@@ -19,31 +19,36 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   const loadAvailablePuzzles = async () => {
     try {
-      // Get last 30 days of puzzles
-      const dates = [];
-      const today = new Date();
-      for (let i = 0; i < 30; i++) {
-        const date = new Date(today);
-        date.setDate(date.getDate() - i);
-        dates.push(date.toISOString().split('T')[0]);
-      }
+      // Get available puzzle dates (we have puzzles from Aug 16-30)
+      const availableDates = [
+        '2025-08-16', '2025-08-17', '2025-08-18', '2025-08-19', '2025-08-20',
+        '2025-08-21', '2025-08-22', '2025-08-23', '2025-08-24', '2025-08-25',
+        '2025-08-26', '2025-08-27', '2025-08-28', '2025-08-29', '2025-08-30'
+      ];
       
       const puzzleList = [];
-      for (const date of dates) {
-        const response = await fetch(`/api/puzzle?date=${date}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.puzzle) {
-            puzzleList.push({
-              date,
-              theme: data.puzzle.theme,
-              completed: history[date]?.completed || false,
-              time: history[date]?.time,
-              mistakes: history[date]?.mistakes
-            });
+      for (const date of availableDates) {
+        try {
+          const response = await fetch(`/api/puzzle?date=${date}`);
+          if (response.ok) {
+            const data = await response.json();
+            if (data.puzzle) {
+              puzzleList.push({
+                date,
+                theme: data.puzzle.theme,
+                completed: history[date]?.completed || false,
+                time: history[date]?.time,
+                mistakes: history[date]?.mistakes
+              });
+            }
           }
+        } catch (err) {
+          console.log(`Could not load puzzle for ${date}`);
         }
       }
+      
+      // Sort by date descending (most recent first)
+      puzzleList.sort((a, b) => b.date.localeCompare(a.date));
       setPuzzles(puzzleList);
     } catch (error) {
       console.error('Error loading puzzles:', error);
@@ -122,7 +127,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         
         <button
           onClick={onClose}
-          className="mt-4 w-full py-3 bg-gradient-to-r from-plum to-peach text-white font-semibold rounded-xl"
+          className="mt-4 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
         >
           Close
         </button>
