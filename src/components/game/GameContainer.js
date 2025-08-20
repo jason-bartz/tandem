@@ -33,8 +33,12 @@ export default function GameContainer() {
     game.completeGame(won);
   };
   
-  const handleSelectPuzzle = (date) => {
-    game.loadPuzzle(date);
+  const handleSelectPuzzle = async (date) => {
+    const success = await game.loadPuzzle(date);
+    if (success) {
+      // Start the game immediately after loading archive puzzle
+      game.startGame();
+    }
   };
 
   const backgroundImage = theme === 'dark' 
