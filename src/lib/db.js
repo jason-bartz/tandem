@@ -1,0 +1,133 @@
+import { PUZZLE_TEMPLATES } from './constants';
+
+let kvClient = null;
+
+function getKVClient() {
+  if (!kvClient && process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    const { kv } = require('@vercel/kv');
+    kvClient = kv;
+  }
+  return kvClient;
+}
+
+const inMemoryDB = {
+  puzzles: {},
+  stats: {
+    views: 0,
+    played: 0,
+    completed: 0
+  }
+};
+
+function getDailyPuzzleFromTemplates(date) {
+  const dateObj = new Date(date);
+  const daysSinceStart = Math.floor((dateObj - new Date('2025-01-01')) / (1000 * 60 * 60 * 24));
+  const templateIndex = daysSinceStart % PUZZLE_TEMPLATES.length;
+  return PUZZLE_TEMPLATES[templateIndex];
+}
+
+export async function getPuzzleForDate(date) {
+  try {
+    const kv = getKVClient();
+    
+    if (kv) {
+      const puzzle = await kv.get(`puzzle:${date}`);
+      if (puzzle) return puzzle;
+    } else {
+      if (inMemoryDB.puzzles[date]) {
+        return inMemoryDB.puzzles[date];
+      }
+    }
+    
+    const templatePuzzle = getDailyPuzzleFromTemplates(date);
+    return {
+      ...templatePuzzle,
+      date,
+      puzzleNumber: Math.floor((new Date(date) - new Date('2025-01-01')) / (1000 * 60 * 60 * 24)) + 1
+    };
+  } catch (error) {
+    console.error('Error getting puzzle:', error);
+    return getDailyPuzzleFromTemplates(date);
+  }
+}
+
+export async function setPuzzleForDate(date, puzzle) {
+  try {
+    const kv = getKVClient();
+    
+    if (kv) {
+      await kv.set(`puzzle:${date}`, puzzle, { ex: 60 * 60 * 24 * 365 });
+    } else {
+      inMemoryDB.puzzles[date] = puzzle;
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error setting puzzle:', error);
+    throw error;
+  }
+}
+
+export async function deletePuzzleForDate(date) {
+  try {
+    const kv = getKVClient();
+    
+    if (kv) {
+      await kv.del(`puzzle:${date}`);
+    } else {
+      delete inMemoryDB.puzzles[date];
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error deleting puzzle:', error);
+    throw error;
+  }
+}
+
+export async function getPuzzlesRange(startDate, endDate) {
+  const puzzles = {};
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+  
+  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+    const dateStr = d.toISOString().split('T')[0];
+    puzzles[dateStr] = await getPuzzleForDate(dateStr);
+  }
+  
+  return puzzles;
+}
+
+export async function incrementStats(stat) {
+  try {
+    const kv = getKVClient();
+    
+    if (kv) {
+      await kv.hincrby('stats', stat, 1);
+    } else {
+      if (inMemoryDB.stats[stat] !== undefined) {
+        inMemoryDB.stats[stat]++;
+      }
+    }
+    
+    return true;
+  } catch (error) {
+    console.error('Error incrementing stats:', error);
+    return false;
+  }
+}
+
+export async function getStats() {
+  try {
+    const kv = getKVClient();
+    
+    if (kv) {
+      return await kv.hgetall('stats') || { views: 0, played: 0, completed: 0 };
+    } else {
+      return { ...inMemoryDB.stats };
+    }
+  } catch (error) {
+    console.error('Error getting stats:', error);
+    return { views: 0, played: 0, completed: 0 };
+  }
+}

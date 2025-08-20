@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tandem - Daily Pairs Puzzle</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --plum: #6B46C1;
+            --peach: #FFB5A7;
+            --sage-green: #87A96B;
+            --warm-yellow: #FFD23F;
+            --coral-red: #FF6B6B;
+            --off-white: #FAF8F3;
+            --light-sand: #F5F2ED;
+            --dark-text: #2C2C2C;
+            --gray-text: #6B7280;
+            --border-color: #E5E7EB;
+            --modal-bg: rgba(0, 0, 0, 0.5);
+        }
+
+        [data-theme="dark"] {
+            --plum: #8B5CF6;
+            --peach: #FCA5A5;
+            --sage-green: #86EFAC;
+            --warm-yellow: #FDE047;
+            --coral-red: #F87171;
+            --off-white: #1F2937;
+            --light-sand: #374151;
+            --dark-text: #F9FAFB;
+            --gray-text: #9CA3AF;
+            --border-color: #4B5563;
+            --modal-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #312e81 0%, #831843 100%);
+        }
+
+        .game-container {
+            background: var(--off-white);
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            width: 100%;
+            max-width: 420px;
+            overflow: hidden;
+            transition: background 0.3s ease;
+        }
+
+        /* Theme Toggle */
+        .theme-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .theme-btn, .sound-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            border: none;
+            background: var(--light-sand);
+            color: var(--dark-text);
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-btn:hover, .sound-btn:hover {
+            transform: scale(1.1);
+            background: var(--gray-text);
+            color: white;
+        }
+
+        /* Welcome Screen */
+        .welcome-screen {
+            padding: 40px 24px;
+            text-align: center;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .game-title-main {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .tagline {
+            color: var(--gray-text);
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 32px;
+        }
+
+        .rules {
+            background: var(--light-sand);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .rules h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--gray-text);
+            margin-bottom: 16px;
+        }
+
+        .rule-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            color: var(--dark-text);
+            font-size: 15px;
+        }
+
+        .rule-emoji {
+            width: 40px;
+            height: 40px;
+            background: var(--off-white);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .play-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .play-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(107, 70, 193, 0.3);
+        }
+
+        .puzzle-date {
+            color: var(--gray-text);
+            font-size: 14px;
+            margin-top: 16px;
+        }
+
+        /* Game Screen */
+        .game-screen {
+            display: none;
+            animation: slideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(100%); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            padding: 20px 24px;
+            text-align: center;
+            position: relative;
+        }
+
+        .game-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 4px;
+        }
+
+        .date {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+        }
+
+        .game-content {
+            padding: 24px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 24px;
+            padding: 16px;
+            background: var(--light-sand);
+            border-radius: 16px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark-text);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--gray-text);
+            margin-top: 4px;
+        }
+
+        .theme-banner {
+            background: linear-gradient(135deg, var(--warm-yellow) 0%, #FFE5A3 100%);
+            padding: 14px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #8B6914;
+            font-weight: 600;
+            animation: slideDown 0.5s ease;
+        }
+
+        [data-theme="dark"] .theme-banner {
+            background: linear-gradient(135deg, #A16207 0%, #854D0E 100%);
+            color: var(--warm-yellow);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .puzzle-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .puzzle-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            opacity: 0;
+            animation: fadeInUp 0.5s forwards;
+        }
+
+        .puzzle-row:nth-child(1) { animation-delay: 0.1s; }
+        .puzzle-row:nth-child(2) { animation-delay: 0.2s; }
+        .puzzle-row:nth-child(3) { animation-delay: 0.3s; }
+        .puzzle-row:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .emoji-bubble {
+            width: 70px;
+            height: 70px;
+            background: var(--light-sand);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .emoji-bubble:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .answer-input {
+            flex: 1;
+            padding: 18px;
+            border: 2px solid var(--border-color);
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+            outline: none;
+            text-transform: uppercase;
+            background: var(--off-white);
+            color: var(--dark-text);
+        }
+
+        [data-theme="dark"] .answer-input {
+            background: var(--light-sand);
+        }
+
+        .answer-input:focus {
+            border-color: var(--plum);
+            box-shadow: 0 0 0 4px rgba(107, 70, 193, 0.1);
+        }
+
+        .answer-input.correct {
+            background: linear-gradient(135deg, var(--sage-green) 0%, #A5C48F 100%);
+            color: white;
+            border-color: var(--sage-green);
+            animation: linkSnap 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes linkSnap {
+            0% { transform: scale(1); }
+            30% { transform: scale(0.95); }
+            60% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        .answer-input.incorrect {
+            background: rgba(255, 107, 107, 0.1);
+            border-color: var(--coral-red);
+            animation: gentleShake 0.5s;
+        }
+
+        @keyframes gentleShake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-6px); }
+            40% { transform: translateX(6px); }
+            60% { transform: translateX(-3px); }
+            80% { transform: translateX(3px); }
+        }
+
+        .check-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .check-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(107, 70, 193, 0.3);
+        }
+
+        .check-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Completion Screen */
+        .completion-screen {
+            display: none;
+            padding: 40px 24px;
+            text-align: center;
+            animation: zoomIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+        }
+
+        @keyframes zoomIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .link-animation {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .link-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            position: absolute;
+            animation: linking 1s ease-in-out infinite;
+        }
+
+        .link-circle:nth-child(1) {
+            background: var(--plum);
+            left: 0;
+            top: 30px;
+        }
+
+        .link-circle:nth-child(2) {
+            background: var(--peach);
+            right: 0;
+            top: 30px;
+        }
+
+        @keyframes linking {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(30px); }
+        }
+
+        .completion-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .completion-stats {
+            color: var(--gray-text);
+            font-size: 16px;
+            margin-bottom: 24px;
+        }
+
+        .completion-date {
+            color: var(--gray-text);
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .result-grid {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 24px;
+            font-size: 32px;
+        }
+
+        .result-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            transition: all 0.3s;
+        }
+
+        .result-dot.correct {
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+        }
+
+        .result-dot.incorrect {
+            background: var(--light-sand);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .share-btn, .stats-btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .share-btn {
+            background: var(--dark-text);
+            color: var(--off-white);
+        }
+
+        [data-theme="dark"] .share-btn {
+            background: var(--gray-text);
+            color: var(--dark-text);
+        }
+
+        .stats-btn {
+            background: var(--light-sand);
+            color: var(--dark-text);
+        }
+
+        .share-btn:hover, .stats-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Statistics Modal */
+        .stats-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--modal-bg);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .stats-content {
+            background: var(--off-white);
+            border-radius: 24px;
+            padding: 32px 24px;
+            max-width: 400px;
+            width: 100%;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .stats-title {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--dark-text);
+        }
+
+        .close-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            background: var(--light-sand);
+            color: var(--gray-text);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: var(--gray-text);
+            color: white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: var(--light-sand);
+            padding: 16px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .stat-card-value {
+            font-size: 32px;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-card-label {
+            font-size: 12px;
+            color: var(--gray-text);
+            margin-top: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 480px) {
+            .emoji-bubble {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+            
+            .answer-input {
+                font-size: 14px;
+                padding: 16px;
+            }
+        }
+
+        /* Hidden canvas for image export */
+        #shareCanvas {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Welcome Screen -->
+        <div class="welcome-screen" id="welcomeScreen">
+            <div class="theme-toggle">
+                <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">🌙</button>
+                <button class="sound-btn" onclick="toggleSound()" id="soundBtn">🔊</button>
+            </div>
+            
+            <div class="logo">🔗</div>
+            <h1 class="game-title-main">Tandem</h1>
+            <p class="tagline">4 answers. 2 emojis each. 1 theme.</p>
+            
+            <div class="rules">
+                <h3>How to Play</h3>
+                <div class="rule-item">
+                    <div class="rule-emoji">👀</div>
+                    <span>Look at each emoji pair</span>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">💭</div>
+                    <span>Guess what they represent</span>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">🔗</div>
+                    <span>Find the theme that links them</span>
+                </div>
+                <div class="rule-item">
+                    <div class="rule-emoji">✅</div>
+                    <span>4 mistakes allowed</span>
+                </div>
+            </div>
+            
+            <button class="play-btn" onclick="startGame()">Play Today's Puzzle</button>
+            <div class="puzzle-date" id="welcomeDate"></div>
+        </div>
+
+        <!-- Game Screen -->
+        <div class="game-screen" id="gameScreen">
+            <div class="header">
+                <div class="theme-toggle">
+                    <button class="theme-btn" onclick="toggleTheme()" id="themeBtn2">🌙</button>
+                    <button class="sound-btn" onclick="toggleSound()" id="soundBtn2">🔊</button>
+                </div>
+                
+                <h1 class="game-title">Tandem</h1>
+                <div class="date" id="gameDate"></div>
+            </div>
+
+            <div class="game-content">
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="timer">0:00</div>
+                        <div class="stat-label">Time</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="mistakes">0/4</div>
+                        <div class="stat-label">Mistakes</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="solved">0/4</div>
+                        <div class="stat-label">Solved</div>
+                    </div>
+                </div>
+
+                <div class="theme-banner">
+                    💡 Today's theme: Things found in a kitchen
+                </div>
+
+                <div class="puzzle-grid">
+                    <div class="puzzle-row">
+                        <div class="emoji-bubble">🍳🔥</div>
+                        <input type="text" class="answer-input" placeholder="Enter answer" data-answer="STOVE" maxlength="10">
+                    </div>
+                    <div class="puzzle-row">
+                        <div class="emoji-bubble">❄️📦</div>
+                        <input type="text" class="answer-input" placeholder="Enter answer" data-answer="FRIDGE" maxlength="10">
+                    </div>
+                    <div class="puzzle-row">
+                        <div class="emoji-bubble">🍞🔥</div>
+                        <input type="text" class="answer-input" placeholder="Enter answer" data-answer="TOASTER" maxlength="10">
+                    </div>
+                    <div class="puzzle-row">
+                        <div class="emoji-bubble">☕⚡</div>
+                        <input type="text" class="answer-input" placeholder="Enter answer" data-answer="COFFEE" maxlength="10">
+                    </div>
+                </div>
+
+                <button class="check-btn" onclick="checkAnswers()">Check Answers</button>
+            </div>
+        </div>
+
+        <!-- Completion Screen -->
+        <div class="completion-screen" id="completionScreen">
+            <div class="theme-toggle">
+                <button class="theme-btn" onclick="toggleTheme()" id="themeBtn3">🌙</button>
+                <button class="sound-btn" onclick="toggleSound()" id="soundBtn3">🔊</button>
+            </div>
+            
+            <div class="link-animation">
+                <div class="link-circle"></div>
+                <div class="link-circle"></div>
+            </div>
+            
+            <h2 class="completion-title">Puzzle Complete!</h2>
+            <div class="completion-date" id="completionDate"></div>
+            <div class="completion-stats">
+                <div id="finalTime">Solved in 0:00</div>
+                <div id="finalMistakes">0 mistakes</div>
+            </div>
+            
+            <div class="result-grid" id="resultGrid">
+                <div class="result-dot"></div>
+                <div class="result-dot"></div>
+                <div class="result-dot"></div>
+                <div class="result-dot"></div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="share-btn" onclick="shareResults()">Share Image</button>
+                <button class="stats-btn" onclick="showStats()">Statistics</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Modal -->
+    <div class="stats-modal" id="statsModal">
+        <div class="stats-content">
+            <div class="stats-header">
+                <h2 class="stats-title">Statistics</h2>
+                <button class="close-btn" onclick="closeStats()">×</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-card-value" id="gamesPlayed">0</div>
+                    <div class="stat-card-label">Played</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value" id="winRate">0%</div>
+                    <div class="stat-card-label">Win Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value" id="currentStreak">0</div>
+                    <div class="stat-card-label">Current Streak</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-card-value" id="bestStreak">0</div>
+                    <div class="stat-card-label">Best Streak</div>
+                </div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-card-value" id="totalWins">0</div>
+                <div class="stat-card-label">Wins</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hidden canvas for share image -->
+    <canvas id="shareCanvas"></canvas>
+
+    <script>
+        let startTime;
+        let mistakes = 0;
+        let solved = 0;
+        let gameComplete = false;
+        let timerInterval;
+        let soundEnabled = true;
+        const maxMistakes = 4;
+        const totalPuzzles = 4;
+
+        // Audio context for sound effects
+        let audioContext;
+        
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+            initAudio();
+            
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            switch(type) {
+                case 'correct':
+                    oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+                    oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                    break;
+                case 'incorrect':
+                    oscillator.frequency.setValueAtTime(196, audioContext.currentTime); // G3
+                    oscillator.frequency.setValueAtTime(174.61, audioContext.currentTime + 0.1); // F3
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.2);
+                    break;
+                case 'complete':
+                    const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+                    notes.forEach((freq, i) => {
+                        const osc = audioContext.createOscillator();
+                        const gain = audioContext.createGain();
+                        osc.connect(gain);
+                        gain.connect(audioContext.destination);
+                        osc.frequency.setValueAtTime(freq, audioContext.currentTime + i * 0.1);
+                        gain.gain.setValueAtTime(0.3, audioContext.currentTime + i * 0.1);
+                        gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + i * 0.1 + 0.5);
+                        osc.start(audioContext.currentTime + i * 0.1);
+                        osc.stop(audioContext.currentTime + i * 0.1 + 0.5);
+                    });
+                    break;
+            }
+        }
+
+        // Get current date and puzzle number
+        function getCurrentPuzzleInfo() {
+            const now = new Date();
+            const start = new Date('2025-01-01');
+            const diffTime = Math.abs(now - start);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', options);
+            
+            return {
+                number: diffDays,
+                date: dateStr
+            };
+        }
+
+        // Update dates on load
+        function updateDates() {
+            const puzzleInfo = getCurrentPuzzleInfo();
+            document.getElementById('welcomeDate').textContent = `Puzzle #${puzzleInfo.number} • ${puzzleInfo.date}`;
+            document.getElementById('gameDate').textContent = `Daily Puzzle #${puzzleInfo.number}`;
+            document.getElementById('completionDate').textContent = puzzleInfo.date;
+        }
+
+        // Theme management
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('tandemTheme', newTheme);
+            
+            // Update all theme buttons
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            themeButtons.forEach(btn => {
+                btn.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            });
+        }
+
+        // Sound toggle
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('tandemSound', soundEnabled);
+            
+            const soundButtons = document.querySelectorAll('.sound-btn');
+            soundButtons.forEach(btn => {
+                btn.textContent = soundEnabled ? '🔊' : '🔇';
+            });
+            
+            if (soundEnabled) {
+                playSound('correct'); // Play a sample sound
+            }
+        }
+
+        // Load preferences
+        function loadPreferences() {
+            const savedTheme = localStorage.getItem('tandemTheme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const themeButtons = document.querySelectorAll('.theme-btn');
+            themeButtons.forEach(btn => {
+                btn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            });
+            
+            soundEnabled = localStorage.getItem('tandemSound') !== 'false';
+            const soundButtons = document.querySelectorAll('.sound-btn');
+            soundButtons.forEach(btn => {
+                btn.textContent = soundEnabled ? '🔊' : '🔇';
+            });
+        }
+
+        // Load stats from localStorage
+        function loadStats() {
+            const stats = JSON.parse(localStorage.getItem('tandemStats') || '{"played":0,"wins":0,"currentStreak":0,"bestStreak":0}');
+            return stats;
+        }
+
+        function saveStats(stats) {
+            localStorage.setItem('tandemStats', JSON.stringify(stats));
+        }
+
+        function updateStatsDisplay() {
+            const stats = loadStats();
+            document.getElementById('gamesPlayed').textContent = stats.played;
+            document.getElementById('totalWins').textContent = stats.wins;
+            document.getElementById('currentStreak').textContent = stats.currentStreak;
+            document.getElementById('bestStreak').textContent = stats.bestStreak;
+            const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
+            document.getElementById('winRate').textContent = winRate + '%';
+        }
+
+        function startGame() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'block';
+            startTime = Date.now();
+            
+            // Start timer
+            timerInterval = setInterval(() => {
+                if (!gameComplete) {
+                    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                    const minutes = Math.floor(elapsed / 60);
+                    const seconds = elapsed % 60;
+                    document.getElementById('timer').textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+                }
+            }, 1000);
+        }
+
+        function checkAnswers() {
+            const inputs = document.querySelectorAll('.answer-input');
+            let currentMistakes = 0;
+            let currentSolved = 0;
+            
+            inputs.forEach(input => {
+                if (input.classList.contains('correct')) {
+                    currentSolved++;
+                    return;
+                }
+                
+                const answer = input.value.trim().toUpperCase();
+                const correct = input.dataset.answer;
+                
+                if (answer) {
+                    if (answer === correct) {
+                        input.classList.add('correct');
+                        input.classList.remove('incorrect');
+                        input.disabled = true;
+                        currentSolved++;
+                        playSound('correct');
+                    } else {
+                        input.classList.add('incorrect');
+                        setTimeout(() => input.classList.remove('incorrect'), 500);
+                        currentMistakes++;
+                        playSound('incorrect');
+                    }
+                }
+            });
+            
+            mistakes += currentMistakes;
+            solved = currentSolved;
+            
+            document.getElementById('mistakes').textContent = `${mistakes}/${maxMistakes}`;
+            document.getElementById('solved').textContent = `${solved}/${totalPuzzles}`;
+            
+            if (solved === totalPuzzles) {
+                completeGame(true);
+            } else if (mistakes >= maxMistakes) {
+                completeGame(false);
+            }
+        }
+
+        function completeGame(won) {
+            gameComplete = true;
+            clearInterval(timerInterval);
+            
+            if (won) {
+                playSound('complete');
+            }
+            
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update stats
+            const stats = loadStats();
+            stats.played++;
+            if (won) {
+                stats.wins++;
+                stats.currentStreak++;
+                if (stats.currentStreak > stats.bestStreak) {
+                    stats.bestStreak = stats.currentStreak;
+                }
+            } else {
+                stats.currentStreak = 0;
+            }
+            saveStats(stats);
+            
+            // Update completion screen
+            document.getElementById('finalTime').textContent = won ? `Solved in ${timeStr}` : `Time: ${timeStr}`;
+            document.getElementById('finalMistakes').textContent = `${mistakes} mistake${mistakes !== 1 ? 's' : ''}`;
+            
+            // Update result dots
+            const dots = document.querySelectorAll('.result-dot');
+            const inputs = document.querySelectorAll('.answer-input');
+            inputs.forEach((input, index) => {
+                if (input.classList.contains('correct')) {
+                    dots[index].classList.add('correct');
+                } else {
+                    dots[index].classList.add('incorrect');
+                }
+            });
+            
+            // Show completion screen
+            setTimeout(() => {
+                document.getElementById('gameScreen').style.display = 'none';
+                document.getElementById('completionScreen').style.display = 'block';
+            }, 500);
+        }
+
+        function createShareImage() {
+            const canvas = document.getElementById('shareCanvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            canvas.width = 400;
+            canvas.height = 500;
+            
+            // Background gradient
+            const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                gradient.addColorStop(0, '#312e81');
+                gradient.addColorStop(1, '#831843');
+            } else {
+                gradient.addColorStop(0, '#6B46C1');
+                gradient.addColorStop(1, '#FFB5A7');
+            }
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // White card background
+            ctx.fillStyle = theme === 'dark' ? '#1F2937' : '#FAF8F3';
+            ctx.roundRect(20, 20, canvas.width - 40, canvas.height - 40, 20);
+            ctx.fill();
+            
+            // Title
+            ctx.font = 'bold 36px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#6B46C1';
+            ctx.textAlign = 'center';
+            ctx.fillText('Tandem', canvas.width / 2, 80);
+            
+            // Puzzle info
+            const puzzleInfo = getCurrentPuzzleInfo();
+            ctx.font = '16px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#6B7280';
+            ctx.fillText(`Puzzle #${puzzleInfo.number}`, canvas.width / 2, 110);
+            ctx.fillText(puzzleInfo.date, canvas.width / 2, 135);
+            
+            // Stats
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+            const timeStr = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = theme === 'dark' ? '#F9FAFB' : '#2C2C2C';
+            ctx.fillText('Puzzle Complete!', canvas.width / 2, 200);
+            
+            ctx.font = '18px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillText(`Solved in ${timeStr}`, canvas.width / 2, 240);
+            ctx.fillText(`${mistakes} mistake${mistakes !== 1 ? 's' : ''}`, canvas.width / 2, 265);
+            
+            // Result dots
+            const dots = document.querySelectorAll('.result-dot');
+            const dotSize = 50;
+            const dotGap = 15;
+            const totalWidth = (dotSize * 4) + (dotGap * 3);
+            const startX = (canvas.width - totalWidth) / 2;
+            
+            dots.forEach((dot, i) => {
+                const x = startX + (i * (dotSize + dotGap));
+                const y = 310;
+                
+                if (dot.classList.contains('correct')) {
+                    const dotGradient = ctx.createLinearGradient(x, y, x + dotSize, y + dotSize);
+                    dotGradient.addColorStop(0, '#6B46C1');
+                    dotGradient.addColorStop(1, '#FFB5A7');
+                    ctx.fillStyle = dotGradient;
+                } else {
+                    ctx.fillStyle = theme === 'dark' ? '#374151' : '#F5F2ED';
+                }
+                
+                ctx.roundRect(x, y, dotSize, dotSize, 10);
+                ctx.fill();
+            });
+            
+            // Bottom text
+            ctx.font = '14px -apple-system, BlinkMacSystemFont, sans-serif';
+            ctx.fillStyle = '#6B7280';
+            ctx.fillText('tandem.game', canvas.width / 2, 420);
+            
+            return canvas;
+        }
+
+        function shareResults() {
+            const canvas = createShareImage();
+            
+            canvas.toBlob((blob) => {
+                const file = new File([blob], `tandem-puzzle-${getCurrentPuzzleInfo().number}.png`, { type: 'image/png' });
+                
+                if (navigator.share && navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'Tandem Puzzle Result',
+                        text: `I solved Tandem Puzzle #${getCurrentPuzzleInfo().number}!`
+                    }).catch(err => {
+                        // Fallback to download
+                        downloadImage(canvas);
+                    });
+                } else {
+                    // Fallback to download
+                    downloadImage(canvas);
+                }
+            });
+        }
+
+        function downloadImage(canvas) {
+            const link = document.createElement('a');
+            link.download = `tandem-puzzle-${getCurrentPuzzleInfo().number}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function showStats() {
+            updateStatsDisplay();
+            document.getElementById('statsModal').style.display = 'flex';
+        }
+
+        function closeStats() {
+            document.getElementById('statsModal').style.display = 'none';
+        }
+
+        // Polyfill for roundRect if not supported
+        if (!CanvasRenderingContext2D.prototype.roundRect) {
+            CanvasRenderingContext2D.prototype.roundRect = function(x, y, width, height, radius) {
+                this.beginPath();
+                this.moveTo(x + radius, y);
+                this.lineTo(x + width - radius, y);
+                this.quadraticCurveTo(x + width, y, x + width, y + radius);
+                this.lineTo(x + width, y + height - radius);
+                this.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+                this.lineTo(x + radius, y + height);
+                this.quadraticCurveTo(x, y + height, x, y + height - radius);
+                this.lineTo(x, y + radius);
+                this.quadraticCurveTo(x, y, x + radius, y);
+                this.closePath();
+            };
+        }
+
+        // Initialize
+        loadPreferences();
+        updateDates();
+        updateStatsDisplay();
+    </script>
+</body>
+</html>
