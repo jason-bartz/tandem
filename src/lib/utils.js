@@ -10,11 +10,17 @@ export function formatTime(seconds) {
   return `${minutes}:${secs.toString().padStart(2, '0')}`;
 }
 
-export function getPuzzleNumber(startDate = '2025-01-01') {
-  const start = new Date(startDate);
-  const today = new Date();
-  const diffTime = Math.abs(today - start);
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+export function getPuzzleNumber(targetDate = null) {
+  // Start from the oldest puzzle we have: August 16, 2025
+  const start = new Date('2025-08-16');
+  const target = targetDate ? new Date(targetDate) : new Date();
+  
+  // Calculate difference in days
+  const diffTime = target - start;
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  
+  // Puzzle #1 is August 16, 2025
+  return diffDays + 1;
 }
 
 export function getCurrentPuzzleInfo() {
@@ -30,6 +36,22 @@ export function getCurrentPuzzleInfo() {
     number: getPuzzleNumber(),
     date: now.toLocaleDateString('en-US', options),
     isoDate: now.toISOString().split('T')[0],
+  };
+}
+
+export function getPuzzleInfoForDate(date) {
+  const d = new Date(date);
+  const options = { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  };
+  
+  return {
+    number: getPuzzleNumber(date),
+    date: d.toLocaleDateString('en-US', options),
+    isoDate: date,
   };
 }
 

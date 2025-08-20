@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-26",
+  "theme": "Desserts",
+  "emojiPairs": [
+    "🍦🍨",
+    "🍪🥛",
+    "🥧🍎",
+    "🍩☕"
+  ],
+  "words": [
+    "ICECREAM",
+    "COOKIE",
+    "PIE",
+    "DONUT"
+  ],
+  "correctAnswers": [
+    "ICECREAM",
+    "COOKIE",
+    "PIE",
+    "DONUT"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🍦🍨",
+      "answer": "ICECREAM"
+    },
+    {
+      "emoji": "🍪🥛",
+      "answer": "COOKIE"
+    },
+    {
+      "emoji": "🥧🍎",
+      "answer": "PIE"
+    },
+    {
+      "emoji": "🍩☕",
+      "answer": "DONUT"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.377Z",
+  "updatedAt": "2025-08-20T19:45:48.377Z",
+  "puzzleNumber": 11
+}

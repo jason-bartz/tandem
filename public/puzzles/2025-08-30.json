@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-30",
+  "theme": "Office Supplies",
+  "emojiPairs": [
+    "✏️📝",
+    "📎📄",
+    "✂️📰",
+    "📌📋"
+  ],
+  "words": [
+    "PENCIL",
+    "PAPERCLIP",
+    "SCISSORS",
+    "PUSHPIN"
+  ],
+  "correctAnswers": [
+    "PENCIL",
+    "PAPERCLIP",
+    "SCISSORS",
+    "PUSHPIN"
+  ],
+  "puzzles": [
+    {
+      "emoji": "✏️📝",
+      "answer": "PENCIL"
+    },
+    {
+      "emoji": "📎📄",
+      "answer": "PAPERCLIP"
+    },
+    {
+      "emoji": "✂️📰",
+      "answer": "SCISSORS"
+    },
+    {
+      "emoji": "📌📋",
+      "answer": "PUSHPIN"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.378Z",
+  "updatedAt": "2025-08-20T19:45:48.378Z",
+  "puzzleNumber": 15
+}

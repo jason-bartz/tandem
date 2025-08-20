@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-17",
+  "theme": "Things That Echo",
+  "emojiPairs": [
+    "🏔️🗣️",
+    "🕳️⬇️",
+    "🏟️👏",
+    "🚇🚊"
+  ],
+  "words": [
+    "CANYON",
+    "CAVE",
+    "STADIUM",
+    "TUNNEL"
+  ],
+  "correctAnswers": [
+    "CANYON",
+    "CAVE",
+    "STADIUM",
+    "TUNNEL"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🏔️🗣️",
+      "answer": "CANYON"
+    },
+    {
+      "emoji": "🕳️⬇️",
+      "answer": "CAVE"
+    },
+    {
+      "emoji": "🏟️👏",
+      "answer": "STADIUM"
+    },
+    {
+      "emoji": "🚇🚊",
+      "answer": "TUNNEL"
+    }
+  ],
+  "createdAt": "2025-08-20T19:56:53.880Z",
+  "updatedAt": "2025-08-20T19:56:53.880Z",
+  "puzzleNumber": 2
+}

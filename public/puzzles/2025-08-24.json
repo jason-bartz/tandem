@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-24",
+  "theme": "School Subjects",
+  "emojiPairs": [
+    "🔬🧪",
+    "➕➖",
+    "🌍🗺️",
+    "🎨🖌️"
+  ],
+  "words": [
+    "SCIENCE",
+    "MATH",
+    "GEOGRAPHY",
+    "ART"
+  ],
+  "correctAnswers": [
+    "SCIENCE",
+    "MATH",
+    "GEOGRAPHY",
+    "ART"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🔬🧪",
+      "answer": "SCIENCE"
+    },
+    {
+      "emoji": "➕➖",
+      "answer": "MATH"
+    },
+    {
+      "emoji": "🌍🗺️",
+      "answer": "GEOGRAPHY"
+    },
+    {
+      "emoji": "🎨🖌️",
+      "answer": "ART"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.376Z",
+  "updatedAt": "2025-08-20T19:45:48.376Z",
+  "puzzleNumber": 9
+}

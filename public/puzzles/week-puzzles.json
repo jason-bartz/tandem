@@ -1,0 +1,134 @@
+{
+  "puzzles": [
+    {
+      "date": "2025-08-21",
+      "emojiPair": "🌊🏄",
+      "words": [
+        "SURF",
+        "BOARD",
+        "WAVE",
+        "RIDER"
+      ],
+      "correctPairs": {
+        "SURF": "BOARD",
+        "BOARD": "SURF",
+        "WAVE": "RIDER",
+        "RIDER": "WAVE"
+      },
+      "createdAt": "2025-08-20T19:39:37.352Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-22",
+      "emojiPair": "🎭🎬",
+      "words": [
+        "MOVIE",
+        "STAR",
+        "DRAMA",
+        "QUEEN"
+      ],
+      "correctPairs": {
+        "MOVIE": "STAR",
+        "STAR": "MOVIE",
+        "DRAMA": "QUEEN",
+        "QUEEN": "DRAMA"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-23",
+      "emojiPair": "🏖️☀️",
+      "words": [
+        "BEACH",
+        "DAY",
+        "SUN",
+        "SHINE"
+      ],
+      "correctPairs": {
+        "BEACH": "DAY",
+        "DAY": "BEACH",
+        "SUN": "SHINE",
+        "SHINE": "SUN"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-24",
+      "emojiPair": "🎮🕹️",
+      "words": [
+        "VIDEO",
+        "GAME",
+        "ARCADE",
+        "PLAYER"
+      ],
+      "correctPairs": {
+        "VIDEO": "GAME",
+        "GAME": "VIDEO",
+        "ARCADE": "PLAYER",
+        "PLAYER": "ARCADE"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-25",
+      "emojiPair": "📚🔖",
+      "words": [
+        "BOOK",
+        "MARK",
+        "PAGE",
+        "TURNER"
+      ],
+      "correctPairs": {
+        "BOOK": "MARK",
+        "MARK": "BOOK",
+        "PAGE": "TURNER",
+        "TURNER": "PAGE"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-26",
+      "emojiPair": "🍕🧀",
+      "words": [
+        "PIZZA",
+        "PIE",
+        "CHEESE",
+        "CAKE"
+      ],
+      "correctPairs": {
+        "PIZZA": "PIE",
+        "PIE": "PIZZA",
+        "CHEESE": "CAKE",
+        "CAKE": "CHEESE"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    },
+    {
+      "date": "2025-08-27",
+      "emojiPair": "🚀🌟",
+      "words": [
+        "ROCKET",
+        "SHIP",
+        "STAR",
+        "LIGHT"
+      ],
+      "correctPairs": {
+        "ROCKET": "SHIP",
+        "SHIP": "ROCKET",
+        "STAR": "LIGHT",
+        "LIGHT": "STAR"
+      },
+      "createdAt": "2025-08-20T19:39:37.358Z",
+      "updatedAt": "2025-08-20T19:39:37.358Z"
+    }
+  ],
+  "metadata": {
+    "createdAt": "2025-08-20T19:39:37.358Z",
+    "totalPuzzles": 7
+  }
+}

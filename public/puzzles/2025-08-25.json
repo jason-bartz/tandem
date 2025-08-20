@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-25",
+  "theme": "Things You Wear",
+  "emojiPairs": [
+    "👓📖",
+    "⌚⏰",
+    "👔💼",
+    "🧤❄️"
+  ],
+  "words": [
+    "GLASSES",
+    "WATCH",
+    "TIE",
+    "GLOVES"
+  ],
+  "correctAnswers": [
+    "GLASSES",
+    "WATCH",
+    "TIE",
+    "GLOVES"
+  ],
+  "puzzles": [
+    {
+      "emoji": "👓📖",
+      "answer": "GLASSES"
+    },
+    {
+      "emoji": "⌚⏰",
+      "answer": "WATCH"
+    },
+    {
+      "emoji": "👔💼",
+      "answer": "TIE"
+    },
+    {
+      "emoji": "🧤❄️",
+      "answer": "GLOVES"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.376Z",
+  "updatedAt": "2025-08-20T19:45:48.376Z",
+  "puzzleNumber": 10
+}

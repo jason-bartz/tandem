@@ -32,6 +32,10 @@ export default function GameContainer() {
     }
     game.completeGame(won);
   };
+  
+  const handleSelectPuzzle = (date) => {
+    game.loadPuzzle(date);
+  };
 
   const backgroundImage = theme === 'dark' 
     ? "url('/images/dark-mode-bg.webp')" 
@@ -100,8 +104,7 @@ export default function GameContainer() {
               onStart={game.startGame}
               theme={theme}
               toggleTheme={toggleTheme}
-              soundEnabled={soundEnabled}
-              toggleSound={toggleSound}
+              onSelectPuzzle={handleSelectPuzzle}
             />
           )}
 
@@ -117,8 +120,6 @@ export default function GameContainer() {
               onCheckAnswers={handleCheckAnswers}
               theme={theme}
               toggleTheme={toggleTheme}
-              soundEnabled={soundEnabled}
-              toggleSound={toggleSound}
             />
           )}
 
@@ -132,8 +133,6 @@ export default function GameContainer() {
               onPlayAgain={game.resetGame}
               theme={theme}
               toggleTheme={toggleTheme}
-              soundEnabled={soundEnabled}
-              toggleSound={toggleSound}
             />
           )}
         </div>

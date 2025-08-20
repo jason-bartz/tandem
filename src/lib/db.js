@@ -50,6 +50,20 @@ function getDailyPuzzleFromTemplates(date) {
 
 export async function getPuzzleForDate(date) {
   try {
+    // First, try to load from JSON file
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${date}.json`);
+      if (fs.existsSync(puzzleFile)) {
+        const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
+        console.log(`Loaded puzzle from file: ${date}`);
+        return puzzleData;
+      }
+    } catch (fileError) {
+      // File doesn't exist or couldn't be read, continue to other methods
+    }
+    
     const redis = await getRedisClient();
     
     if (redis) {
@@ -62,10 +76,11 @@ export async function getPuzzleForDate(date) {
     }
     
     const templatePuzzle = getDailyPuzzleFromTemplates(date);
+    const { getPuzzleNumber } = require('./utils');
     return {
       ...templatePuzzle,
       date,
-      puzzleNumber: Math.floor((new Date(date) - new Date('2025-01-01')) / (1000 * 60 * 60 * 24)) + 1
+      puzzleNumber: getPuzzleNumber(date)
     };
   } catch (error) {
     console.error('Error getting puzzle:', error);

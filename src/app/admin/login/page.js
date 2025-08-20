@@ -32,81 +32,138 @@ export default function AdminLogin() {
   };
 
   return (
-    <div 
-      className="fixed inset-0 w-full h-full flex items-center justify-center"
-      style={{ 
-        backgroundImage: "url('/images/light-mode-bg.webp')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
-      }}
-    >
-      <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+    <div style={{ 
+      minHeight: '100vh',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: '#f3f4f6',
+      padding: '1rem'
+    }}>
+      <div style={{
+        backgroundColor: 'white',
+        padding: '2rem',
+        borderRadius: '1rem',
+        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+        width: '100%',
+        maxWidth: '400px'
+      }}>
+        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
             Tandem Admin
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-400">
+          <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>
             Sign in to manage puzzles
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
+        {error && (
+          <div style={{
+            padding: '0.75rem',
+            marginBottom: '1rem',
+            backgroundColor: '#fee2e2',
+            color: '#991b1b',
+            borderRadius: '0.5rem',
+            textAlign: 'center'
+          }}>
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1.5rem' }}>
             <label 
               htmlFor="username" 
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              style={{ 
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '0.25rem'
+              }}
             >
               Username
             </label>
             <input
               id="username"
               type="text"
+              required
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                outline: 'none'
+              }}
               placeholder="Enter username"
             />
           </div>
 
-          <div>
+          <div style={{ marginBottom: '1.5rem' }}>
             <label 
               htmlFor="password" 
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+              style={{ 
+                display: 'block',
+                fontSize: '0.875rem',
+                fontWeight: '500',
+                color: '#374151',
+                marginBottom: '0.25rem'
+              }}
             >
               Password
             </label>
             <input
               id="password"
               type="password"
+              required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
+              style={{
+                width: '100%',
+                padding: '0.75rem',
+                border: '1px solid #d1d5db',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                outline: 'none'
+              }}
               placeholder="Enter password"
             />
           </div>
 
-          {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-600 dark:text-red-400 px-4 py-3 rounded-lg">
-              {error}
-            </div>
-          )}
-
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 px-4 bg-gradient-to-r from-plum to-peach text-white font-semibold rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{
+              width: '100%',
+              padding: '0.75rem',
+              backgroundColor: '#6b46c1',
+              color: 'white',
+              fontWeight: '600',
+              borderRadius: '0.5rem',
+              border: 'none',
+              fontSize: '1rem',
+              cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.5 : 1
+            }}
           >
             {loading ? 'Signing in...' : 'Sign In'}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div style={{ marginTop: '1.5rem', textAlign: 'center' }}>
           <button
             onClick={() => router.push('/')}
-            className="text-sm text-gray-600 dark:text-gray-400 hover:text-plum dark:hover:text-plum"
+            style={{
+              fontSize: '0.875rem',
+              color: '#6b7280',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+              textDecoration: 'underline'
+            }}
           >
             ← Back to Game
           </button>
