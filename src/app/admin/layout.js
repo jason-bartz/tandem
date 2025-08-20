@@ -38,8 +38,13 @@ export default function AdminLayout({ children }) {
   if (loading) {
     return (
       <div 
-        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/light-mode-bg.webp')" }}
+        className="fixed inset-0 w-full h-full flex items-center justify-center"
+        style={{ 
+          backgroundImage: "url('/images/light-mode-bg.webp')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <LoadingSpinner />
       </div>

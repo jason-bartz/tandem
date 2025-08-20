@@ -40,8 +40,13 @@ export default function GameContainer() {
   if (game.loading) {
     return (
       <div 
-        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/images/light-mode-bg.webp')" }}
+        className="fixed inset-0 w-full h-full flex items-center justify-center"
+        style={{ 
+          backgroundImage: "url('/images/light-mode-bg.webp')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
         <LoadingSpinner />
       </div>
@@ -51,10 +56,15 @@ export default function GameContainer() {
   if (game.error) {
     return (
       <div 
-        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage }}
+        className="fixed inset-0 w-full h-full flex items-center justify-center"
+        style={{ 
+          backgroundImage,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat'
+        }}
       >
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center">
+        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
             Oops!
           </h2>
@@ -63,7 +73,7 @@ export default function GameContainer() {
           </p>
           <button
             onClick={game.loadPuzzle}
-            className="px-6 py-3 bg-plum text-white rounded-xl hover:bg-plum-dark transition-colors"
+            className="px-6 py-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors"
           >
             Try Again
           </button>
@@ -75,9 +85,15 @@ export default function GameContainer() {
   // Main container with wallpaper background
   return (
     <div 
-      className={`min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat ${theme}`}
-      style={{ backgroundImage }}
+      className={`fixed inset-0 w-full h-full overflow-auto ${theme}`}
+      style={{ 
+        backgroundImage,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
+      <div className="min-h-screen flex items-center justify-center p-4">
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
@@ -120,6 +136,7 @@ export default function GameContainer() {
               toggleSound={toggleSound}
             />
           )}
+        </div>
       </div>
     </div>
   );

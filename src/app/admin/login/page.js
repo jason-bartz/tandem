@@ -33,8 +33,13 @@ export default function AdminLogin() {
 
   return (
     <div 
-      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
-      style={{ backgroundImage: "url('/images/light-mode-bg.webp')" }}
+      className="fixed inset-0 w-full h-full flex items-center justify-center"
+      style={{ 
+        backgroundImage: "url('/images/light-mode-bg.webp')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}
     >
       <div className="bg-white dark:bg-gray-800 p-8 rounded-3xl shadow-2xl w-full max-w-md">
         <div className="text-center mb-8">

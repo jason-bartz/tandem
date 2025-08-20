@@ -67,7 +67,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
       
       <button
         onClick={onStart}
-        className="w-full p-4 bg-gradient-to-r from-plum to-peach text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg"
+        className="w-full p-4 bg-gradient-to-r from-plum via-plum-light to-peach text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-plum/30"
       >
         Play Today&apos;s Puzzle
       </button>
