@@ -33,9 +33,16 @@ export default function GameContainer() {
     game.completeGame(won);
   };
 
+  const backgroundImage = theme === 'dark' 
+    ? "url('/images/dark-mode-bg.webp')" 
+    : "url('/images/light-mode-bg.webp')";
+
   if (game.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-plum to-peach">
+      <div 
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/light-mode-bg.webp')" }}
+      >
         <LoadingSpinner />
       </div>
     );
@@ -43,7 +50,10 @@ export default function GameContainer() {
 
   if (game.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-plum to-peach">
+      <div 
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage }}
+      >
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center">
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
             Oops!
@@ -62,9 +72,12 @@ export default function GameContainer() {
     );
   }
 
-  // Main container with gradient background - no extra wrapper
+  // Main container with wallpaper background
   return (
-    <div className={`min-h-screen bg-gradient-to-br from-plum to-peach flex items-center justify-center p-4 ${theme}`}>
+    <div 
+      className={`min-h-screen flex items-center justify-center p-4 bg-cover bg-center bg-no-repeat ${theme}`}
+      style={{ backgroundImage }}
+    >
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen

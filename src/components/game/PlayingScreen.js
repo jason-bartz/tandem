@@ -1,4 +1,5 @@
 'use client';
+import Image from 'next/image';
 import { formatTime } from '@/lib/utils';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
@@ -33,7 +34,16 @@ export default function PlayingScreen({
           </button>
         </div>
         
-        <h1 className="text-2xl font-extrabold text-white mb-1">Tandem</h1>
+        <div className="w-16 h-16 mx-auto mb-2 relative">
+          <Image
+            src="/images/main-logo.webp"
+            alt="Tandem Logo"
+            width={64}
+            height={64}
+            className="rounded-xl"
+            priority
+          />
+        </div>
         <div className="text-white/80 text-sm">
           Daily Puzzle #{puzzle?.puzzleNumber || ''}
         </div>

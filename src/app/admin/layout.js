@@ -37,7 +37,10 @@ export default function AdminLayout({ children }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-plum to-peach">
+      <div 
+        className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: "url('/images/light-mode-bg.webp')" }}
+      >
         <LoadingSpinner />
       </div>
     );
