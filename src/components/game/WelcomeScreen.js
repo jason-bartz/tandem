@@ -33,31 +33,31 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
         4 answers. 2 emojis each. 1 theme.
       </p>
       
-      <div className="bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl p-6 mb-6 text-left">
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
         <h3 className="text-sm uppercase tracking-wider text-gray-text dark:text-gray-300 mb-4 font-semibold">
           How to Play
         </h3>
         <div className="space-y-3">
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-white/20 dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
               👀
             </div>
             <span className="text-dark-text dark:text-gray-200 text-sm">Look at each emoji pair</span>
           </div>
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-white/20 dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
               💭
             </div>
             <span className="text-dark-text dark:text-gray-200 text-sm">Guess what they represent</span>
           </div>
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-white/20 dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
               🔗
             </div>
             <span className="text-dark-text dark:text-gray-200 text-sm">Find the theme that links them</span>
           </div>
           <div className="flex items-center">
-            <div className="w-10 h-10 bg-white/20 dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
               ✅
             </div>
             <span className="text-dark-text dark:text-gray-200 text-sm">4 mistakes allowed</span>

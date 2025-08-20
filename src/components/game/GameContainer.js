@@ -62,6 +62,7 @@ export default function GameContainer() {
     );
   }
 
+  // Main container with gradient background - no extra wrapper
   return (
     <div className={`min-h-screen bg-gradient-to-br from-plum to-peach flex items-center justify-center p-4 ${theme}`}>
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
