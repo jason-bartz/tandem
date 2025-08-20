@@ -1,0 +1,124 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --plum: #6B46C1;
+  --peach: #FFB5A7;
+  --sage-green: #87A96B;
+  --warm-yellow: #FFD23F;
+  --coral-red: #FF6B6B;
+  --off-white: #FAF8F3;
+  --light-sand: #F5F2ED;
+  --dark-text: #2C2C2C;
+  --gray-text: #6B7280;
+  --border-color: #E5E7EB;
+  --modal-bg: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="dark"] {
+  --plum: #8B5CF6;
+  --peach: #FCA5A5;
+  --sage-green: #86EFAC;
+  --warm-yellow: #FDE047;
+  --coral-red: #F87171;
+  --off-white: #1F2937;
+  --light-sand: #374151;
+  --dark-text: #F9FAFB;
+  --gray-text: #9CA3AF;
+  --border-color: #4B5563;
+  --modal-bg: rgba(0, 0, 0, 0.7);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-x: hidden;
+  transition: background 0.3s ease;
+}
+
+[data-theme="dark"] body {
+  background: linear-gradient(135deg, #312e81 0%, #831843 100%);
+}
+
+.game-container {
+  background: var(--off-white);
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+  width: 100%;
+  max-width: 420px;
+  overflow: hidden;
+  transition: background 0.3s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes linkSnap {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.95); }
+  60% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+@keyframes gentleShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px); }
+  40% { transform: translateX(6px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+
+@keyframes zoomIn {
+  from { opacity: 0; transform: scale(0.8); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes linking {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(30px); }
+}
+
+@keyframes modalSlide {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Hidden canvas for image export */
+#shareCanvas {
+  display: none;
+}
