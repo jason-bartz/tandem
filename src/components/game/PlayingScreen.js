@@ -48,10 +48,6 @@ export default function PlayingScreen({
 
         {puzzle && (
           <>
-            <div className="bg-gradient-to-r from-warm-yellow to-yellow-200 dark:from-yellow-700 dark:to-yellow-800 p-3.5 rounded-xl text-center mb-6 text-sm text-yellow-900 dark:text-warm-yellow font-semibold animate-slide-up">
-              💡 Today&apos;s theme: {puzzle.theme}
-            </div>
-
             <div className="flex flex-col gap-4 mb-6">
               {puzzle.puzzles.map((p, index) => (
                 <PuzzleRow

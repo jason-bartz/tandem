@@ -65,7 +65,7 @@ export default function GameContainer() {
   return (
     <div className={`min-h-screen bg-gradient-to-br from-plum to-peach ${theme}`}>
       <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+        <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}
@@ -99,6 +99,7 @@ export default function GameContainer() {
               time={timer.elapsed}
               mistakes={game.mistakes}
               correctAnswers={game.correctAnswers}
+              puzzleTheme={game.puzzle?.theme}
               onPlayAgain={game.resetGame}
               theme={theme}
               toggleTheme={toggleTheme}
