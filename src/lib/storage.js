@@ -57,3 +57,53 @@ export function getTodayResult() {
   const result = localStorage.getItem(getTodayKey());
   return result ? JSON.parse(result) : null;
 }
+
+export function getStoredStats() {
+  if (typeof window === 'undefined') {
+    return {
+      gamesPlayed: 0,
+      gamesWon: 0,
+      currentStreak: 0,
+      maxStreak: 0,
+      averageTime: null
+    };
+  }
+  
+  const stats = localStorage.getItem(STORAGE_KEYS.STATS);
+  const parsedStats = stats ? JSON.parse(stats) : {};
+  
+  return {
+    gamesPlayed: parsedStats.played || 0,
+    gamesWon: parsedStats.wins || 0,
+    currentStreak: parsedStats.currentStreak || 0,
+    maxStreak: parsedStats.bestStreak || 0,
+    averageTime: parsedStats.averageTime || null
+  };
+}
+
+export function getGameHistory() {
+  if (typeof window === 'undefined') return {};
+  
+  const history = {};
+  const keys = Object.keys(localStorage);
+  
+  keys.forEach(key => {
+    if (key.startsWith('tandem_')) {
+      const parts = key.split('_');
+      if (parts.length === 4) {
+        const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
+        const data = localStorage.getItem(key);
+        if (data) {
+          const parsed = JSON.parse(data);
+          history[date] = {
+            completed: parsed.won || false,
+            time: parsed.time,
+            mistakes: parsed.mistakes
+          };
+        }
+      }
+    }
+  });
+  
+  return history;
+}

@@ -13,7 +13,7 @@ export default function GameContainer() {
   const game = useGame();
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
   const { theme, toggleTheme } = useTheme();
-  const { soundEnabled, toggleSound, playSound } = useSound();
+  const { playSound } = useSound();
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();
@@ -77,7 +77,7 @@ export default function GameContainer() {
           </p>
           <button
             onClick={game.loadPuzzle}
-            className="px-6 py-3 bg-violet-600 text-white rounded-xl hover:bg-violet-700 transition-colors"
+            className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
           >
             Try Again
           </button>
@@ -98,7 +98,7 @@ export default function GameContainer() {
       }}
     >
       <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-fade-in">
+        <div className="w-full max-w-md">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}

@@ -51,22 +51,31 @@ export default function CompleteScreen({
 
     try {
       const canvas = await html2canvas(element, {
-        backgroundColor: null,
-        scale: 2
+        backgroundColor: theme === 'dark' ? '#1a1a1a' : '#ffffff',
+        scale: 2,
+        logging: false
       });
       
-      canvas.toBlob((blob) => {
-        if (navigator.share) {
-          const file = new File([blob], 'tandem-result.png', { type: 'image/png' });
-          navigator.share({
-            files: [file],
-            title: 'My Tandem Result'
-          });
+      canvas.toBlob(async (blob) => {
+        if (!blob) return;
+        
+        const file = new File([blob], 'tandem-results.png', { type: 'image/png' });
+        
+        if (navigator.share && navigator.canShare({ files: [file] })) {
+          try {
+            await navigator.share({
+              files: [file],
+              title: 'Tandem Results',
+              text: generateShareText(puzzleInfo.number, formatTime(time), mistakes, correctAnswers)
+            });
+          } catch (err) {
+            console.log('Share failed:', err);
+          }
         } else {
           const url = URL.createObjectURL(blob);
           const a = document.createElement('a');
           a.href = url;
-          a.download = 'tandem-result.png';
+          a.download = 'tandem-results.png';
           a.click();
           URL.revokeObjectURL(url);
         }
@@ -77,74 +86,91 @@ export default function CompleteScreen({
   };
 
   return (
-    <div id="completion-content" className="p-10 text-center relative animate-fade-in">
-      <div className="absolute top-5 right-5 flex gap-2">
+    <div className="animate-fade-in">
+      {/* Control buttons positioned above the card */}
+      <div className="flex justify-end gap-2 mb-4">
         <button
           onClick={() => setShowRules(true)}
-          className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="How to Play"
         >
           💡
         </button>
         <button
           onClick={() => setShowPlayerStats(true)}
-          className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
         </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
-      
-      <div className="w-24 h-24 mx-auto mb-6 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-10 h-10 rounded-full bg-plum animate-pulse" />
-          <div className="w-10 h-10 rounded-full bg-peach animate-pulse ml-4" />
+
+      {/* Main completion card */}
+      <div id="completion-content" className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
+        <div className="w-24 h-24 mx-auto mb-6 relative">
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-full bg-sky-500 animate-pulse" />
+            <div className="w-10 h-10 rounded-full bg-teal-400 animate-pulse ml-4" />
+          </div>
         </div>
-      </div>
-      
-      <h2 className="text-3xl font-extrabold bg-gradient-to-r from-plum via-plum-light to-peach bg-clip-text text-transparent mb-3">
-        {won ? 'Puzzle Complete!' : 'Game Over!'}
-      </h2>
-      
-      <div className="text-gray-text dark:text-gray-300 text-sm mb-4">{puzzleInfo.date}</div>
-      
-      {puzzleTheme && (
-        <div className="bg-gradient-to-r from-warm-yellow to-yellow-200 dark:from-yellow-700 dark:to-yellow-800 p-3 rounded-xl text-center mb-4 text-sm text-yellow-900 dark:text-warm-yellow font-semibold">
-          💡 Theme: {puzzleTheme}
+        
+        <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
+          {won ? 'Congratulations!' : 'Better luck next time!'}
+        </h1>
+        
+        <p className="text-gray-600 dark:text-gray-400 mb-6">
+          {won ? 'You solved today\'s puzzle!' : 'You\'ll get it tomorrow!'}
+        </p>
+
+        {puzzleTheme && (
+          <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
+            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+              {formatTime(time)}
+            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+              {mistakes}/4
+            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
+          </div>
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+              #{puzzleInfo.number}
+            </div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Puzzle</div>
+          </div>
         </div>
-      )}
-      
-      <div className="text-gray-text dark:text-gray-300 text-base mb-6">
-        <div>Solved in {formatTime(time)}</div>
-        <div>{mistakes} mistake{mistakes !== 1 ? 's' : ''}</div>
-      </div>
-      
-      <div className="flex justify-center gap-2 mb-6 text-3xl">
-        {correctAnswers.map((correct, index) => (
-          <div
-            key={index}
-            className={`w-10 h-10 rounded-xl ${
-              correct 
-                ? 'bg-gradient-to-r from-plum to-peach' 
-                : 'bg-light-sand'
-            }`}
-          />
-        ))}
-      </div>
-      
-      <div className="flex gap-3">
-        <button
-          onClick={shareImage}
-          className="flex-1 p-3.5 bg-dark-text dark:bg-gray-text text-off-white dark:text-dark-text border-none rounded-xl text-sm font-semibold cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg"
-        >
-          Share Image
-        </button>
+
+        <div className="space-y-3 mb-6">
+          <button
+            onClick={shareResults}
+            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+          >
+            Share Results
+          </button>
+          <button
+            onClick={shareImage}
+            className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+          >
+            Share as Image
+          </button>
+        </div>
+
         <button
           onClick={() => setShowStats(true)}
-          className="flex-1 p-3.5 bg-light-sand text-dark-text border-none rounded-xl text-sm font-semibold cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg"
+          className="text-sky-600 dark:text-sky-400 hover:underline text-sm"
         >
-          Statistics
+          View All Statistics
         </button>
       </div>
 
