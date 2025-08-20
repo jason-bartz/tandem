@@ -29,15 +29,12 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
         />
       </div>
       
-      <h1 className="text-4xl font-extrabold bg-gradient-to-r from-plum to-peach bg-clip-text text-transparent mb-2">
-        Tandem
-      </h1>
-      <p className="text-gray-text text-lg font-medium mb-8">
+      <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
         4 answers. 2 emojis each. 1 theme.
       </p>
       
-      <div className="bg-light-sand rounded-2xl p-6 mb-6 text-left">
-        <h3 className="text-sm uppercase tracking-wider text-gray-text mb-4 font-semibold">
+      <div className="bg-light-sand dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
+        <h3 className="text-sm uppercase tracking-wider text-gray-text dark:text-gray-300 mb-4 font-semibold">
           How to Play
         </h3>
         <div className="space-y-3">
@@ -45,25 +42,25 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
             <div className="w-10 h-10 bg-off-white rounded-xl flex items-center justify-center mr-3 text-xl">
               👀
             </div>
-            <span className="text-dark-text text-sm">Look at each emoji pair</span>
+            <span className="text-dark-text dark:text-gray-200 text-sm">Look at each emoji pair</span>
           </div>
           <div className="flex items-center">
             <div className="w-10 h-10 bg-off-white rounded-xl flex items-center justify-center mr-3 text-xl">
               💭
             </div>
-            <span className="text-dark-text text-sm">Guess what they represent</span>
+            <span className="text-dark-text dark:text-gray-200 text-sm">Guess what they represent</span>
           </div>
           <div className="flex items-center">
             <div className="w-10 h-10 bg-off-white rounded-xl flex items-center justify-center mr-3 text-xl">
               🔗
             </div>
-            <span className="text-dark-text text-sm">Find the theme that links them</span>
+            <span className="text-dark-text dark:text-gray-200 text-sm">Find the theme that links them</span>
           </div>
           <div className="flex items-center">
             <div className="w-10 h-10 bg-off-white rounded-xl flex items-center justify-center mr-3 text-xl">
               ✅
             </div>
-            <span className="text-dark-text text-sm">4 mistakes allowed</span>
+            <span className="text-dark-text dark:text-gray-200 text-sm">4 mistakes allowed</span>
           </div>
         </div>
       </div>
@@ -75,7 +72,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
         Play Today&apos;s Puzzle
       </button>
       
-      <div className="text-gray-text text-sm mt-4">
+      <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
         Puzzle #{puzzleInfo.number} • {puzzleInfo.date}
       </div>
     </div>

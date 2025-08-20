@@ -10,6 +10,7 @@ export default function CompleteScreen({
   time,
   mistakes,
   correctAnswers,
+  puzzleTheme,
   onPlayAgain,
   theme,
   toggleTheme,
@@ -96,9 +97,15 @@ export default function CompleteScreen({
         {won ? 'Puzzle Complete!' : 'Game Over!'}
       </h2>
       
-      <div className="text-gray-text text-sm mb-4">{puzzleInfo.date}</div>
+      <div className="text-gray-text dark:text-gray-300 text-sm mb-4">{puzzleInfo.date}</div>
       
-      <div className="text-gray-text text-base mb-6">
+      {puzzleTheme && (
+        <div className="bg-gradient-to-r from-warm-yellow to-yellow-200 dark:from-yellow-700 dark:to-yellow-800 p-3 rounded-xl text-center mb-4 text-sm text-yellow-900 dark:text-warm-yellow font-semibold">
+          💡 Theme: {puzzleTheme}
+        </div>
+      )}
+      
+      <div className="text-gray-text dark:text-gray-300 text-base mb-6">
         <div>Solved in {formatTime(time)}</div>
         <div>{mistakes} mistake{mistakes !== 1 ? 's' : ''}</div>
       </div>
