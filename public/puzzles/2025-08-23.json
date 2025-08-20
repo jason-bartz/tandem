@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-23",
+  "theme": "Things That Fly",
+  "emojiPairs": [
+    "✈️🛫",
+    "🦅🪶",
+    "🚁🔄",
+    "🪁🧵"
+  ],
+  "words": [
+    "PLANE",
+    "BIRD",
+    "HELICOPTER",
+    "KITE"
+  ],
+  "correctAnswers": [
+    "PLANE",
+    "BIRD",
+    "HELICOPTER",
+    "KITE"
+  ],
+  "puzzles": [
+    {
+      "emoji": "✈️🛫",
+      "answer": "PLANE"
+    },
+    {
+      "emoji": "🦅🪶",
+      "answer": "BIRD"
+    },
+    {
+      "emoji": "🚁🔄",
+      "answer": "HELICOPTER"
+    },
+    {
+      "emoji": "🪁🧵",
+      "answer": "KITE"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.376Z",
+  "updatedAt": "2025-08-20T19:45:48.376Z",
+  "puzzleNumber": 8
+}

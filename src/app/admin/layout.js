@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 
@@ -8,16 +8,29 @@ export default function AdminLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
+  
+  // Special pages that don't need authentication
+  const isPublicPage = pathname === '/admin/login' || 
+                       pathname === '/admin/debug' || 
+                       pathname === '/admin/test';
 
   useEffect(() => {
+    // Skip auth check for public pages
+    if (isPublicPage) {
+      setLoading(false);
+      return;
+    }
+    
     checkAuth();
-  }, []);
+  }, [pathname, isPublicPage]);
 
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('adminToken');
       if (!token) {
         router.push('/admin/login');
+        setLoading(false);
         return;
       }
 
@@ -25,16 +38,24 @@ export default function AdminLayout({ children }) {
       if (isValid) {
         setIsAuthenticated(true);
       } else {
+        localStorage.removeItem('adminToken');
         router.push('/admin/login');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
+      localStorage.removeItem('adminToken');
       router.push('/admin/login');
     } finally {
       setLoading(false);
     }
   };
 
+  // For public pages, render directly without auth wrapper
+  if (isPublicPage) {
+    return children;
+  }
+
+  // Show loading spinner while checking auth
   if (loading) {
     return (
       <div 
@@ -51,10 +72,12 @@ export default function AdminLayout({ children }) {
     );
   }
 
+  // Don't render anything if not authenticated (redirecting to login)
   if (!isAuthenticated) {
     return null;
   }
 
+  // Render authenticated admin layout
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">

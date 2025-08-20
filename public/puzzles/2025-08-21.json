@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-21",
+  "theme": "Things You Read",
+  "emojiPairs": [
+    "📰🗞️",
+    "📖📚",
+    "📧💻",
+    "🗺️🧭"
+  ],
+  "words": [
+    "NEWSPAPER",
+    "BOOK",
+    "EMAIL",
+    "MAP"
+  ],
+  "correctAnswers": [
+    "NEWSPAPER",
+    "BOOK",
+    "EMAIL",
+    "MAP"
+  ],
+  "puzzles": [
+    {
+      "emoji": "📰🗞️",
+      "answer": "NEWSPAPER"
+    },
+    {
+      "emoji": "📖📚",
+      "answer": "BOOK"
+    },
+    {
+      "emoji": "📧💻",
+      "answer": "EMAIL"
+    },
+    {
+      "emoji": "🗺️🧭",
+      "answer": "MAP"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.359Z",
+  "updatedAt": "2025-08-20T19:45:48.365Z",
+  "puzzleNumber": 6
+}

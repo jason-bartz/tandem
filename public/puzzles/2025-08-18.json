@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-18",
+  "theme": "Types of Patterns",
+  "emojiPairs": [
+    "🦓⬛",
+    "🏁⬜",
+    "👚🌸",
+    "🦒🟫"
+  ],
+  "words": [
+    "STRIPES",
+    "CHECKERED",
+    "FLORAL",
+    "SPOTS"
+  ],
+  "correctAnswers": [
+    "STRIPES",
+    "CHECKERED",
+    "FLORAL",
+    "SPOTS"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🦓⬛",
+      "answer": "STRIPES"
+    },
+    {
+      "emoji": "🏁⬜",
+      "answer": "CHECKERED"
+    },
+    {
+      "emoji": "👚🌸",
+      "answer": "FLORAL"
+    },
+    {
+      "emoji": "🦒🟫",
+      "answer": "SPOTS"
+    }
+  ],
+  "createdAt": "2025-08-20T19:56:53.881Z",
+  "updatedAt": "2025-08-20T19:56:53.881Z",
+  "puzzleNumber": 3
+}

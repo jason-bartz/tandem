@@ -1,21 +1,43 @@
 'use client';
+import { useState } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
+import RulesModal from './RulesModal';
+import PlayerStatsModal from './PlayerStatsModal';
+import ArchiveModal from './ArchiveModal';
 
-export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnabled, toggleSound }) {
+export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
+  const [showRules, setShowRules] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
 
   return (
     <div className="p-10 text-center relative animate-fade-in">
       <div className="absolute top-5 right-5 flex gap-2">
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         <button
-          onClick={toggleSound}
+          onClick={() => setShowRules(true)}
           className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          title="How to Play"
         >
-          {soundEnabled ? '🔊' : '🔇'}
+          💡
         </button>
+        <button
+          onClick={() => setShowStats(true)}
+          className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          title="Statistics"
+        >
+          📊
+        </button>
+        <button
+          onClick={() => setShowArchive(true)}
+          className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          title="Archive"
+        >
+          📅
+        </button>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
       
       <div className="w-24 h-24 mx-auto mb-5 relative">
@@ -75,6 +97,14 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, soundEnable
       <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
         Puzzle #{puzzleInfo.number} • {puzzleInfo.date}
       </div>
+      
+      <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
+      <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <ArchiveModal 
+        isOpen={showArchive} 
+        onClose={() => setShowArchive(false)}
+        onSelectPuzzle={onSelectPuzzle}
+      />
     </div>
   );
 }

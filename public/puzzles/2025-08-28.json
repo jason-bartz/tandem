@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-28",
+  "theme": "Musical Instruments",
+  "emojiPairs": [
+    "🎹🎵",
+    "🥁🎶",
+    "🎸🤘",
+    "🎺📯"
+  ],
+  "words": [
+    "PIANO",
+    "DRUMS",
+    "GUITAR",
+    "TRUMPET"
+  ],
+  "correctAnswers": [
+    "PIANO",
+    "DRUMS",
+    "GUITAR",
+    "TRUMPET"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🎹🎵",
+      "answer": "PIANO"
+    },
+    {
+      "emoji": "🥁🎶",
+      "answer": "DRUMS"
+    },
+    {
+      "emoji": "🎸🤘",
+      "answer": "GUITAR"
+    },
+    {
+      "emoji": "🎺📯",
+      "answer": "TRUMPET"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.377Z",
+  "updatedAt": "2025-08-20T19:45:48.377Z",
+  "puzzleNumber": 13
+}

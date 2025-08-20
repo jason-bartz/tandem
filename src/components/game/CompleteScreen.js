@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { formatTime, generateShareText, getCurrentPuzzleInfo } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
+import RulesModal from './RulesModal';
+import PlayerStatsModal from './PlayerStatsModal';
 import html2canvas from 'html2canvas';
 
 export default function CompleteScreen({
@@ -13,11 +15,11 @@ export default function CompleteScreen({
   puzzleTheme,
   onPlayAgain,
   theme,
-  toggleTheme,
-  soundEnabled,
-  toggleSound
+  toggleTheme
 }) {
   const [showStats, setShowStats] = useState(false);
+  const [showRules, setShowRules] = useState(false);
+  const [showPlayerStats, setShowPlayerStats] = useState(false);
   const puzzleInfo = getCurrentPuzzleInfo();
 
   const shareResults = async () => {
@@ -77,13 +79,21 @@ export default function CompleteScreen({
   return (
     <div id="completion-content" className="p-10 text-center relative animate-fade-in">
       <div className="absolute top-5 right-5 flex gap-2">
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
         <button
-          onClick={toggleSound}
+          onClick={() => setShowRules(true)}
           className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          title="How to Play"
         >
-          {soundEnabled ? '🔊' : '🔇'}
+          💡
         </button>
+        <button
+          onClick={() => setShowPlayerStats(true)}
+          className="w-10 h-10 rounded-xl border-none bg-light-sand text-dark-text text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-gray-text hover:text-white"
+          title="Statistics"
+        >
+          📊
+        </button>
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
       
       <div className="w-24 h-24 mx-auto mb-6 relative">
@@ -141,6 +151,9 @@ export default function CompleteScreen({
       {showStats && (
         <StatsModal onClose={() => setShowStats(false)} />
       )}
+      
+      <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
+      <PlayerStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
     </div>
   );
 }

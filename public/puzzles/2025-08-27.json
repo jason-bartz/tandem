@@ -1,0 +1,43 @@
+{
+  "date": "2025-08-27",
+  "theme": "Things at the Beach",
+  "emojiPairs": [
+    "🏖️☂️",
+    "🌊🏄",
+    "🐚🦀",
+    "🏰👶"
+  ],
+  "words": [
+    "UMBRELLA",
+    "WAVES",
+    "SHELLS",
+    "SANDCASTLE"
+  ],
+  "correctAnswers": [
+    "UMBRELLA",
+    "WAVES",
+    "SHELLS",
+    "SANDCASTLE"
+  ],
+  "puzzles": [
+    {
+      "emoji": "🏖️☂️",
+      "answer": "UMBRELLA"
+    },
+    {
+      "emoji": "🌊🏄",
+      "answer": "WAVES"
+    },
+    {
+      "emoji": "🐚🦀",
+      "answer": "SHELLS"
+    },
+    {
+      "emoji": "🏰👶",
+      "answer": "SANDCASTLE"
+    }
+  ],
+  "createdAt": "2025-08-20T19:45:48.377Z",
+  "updatedAt": "2025-08-20T19:45:48.377Z",
+  "puzzleNumber": 12
+}
