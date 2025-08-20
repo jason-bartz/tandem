@@ -7,7 +7,7 @@ import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 
-export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle }) {
+export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -92,9 +92,10 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         
         <button
           onClick={onStart}
-          className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30"
+          disabled={!puzzle}
+          className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          Play Today&apos;s Puzzle
+          {puzzle ? "Play Today's Puzzle" : "Loading Puzzle..."}
         </button>
         
         <div className="text-gray-text dark:text-gray-400 text-sm mt-4">

@@ -19,6 +19,11 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   const loadAvailablePuzzles = async () => {
     try {
+      // Get today's date
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const todayStr = today.toISOString().split('T')[0];
+      
       // Get available puzzle dates (we have puzzles from Aug 16-30)
       const availableDates = [
         '2025-08-16', '2025-08-17', '2025-08-18', '2025-08-19', '2025-08-20',
@@ -28,15 +33,22 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       
       const puzzleList = [];
       for (const date of availableDates) {
+        // Don't show today's puzzle or future puzzles in archive
+        if (date >= todayStr) {
+          continue;
+        }
+        
         try {
           const response = await fetch(`/api/puzzle?date=${date}`);
           if (response.ok) {
             const data = await response.json();
             if (data.puzzle) {
+              const isCompleted = history[date]?.completed || false;
               puzzleList.push({
                 date,
-                theme: data.puzzle.theme,
-                completed: history[date]?.completed || false,
+                // Only show theme if puzzle was completed
+                theme: isCompleted ? data.puzzle.theme : null,
+                completed: isCompleted,
                 time: history[date]?.time,
                 mistakes: history[date]?.mistakes
               });
@@ -105,13 +117,17 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                     {formatDate(puzzle.date)}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {puzzle.theme || 'Mystery Theme'}
+                    {puzzle.completed ? puzzle.theme : 'Play to reveal theme'}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {puzzle.completed && (
-                    <div className="text-green-500">
+                  {puzzle.completed ? (
+                    <div className="text-green-500 text-xl">
                       ✓
+                    </div>
+                  ) : (
+                    <div className="text-gray-400 text-xl">
+                      ○
                     </div>
                   )}
                   {puzzle.time && (
