@@ -1,13 +1,35 @@
 import { PUZZLE_TEMPLATES } from './constants';
+import { createClient } from 'redis';
 
-let kvClient = null;
+let redisClient = null;
 
-function getKVClient() {
-  if (!kvClient && process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-    const { kv } = require('@vercel/kv');
-    kvClient = kv;
+async function getRedisClient() {
+  if (!redisClient) {
+    // Use KV_REST_API_URL if available (Vercel KV), otherwise use standard Redis URL
+    const url = process.env.KV_REST_API_URL || process.env.REDIS_URL;
+    const token = process.env.KV_REST_API_TOKEN;
+    
+    if (url && token) {
+      // Vercel KV configuration
+      redisClient = createClient({
+        url,
+        token
+      });
+    } else if (url) {
+      // Standard Redis configuration
+      redisClient = createClient({
+        url
+      });
+    } else {
+      // No Redis available, will use in-memory
+      return null;
+    }
+    
+    if (redisClient) {
+      await redisClient.connect();
+    }
   }
-  return kvClient;
+  return redisClient;
 }
 
 const inMemoryDB = {
@@ -28,11 +50,11 @@ function getDailyPuzzleFromTemplates(date) {
 
 export async function getPuzzleForDate(date) {
   try {
-    const kv = getKVClient();
+    const redis = await getRedisClient();
     
-    if (kv) {
-      const puzzle = await kv.get(`puzzle:${date}`);
-      if (puzzle) return puzzle;
+    if (redis) {
+      const puzzle = await redis.get(`puzzle:${date}`);
+      if (puzzle) return JSON.parse(puzzle);
     } else {
       if (inMemoryDB.puzzles[date]) {
         return inMemoryDB.puzzles[date];
@@ -53,10 +75,10 @@ export async function getPuzzleForDate(date) {
 
 export async function setPuzzleForDate(date, puzzle) {
   try {
-    const kv = getKVClient();
+    const redis = await getRedisClient();
     
-    if (kv) {
-      await kv.set(`puzzle:${date}`, puzzle, { ex: 60 * 60 * 24 * 365 });
+    if (redis) {
+      await redis.set(`puzzle:${date}`, JSON.stringify(puzzle), { EX: 60 * 60 * 24 * 365 });
     } else {
       inMemoryDB.puzzles[date] = puzzle;
     }
@@ -70,10 +92,10 @@ export async function setPuzzleForDate(date, puzzle) {
 
 export async function deletePuzzleForDate(date) {
   try {
-    const kv = getKVClient();
+    const redis = await getRedisClient();
     
-    if (kv) {
-      await kv.del(`puzzle:${date}`);
+    if (redis) {
+      await redis.del(`puzzle:${date}`);
     } else {
       delete inMemoryDB.puzzles[date];
     }
@@ -100,10 +122,10 @@ export async function getPuzzlesRange(startDate, endDate) {
 
 export async function incrementStats(stat) {
   try {
-    const kv = getKVClient();
+    const redis = await getRedisClient();
     
-    if (kv) {
-      await kv.hincrby('stats', stat, 1);
+    if (redis) {
+      await redis.hIncrBy('stats', stat, 1);
     } else {
       if (inMemoryDB.stats[stat] !== undefined) {
         inMemoryDB.stats[stat]++;
@@ -119,10 +141,15 @@ export async function incrementStats(stat) {
 
 export async function getStats() {
   try {
-    const kv = getKVClient();
+    const redis = await getRedisClient();
     
-    if (kv) {
-      return await kv.hgetall('stats') || { views: 0, played: 0, completed: 0 };
+    if (redis) {
+      const stats = await redis.hGetAll('stats');
+      return {
+        views: parseInt(stats.views) || 0,
+        played: parseInt(stats.played) || 0,
+        completed: parseInt(stats.completed) || 0
+      };
     } else {
       return { ...inMemoryDB.stats };
     }
