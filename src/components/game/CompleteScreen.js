@@ -93,7 +93,7 @@ export default function CompleteScreen({
         </div>
       </div>
       
-      <h2 className="text-3xl font-extrabold bg-gradient-to-r from-plum to-peach bg-clip-text text-transparent mb-3">
+      <h2 className="text-3xl font-extrabold bg-gradient-to-r from-plum via-plum-light to-peach bg-clip-text text-transparent mb-3">
         {won ? 'Puzzle Complete!' : 'Game Over!'}
       </h2>
       

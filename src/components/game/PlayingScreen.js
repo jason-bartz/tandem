@@ -23,12 +23,12 @@ export default function PlayingScreen({
   
   return (
     <div className="animate-slide-up">
-      <div className="bg-gradient-to-r from-plum to-peach p-5 text-center relative">
+      <div className="bg-gradient-to-r from-plum via-plum-light to-peach-light p-5 text-center relative">
         <div className="absolute top-5 right-5 flex gap-2">
           <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
           <button
             onClick={toggleSound}
-            className="w-10 h-10 rounded-xl border-none bg-white/20 text-white text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-white/30"
+            className="w-10 h-10 rounded-xl border-none bg-white/30 backdrop-blur-sm text-white text-xl cursor-pointer transition-all flex items-center justify-center hover:scale-110 hover:bg-white/40"
           >
             {soundEnabled ? '🔊' : '🔇'}
           </button>
@@ -76,7 +76,7 @@ export default function PlayingScreen({
         <button
           onClick={onCheckAnswers}
           disabled={!hasAnyInput}
-          className="w-full p-4 bg-gradient-to-r from-plum to-peach text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full p-4 bg-gradient-to-r from-plum via-plum-light to-peach text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-plum/30 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Check Answers
         </button>

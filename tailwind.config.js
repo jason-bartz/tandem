@@ -9,22 +9,37 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // Violet/Purple - complementing sky blues
         plum: {
-          DEFAULT: '#6B46C1',
-          dark: '#8B5CF6',
+          DEFAULT: '#8B5CF6',
+          dark: '#7C3AED',
+          light: '#A78BFA',
         },
+        // Warm sunset tones
         peach: {
-          DEFAULT: '#FFB5A7',
-          dark: '#FCA5A5',
+          DEFAULT: '#FB923C',
+          dark: '#EA580C',
+          light: '#FED7AA',
         },
+        // Nature greens - matching landscape
         sage: {
-          DEFAULT: '#87A96B',
-          dark: '#86EFAC',
+          DEFAULT: '#10B981',
+          dark: '#059669',
+          light: '#86EFAC',
         },
+        // Coral accents
         coral: {
-          DEFAULT: '#FF6B6B',
-          dark: '#F87171',
+          DEFAULT: '#F87171',
+          dark: '#EF4444',
+          light: '#FCA5A5',
         },
+        // Additional custom colors
+        'warm-yellow': '#FCD34D',
+        'light-sand': '#FEF3C7',
+        'off-white': '#FFFBEB',
+        'gray-text': '#6B7280',
+        'dark-text': '#1F2937',
+        'border-color': '#E5E7EB',
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease',
