@@ -71,29 +71,18 @@ export default function PlayingScreen({
             solved={solved}
           />
 
-          {puzzle && puzzle.puzzles && Array.isArray(puzzle.puzzles) && puzzle.puzzles.length > 0 ? (
-            <>
-              <div className="flex flex-col gap-4 mb-6">
-                {puzzle.puzzles.map((p, index) => (
-                  <PuzzleRow
-                    key={index}
-                    emoji={p.emoji || '❓❓'}
-                    value={answers[index]}
-                    onChange={(value) => onUpdateAnswer(index, value)}
-                    isCorrect={correctAnswers[index]}
-                    index={index}
-                  />
-                ))}
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-8 text-gray-500">
-              <div className="mb-2">No puzzle data available</div>
-              <div className="text-xs">
-                {puzzle ? `Puzzle structure: ${JSON.stringify(Object.keys(puzzle))}` : 'No puzzle loaded'}
-              </div>
-            </div>
-          )}
+          <div className="flex flex-col gap-4 mb-6">
+            {puzzle && puzzle.puzzles && puzzle.puzzles.map((p, index) => (
+              <PuzzleRow
+                key={index}
+                emoji={p.emoji || '❓❓'}
+                value={answers[index]}
+                onChange={(value) => onUpdateAnswer(index, value)}
+                isCorrect={correctAnswers[index]}
+                index={index}
+              />
+            ))}
+          </div>
 
           <button
             onClick={onCheckAnswers}

@@ -5,8 +5,8 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, index }) 
 
   return (
     <div 
-      className="flex gap-3 items-center opacity-0 animate-fadeInUp"
-      style={{ animationDelay, animationFillMode: 'forwards' }}
+      className="flex gap-3 items-center"
+      style={{ animationDelay }}
     >
       <div className="w-[70px] h-[70px] bg-light-sand dark:bg-gray-700 rounded-[18px] flex items-center justify-center text-3xl shadow-md transition-all hover:scale-105 hover:shadow-lg">
         {emoji}

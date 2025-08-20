@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
@@ -13,91 +13,61 @@ export function useGame() {
   const [solved, setSolved] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Use ref to track if already loading to prevent double fetches
-  const isLoadingRef = useRef(false);
-  const isMountedRef = useRef(true);
+  const [isArchiveGame, setIsArchiveGame] = useState(false);
 
-  // Load puzzle on mount - NO DEPENDENCIES
+  // Simple load puzzle on mount
   useEffect(() => {
-    const loadInitialPuzzle = async () => {
-      // Prevent double loading
-      if (isLoadingRef.current) return;
-      isLoadingRef.current = true;
-
+    async function loadPuzzle() {
       try {
-        console.log('Fetching puzzle...');
-        setLoading(true);
-        setError(null);
+        console.log('Starting to load puzzle...');
+        const response = await puzzleService.getPuzzle();
+        console.log('Response from service:', response);
         
-        const data = await puzzleService.getPuzzle();
-        
-        // Check if component is still mounted
-        if (!isMountedRef.current) return;
-        
-        console.log('Puzzle data received:', data);
-        
-        if (data && data.puzzle) {
-          // Ensure puzzle has correct structure
-          const puzzleData = data.puzzle;
-          
-          // Handle old structure if needed
-          if (!puzzleData.puzzles && puzzleData.emojiPairs && puzzleData.words) {
-            puzzleData.puzzles = puzzleData.emojiPairs.map((emoji, index) => ({
-              emoji: emoji,
-              answer: puzzleData.words[index] || puzzleData.correctAnswers?.[index]
-            }));
-          }
-          
-          setPuzzle(puzzleData);
-          console.log('Puzzle set successfully:', puzzleData);
+        if (response && response.puzzle) {
+          console.log('Found puzzle in response:', response.puzzle);
+          setPuzzle(response.puzzle);
+        } else if (response) {
+          // Maybe the response IS the puzzle
+          console.log('Response might be puzzle itself:', response);
+          setPuzzle(response);
         } else {
-          setError('No puzzle available for today');
+          console.error('No valid response');
+          setError('No puzzle available');
         }
       } catch (err) {
-        if (!isMountedRef.current) return;
-        console.error('Failed to load puzzle:', err);
-        setError('Failed to load puzzle. Please try again.');
+        console.error('Error loading puzzle:', err);
+        setError('Failed to load puzzle');
       } finally {
-        if (isMountedRef.current) {
-          setLoading(false);
-          isLoadingRef.current = false;
-        }
+        setLoading(false);
       }
-    };
-
-    loadInitialPuzzle();
+    }
     
-    // Cleanup function
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []); // Empty dependency array - run once on mount
+    loadPuzzle();
+  }, []);
 
-  // Function to load a specific puzzle (for archive)
+  // Load specific puzzle for archive
   const loadPuzzle = useCallback(async (date = null) => {
     try {
       setLoading(true);
       setError(null);
-      setGameState(GAME_STATES.WELCOME);
       
-      const data = await puzzleService.getPuzzle(date);
+      // Check if this is an archive game (has a specific date)
+      const isArchive = date !== null;
+      setIsArchiveGame(isArchive);
       
-      if (!isMountedRef.current) return false;
+      const response = await puzzleService.getPuzzle(date);
       
-      if (data && data.puzzle) {
-        const puzzleData = data.puzzle;
-        
-        // Handle old structure
-        if (!puzzleData.puzzles && puzzleData.emojiPairs && puzzleData.words) {
-          puzzleData.puzzles = puzzleData.emojiPairs.map((emoji, index) => ({
-            emoji: emoji,
-            answer: puzzleData.words[index] || puzzleData.correctAnswers?.[index]
-          }));
-        }
-        
-        setPuzzle(puzzleData);
-        // Reset game state
+      if (response && response.puzzle) {
+        setPuzzle(response.puzzle);
+        setGameState(GAME_STATES.WELCOME);
+        setAnswers(['', '', '', '']);
+        setCorrectAnswers([false, false, false, false]);
+        setMistakes(0);
+        setSolved(0);
+        return true;
+      } else if (response) {
+        setPuzzle(response);
+        setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
         setMistakes(0);
@@ -109,7 +79,7 @@ export function useGame() {
       }
     } catch (err) {
       console.error('Failed to load puzzle:', err);
-      setError('Failed to load puzzle. Please try again.');
+      setError('Failed to load puzzle');
       return false;
     } finally {
       setLoading(false);
@@ -117,11 +87,8 @@ export function useGame() {
   }, []);
 
   const startGame = useCallback(() => {
-    console.log('Starting game with puzzle:', puzzle);
-    
     if (!puzzle) {
       console.error('Cannot start game without puzzle');
-      setError('Please wait for puzzle to load');
       return;
     }
     
@@ -131,7 +98,6 @@ export function useGame() {
     setAnswers(['', '', '', '']);
     setCorrectAnswers([false, false, false, false]);
     setError(null);
-    console.log('Game started');
   }, [puzzle]);
 
   const updateAnswer = useCallback((index, value) => {
@@ -145,7 +111,6 @@ export function useGame() {
 
   const checkAnswers = useCallback(() => {
     if (!puzzle || !puzzle.puzzles) {
-      console.error('No puzzle to check');
       return { correct: 0, incorrect: 0 };
     }
 
@@ -174,7 +139,6 @@ export function useGame() {
     setMistakes(prev => prev + newMistakes);
     setSolved(newSolved);
 
-    // Check game completion
     if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
       completeGame(true);
     } else if (mistakes + newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
@@ -195,11 +159,12 @@ export function useGame() {
         completed: won,
         mistakes,
         solved,
+        isArchive: isArchiveGame, // Pass archive flag to stats service
       });
     } catch (err) {
       console.error('Failed to save stats:', err);
     }
-  }, [mistakes, solved]);
+  }, [mistakes, solved, isArchiveGame]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -210,19 +175,7 @@ export function useGame() {
     setError(null);
   }, []);
 
-  // Debug logging
-  useEffect(() => {
-    console.log('State update:', {
-      gameState,
-      hasPuzzle: !!puzzle,
-      puzzleTheme: puzzle?.theme,
-      loading,
-      error
-    });
-  }, [gameState, puzzle, loading, error]);
-
   return {
-    // State
     gameState,
     puzzle,
     answers,
@@ -231,8 +184,7 @@ export function useGame() {
     solved,
     loading,
     error,
-    
-    // Actions
+    isArchiveGame,
     startGame,
     updateAnswer,
     checkAnswers,
