@@ -18,14 +18,17 @@ export function useGame() {
     loadPuzzle();
   }, []);
 
-  const loadPuzzle = async () => {
+  const loadPuzzle = async (date = null) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await puzzleService.getPuzzle();
+      const data = await puzzleService.getPuzzle(date);
+      
+      console.log('Loaded puzzle data:', data); // Debug log
       
       if (data.puzzle) {
         setPuzzle(data.puzzle);
+        console.log('Set puzzle state:', data.puzzle); // Debug log
       } else {
         setError('No puzzle available for today');
       }

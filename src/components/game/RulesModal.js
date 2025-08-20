@@ -64,7 +64,7 @@ export default function RulesModal({ isOpen, onClose }) {
         
         <button
           onClick={onClose}
-          className="mt-6 w-full py-3 bg-gradient-to-r from-plum to-peach text-white font-semibold rounded-xl"
+          className="mt-6 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
         >
           Got it!
         </button>
