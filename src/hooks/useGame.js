@@ -14,39 +14,93 @@ export function useGame() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Load puzzle on mount - FIXED VERSION
   useEffect(() => {
-    loadPuzzle();
+    let mounted = true;
+    
+    const loadInitialPuzzle = async () => {
+      try {
+        console.log('Loading puzzle...');
+        const data = await puzzleService.getPuzzle();
+        
+        if (!mounted) return;
+        
+        console.log('Puzzle data received:', data);
+        
+        if (data && data.puzzle) {
+          setPuzzle(data.puzzle);
+          setLoading(false);
+          setError(null);
+          console.log('Puzzle successfully set in state');
+        } else {
+          setError('No puzzle available for today');
+          setLoading(false);
+        }
+      } catch (err) {
+        if (!mounted) return;
+        
+        console.error('Failed to load puzzle:', err);
+        setError('Failed to load puzzle. Please try again.');
+        setLoading(false);
+      }
+    };
+    
+    loadInitialPuzzle();
+    
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const loadPuzzle = async (date = null) => {
+  // Load puzzle function for date selection
+  const loadPuzzle = useCallback(async (date = null) => {
     try {
       setLoading(true);
       setError(null);
+      
       const data = await puzzleService.getPuzzle(date);
       
-      console.log('Loaded puzzle data:', data); // Debug log
-      
-      if (data.puzzle) {
+      if (data && data.puzzle) {
         setPuzzle(data.puzzle);
-        console.log('Set puzzle state:', data.puzzle); // Debug log
+        setGameState(GAME_STATES.WELCOME); // Reset to welcome when loading new puzzle
+        setAnswers(['', '', '', '']);
+        setCorrectAnswers([false, false, false, false]);
+        setMistakes(0);
+        setSolved(0);
+        setLoading(false);
+        return true;
       } else {
-        setError('No puzzle available for today');
+        setError('No puzzle available');
+        setLoading(false);
+        return false;
       }
     } catch (err) {
-      setError('Failed to load puzzle. Please try again.');
       console.error('Failed to load puzzle:', err);
-    } finally {
+      setError('Failed to load puzzle. Please try again.');
       setLoading(false);
+      return false;
     }
-  };
+  }, []);
 
+  // Start game - SIMPLIFIED
   const startGame = useCallback(() => {
+    console.log('startGame called, puzzle:', puzzle);
+    
+    if (!puzzle) {
+      console.error('Cannot start game without puzzle');
+      return;
+    }
+    
+    // Reset game state
     setGameState(GAME_STATES.PLAYING);
     setMistakes(0);
     setSolved(0);
     setAnswers(['', '', '', '']);
     setCorrectAnswers([false, false, false, false]);
-  }, []);
+    setError(null);
+    
+    console.log('Game started successfully');
+  }, [puzzle]);
 
   const updateAnswer = useCallback((index, value) => {
     const sanitized = sanitizeInput(value);
@@ -58,7 +112,7 @@ export function useGame() {
   }, []);
 
   const checkAnswers = useCallback(() => {
-    if (!puzzle) return { correct: 0, incorrect: 0 };
+    if (!puzzle || !puzzle.puzzles) return { correct: 0, incorrect: 0 };
 
     let newMistakes = 0;
     let newSolved = 0;
@@ -70,7 +124,7 @@ export function useGame() {
         return;
       }
 
-      const userAnswer = answers[i].trim();
+      const userAnswer = answers[i].trim().toUpperCase();
       if (userAnswer) {
         if (userAnswer === p.answer.toUpperCase()) {
           newCorrectAnswers[i] = true;
@@ -117,7 +171,18 @@ export function useGame() {
     setCorrectAnswers([false, false, false, false]);
     setMistakes(0);
     setSolved(0);
+    setError(null);
   }, []);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('Game state updated:', {
+      gameState,
+      hasPuzzle: !!puzzle,
+      loading,
+      error
+    });
+  }, [gameState, puzzle, loading, error]);
 
   return {
     gameState,

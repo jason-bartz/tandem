@@ -105,6 +105,7 @@ export default function GameContainer() {
               theme={theme}
               toggleTheme={toggleTheme}
               onSelectPuzzle={handleSelectPuzzle}
+              puzzle={game.puzzle}
             />
           )}
 

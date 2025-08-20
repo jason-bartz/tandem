@@ -71,13 +71,13 @@ export default function PlayingScreen({
             solved={solved}
           />
 
-          {puzzle && puzzle.puzzles ? (
+          {puzzle && puzzle.puzzles && Array.isArray(puzzle.puzzles) && puzzle.puzzles.length > 0 ? (
             <>
               <div className="flex flex-col gap-4 mb-6">
                 {puzzle.puzzles.map((p, index) => (
                   <PuzzleRow
                     key={index}
-                    emoji={p.emoji}
+                    emoji={p.emoji || '❓❓'}
                     value={answers[index]}
                     onChange={(value) => onUpdateAnswer(index, value)}
                     isCorrect={correctAnswers[index]}
@@ -88,7 +88,10 @@ export default function PlayingScreen({
             </>
           ) : (
             <div className="text-center py-8 text-gray-500">
-              No puzzle data available
+              <div className="mb-2">No puzzle data available</div>
+              <div className="text-xs">
+                {puzzle ? `Puzzle structure: ${JSON.stringify(Object.keys(puzzle))}` : 'No puzzle loaded'}
+              </div>
             </div>
           )}
 
