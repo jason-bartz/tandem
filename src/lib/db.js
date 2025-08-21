@@ -50,7 +50,22 @@ function getDailyPuzzleFromTemplates(date) {
 
 export async function getPuzzleForDate(date) {
   try {
-    // First, try to load from JSON file
+    // First, check database (edited puzzles take priority)
+    const redis = await getRedisClient();
+    
+    if (redis) {
+      const puzzle = await redis.get(`puzzle:${date}`);
+      if (puzzle) {
+        console.log(`Loaded puzzle from database: ${date}`);
+        return JSON.parse(puzzle);
+      }
+    } else {
+      if (inMemoryDB.puzzles[date]) {
+        return inMemoryDB.puzzles[date];
+      }
+    }
+    
+    // Then try to load from JSON file (original puzzles)
     try {
       const fs = require('fs');
       const path = require('path');
@@ -64,17 +79,7 @@ export async function getPuzzleForDate(date) {
       // File doesn't exist or couldn't be read, continue to other methods
     }
     
-    const redis = await getRedisClient();
-    
-    if (redis) {
-      const puzzle = await redis.get(`puzzle:${date}`);
-      if (puzzle) return JSON.parse(puzzle);
-    } else {
-      if (inMemoryDB.puzzles[date]) {
-        return inMemoryDB.puzzles[date];
-      }
-    }
-    
+    // Finally, fall back to template puzzles
     const templatePuzzle = getDailyPuzzleFromTemplates(date);
     const { getPuzzleNumber } = require('./utils');
     return {
@@ -132,30 +137,34 @@ export async function getPuzzlesRange(startDate, endDate) {
     
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
+      let puzzleFound = false;
       
-      // First try to load from JSON file (same as getPuzzleForDate)
-      try {
-        const fs = require('fs');
-        const path = require('path');
-        const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${dateStr}.json`);
-        if (fs.existsSync(puzzleFile)) {
-          const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
-          puzzles[dateStr] = puzzleData;
-          continue;
-        }
-      } catch (fileError) {
-        // File doesn't exist, continue to database check
-      }
-      
-      // Then check database
+      // First check database (edited puzzles take priority)
       if (redis) {
         const puzzleData = await redis.get(`puzzle:${dateStr}`);
         if (puzzleData) {
           puzzles[dateStr] = JSON.parse(puzzleData);
+          puzzleFound = true;
         }
       } else {
         if (inMemoryDB.puzzles[dateStr]) {
           puzzles[dateStr] = inMemoryDB.puzzles[dateStr];
+          puzzleFound = true;
+        }
+      }
+      
+      // If not in database, try to load from JSON file
+      if (!puzzleFound) {
+        try {
+          const fs = require('fs');
+          const path = require('path');
+          const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${dateStr}.json`);
+          if (fs.existsSync(puzzleFile)) {
+            const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
+            puzzles[dateStr] = puzzleData;
+          }
+        } catch (fileError) {
+          // File doesn't exist, skip
         }
       }
     }
