@@ -181,26 +181,32 @@ export function useGame() {
       return;
     }
     
-    // Find first unanswered puzzle
+    // Find all unanswered puzzles
+    const unansweredIndices = [];
     for (let i = 0; i < puzzle.puzzles.length; i++) {
       if (!correctAnswers[i] && !answers[i]) {
-        const newAnswers = [...answers];
-        newAnswers[i] = puzzle.puzzles[i].answer;
-        setAnswers(newAnswers);
-        
-        const newCorrectAnswers = [...correctAnswers];
-        newCorrectAnswers[i] = true;
-        setCorrectAnswers(newCorrectAnswers);
-        
-        setSolved(prev => prev + 1);
-        setHintsUsed(1);
-        
-        // Check if game is complete
-        if (solved + 1 === GAME_CONFIG.PUZZLE_COUNT) {
-          completeGame(true);
-        }
-        
-        break;
+        unansweredIndices.push(i);
+      }
+    }
+    
+    // If there are unanswered puzzles, randomly select one
+    if (unansweredIndices.length > 0) {
+      const randomIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
+      
+      const newAnswers = [...answers];
+      newAnswers[randomIndex] = puzzle.puzzles[randomIndex].answer;
+      setAnswers(newAnswers);
+      
+      const newCorrectAnswers = [...correctAnswers];
+      newCorrectAnswers[randomIndex] = true;
+      setCorrectAnswers(newCorrectAnswers);
+      
+      setSolved(prev => prev + 1);
+      setHintsUsed(1);
+      
+      // Check if game is complete
+      if (solved + 1 === GAME_CONFIG.PUZZLE_COUNT) {
+        completeGame(true);
       }
     }
   }, [puzzle, answers, correctAnswers, hintsUsed, solved, completeGame]);

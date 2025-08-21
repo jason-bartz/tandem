@@ -46,11 +46,12 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
               const isCompleted = history[date]?.completed || false;
               puzzleList.push({
                 date,
-                // Only show theme if puzzle was completed
-                theme: isCompleted ? data.puzzle.theme : null,
+                // Always show theme
+                theme: data.puzzle.theme,
                 completed: isCompleted,
                 time: history[date]?.time,
-                mistakes: history[date]?.mistakes
+                mistakes: history[date]?.mistakes,
+                puzzleNumber: data.puzzleNumber
               });
             }
           }
@@ -115,9 +116,14 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                 <div>
                   <div className="font-semibold text-gray-800 dark:text-gray-200">
                     {formatDate(puzzle.date)}
+                    {puzzle.puzzleNumber && (
+                      <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                        #{puzzle.puzzleNumber}
+                      </span>
+                    )}
                   </div>
                   <div className="text-sm text-gray-600 dark:text-gray-400">
-                    {puzzle.completed ? puzzle.theme : 'Play to reveal theme'}
+                    {puzzle.theme || 'No theme'}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

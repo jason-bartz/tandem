@@ -86,6 +86,18 @@ export default function PlayingScreen({
             solved={solved}
           />
 
+          {/* Theme Display */}
+          {puzzle?.theme && (
+            <div className="text-center mb-4">
+              <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full">
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Theme: </span>
+                <span className="text-base font-semibold text-purple-700 dark:text-purple-300">
+                  {puzzle.theme}
+                </span>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col gap-4 mb-6">
             {puzzle && puzzle.puzzles && puzzle.puzzles.map((p, index) => (
               <PuzzleRow
