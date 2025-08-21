@@ -46,8 +46,8 @@ export const siteConfig = {
   
   // Theme colors for different contexts
   themeColors: {
-    light: '#6B46C1',
-    dark: '#8B5CF6'
+    light: '#0EA5E9', // Sky-500
+    dark: '#14B8A6'   // Teal-600
   },
   
   // Apple specific
