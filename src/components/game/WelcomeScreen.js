@@ -3,13 +3,11 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import ThemeToggle from './ThemeToggle';
-import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 
 export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
-  const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
 
@@ -17,13 +15,6 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
     <div className="animate-fade-in">
       {/* Control buttons positioned above the card */}
       <div className="flex justify-end gap-2 mb-4">
-        <button
-          onClick={() => setShowRules(true)}
-          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
-          title="How to Play"
-        >
-          💡
-        </button>
         <button
           onClick={() => setShowStats(true)}
           className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
@@ -45,7 +36,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
         <div className="w-24 h-24 mx-auto mb-5 relative">
           <Image
-            src="/images/main-logo.webp"
+            src={theme === 'dark' ? "/images/dark-mode-logo.webp" : "/images/main-logo.webp"}
             alt="Tandem Logo"
             width={96}
             height={96}
@@ -103,7 +94,6 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         </div>
       </div>
       
-      <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal 
         isOpen={showArchive} 

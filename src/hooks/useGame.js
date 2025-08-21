@@ -14,28 +14,24 @@ export function useGame() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isArchiveGame, setIsArchiveGame] = useState(false);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
 
   // Simple load puzzle on mount
   useEffect(() => {
     async function loadPuzzle() {
       try {
-        console.log('Starting to load puzzle...');
         const response = await puzzleService.getPuzzle();
-        console.log('Response from service:', response);
         
         if (response && response.puzzle) {
-          console.log('Found puzzle in response:', response.puzzle);
           setPuzzle(response.puzzle);
         } else if (response) {
           // Maybe the response IS the puzzle
-          console.log('Response might be puzzle itself:', response);
           setPuzzle(response);
         } else {
-          console.error('No valid response');
           setError('No puzzle available');
         }
       } catch (err) {
-        console.error('Error loading puzzle:', err);
         setError('Failed to load puzzle');
       } finally {
         setLoading(false);
@@ -78,7 +74,6 @@ export function useGame() {
         return false;
       }
     } catch (err) {
-      console.error('Failed to load puzzle:', err);
       setError('Failed to load puzzle');
       return false;
     } finally {
@@ -88,7 +83,6 @@ export function useGame() {
 
   const startGame = useCallback(() => {
     if (!puzzle) {
-      console.error('Cannot start game without puzzle');
       return;
     }
     
@@ -98,6 +92,8 @@ export function useGame() {
     setAnswers(['', '', '', '']);
     setCorrectAnswers([false, false, false, false]);
     setError(null);
+    setHintsUsed(0);
+    setHasCheckedAnswers(false);
   }, [puzzle]);
 
   const updateAnswer = useCallback((index, value) => {
@@ -113,6 +109,8 @@ export function useGame() {
     if (!puzzle || !puzzle.puzzles) {
       return { correct: 0, incorrect: 0 };
     }
+
+    setHasCheckedAnswers(true);
 
     let newMistakes = 0;
     let newSolved = 0;
@@ -159,12 +157,13 @@ export function useGame() {
         completed: won,
         mistakes,
         solved,
+        hintsUsed,
         isArchive: isArchiveGame, // Pass archive flag to stats service
       });
     } catch (err) {
-      console.error('Failed to save stats:', err);
+      // Silently fail saving stats
     }
-  }, [mistakes, solved, isArchiveGame]);
+  }, [mistakes, solved, hintsUsed, isArchiveGame]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -173,7 +172,38 @@ export function useGame() {
     setMistakes(0);
     setSolved(0);
     setError(null);
+    setHintsUsed(0);
+    setHasCheckedAnswers(false);
   }, []);
+  
+  const useHint = useCallback(() => {
+    if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
+      return;
+    }
+    
+    // Find first unanswered puzzle
+    for (let i = 0; i < puzzle.puzzles.length; i++) {
+      if (!correctAnswers[i] && !answers[i]) {
+        const newAnswers = [...answers];
+        newAnswers[i] = puzzle.puzzles[i].answer;
+        setAnswers(newAnswers);
+        
+        const newCorrectAnswers = [...correctAnswers];
+        newCorrectAnswers[i] = true;
+        setCorrectAnswers(newCorrectAnswers);
+        
+        setSolved(prev => prev + 1);
+        setHintsUsed(1);
+        
+        // Check if game is complete
+        if (solved + 1 === GAME_CONFIG.PUZZLE_COUNT) {
+          completeGame(true);
+        }
+        
+        break;
+      }
+    }
+  }, [puzzle, answers, correctAnswers, hintsUsed, solved, completeGame]);
 
   return {
     gameState,
@@ -185,11 +215,14 @@ export function useGame() {
     loading,
     error,
     isArchiveGame,
+    hintsUsed,
+    hasCheckedAnswers,
     startGame,
     updateAnswer,
     checkAnswers,
     completeGame,
     resetGame,
     loadPuzzle,
+    useHint,
   };
 }
