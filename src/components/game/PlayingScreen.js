@@ -89,9 +89,9 @@ export default function PlayingScreen({
           {/* Theme Display */}
           {puzzle?.theme && (
             <div className="text-center mb-4">
-              <div className="inline-block px-4 py-2 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-full">
+              <div className="inline-block px-4 py-2 bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900/30 dark:to-teal-900/30 rounded-full">
                 <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Theme: </span>
-                <span className="text-base font-semibold text-purple-700 dark:text-purple-300">
+                <span className="text-base font-semibold text-sky-700 dark:text-sky-300">
                   {puzzle.theme}
                 </span>
               </div>

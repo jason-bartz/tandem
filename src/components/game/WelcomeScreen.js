@@ -68,9 +68,9 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
             </div>
             <div className="flex items-center">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
-                🔗
+                🎯
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm">Find the theme that links them</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm">Use the theme to guide your answers</span>
             </div>
             <div className="flex items-center">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
@@ -91,13 +91,6 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         
         <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
           Puzzle #{puzzleInfo.number} • {puzzleInfo.date}
-          {puzzle?.theme && (
-            <div className="mt-2">
-              <span className="text-purple-600 dark:text-purple-400 font-medium">
-                Today's Theme: {puzzle.theme}
-              </span>
-            </div>
-          )}
         </div>
       </div>
       
