@@ -112,6 +112,34 @@ export function sanitizeInput(input) {
     .replace(/[^A-Z\s]/g, '');
 }
 
+export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
+  const user = userAnswer.trim().toUpperCase();
+  const correct = correctAnswer.toUpperCase();
+  
+  // Exact match
+  if (user === correct) return true;
+  
+  // Check if user answer is the plural of correct answer
+  if (user === correct + 'S') return true;
+  if (user === correct + 'ES') return true;
+  
+  // Check if correct answer is the plural of user answer
+  if (correct === user + 'S') return true;
+  if (correct === user + 'ES') return true;
+  
+  // Handle special cases for words ending in Y (e.g., PIRACY -> PIRACIES)
+  if (correct.endsWith('Y') && user === correct.slice(0, -1) + 'IES') return true;
+  if (user.endsWith('Y') && correct === user.slice(0, -1) + 'IES') return true;
+  
+  // Handle words ending in F/FE (e.g., THIEF -> THIEVES, KNIFE -> KNIVES)
+  if (correct.endsWith('F') && user === correct.slice(0, -1) + 'VES') return true;
+  if (correct.endsWith('FE') && user === correct.slice(0, -2) + 'VES') return true;
+  if (user.endsWith('F') && correct === user.slice(0, -1) + 'VES') return true;
+  if (user.endsWith('FE') && correct === user.slice(0, -2) + 'VES') return true;
+  
+  return false;
+}
+
 export function delay(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

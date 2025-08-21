@@ -2,8 +2,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
-import { sanitizeInput } from '@/lib/utils';
+import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
 import { savePuzzleProgress, savePuzzleResult } from '@/lib/storage';
+import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 
 export function useGame() {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -137,6 +138,121 @@ export function useGame() {
     }
   }, [checkedWrongAnswers]);
 
+  const completeGame = useCallback(async (won) => {
+    setGameState(GAME_STATES.COMPLETE);
+    
+    // Play appropriate sound
+    if (won) {
+      playSuccessSound();
+    } else {
+      playFailureSound();
+    }
+    
+    // Save the final result
+    if (currentPuzzleDate) {
+      savePuzzleResult(currentPuzzleDate, {
+        won,
+        mistakes,
+        solved,
+        hintsUsed,
+        time: null // Could add time tracking if needed
+      });
+    }
+    
+    try {
+      await statsService.updateStats({
+        completed: won,
+        mistakes,
+        solved,
+        hintsUsed,
+        isArchive: isArchiveGame, // Pass archive flag to stats service
+      });
+    } catch (err) {
+      // Silently fail saving stats
+    }
+  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate]);
+
+  const checkSingleAnswer = useCallback((index) => {
+    if (!puzzle || !puzzle.puzzles || !puzzle.puzzles[index]) {
+      return false;
+    }
+
+    // Don't check if already correct
+    if (correctAnswers[index]) {
+      return true;
+    }
+
+    const userAnswer = answers[index].trim();
+    if (!userAnswer) {
+      return false;
+    }
+
+    const isCorrect = checkAnswerWithPlurals(userAnswer, puzzle.puzzles[index].answer);
+    
+    if (isCorrect) {
+      // Mark as correct
+      const newCorrectAnswers = [...correctAnswers];
+      newCorrectAnswers[index] = true;
+      setCorrectAnswers(newCorrectAnswers);
+      
+      // Clear wrong status if it was wrong before
+      if (checkedWrongAnswers[index]) {
+        const newCheckedWrongAnswers = [...checkedWrongAnswers];
+        newCheckedWrongAnswers[index] = false;
+        setCheckedWrongAnswers(newCheckedWrongAnswers);
+      }
+      
+      // Update solved count
+      const newSolved = solved + 1;
+      setSolved(newSolved);
+      
+      // Save progress
+      if (currentPuzzleDate) {
+        savePuzzleProgress(currentPuzzleDate, {
+          started: true,
+          solved: newSolved,
+          mistakes,
+          hintsUsed
+        });
+      }
+      
+      // Check if game is complete
+      if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
+        completeGame(true);
+      }
+      
+      return true;
+    } else {
+      // Mark as wrong only if not already marked
+      if (!checkedWrongAnswers[index]) {
+        const newCheckedWrongAnswers = [...checkedWrongAnswers];
+        newCheckedWrongAnswers[index] = true;
+        setCheckedWrongAnswers(newCheckedWrongAnswers);
+        
+        // Increment mistakes
+        const newMistakes = mistakes + 1;
+        setMistakes(newMistakes);
+        
+        // Save progress
+        if (currentPuzzleDate) {
+          savePuzzleProgress(currentPuzzleDate, {
+            started: true,
+            solved,
+            mistakes: newMistakes,
+            hintsUsed
+          });
+        }
+        
+        // Check if game is over
+        if (newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
+          completeGame(false);
+        }
+      }
+      
+      return false;
+    }
+  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
+
   const checkAnswers = useCallback(() => {
     if (!puzzle || !puzzle.puzzles) {
       return { correct: 0, incorrect: 0 };
@@ -155,14 +271,17 @@ export function useGame() {
         return;
       }
 
-      const userAnswer = answers[i].trim().toUpperCase();
+      const userAnswer = answers[i].trim();
       if (userAnswer) {
-        if (userAnswer === p.answer.toUpperCase()) {
+        if (checkAnswerWithPlurals(userAnswer, p.answer)) {
           newCorrectAnswers[i] = true;
           newCheckedWrongAnswers[i] = false; // Clear wrong status if now correct
           newSolved++;
         } else {
-          newMistakes++;
+          // Only count as a new mistake if this answer wasn't already marked as wrong
+          if (!checkedWrongAnswers[i]) {
+            newMistakes++;
+          }
           newCheckedWrongAnswers[i] = true; // Mark this specific answer as checked and wrong
         }
       }
@@ -194,33 +313,6 @@ export function useGame() {
       incorrect: newMistakes,
     };
   }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
-
-  const completeGame = useCallback(async (won) => {
-    setGameState(GAME_STATES.COMPLETE);
-    
-    // Save the final result
-    if (currentPuzzleDate) {
-      savePuzzleResult(currentPuzzleDate, {
-        won,
-        mistakes,
-        solved,
-        hintsUsed,
-        time: null // Could add time tracking if needed
-      });
-    }
-    
-    try {
-      await statsService.updateStats({
-        completed: won,
-        mistakes,
-        solved,
-        hintsUsed,
-        isArchive: isArchiveGame, // Pass archive flag to stats service
-      });
-    } catch (err) {
-      // Silently fail saving stats
-    }
-  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -285,6 +377,7 @@ export function useGame() {
     startGame,
     updateAnswer,
     checkAnswers,
+    checkSingleAnswer,
     completeGame,
     resetGame,
     loadPuzzle,

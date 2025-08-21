@@ -4,6 +4,7 @@ import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
 import { GAME_STATES } from '@/lib/constants';
+import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
@@ -29,6 +30,11 @@ export default function GameContainer() {
   const handleComplete = (won) => {
     if (won) {
       playSound('complete');
+    } else {
+      // Play the gentle failure sound
+      if (soundEnabled) {
+        playFailureSound();
+      }
     }
     game.completeGame(won);
   };
@@ -124,6 +130,7 @@ export default function GameContainer() {
               time={timer.elapsed}
               onUpdateAnswer={game.updateAnswer}
               onCheckAnswers={handleCheckAnswers}
+              onCheckSingleAnswer={game.checkSingleAnswer}
               theme={theme}
               toggleTheme={toggleTheme}
               onSelectPuzzle={handleSelectPuzzle}
