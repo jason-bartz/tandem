@@ -135,39 +135,18 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                 </div>
                 <div className="flex items-center gap-2">
                   {puzzle.status === 'completed' && (
-                    <div className="flex items-center gap-1">
-                      <div className="text-green-500 text-xl" title="Completed">
-                        ✓
-                      </div>
-                      {puzzle.solved && (
-                        <div className="text-xs text-green-600 dark:text-green-400">
-                          {puzzle.solved}/4
-                        </div>
-                      )}
+                    <div className="text-green-500 text-xl" title="Completed">
+                      ✓
                     </div>
                   )}
                   {puzzle.status === 'failed' && (
-                    <div className="flex items-center gap-1">
-                      <div className="text-red-500 text-xl" title="Failed">
-                        ✗
-                      </div>
-                      {puzzle.solved && (
-                        <div className="text-xs text-red-600 dark:text-red-400">
-                          {puzzle.solved}/4
-                        </div>
-                      )}
+                    <div className="text-red-500 text-xl" title="Failed">
+                      ✗
                     </div>
                   )}
                   {puzzle.status === 'attempted' && (
-                    <div className="flex items-center gap-1">
-                      <div className="text-yellow-500 text-xl" title="In Progress">
-                        ◐
-                      </div>
-                      {puzzle.solved > 0 && (
-                        <div className="text-xs text-yellow-600 dark:text-yellow-400">
-                          {puzzle.solved}/4
-                        </div>
-                      )}
+                    <div className="text-yellow-500 text-xl" title="In Progress">
+                      ◐
                     </div>
                   )}
                   {puzzle.status === 'not_played' && (

@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { formatTime } from '@/lib/utils';
-import { playHintSound } from '@/lib/sounds';
+import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
 import ThemeToggle from './ThemeToggle';
@@ -20,6 +20,7 @@ export default function PlayingScreen({
   time,
   onUpdateAnswer,
   onCheckAnswers,
+  onCheckSingleAnswer,
   theme,
   toggleTheme,
   onSelectPuzzle,
@@ -34,11 +35,33 @@ export default function PlayingScreen({
   const [showArchive, setShowArchive] = useState(false);
   
   const handleEnterPress = (index) => {
-    // Move to next input field
-    const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
-    const currentIndex = Array.from(inputs).findIndex(input => document.activeElement === input);
-    if (currentIndex < inputs.length - 1) {
-      inputs[currentIndex + 1].focus();
+    // Check the current answer
+    if (onCheckSingleAnswer) {
+      const isCorrect = onCheckSingleAnswer(index);
+      
+      // Play appropriate sound
+      try {
+        if (isCorrect) {
+          playCorrectSound();  // Simple ding for individual correct answer
+        } else if (answers[index].trim()) {
+          // Only play error sound if there was actually an answer entered
+          playErrorSound();
+        }
+      } catch (e) {
+        // Sound might fail on some browsers
+      }
+      
+      // Only move to next field if the answer was correct
+      if (isCorrect) {
+        setTimeout(() => {
+          const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
+          const currentIndex = Array.from(inputs).findIndex(input => document.activeElement === input);
+          if (currentIndex < inputs.length - 1) {
+            inputs[currentIndex + 1].focus();
+          }
+        }, 300);
+      }
+      // If wrong, cursor stays in the same field
     }
   };
   

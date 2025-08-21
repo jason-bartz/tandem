@@ -77,6 +77,38 @@ export function playSuccessSound() {
   bell.stop(bellTime + 0.5);
 }
 
+// Play a pleasant ding for correct individual answers
+export function playCorrectSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+  
+  // Create a simple, pleasant two-note ding
+  const notes = [
+    { freq: 659.25, start: 0, duration: 0.1 },    // E5
+    { freq: 880, start: 0.05, duration: 0.15 },   // A5
+  ];
+  
+  notes.forEach(({ freq, start, duration }) => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+    
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, currentTime + start);
+    
+    gainNode.gain.setValueAtTime(0, currentTime + start);
+    gainNode.gain.linearRampToValueAtTime(0.12, currentTime + start + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + start + duration);
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    
+    oscillator.start(currentTime + start);
+    oscillator.stop(currentTime + start + duration);
+  });
+}
+
 // Play a simple click sound for interactions
 export function playClickSound() {
   const context = initAudio();
@@ -170,6 +202,61 @@ export function playStartSound() {
   
   pop.start(currentTime + 0.15);
   pop.stop(currentTime + 0.25);
+}
+
+// Play a gentle failure sound - soft and not harsh
+export function playFailureSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+  
+  // Create a gentle, descending melody with soft tones
+  const notes = [
+    { freq: 523.25, start: 0, duration: 0.2 },      // C5
+    { freq: 440, start: 0.15, duration: 0.2 },      // A4
+    { freq: 392, start: 0.3, duration: 0.25 },      // G4
+    { freq: 329.63, start: 0.45, duration: 0.35 },  // E4 (longer, softer fade)
+  ];
+  
+  notes.forEach(({ freq, start, duration }) => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+    
+    // Use triangle wave for a softer, mellower tone
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(freq, currentTime + start);
+    
+    // Gentle envelope with soft attack and release
+    gainNode.gain.setValueAtTime(0, currentTime + start);
+    gainNode.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.03); // Soft attack
+    gainNode.gain.setValueAtTime(0.06, currentTime + start + duration * 0.5); // Sustain
+    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration); // Gentle release
+    
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    
+    oscillator.start(currentTime + start);
+    oscillator.stop(currentTime + start + duration);
+  });
+  
+  // Add a soft low harmony for warmth (not harsh)
+  const harmony = context.createOscillator();
+  const harmonyGain = context.createGain();
+  
+  harmony.type = 'sine';
+  harmony.frequency.setValueAtTime(164.81, currentTime + 0.3); // E3 - low, warm tone
+  
+  harmonyGain.gain.setValueAtTime(0, currentTime + 0.3);
+  harmonyGain.gain.linearRampToValueAtTime(0.04, currentTime + 0.35);
+  harmonyGain.gain.setValueAtTime(0.03, currentTime + 0.6);
+  harmonyGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.8);
+  
+  harmony.connect(harmonyGain);
+  harmonyGain.connect(context.destination);
+  
+  harmony.start(currentTime + 0.3);
+  harmony.stop(currentTime + 0.8);
 }
 
 // Play a magical hint sound - like a lightbulb moment
