@@ -181,28 +181,6 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           ))}
         </div>
         
-        {/* Legend for status indicators */}
-        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex items-center gap-2">
-              <span className="text-green-500">✓</span>
-              <span className="text-gray-600 dark:text-gray-400">Completed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-red-500">✗</span>
-              <span className="text-gray-600 dark:text-gray-400">Failed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-yellow-500">◐</span>
-              <span className="text-gray-600 dark:text-gray-400">In Progress</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-gray-400">○</span>
-              <span className="text-gray-600 dark:text-gray-400">Not Played</span>
-            </div>
-          </div>
-        </div>
-        
         <button
           onClick={onClose}
           className="mt-4 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
