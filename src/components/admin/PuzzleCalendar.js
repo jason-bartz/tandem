@@ -144,7 +144,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}
                   `}
-                  onClick={() => day && setSelectedPuzzle(puzzle || { date: dateStr })}
+                  onClick={() => day && setSelectedPuzzle(puzzle ? { ...puzzle, date: dateStr } : { date: dateStr })}
                 >
                   {day && (
                     <>
@@ -196,7 +196,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                 <div className="flex justify-end space-x-3">
                   <button
                     onClick={() => {
-                      onEditPuzzle(selectedPuzzle);
+                      onEditPuzzle({ ...selectedPuzzle, date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
                     className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
