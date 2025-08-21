@@ -32,9 +32,13 @@ export default function CompleteScreen({
 
     try {
       const canvas = await html2canvas(element, {
-        backgroundColor: theme === 'dark' ? '#1a1a1a' : '#ffffff',
+        backgroundColor: theme === 'dark' ? '#111827' : '#ffffff',
         scale: 2,
-        logging: false
+        logging: false,
+        useCORS: true,
+        allowTaint: true,
+        windowWidth: element.scrollWidth,
+        windowHeight: element.scrollHeight
       });
       
       canvas.toBlob(async (blob) => {
@@ -87,8 +91,8 @@ export default function CompleteScreen({
 
       {/* Main completion card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
-        {/* Content for sharing (without buttons) */}
-        <div id="share-content">
+        {/* Content for sharing (without buttons) - add padding and background */}
+        <div id="share-content" className="p-8 -m-10 mb-6 bg-white dark:bg-gray-900">
           <div className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center">
             <Image
               src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/main-logo.webp"}
@@ -99,22 +103,22 @@ export default function CompleteScreen({
             />
           </div>
         
-        <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
-          {won ? 'Congratulations!' : 'Better luck next time!'}
-        </h1>
-        
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          {won ? 'You solved today\'s puzzle!' : 'You\'ll get it tomorrow!'}
-        </p>
+          <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
+            {won ? 'Congratulations!' : 'Better luck next time!'}
+          </h1>
+          
+          <p className="text-gray-600 dark:text-gray-400 mb-6">
+            {won ? 'You solved today\'s puzzle!' : 'You\'ll get it tomorrow!'}
+          </p>
 
-        {puzzleTheme && (
-          <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6">
-            <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
-            <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
-          </div>
-        )}
+          {puzzleTheme && (
+            <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6 mx-4">
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
+            </div>
+          )}
 
-          <div className="grid grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-3 gap-4 mb-6 px-4">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                 {formatTime(time)}
@@ -136,7 +140,7 @@ export default function CompleteScreen({
           </div>
           
           {hintsUsed > 0 && (
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400 pb-4">
               💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
             </div>
           )}
