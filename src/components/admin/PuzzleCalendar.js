@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import adminService from '@/services/admin.service';
 import { formatDate } from '@/lib/utils';
+import { getHolidaysForMonth } from '@/lib/holidays';
 
 export default function PuzzleCalendar({ onEditPuzzle }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -189,29 +190,52 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
               const puzzle = getPuzzleForDay(day);
               const dateStr = day ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
                 .toISOString().split('T')[0] : '';
+              const holidays = getHolidaysForMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+              const holiday = day ? holidays[day] : null;
               
               return (
                 <div
                   key={index}
                   className={`
-                    h-24 w-24 p-2 rounded-lg border
+                    h-24 w-24 p-1 rounded-lg border overflow-hidden
                     ${day ? 'cursor-pointer hover:border-plum' : ''}
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}
+                    ${holiday && !puzzle ? 'bg-amber-50 dark:bg-amber-900/10' : ''}
                   `}
                   onClick={() => day && setSelectedPuzzle(puzzle ? { ...puzzle, date: dateStr } : { date: dateStr })}
                 >
                   {day && (
                     <>
-                      <div className="text-sm font-medium text-gray-900 dark:text-white">
-                        {day}
+                      <div className="flex justify-between items-start">
+                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                          {day}
+                        </div>
+                        {holiday && (
+                          <div className="text-xs">
+                            {holiday === 'Christmas' ? '🎄' :
+                             holiday === 'Halloween' ? '🎃' :
+                             holiday === "Valentine's Day" ? '❤️' :
+                             holiday === 'Easter' ? '🐰' :
+                             holiday === 'Thanksgiving' ? '🦃' :
+                             holiday === 'Independence Day' ? '🎆' :
+                             holiday === "New Year's Day" ? '🎊' :
+                             holiday === "St. Patrick's Day" ? '☘️' :
+                             '🎉'}
+                          </div>
+                        )}
                       </div>
+                      {holiday && (
+                        <div className="text-xs text-amber-700 dark:text-amber-400 truncate mt-1 font-medium">
+                          {holiday}
+                        </div>
+                      )}
                       {puzzle && (
                         <div className="mt-1">
                           <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
                             {puzzle.theme}
                           </div>
-                          <div className="text-lg mt-1">
+                          <div className="text-sm mt-1">
                             {puzzle.puzzles[0].emoji}
                           </div>
                         </div>
