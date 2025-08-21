@@ -189,23 +189,31 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           </div>
         )}
 
-        <div className="flex justify-end space-x-4">
+        <div className="flex justify-between">
           <button
             type="button"
-            onClick={() => {
-              setTheme('');
-              setPuzzles([
-                { emoji: '', answer: '' },
-                { emoji: '', answer: '' },
-                { emoji: '', answer: '' },
-                { emoji: '', answer: '' },
-              ]);
-              setMessage('');
-            }}
+            onClick={onClose}
             className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
           >
-            Clear
+            ← Back to Calendar
           </button>
+          <div className="flex space-x-4">
+            <button
+              type="button"
+              onClick={() => {
+                setTheme('');
+                setPuzzles([
+                  { emoji: '', answer: '' },
+                  { emoji: '', answer: '' },
+                  { emoji: '', answer: '' },
+                  { emoji: '', answer: '' },
+                ]);
+                setMessage('');
+              }}
+              className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+            >
+              Clear
+            </button>
           <button
             type="submit"
             disabled={loading || !validateForm()}
@@ -213,6 +221,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           >
             {loading ? 'Saving...' : 'Save Puzzle'}
           </button>
+          </div>
         </div>
       </form>
     </div>
