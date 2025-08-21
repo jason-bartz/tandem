@@ -72,7 +72,10 @@ export default function AdminDashboard() {
         {activeTab === 'editor' && (
           <PuzzleEditor 
             initialPuzzle={editingPuzzle}
-            onClose={() => setEditingPuzzle(null)}
+            onClose={() => {
+              setEditingPuzzle(null);
+              setActiveTab('calendar');
+            }}
           />
         )}
         {activeTab === 'stats' && <StatsOverview />}

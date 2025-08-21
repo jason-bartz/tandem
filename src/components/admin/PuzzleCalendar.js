@@ -8,6 +8,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   const [puzzles, setPuzzles] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedPuzzle, setSelectedPuzzle] = useState(null);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
 
   useEffect(() => {
     loadMonthPuzzles();
@@ -97,9 +98,63 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full w-full">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium text-gray-900 dark:text-white">
-            {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-          </h3>
+          <div className="relative">
+            <button
+              onClick={() => setShowMonthPicker(!showMonthPicker)}
+              className="text-lg font-medium text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors flex items-center gap-2"
+            >
+              {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showMonthPicker && (
+              <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50" style={{ minWidth: '280px' }}>
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                    <button
+                      key={month}
+                      onClick={() => {
+                        const newDate = new Date(currentMonth);
+                        newDate.setMonth(index);
+                        setCurrentMonth(newDate);
+                        setShowMonthPicker(false);
+                      }}
+                      className={`px-3 py-2 rounded text-sm ${
+                        currentMonth.getMonth() === index
+                          ? 'bg-sky-500 text-white'
+                          : 'hover:bg-gray-100 dark:hover:bg-gray-700'
+                      }`}
+                    >
+                      {month}
+                    </button>
+                  ))}
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={currentMonth.getFullYear()}
+                    onChange={(e) => {
+                      const newDate = new Date(currentMonth);
+                      newDate.setFullYear(parseInt(e.target.value));
+                      setCurrentMonth(newDate);
+                    }}
+                    min="2024"
+                    max="2030"
+                    className="flex-1 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded text-center dark:bg-gray-700 dark:text-white"
+                  />
+                  <button
+                    onClick={() => setShowMonthPicker(false)}
+                    className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+          
           <div className="flex space-x-2">
             <button
               onClick={handlePreviousMonth}
