@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import adminService from '@/services/admin.service';
 import { formatDate } from '@/lib/utils';
 
-export default function PuzzleCalendar() {
+export default function PuzzleCalendar({ onEditPuzzle }) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [puzzles, setPuzzles] = useState({});
   const [loading, setLoading] = useState(false);
@@ -194,6 +194,15 @@ export default function PuzzleCalendar() {
                 </div>
                 
                 <div className="flex justify-end space-x-3">
+                  <button
+                    onClick={() => {
+                      onEditPuzzle(selectedPuzzle);
+                      setSelectedPuzzle(null);
+                    }}
+                    className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handleDeletePuzzle(selectedPuzzle.date)}
                     className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"

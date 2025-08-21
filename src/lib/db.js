@@ -127,9 +127,25 @@ export async function getPuzzlesRange(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   
-  for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
-    const dateStr = d.toISOString().split('T')[0];
-    puzzles[dateStr] = await getPuzzleForDate(dateStr);
+  try {
+    const redis = await getRedisClient();
+    
+    for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+      const dateStr = d.toISOString().split('T')[0];
+      
+      if (redis) {
+        const puzzleData = await redis.get(`puzzle:${dateStr}`);
+        if (puzzleData) {
+          puzzles[dateStr] = JSON.parse(puzzleData);
+        }
+      } else {
+        if (inMemoryDB.puzzles[dateStr]) {
+          puzzles[dateStr] = inMemoryDB.puzzles[dateStr];
+        }
+      }
+    }
+  } catch (error) {
+    console.error('Error getting puzzles range:', error);
   }
   
   return puzzles;

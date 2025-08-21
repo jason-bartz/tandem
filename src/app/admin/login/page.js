@@ -37,19 +37,25 @@ export default function AdminLogin() {
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: '#f3f4f6',
+      backgroundImage: "url('/images/light-mode-bg.webp')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+      backgroundColor: 'white',
       padding: '1rem'
     }}>
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backdropFilter: 'blur(10px)',
         padding: '2rem',
-        borderRadius: '1rem',
-        boxShadow: '0 10px 25px rgba(0,0,0,0.1)',
+        borderRadius: '1.5rem',
+        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.5)',
         width: '100%',
         maxWidth: '400px'
       }}>
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827' }}>
+          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', background: 'linear-gradient(to right, #0EA5E9, #14B8A6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
             Tandem Admin
           </h1>
           <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>
@@ -139,7 +145,7 @@ export default function AdminLogin() {
             style={{
               width: '100%',
               padding: '0.75rem',
-              backgroundColor: '#6b46c1',
+              background: 'linear-gradient(to right, #0EA5E9, #14B8A6)',
               color: 'white',
               fontWeight: '600',
               borderRadius: '0.5rem',

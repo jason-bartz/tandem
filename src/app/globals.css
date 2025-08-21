@@ -38,7 +38,12 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background: linear-gradient(135deg, var(--plum) 0%, var(--peach) 100%);
+  background-color: #fafafa;
+  background-image: url('/wallpaper.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
   min-height: 100vh;
   display: flex;
   align-items: center;
@@ -49,7 +54,12 @@ body {
 }
 
 [data-theme="dark"] body {
-  background: linear-gradient(135deg, #312e81 0%, #831843 100%);
+  background-color: #1a1a1a;
+  background-image: url('/wallpaper-dark.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .game-container {

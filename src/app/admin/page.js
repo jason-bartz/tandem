@@ -6,6 +6,7 @@ import StatsOverview from '@/components/admin/StatsOverview';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
+  const [editingPuzzle, setEditingPuzzle] = useState(null);
 
   return (
     <div className="px-4 py-5 sm:p-6">
@@ -25,7 +26,7 @@ export default function AdminDashboard() {
             className={`
               py-2 px-1 border-b-2 font-medium text-sm
               ${activeTab === 'calendar'
-                ? 'border-plum text-plum'
+                ? 'border-sky-500 text-sky-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }
             `}
@@ -37,7 +38,7 @@ export default function AdminDashboard() {
             className={`
               py-2 px-1 border-b-2 font-medium text-sm
               ${activeTab === 'editor'
-                ? 'border-plum text-plum'
+                ? 'border-sky-500 text-sky-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }
             `}
@@ -49,7 +50,7 @@ export default function AdminDashboard() {
             className={`
               py-2 px-1 border-b-2 font-medium text-sm
               ${activeTab === 'stats'
-                ? 'border-plum text-plum'
+                ? 'border-sky-500 text-sky-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }
             `}
@@ -60,8 +61,20 @@ export default function AdminDashboard() {
       </div>
 
       <div className="mt-6">
-        {activeTab === 'calendar' && <PuzzleCalendar />}
-        {activeTab === 'editor' && <PuzzleEditor />}
+        {activeTab === 'calendar' && (
+          <PuzzleCalendar 
+            onEditPuzzle={(puzzle) => {
+              setEditingPuzzle(puzzle);
+              setActiveTab('editor');
+            }}
+          />
+        )}
+        {activeTab === 'editor' && (
+          <PuzzleEditor 
+            initialPuzzle={editingPuzzle}
+            onClose={() => setEditingPuzzle(null)}
+          />
+        )}
         {activeTab === 'stats' && <StatsOverview />}
       </div>
     </div>

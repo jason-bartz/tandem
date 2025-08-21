@@ -79,19 +79,28 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
+    <div 
+      className="min-h-screen"
+      style={{
+        backgroundImage: "url('/images/light-mode-bg.webp')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundColor: 'white'
+      }}
+    >
+      <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-sky-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
-              <h1 className="text-xl font-bold text-gray-900 dark:text-white">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-sky-500 to-teal-400 bg-clip-text text-transparent">
                 Tandem Admin
               </h1>
             </div>
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => router.push('/')}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-sky-600 hover:text-sky-700 font-medium"
               >
                 View Game
               </button>
@@ -100,7 +109,7 @@ export default function AdminLayout({ children }) {
                   localStorage.removeItem('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+                className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-all font-medium"
               >
                 Logout
               </button>
@@ -109,7 +118,9 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {children}
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6">
+          {children}
+        </div>
       </main>
     </div>
   );

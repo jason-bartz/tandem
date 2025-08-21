@@ -1,21 +1,36 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { PUZZLE_TEMPLATES } from '@/lib/constants';
 import adminService from '@/services/admin.service';
 
-export default function PuzzleEditor() {
+export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const [selectedDate, setSelectedDate] = useState(
-    new Date().toISOString().split('T')[0]
+    initialPuzzle?.date || new Date().toISOString().split('T')[0]
   );
-  const [theme, setTheme] = useState('');
-  const [puzzles, setPuzzles] = useState([
-    { emoji: '', answer: '' },
-    { emoji: '', answer: '' },
-    { emoji: '', answer: '' },
-    { emoji: '', answer: '' },
-  ]);
+  const [theme, setTheme] = useState(initialPuzzle?.theme || '');
+  const [puzzles, setPuzzles] = useState(
+    initialPuzzle?.puzzles || [
+      { emoji: '', answer: '' },
+      { emoji: '', answer: '' },
+      { emoji: '', answer: '' },
+      { emoji: '', answer: '' },
+    ]
+  );
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    if (initialPuzzle) {
+      setSelectedDate(initialPuzzle.date);
+      setTheme(initialPuzzle.theme || '');
+      setPuzzles(initialPuzzle.puzzles || [
+        { emoji: '', answer: '' },
+        { emoji: '', answer: '' },
+        { emoji: '', answer: '' },
+        { emoji: '', answer: '' },
+      ]);
+    }
+  }, [initialPuzzle]);
 
   const handleTemplateSelect = (template) => {
     setTheme(template.theme);
@@ -45,6 +60,9 @@ export default function PuzzleEditor() {
 
       if (result.success) {
         setMessage(`✅ Puzzle saved for ${selectedDate}`);
+        if (onClose) {
+          setTimeout(() => onClose(), 1500);
+        }
       } else {
         setMessage('❌ Failed to save puzzle');
       }
@@ -67,6 +85,13 @@ export default function PuzzleEditor() {
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+      {initialPuzzle && (
+        <div className="mb-4 p-3 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 rounded-lg">
+          <p className="text-sm text-sky-700 dark:text-sky-300">
+            Editing puzzle for {initialPuzzle.date}
+          </p>
+        </div>
+      )}
       <div className="mb-6">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
           Quick Templates

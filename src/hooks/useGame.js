@@ -174,17 +174,17 @@ export function useGame() {
 
   const checkSingleAnswer = useCallback((index) => {
     if (!puzzle || !puzzle.puzzles || !puzzle.puzzles[index]) {
-      return false;
+      return { isCorrect: false, gameComplete: false };
     }
 
     // Don't check if already correct
     if (correctAnswers[index]) {
-      return true;
+      return { isCorrect: true, gameComplete: false };
     }
 
     const userAnswer = answers[index].trim();
     if (!userAnswer) {
-      return false;
+      return { isCorrect: false, gameComplete: false };
     }
 
     const isCorrect = checkAnswerWithPlurals(userAnswer, puzzle.puzzles[index].answer);
@@ -219,9 +219,10 @@ export function useGame() {
       // Check if game is complete
       if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
         completeGame(true);
+        return { isCorrect: true, gameComplete: true };
       }
       
-      return true;
+      return { isCorrect: true, gameComplete: false };
     } else {
       // Mark as wrong only if not already marked
       if (!checkedWrongAnswers[index]) {
@@ -246,10 +247,11 @@ export function useGame() {
         // Check if game is over
         if (newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
           completeGame(false);
+          return { isCorrect: false, gameComplete: true };
         }
       }
       
-      return false;
+      return { isCorrect: false, gameComplete: false };
     }
   }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
 
