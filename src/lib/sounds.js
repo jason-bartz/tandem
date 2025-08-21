@@ -120,34 +120,33 @@ export function playErrorSound() {
   oscillator.stop(context.currentTime + 0.15);
 }
 
-// Play a calm, welcoming sound when starting the game
+// Play a playful, game-like sound when starting the game
 export function playStartSound() {
   const context = initAudio();
   if (!context) return;
 
   const currentTime = context.currentTime;
   
-  // Create a gentle two-note chime (C5 and G5)
+  // Create a bouncy, ascending melody - like a happy little jump
   const notes = [
-    { freq: 523.25, start: 0, duration: 0.4 },      // C5
-    { freq: 783.99, start: 0.2, duration: 0.4 },    // G5 (perfect fifth)
+    { freq: 392, start: 0, duration: 0.08 },        // G4
+    { freq: 523.25, start: 0.05, duration: 0.08 },  // C5
+    { freq: 659.25, start: 0.1, duration: 0.12 },   // E5
   ];
   
   notes.forEach(({ freq, start, duration }) => {
     const oscillator = context.createOscillator();
     const gainNode = context.createGain();
     
-    // Use sine wave for a soft, calm tone
-    oscillator.type = 'sine';
+    // Mix of sine and triangle for a softer, more playful tone
+    oscillator.type = 'triangle';
     oscillator.frequency.setValueAtTime(freq, currentTime + start);
     
-    // Gentle envelope with soft attack and long release
+    // Quick, bouncy envelope
     gainNode.gain.setValueAtTime(0, currentTime + start);
-    gainNode.gain.linearRampToValueAtTime(0.12, currentTime + start + 0.05); // Soft attack
-    gainNode.gain.setValueAtTime(0.12, currentTime + start + 0.15); // Brief sustain
-    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration); // Gentle release
+    gainNode.gain.linearRampToValueAtTime(0.15, currentTime + start + 0.01);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + start + duration);
     
-    // Connect and play
     oscillator.connect(gainNode);
     gainNode.connect(context.destination);
     
@@ -155,21 +154,68 @@ export function playStartSound() {
     oscillator.stop(currentTime + start + duration);
   });
   
-  // Add a subtle low harmonic for warmth
-  const bass = context.createOscillator();
-  const bassGain = context.createGain();
+  // Add a little "pop" at the end for extra playfulness
+  const pop = context.createOscillator();
+  const popGain = context.createGain();
   
-  bass.type = 'sine';
-  bass.frequency.setValueAtTime(130.81, currentTime); // C3 (two octaves below)
+  pop.type = 'sine';
+  pop.frequency.setValueAtTime(1046.5, currentTime + 0.15); // C6
   
-  bassGain.gain.setValueAtTime(0, currentTime);
-  bassGain.gain.linearRampToValueAtTime(0.05, currentTime + 0.1);
-  bassGain.gain.setValueAtTime(0.05, currentTime + 0.3);
-  bassGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.6);
+  popGain.gain.setValueAtTime(0, currentTime + 0.15);
+  popGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.16);
+  popGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.25);
   
-  bass.connect(bassGain);
-  bassGain.connect(context.destination);
+  pop.connect(popGain);
+  popGain.connect(context.destination);
   
-  bass.start(currentTime);
-  bass.stop(currentTime + 0.6);
+  pop.start(currentTime + 0.15);
+  pop.stop(currentTime + 0.25);
+}
+
+// Play a magical hint sound - like a lightbulb moment
+export function playHintSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+  
+  // Create a magical "ding" with a sparkle effect
+  // Main chime
+  const chime = context.createOscillator();
+  const chimeGain = context.createGain();
+  
+  chime.type = 'sine';
+  chime.frequency.setValueAtTime(880, currentTime); // A5
+  
+  chimeGain.gain.setValueAtTime(0, currentTime);
+  chimeGain.gain.linearRampToValueAtTime(0.2, currentTime + 0.02);
+  chimeGain.gain.setValueAtTime(0.15, currentTime + 0.1);
+  chimeGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.4);
+  
+  chime.connect(chimeGain);
+  chimeGain.connect(context.destination);
+  
+  chime.start(currentTime);
+  chime.stop(currentTime + 0.4);
+  
+  // Add sparkle overtones
+  const sparkleFreqs = [1760, 2637, 3520]; // A6, E7, A7
+  
+  sparkleFreqs.forEach((freq, index) => {
+    const sparkle = context.createOscillator();
+    const sparkleGain = context.createGain();
+    
+    sparkle.type = 'sine';
+    sparkle.frequency.setValueAtTime(freq, currentTime + 0.02 + (index * 0.03));
+    
+    sparkleGain.gain.setValueAtTime(0, currentTime + 0.02 + (index * 0.03));
+    sparkleGain.gain.linearRampToValueAtTime(0.05, currentTime + 0.03 + (index * 0.03));
+    sparkleGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.2 + (index * 0.05));
+    
+    sparkle.connect(sparkleGain);
+    sparkleGain.connect(context.destination);
+    
+    sparkle.start(currentTime + 0.02 + (index * 0.03));
+    sparkle.stop(currentTime + 0.3 + (index * 0.05));
+  });
 }
