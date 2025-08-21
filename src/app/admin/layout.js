@@ -118,7 +118,7 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] max-w-6xl mx-auto">
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-5xl mx-auto" style={{ minWidth: '800px' }}>
           {children}
         </div>
       </main>

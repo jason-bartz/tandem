@@ -87,7 +87,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 h-full w-full" style={{ minWidth: '700px' }}>
       {initialPuzzle && (
         <div className="mb-4 p-3 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 rounded-lg">
           <p className="text-sm text-sky-700 dark:text-sky-300">
