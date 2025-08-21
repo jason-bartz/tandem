@@ -222,12 +222,23 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                 <p className="text-gray-600 dark:text-gray-400 mb-6">
                   No puzzle scheduled for this date.
                 </p>
-                <button
-                  onClick={() => setSelectedPuzzle(null)}
-                  className="w-full px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
-                >
-                  Close
-                </button>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => {
+                      onEditPuzzle({ date: selectedPuzzle.date });
+                      setSelectedPuzzle(null);
+                    }}
+                    className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
+                  >
+                    Create Puzzle
+                  </button>
+                  <button
+                    onClick={() => setSelectedPuzzle(null)}
+                    className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
+                  >
+                    Close
+                  </button>
+                </div>
               </>
             )}
           </div>
