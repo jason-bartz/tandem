@@ -37,22 +37,25 @@ export default function PlayingScreen({
   const handleEnterPress = (index) => {
     // Check the current answer
     if (onCheckSingleAnswer) {
-      const isCorrect = onCheckSingleAnswer(index);
+      const result = onCheckSingleAnswer(index);
       
-      // Play appropriate sound
-      try {
-        if (isCorrect) {
-          playCorrectSound();  // Simple ding for individual correct answer
-        } else if (answers[index].trim()) {
-          // Only play error sound if there was actually an answer entered
-          playErrorSound();
+      // Only play individual answer sounds if the game isn't complete
+      // (game completion sounds are handled in completeGame function)
+      if (!result.gameComplete) {
+        try {
+          if (result.isCorrect) {
+            playCorrectSound();  // Simple ding for individual correct answer
+          } else if (answers[index].trim()) {
+            // Only play error sound if there was actually an answer entered
+            playErrorSound();
+          }
+        } catch (e) {
+          // Sound might fail on some browsers
         }
-      } catch (e) {
-        // Sound might fail on some browsers
       }
       
-      // Only move to next field if the answer was correct
-      if (isCorrect) {
+      // Only move to next field if the answer was correct and game isn't complete
+      if (result.isCorrect && !result.gameComplete) {
         setTimeout(() => {
           const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
           const currentIndex = Array.from(inputs).findIndex(input => document.activeElement === input);
@@ -61,7 +64,7 @@ export default function PlayingScreen({
           }
         }, 300);
       }
-      // If wrong, cursor stays in the same field
+      // If wrong or game complete, cursor stays in the same field
     }
   };
   
