@@ -66,7 +66,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           setTimeout(() => onClose(), 1500);
         }
       } else {
-        setMessage('❌ Failed to save puzzle');
+        setMessage(`❌ Failed to save puzzle: ${result.error || 'Unknown error'}`);
+        console.error('Puzzle save failed:', result);
       }
     } catch (error) {
       setMessage('❌ Error saving puzzle');
