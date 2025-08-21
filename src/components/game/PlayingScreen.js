@@ -24,7 +24,8 @@ export default function PlayingScreen({
   onSelectPuzzle,
   hintsUsed,
   onUseHint,
-  hasCheckedAnswers
+  hasCheckedAnswers,
+  onReturnToWelcome
 }) {
   const hasAnyInput = answers.some(answer => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
@@ -65,7 +66,11 @@ export default function PlayingScreen({
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden">
         {/* Header with gradient matching outdoor theme */}
         <div className="bg-gradient-to-r from-sky-500 to-teal-400 p-5 text-center">
-          <div className="w-16 h-16 mx-auto mb-2 relative">
+          <button 
+            onClick={onReturnToWelcome}
+            className="w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
+            title="Return to Welcome Screen"
+          >
             <Image
               src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/alt-logo.webp"}
               alt="Tandem Logo"
@@ -74,7 +79,7 @@ export default function PlayingScreen({
               className="rounded-xl"
               priority
             />
-          </div>
+          </button>
           <div className="text-white/90 text-sm font-medium">
             Daily Puzzle #{puzzle?.puzzleNumber || ''}
           </div>

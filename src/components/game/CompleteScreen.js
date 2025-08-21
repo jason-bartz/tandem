@@ -19,7 +19,8 @@ export default function CompleteScreen({
   theme,
   toggleTheme,
   hintsUsed,
-  onSelectPuzzle
+  onSelectPuzzle,
+  onReturnToWelcome
 }) {
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
@@ -97,7 +98,11 @@ export default function CompleteScreen({
       {/* Main completion card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
         <div>
-          <div className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center">
+          <button 
+            onClick={onReturnToWelcome}
+            className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+            title="Return to Welcome Screen"
+          >
             <Image
               src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/main-logo.webp"}
               alt="Tandem Logo"
@@ -105,7 +110,7 @@ export default function CompleteScreen({
               height={96}
               className="rounded-2xl"
             />
-          </div>
+          </button>
         
           <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
             {won ? 'Congratulations!' : 'Better luck next time!'}
