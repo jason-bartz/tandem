@@ -183,15 +183,15 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
         <div className="p-8 text-center text-gray-500">Loading puzzles...</div>
       ) : (
         <div className="p-6">
-          <div className="grid grid-cols-7 gap-2 mb-2" style={{ minWidth: '700px' }}>
+          <div className="grid grid-cols-7 gap-3 mb-3" style={{ minWidth: '1050px' }}>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 w-24">
+              <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 w-36">
                 {day}
               </div>
             ))}
           </div>
           
-          <div className="grid grid-cols-7 gap-2" style={{ minWidth: '700px' }}>
+          <div className="grid grid-cols-7 gap-3" style={{ minWidth: '1050px' }}>
             {getDaysInMonth().map((day, index) => {
               const puzzle = getPuzzleForDay(day);
               const dateStr = day ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
@@ -203,7 +203,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                 <div
                   key={index}
                   className={`
-                    h-24 w-24 p-1 rounded-lg border overflow-hidden
+                    h-32 w-36 p-2 rounded-lg border overflow-hidden
                     ${day ? 'cursor-pointer hover:border-plum' : ''}
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}
@@ -232,13 +232,13 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                         )}
                       </div>
                       {holiday && (
-                        <div className="text-xs text-amber-700 dark:text-amber-400 truncate mt-1 font-medium">
+                        <div className="text-xs text-amber-700 dark:text-amber-400 mt-1 font-medium" style={{ fontSize: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                           {holiday}
                         </div>
                       )}
                       {puzzle && (
                         <div className="mt-1">
-                          <div className="text-xs text-gray-600 dark:text-gray-400 truncate">
+                          <div className="text-xs text-gray-600 dark:text-gray-400" style={{ fontSize: '11px', lineHeight: '1.3', wordWrap: 'break-word' }}>
                             {puzzle.theme}
                           </div>
                           <div className="text-sm mt-1">
