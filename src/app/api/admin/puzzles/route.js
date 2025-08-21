@@ -82,8 +82,8 @@ export async function POST(request) {
         theme: z.string().min(3).max(50),
         puzzles: z.array(
           z.object({
-            emoji: z.string().min(2).max(6),
-            answer: z.string().min(2).max(10).regex(/^[A-Z\s]+$/),
+            emoji: z.string().min(1).max(10), // Allow emoji pairs
+            answer: z.string().min(2).max(15).regex(/^[A-Z\s]+$/), // Allow longer answers
           })
         ).length(4),
       }),
