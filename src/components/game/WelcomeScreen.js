@@ -91,6 +91,13 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         
         <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
           Puzzle #{puzzleInfo.number} • {puzzleInfo.date}
+          {puzzle?.theme && (
+            <div className="mt-2">
+              <span className="text-purple-600 dark:text-purple-400 font-medium">
+                Today's Theme: {puzzle.theme}
+              </span>
+            </div>
+          )}
         </div>
       </div>
       
