@@ -98,12 +98,14 @@ export default function AdminLayout({ children }) {
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <button
-                onClick={() => router.push('/')}
+              <a
+                href="/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sky-600 hover:text-sky-700 font-medium"
               >
                 View Game
-              </button>
+              </a>
               <button
                 onClick={() => {
                   localStorage.removeItem('adminToken');
@@ -118,7 +120,7 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-5xl mx-auto" style={{ minWidth: '800px' }}>
+        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-7xl mx-auto" style={{ minWidth: '1100px' }}>
           {children}
         </div>
       </main>
