@@ -80,9 +80,9 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const validateForm = () => {
     if (!theme.trim()) return false;
     return puzzles.every(p => 
-      p.emoji.trim().length >= 2 && 
+      p.emoji.trim().length >= 1 && 
       p.answer.trim().length >= 2 && 
-      p.answer.trim().length <= 10
+      p.answer.trim().length <= 30
     );
   };
 
@@ -143,9 +143,12 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-4">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Puzzle Pairs
           </label>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            For multiple acceptable answers, separate with commas (e.g., "DONUT, DOUGHNUT")
+          </p>
           <div className="space-y-4">
             {puzzles.map((puzzle, index) => (
               <div key={index} className="flex gap-4 items-center">
@@ -164,8 +167,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                   type="text"
                   value={puzzle.answer}
                   onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
-                  placeholder="Answer (e.g., STOVE)"
-                  maxLength={10}
+                  placeholder="ANSWER (E.G., STOVE)"
+                  maxLength={30}
                   className="flex-1 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white uppercase"
                   required
                 />
