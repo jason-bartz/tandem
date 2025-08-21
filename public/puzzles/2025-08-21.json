@@ -4,19 +4,19 @@
   "emojiPairs": [
     "📰🗞️",
     "📖📚",
-    "📧💻",
+    "🔮🎴",
     "🗺️🧭"
   ],
   "words": [
     "NEWSPAPER",
     "BOOK",
-    "EMAIL",
+    "FORTUNE",
     "MAP"
   ],
   "correctAnswers": [
     "NEWSPAPER",
     "BOOK",
-    "EMAIL",
+    "FORTUNE",
     "MAP"
   ],
   "puzzles": [
@@ -29,8 +29,8 @@
       "answer": "BOOK"
     },
     {
-      "emoji": "📧💻",
-      "answer": "EMAIL"
+      "emoji": "🔮🎴",
+      "answer": "FORTUNE"
     },
     {
       "emoji": "🗺️🧭",

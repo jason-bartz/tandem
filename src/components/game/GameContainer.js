@@ -125,6 +125,10 @@ export default function GameContainer() {
               onCheckAnswers={handleCheckAnswers}
               theme={theme}
               toggleTheme={toggleTheme}
+              onSelectPuzzle={handleSelectPuzzle}
+              hintsUsed={game.hintsUsed}
+              onUseHint={game.useHint}
+              hasCheckedAnswers={game.hasCheckedAnswers}
             />
           )}
 
@@ -138,6 +142,8 @@ export default function GameContainer() {
               onPlayAgain={game.resetGame}
               theme={theme}
               toggleTheme={toggleTheme}
+              hintsUsed={game.hintsUsed || 0}
+              onSelectPuzzle={handleSelectPuzzle}
             />
           )}
         </div>

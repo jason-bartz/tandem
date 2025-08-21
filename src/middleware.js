@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server';
 
 export function middleware(request) {
+  // Allow GET requests to rotate-puzzle endpoint for status checks
+  if (request.nextUrl.pathname === '/api/admin/rotate-puzzle' && 
+      request.method === 'GET') {
+    return NextResponse.next();
+  }
+  
   // Basic auth check for admin routes (token verification happens in the API route)
   if (request.nextUrl.pathname.startsWith('/api/admin') && 
       !request.nextUrl.pathname.includes('/api/admin/auth')) {

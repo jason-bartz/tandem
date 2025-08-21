@@ -7,6 +7,7 @@ import StatsBar from './StatsBar';
 import ThemeToggle from './ThemeToggle';
 import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
+import ArchiveModal from './ArchiveModal';
 
 export default function PlayingScreen({
   puzzle,
@@ -18,29 +19,43 @@ export default function PlayingScreen({
   onUpdateAnswer,
   onCheckAnswers,
   theme,
-  toggleTheme
+  toggleTheme,
+  onSelectPuzzle,
+  hintsUsed,
+  onUseHint,
+  hasCheckedAnswers
 }) {
   const hasAnyInput = answers.some(answer => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  
+  const handleEnterPress = (index) => {
+    // Move to next input field
+    const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
+    const currentIndex = Array.from(inputs).findIndex(input => document.activeElement === input);
+    if (currentIndex < inputs.length - 1) {
+      inputs[currentIndex + 1].focus();
+    }
+  };
   
   return (
     <div className="animate-slide-up">
       {/* Control buttons positioned above the card */}
       <div className="flex justify-end gap-2 mb-4">
         <button
-          onClick={() => setShowRules(true)}
-          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
-          title="How to Play"
-        >
-          💡
-        </button>
-        <button
           onClick={() => setShowStats(true)}
           className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
+        </button>
+        <button
+          onClick={() => setShowArchive(true)}
+          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          title="Archive"
+        >
+          📅
         </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
@@ -51,7 +66,7 @@ export default function PlayingScreen({
         <div className="bg-gradient-to-r from-sky-500 to-teal-400 p-5 text-center">
           <div className="w-16 h-16 mx-auto mb-2 relative">
             <Image
-              src="/images/main-logo.webp"
+              src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/alt-logo.webp"}
               alt="Tandem Logo"
               width={64}
               height={64}
@@ -80,22 +95,41 @@ export default function PlayingScreen({
                 onChange={(value) => onUpdateAnswer(index, value)}
                 isCorrect={correctAnswers[index]}
                 index={index}
+                hasBeenChecked={hasCheckedAnswers}
+                onEnterPress={() => handleEnterPress(index)}
               />
             ))}
           </div>
 
-          <button
-            onClick={onCheckAnswers}
-            disabled={!hasAnyInput}
-            className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-          >
-            Check Answers
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={onCheckAnswers}
+              disabled={!hasAnyInput}
+              className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+            >
+              Check Answers
+            </button>
+            
+            {hintsUsed === 0 && solved < 4 && (
+              <button
+                onClick={onUseHint}
+                className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
+              >
+                <span className="text-xl">💡</span>
+                Use Hint (1 available)
+              </button>
+            )}
+          </div>
         </div>
       </div>
       
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <ArchiveModal 
+        isOpen={showArchive} 
+        onClose={() => setShowArchive(false)}
+        onSelectPuzzle={onSelectPuzzle}
+      />
     </div>
   );
 }

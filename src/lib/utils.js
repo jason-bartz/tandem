@@ -24,18 +24,26 @@ export function getPuzzleNumber(targetDate = null) {
 }
 
 export function getCurrentPuzzleInfo() {
+  // Get current date in ET timezone
+  const { toZonedTime } = require('date-fns-tz');
+  const etTimeZone = 'America/New_York';
   const now = new Date();
+  const etNow = toZonedTime(now, etTimeZone);
+  
   const options = { 
     weekday: 'long', 
     year: 'numeric', 
     month: 'long', 
-    day: 'numeric' 
+    day: 'numeric',
+    timeZone: 'America/New_York'
   };
   
+  const isoDate = `${etNow.getFullYear()}-${String(etNow.getMonth() + 1).padStart(2, '0')}-${String(etNow.getDate()).padStart(2, '0')}`;
+  
   return {
-    number: getPuzzleNumber(),
+    number: getPuzzleNumber(isoDate),
     date: now.toLocaleDateString('en-US', options),
-    isoDate: now.toISOString().split('T')[0],
+    isoDate: isoDate,
   };
 }
 
@@ -55,9 +63,14 @@ export function getPuzzleInfoForDate(date) {
   };
 }
 
-export function generateShareText(puzzleNumber, time, mistakes, results) {
+export function generateShareText(puzzleNumber, time, mistakes, results, hintsUsed = 0) {
   const resultEmojis = results.map(r => r ? '🟣🟠' : '⚪⚪').join('');
-  return `Tandem #${puzzleNumber}\n${resultEmojis}\nTime: ${time}\nMistakes: ${mistakes}/4\n\nPlay at tandem.game`;
+  let shareText = `Tandem #${puzzleNumber}\n${resultEmojis}\nTime: ${time}\nMistakes: ${mistakes}/4`;
+  if (hintsUsed > 0) {
+    shareText += `\n💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`;
+  }
+  shareText += '\n\nPlay at tandem.game';
+  return shareText;
 }
 
 export function debounce(func, wait) {

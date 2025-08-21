@@ -55,7 +55,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
             }
           }
         } catch (err) {
-          console.log(`Could not load puzzle for ${date}`);
+          // Could not load puzzle for this date
         }
       }
       
@@ -63,7 +63,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       puzzleList.sort((a, b) => b.date.localeCompare(a.date));
       setPuzzles(puzzleList);
     } catch (error) {
-      console.error('Error loading puzzles:', error);
+      // Error loading puzzles
     }
   };
 
