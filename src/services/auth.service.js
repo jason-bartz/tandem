@@ -1,9 +1,10 @@
 import { API_ENDPOINTS } from '@/lib/constants';
+import { getApiUrl } from '@/lib/api-helper';
 
 class AuthService {
   async login(username, password) {
     try {
-      const response = await fetch(API_ENDPOINTS.ADMIN_AUTH, {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_AUTH), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,7 +34,7 @@ class AuthService {
 
   async verifyToken(token) {
     try {
-      const response = await fetch(API_ENDPOINTS.ADMIN_AUTH, {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_AUTH), {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
