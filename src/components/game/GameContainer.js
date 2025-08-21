@@ -150,13 +150,13 @@ export default function GameContainer() {
             />
           )}
         </div>
-        
-        {/* Copyright notice */}
-        <div className="mt-8 text-center">
-          <p className="text-white/60 text-xs">
-            © 2025 Tandem
-          </p>
-        </div>
+      </div>
+      
+      {/* Copyright notice - positioned at bottom */}
+      <div className="fixed bottom-4 left-0 right-0 text-center pointer-events-none">
+        <p className="text-white/60 text-xs">
+          © 2025 Tandem
+        </p>
       </div>
     </div>
   );
