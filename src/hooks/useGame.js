@@ -346,7 +346,12 @@ export function useGame() {
       const randomIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
       
       const newAnswers = [...answers];
-      newAnswers[randomIndex] = puzzle.puzzles[randomIndex].answer;
+      // Only use the first answer if there are multiple (comma-separated)
+      const fullAnswer = puzzle.puzzles[randomIndex].answer;
+      const firstAnswer = fullAnswer.includes(',') 
+        ? fullAnswer.split(',')[0].trim() 
+        : fullAnswer;
+      newAnswers[randomIndex] = firstAnswer;
       setAnswers(newAnswers);
       
       const newCorrectAnswers = [...correctAnswers];
