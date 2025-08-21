@@ -15,8 +15,10 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, index, ha
       className="flex gap-3 items-center"
       style={{ animationDelay }}
     >
-      <div className="w-[70px] h-[70px] bg-light-sand dark:bg-gray-700 rounded-[18px] flex items-center justify-center text-3xl shadow-md transition-all hover:scale-105 hover:shadow-lg">
-        {emoji}
+      <div className="min-w-[80px] h-[70px] px-2 bg-light-sand dark:bg-gray-700 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg">
+        <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap shrink-0">
+          {emoji}
+        </span>
       </div>
       <input
         type="text"
