@@ -60,7 +60,7 @@ export default function AdminDashboard() {
         </nav>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 min-h-[500px]">
         {activeTab === 'calendar' && (
           <PuzzleCalendar 
             onEditPuzzle={(puzzle) => {
