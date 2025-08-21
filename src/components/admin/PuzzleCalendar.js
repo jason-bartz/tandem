@@ -156,7 +156,13 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
             )}
           </div>
           
-          <div className="flex space-x-2">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => setCurrentMonth(new Date())}
+              className="px-3 py-1 text-sm bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
+            >
+              Today
+            </button>
             <button
               onClick={handlePreviousMonth}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
