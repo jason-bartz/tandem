@@ -101,7 +101,7 @@ export default function GameContainer() {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      <div className="min-h-screen flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4 pb-12">
         <div className="w-full max-w-md">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
