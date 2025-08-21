@@ -16,6 +16,7 @@ export function useGame() {
   const [isArchiveGame, setIsArchiveGame] = useState(false);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
+  const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
 
   // Simple load puzzle on mount
   useEffect(() => {
@@ -58,6 +59,7 @@ export function useGame() {
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
+        setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
         return true;
@@ -66,6 +68,7 @@ export function useGame() {
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
+        setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
         return true;
@@ -91,6 +94,7 @@ export function useGame() {
     setSolved(0);
     setAnswers(['', '', '', '']);
     setCorrectAnswers([false, false, false, false]);
+    setCheckedWrongAnswers([false, false, false, false]);
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
@@ -103,7 +107,15 @@ export function useGame() {
       newAnswers[index] = sanitized;
       return newAnswers;
     });
-  }, []);
+    // Clear the wrong status when user starts typing again
+    if (checkedWrongAnswers[index]) {
+      setCheckedWrongAnswers(prev => {
+        const newCheckedWrong = [...prev];
+        newCheckedWrong[index] = false;
+        return newCheckedWrong;
+      });
+    }
+  }, [checkedWrongAnswers]);
 
   const checkAnswers = useCallback(() => {
     if (!puzzle || !puzzle.puzzles) {
@@ -115,6 +127,7 @@ export function useGame() {
     let newMistakes = 0;
     let newSolved = 0;
     const newCorrectAnswers = [...correctAnswers];
+    const newCheckedWrongAnswers = [...checkedWrongAnswers];
 
     puzzle.puzzles.forEach((p, i) => {
       if (correctAnswers[i]) {
@@ -126,14 +139,17 @@ export function useGame() {
       if (userAnswer) {
         if (userAnswer === p.answer.toUpperCase()) {
           newCorrectAnswers[i] = true;
+          newCheckedWrongAnswers[i] = false; // Clear wrong status if now correct
           newSolved++;
         } else {
           newMistakes++;
+          newCheckedWrongAnswers[i] = true; // Mark this specific answer as checked and wrong
         }
       }
     });
 
     setCorrectAnswers(newCorrectAnswers);
+    setCheckedWrongAnswers(newCheckedWrongAnswers);
     setMistakes(prev => prev + newMistakes);
     setSolved(newSolved);
 
@@ -147,7 +163,7 @@ export function useGame() {
       correct: newSolved - solved,
       incorrect: newMistakes,
     };
-  }, [puzzle, answers, correctAnswers, mistakes, solved]);
+  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved]);
 
   const completeGame = useCallback(async (won) => {
     setGameState(GAME_STATES.COMPLETE);
@@ -169,6 +185,7 @@ export function useGame() {
     setGameState(GAME_STATES.WELCOME);
     setAnswers(['', '', '', '']);
     setCorrectAnswers([false, false, false, false]);
+    setCheckedWrongAnswers([false, false, false, false]);
     setMistakes(0);
     setSolved(0);
     setError(null);
@@ -216,6 +233,7 @@ export function useGame() {
     puzzle,
     answers,
     correctAnswers,
+    checkedWrongAnswers,
     mistakes,
     solved,
     loading,

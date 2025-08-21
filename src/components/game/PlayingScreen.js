@@ -13,6 +13,7 @@ export default function PlayingScreen({
   puzzle,
   answers,
   correctAnswers,
+  checkedWrongAnswers,
   mistakes,
   solved,
   time,
@@ -106,8 +107,8 @@ export default function PlayingScreen({
                 value={answers[index]}
                 onChange={(value) => onUpdateAnswer(index, value)}
                 isCorrect={correctAnswers[index]}
+                isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
                 index={index}
-                hasBeenChecked={hasCheckedAnswers}
                 onEnterPress={() => handleEnterPress(index)}
               />
             ))}

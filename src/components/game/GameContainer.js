@@ -118,6 +118,7 @@ export default function GameContainer() {
               puzzle={game.puzzle}
               answers={game.answers}
               correctAnswers={game.correctAnswers}
+              checkedWrongAnswers={game.checkedWrongAnswers}
               mistakes={game.mistakes}
               solved={game.solved}
               time={timer.elapsed}
