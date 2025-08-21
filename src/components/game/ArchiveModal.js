@@ -19,6 +19,9 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   const loadAvailablePuzzles = async () => {
     try {
+      // Get game history first
+      const gameHistory = getGameHistory();
+      
       // Get today's date
       const today = new Date();
       today.setHours(0, 0, 0, 0);
@@ -43,14 +46,18 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           if (response.ok) {
             const data = await response.json();
             if (data.puzzle) {
-              const isCompleted = history[date]?.completed || false;
+              const historyData = gameHistory[date] || {};
               puzzleList.push({
                 date,
                 // Always show theme
                 theme: data.puzzle.theme,
-                completed: isCompleted,
-                time: history[date]?.time,
-                mistakes: history[date]?.mistakes,
+                completed: historyData.completed || false,
+                failed: historyData.failed || false,
+                attempted: historyData.attempted || false,
+                status: historyData.status || 'not_played',
+                time: historyData.time,
+                mistakes: historyData.mistakes,
+                solved: historyData.solved,
                 puzzleNumber: data.puzzleNumber
               });
             }
@@ -127,24 +134,73 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  {puzzle.completed ? (
-                    <div className="text-green-500 text-xl">
-                      ✓
-                    </div>
-                  ) : (
-                    <div className="text-gray-400 text-xl">
-                      ○
+                  {puzzle.status === 'completed' && (
+                    <div className="flex items-center gap-1">
+                      <div className="text-green-500 text-xl" title="Completed">
+                        ✓
+                      </div>
+                      {puzzle.solved && (
+                        <div className="text-xs text-green-600 dark:text-green-400">
+                          {puzzle.solved}/4
+                        </div>
+                      )}
                     </div>
                   )}
-                  {puzzle.time && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400">
-                      {puzzle.time}
+                  {puzzle.status === 'failed' && (
+                    <div className="flex items-center gap-1">
+                      <div className="text-red-500 text-xl" title="Failed">
+                        ✗
+                      </div>
+                      {puzzle.solved && (
+                        <div className="text-xs text-red-600 dark:text-red-400">
+                          {puzzle.solved}/4
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {puzzle.status === 'attempted' && (
+                    <div className="flex items-center gap-1">
+                      <div className="text-yellow-500 text-xl" title="In Progress">
+                        ◐
+                      </div>
+                      {puzzle.solved > 0 && (
+                        <div className="text-xs text-yellow-600 dark:text-yellow-400">
+                          {puzzle.solved}/4
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  {puzzle.status === 'not_played' && (
+                    <div className="text-gray-400 text-xl" title="Not Played">
+                      ○
                     </div>
                   )}
                 </div>
               </div>
             </button>
           ))}
+        </div>
+        
+        {/* Legend for status indicators */}
+        <div className="mt-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="text-green-500">✓</span>
+              <span className="text-gray-600 dark:text-gray-400">Completed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-red-500">✗</span>
+              <span className="text-gray-600 dark:text-gray-400">Failed</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-yellow-500">◐</span>
+              <span className="text-gray-600 dark:text-gray-400">In Progress</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-400">○</span>
+              <span className="text-gray-600 dark:text-gray-400">Not Played</span>
+            </div>
+          </div>
         </div>
         
         <button

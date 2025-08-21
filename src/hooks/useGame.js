@@ -3,6 +3,7 @@ import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
 import { sanitizeInput } from '@/lib/utils';
+import { savePuzzleProgress, savePuzzleResult } from '@/lib/storage';
 
 export function useGame() {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -14,6 +15,7 @@ export function useGame() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isArchiveGame, setIsArchiveGame] = useState(false);
+  const [currentPuzzleDate, setCurrentPuzzleDate] = useState(null);
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
   const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
@@ -22,6 +24,10 @@ export function useGame() {
   useEffect(() => {
     async function loadPuzzle() {
       try {
+        // Set today's date as the current puzzle date
+        const today = new Date().toISOString().split('T')[0];
+        setCurrentPuzzleDate(today);
+        
         const response = await puzzleService.getPuzzle();
         
         if (response && response.puzzle) {
@@ -51,6 +57,10 @@ export function useGame() {
       // Check if this is an archive game (has a specific date)
       const isArchive = date !== null;
       setIsArchiveGame(isArchive);
+      
+      // Set the current puzzle date (use today if not specified)
+      const puzzleDate = date || new Date().toISOString().split('T')[0];
+      setCurrentPuzzleDate(puzzleDate);
       
       const response = await puzzleService.getPuzzle(date);
       
@@ -98,7 +108,17 @@ export function useGame() {
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
-  }, [puzzle]);
+    
+    // Save initial progress to mark as attempted
+    if (currentPuzzleDate) {
+      savePuzzleProgress(currentPuzzleDate, {
+        started: true,
+        solved: 0,
+        mistakes: 0,
+        hintsUsed: 0
+      });
+    }
+  }, [puzzle, currentPuzzleDate]);
 
   const updateAnswer = useCallback((index, value) => {
     const sanitized = sanitizeInput(value);
@@ -153,6 +173,16 @@ export function useGame() {
     setMistakes(prev => prev + newMistakes);
     setSolved(newSolved);
 
+    // Save progress after checking answers
+    if (currentPuzzleDate) {
+      savePuzzleProgress(currentPuzzleDate, {
+        started: true,
+        solved: newSolved,
+        mistakes: mistakes + newMistakes,
+        hintsUsed
+      });
+    }
+
     if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
       completeGame(true);
     } else if (mistakes + newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
@@ -163,10 +193,21 @@ export function useGame() {
       correct: newSolved - solved,
       incorrect: newMistakes,
     };
-  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved]);
+  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
 
   const completeGame = useCallback(async (won) => {
     setGameState(GAME_STATES.COMPLETE);
+    
+    // Save the final result
+    if (currentPuzzleDate) {
+      savePuzzleResult(currentPuzzleDate, {
+        won,
+        mistakes,
+        solved,
+        hintsUsed,
+        time: null // Could add time tracking if needed
+      });
+    }
     
     try {
       await statsService.updateStats({
@@ -179,7 +220,7 @@ export function useGame() {
     } catch (err) {
       // Silently fail saving stats
     }
-  }, [mistakes, solved, hintsUsed, isArchiveGame]);
+  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);

@@ -52,6 +52,32 @@ export function saveTodayResult(result) {
   }
 }
 
+export function savePuzzleResult(date, result) {
+  if (typeof window !== 'undefined') {
+    const dateObj = new Date(date + 'T00:00:00');
+    const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+    localStorage.setItem(key, JSON.stringify({
+      ...result,
+      timestamp: new Date().toISOString()
+    }));
+  }
+}
+
+export function savePuzzleProgress(date, progress) {
+  if (typeof window !== 'undefined') {
+    const dateObj = new Date(date + 'T00:00:00');
+    const key = `tandem_progress_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+    const existing = localStorage.getItem(key);
+    const existingData = existing ? JSON.parse(existing) : {};
+    
+    localStorage.setItem(key, JSON.stringify({
+      ...existingData,
+      ...progress,
+      lastUpdated: new Date().toISOString()
+    }));
+  }
+}
+
 export function getTodayResult() {
   if (typeof window === 'undefined') return null;
   const result = localStorage.getItem(getTodayKey());
@@ -90,16 +116,41 @@ export function getGameHistory() {
   keys.forEach(key => {
     if (key.startsWith('tandem_')) {
       const parts = key.split('_');
-      if (parts.length === 4) {
+      
+      // Handle completed/failed games
+      if (parts.length === 4 && parts[0] === 'tandem' && parts[1] !== 'progress') {
         const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
         const data = localStorage.getItem(key);
         if (data) {
           const parsed = JSON.parse(data);
           history[date] = {
+            ...history[date],
             completed: parsed.won || false,
+            failed: parsed.won === false, // Explicitly failed
             time: parsed.time,
-            mistakes: parsed.mistakes
+            mistakes: parsed.mistakes,
+            status: parsed.won ? 'completed' : 'failed'
           };
+        }
+      }
+      
+      // Handle in-progress/attempted games
+      if (parts[1] === 'progress' && parts.length === 5) {
+        const date = `${parts[2]}-${parts[3].padStart(2, '0')}-${parts[4].padStart(2, '0')}`;
+        const data = localStorage.getItem(key);
+        if (data) {
+          const parsed = JSON.parse(data);
+          // Only mark as attempted if there's no completion record
+          if (!history[date] || !history[date].status) {
+            history[date] = {
+              ...history[date],
+              attempted: true,
+              status: 'attempted',
+              lastPlayed: parsed.lastUpdated,
+              solved: parsed.solved || 0,
+              mistakes: parsed.mistakes || 0
+            };
+          }
         }
       }
     }
