@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1200" height="600" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bgGradientTw" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6B46C1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8B5CF6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="600" fill="url(#bgGradientTw)"/>
+  
+  <!-- Content -->
+  <circle cx="600" cy="180" r="50" fill="white" opacity="0.9"/>
+  <text x="600" y="195" font-family="Arial, sans-serif" font-size="40" font-weight="bold" text-anchor="middle" fill="#6B46C1">T</text>
+  
+  <text x="600" y="280" font-family="Arial, sans-serif" font-size="56" font-weight="bold" text-anchor="middle" fill="white">TANDEM</text>
+  <text x="600" y="340" font-family="Arial, sans-serif" font-size="24" text-anchor="middle" fill="white" opacity="0.9">Match Emojis to Words Daily!</text>
+  
+  <!-- Emoji row -->
+  <text x="450" y="420" font-family="Arial, sans-serif" font-size="40" text-anchor="middle">🎮</text>
+  <text x="525" y="420" font-family="Arial, sans-serif" font-size="40" text-anchor="middle">🧩</text>
+  <text x="600" y="420" font-family="Arial, sans-serif" font-size="40" text-anchor="middle">🎯</text>
+  <text x="675" y="420" font-family="Arial, sans-serif" font-size="40" text-anchor="middle">🏆</text>
+  <text x="750" y="420" font-family="Arial, sans-serif" font-size="40" text-anchor="middle">💡</text>
+  
+  <!-- CTA -->
+  <rect x="500" y="470" width="200" height="50" rx="25" fill="white"/>
+  <text x="600" y="502" font-family="Arial, sans-serif" font-size="20" font-weight="bold" text-anchor="middle" fill="#6B46C1">Play Now</text>
+  
+  <text x="600" y="560" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" fill="white" opacity="0.7">tandem.game</text>
+</svg>
