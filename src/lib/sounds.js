@@ -119,3 +119,57 @@ export function playErrorSound() {
   oscillator.start(context.currentTime);
   oscillator.stop(context.currentTime + 0.15);
 }
+
+// Play a calm, welcoming sound when starting the game
+export function playStartSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+  
+  // Create a gentle two-note chime (C5 and G5)
+  const notes = [
+    { freq: 523.25, start: 0, duration: 0.4 },      // C5
+    { freq: 783.99, start: 0.2, duration: 0.4 },    // G5 (perfect fifth)
+  ];
+  
+  notes.forEach(({ freq, start, duration }) => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+    
+    // Use sine wave for a soft, calm tone
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(freq, currentTime + start);
+    
+    // Gentle envelope with soft attack and long release
+    gainNode.gain.setValueAtTime(0, currentTime + start);
+    gainNode.gain.linearRampToValueAtTime(0.12, currentTime + start + 0.05); // Soft attack
+    gainNode.gain.setValueAtTime(0.12, currentTime + start + 0.15); // Brief sustain
+    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration); // Gentle release
+    
+    // Connect and play
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+    
+    oscillator.start(currentTime + start);
+    oscillator.stop(currentTime + start + duration);
+  });
+  
+  // Add a subtle low harmonic for warmth
+  const bass = context.createOscillator();
+  const bassGain = context.createGain();
+  
+  bass.type = 'sine';
+  bass.frequency.setValueAtTime(130.81, currentTime); // C3 (two octaves below)
+  
+  bassGain.gain.setValueAtTime(0, currentTime);
+  bassGain.gain.linearRampToValueAtTime(0.05, currentTime + 0.1);
+  bassGain.gain.setValueAtTime(0.05, currentTime + 0.3);
+  bassGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.6);
+  
+  bass.connect(bassGain);
+  bassGain.connect(context.destination);
+  
+  bass.start(currentTime);
+  bass.stop(currentTime + 0.6);
+}
