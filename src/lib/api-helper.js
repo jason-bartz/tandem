@@ -1,11 +1,6 @@
 // Helper to get the correct API base URL
-// Handles custom domain redirect issues
+// For now, always use relative paths to avoid CORS issues
 export function getApiUrl(endpoint) {
-  // If we're on the custom domain, use the Vercel deployment URL for API calls
-  if (typeof window !== 'undefined' && window.location.hostname === 'www.tandemdaily.com') {
-    return `https://tandem-jasons-projects-3cdf6ae5.vercel.app${endpoint}`;
-  }
-  
-  // Otherwise use relative path
+  // Always use relative path - the custom domain should proxy to Vercel
   return endpoint;
 }
