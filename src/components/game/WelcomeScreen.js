@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
+import { playStartSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
@@ -10,6 +11,15 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+
+  const handlePlayClick = () => {
+    try {
+      playStartSound();
+    } catch (e) {
+      // Sound might fail on some browsers
+    }
+    onStart();
+  };
 
   return (
     <div className="animate-fade-in">
@@ -82,7 +92,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         </div>
         
         <button
-          onClick={onStart}
+          onClick={handlePlayClick}
           disabled={!puzzle}
           className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
