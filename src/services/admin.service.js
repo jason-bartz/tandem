@@ -18,12 +18,13 @@ class AdminService {
         body: JSON.stringify({ date, puzzle }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        console.error('Save puzzle failed:', response.status, response.statusText);
-        return { success: false, error: `Server error: ${response.status}` };
+        console.error('Save puzzle failed:', response.status, response.statusText, data);
+        return { success: false, error: data.error || `Server error: ${response.status}` };
       }
 
-      const data = await response.json();
       return data;
     } catch (error) {
       console.error('AdminService.savePuzzle error:', error);
