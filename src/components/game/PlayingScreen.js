@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { formatTime } from '@/lib/utils';
+import { playHintSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
 import ThemeToggle from './ThemeToggle';
@@ -39,6 +40,15 @@ export default function PlayingScreen({
     if (currentIndex < inputs.length - 1) {
       inputs[currentIndex + 1].focus();
     }
+  };
+  
+  const handleUseHint = () => {
+    try {
+      playHintSound();
+    } catch (e) {
+      // Sound might fail on some browsers
+    }
+    onUseHint();
   };
   
   return (
@@ -130,7 +140,7 @@ export default function PlayingScreen({
             
             {hintsUsed === 0 && solved < 4 && (
               <button
-                onClick={onUseHint}
+                onClick={handleUseHint}
                 className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
               >
                 <span className="text-xl">💡</span>
