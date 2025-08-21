@@ -1,0 +1,48 @@
+# Tandem Game Robots.txt
+# https://tandem.game
+
+# Allow all web crawlers
+User-agent: *
+Allow: /
+Disallow: /api/admin/
+Disallow: /admin/
+
+# Specific crawler optimizations
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
+
+User-agent: DuckDuckBot
+Allow: /
+Crawl-delay: 1
+
+# Block bad bots
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+# Sitemap location
+Sitemap: https://tandem.game/sitemap.xml
+Sitemap: https://tandem.game/sitemap-puzzles.xml
+
+# Cache-Control for crawlers
+# Tell crawlers to revisit daily for new puzzles
+Crawl-delay: 0
+Visit-time: 0001-0600
+Request-rate: 1/10
