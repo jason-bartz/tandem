@@ -94,7 +94,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full w-full">
       <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-medium text-gray-900 dark:text-white">
@@ -121,15 +121,15 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
         <div className="p-8 text-center text-gray-500">Loading puzzles...</div>
       ) : (
         <div className="p-6">
-          <div className="grid grid-cols-7 gap-2 mb-2">
+          <div className="grid grid-cols-7 gap-2 mb-2" style={{ minWidth: '700px' }}>
             {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">
+              <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 w-24">
                 {day}
               </div>
             ))}
           </div>
           
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-2" style={{ minWidth: '700px' }}>
             {getDaysInMonth().map((day, index) => {
               const puzzle = getPuzzleForDay(day);
               const dateStr = day ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
@@ -139,7 +139,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
                 <div
                   key={index}
                   className={`
-                    min-h-[80px] p-2 rounded-lg border
+                    h-24 w-24 p-2 rounded-lg border
                     ${day ? 'cursor-pointer hover:border-plum' : ''}
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}

@@ -46,7 +46,7 @@ export default function StatsOverview() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full" style={{ minWidth: '700px' }}>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Views" value={stats.views} />
         <StatCard title="Games Played" value={stats.played} />
