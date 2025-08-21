@@ -133,6 +133,21 @@ export async function getPuzzlesRange(startDate, endDate) {
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
       
+      // First try to load from JSON file (same as getPuzzleForDate)
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${dateStr}.json`);
+        if (fs.existsSync(puzzleFile)) {
+          const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
+          puzzles[dateStr] = puzzleData;
+          continue;
+        }
+      } catch (fileError) {
+        // File doesn't exist, continue to database check
+      }
+      
+      // Then check database
       if (redis) {
         const puzzleData = await redis.get(`puzzle:${dateStr}`);
         if (puzzleData) {
