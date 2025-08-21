@@ -1,12 +1,13 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { formatTime, generateShareText, getCurrentPuzzleInfo } from '@/lib/utils';
+import confetti from 'canvas-confetti';
+import { formatTime, getCurrentPuzzleInfo } from '@/lib/utils';
+import { playSuccessSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
-import html2canvas from 'html2canvas';
 
 export default function CompleteScreen({
   won,
@@ -25,47 +26,51 @@ export default function CompleteScreen({
   const [showArchive, setShowArchive] = useState(false);
   const puzzleInfo = getCurrentPuzzleInfo();
 
-  const shareResults = async () => {
-    // First generate and download the image
-    const element = document.getElementById('share-content');
-    if (!element) return;
-
-    try {
-      const canvas = await html2canvas(element, {
-        backgroundColor: theme === 'dark' ? '#111827' : '#ffffff',
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight
-      });
+  useEffect(() => {
+    if (won) {
+      // Play success sound
+      try {
+        playSuccessSound();
+      } catch (e) {
+        // Sound might fail on some browsers
+      }
       
-      canvas.toBlob(async (blob) => {
-        if (!blob) return;
+      // Trigger confetti with sky/teal theme colors
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function() {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
         
-        // Always download the image
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `tandem-puzzle-${puzzleInfo.number}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-        
-        // Also copy text to clipboard
-        const shareText = generateShareText(
-          puzzleInfo.number,
-          formatTime(time),
-          mistakes,
-          correctAnswers,
-          hintsUsed
-        );
-        navigator.clipboard.writeText(shareText);
-      });
-    } catch (err) {
-      // Failed to generate image
+        // Sky and teal colored confetti
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4']
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4']
+        });
+      }, 250);
+
+      return () => clearInterval(interval);
     }
-  };
+  }, [won]);
 
 
   return (
@@ -91,8 +96,7 @@ export default function CompleteScreen({
 
       {/* Main completion card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
-        {/* Content for sharing (without buttons) - add padding and background */}
-        <div id="share-content" className="p-8 -m-10 mb-6 bg-white dark:bg-gray-900">
+        <div>
           <div className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center">
             <Image
               src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/main-logo.webp"}
@@ -112,13 +116,13 @@ export default function CompleteScreen({
           </p>
 
           {puzzleTheme && (
-            <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6 mx-4">
+            <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6">
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
             </div>
           )}
 
-          <div className="grid grid-cols-3 gap-4 mb-6 px-4">
+          <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
                 {formatTime(time)}
@@ -140,7 +144,7 @@ export default function CompleteScreen({
           </div>
           
           {hintsUsed > 0 && (
-            <div className="text-sm text-gray-600 dark:text-gray-400 pb-4">
+            <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
             </div>
           )}
@@ -148,14 +152,8 @@ export default function CompleteScreen({
 
         <div className="space-y-3 mb-6">
           <button
-            onClick={shareResults}
-            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
-          >
-            Share Results
-          </button>
-          <button
             onClick={() => setShowArchive(true)}
-            className="w-full py-3 px-4 bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 rounded-xl font-semibold hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
             Play from Archive
           </button>
