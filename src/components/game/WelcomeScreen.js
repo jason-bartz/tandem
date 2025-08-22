@@ -67,29 +67,23 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
             How to Play
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
-                👀
-              </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm">Look at each emoji pair</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
-                💭
-              </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm">Guess what they represent</span>
-            </div>
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="flex items-start">
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 🎯
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm">Use the theme to guide your answers</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">Use the theme to guide your answers</span>
             </div>
-            <div className="flex items-center">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl">
+            <div className="flex items-start">
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
+                ✌️
+              </div>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">Each emoji pair = one word</span>
+            </div>
+            <div className="flex items-start">
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 ✅
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm">4 mistakes allowed</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">4 mistakes allowed</span>
             </div>
           </div>
         </div>
