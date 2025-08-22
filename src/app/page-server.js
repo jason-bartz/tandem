@@ -28,7 +28,7 @@ async function getTodaysPuzzle() {
   }
 }
 
-export default async function Home() {
+export default async function HomePage() {
   const initialPuzzleData = await getTodaysPuzzle();
   
   return <GameContainerClient initialPuzzleData={initialPuzzleData} />;
