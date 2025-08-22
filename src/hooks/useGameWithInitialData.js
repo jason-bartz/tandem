@@ -177,6 +177,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     
     if (currentPuzzleDate) {
       savePuzzleResult(currentPuzzleDate, {
+        won: won,
         completed: won,
         failed: !won,
         status: won ? 'completed' : 'failed',

@@ -11,35 +11,18 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   useEffect(() => {
     if (isOpen) {
+      // Reset state first
+      setPuzzles([]);
+      setIsLoading(true);
+      
       // Always get fresh game history when modal opens
       const gameHistory = getGameHistory();
       setHistory(gameHistory);
       
-      // Check for cached data first
-      const cachedPuzzles = getCachedData();
-      if (cachedPuzzles) {
-        // Update cached puzzles with fresh game history
-        const updatedPuzzles = cachedPuzzles.map(puzzle => {
-          const historyData = gameHistory[puzzle.date] || {};
-          return {
-            ...puzzle,
-            completed: historyData.completed || false,
-            failed: historyData.failed || false,
-            attempted: historyData.attempted || false,
-            status: historyData.status || 'not_played',
-            time: historyData.time,
-            mistakes: historyData.mistakes,
-            solved: historyData.solved
-          };
-        });
-        setPuzzles(updatedPuzzles);
-        setIsLoading(false);
-      } else {
-        // Load available puzzles
-        loadAvailablePuzzles();
-      }
+      // Always reload puzzles to ensure fresh data
+      loadAvailablePuzzles();
     }
-  }, [isOpen]); // Removed getCachedData from deps to force refresh
+  }, [isOpen]); // Force refresh every time modal opens
 
   const loadAvailablePuzzles = async () => {
     setIsLoading(true);
