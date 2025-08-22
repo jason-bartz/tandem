@@ -1,9 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import statsService from '@/services/stats.service';
 import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
-import { savePuzzleProgress, savePuzzleResult } from '@/lib/storage';
+import { savePuzzleProgress, savePuzzleResult, updateGameStats, hasPlayedToday } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 
 export function useGameWithInitialData(initialPuzzleData) {
@@ -157,6 +156,13 @@ export function useGameWithInitialData(initialPuzzleData) {
       playFailureSound();
     }
     
+    // Check if this is the first attempt for today's puzzle
+    const today = new Date().toISOString().split('T')[0];
+    const isFirstAttempt = !isArchiveGame && currentPuzzleDate === today && !hasPlayedToday();
+    
+    // Update stats with proper parameters
+    updateGameStats(won, isFirstAttempt, isArchiveGame);
+    
     if (!isArchiveGame) {
       try {
         await puzzleService.submitCompletion({
@@ -164,8 +170,6 @@ export function useGameWithInitialData(initialPuzzleData) {
           time: 0,
           mistakes: mistakes
         });
-        
-        await statsService.recordCompletion(won, mistakes);
       } catch (err) {
         console.error('Failed to submit completion:', err);
       }
@@ -227,7 +231,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.QUESTIONS_PER_PUZZLE };
     } else {
       setMistakes(prev => {
-        const newMistakes = prev + 1;
+        const newMistakes = Math.min(prev + 1, GAME_CONFIG.MAX_MISTAKES);
         
         if (currentPuzzleDate) {
           savePuzzleProgress(currentPuzzleDate, {
@@ -301,7 +305,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     
     if (incorrect > 0) {
       setMistakes(prev => {
-        const newMistakes = prev + incorrect;
+        const newMistakes = Math.min(prev + incorrect, GAME_CONFIG.MAX_MISTAKES);
         
         if (currentPuzzleDate) {
           savePuzzleProgress(currentPuzzleDate, {
@@ -326,29 +330,54 @@ export function useGameWithInitialData(initialPuzzleData) {
       return false;
     }
     
-    const answer = puzzle.puzzles[index].answer;
-    const currentAnswer = answers[index] || '';
+    // Get the correct answer (use first if multiple)
+    const puzzleItem = puzzle.puzzles[index];
+    let answer = puzzleItem.answer;
     
-    let hintAnswer = '';
-    if (currentAnswer.length === 0) {
-      hintAnswer = answer[0];
-    } else if (currentAnswer.length < answer.length) {
-      hintAnswer = answer.substring(0, currentAnswer.length + 1);
-    } else {
-      hintAnswer = answer;
+    // If answer has multiple options separated by comma, use the first one
+    if (answer.includes(',')) {
+      answer = answer.split(',')[0].trim();
     }
     
+    // Fill in the complete answer
     setAnswers(prev => {
       const newAnswers = [...prev];
-      newAnswers[index] = hintAnswer;
+      newAnswers[index] = answer;
       return newAnswers;
     });
     
+    // Mark this answer as correct
+    setCorrectAnswers(prev => {
+      const newCorrect = [...prev];
+      newCorrect[index] = true;
+      return newCorrect;
+    });
+    
+    // Clear wrong status if it was set
+    setCheckedWrongAnswers(prev => {
+      const newCheckedWrong = [...prev];
+      newCheckedWrong[index] = false;
+      return newCheckedWrong;
+    });
+    
+    // Increment solved count
+    setSolved(prev => {
+      const newSolved = prev + 1;
+      
+      // Check if game is complete
+      if (newSolved === GAME_CONFIG.QUESTIONS_PER_PUZZLE) {
+        completeGame(true);
+      }
+      
+      return newSolved;
+    });
+    
+    // Track hint usage
     setHintsUsed(prev => {
       const newHintsUsed = prev + 1;
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
-          solved: solved,
+          solved: solved + 1,
           mistakes: mistakes,
           hintsUsed: newHintsUsed
         });
@@ -357,7 +386,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     });
     
     return true;
-  }, [answers, correctAnswers, puzzle, solved, mistakes, currentPuzzleDate]);
+  }, [correctAnswers, puzzle, solved, mistakes, currentPuzzleDate, completeGame]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
