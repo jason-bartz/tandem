@@ -86,297 +86,297 @@
     },
     {
       "date": "2025-08-23",
-      "theme": "Things That Fly",
+      "theme": "Things That Erode",
       "emojiPairs": [
-        "✈️🛫",
-        "🦅🪶",
-        "🚁🔄",
-        "🪁🧵"
+        "🏖️🌊",
+        "🤝💔",
+        "⛰️💨",
+        "💵📉"
       ],
       "words": [
-        "PLANE",
-        "BIRD",
-        "HELICOPTER",
-        "KITE"
+        "BEACH",
+        "TRUST",
+        "MOUNTAIN",
+        "VALUE"
       ],
       "correctAnswers": [
-        "PLANE",
-        "BIRD",
-        "HELICOPTER",
-        "KITE"
+        "BEACH",
+        "TRUST",
+        "MOUNTAIN",
+        "VALUE"
       ],
       "puzzles": [
         {
-          "emoji": "✈️🛫",
-          "answer": "PLANE"
+          "emoji": "🏖️🌊",
+          "answer": "BEACH"
         },
         {
-          "emoji": "🦅🪶",
-          "answer": "BIRD"
+          "emoji": "🤝💔",
+          "answer": "TRUST"
         },
         {
-          "emoji": "🚁🔄",
-          "answer": "HELICOPTER"
+          "emoji": "⛰️💨",
+          "answer": "MOUNTAIN"
         },
         {
-          "emoji": "🪁🧵",
-          "answer": "KITE"
+          "emoji": "💵📉",
+          "answer": "VALUE"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.681Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-24",
-      "theme": "School Subjects",
+      "theme": "Types of Anchors",
       "emojiPairs": [
-        "🔬🧪",
-        "➕➖",
-        "🌍🗺️",
-        "🎨🖌️"
+        "⚓🚢",
+        "📺📰",
+        "👨‍👩‍👧💕",
+        "🏃🏁"
       ],
       "words": [
-        "SCIENCE",
-        "MATH",
-        "GEOGRAPHY",
-        "ART"
+        "SHIP",
+        "NEWS",
+        "FAMILY",
+        "RELAY"
       ],
       "correctAnswers": [
-        "SCIENCE",
-        "MATH",
-        "GEOGRAPHY",
-        "ART"
+        "SHIP",
+        "NEWS",
+        "FAMILY",
+        "RELAY"
       ],
       "puzzles": [
         {
-          "emoji": "🔬🧪",
-          "answer": "SCIENCE"
+          "emoji": "⚓🚢",
+          "answer": "SHIP"
         },
         {
-          "emoji": "➕➖",
-          "answer": "MATH"
+          "emoji": "📺📰",
+          "answer": "NEWS"
         },
         {
-          "emoji": "🌍🗺️",
-          "answer": "GEOGRAPHY"
+          "emoji": "👨‍👩‍👧💕",
+          "answer": "FAMILY"
         },
         {
-          "emoji": "🎨🖌️",
-          "answer": "ART"
+          "emoji": "🏃🏁",
+          "answer": "RELAY"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-25",
-      "theme": "Things You Wear",
+      "theme": "Forms of Resistance",
       "emojiPairs": [
-        "👓📖",
-        "⌚⏰",
-        "👔💼",
-        "🧤❄️"
+        "💨🏢",
+        "💪🦠",
+        "✊📢",
+        "💧🧥"
       ],
       "words": [
-        "GLASSES",
-        "WATCH",
-        "TIE",
-        "GLOVES"
+        "WIND",
+        "IMMUNE",
+        "PROTEST",
+        "WATER"
       ],
       "correctAnswers": [
-        "GLASSES",
-        "WATCH",
-        "TIE",
-        "GLOVES"
+        "WIND",
+        "IMMUNE",
+        "PROTEST",
+        "WATER"
       ],
       "puzzles": [
         {
-          "emoji": "👓📖",
-          "answer": "GLASSES"
+          "emoji": "💨🏢",
+          "answer": "WIND"
         },
         {
-          "emoji": "⌚⏰",
-          "answer": "WATCH"
+          "emoji": "💪🦠",
+          "answer": "IMMUNE"
         },
         {
-          "emoji": "👔💼",
-          "answer": "TIE"
+          "emoji": "✊📢",
+          "answer": "PROTEST"
         },
         {
-          "emoji": "🧤❄️",
-          "answer": "GLOVES"
+          "emoji": "💧🧥",
+          "answer": "WATER"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-26",
-      "theme": "Desserts",
+      "theme": "Types of Signatures",
       "emojiPairs": [
-        "🍦🍨",
-        "🍪🥛",
-        "🥧🍎",
-        "🍩☕"
+        "✍️📄",
+        "🎵🎶",
+        "👃🌹",
+        "🔬🧬"
       ],
       "words": [
-        "ICECREAM",
-        "COOKIE",
-        "PIE",
-        "DONUT"
+        "WRITTEN",
+        "MUSICAL",
+        "SCENT",
+        "GENETIC"
       ],
       "correctAnswers": [
-        "ICECREAM",
-        "COOKIE",
-        "PIE",
-        "DONUT"
+        "WRITTEN",
+        "MUSICAL",
+        "SCENT",
+        "GENETIC"
       ],
       "puzzles": [
         {
-          "emoji": "🍦🍨",
-          "answer": "ICECREAM"
+          "emoji": "✍️📄",
+          "answer": "WRITTEN"
         },
         {
-          "emoji": "🍪🥛",
-          "answer": "COOKIE"
+          "emoji": "🎵🎶",
+          "answer": "MUSICAL"
         },
         {
-          "emoji": "🥧🍎",
-          "answer": "PIE"
+          "emoji": "👃🌹",
+          "answer": "SCENT"
         },
         {
-          "emoji": "🍩☕",
-          "answer": "DONUT"
+          "emoji": "🔬🧬",
+          "answer": "GENETIC"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-27",
-      "theme": "Things at the Beach",
+      "theme": "Things That Fluctuate",
       "emojiPairs": [
-        "🏖️☂️",
-        "🌊🏄",
-        "🐚🦀",
-        "🏰👶"
+        "📈📉",
+        "😊😢",
+        "🌡️☀️",
+        "⚖️📊"
       ],
       "words": [
-        "UMBRELLA",
-        "WAVES",
-        "SHELLS",
-        "SANDCASTLE"
+        "STOCKS",
+        "MOOD",
+        "TEMPERATURE",
+        "WEIGHT"
       ],
       "correctAnswers": [
-        "UMBRELLA",
-        "WAVES",
-        "SHELLS",
-        "SANDCASTLE"
+        "STOCKS",
+        "MOOD",
+        "TEMPERATURE",
+        "WEIGHT"
       ],
       "puzzles": [
         {
-          "emoji": "🏖️☂️",
-          "answer": "UMBRELLA"
+          "emoji": "📈📉",
+          "answer": "STOCKS"
         },
         {
-          "emoji": "🌊🏄",
-          "answer": "WAVES"
+          "emoji": "😊😢",
+          "answer": "MOOD"
         },
         {
-          "emoji": "🐚🦀",
-          "answer": "SHELLS"
+          "emoji": "🌡️☀️",
+          "answer": "TEMPERATURE"
         },
         {
-          "emoji": "🏰👶",
-          "answer": "SANDCASTLE"
+          "emoji": "⚖️📊",
+          "answer": "WEIGHT"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-28",
-      "theme": "Musical Instruments",
+      "theme": "Forms of Leverage",
       "emojiPairs": [
-        "🎹🎵",
-        "🥁🎶",
-        "🎸🤘",
-        "🎺📯"
+        "🏗️🔧",
+        "💼🤝",
+        "💰🏦",
+        "🤐🔐"
       ],
       "words": [
-        "PIANO",
-        "DRUMS",
-        "GUITAR",
-        "TRUMPET"
+        "CROWBAR",
+        "INFLUENCE",
+        "DEBT",
+        "BLACKMAIL"
       ],
       "correctAnswers": [
-        "PIANO",
-        "DRUMS",
-        "GUITAR",
-        "TRUMPET"
+        "CROWBAR",
+        "INFLUENCE",
+        "DEBT",
+        "BLACKMAIL"
       ],
       "puzzles": [
         {
-          "emoji": "🎹🎵",
-          "answer": "PIANO"
+          "emoji": "🏗️🔧",
+          "answer": "CROWBAR"
         },
         {
-          "emoji": "🥁🎶",
-          "answer": "DRUMS"
+          "emoji": "💼🤝",
+          "answer": "INFLUENCE"
         },
         {
-          "emoji": "🎸🤘",
-          "answer": "GUITAR"
+          "emoji": "💰🏦",
+          "answer": "DEBT"
         },
         {
-          "emoji": "🎺📯",
-          "answer": "TRUMPET"
+          "emoji": "🤐🔐",
+          "answer": "BLACKMAIL"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-29",
-      "theme": "Breakfast Foods",
+      "theme": "Things That Compound",
       "emojiPairs": [
-        "🥞🍯",
-        "🥚🍳",
-        "🥓🐷",
-        "🥣🥛"
+        "💰📈",
+        "❄️⛄",
+        "🧩🤔",
+        "💊🧪"
       ],
       "words": [
-        "PANCAKES",
-        "EGGS",
-        "BACON",
-        "CEREAL"
+        "INTEREST",
+        "SNOW",
+        "PROBLEMS",
+        "MEDICINE"
       ],
       "correctAnswers": [
-        "PANCAKES",
-        "EGGS",
-        "BACON",
-        "CEREAL"
+        "INTEREST",
+        "SNOW",
+        "PROBLEMS",
+        "MEDICINE"
       ],
       "puzzles": [
         {
-          "emoji": "🥞🍯",
-          "answer": "PANCAKES"
+          "emoji": "💰📈",
+          "answer": "INTEREST"
         },
         {
-          "emoji": "🥚🍳",
-          "answer": "EGGS"
+          "emoji": "❄️⛄",
+          "answer": "SNOW"
         },
         {
-          "emoji": "🥓🐷",
-          "answer": "BACON"
+          "emoji": "🧩🤔",
+          "answer": "PROBLEMS"
         },
         {
-          "emoji": "🥣🥛",
-          "answer": "CEREAL"
+          "emoji": "💊🧪",
+          "answer": "MEDICINE"
         }
       ],
-      "createdAt": "2025-08-20T19:45:48.378Z",
-      "updatedAt": "2025-08-20T19:45:48.378Z"
+      "createdAt": "2025-08-22T00:01:37.685Z",
+      "updatedAt": "2025-08-22T00:01:37.685Z"
     },
     {
       "date": "2025-08-30",
@@ -420,9 +420,5 @@
       "createdAt": "2025-08-20T19:45:48.378Z",
       "updatedAt": "2025-08-20T19:45:48.378Z"
     }
-  ],
-  "metadata": {
-    "createdAt": "2025-08-20T19:45:48.378Z",
-    "totalPuzzles": 10
-  }
+  ]
 }
