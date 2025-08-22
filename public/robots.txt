@@ -1,5 +1,5 @@
 # Tandem Game Robots.txt
-# https://tandem.game
+# https://tandemdaily.com
 
 # Allow all web crawlers
 User-agent: *
@@ -38,8 +38,8 @@ User-agent: MJ12bot
 Disallow: /
 
 # Sitemap location
-Sitemap: https://tandem.game/sitemap.xml
-Sitemap: https://tandem.game/sitemap-puzzles.xml
+Sitemap: https://tandemdaily.com/sitemap.xml
+Sitemap: https://tandemdaily.com/sitemap-puzzles.xml
 
 # Cache-Control for crawlers
 # Tell crawlers to revisit daily for new puzzles

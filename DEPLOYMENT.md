@@ -69,7 +69,7 @@ Click **Deploy** and wait for the build to complete (usually 1-2 minutes).
 ## 🌐 Custom Domain (Optional)
 
 1. In Vercel project settings → **Domains**
-2. Add your custom domain (e.g., tandem.game)
+2. Add your custom domain (e.g., tandemdaily.com)
 3. Follow DNS configuration instructions
 
 ## 🎮 Access Your Game

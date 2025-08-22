@@ -4,9 +4,9 @@ export const siteConfig = {
   titleTemplate: '%s | Tandem',
   description: 'Challenge your brain with Tandem, the addictive daily word puzzle game! Match emoji pairs to words, share your scores, and compete with friends. New puzzle every day at midnight ET.',
   shortDescription: 'Match emoji pairs to words in this addictive daily puzzle game',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game',
-  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game'}/og-image.webp`,
-  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game'}/twitter-image.webp`,
+  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com',
+  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/og-image.webp`,
+  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/twitter-image.webp`,
   locale: 'en_US',
   type: 'website',
   keywords: [
@@ -29,7 +29,7 @@ export const siteConfig = {
   authors: [
     {
       name: 'Tandem Game',
-      url: 'https://tandem.game'
+      url: 'https://tandemdaily.com'
     }
   ],
   creator: 'Tandem Game',
