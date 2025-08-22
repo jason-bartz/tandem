@@ -1,20 +1,45 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PuzzleEditor from '@/components/admin/PuzzleEditor';
 import PuzzleCalendar from '@/components/admin/PuzzleCalendar';
 import StatsOverview from '@/components/admin/StatsOverview';
+import BulkImport from '@/components/admin/BulkImport';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [editingPuzzle, setEditingPuzzle] = useState(null);
+  const [showBulkImport, setShowBulkImport] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+    console.log('AdminDashboard mounted');
+  }, []);
+  
+  console.log('AdminDashboard rendering, showBulkImport:', showBulkImport, 'mounted:', mounted);
 
   return (
     <div className="px-4 py-5 sm:p-6">
       <div className="mb-6">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-          Puzzle Management
-        </h2>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+            Puzzle Management
+          </h2>
+          {mounted && (
+            <button
+              onClick={() => {
+                console.log('Bulk Import button clicked!');
+                setShowBulkImport(true);
+              }}
+              className="px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
+              style={{ backgroundColor: '#0ea5e9' }}
+            >
+              📤 Bulk Import
+            </button>
+          )}
+        </div>
+        <p className="text-sm text-gray-600 dark:text-gray-400">
           Create and manage daily puzzles for Tandem
         </p>
       </div>
@@ -63,6 +88,7 @@ export default function AdminDashboard() {
       <div className="mt-6 min-h-[500px]">
         {activeTab === 'calendar' && (
           <PuzzleCalendar 
+            key={refreshKey}
             onEditPuzzle={(puzzle) => {
               setEditingPuzzle(puzzle);
               setActiveTab('editor');
@@ -80,6 +106,16 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'stats' && <StatsOverview />}
       </div>
+
+      {showBulkImport && (
+        <BulkImport
+          onClose={() => setShowBulkImport(false)}
+          onSuccess={() => {
+            setRefreshKey(prev => prev + 1);
+            setActiveTab('calendar');
+          }}
+        />
+      )}
     </div>
   );
 }
