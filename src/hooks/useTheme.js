@@ -8,6 +8,12 @@ export function useTheme() {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || THEME_CONFIG.DEFAULT;
     setTheme(savedTheme);
     document.documentElement.setAttribute('data-theme', savedTheme);
+    // Add or remove dark class for Tailwind CSS
+    if (savedTheme === THEME_CONFIG.DARK) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, []);
 
   const toggleTheme = () => {
@@ -15,6 +21,12 @@ export function useTheme() {
     setTheme(newTheme);
     document.documentElement.setAttribute('data-theme', newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
+    // Add or remove dark class for Tailwind CSS
+    if (newTheme === THEME_CONFIG.DARK) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   const setThemeMode = (mode) => {
@@ -22,6 +34,12 @@ export function useTheme() {
       setTheme(mode);
       document.documentElement.setAttribute('data-theme', mode);
       localStorage.setItem(STORAGE_KEYS.THEME, mode);
+      // Add or remove dark class for Tailwind CSS
+      if (mode === THEME_CONFIG.DARK) {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
     }
   };
 

@@ -96,7 +96,7 @@ export default function PlayingScreen({
       <div className="flex justify-end gap-2 mb-4">
         <button
           onClick={() => setShowStats(true)}
-          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
@@ -104,7 +104,7 @@ export default function PlayingScreen({
         <button
           onClick={() => setShowArchive(true)}
           onMouseEnter={() => preloadArchive()}
-          className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
         >
           📅
