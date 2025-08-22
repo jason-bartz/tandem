@@ -15,6 +15,11 @@ async function getTodaysPuzzle() {
       }));
     }
     
+    // Add puzzle number to puzzle object if not present
+    if (puzzle && !puzzle.puzzleNumber) {
+      puzzle.puzzleNumber = currentInfo.number;
+    }
+    
     return {
       success: true,
       date: currentInfo.isoDate,

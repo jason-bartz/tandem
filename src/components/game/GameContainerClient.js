@@ -125,7 +125,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
             checkedWrongAnswers={game.checkedWrongAnswers}
             mistakes={game.mistakes}
             solved={game.solved}
-            time={timer.time}
+            time={timer.elapsed}
             onUpdateAnswer={game.updateAnswer}
             onCheckAnswers={handleCheckAnswers}
             onCheckSingleAnswer={game.checkSingleAnswer}
@@ -142,7 +142,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
         {game.gameState === GAME_STATES.COMPLETE && (
           <CompleteScreen
             won={game.won}
-            time={timer.time}
+            time={timer.elapsed}
             mistakes={game.mistakes}
             correctAnswers={game.solved}
             puzzleTheme={game.puzzle?.theme}

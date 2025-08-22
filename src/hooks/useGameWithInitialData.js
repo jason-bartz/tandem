@@ -33,7 +33,12 @@ export function useGameWithInitialData(initialPuzzleData) {
           const response = await puzzleService.getPuzzle();
           
           if (response && response.puzzle) {
-            setPuzzle(response.puzzle);
+            // Add puzzleNumber to the puzzle object if it's not there
+            const puzzleWithNumber = {
+              ...response.puzzle,
+              puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber
+            };
+            setPuzzle(puzzleWithNumber);
             setError(null);
           } else if (response) {
             setPuzzle(response);
@@ -67,7 +72,12 @@ export function useGameWithInitialData(initialPuzzleData) {
       const response = await puzzleService.getPuzzle(date);
       
       if (response && response.puzzle) {
-        setPuzzle(response.puzzle);
+        // Add puzzleNumber to the puzzle object if it's not there
+        const puzzleWithNumber = {
+          ...response.puzzle,
+          puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber
+        };
+        setPuzzle(puzzleWithNumber);
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);

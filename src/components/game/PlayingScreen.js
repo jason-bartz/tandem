@@ -71,12 +71,23 @@ export default function PlayingScreen({
   };
   
   const handleUseHint = () => {
-    try {
-      playHintSound();
-    } catch (e) {
-      // Sound might fail on some browsers
+    // Find the first unsolved puzzle to give a hint for
+    let hintIndex = -1;
+    for (let i = 0; i < 4; i++) {
+      if (!correctAnswers[i]) {
+        hintIndex = i;
+        break;
+      }
     }
-    onUseHint();
+    
+    if (hintIndex !== -1) {
+      try {
+        playHintSound();
+      } catch (e) {
+        // Sound might fail on some browsers
+      }
+      onUseHint(hintIndex);
+    }
   };
   
   return (
