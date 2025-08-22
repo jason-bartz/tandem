@@ -220,7 +220,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           });
         }
         
-        if (newSolved === GAME_CONFIG.QUESTIONS_PER_PUZZLE) {
+        if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
           completeGame(true);
           return newSolved;
         }
@@ -228,7 +228,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         return newSolved;
       });
       
-      return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.QUESTIONS_PER_PUZZLE };
+      return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.PUZZLE_COUNT };
     } else {
       setMistakes(prev => {
         const newMistakes = Math.min(prev + 1, GAME_CONFIG.MAX_MISTAKES);
@@ -296,7 +296,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           });
         }
         
-        if (newSolved === GAME_CONFIG.QUESTIONS_PER_PUZZLE) {
+        if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
           completeGame(true);
         }
         return newSolved;
@@ -365,7 +365,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       const newSolved = prev + 1;
       
       // Check if game is complete
-      if (newSolved === GAME_CONFIG.QUESTIONS_PER_PUZZLE) {
+      if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
         completeGame(true);
       }
       
