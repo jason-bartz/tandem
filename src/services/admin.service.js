@@ -82,6 +82,28 @@ class AdminService {
       throw error;
     }
   }
+
+  async bulkImportPuzzles(puzzles, startDate = null, overwrite = false) {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/bulk-import'), {
+        method: 'POST',
+        headers: this.getAuthHeaders(),
+        body: JSON.stringify({ puzzles, startDate, overwrite }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        console.error('Bulk import failed:', response.status, response.statusText, data);
+        return { success: false, error: data.error || `Server error: ${response.status}` };
+      }
+
+      return data;
+    } catch (error) {
+      console.error('AdminService.bulkImportPuzzles error:', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 export default new AdminService();
