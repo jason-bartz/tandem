@@ -71,16 +71,19 @@ export default function PlayingScreen({
   };
   
   const handleUseHint = () => {
-    // Find the first unsolved puzzle to give a hint for
-    let hintIndex = -1;
+    // Find all unsolved puzzles and randomly select one for the hint
+    const unsolvedIndices = [];
     for (let i = 0; i < 4; i++) {
       if (!correctAnswers[i]) {
-        hintIndex = i;
-        break;
+        unsolvedIndices.push(i);
       }
     }
     
-    if (hintIndex !== -1) {
+    if (unsolvedIndices.length > 0) {
+      // Randomly select one of the unsolved puzzles
+      const randomIndex = Math.floor(Math.random() * unsolvedIndices.length);
+      const hintIndex = unsolvedIndices[randomIndex];
+      
       try {
         playHintSound();
       } catch (e) {
