@@ -103,6 +103,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
       
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal 
+        key={showArchive ? Date.now() : 'closed'}
         isOpen={showArchive} 
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}

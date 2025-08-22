@@ -182,6 +182,7 @@ export default function CompleteScreen({
       
       <PlayerStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
       <ArchiveModal 
+        key={showArchive ? Date.now() : 'closed'}
         isOpen={showArchive} 
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}
