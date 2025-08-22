@@ -37,7 +37,8 @@ export const metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} - Daily Emoji Word Puzzle Game`
+        alt: `${siteConfig.name} - Daily Emoji Word Puzzle Game`,
+        type: 'image/webp'
       }
     ],
     locale: siteConfig.locale,

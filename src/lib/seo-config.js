@@ -5,8 +5,8 @@ export const siteConfig = {
   description: 'Challenge your brain with Tandem, the addictive daily word puzzle game! Match emoji pairs to words, share your scores, and compete with friends. New puzzle every day at midnight ET.',
   shortDescription: 'Match emoji pairs to words in this addictive daily puzzle game',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game',
-  ogImage: '/og-image.webp',
-  twitterImage: '/twitter-image.webp',
+  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game'}/og-image.webp`,
+  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandem.game'}/twitter-image.webp`,
   locale: 'en_US',
   type: 'website',
   keywords: [
@@ -92,7 +92,8 @@ export function generatePuzzleMetadata(puzzleInfo) {
           url: siteConfig.ogImage,
           width: 1200,
           height: 630,
-          alt: `Tandem Puzzle ${puzzleNumber ? `#${puzzleNumber}` : ''}`
+          alt: `Tandem Puzzle ${puzzleNumber ? `#${puzzleNumber}` : ''}`,
+          type: 'image/webp'
         }
       ]
     },
