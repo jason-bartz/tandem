@@ -15,18 +15,28 @@ export function saveStats(stats) {
   }
 }
 
-export function updateGameStats(won) {
+export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false) {
   const stats = loadStats();
+  
+  // Always count towards total games played
   stats.played++;
   
   if (won) {
+    // Always count wins
     stats.wins++;
-    stats.currentStreak++;
-    if (stats.currentStreak > stats.bestStreak) {
-      stats.bestStreak = stats.currentStreak;
+    
+    // Only update streak for first-try daily puzzle wins (not archive games)
+    if (isFirstAttempt && !isArchiveGame) {
+      stats.currentStreak++;
+      if (stats.currentStreak > stats.bestStreak) {
+        stats.bestStreak = stats.currentStreak;
+      }
     }
   } else {
-    stats.currentStreak = 0;
+    // Only reset streak for daily puzzle losses on first attempt
+    if (isFirstAttempt && !isArchiveGame) {
+      stats.currentStreak = 0;
+    }
   }
   
   saveStats(stats);
