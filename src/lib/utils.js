@@ -69,7 +69,7 @@ export function generateShareText(puzzleNumber, time, mistakes, results, hintsUs
   if (hintsUsed > 0) {
     shareText += `\n💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`;
   }
-  shareText += '\n\nPlay at tandem.game';
+  shareText += '\n\nPlay at tandemdaily.com';
   return shareText;
 }
 
