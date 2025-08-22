@@ -8,6 +8,7 @@ import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import { useArchivePreload } from '@/hooks/useArchivePreload';
 
 export default function CompleteScreen({
   won,
@@ -26,6 +27,7 @@ export default function CompleteScreen({
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const puzzleInfo = getCurrentPuzzleInfo();
+  const { preloadArchive } = useArchivePreload();
 
   useEffect(() => {
     if (won) {
@@ -87,6 +89,7 @@ export default function CompleteScreen({
         </button>
         <button
           onClick={() => setShowArchive(true)}
+          onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
         >
@@ -158,6 +161,7 @@ export default function CompleteScreen({
         <div className="space-y-3 mb-6">
           <button
             onClick={() => setShowArchive(true)}
+            onMouseEnter={() => preloadArchive()}
             className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
             Play from Archive

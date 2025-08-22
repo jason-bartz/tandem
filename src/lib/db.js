@@ -65,7 +65,29 @@ export async function getPuzzleForDate(date) {
       }
     }
     
-    // Then try to load from JSON file (original puzzles)
+    // Then try to load from all-puzzles.json
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      const allPuzzlesFile = path.join(process.cwd(), 'public', 'puzzles', 'all-puzzles.json');
+      if (fs.existsSync(allPuzzlesFile)) {
+        const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
+        if (data.puzzles && Array.isArray(data.puzzles)) {
+          const puzzle = data.puzzles.find(p => p.date === date);
+          if (puzzle) {
+            console.log(`Loaded puzzle from all-puzzles.json: ${date}`);
+            return {
+              theme: puzzle.theme,
+              puzzles: puzzle.puzzles
+            };
+          }
+        }
+      }
+    } catch (fileError) {
+      // File doesn't exist or couldn't be read, continue to other methods
+    }
+    
+    // Then try individual JSON file
     try {
       const fs = require('fs');
       const path = require('path');
@@ -132,6 +154,25 @@ export async function getPuzzlesRange(startDate, endDate) {
   const start = new Date(startDate);
   const end = new Date(endDate);
   
+  // Load all-puzzles.json once at the start
+  let allPuzzlesData = {};
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const allPuzzlesFile = path.join(process.cwd(), 'public', 'puzzles', 'all-puzzles.json');
+    if (fs.existsSync(allPuzzlesFile)) {
+      const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
+      // Convert array to object keyed by date
+      if (data.puzzles && Array.isArray(data.puzzles)) {
+        data.puzzles.forEach(puzzle => {
+          allPuzzlesData[puzzle.date] = puzzle;
+        });
+      }
+    }
+  } catch (error) {
+    console.error('Error loading all-puzzles.json:', error);
+  }
+  
   try {
     const redis = await getRedisClient();
     
@@ -153,7 +194,16 @@ export async function getPuzzlesRange(startDate, endDate) {
         }
       }
       
-      // If not in database, try to load from JSON file
+      // If not in database, check all-puzzles.json data
+      if (!puzzleFound && allPuzzlesData[dateStr]) {
+        puzzles[dateStr] = {
+          theme: allPuzzlesData[dateStr].theme,
+          puzzles: allPuzzlesData[dateStr].puzzles
+        };
+        puzzleFound = true;
+      }
+      
+      // Finally, try individual JSON file
       if (!puzzleFound) {
         try {
           const fs = require('fs');

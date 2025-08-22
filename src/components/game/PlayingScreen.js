@@ -9,6 +9,7 @@ import ThemeToggle from './ThemeToggle';
 import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import { useArchivePreload } from '@/hooks/useArchivePreload';
 
 export default function PlayingScreen({
   puzzle,
@@ -33,6 +34,7 @@ export default function PlayingScreen({
   const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const { preloadArchive } = useArchivePreload();
   
   const handleEnterPress = (index) => {
     // Check the current answer
@@ -90,6 +92,7 @@ export default function PlayingScreen({
         </button>
         <button
           onClick={() => setShowArchive(true)}
+          onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
         >

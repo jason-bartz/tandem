@@ -6,11 +6,13 @@ import { playStartSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import { useArchivePreload } from '@/hooks/useArchivePreload';
 
 export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const { preloadArchive } = useArchivePreload();
 
   const handlePlayClick = () => {
     try {
@@ -34,6 +36,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         </button>
         <button
           onClick={() => setShowArchive(true)}
+          onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
         >
