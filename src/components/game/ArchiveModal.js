@@ -1,7 +1,8 @@
 'use client';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
+import { getCurrentPuzzleInfo } from '@/lib/utils';
 
 export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [history, setHistory] = useState([]);
@@ -9,31 +10,15 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [isLoading, setIsLoading] = useState(false);
   const { getCachedData } = useArchivePreload();
 
-  useEffect(() => {
-    if (isOpen) {
-      // Reset state first
-      setPuzzles([]);
-      setIsLoading(true);
-      
-      // Always get fresh game history when modal opens
-      const gameHistory = getGameHistory();
-      setHistory(gameHistory);
-      
-      // Always reload puzzles to ensure fresh data
-      loadAvailablePuzzles();
-    }
-  }, [isOpen]); // Force refresh every time modal opens
-
-  const loadAvailablePuzzles = async () => {
+  const loadAvailablePuzzles = useCallback(async () => {
     setIsLoading(true);
     try {
       // Get game history first
       const gameHistory = getGameHistory();
       
-      // Get today's date
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split('T')[0];
+      // Get today's date using Eastern Time
+      const currentInfo = getCurrentPuzzleInfo();
+      const todayStr = currentInfo.isoDate;
       
       // Get available puzzle dates (we have puzzles from Aug 16-30)
       const availableDates = [
@@ -42,8 +27,12 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         '2025-08-26', '2025-08-27', '2025-08-28', '2025-08-29', '2025-08-30'
       ];
       
-      // Filter out today and future dates
-      const datesToFetch = availableDates.filter(date => date < todayStr);
+      // Filter out today and future dates using proper date comparison
+      const datesToFetch = availableDates.filter(date => {
+        const dateObj = new Date(date + 'T00:00:00');
+        const todayObj = new Date(todayStr + 'T00:00:00');
+        return dateObj < todayObj;
+      });
       
       // Try batch endpoint first
       try {
@@ -125,7 +114,22 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []); // Add empty dependency array since we don't use any external values
+
+  useEffect(() => {
+    if (isOpen) {
+      // Reset state first
+      setPuzzles([]);
+      setIsLoading(true);
+      
+      // Always get fresh game history when modal opens
+      const gameHistory = getGameHistory();
+      setHistory(gameHistory);
+      
+      // Always reload puzzles to ensure fresh data
+      loadAvailablePuzzles();
+    }
+  }, [isOpen, loadAvailablePuzzles]); // Include loadAvailablePuzzles in dependencies
 
   if (!isOpen) return null;
 

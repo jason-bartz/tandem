@@ -1,6 +1,7 @@
 'use client';
 import { useState, useCallback } from 'react';
 import { getGameHistory } from '@/lib/storage';
+import { getCurrentPuzzleInfo } from '@/lib/utils';
 
 const archiveCache = {
   data: null,
@@ -33,9 +34,9 @@ export function useArchivePreload() {
 
     try {
       const gameHistory = getGameHistory();
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const todayStr = today.toISOString().split('T')[0];
+      // Get today's date using Eastern Time
+      const currentInfo = getCurrentPuzzleInfo();
+      const todayStr = currentInfo.isoDate;
       
       const availableDates = [
         '2025-08-16', '2025-08-17', '2025-08-18', '2025-08-19', '2025-08-20',
@@ -43,7 +44,12 @@ export function useArchivePreload() {
         '2025-08-26', '2025-08-27', '2025-08-28', '2025-08-29', '2025-08-30'
       ];
       
-      const datesToFetch = availableDates.filter(date => date < todayStr);
+      // Filter out today and future dates using proper date comparison
+      const datesToFetch = availableDates.filter(date => {
+        const dateObj = new Date(date + 'T00:00:00');
+        const todayObj = new Date(todayStr + 'T00:00:00');
+        return dateObj < todayObj;
+      });
       
       // Try batch endpoint
       const response = await fetch('/api/puzzles/batch', {
