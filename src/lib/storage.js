@@ -44,8 +44,12 @@ export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = fals
 }
 
 export function getTodayKey() {
-  const today = new Date();
-  return `tandem_${today.getFullYear()}_${today.getMonth() + 1}_${today.getDate()}`;
+  // Use Eastern Time for consistency with puzzle rotation
+  const { toZonedTime } = require('date-fns-tz');
+  const etTimeZone = 'America/New_York';
+  const now = new Date();
+  const etToday = toZonedTime(now, etTimeZone);
+  return `tandem_${etToday.getFullYear()}_${etToday.getMonth() + 1}_${etToday.getDate()}`;
 }
 
 export function hasPlayedToday() {

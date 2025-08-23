@@ -25,8 +25,10 @@ export function useGame() {
   useEffect(() => {
     async function loadPuzzle() {
       try {
-        // Set today's date as the current puzzle date
-        const today = new Date().toISOString().split('T')[0];
+        // Get Eastern Time date for consistency with puzzle rotation
+        const { getCurrentPuzzleInfo } = await import('@/lib/utils');
+        const puzzleInfo = getCurrentPuzzleInfo();
+        const today = puzzleInfo.isoDate;
         setCurrentPuzzleDate(today);
         
         const response = await puzzleService.getPuzzle();
@@ -59,8 +61,13 @@ export function useGame() {
       const isArchive = date !== null;
       setIsArchiveGame(isArchive);
       
-      // Set the current puzzle date (use today if not specified)
-      const puzzleDate = date || new Date().toISOString().split('T')[0];
+      // Set the current puzzle date (use ET today if not specified)
+      let puzzleDate = date;
+      if (!date) {
+        const { getCurrentPuzzleInfo } = await import('@/lib/utils');
+        const puzzleInfo = getCurrentPuzzleInfo();
+        puzzleDate = puzzleInfo.isoDate;
+      }
       setCurrentPuzzleDate(puzzleDate);
       
       const response = await puzzleService.getPuzzle(date);
