@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
@@ -9,8 +9,12 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [puzzles, setPuzzles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const { getCachedData } = useArchivePreload();
+  const loadingRef = useRef(false);
 
   const loadAvailablePuzzles = useCallback(async () => {
+    // Prevent concurrent loads
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setIsLoading(true);
     try {
       // Get game history first
@@ -111,23 +115,24 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       setPuzzles(puzzleList);
     } catch (error) {
       // Error loading puzzles
+      console.error('Error loading archive puzzles:', error);
     } finally {
       setIsLoading(false);
+      loadingRef.current = false;
     }
-  }, []); // Add empty dependency array since we don't use any external values
+  }, []); // Empty dependency array
 
   useEffect(() => {
     if (isOpen) {
-      // Reset state first
-      setPuzzles([]);
-      setIsLoading(true);
-      
       // Always get fresh game history when modal opens
       const gameHistory = getGameHistory();
       setHistory(gameHistory);
       
-      // Always reload puzzles to ensure fresh data
+      // Always reload puzzles when modal opens
       loadAvailablePuzzles();
+    } else {
+      // Reset loading ref when modal closes
+      loadingRef.current = false;
     }
   }, [isOpen, loadAvailablePuzzles]); // Include loadAvailablePuzzles in dependencies
 
@@ -166,12 +171,12 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         </div>
         
         <div className="flex-1 overflow-y-auto space-y-2">
-          {isLoading ? (
+          {isLoading && puzzles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading puzzles...</p>
             </div>
-          ) : puzzles.length === 0 ? (
+          ) : puzzles.length === 0 && !isLoading ? (
             <div className="text-center py-8 text-gray-600 dark:text-gray-400">
               No past puzzles available yet
             </div>
