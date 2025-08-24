@@ -1,24 +1,38 @@
 'use client';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 
+// Global cache to persist across component mounts/unmounts
+const globalArchiveCache = {
+  puzzles: [],
+  lastFetch: null,
+  isLoading: false
+};
+
+const CACHE_DURATION = 30000; // 30 seconds
+
 export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
-  const [puzzles, setPuzzles] = useState([]);
+  const [puzzles, setPuzzles] = useState(globalArchiveCache.puzzles || []);
   const [isLoading, setIsLoading] = useState(false);
-  const isLoadingRef = useRef(false);
-  const hasFetchedRef = useRef(false);
 
   const loadAvailablePuzzles = useCallback(async () => {
-    // Prevent duplicate fetches
-    if (isLoadingRef.current) return;
-    
-    isLoadingRef.current = true;
-    
-    // Only show loading on first fetch
-    if (!hasFetchedRef.current) {
-      setIsLoading(true);
+    // Check if we have recent cached data
+    const now = Date.now();
+    if (globalArchiveCache.lastFetch && 
+        (now - globalArchiveCache.lastFetch) < CACHE_DURATION &&
+        globalArchiveCache.puzzles.length > 0) {
+      setPuzzles(globalArchiveCache.puzzles);
+      return;
     }
+
+    // Prevent concurrent loads
+    if (globalArchiveCache.isLoading) {
+      return;
+    }
+
+    globalArchiveCache.isLoading = true;
+    setIsLoading(true);
     
     try {
       // Get game history first
@@ -75,14 +89,17 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           
           // Sort by date descending (most recent first)
           puzzleList.sort((a, b) => b.date.localeCompare(a.date));
+          
+          // Update both state and global cache
           setPuzzles(puzzleList);
-          hasFetchedRef.current = true;
-          setIsLoading(false);
-          isLoadingRef.current = false;
+          globalArchiveCache.puzzles = puzzleList;
+          globalArchiveCache.lastFetch = Date.now();
+          
           return;
         }
       } catch (err) {
         // Batch endpoint failed, fall back to parallel fetching
+        console.error('Batch fetch failed:', err);
       }
       
       // Fallback: Fetch all puzzles in parallel
@@ -108,7 +125,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
             }
           }
         } catch (err) {
-          // Could not load puzzle for this date
+          console.error(`Failed to fetch puzzle for ${date}:`, err);
         }
         return null;
       });
@@ -118,19 +135,41 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       
       // Sort by date descending (most recent first)
       puzzleList.sort((a, b) => b.date.localeCompare(a.date));
+      
+      // Update both state and global cache
       setPuzzles(puzzleList);
-      hasFetchedRef.current = true;
+      globalArchiveCache.puzzles = puzzleList;
+      globalArchiveCache.lastFetch = Date.now();
+      
     } catch (error) {
       console.error('Error loading archive puzzles:', error);
     } finally {
       setIsLoading(false);
-      isLoadingRef.current = false;
+      globalArchiveCache.isLoading = false;
     }
   }, []);
 
   useEffect(() => {
-    if (isOpen && !hasFetchedRef.current) {
-      loadAvailablePuzzles();
+    if (isOpen) {
+      // Always update game history status when modal opens
+      if (globalArchiveCache.puzzles.length > 0) {
+        const gameHistory = getGameHistory();
+        const updatedPuzzles = globalArchiveCache.puzzles.map(puzzle => {
+          const historyData = gameHistory[puzzle.date] || {};
+          return {
+            ...puzzle,
+            completed: historyData.completed || false,
+            failed: historyData.failed || false,
+            attempted: historyData.attempted || false,
+            status: historyData.status || 'not_played'
+          };
+        });
+        setPuzzles(updatedPuzzles);
+        globalArchiveCache.puzzles = updatedPuzzles;
+      } else {
+        // First time loading
+        loadAvailablePuzzles();
+      }
     }
   }, [isOpen, loadAvailablePuzzles]);
 
@@ -169,7 +208,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         </div>
         
         <div className="flex-1 overflow-y-auto space-y-2">
-          {isLoading ? (
+          {isLoading && puzzles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading puzzles...</p>
