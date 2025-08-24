@@ -26,7 +26,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
         onChange={(e) => onChange(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder="Enter answer"
-        maxLength={10}
+        maxLength={15}
         disabled={isCorrect}
         className={`
           flex-1 p-4 border-2 rounded-xl text-base font-medium transition-all outline-none uppercase
