@@ -223,7 +223,6 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                 key={puzzle.date}
                 onClick={() => {
                   onSelectPuzzle(puzzle.date);
-                  onClose();
                 }}
                 className="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-left"
               >
