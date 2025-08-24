@@ -208,14 +208,10 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         </div>
         
         <div className="flex-1 overflow-y-auto space-y-2">
-          {isLoading && puzzles.length === 0 ? (
+          {puzzles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading puzzles...</p>
-            </div>
-          ) : puzzles.length === 0 ? (
-            <div className="text-center py-8 text-gray-600 dark:text-gray-400">
-              No past puzzles available yet
             </div>
           ) : (
             puzzles.map((puzzle) => (
