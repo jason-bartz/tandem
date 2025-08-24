@@ -50,10 +50,16 @@ export default function GameContainer() {
   };
   
   const handleSelectPuzzle = async (date) => {
+    // Reset to welcome state first
+    game.resetGame();
+    
+    // Load the selected puzzle
     const success = await game.loadPuzzle(date);
     if (success) {
-      // Start the game immediately after loading archive puzzle
-      game.startGame();
+      // Small delay to ensure state updates have propagated
+      setTimeout(() => {
+        game.startGame();
+      }, 100);
     }
   };
 

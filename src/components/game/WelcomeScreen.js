@@ -103,10 +103,15 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
       
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal 
-        key={showArchive ? Date.now() : 'closed'}
         isOpen={showArchive} 
         onClose={() => setShowArchive(false)}
-        onSelectPuzzle={onSelectPuzzle}
+        onSelectPuzzle={(date) => {
+          setShowArchive(false);
+          // Small delay to ensure modal closes before loading new puzzle
+          setTimeout(() => {
+            onSelectPuzzle(date);
+          }, 100);
+        }}
       />
     </div>
   );
