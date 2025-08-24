@@ -3,6 +3,7 @@ import { useGame } from '@/hooks/useGame';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
+import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { GAME_STATES } from '@/lib/constants';
 import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
@@ -15,6 +16,15 @@ export default function GameContainer() {
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
+  
+  // Auto-refresh puzzle at midnight ET
+  useMidnightRefresh(() => {
+    console.log('[GameContainer] Midnight detected, refreshing puzzle...');
+    // If not in the middle of playing, reload the puzzle
+    if (game.gameState !== GAME_STATES.PLAYING) {
+      game.loadPuzzle(null); // Load today's puzzle
+    }
+  });
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();

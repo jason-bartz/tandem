@@ -2,6 +2,10 @@ import { getPuzzleForDate } from '@/lib/db';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import GameContainerClient from '@/components/game/GameContainerClient';
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 async function getTodaysPuzzle() {
   try {
     const currentInfo = getCurrentPuzzleInfo();
