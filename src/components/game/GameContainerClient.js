@@ -97,7 +97,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Main container with wallpaper background
   return (
     <div 
-      className="fixed inset-0 w-full h-full"
+      className="fixed inset-0 w-full h-full flex items-center justify-center"
       style={{ 
         backgroundImage,
         backgroundSize: 'cover',
@@ -105,10 +105,23 @@ export default function GameContainerClient({ initialPuzzleData }) {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Main content area - adjusted to not cover footer */}
-      <div className="absolute inset-0 pb-12 flex items-center justify-center overflow-auto">
-        {/* Content wrapper - constrains width but allows height to adjust */}
-        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in">
+      {/* Footer - absolutely positioned at bottom behind content */}
+      <div className="absolute bottom-0 left-0 right-0 py-3 px-4 text-center">
+        <p className="text-xs text-white/60">
+          © 2025 Tandem - by{' '}
+          <a 
+            href="https://www.goodvibesgames.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-white/90 transition-colors underline"
+          >
+            Good Vibes Games
+          </a>
+        </p>
+      </div>
+      
+      {/* Content wrapper - constrains width but allows height to adjust */}
+      <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen 
               onStart={game.startGame}
@@ -156,22 +169,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
               onReturnToWelcome={game.returnToWelcome}
             />
           )}
-        </div>
-      </div>
-      
-      {/* Footer - positioned at bottom with higher z-index for clickability */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 py-3 px-4 text-center pointer-events-auto">
-        <p className="text-xs text-white/60">
-          © 2025 Tandem - by{' '}
-          <a 
-            href="https://www.goodvibesgames.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-white/90 transition-colors underline"
-          >
-            Good Vibes Games
-          </a>
-        </p>
       </div>
     </div>
   );
