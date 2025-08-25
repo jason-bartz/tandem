@@ -2,7 +2,13 @@ import { NextResponse } from 'next/server';
 import { setPuzzleForDate, getPuzzlesRange } from '@/lib/db';
 import { verifyAdminToken } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
-import { z } from 'zod';
+import {
+  bulkImportSchema,
+  parseAndValidateJson,
+  sanitizeErrorMessage,
+  escapeHtml
+} from '@/lib/security/validation';
+import { withRateLimit } from '@/lib/security/rateLimiter';
 
 async function requireAdmin(request) {
   const authHeader = request.headers.get('authorization');
@@ -34,6 +40,12 @@ function getNextAvailableDates(startDate, count, existingPuzzles) {
 
 export async function POST(request) {
   try {
+    // Apply rate limiting for write operations
+    const rateLimitResponse = await withRateLimit(request, 'write');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+    
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -42,25 +54,17 @@ export async function POST(request) {
       );
     }
     
-    const body = await request.json();
-    
-    const bulkImportSchema = z.object({
+    // Enhanced bulk import schema with date validation
+    const enhancedBulkImportSchema = bulkImportSchema.extend({
       startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-      overwrite: z.boolean().optional().default(false),
-      puzzles: z.array(
-        z.object({
-          theme: z.string().min(3).max(50),
-          puzzles: z.array(
-            z.object({
-              emoji: z.string().min(1).max(10),
-              answer: z.string().min(2).max(30).transform(s => s.toUpperCase())
-            })
-          ).length(4)
-        })
-      ).min(1)
+      overwrite: z.boolean().optional().default(false)
     });
     
-    const { startDate, overwrite, puzzles: importedPuzzles } = bulkImportSchema.parse(body);
+    // Parse and validate with size limits
+    const { startDate, overwrite, puzzles: importedPuzzles } = await parseAndValidateJson(
+      request, 
+      enhancedBulkImportSchema
+    );
     
     for (const puzzle of importedPuzzles) {
       if (!isValidPuzzle(puzzle)) {
@@ -110,7 +114,7 @@ export async function POST(request) {
       try {
         await setPuzzleForDate(date, {
           ...puzzle,
-          createdBy: admin.username,
+          createdBy: escapeHtml(admin.username),
           createdAt: new Date().toISOString(),
           importedAt: new Date().toISOString()
         });
@@ -148,19 +152,30 @@ export async function POST(request) {
   } catch (error) {
     console.error('POST /api/admin/bulk-import error:', error);
     
-    if (error instanceof z.ZodError) {
+    const message = sanitizeErrorMessage(error);
+    
+    if (error.message.includes('Validation error') || error.message.includes('Invalid')) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid import data format',
-          details: error.errors 
+          error: message
         },
         { status: 400 }
       );
     }
     
+    if (error.message.includes('too large')) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          error: 'Import data too large. Please split into smaller batches.'
+        },
+        { status: 413 }
+      );
+    }
+    
     return NextResponse.json(
-      { success: false, error: 'Failed to import puzzles' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

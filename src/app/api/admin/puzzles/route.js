@@ -6,7 +6,15 @@ import {
 } from '@/lib/db';
 import { verifyAdminToken } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
-import { z } from 'zod';
+import {
+  dateRangeSchema,
+  dateSchema,
+  puzzleWithDateSchema,
+  parseAndValidateJson,
+  sanitizeErrorMessage,
+  escapeHtml
+} from '@/lib/security/validation';
+import { withRateLimit } from '@/lib/security/rateLimiter';
 
 async function requireAdmin(request) {
   const authHeader = request.headers.get('authorization');
@@ -21,6 +29,12 @@ async function requireAdmin(request) {
 
 export async function GET(request) {
   try {
+    // Apply rate limiting
+    const rateLimitResponse = await withRateLimit(request, 'general');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+    
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -32,11 +46,6 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const start = searchParams.get('start');
     const end = searchParams.get('end');
-    
-    const dateRangeSchema = z.object({
-      start: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-      end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-    });
     
     const { start: validStart, end: validEnd } = dateRangeSchema.parse({ start, end });
     
@@ -50,15 +59,17 @@ export async function GET(request) {
   } catch (error) {
     console.error('GET /api/admin/puzzles error:', error);
     
-    if (error instanceof z.ZodError) {
+    const message = sanitizeErrorMessage(error);
+    
+    if (error.message.includes('Validation error') || error.message.includes('Invalid date')) {
       return NextResponse.json(
-        { success: false, error: 'Invalid date range' },
+        { success: false, error: message },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch puzzles' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -66,6 +77,12 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
+    // Apply rate limiting for write operations
+    const rateLimitResponse = await withRateLimit(request, 'write');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+    
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -74,22 +91,8 @@ export async function POST(request) {
       );
     }
     
-    const body = await request.json();
-    
-    const puzzleSchema = z.object({
-      date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-      puzzle: z.object({
-        theme: z.string().min(3).max(50),
-        puzzles: z.array(
-          z.object({
-            emoji: z.string().min(1).max(10), // Allow emoji pairs
-            answer: z.string().min(2).max(30).regex(/^[A-Z\s,]+$/), // Allow multiple answers separated by commas
-          })
-        ).length(4),
-      }),
-    });
-    
-    const { date, puzzle } = puzzleSchema.parse(body);
+    // Parse and validate request body with size limits
+    const { date, puzzle } = await parseAndValidateJson(request, puzzleWithDateSchema);
     
     if (!isValidPuzzle(puzzle)) {
       return NextResponse.json(
@@ -100,7 +103,7 @@ export async function POST(request) {
     
     await setPuzzleForDate(date, {
       ...puzzle,
-      createdBy: admin.username,
+      createdBy: escapeHtml(admin.username),
       createdAt: new Date().toISOString(),
     });
     
@@ -112,19 +115,27 @@ export async function POST(request) {
   } catch (error) {
     console.error('POST /api/admin/puzzles error:', error);
     
-    if (error instanceof z.ZodError) {
+    const message = sanitizeErrorMessage(error);
+    
+    if (error.message.includes('Validation error') || error.message.includes('Invalid')) {
       return NextResponse.json(
         { 
           success: false, 
-          error: 'Invalid puzzle data',
-          details: error.errors 
+          error: message
         },
         { status: 400 }
       );
     }
     
+    if (error.message.includes('too large')) {
+      return NextResponse.json(
+        { success: false, error: message },
+        { status: 413 }
+      );
+    }
+    
     return NextResponse.json(
-      { success: false, error: 'Failed to save puzzle' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
@@ -132,6 +143,12 @@ export async function POST(request) {
 
 export async function DELETE(request) {
   try {
+    // Apply rate limiting for write operations
+    const rateLimitResponse = await withRateLimit(request, 'write');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+    
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -143,7 +160,6 @@ export async function DELETE(request) {
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
     
-    const dateSchema = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
     const validatedDate = dateSchema.parse(date);
     
     await deletePuzzleForDate(validatedDate);
@@ -155,15 +171,17 @@ export async function DELETE(request) {
   } catch (error) {
     console.error('DELETE /api/admin/puzzles error:', error);
     
-    if (error instanceof z.ZodError) {
+    const message = sanitizeErrorMessage(error);
+    
+    if (error.message.includes('Invalid date')) {
       return NextResponse.json(
-        { success: false, error: 'Invalid date format' },
+        { success: false, error: message },
         { status: 400 }
       );
     }
     
     return NextResponse.json(
-      { success: false, error: 'Failed to delete puzzle' },
+      { success: false, error: message },
       { status: 500 }
     );
   }

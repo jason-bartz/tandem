@@ -1,37 +1,75 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { z } from 'zod';
+import { 
+  authCredentialsSchema, 
+  parseAndValidateJson,
+  sanitizeErrorMessage,
+  validateEnvironmentVariables 
+} from '@/lib/security/validation';
+import {
+  getClientIdentifier,
+  isLockedOut,
+  recordFailedAttempt,
+  clearFailedAttempts,
+  withRateLimit
+} from '@/lib/security/rateLimiter';
 
 export async function POST(request) {
   try {
-    const body = await request.json();
+    // Validate environment variables
+    validateEnvironmentVariables();
     
-    const credentialsSchema = z.object({
-      username: z.string().min(1),
-      password: z.string().min(1),
-    });
+    // Check rate limiting for auth endpoint
+    const rateLimitResponse = await withRateLimit(request, 'auth');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
     
-    const { username, password } = credentialsSchema.parse(body);
+    // Get client identifier for rate limiting
+    const clientId = getClientIdentifier(request);
     
-    if (username !== process.env.ADMIN_USERNAME) {
+    // Check if client is locked out
+    const lockoutStatus = await isLockedOut(clientId);
+    if (lockoutStatus.locked) {
       return NextResponse.json(
-        { success: false, error: 'Invalid credentials' },
-        { status: 401 }
+        { 
+          success: false, 
+          error: lockoutStatus.message,
+          lockedUntil: lockoutStatus.until,
+          permanent: lockoutStatus.permanent || false
+        },
+        { status: 429 }
       );
     }
     
-    const isValidPassword = await bcrypt.compare(
+    // Parse and validate request body
+    const { username, password } = await parseAndValidateJson(request, authCredentialsSchema);
+    
+    // Check credentials
+    const isValidUsername = username === process.env.ADMIN_USERNAME;
+    const isValidPassword = isValidUsername && await bcrypt.compare(
       password,
       process.env.ADMIN_PASSWORD_HASH
     );
     
-    if (!isValidPassword) {
+    if (!isValidUsername || !isValidPassword) {
+      // Record failed attempt
+      const attemptResult = await recordFailedAttempt(clientId);
+      
       return NextResponse.json(
-        { success: false, error: 'Invalid credentials' },
+        { 
+          success: false, 
+          error: attemptResult.message || 'Invalid credentials',
+          remainingAttempts: attemptResult.remainingAttempts,
+          locked: attemptResult.locked || false
+        },
         { status: 401 }
       );
     }
+    
+    // Clear failed attempts on successful login
+    await clearFailedAttempts(clientId);
     
     const token = jwt.sign(
       { 
@@ -51,15 +89,24 @@ export async function POST(request) {
   } catch (error) {
     console.error('POST /api/admin/auth error:', error);
     
-    if (error instanceof z.ZodError) {
+    const message = sanitizeErrorMessage(error);
+    
+    if (error.message.includes('Validation error')) {
       return NextResponse.json(
-        { success: false, error: 'Invalid request data' },
+        { success: false, error: message },
         { status: 400 }
       );
     }
     
+    if (error.message.includes('environment variables')) {
+      return NextResponse.json(
+        { success: false, error: 'Server configuration error' },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
-      { success: false, error: 'Authentication failed' },
+      { success: false, error: message },
       { status: 500 }
     );
   }
