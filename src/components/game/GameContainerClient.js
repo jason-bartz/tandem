@@ -97,7 +97,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Main container with wallpaper background
   return (
     <div 
-      className="fixed inset-0 w-full h-full flex flex-col"
+      className="fixed inset-0 w-full h-full"
       style={{ 
         backgroundImage,
         backgroundSize: 'cover',
@@ -105,8 +105,23 @@ export default function GameContainerClient({ initialPuzzleData }) {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Main content area - takes up available space */}
-      <div className="flex-1 flex items-center justify-center overflow-auto">
+      {/* Footer - positioned at bottom with lower z-index */}
+      <div className="absolute bottom-0 left-0 right-0 z-0 py-3 px-4 text-center">
+        <p className="text-xs text-white/60">
+          © 2025 Tandem - by{' '}
+          <a 
+            href="https://www.goodvibesgames.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-white/90 transition-colors underline"
+          >
+            Good Vibes Games
+          </a>
+        </p>
+      </div>
+      
+      {/* Main content area - positioned above footer with higher z-index */}
+      <div className="absolute inset-0 z-10 flex items-center justify-center overflow-auto">
         {/* Content wrapper - constrains width but allows height to adjust */}
         <div className="w-full max-w-xl mx-auto p-6 animate-fade-in">
           {game.gameState === GAME_STATES.WELCOME && (
@@ -157,21 +172,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
             />
           )}
         </div>
-      </div>
-      
-      {/* Footer - stays at bottom */}
-      <div className="w-full py-3 px-4 text-center">
-        <p className="text-xs text-white/60">
-          © 2025 Tandem - by{' '}
-          <a 
-            href="https://www.goodvibesgames.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-white/90 transition-colors underline"
-          >
-            Good Vibes Games
-          </a>
-        </p>
       </div>
     </div>
   );
