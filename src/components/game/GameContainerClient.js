@@ -97,16 +97,17 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Main container with wallpaper background
   return (
     <div 
-      className="fixed inset-0 w-full h-full flex items-center justify-center"
+      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
       style={{ 
         backgroundImage,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
       }}
     >
       {/* Footer - absolutely positioned at bottom behind content */}
-      <div className="absolute bottom-0 left-0 right-0 py-3 px-4 text-center">
+      <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
         <p className="text-xs text-white/60">
           © 2025 Tandem - by{' '}
           <a 
@@ -120,8 +121,10 @@ export default function GameContainerClient({ initialPuzzleData }) {
         </p>
       </div>
       
-      {/* Content wrapper - constrains width but allows height to adjust */}
-      <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10">
+      {/* Scrollable content container */}
+      <div className="min-h-full flex items-center justify-center py-20">
+        {/* Content wrapper - constrains width but allows height to adjust */}
+        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen 
               onStart={game.startGame}
@@ -169,6 +172,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
               onReturnToWelcome={game.returnToWelcome}
             />
           )}
+        </div>
       </div>
     </div>
   );
