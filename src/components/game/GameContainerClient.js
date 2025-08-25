@@ -122,9 +122,9 @@ export default function GameContainerClient({ initialPuzzleData }) {
       </div>
       
       {/* Scrollable content container */}
-      <div className="min-h-full flex items-center justify-center py-20">
+      <div className="min-h-screen flex items-center justify-center py-6">
         {/* Content wrapper - constrains width but allows height to adjust */}
-        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10">
+        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen 
               onStart={game.startGame}
