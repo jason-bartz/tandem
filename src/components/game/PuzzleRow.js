@@ -12,11 +12,11 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
 
   return (
     <div 
-      className="flex gap-3 items-center"
+      className="flex gap-2 sm:gap-3 items-center"
       style={{ animationDelay }}
     >
-      <div className="min-w-[80px] h-[70px] px-2 bg-light-sand dark:bg-gray-700 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg">
-        <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap shrink-0">
+      <div className="w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2 bg-light-sand dark:bg-gray-700 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0">
+        <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap">
           {emoji}
         </span>
       </div>
@@ -29,7 +29,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
         maxLength={15}
         disabled={isCorrect}
         className={`
-          flex-1 p-4 border-2 rounded-xl text-base font-medium transition-all outline-none uppercase
+          flex-1 min-w-0 p-3 sm:p-4 border-2 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase
           ${isCorrect 
             ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap' 
             : isWrong 
