@@ -97,7 +97,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Main container with wallpaper background
   return (
     <div 
-      className="fixed inset-0 w-full h-full flex items-center justify-center"
+      className="fixed inset-0 w-full h-full flex flex-col"
       style={{ 
         backgroundImage,
         backgroundSize: 'cover',
@@ -105,55 +105,73 @@ export default function GameContainerClient({ initialPuzzleData }) {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* Content wrapper - constrains width but allows height to adjust */}
-      <div className="w-full max-w-xl mx-auto p-6 animate-fade-in">
-        {game.gameState === GAME_STATES.WELCOME && (
-          <WelcomeScreen 
-            onStart={game.startGame}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            onSelectPuzzle={handleSelectPuzzle}
-            puzzle={game.puzzle}
-          />
-        )}
-        
-        {game.gameState === GAME_STATES.PLAYING && (
-          <PlayingScreen
-            puzzle={game.puzzle}
-            answers={game.answers}
-            correctAnswers={game.correctAnswers}
-            checkedWrongAnswers={game.checkedWrongAnswers}
-            mistakes={game.mistakes}
-            solved={game.solved}
-            time={timer.elapsed}
-            onUpdateAnswer={game.updateAnswer}
-            onCheckAnswers={handleCheckAnswers}
-            onCheckSingleAnswer={game.checkSingleAnswer}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            onSelectPuzzle={handleSelectPuzzle}
-            hintsUsed={game.hintsUsed}
-            onUseHint={game.useHint}
-            hasCheckedAnswers={game.hasCheckedAnswers}
-            onReturnToWelcome={game.returnToWelcome}
-          />
-        )}
-        
-        {game.gameState === GAME_STATES.COMPLETE && (
-          <CompleteScreen
-            won={game.won}
-            time={timer.elapsed}
-            mistakes={game.mistakes}
-            correctAnswers={game.solved}
-            puzzleTheme={game.puzzle?.theme}
-            onPlayAgain={game.resetGame}
-            theme={theme}
-            toggleTheme={toggleTheme}
-            hintsUsed={game.hintsUsed}
-            onSelectPuzzle={handleSelectPuzzle}
-            onReturnToWelcome={game.returnToWelcome}
-          />
-        )}
+      {/* Main content area - takes up available space */}
+      <div className="flex-1 flex items-center justify-center overflow-auto">
+        {/* Content wrapper - constrains width but allows height to adjust */}
+        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in">
+          {game.gameState === GAME_STATES.WELCOME && (
+            <WelcomeScreen 
+              onStart={game.startGame}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              onSelectPuzzle={handleSelectPuzzle}
+              puzzle={game.puzzle}
+            />
+          )}
+          
+          {game.gameState === GAME_STATES.PLAYING && (
+            <PlayingScreen
+              puzzle={game.puzzle}
+              answers={game.answers}
+              correctAnswers={game.correctAnswers}
+              checkedWrongAnswers={game.checkedWrongAnswers}
+              mistakes={game.mistakes}
+              solved={game.solved}
+              time={timer.elapsed}
+              onUpdateAnswer={game.updateAnswer}
+              onCheckAnswers={handleCheckAnswers}
+              onCheckSingleAnswer={game.checkSingleAnswer}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              onSelectPuzzle={handleSelectPuzzle}
+              hintsUsed={game.hintsUsed}
+              onUseHint={game.useHint}
+              hasCheckedAnswers={game.hasCheckedAnswers}
+              onReturnToWelcome={game.returnToWelcome}
+            />
+          )}
+          
+          {game.gameState === GAME_STATES.COMPLETE && (
+            <CompleteScreen
+              won={game.won}
+              time={timer.elapsed}
+              mistakes={game.mistakes}
+              correctAnswers={game.solved}
+              puzzleTheme={game.puzzle?.theme}
+              onPlayAgain={game.resetGame}
+              theme={theme}
+              toggleTheme={toggleTheme}
+              hintsUsed={game.hintsUsed}
+              onSelectPuzzle={handleSelectPuzzle}
+              onReturnToWelcome={game.returnToWelcome}
+            />
+          )}
+        </div>
+      </div>
+      
+      {/* Footer - stays at bottom */}
+      <div className="w-full py-3 px-4 text-center">
+        <p className="text-xs text-white/60">
+          © 2025 Tandem - by{' '}
+          <a 
+            href="https://www.goodvibesgames.com" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-white/70 hover:text-white/90 transition-colors underline"
+          >
+            Good Vibes Games
+          </a>
+        </p>
       </div>
     </div>
   );
