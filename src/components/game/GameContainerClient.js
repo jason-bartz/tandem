@@ -163,6 +163,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
               time={timer.elapsed}
               mistakes={game.mistakes}
               correctAnswers={game.solved}
+              puzzle={game.puzzle}
               puzzleTheme={game.puzzle?.theme}
               onPlayAgain={game.resetGame}
               theme={theme}
