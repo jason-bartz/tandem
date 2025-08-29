@@ -15,6 +15,7 @@ export default function CompleteScreen({
   time,
   mistakes,
   correctAnswers,
+  puzzle,
   puzzleTheme,
   onPlayAgain,
   theme,
@@ -154,6 +155,24 @@ export default function CompleteScreen({
           {hintsUsed > 0 && (
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
+            </div>
+          )}
+
+          {!won && puzzle?.puzzles && (
+            <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 rounded-2xl p-6 mb-6">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Correct Answers:</p>
+              <div className="space-y-3">
+                {puzzle.puzzles.map((item, index) => {
+                  // Get first answer if multiple are comma-separated
+                  const firstAnswer = item.answer.split(',')[0].trim();
+                  return (
+                    <div key={index} className="flex items-center justify-between bg-white/50 dark:bg-gray-800/50 rounded-xl px-4 py-3">
+                      <span className="text-2xl">{item.emoji}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">{firstAnswer}</span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>

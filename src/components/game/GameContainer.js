@@ -163,6 +163,7 @@ export default function GameContainer() {
               time={timer.elapsed}
               mistakes={game.mistakes}
               correctAnswers={game.correctAnswers}
+              puzzle={game.puzzle}
               puzzleTheme={game.puzzle?.theme}
               onPlayAgain={game.resetGame}
               theme={theme}
