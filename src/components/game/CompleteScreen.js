@@ -159,16 +159,16 @@ export default function CompleteScreen({
           )}
 
           {!won && puzzle?.puzzles && (
-            <div className="bg-gradient-to-r from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 rounded-2xl p-6 mb-6">
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-4">Correct Answers:</p>
+            <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 mb-6 border border-rose-200 dark:border-gray-600">
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Correct Answers:</p>
               <div className="space-y-3">
                 {puzzle.puzzles.map((item, index) => {
                   // Get first answer if multiple are comma-separated
                   const firstAnswer = item.answer.split(',')[0].trim();
                   return (
-                    <div key={index} className="flex items-center justify-between bg-white/50 dark:bg-gray-800/50 rounded-xl px-4 py-3">
+                    <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-4 py-3 shadow-sm">
                       <span className="text-2xl">{item.emoji}</span>
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">{firstAnswer}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">{firstAnswer}</span>
                     </div>
                   );
                 })}
