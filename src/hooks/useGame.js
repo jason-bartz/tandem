@@ -73,13 +73,6 @@ export function useGame() {
       
       const response = await puzzleService.getPuzzle(date);
       
-      console.log('[useGame] loadPuzzle response:', {
-        date,
-        puzzleDate,
-        isArchive,
-        response: response ? 'exists' : 'null'
-      });
-      
       if (response && response.puzzle) {
         setPuzzle({ ...response.puzzle, date: puzzleDate }); // Add date to puzzle
         setGameState(GAME_STATES.WELCOME);
@@ -116,12 +109,6 @@ export function useGame() {
     if (!puzzle) {
       return;
     }
-    
-    console.log('[useGame] startGame called:', {
-      currentPuzzleDate,
-      isArchiveGame,
-      puzzle: puzzle?.date || 'no date in puzzle'
-    });
     
     setGameState(GAME_STATES.PLAYING);
     setMistakes(0);
@@ -180,17 +167,6 @@ export function useGame() {
     // Check if this is the first attempt BEFORE saving the result
     const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
     
-    console.log('[useGame] completeGame:', {
-      currentPuzzleDate,
-      puzzleDateToUse,
-      puzzleDate: puzzle?.date,
-      isArchiveGame,
-      isArchive,
-      isFirstAttempt,
-      won,
-      hasPlayedBefore: puzzleDateToUse ? hasPlayedPuzzle(puzzleDateToUse) : false
-    });
-    
     // Save the final result
     if (puzzleDateToUse) {
       savePuzzleResult(puzzleDateToUse, {
@@ -214,7 +190,6 @@ export function useGame() {
       });
     } catch (err) {
       // Silently fail saving stats
-      console.error('[useGame] Failed to save stats:', err);
     }
   }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]);
 

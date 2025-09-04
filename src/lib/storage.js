@@ -52,14 +52,6 @@ export function saveStats(stats) {
 export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false, puzzleDate = null) {
   const stats = loadStats();
   
-  console.log('[storage] updateGameStats called:', {
-    won,
-    isFirstAttempt,
-    isArchiveGame,
-    puzzleDate,
-    statsBeforeUpdate: { ...stats }
-  });
-  
   // Count games played for first attempts only (both daily and archive)
   if (isFirstAttempt) {
     stats.played++;
@@ -107,12 +99,6 @@ export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = fals
       stats.lastStreakDate = puzzleDate || getTodayDateString();
     }
   }
-  
-  console.log('[storage] updateGameStats final stats:', {
-    statsAfterUpdate: { ...stats },
-    wasFirstAttempt: isFirstAttempt,
-    wasArchive: isArchiveGame
-  });
   
   saveStats(stats);
   return stats;
