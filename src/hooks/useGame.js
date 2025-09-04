@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
-import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, checkAnswerWithPlurals, getCurrentPuzzleInfo } from '@/lib/utils';
 import { savePuzzleProgress, savePuzzleResult, hasPlayedPuzzle } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 
@@ -172,20 +172,28 @@ export function useGame() {
       playFailureSound();
     }
     
+    // Get the puzzle date from the puzzle object itself as a fallback
+    const puzzleDateToUse = currentPuzzleDate || puzzle?.date || null;
+    const todayDate = getCurrentPuzzleInfo().isoDate;
+    const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
+    
     // Check if this is the first attempt BEFORE saving the result
-    const isFirstAttempt = currentPuzzleDate ? !hasPlayedPuzzle(currentPuzzleDate) : true;
+    const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
     
     console.log('[useGame] completeGame:', {
       currentPuzzleDate,
+      puzzleDateToUse,
+      puzzleDate: puzzle?.date,
       isArchiveGame,
+      isArchive,
       isFirstAttempt,
       won,
-      hasPlayedBefore: currentPuzzleDate ? hasPlayedPuzzle(currentPuzzleDate) : false
+      hasPlayedBefore: puzzleDateToUse ? hasPlayedPuzzle(puzzleDateToUse) : false
     });
     
     // Save the final result
-    if (currentPuzzleDate) {
-      savePuzzleResult(currentPuzzleDate, {
+    if (puzzleDateToUse) {
+      savePuzzleResult(puzzleDateToUse, {
         won,
         mistakes,
         solved,
@@ -200,14 +208,15 @@ export function useGame() {
         mistakes,
         solved,
         hintsUsed,
-        isArchive: isArchiveGame, // Pass archive flag to stats service
-        puzzleDate: currentPuzzleDate, // Pass the puzzle date for streak tracking
+        isArchive: isArchive, // Pass archive flag to stats service
+        puzzleDate: puzzleDateToUse, // Pass the puzzle date for streak tracking
         isFirstAttempt, // Pass the first attempt flag directly
       });
     } catch (err) {
       // Silently fail saving stats
+      console.error('[useGame] Failed to save stats:', err);
     }
-  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate]);
+  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]);
 
   const checkSingleAnswer = useCallback((index) => {
     if (!puzzle || !puzzle.puzzles || !puzzle.puzzles[index]) {
