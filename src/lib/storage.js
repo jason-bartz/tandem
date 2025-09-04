@@ -1,12 +1,46 @@
 import { STORAGE_KEYS } from './constants';
 
+function getTodayDateString() {
+  const { toZonedTime } = require('date-fns-tz');
+  const etTimeZone = 'America/New_York';
+  const now = new Date();
+  const etToday = toZonedTime(now, etTimeZone);
+  return `${etToday.getFullYear()}-${String(etToday.getMonth() + 1).padStart(2, '0')}-${String(etToday.getDate()).padStart(2, '0')}`;
+}
+
+function getYesterdayDateString(todayString) {
+  const date = new Date(todayString + 'T00:00:00');
+  date.setDate(date.getDate() - 1);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
 export function loadStats() {
   if (typeof window === 'undefined') {
     return { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
   }
   
   const stats = localStorage.getItem(STORAGE_KEYS.STATS);
-  return stats ? JSON.parse(stats) : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+  const parsedStats = stats ? JSON.parse(stats) : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+  
+  // Check if streak should be reset due to missed days
+  checkAndUpdateStreak(parsedStats);
+  
+  return parsedStats;
+}
+
+function checkAndUpdateStreak(stats) {
+  // Only check if there's an active streak
+  if (stats.currentStreak > 0 && stats.lastStreakDate) {
+    const today = getTodayDateString();
+    const yesterday = getYesterdayDateString(today);
+    
+    // If last streak date is not yesterday or today, reset streak
+    if (stats.lastStreakDate !== yesterday && stats.lastStreakDate !== today) {
+      stats.currentStreak = 0;
+      // Don't update lastStreakDate here, keep it for history
+      saveStats(stats);
+    }
+  }
 }
 
 export function saveStats(stats) {
@@ -15,19 +49,46 @@ export function saveStats(stats) {
   }
 }
 
-export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false) {
+export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false, puzzleDate = null) {
   const stats = loadStats();
   
-  // Always count towards total games played
-  stats.played++;
+  // Only count daily puzzles played for the first time towards games played
+  // Archive games and replays don't count
+  if (!isArchiveGame && isFirstAttempt) {
+    stats.played++;
+  }
   
   if (won) {
-    // Always count wins
-    stats.wins++;
+    // Only count wins for daily puzzles on first attempt
+    if (!isArchiveGame && isFirstAttempt) {
+      stats.wins++;
+    }
     
-    // Only update streak for first-try daily puzzle wins (not archive games)
+    // Streak logic - only for daily puzzle first attempts
     if (isFirstAttempt && !isArchiveGame) {
-      stats.currentStreak++;
+      // Check if we played yesterday (for consecutive days)
+      const lastStreakDate = stats.lastStreakDate;
+      const today = puzzleDate || getTodayDateString();
+      const yesterday = getYesterdayDateString(today);
+      
+      if (!lastStreakDate) {
+        // No previous streak, start at 1
+        stats.currentStreak = 1;
+      } else if (lastStreakDate === yesterday) {
+        // Played and won yesterday, continue streak
+        stats.currentStreak++;
+      } else if (lastStreakDate === today) {
+        // Already played today, don't update
+        // This handles multiple attempts on the same day
+      } else {
+        // Missed one or more days, restart streak
+        stats.currentStreak = 1;
+      }
+      
+      // Update last streak date
+      stats.lastStreakDate = today;
+      
+      // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
         stats.bestStreak = stats.currentStreak;
       }
@@ -36,6 +97,7 @@ export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = fals
     // Only reset streak for daily puzzle losses on first attempt
     if (isFirstAttempt && !isArchiveGame) {
       stats.currentStreak = 0;
+      stats.lastStreakDate = puzzleDate || getTodayDateString();
     }
   }
   
@@ -55,6 +117,13 @@ export function getTodayKey() {
 export function hasPlayedToday() {
   if (typeof window === 'undefined') return false;
   return localStorage.getItem(getTodayKey()) !== null;
+}
+
+export function hasPlayedPuzzle(date) {
+  if (typeof window === 'undefined') return false;
+  const dateObj = new Date(date + 'T00:00:00');
+  const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+  return localStorage.getItem(key) !== null;
 }
 
 export function saveTodayResult(result) {

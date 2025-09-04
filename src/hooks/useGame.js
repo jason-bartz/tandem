@@ -177,6 +177,7 @@ export function useGame() {
         solved,
         hintsUsed,
         isArchive: isArchiveGame, // Pass archive flag to stats service
+        puzzleDate: currentPuzzleDate, // Pass the puzzle date for streak tracking
       });
     } catch (err) {
       // Silently fail saving stats
