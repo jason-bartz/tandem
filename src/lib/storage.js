@@ -52,15 +52,14 @@ export function saveStats(stats) {
 export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false, puzzleDate = null) {
   const stats = loadStats();
   
-  // Only count daily puzzles played for the first time towards games played
-  // Archive games and replays don't count
-  if (!isArchiveGame && isFirstAttempt) {
+  // Count games played for first attempts only (both daily and archive)
+  if (isFirstAttempt) {
     stats.played++;
   }
   
   if (won) {
-    // Only count wins for daily puzzles on first attempt
-    if (!isArchiveGame && isFirstAttempt) {
+    // Count wins for first attempts only (both daily and archive)
+    if (isFirstAttempt) {
       stats.wins++;
     }
     
