@@ -119,7 +119,7 @@ export default function PlayingScreen({
       {/* Main game card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden">
         {/* Header with gradient matching outdoor theme */}
-        <div className="bg-gradient-to-r from-sky-500 to-teal-400 p-5 text-center">
+        <div className="bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900 p-5 text-center">
           <button 
             onClick={onReturnToWelcome}
             className="w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
@@ -186,7 +186,7 @@ export default function PlayingScreen({
             {hintsUsed === 0 && solved < 4 && (
               <button
                 onClick={handleUseHint}
-                className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 text-gray-800 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
+                className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
               >
                 <span className="text-xl">💡</span>
                 Use Hint (1 available)

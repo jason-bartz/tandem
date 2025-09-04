@@ -80,17 +80,10 @@ export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, hi
   // Build the header
   let shareText = `Daily Puzzle ${formattedDate}\n`;
   shareText += `${theme}\n`;
-  shareText += `━━━━━━━━━━━━━━━━\n`;
+  shareText += `━━━━━━━━━━━━\n`;
   
   // Build the stats line
   shareText += `⏱️ ${formattedTime} | ❌ ${mistakes}/4`;
-  
-  // Add conditional text based on hints and mistakes
-  if (mistakes === 0 && hintsUsed === 0) {
-    shareText += ` | 🏆 Perfect`;
-  } else if (hintsUsed > 0) {
-    shareText += ` | 💡 Hint Used`;
-  }
   shareText += `\n\n`;
   
   // Build emoji representation of puzzle completion
