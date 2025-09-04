@@ -2,12 +2,13 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import { formatTime, getCurrentPuzzleInfo } from '@/lib/utils';
+import { formatTime, getCurrentPuzzleInfo, generateShareText } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import ShareButton from './ShareButton';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 
 export default function CompleteScreen({
@@ -21,6 +22,7 @@ export default function CompleteScreen({
   theme,
   toggleTheme,
   hintsUsed,
+  activeHints = [],
   onSelectPuzzle,
   onReturnToWelcome
 }) {
@@ -29,6 +31,17 @@ export default function CompleteScreen({
   const [showArchive, setShowArchive] = useState(false);
   const puzzleInfo = getCurrentPuzzleInfo();
   const { preloadArchive } = useArchivePreload();
+
+  // Generate share text
+  const hintPositions = activeHints ? activeHints.map((hint, index) => hint ? index : null).filter(pos => pos !== null) : [];
+  const shareText = generateShareText(
+    puzzleInfo.number,
+    puzzleTheme || 'Tandem Puzzle',
+    time,
+    mistakes,
+    hintsUsed,
+    hintPositions
+  );
 
   useEffect(() => {
     if (won) {
@@ -178,6 +191,7 @@ export default function CompleteScreen({
         </div>
 
         <div className="space-y-3 mb-6">
+          <ShareButton shareText={shareText} />
           <button
             onClick={() => setShowArchive(true)}
             onMouseEnter={() => preloadArchive()}
