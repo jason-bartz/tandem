@@ -63,13 +63,38 @@ export function getPuzzleInfoForDate(date) {
   };
 }
 
-export function generateShareText(puzzleNumber, time, mistakes, results, hintsUsed = 0) {
-  const resultEmojis = results.map(r => r ? '🟣🟠' : '⚪⚪').join('');
-  let shareText = `Tandem #${puzzleNumber}\n${resultEmojis}\nTime: ${time}\nMistakes: ${mistakes}/4`;
-  if (hintsUsed > 0) {
-    shareText += `\n💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`;
+export function generateShareText(puzzleNumber, theme, timeInSeconds, mistakes, hintsUsed = 0, hintPositions = []) {
+  // Format time as M:SS
+  const formattedTime = formatTime(timeInSeconds);
+  
+  // Build the header
+  let shareText = `Tandem #${puzzleNumber}\n`;
+  shareText += `${theme}\n`;
+  shareText += `━━━━━━━━━━━━━━━━\n`;
+  
+  // Build the stats line
+  shareText += `⏱️ ${formattedTime} | ❌ ${mistakes}/4`;
+  
+  // Add Perfect! if no mistakes and no hints
+  if (mistakes === 0 && hintsUsed === 0) {
+    shareText += ` | 🏆 Perfect!`;
   }
-  shareText += '\n\nPlay at tandemdaily.com';
+  shareText += `\n\n`;
+  
+  // Build emoji representation of puzzle completion
+  // 4 puzzles, each represented by 🔷 or 💡 (if hint was used on that position)
+  const puzzleEmojis = [];
+  for (let i = 0; i < 4; i++) {
+    if (hintPositions.includes(i)) {
+      puzzleEmojis.push('💡');
+    } else {
+      puzzleEmojis.push('🔷');
+    }
+  }
+  shareText += puzzleEmojis.join(' ');
+  
+  shareText += '\n\n#TandemPuzzle';
+  
   return shareText;
 }
 

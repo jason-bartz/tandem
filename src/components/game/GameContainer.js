@@ -170,6 +170,7 @@ export default function GameContainer() {
               theme={theme}
               toggleTheme={toggleTheme}
               hintsUsed={game.hintsUsed || 0}
+              activeHints={game.activeHints}
               onSelectPuzzle={handleSelectPuzzle}
               onReturnToWelcome={game.resetGame}
             />
