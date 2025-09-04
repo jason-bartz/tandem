@@ -16,13 +16,30 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [puzzles, setPuzzles] = useState(globalArchiveCache.puzzles || []);
   const [isLoading, setIsLoading] = useState(false);
 
-  const loadAvailablePuzzles = useCallback(async () => {
-    // Check if we have recent cached data
+  const loadAvailablePuzzles = useCallback(async (forceRefresh = false) => {
+    // Check if we have recent cached data (unless forcing refresh)
     const now = Date.now();
-    if (globalArchiveCache.lastFetch && 
+    if (!forceRefresh &&
+        globalArchiveCache.lastFetch && 
         (now - globalArchiveCache.lastFetch) < CACHE_DURATION &&
         globalArchiveCache.puzzles.length > 0) {
-      setPuzzles(globalArchiveCache.puzzles);
+      // Even when using cache, refresh the game history to get latest status
+      const gameHistory = getGameHistory();
+      const updatedPuzzles = globalArchiveCache.puzzles.map(puzzle => {
+        const historyData = gameHistory[puzzle.date] || {};
+        return {
+          ...puzzle,
+          completed: historyData.completed || false,
+          failed: historyData.failed || false,
+          attempted: historyData.attempted || false,
+          status: historyData.status || 'not_played',
+          time: historyData.time,
+          mistakes: historyData.mistakes,
+          solved: historyData.solved
+        };
+      });
+      setPuzzles(updatedPuzzles);
+      globalArchiveCache.puzzles = updatedPuzzles;
       return;
     }
 
@@ -154,14 +171,8 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   useEffect(() => {
     if (isOpen) {
-      // Only load puzzles if cache is empty
-      if (globalArchiveCache.puzzles.length === 0) {
-        loadAvailablePuzzles();
-      } else {
-        // Just set the cached puzzles without updating game history
-        // This prevents scroll reset
-        setPuzzles(globalArchiveCache.puzzles);
-      }
+      // Always load puzzles when opening (this will update status from cache)
+      loadAvailablePuzzles();
     }
   }, [isOpen, loadAvailablePuzzles]);
 
