@@ -73,8 +73,15 @@ export function useGame() {
       
       const response = await puzzleService.getPuzzle(date);
       
+      console.log('[useGame] loadPuzzle response:', {
+        date,
+        puzzleDate,
+        isArchive,
+        response: response ? 'exists' : 'null'
+      });
+      
       if (response && response.puzzle) {
-        setPuzzle(response.puzzle);
+        setPuzzle({ ...response.puzzle, date: puzzleDate }); // Add date to puzzle
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
@@ -84,7 +91,7 @@ export function useGame() {
         setActiveHints([null, null, null, null]);
         return true;
       } else if (response) {
-        setPuzzle(response);
+        setPuzzle({ ...response, date: puzzleDate }); // Add date to puzzle
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
@@ -110,6 +117,12 @@ export function useGame() {
       return;
     }
     
+    console.log('[useGame] startGame called:', {
+      currentPuzzleDate,
+      isArchiveGame,
+      puzzle: puzzle?.date || 'no date in puzzle'
+    });
+    
     setGameState(GAME_STATES.PLAYING);
     setMistakes(0);
     setSolved(0);
@@ -130,7 +143,7 @@ export function useGame() {
         hintsUsed: 0
       });
     }
-  }, [puzzle, currentPuzzleDate]);
+  }, [puzzle, currentPuzzleDate, isArchiveGame]);
 
   const updateAnswer = useCallback((index, value) => {
     const sanitized = sanitizeInput(value);
