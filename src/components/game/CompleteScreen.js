@@ -29,13 +29,18 @@ export default function CompleteScreen({
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
-  const puzzleInfo = getCurrentPuzzleInfo();
   const { preloadArchive } = useArchivePreload();
+  
+  // Get the actual puzzle number (from the puzzle object for archive games, or current for today's)
+  const actualPuzzleNumber = puzzle?.puzzleNumber || getCurrentPuzzleInfo().number;
 
-  // Generate share text
-  const hintPositions = activeHints ? activeHints.map((hint, index) => hint ? index : null).filter(pos => pos !== null) : [];
+  // Generate share text - fix hint positions mapping
+  const hintPositions = activeHints ? 
+    activeHints.map((hint, index) => hint ? index : null).filter(pos => pos !== null) : 
+    [];
+  
   const shareText = generateShareText(
-    puzzleInfo.number,
+    actualPuzzleNumber,
     puzzleTheme || 'Tandem Puzzle',
     time,
     mistakes,
@@ -159,7 +164,7 @@ export default function CompleteScreen({
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                #{puzzleInfo.number}
+                #{actualPuzzleNumber}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Puzzle</div>
             </div>
