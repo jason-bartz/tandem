@@ -25,6 +25,12 @@ class StatsService {
         gameResult.isFirstAttempt : 
         (gameResult.puzzleDate ? !hasPlayedPuzzle(gameResult.puzzleDate) : true);
       
+      console.log('[statsService] updateStats:', {
+        ...gameResult,
+        isFirstAttempt,
+        determinedFrom: gameResult.isFirstAttempt !== undefined ? 'passed' : 'calculated'
+      });
+      
       // Update local stats with proper parameters
       const localStats = updateGameStats(
         gameResult.completed,

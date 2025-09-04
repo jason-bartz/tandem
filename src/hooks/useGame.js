@@ -162,6 +162,14 @@ export function useGame() {
     // Check if this is the first attempt BEFORE saving the result
     const isFirstAttempt = currentPuzzleDate ? !hasPlayedPuzzle(currentPuzzleDate) : true;
     
+    console.log('[useGame] completeGame:', {
+      currentPuzzleDate,
+      isArchiveGame,
+      isFirstAttempt,
+      won,
+      hasPlayedBefore: currentPuzzleDate ? hasPlayedPuzzle(currentPuzzleDate) : false
+    });
+    
     // Save the final result
     if (currentPuzzleDate) {
       savePuzzleResult(currentPuzzleDate, {
