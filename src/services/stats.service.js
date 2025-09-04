@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from '@/lib/constants';
-import { updateGameStats, saveTodayResult } from '@/lib/storage';
+import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/lib/storage';
 
 class StatsService {
   async getGlobalStats() {
@@ -20,35 +20,57 @@ class StatsService {
 
   async updateStats(gameResult) {
     try {
-      const localStats = updateGameStats(gameResult.completed);
+      // Determine if this is the first attempt for this puzzle
+      const isFirstAttempt = gameResult.puzzleDate ? 
+        !hasPlayedPuzzle(gameResult.puzzleDate) : true;
       
-      saveTodayResult({
-        completed: gameResult.completed,
-        mistakes: gameResult.mistakes,
-        solved: gameResult.solved,
-        time: gameResult.time
-      });
+      // Update local stats with proper parameters
+      const localStats = updateGameStats(
+        gameResult.completed,
+        isFirstAttempt,
+        gameResult.isArchive || false,
+        gameResult.puzzleDate
+      );
       
-      const response = await fetch(API_ENDPOINTS.PUZZLE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      // Save the result if it's not an archive game
+      if (!gameResult.isArchive) {
+        saveTodayResult({
           completed: gameResult.completed,
-          time: gameResult.time || 0,
-          mistakes: gameResult.mistakes || 0,
-        }),
-      });
+          mistakes: gameResult.mistakes,
+          solved: gameResult.solved,
+          time: gameResult.time,
+          won: gameResult.completed
+        });
+      }
       
-      if (!response.ok) {
-        console.warn('Failed to update server stats:', response.status);
+      // Update server stats only for daily puzzles
+      if (!gameResult.isArchive) {
+        const response = await fetch(API_ENDPOINTS.PUZZLE, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            completed: gameResult.completed,
+            time: gameResult.time || 0,
+            mistakes: gameResult.mistakes || 0,
+          }),
+        });
+        
+        if (!response.ok) {
+          console.warn('Failed to update server stats:', response.status);
+        }
       }
       
       return localStats;
     } catch (error) {
       console.error('StatsService.updateStats error:', error);
-      return updateGameStats(gameResult.completed);
+      return updateGameStats(
+        gameResult.completed, 
+        !hasPlayedPuzzle(gameResult.puzzleDate || ''),
+        gameResult.isArchive || false,
+        gameResult.puzzleDate
+      );
     }
   }
 
