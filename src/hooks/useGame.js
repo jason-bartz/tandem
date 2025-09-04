@@ -20,6 +20,7 @@ export function useGame() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
   const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
+  const [activeHints, setActiveHints] = useState([null, null, null, null]);
 
   // Simple load puzzle on mount
   useEffect(() => {
@@ -80,6 +81,7 @@ export function useGame() {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
+        setActiveHints([null, null, null, null]);
         return true;
       } else if (response) {
         setPuzzle(response);
@@ -89,6 +91,7 @@ export function useGame() {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
+        setActiveHints([null, null, null, null]);
         return true;
       } else {
         setError('No puzzle available');
@@ -116,6 +119,7 @@ export function useGame() {
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
+    setActiveHints([null, null, null, null]);
     
     // Save initial progress to mark as attempted
     if (currentPuzzleDate) {
@@ -209,6 +213,13 @@ export function useGame() {
         setCheckedWrongAnswers(newCheckedWrongAnswers);
       }
       
+      // Clear hint for this puzzle if it was active
+      if (activeHints[index]) {
+        const newActiveHints = [...activeHints];
+        newActiveHints[index] = null;
+        setActiveHints(newActiveHints);
+      }
+      
       // Update solved count
       const newSolved = solved + 1;
       setSolved(newSolved);
@@ -260,7 +271,7 @@ export function useGame() {
       
       return { isCorrect: false, gameComplete: false };
     }
-  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
+  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed, activeHints]);
 
   const checkAnswers = useCallback(() => {
     if (!puzzle || !puzzle.puzzles) {
@@ -321,7 +332,7 @@ export function useGame() {
       correct: newSolved - solved,
       incorrect: newMistakes,
     };
-  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed]);
+  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed, activeHints]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -333,47 +344,64 @@ export function useGame() {
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
+    setActiveHints([null, null, null, null]);
   }, []);
   
-  const useHint = useCallback(() => {
+  const useHint = useCallback((targetIndex) => {
     if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
       return;
     }
     
-    // Find all unanswered puzzles
-    const unansweredIndices = [];
-    for (let i = 0; i < puzzle.puzzles.length; i++) {
-      if (!correctAnswers[i] && !answers[i]) {
-        unansweredIndices.push(i);
+    // Use the provided index or find a random unanswered puzzle
+    let hintIndex = targetIndex;
+    
+    if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
+      // Find all unanswered puzzles
+      const unansweredIndices = [];
+      for (let i = 0; i < puzzle.puzzles.length; i++) {
+        if (!correctAnswers[i]) {
+          unansweredIndices.push(i);
+        }
       }
+      
+      if (unansweredIndices.length === 0) {
+        return;
+      }
+      
+      // Randomly select one
+      hintIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
     }
     
-    // If there are unanswered puzzles, randomly select one
-    if (unansweredIndices.length > 0) {
-      const randomIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
-      
-      const newAnswers = [...answers];
-      // Only use the first answer if there are multiple (comma-separated)
-      const fullAnswer = puzzle.puzzles[randomIndex].answer;
-      const firstAnswer = fullAnswer.includes(',') 
-        ? fullAnswer.split(',')[0].trim() 
-        : fullAnswer;
-      newAnswers[randomIndex] = firstAnswer;
-      setAnswers(newAnswers);
-      
-      const newCorrectAnswers = [...correctAnswers];
-      newCorrectAnswers[randomIndex] = true;
-      setCorrectAnswers(newCorrectAnswers);
-      
-      setSolved(prev => prev + 1);
-      setHintsUsed(1);
-      
-      // Check if game is complete
-      if (solved + 1 === GAME_CONFIG.PUZZLE_COUNT) {
-        completeGame(true);
-      }
+    // Get the answer and create hint data
+    const fullAnswer = puzzle.puzzles[hintIndex].answer;
+    const firstAnswer = fullAnswer.includes(',') 
+      ? fullAnswer.split(',')[0].trim() 
+      : fullAnswer;
+    
+    // Create hint data with first letter and character count
+    const hintData = {
+      firstLetter: firstAnswer.charAt(0).toUpperCase(),
+      length: firstAnswer.length,
+      fullAnswer: firstAnswer.toUpperCase()
+    };
+    
+    // Update active hints
+    const newActiveHints = [...activeHints];
+    newActiveHints[hintIndex] = hintData;
+    setActiveHints(newActiveHints);
+    
+    setHintsUsed(1);
+    
+    // Save progress with hint usage
+    if (currentPuzzleDate) {
+      savePuzzleProgress(currentPuzzleDate, {
+        started: true,
+        solved,
+        mistakes,
+        hintsUsed: 1
+      });
     }
-  }, [puzzle, answers, correctAnswers, hintsUsed, solved, completeGame]);
+  }, [puzzle, correctAnswers, hintsUsed, activeHints, currentPuzzleDate, solved, mistakes]);
 
   return {
     gameState,
@@ -388,6 +416,7 @@ export function useGame() {
     isArchiveGame,
     hintsUsed,
     hasCheckedAnswers,
+    activeHints,
     startGame,
     updateAnswer,
     checkAnswers,
