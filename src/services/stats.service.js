@@ -20,9 +20,10 @@ class StatsService {
 
   async updateStats(gameResult) {
     try {
-      // Determine if this is the first attempt for this puzzle
-      const isFirstAttempt = gameResult.puzzleDate ? 
-        !hasPlayedPuzzle(gameResult.puzzleDate) : true;
+      // Use the passed isFirstAttempt flag or determine it
+      const isFirstAttempt = gameResult.isFirstAttempt !== undefined ? 
+        gameResult.isFirstAttempt : 
+        (gameResult.puzzleDate ? !hasPlayedPuzzle(gameResult.puzzleDate) : true);
       
       // Update local stats with proper parameters
       const localStats = updateGameStats(

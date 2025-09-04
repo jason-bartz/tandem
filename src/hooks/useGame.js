@@ -3,7 +3,7 @@ import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
 import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
-import { savePuzzleProgress, savePuzzleResult } from '@/lib/storage';
+import { savePuzzleProgress, savePuzzleResult, hasPlayedPuzzle } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 
 export function useGame() {
@@ -159,6 +159,9 @@ export function useGame() {
       playFailureSound();
     }
     
+    // Check if this is the first attempt BEFORE saving the result
+    const isFirstAttempt = currentPuzzleDate ? !hasPlayedPuzzle(currentPuzzleDate) : true;
+    
     // Save the final result
     if (currentPuzzleDate) {
       savePuzzleResult(currentPuzzleDate, {
@@ -178,6 +181,7 @@ export function useGame() {
         hintsUsed,
         isArchive: isArchiveGame, // Pass archive flag to stats service
         puzzleDate: currentPuzzleDate, // Pass the puzzle date for streak tracking
+        isFirstAttempt, // Pass the first attempt flag directly
       });
     } catch (err) {
       // Silently fail saving stats
