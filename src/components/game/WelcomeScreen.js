@@ -97,7 +97,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         </button>
         
         <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
-          Puzzle #{puzzleInfo.number} • {puzzleInfo.date}
+          {puzzleInfo.date}
         </div>
       </div>
       

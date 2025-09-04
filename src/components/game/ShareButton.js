@@ -65,23 +65,7 @@ export default function ShareButton({ shareText, className = '' }) {
         `}
         aria-label="Share results"
       >
-        <svg 
-          className="w-5 h-5" 
-          fill="none" 
-          stroke="currentColor" 
-          viewBox="0 0 24 24"
-          aria-hidden="true"
-        >
-          <path 
-            strokeLinecap="round" 
-            strokeLinejoin="round" 
-            strokeWidth={2} 
-            d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m9.032 4.026a3 3 0 10-2.684 0m-9.032 0a3 3 0 002.684 0m6.348 0a3 3 0 100-5.368m0 5.368a3 3 0 100-5.368m-6.348 0a3 3 0 100 5.368" 
-          />
-        </svg>
-        <span>
-          {copied ? 'Copied!' : error ? 'Failed to copy' : 'Share Results'}
-        </span>
+        {copied ? 'Copied!' : error ? 'Failed to copy' : 'Share Results'}
       </button>
 
       {/* Visual feedback tooltip */}
