@@ -35,10 +35,10 @@ export function useGame() {
         const response = await puzzleService.getPuzzle();
         
         if (response && response.puzzle) {
-          setPuzzle(response.puzzle);
+          setPuzzle({ ...response.puzzle, date: today });
         } else if (response) {
           // Maybe the response IS the puzzle
-          setPuzzle(response);
+          setPuzzle({ ...response, date: today });
         } else {
           setError('No puzzle available');
         }
