@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import { formatTime, getCurrentPuzzleInfo, generateShareText, formatDateShort } from '@/lib/utils';
+import { formatTime, getCurrentPuzzleInfo, generateShareText, formatDateShort, getRandomCongratulation } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
@@ -29,6 +29,7 @@ export default function CompleteScreen({
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [congratsMessage, setCongratsMessage] = useState('');
   const { preloadArchive } = useArchivePreload();
   
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
@@ -56,6 +57,9 @@ export default function CompleteScreen({
 
   useEffect(() => {
     if (won) {
+      // Set random congratulatory message
+      setCongratsMessage(getRandomCongratulation());
+      
       // Play success sound
       try {
         playSuccessSound();
@@ -141,7 +145,7 @@ export default function CompleteScreen({
           </button>
         
           <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
-            {won ? 'Congratulations!' : 'Better luck next time!'}
+            {won ? congratsMessage : 'Better luck next time!'}
           </h1>
           
           <p className="text-gray-600 dark:text-gray-400 mb-6">

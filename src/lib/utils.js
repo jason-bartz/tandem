@@ -222,3 +222,34 @@ export function isSameDay(date1, date2) {
          d1.getMonth() === d2.getMonth() &&
          d1.getDate() === d2.getDate();
 }
+
+export function getRandomCongratulation() {
+  const congratulations = [
+    'Brilliant!',
+    'Excellent!',
+    'Fantastic!',
+    'Amazing!',
+    'Wonderful!',
+    'Superb!',
+    'Stellar!',
+    'Awesome!',
+    'Terrific!',
+    'Way to go!',
+    'You did it!',
+    'Well done!',
+    'Nice work!',
+    'Great job!',
+    'Hooray!',
+    'Bravo!',
+    'Victory!',
+    'Marvelous!',
+    'Splendid!',
+    'Outstanding!',
+    'Incredible!',
+    'Remarkable!',
+    'Congratulations!',
+    'Congrats!'
+  ];
+  
+  return congratulations[Math.floor(Math.random() * congratulations.length)];
+}
