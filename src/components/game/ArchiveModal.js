@@ -42,19 +42,22 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       const currentInfo = getCurrentPuzzleInfo();
       const todayStr = currentInfo.isoDate;
       
-      // Get available puzzle dates (we have puzzles from Aug 16-30)
-      const availableDates = [
-        '2025-08-16', '2025-08-17', '2025-08-18', '2025-08-19', '2025-08-20',
-        '2025-08-21', '2025-08-22', '2025-08-23', '2025-08-24', '2025-08-25',
-        '2025-08-26', '2025-08-27', '2025-08-28', '2025-08-29', '2025-08-30'
-      ];
+      // Generate available puzzle dates from Aug 16 to yesterday
+      const startDate = new Date('2025-08-16T00:00:00');
+      const todayObj = new Date(todayStr + 'T00:00:00');
+      const availableDates = [];
       
-      // Filter out today and future dates using proper date comparison
-      const datesToFetch = availableDates.filter(date => {
-        const dateObj = new Date(date + 'T00:00:00');
-        const todayObj = new Date(todayStr + 'T00:00:00');
-        return dateObj < todayObj;
-      });
+      // Generate all dates from start to yesterday
+      const currentDate = new Date(startDate);
+      while (currentDate < todayObj) {
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+        const day = String(currentDate.getDate()).padStart(2, '0');
+        availableDates.push(`${year}-${month}-${day}`);
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
+      
+      const datesToFetch = availableDates;
       
       // Try batch endpoint first
       try {
@@ -151,24 +154,13 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
   useEffect(() => {
     if (isOpen) {
-      // Always update game history status when modal opens
-      if (globalArchiveCache.puzzles.length > 0) {
-        const gameHistory = getGameHistory();
-        const updatedPuzzles = globalArchiveCache.puzzles.map(puzzle => {
-          const historyData = gameHistory[puzzle.date] || {};
-          return {
-            ...puzzle,
-            completed: historyData.completed || false,
-            failed: historyData.failed || false,
-            attempted: historyData.attempted || false,
-            status: historyData.status || 'not_played'
-          };
-        });
-        setPuzzles(updatedPuzzles);
-        globalArchiveCache.puzzles = updatedPuzzles;
-      } else {
-        // First time loading
+      // Only load puzzles if cache is empty
+      if (globalArchiveCache.puzzles.length === 0) {
         loadAvailablePuzzles();
+      } else {
+        // Just set the cached puzzles without updating game history
+        // This prevents scroll reset
+        setPuzzles(globalArchiveCache.puzzles);
       }
     }
   }, [isOpen, loadAvailablePuzzles]);

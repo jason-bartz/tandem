@@ -63,21 +63,33 @@ export function getPuzzleInfoForDate(date) {
   };
 }
 
-export function generateShareText(puzzleNumber, theme, timeInSeconds, mistakes, hintsUsed = 0, hintPositions = []) {
+export function formatDateShort(dateString) {
+  // Convert date string to M/D/YY format
+  const date = new Date(dateString + 'T00:00:00');
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const year = date.getFullYear().toString().slice(-2);
+  return `${month}/${day}/${year}`;
+}
+
+export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, hintsUsed = 0, hintPositions = []) {
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
+  const formattedDate = formatDateShort(puzzleDate);
   
   // Build the header
-  let shareText = `Tandem #${puzzleNumber}\n`;
+  let shareText = `Daily Puzzle ${formattedDate}\n`;
   shareText += `${theme}\n`;
   shareText += `━━━━━━━━━━━━━━━━\n`;
   
   // Build the stats line
   shareText += `⏱️ ${formattedTime} | ❌ ${mistakes}/4`;
   
-  // Add Perfect! if no mistakes and no hints
+  // Add conditional text based on hints and mistakes
   if (mistakes === 0 && hintsUsed === 0) {
-    shareText += ` | 🏆 Perfect!`;
+    shareText += ` | 🏆 Perfect`;
+  } else if (hintsUsed > 0) {
+    shareText += ` | 💡 Hint Used`;
   }
   shareText += `\n\n`;
   

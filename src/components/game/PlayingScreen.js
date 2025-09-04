@@ -1,7 +1,7 @@
 'use client';
 import { useState } from 'react';
 import Image from 'next/image';
-import { formatTime } from '@/lib/utils';
+import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
@@ -135,7 +135,7 @@ export default function PlayingScreen({
             />
           </button>
           <div className="text-white/90 text-sm font-medium">
-            Daily Puzzle #{puzzle?.puzzleNumber || ''}
+            Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}
           </div>
         </div>
 

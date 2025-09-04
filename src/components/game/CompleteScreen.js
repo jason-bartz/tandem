@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import { formatTime, getCurrentPuzzleInfo, generateShareText } from '@/lib/utils';
+import { formatTime, getCurrentPuzzleInfo, generateShareText, formatDateShort } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
@@ -31,16 +31,22 @@ export default function CompleteScreen({
   const [showArchive, setShowArchive] = useState(false);
   const { preloadArchive } = useArchivePreload();
   
-  // Get the actual puzzle number (from the puzzle object for archive games, or current for today's)
-  const actualPuzzleNumber = puzzle?.puzzleNumber || getCurrentPuzzleInfo().number;
+  // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
+  const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
 
-  // Generate share text - fix hint positions mapping
-  const hintPositions = activeHints ? 
-    activeHints.map((hint, index) => hint ? index : null).filter(pos => pos !== null) : 
-    [];
+  // Generate share text - map hint positions correctly
+  // activeHints is now a boolean array indicating which positions had hints
+  const hintPositions = [];
+  if (activeHints && activeHints.length > 0) {
+    activeHints.forEach((hadHint, index) => {
+      if (hadHint) {
+        hintPositions.push(index);
+      }
+    });
+  }
   
   const shareText = generateShareText(
-    actualPuzzleNumber,
+    puzzleDate,
     puzzleTheme || 'Tandem Puzzle',
     time,
     mistakes,
@@ -163,10 +169,10 @@ export default function CompleteScreen({
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                #{actualPuzzleNumber}
+              <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                {formatDateShort(puzzleDate)}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Puzzle</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
             </div>
           </div>
           

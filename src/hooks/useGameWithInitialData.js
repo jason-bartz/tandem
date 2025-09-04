@@ -21,6 +21,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
   const [won, setWon] = useState(false);
   const [activeHints, setActiveHints] = useState([null, null, null, null]);
+  const [hintPositionsUsed, setHintPositionsUsed] = useState([false, false, false, false]);
 
   // Only load puzzle if we don't have initial data
   useEffect(() => {
@@ -33,12 +34,13 @@ export function useGameWithInitialData(initialPuzzleData) {
           const response = await puzzleService.getPuzzle();
           
           if (response && response.puzzle) {
-            // Add puzzleNumber to the puzzle object if it's not there
-            const puzzleWithNumber = {
+            // Add puzzleNumber and date to the puzzle object if it's not there
+            const puzzleWithData = {
               ...response.puzzle,
-              puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber
+              puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
+              date: response.date || today
             };
-            setPuzzle(puzzleWithNumber);
+            setPuzzle(puzzleWithData);
             setError(null);
           } else if (response) {
             setPuzzle(response);
@@ -72,12 +74,13 @@ export function useGameWithInitialData(initialPuzzleData) {
       const response = await puzzleService.getPuzzle(date);
       
       if (response && response.puzzle) {
-        // Add puzzleNumber to the puzzle object if it's not there
-        const puzzleWithNumber = {
+        // Add puzzleNumber and date to the puzzle object if it's not there
+        const puzzleWithData = {
           ...response.puzzle,
-          puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber
+          puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
+          date: response.date || puzzleDate
         };
-        setPuzzle(puzzleWithNumber);
+        setPuzzle(puzzleWithData);
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
@@ -85,6 +88,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setMistakes(0);
         setSolved(0);
         setActiveHints([null, null, null, null]);
+        setHintPositionsUsed([false, false, false, false]);
         return true;
       } else if (response) {
         setPuzzle(response);
@@ -95,6 +99,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setMistakes(0);
         setSolved(0);
         setActiveHints([null, null, null, null]);
+        setHintPositionsUsed([false, false, false, false]);
         return true;
       } else {
         setError('No puzzle available');
@@ -123,6 +128,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHintsUsed(0);
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
+    setHintPositionsUsed([false, false, false, false]);
     
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
@@ -189,10 +195,11 @@ export function useGameWithInitialData(initialPuzzleData) {
         solved: solved,
         time: 0,
         hintsUsed: hintsUsed,
+        hintPositionsUsed: hintPositionsUsed,
         attempted: true
       });
     }
-  }, [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed]);
+  }, [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed, hintPositionsUsed]);
 
   const checkSingleAnswer = useCallback((index) => {
     if (correctAnswers[index]) {
@@ -380,6 +387,11 @@ export function useGameWithInitialData(initialPuzzleData) {
     newActiveHints[hintIndex] = hintData;
     setActiveHints(newActiveHints);
     
+    // Mark this position as having used a hint (this won't be cleared)
+    const newHintPositions = [...hintPositionsUsed];
+    newHintPositions[hintIndex] = true;
+    setHintPositionsUsed(newHintPositions);
+    
     setHintsUsed(1);
     
     // Save progress with hint usage
@@ -391,7 +403,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         hintsUsed: 1
       });
     }
-  }, [puzzle, correctAnswers, hintsUsed, activeHints, currentPuzzleDate, solved, mistakes]);
+  }, [puzzle, correctAnswers, hintsUsed, activeHints, hintPositionsUsed, currentPuzzleDate, solved, mistakes]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -403,6 +415,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHintsUsed(0);
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
+    setHintPositionsUsed([false, false, false, false]);
   }, []);
 
   const returnToWelcome = useCallback(() => {
@@ -423,6 +436,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     hintsUsed,
     hasCheckedAnswers,
     activeHints,
+    hintPositionsUsed,
     startGame,
     updateAnswer,
     checkAnswers,
