@@ -28,7 +28,8 @@ export default function PlayingScreen({
   hintsUsed,
   onUseHint,
   hasCheckedAnswers,
-  onReturnToWelcome
+  onReturnToWelcome,
+  activeHints
 }) {
   const hasAnyInput = answers.some(answer => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
@@ -168,6 +169,7 @@ export default function PlayingScreen({
                 isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
                 index={index}
                 onEnterPress={() => handleEnterPress(index)}
+                hintData={activeHints && activeHints[index]}
               />
             ))}
           </div>

@@ -154,6 +154,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
               onUseHint={game.useHint}
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.returnToWelcome}
+              activeHints={game.activeHints}
             />
           )}
           

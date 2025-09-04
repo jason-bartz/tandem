@@ -154,6 +154,7 @@ export default function GameContainer() {
               onUseHint={game.useHint}
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.resetGame}
+              activeHints={game.activeHints}
             />
           )}
 
