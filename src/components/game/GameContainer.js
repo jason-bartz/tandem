@@ -50,10 +50,7 @@ export default function GameContainer() {
   };
   
   const handleSelectPuzzle = async (date) => {
-    // Reset to welcome state first
-    game.resetGame();
-    
-    // Load the selected puzzle
+    // Load the selected puzzle (loadPuzzle handles resetting internally)
     const success = await game.loadPuzzle(date);
     if (success) {
       // Small delay to ensure state updates have propagated
