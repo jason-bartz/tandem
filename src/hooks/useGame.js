@@ -133,7 +133,27 @@ export function useGame() {
   }, [puzzle, currentPuzzleDate, isArchiveGame]);
 
   const updateAnswer = useCallback((index, value) => {
-    const sanitized = sanitizeInput(value);
+    // Check if there's an active hint for this index
+    const hint = activeHints[index];
+    let processedValue = value;
+
+    if (hint) {
+      // If there's a hint, ensure the first letter is preserved
+      const hintLetter = hint.firstLetter;
+
+      if (value.length === 0) {
+        // If user tries to clear the field, keep the hint letter
+        processedValue = hintLetter;
+      } else if (!value.toUpperCase().startsWith(hintLetter)) {
+        // If the value doesn't start with the hint letter, add it
+        processedValue = hintLetter + value;
+      } else if (value.toUpperCase() === hintLetter) {
+        // If only the hint letter is present, keep it
+        processedValue = hintLetter;
+      }
+    }
+
+    const sanitized = sanitizeInput(processedValue);
     setAnswers(prev => {
       const newAnswers = [...prev];
       newAnswers[index] = sanitized;
@@ -147,37 +167,27 @@ export function useGame() {
         return newCheckedWrong;
       });
     }
-  }, [checkedWrongAnswers]);
+  }, [checkedWrongAnswers, activeHints]);
 
   const completeGame = useCallback(async (won) => {
     setGameState(GAME_STATES.COMPLETE);
-    
+
     // Play appropriate sound
     if (won) {
       playSuccessSound();
     } else {
       playFailureSound();
     }
-    
+
     // Get the puzzle date from the puzzle object itself as a fallback
     const puzzleDateToUse = currentPuzzleDate || puzzle?.date || null;
     const todayDate = getCurrentPuzzleInfo().isoDate;
     const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
-    
+
     // Check if this is the first attempt BEFORE saving the result
     const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
-    
-    // Save the final result
-    if (puzzleDateToUse) {
-      savePuzzleResult(puzzleDateToUse, {
-        won,
-        mistakes,
-        solved,
-        hintsUsed,
-        time: null // Could add time tracking if needed
-      });
-    }
-    
+
+    // Update stats BEFORE saving the puzzle result to preserve first attempt status
     try {
       await statsService.updateStats({
         completed: won,
@@ -190,6 +200,17 @@ export function useGame() {
       });
     } catch (err) {
       // Silently fail saving stats
+    }
+
+    // Save the final result AFTER updating stats
+    if (puzzleDateToUse) {
+      savePuzzleResult(puzzleDateToUse, {
+        won,
+        mistakes,
+        solved,
+        hintsUsed,
+        time: null // Could add time tracking if needed
+      });
     }
   }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]);
 
@@ -399,7 +420,14 @@ export function useGame() {
     const newActiveHints = [...activeHints];
     newActiveHints[hintIndex] = hintData;
     setActiveHints(newActiveHints);
-    
+
+    // Pre-fill the answer with the hint letter
+    setAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[hintIndex] = hintData.firstLetter;
+      return newAnswers;
+    });
+
     setHintsUsed(1);
     
     // Save progress with hint usage
