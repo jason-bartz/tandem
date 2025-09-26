@@ -8,6 +8,19 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
       e.preventDefault();
       onEnterPress();
     }
+
+    // Prevent deleting the hint letter with backspace
+    if (hintData && e.key === 'Backspace') {
+      const currentValue = e.target.value;
+      const hintLetter = hintData.firstLetter;
+
+      // If only the hint letter remains or trying to delete it, prevent default
+      if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
+        e.preventDefault();
+        // Set the value to just the hint letter
+        onChange(hintLetter);
+      }
+    }
   };
 
   // Generate hint placeholder text
@@ -32,7 +45,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
       <div className="relative flex-1">
         <input
           type="text"
-          value={value}
+          value={hintData && !value ? hintData.firstLetter : value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={getHintPlaceholder()}
