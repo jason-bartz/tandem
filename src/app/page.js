@@ -2,15 +2,23 @@ import { getPuzzleForDate } from '@/lib/db';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import GameContainerClient from '@/components/game/GameContainerClient';
 
-// Force dynamic rendering to prevent caching issues
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Conditional dynamic based on build target
+const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
+
+// Only force dynamic for web builds, not for iOS static export
+export const dynamic = isCapacitorBuild ? undefined : 'force-dynamic';
+export const revalidate = isCapacitorBuild ? undefined : 0;
 
 async function getTodaysPuzzle() {
+  // For iOS build, return null and let the client fetch
+  if (isCapacitorBuild) {
+    return null;
+  }
+
   try {
     const currentInfo = getCurrentPuzzleInfo();
     const puzzle = await getPuzzleForDate(currentInfo.isoDate);
-    
+
     // Ensure puzzle has proper structure
     if (puzzle && !puzzle.puzzles && puzzle.emojiPairs && puzzle.words) {
       puzzle.puzzles = puzzle.emojiPairs.map((emoji, index) => ({
@@ -18,12 +26,12 @@ async function getTodaysPuzzle() {
         answer: puzzle.words[index] || puzzle.correctAnswers[index]
       }));
     }
-    
+
     // Add puzzle number to puzzle object if not present
     if (puzzle && !puzzle.puzzleNumber) {
       puzzle.puzzleNumber = currentInfo.number;
     }
-    
+
     return {
       success: true,
       date: currentInfo.isoDate,
@@ -39,6 +47,6 @@ async function getTodaysPuzzle() {
 
 export default async function Home() {
   const initialPuzzleData = await getTodaysPuzzle();
-  
+
   return <GameContainerClient initialPuzzleData={initialPuzzleData} />;
 }

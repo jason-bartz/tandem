@@ -1,6 +1,7 @@
 import './globals.css'
 import { Inter } from 'next/font/google'
 import { siteConfig } from '@/lib/seo-config'
+import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -143,10 +144,10 @@ export default function RootLayout({ children }) {
       priceCurrency: 'USD'
     }
   }
-  
+
   return (
-    <html 
-      lang="en" 
+    <html
+      lang="en"
       suppressHydrationWarning
       className="scroll-smooth"
     >
@@ -154,10 +155,10 @@ export default function RootLayout({ children }) {
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-        
+
         {/* Preload critical resources */}
         <link rel="preload" href="/images/main-logo.webp" as="image" type="image/webp" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
@@ -177,7 +178,9 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body className={`${inter.className} antialiased`}>
-        {children}
+        <IOSContainerWrapper>
+          {children}
+        </IOSContainerWrapper>
       </body>
     </html>
   )
