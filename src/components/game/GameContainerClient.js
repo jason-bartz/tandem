@@ -9,6 +9,7 @@ import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import VersionChecker from '@/components/shared/VersionChecker';
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
@@ -96,9 +97,9 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   // Main container with wallpaper background
   return (
-    <div 
+    <div
       className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-      style={{ 
+      style={{
         backgroundImage,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -106,6 +107,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
         backgroundAttachment: 'fixed'
       }}
     >
+      {/* Version checker for iOS app updates */}
+      <VersionChecker />
       {/* Footer - absolutely positioned at bottom behind content */}
       <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
         <p className="text-xs text-white/60">

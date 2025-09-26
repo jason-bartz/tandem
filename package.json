@@ -5,14 +5,30 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:web": "next build",
+    "build:ios": "BUILD_TARGET=capacitor next build",
     "start": "next start",
     "lint": "next lint",
     "test": "jest --watch",
     "test:ci": "jest --ci",
     "hash-password": "node scripts/hash-password.js",
-    "seed": "node scripts/seed-puzzles.js"
+    "seed": "node scripts/seed-puzzles.js",
+    "cap:add": "cap add ios",
+    "cap:sync": "cap sync",
+    "cap:open": "cap open ios",
+    "ios:dev": "npm run build:ios && npm run cap:sync && npm run cap:open",
+    "ios:build": "npm run build:ios && npm run cap:sync"
   },
   "dependencies": {
+    "@capacitor/app": "^5.0.6",
+    "@capacitor/core": "^5.5.1",
+    "@capacitor/haptics": "^5.0.6",
+    "@capacitor/ios": "^5.5.1",
+    "@capacitor/keyboard": "^5.0.6",
+    "@capacitor/preferences": "^5.0.6",
+    "@capacitor/share": "^5.0.6",
+    "@capacitor/splash-screen": "^5.0.6",
+    "@capacitor/status-bar": "^5.0.6",
     "@vercel/kv": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.3",
@@ -30,6 +46,7 @@
     "zustand": "^4.4.7"
   },
   "devDependencies": {
+    "@capacitor/cli": "^5.5.1",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
     "autoprefixer": "^10.0.1",

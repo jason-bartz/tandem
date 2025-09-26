@@ -1,0 +1,1 @@
+{"apiVersion":"1.0.0","minSupportedClient":"1.0.0","currentWebVersion":"1.0.0","features":{"puzzles":true,"stats":true,"archive":true,"offline":true,"share":true},"endpoints":{"puzzle":"/api/puzzle","stats":"/api/stats","batch":"/api/puzzles/batch"}}

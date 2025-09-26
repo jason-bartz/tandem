@@ -1,0 +1,117 @@
+{
+  "name": "Tandem - Daily Emoji Word Puzzle Game",
+  "short_name": "Tandem",
+  "description": "Challenge your brain with Tandem! Match emoji pairs to words in this addictive daily puzzle game. New puzzle every day at midnight ET.",
+  "categories": ["games", "puzzle", "entertainment"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/favicon-16x16.png",
+      "sizes": "16x16",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/favicon-32x32.png",
+      "sizes": "32x32",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/screenshots/game-desktop.png",
+      "sizes": "1920x1080",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "Tandem game on desktop"
+    },
+    {
+      "src": "/screenshots/game-mobile.png",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "Tandem game on mobile"
+    }
+  ],
+  "theme_color": "#0EA5E9",
+  "background_color": "#0EA5E9",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "id": "/?source=pwa",
+  "prefer_related_applications": false,
+  "shortcuts": [
+    {
+      "name": "Today's Puzzle",
+      "short_name": "Play",
+      "description": "Jump straight into today's puzzle",
+      "url": "/?action=play&source=pwa",
+      "icons": [
+        {
+          "src": "/icons/play-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Archive",
+      "short_name": "Archive",
+      "description": "Browse past puzzles",
+      "url": "/archive?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/archive-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Statistics",
+      "short_name": "Stats",
+      "description": "View your game statistics",
+      "url": "/stats?source=pwa",
+      "icons": [
+        {
+          "src": "/icons/stats-96x96.png",
+          "sizes": "96x96",
+          "type": "image/png"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "related_applications": [],
+  "iarc_rating_id": ""
+}
