@@ -208,20 +208,6 @@ export default function Support() {
         backgroundAttachment: 'fixed'
       }}
     >
-      {/* Footer */}
-      <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
-        <p className="text-xs text-white/60">
-          © 2025{' '}
-          <a
-            href="https://www.goodvibesgames.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-white/70 hover:text-white/90 transition-colors underline"
-          >
-            Good Vibes Games
-          </a>
-        </p>
-      </div>
 
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
