@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
@@ -10,6 +10,7 @@ import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
+import platformService from '@/services/platform';
 
 export default function PlayingScreen({
   puzzle,
@@ -35,8 +36,50 @@ export default function PlayingScreen({
   const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { preloadArchive } = useArchivePreload();
+  const contentRef = useRef(null);
+  const puzzleContainerRef = useRef(null);
   
+  // Handle iOS keyboard visibility and scrolling
+  useEffect(() => {
+    if (!platformService.isPlatformNative()) return;
+
+    const handleFocusIn = (e) => {
+      if (e.target.tagName === 'INPUT') {
+        setIsKeyboardVisible(true);
+        // Scroll the input into view with some padding
+        setTimeout(() => {
+          const inputRect = e.target.getBoundingClientRect();
+          const container = puzzleContainerRef.current;
+          if (container) {
+            const containerRect = container.getBoundingClientRect();
+            const scrollTop = container.scrollTop;
+            const inputTop = inputRect.top - containerRect.top + scrollTop;
+            const desiredPosition = inputTop - 100; // 100px padding from top
+
+            container.scrollTo({
+              top: desiredPosition,
+              behavior: 'smooth'
+            });
+          }
+        }, 300); // Wait for keyboard animation
+      }
+    };
+
+    const handleFocusOut = () => {
+      setIsKeyboardVisible(false);
+    };
+
+    document.addEventListener('focusin', handleFocusIn);
+    document.addEventListener('focusout', handleFocusOut);
+
+    return () => {
+      document.removeEventListener('focusin', handleFocusIn);
+      document.removeEventListener('focusout', handleFocusOut);
+    };
+  }, []);
+
   const handleEnterPress = (index) => {
     // Check the current answer
     if (onCheckSingleAnswer) {
@@ -95,9 +138,9 @@ export default function PlayingScreen({
   };
   
   return (
-    <div className="animate-slide-up">
-      {/* Control buttons positioned above the card */}
-      <div className="flex justify-end gap-2 mb-4">
+    <div className="animate-slide-up relative h-full flex flex-col">
+      {/* Control buttons with safe area padding for iOS */}
+      <div className="flex justify-end gap-2 mb-2 sm:mb-4 pt-safe-ios">
         <button
           onClick={() => setShowStats(true)}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
@@ -116,13 +159,23 @@ export default function PlayingScreen({
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
-      {/* Main game card */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden">
-        {/* Header with gradient matching outdoor theme */}
-        <div className="bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900 p-5 text-center">
-          <button 
+      {/* Main game card with scroll container */}
+      <div
+        ref={puzzleContainerRef}
+        className={`bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex-1 flex flex-col ${
+          platformService.isPlatformNative() ? 'overflow-y-auto scrollable' : ''
+        }`}
+        style={{
+          maxHeight: platformService.isPlatformNative() ? 'calc(100vh - 120px)' : 'auto',
+          paddingBottom: isKeyboardVisible ? '280px' : '0'
+        }}
+      >
+        {/* Header with gradient - Logo hidden on mobile */}
+        <div className="bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900 p-5 text-center flex-shrink-0">
+          {/* Only show logo on larger screens */}
+          <button
             onClick={onReturnToWelcome}
-            className="w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
+            className="hidden sm:block w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
             title="Return to Welcome Screen"
           >
             <Image
@@ -139,7 +192,7 @@ export default function PlayingScreen({
           </div>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 flex-1" ref={contentRef}>
           <StatsBar
             time={formatTime(time)}
             mistakes={mistakes}

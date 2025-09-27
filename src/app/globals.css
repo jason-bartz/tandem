@@ -53,6 +53,17 @@ select {
   text-size-adjust: 100%;
 }
 
+/* iOS Safe area padding for control buttons */
+.pt-safe-ios {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Scrollable container for iOS */
+.scrollable {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+}
+
 /* Ensure inputs don't zoom on iOS devices */
 @media screen and (max-width: 768px) {
   input[type="text"],
