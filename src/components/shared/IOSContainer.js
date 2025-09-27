@@ -26,11 +26,47 @@ export default function IOSContainer({ children }) {
             `${info.keyboardHeight}px`
           );
           document.documentElement.classList.add('keyboard-visible');
+
+          // Auto-scroll to active input field
+          setTimeout(() => {
+            const activeElement = document.activeElement;
+            if (activeElement && activeElement.tagName === 'INPUT') {
+              // Find the scrollable container
+              const scrollContainer = document.querySelector('.scrollable');
+              if (scrollContainer) {
+                const inputRect = activeElement.getBoundingClientRect();
+                const containerRect = scrollContainer.getBoundingClientRect();
+                const keyboardHeight = info.keyboardHeight || 300;
+                const viewportHeight = window.innerHeight - keyboardHeight;
+
+                // Check if input is below the visible area
+                if (inputRect.bottom > viewportHeight - 100) {
+                  const scrollTop = scrollContainer.scrollTop;
+                  const inputTop = inputRect.top - containerRect.top + scrollTop;
+                  const desiredPosition = inputTop - 100; // Keep 100px padding from top
+
+                  scrollContainer.scrollTo({
+                    top: desiredPosition,
+                    behavior: 'smooth'
+                  });
+                }
+              }
+            }
+          }, 100);
         };
 
         const handleKeyboardHide = () => {
           document.documentElement.style.setProperty('--keyboard-height', '0px');
           document.documentElement.classList.remove('keyboard-visible');
+
+          // Reset scroll position smoothly
+          const scrollContainer = document.querySelector('.scrollable');
+          if (scrollContainer) {
+            scrollContainer.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            });
+          }
         };
 
         // Add keyboard listeners
@@ -91,7 +127,11 @@ export default function IOSContainer({ children }) {
 
       /* Keyboard adjustments */
       .ios-app.keyboard-visible {
-        padding-bottom: var(--keyboard-height, 0);
+        transition: all 0.3s ease;
+      }
+
+      .ios-app.keyboard-visible .scrollable {
+        padding-bottom: calc(var(--keyboard-height, 0px) + 20px);
         transition: padding-bottom 0.3s ease;
       }
 
@@ -108,6 +148,14 @@ export default function IOSContainer({ children }) {
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
+        scroll-behavior: smooth;
+        position: relative;
+      }
+
+      /* Ensure content is visible when keyboard is shown */
+      .ios-app.keyboard-visible .game-content {
+        transform: translateY(0);
+        transition: transform 0.3s ease;
       }
 
       /* Input focus styles for iOS */
@@ -132,12 +180,14 @@ export default function IOSContainer({ children }) {
 
       /* Fix for iOS rubber band scrolling */
       .ios-app .game-container {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: relative;
+        min-height: 100vh;
         overflow: hidden;
+      }
+
+      /* Safe area adjustments for control buttons */
+      .ios-app .pt-safe-ios {
+        padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 1.5rem));
       }
 
       /* Ensure modals appear above everything on iOS */

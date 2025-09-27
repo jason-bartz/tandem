@@ -121,7 +121,7 @@ export default function GameContainer() {
       }}
     >
       <div className="min-h-screen flex items-center justify-center p-4 pb-12">
-        <div className="w-full max-w-md">
+        <div className="w-full max-w-md h-[90vh] sm:h-auto flex flex-col">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}
