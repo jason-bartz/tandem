@@ -14,7 +14,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 export default function GameContainer() {
   const game = useGame();
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, isAuto, currentState } = useTheme();
   const { playSound } = useSound();
   
   // Auto-refresh puzzle at midnight ET
@@ -127,6 +127,8 @@ export default function GameContainer() {
               onStart={game.startGame}
               theme={theme}
               toggleTheme={toggleTheme}
+              isAuto={isAuto}
+              currentState={currentState}
               onSelectPuzzle={handleSelectPuzzle}
               puzzle={game.puzzle}
             />
@@ -146,6 +148,8 @@ export default function GameContainer() {
               onCheckSingleAnswer={game.checkSingleAnswer}
               theme={theme}
               toggleTheme={toggleTheme}
+              isAuto={isAuto}
+              currentState={currentState}
               onSelectPuzzle={handleSelectPuzzle}
               hintsUsed={game.hintsUsed}
               onUseHint={game.useHint}
@@ -166,6 +170,8 @@ export default function GameContainer() {
               onPlayAgain={game.resetGame}
               theme={theme}
               toggleTheme={toggleTheme}
+              isAuto={isAuto}
+              currentState={currentState}
               hintsUsed={game.hintsUsed || 0}
               activeHints={game.activeHints}
               onSelectPuzzle={handleSelectPuzzle}
