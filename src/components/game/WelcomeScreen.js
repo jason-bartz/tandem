@@ -77,11 +77,13 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 ✌️
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">Each emoji pair = one word</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+                Each emoji pair = one word, or <em>tandem</em>
+              </span>
             </div>
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                ✅
+                ❌
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">4 mistakes allowed</span>
             </div>
