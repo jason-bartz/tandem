@@ -8,7 +8,7 @@ import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 
-export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuzzle, puzzle }) {
+export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, currentState, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
@@ -42,7 +42,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, onSelectPuz
         >
           📅
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
       {/* Main welcome card */}

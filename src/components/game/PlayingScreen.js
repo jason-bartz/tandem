@@ -25,6 +25,8 @@ export default function PlayingScreen({
   onCheckSingleAnswer,
   theme,
   toggleTheme,
+  isAuto,
+  currentState,
   onSelectPuzzle,
   hintsUsed,
   onUseHint,
@@ -156,7 +158,7 @@ export default function PlayingScreen({
         >
           📅
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
       {/* Main game card with scroll container */}

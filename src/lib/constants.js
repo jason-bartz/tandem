@@ -7,6 +7,7 @@ export const GAME_CONFIG = {
 
 export const STORAGE_KEYS = {
   THEME: 'tandemTheme',
+  THEME_MODE: 'tandemThemeMode',
   SOUND: 'tandemSound',
   STATS: 'tandemStats',
   AUTH_TOKEN: 'adminToken',
@@ -107,6 +108,12 @@ export const THEME_CONFIG = {
   LIGHT: 'light',
   DARK: 'dark',
   DEFAULT: 'light',
+};
+
+export const THEME_MODE = {
+  AUTO: 'auto',
+  MANUAL: 'manual',
+  DEFAULT: 'auto',
 };
 
 export const ADMIN_CONFIG = {

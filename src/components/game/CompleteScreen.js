@@ -21,6 +21,8 @@ export default function CompleteScreen({
   onPlayAgain,
   theme,
   toggleTheme,
+  isAuto,
+  currentState,
   hintsUsed,
   activeHints = [],
   onSelectPuzzle,
@@ -124,7 +126,7 @@ export default function CompleteScreen({
         >
           📅
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
       {/* Main completion card */}
