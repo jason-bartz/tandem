@@ -231,7 +231,7 @@ export default function PlayingScreen({
             <button
               onClick={onCheckAnswers}
               disabled={!hasAnyInput}
-              className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
               Check Answers
             </button>

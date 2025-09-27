@@ -86,7 +86,7 @@ export default function ShareButton({ shareText, className = '' }) {
         onClick={handleShare}
         className={`
           w-full py-3 px-4
-          bg-gradient-to-r from-emerald-500 to-teal-500
+          bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600
           text-white rounded-xl font-semibold
           hover:shadow-lg transition-all
           flex items-center justify-center gap-2
