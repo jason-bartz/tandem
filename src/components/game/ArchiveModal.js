@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
+import puzzleService from '@/services/puzzle.service';
 
 // Global cache to persist across component mounts/unmounts
 const globalArchiveCache = {
@@ -76,15 +77,19 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
       
       const datesToFetch = availableDates;
       
-      // Try batch endpoint first
-      try {
-        const response = await fetch('/api/puzzles/batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ dates: datesToFetch })
-        });
-        
-        if (response.ok) {
+      // Try batch endpoint first - disabled for iOS
+      // Skip batch endpoint on iOS since API routes aren't available
+      const skipBatch = true; // Always skip for now since we're on mobile
+
+      if (!skipBatch) {
+        try {
+          const response = await fetch('/api/puzzles/batch', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ dates: datesToFetch })
+          });
+
+          if (response.ok) {
           const data = await response.json();
           const puzzleList = [];
           
@@ -117,18 +122,17 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           
           return;
         }
-      } catch (err) {
-        // Batch endpoint failed, fall back to parallel fetching
-        console.error('Batch fetch failed:', err);
+        } catch (err) {
+          // Batch endpoint failed, fall back to parallel fetching
+          console.error('Batch fetch failed:', err);
+        }
       }
       
-      // Fallback: Fetch all puzzles in parallel
+      // Fallback: Fetch all puzzles in parallel using puzzle service
       const puzzlePromises = datesToFetch.map(async (date) => {
         try {
-          const response = await fetch(`/api/puzzle?date=${date}`);
-          if (response.ok) {
-            const data = await response.json();
-            if (data.puzzle) {
+          const data = await puzzleService.getPuzzle(date);
+          if (data && data.puzzle) {
               const historyData = gameHistory[date] || {};
               return {
                 date,
@@ -143,7 +147,6 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                 puzzleNumber: data.puzzleNumber
               };
             }
-          }
         } catch (err) {
           console.error(`Failed to fetch puzzle for ${date}:`, err);
         }

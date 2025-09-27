@@ -1,19 +1,11 @@
 import { API_ENDPOINTS } from '@/lib/constants';
+import platformService from './platform';
 
 class PuzzleService {
   async getPuzzle(date = null) {
     try {
-      const url = date 
-        ? `${API_ENDPOINTS.PUZZLE}?date=${date}`
-        : API_ENDPOINTS.PUZZLE;
-        
-      const response = await fetch(url);
-      
-      if (!response.ok) {
-        throw new Error(`Failed to fetch puzzle: ${response.status}`);
-      }
-      
-      const data = await response.json();
+      // Use platform service which handles CORS and offline properly
+      const data = await platformService.fetchPuzzle(date);
       return data;
     } catch (error) {
       console.error('PuzzleService.getPuzzle error:', error);
