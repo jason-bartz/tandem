@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useTheme } from '@/hooks/useTheme';
 import Link from 'next/link';
-import { ChevronLeftIcon } from '@heroicons/react/24/outline';
 
 export default function Support() {
   const { theme } = useTheme();
@@ -232,7 +231,9 @@ export default function Support() {
             href="/"
             className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
           >
-            <ChevronLeftIcon className="h-5 w-5" />
+            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
             <span className="text-sm font-medium">Back to Game</span>
           </Link>
 
