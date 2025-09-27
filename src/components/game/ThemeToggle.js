@@ -1,6 +1,8 @@
 'use client';
+import { useHaptics } from '@/hooks/useHaptics';
 
 export default function ThemeToggle({ theme, toggleTheme, isAuto, currentState }) {
+  const { lightTap } = useHaptics();
   const getIcon = () => {
     if (isAuto) {
       return '🔄';
@@ -30,7 +32,10 @@ export default function ThemeToggle({ theme, toggleTheme, isAuto, currentState }
 
   return (
     <button
-      onClick={toggleTheme}
+      onClick={() => {
+        lightTap();
+        toggleTheme();
+      }}
       className={getButtonStyle()}
       title={getTitle()}
     >

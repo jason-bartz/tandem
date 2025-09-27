@@ -10,6 +10,7 @@ import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import ShareButton from './ShareButton';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
+import { useHaptics } from '@/hooks/useHaptics';
 
 export default function CompleteScreen({
   won,
@@ -33,6 +34,7 @@ export default function CompleteScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { preloadArchive } = useArchivePreload();
+  const { celebration, lightTap } = useHaptics();
   
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
@@ -61,14 +63,15 @@ export default function CompleteScreen({
     if (won) {
       // Set random congratulatory message
       setCongratsMessage(getRandomCongratulation());
-      
-      // Play success sound
+
+      // Play success sound and trigger celebration haptics
       try {
         playSuccessSound();
+        celebration();  // Trigger haptic celebration pattern
       } catch (e) {
         // Sound might fail on some browsers
       }
-      
+
       // Trigger confetti with sky/teal theme colors
       const duration = 3000;
       const animationEnd = Date.now() + duration;
@@ -112,14 +115,20 @@ export default function CompleteScreen({
       {/* Control buttons positioned above the card */}
       <div className="flex justify-end gap-2 mb-4">
         <button
-          onClick={() => setShowPlayerStats(true)}
+          onClick={() => {
+            lightTap();
+            setShowPlayerStats(true);
+          }}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
         </button>
         <button
-          onClick={() => setShowArchive(true)}
+          onClick={() => {
+            lightTap();
+            setShowArchive(true);
+          }}
           onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
@@ -132,8 +141,11 @@ export default function CompleteScreen({
       {/* Main completion card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
         <div>
-          <button 
-            onClick={onReturnToWelcome}
+          <button
+            onClick={() => {
+              lightTap();
+              onReturnToWelcome();
+            }}
             className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
             title="Return to Welcome Screen"
           >
@@ -210,7 +222,10 @@ export default function CompleteScreen({
         <div className="space-y-3 mb-6">
           <ShareButton shareText={shareText} />
           <button
-            onClick={() => setShowArchive(true)}
+            onClick={() => {
+              lightTap();
+              setShowArchive(true);
+            }}
             onMouseEnter={() => preloadArchive()}
             className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
@@ -219,7 +234,10 @@ export default function CompleteScreen({
         </div>
 
         <button
-          onClick={() => setShowStats(true)}
+          onClick={() => {
+            lightTap();
+            setShowStats(true);
+          }}
           className="text-sky-600 dark:text-sky-400 hover:underline text-sm"
         >
           View All Statistics
