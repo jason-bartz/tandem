@@ -33,7 +33,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
   };
 
   return (
-    <div 
+    <div
       className="flex gap-2 sm:gap-3 items-center"
       style={{ animationDelay }}
     >
@@ -53,20 +53,34 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
           disabled={isCorrect}
           className={`
             w-full p-3 sm:p-4 border-2 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase
-            ${isCorrect 
-              ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap' 
-              : isWrong 
-                ? 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 animate-shake' 
+            ${isCorrect
+              ? 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap'
+              : isWrong
+                ? 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 animate-shake'
                 : hintData
                   ? 'bg-yellow-50 dark:bg-yellow-900/20 text-dark-text dark:text-gray-200 border-yellow-400 dark:border-yellow-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
                   : 'bg-off-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-border-color dark:border-gray-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
             }
             disabled:cursor-not-allowed
+            ${hintData && (!value || value.toUpperCase() === hintData.firstLetter) ? 'text-transparent' : ''}
             ${hintData ? 'placeholder:text-gray-700 dark:placeholder:text-gray-300 placeholder:font-semibold placeholder:tracking-wider' : ''}
           `}
         />
         {hintData && !isCorrect && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xl">💡</span>
+          <>
+            {/* Show hint pattern only when input shows just the first letter or less */}
+            {(!value || value.toUpperCase() === hintData.firstLetter) && (
+              <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
+                <span className="text-sm sm:text-base font-medium uppercase tracking-wider text-gray-500 dark:text-gray-400" style={{ letterSpacing: '0.15em' }}>
+                  {hintData.firstLetter}
+                  {Array(hintData.length - 1).fill(null).map((_, i) => (
+                    <span key={i} className="ml-1">_</span>
+                  ))}
+                </span>
+              </div>
+            )}
+            <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xl">💡</span>
+          </>
         )}
       </div>
     </div>
