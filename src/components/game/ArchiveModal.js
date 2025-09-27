@@ -272,7 +272,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
         
         <button
           onClick={onClose}
-          className="mt-4 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+          className="mt-4 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
         >
           Close
         </button>

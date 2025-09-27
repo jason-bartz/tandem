@@ -210,7 +210,7 @@ export default function CompleteScreen({
           <button
             onClick={() => setShowArchive(true)}
             onMouseEnter={() => preloadArchive()}
-            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
             Play from Archive
           </button>
