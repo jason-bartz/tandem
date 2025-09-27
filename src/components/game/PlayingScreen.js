@@ -10,6 +10,7 @@ import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
+import { useHaptics } from '@/hooks/useHaptics';
 import platformService from '@/services/platform';
 
 export default function PlayingScreen({
@@ -40,6 +41,7 @@ export default function PlayingScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { preloadArchive } = useArchivePreload();
+  const { lightTap, correctAnswer, incorrectAnswer, hintUsed, selectionStart } = useHaptics();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
   
@@ -86,16 +88,18 @@ export default function PlayingScreen({
     // Check the current answer
     if (onCheckSingleAnswer) {
       const result = onCheckSingleAnswer(index);
-      
+
       // Only play individual answer sounds if the game isn't complete
       // (game completion sounds are handled in completeGame function)
       if (!result.gameComplete) {
         try {
           if (result.isCorrect) {
             playCorrectSound();  // Simple ding for individual correct answer
+            correctAnswer();     // Haptic feedback for correct answer
           } else if (answers[index].trim()) {
             // Only play error sound if there was actually an answer entered
             playErrorSound();
+            incorrectAnswer();   // Haptic feedback for wrong answer
           }
         } catch (e) {
           // Sound might fail on some browsers
@@ -124,14 +128,15 @@ export default function PlayingScreen({
         unsolvedIndices.push(i);
       }
     }
-    
+
     if (unsolvedIndices.length > 0) {
       // Randomly select one of the unsolved puzzles
       const randomIndex = Math.floor(Math.random() * unsolvedIndices.length);
       const hintIndex = unsolvedIndices[randomIndex];
-      
+
       try {
         playHintSound();
+        hintUsed();  // Haptic feedback for hint usage
       } catch (e) {
         // Sound might fail on some browsers
       }
@@ -144,14 +149,20 @@ export default function PlayingScreen({
       {/* Control buttons with safe area padding for iOS */}
       <div className="flex justify-end gap-2 mb-2 sm:mb-4 pt-safe-ios">
         <button
-          onClick={() => setShowStats(true)}
+          onClick={() => {
+            lightTap();
+            setShowStats(true);
+          }}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
         </button>
         <button
-          onClick={() => setShowArchive(true)}
+          onClick={() => {
+            lightTap();
+            setShowArchive(true);
+          }}
           onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"
@@ -176,7 +187,10 @@ export default function PlayingScreen({
         <div className="bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900 p-5 text-center flex-shrink-0">
           {/* Only show logo on larger screens */}
           <button
-            onClick={onReturnToWelcome}
+            onClick={() => {
+              lightTap();
+              onReturnToWelcome();
+            }}
             className="hidden sm:block w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
             title="Return to Welcome Screen"
           >
@@ -231,7 +245,12 @@ export default function PlayingScreen({
 
           <div className="space-y-3">
             <button
-              onClick={onCheckAnswers}
+              onClick={() => {
+                if (hasAnyInput) {
+                  lightTap();
+                  onCheckAnswers();
+                }
+              }}
               disabled={!hasAnyInput}
               className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
             >
@@ -240,7 +259,10 @@ export default function PlayingScreen({
             
             {hintsUsed === 0 && solved < 4 && (
               <button
-                onClick={handleUseHint}
+                onClick={() => {
+                  lightTap();
+                  handleUseHint();
+                }}
                 className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
               >
                 <span className="text-xl">💡</span>

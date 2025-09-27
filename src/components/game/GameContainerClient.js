@@ -3,6 +3,7 @@ import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
+import { useHaptics } from '@/hooks/useHaptics';
 import { GAME_STATES } from '@/lib/constants';
 import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
@@ -18,15 +19,18 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
+  const { correctAnswer, incorrectAnswer } = useHaptics();
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();
-    
+
     if (result.correct > 0) {
       playSound('correct');
+      correctAnswer();  // Add haptic feedback for correct answers
     }
     if (result.incorrect > 0) {
       playSound('incorrect');
+      incorrectAnswer();  // Add haptic feedback for incorrect answers
     }
   };
 

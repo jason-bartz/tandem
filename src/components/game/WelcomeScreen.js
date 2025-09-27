@@ -7,16 +7,19 @@ import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
+import { useHaptics } from '@/hooks/useHaptics';
 
 export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, currentState, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const { preloadArchive } = useArchivePreload();
+  const { lightTap, mediumTap } = useHaptics();
 
   const handlePlayClick = () => {
     try {
       playStartSound();
+      mediumTap();  // Medium tap for starting the game
     } catch (e) {
       // Sound might fail on some browsers
     }
@@ -28,14 +31,20 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
       {/* Control buttons positioned above the card */}
       <div className="flex justify-end gap-2 mb-4">
         <button
-          onClick={() => setShowStats(true)}
+          onClick={() => {
+            lightTap();
+            setShowStats(true);
+          }}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
         </button>
         <button
-          onClick={() => setShowArchive(true)}
+          onClick={() => {
+            lightTap();
+            setShowArchive(true);
+          }}
           onMouseEnter={() => preloadArchive()}
           className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
           title="Archive"

@@ -1,6 +1,6 @@
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { Share } from '@capacitor/share';
-import { Haptics, ImpactStyle } from '@capacitor/haptics';
+import { Haptics, ImpactStyle, NotificationType, HapticsNotificationType } from '@capacitor/haptics';
 import { Preferences } from '@capacitor/preferences';
 
 class PlatformService {
@@ -319,6 +319,101 @@ class PlatformService {
       });
     } catch (error) {
       // Haptic feedback not available
+    }
+  }
+
+  // Enhanced haptic methods for different interaction types
+  async hapticImpact(type = 'medium') {
+    return this.haptic(type);
+  }
+
+  async hapticNotification(type = 'success') {
+    if (!this.isNative || !Haptics) return;
+
+    try {
+      // Use Haptics notification method if available
+      if (Haptics.notification) {
+        const notificationTypes = {
+          success: 'SUCCESS',
+          warning: 'WARNING',
+          error: 'ERROR',
+        };
+        await Haptics.notification({ type: notificationTypes[type] || 'SUCCESS' });
+      } else {
+        // Fallback to impact patterns
+        const patterns = {
+          success: async () => {
+            await this.haptic('medium');
+            setTimeout(() => this.haptic('light'), 100);
+          },
+          warning: async () => {
+            await this.haptic('light');
+            setTimeout(() => this.haptic('light'), 150);
+          },
+          error: async () => {
+            await this.haptic('heavy');
+          },
+        };
+        await patterns[type]();
+      }
+    } catch (error) {
+      // Haptic notification not available
+    }
+  }
+
+  async hapticSelection() {
+    if (!this.isNative || !Haptics) return;
+
+    try {
+      // Use selection changed if available
+      if (Haptics.selectionChanged) {
+        await Haptics.selectionChanged();
+      } else {
+        // Fallback to light impact
+        await this.haptic('light');
+      }
+    } catch (error) {
+      // Haptic selection not available
+    }
+  }
+
+  async hapticSelectionStart() {
+    if (!this.isNative || !Haptics) return;
+
+    try {
+      if (Haptics.selectionStart) {
+        await Haptics.selectionStart();
+      } else {
+        await this.haptic('light');
+      }
+    } catch (error) {
+      // Haptic selection start not available
+    }
+  }
+
+  async hapticSelectionChanged() {
+    if (!this.isNative || !Haptics) return;
+
+    try {
+      if (Haptics.selectionChanged) {
+        await Haptics.selectionChanged();
+      } else {
+        await this.haptic('light');
+      }
+    } catch (error) {
+      // Haptic selection changed not available
+    }
+  }
+
+  async hapticSelectionEnd() {
+    if (!this.isNative || !Haptics) return;
+
+    try {
+      if (Haptics.selectionEnd) {
+        await Haptics.selectionEnd();
+      }
+    } catch (error) {
+      // Haptic selection end not available
     }
   }
 

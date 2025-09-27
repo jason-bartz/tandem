@@ -1,6 +1,8 @@
 'use client';
+import { useHaptics } from '@/hooks/useHaptics';
 
 export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, index, onEnterPress, hintData }) {
+  const { selectionStart } = useHaptics();
   const animationDelay = `${(index + 1) * 100}ms`;
 
   const handleKeyDown = (e) => {
@@ -48,6 +50,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
           value={hintData && !value ? hintData.firstLetter : value}
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onFocus={() => selectionStart()}
           placeholder={getHintPlaceholder()}
           maxLength={15}
           disabled={isCorrect}
