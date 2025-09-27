@@ -1,4 +1,4 @@
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Preferences } from '@capacitor/preferences';
@@ -12,7 +12,7 @@ class PlatformService {
 
     // Set API URL based on platform
     this.apiUrl = this.isNative
-      ? 'https://tandemdaily.com'
+      ? 'https://www.tandemdaily.com'
       : process.env.NEXT_PUBLIC_API_URL || '';
 
     // Cache key prefix for offline storage
@@ -31,36 +31,64 @@ class PlatformService {
 
   // API methods with offline support
   async fetchPuzzle(date) {
-    const url = `${this.apiUrl}/api/puzzle?date=${date}`;
+    // If no date provided, use today's date in Eastern Time
+    const targetDate = date || this.getTodayDateString();
+
+    // Build the full URL
+    const url = this.isNative
+      ? `https://www.tandemdaily.com/api/puzzle?date=${targetDate}`
+      : `/api/puzzle?date=${targetDate}`;
 
     try {
-      const res = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      let data;
 
-      if (!res.ok) {
-        throw new Error(`API Error: ${res.status}`);
+      // Use native HTTP on iOS to bypass CORS
+      if (this.isNative && this.isIOS) {
+        const response = await CapacitorHttp.get({
+          url: `https://www.tandemdaily.com/api/puzzle?date=${targetDate}`,
+        });
+        data = response.data;
+      } else {
+        // Use regular fetch for web
+        const res = await fetch(url, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!res.ok) {
+          throw new Error(`API Error: ${res.status}`);
+        }
+
+        data = await res.json();
       }
-
-      const data = await res.json();
 
       // Cache successful fetch for offline use
       if (this.isNative) {
-        await this.cachePuzzle(date, data);
+        await this.cachePuzzle(targetDate, data);
+        console.log('Puzzle cached for offline use:', targetDate);
       }
 
       return data;
     } catch (error) {
-      // Error fetching puzzle - will try offline fallback
+      console.error('Error fetching puzzle from API:', error);
 
       // Try offline fallback on native
       if (this.isNative) {
-        const cachedPuzzle = await this.getOfflinePuzzle(date);
+        const cachedPuzzle = await this.getOfflinePuzzle(targetDate);
         if (cachedPuzzle) {
+          console.log('Using cached puzzle for:', targetDate);
           return cachedPuzzle;
+        }
+
+        // Last resort: try static puzzles
+        try {
+          const { getStaticPuzzle } = await import('../data/staticPuzzles');
+          console.log('Falling back to static puzzle for:', targetDate);
+          return getStaticPuzzle(targetDate);
+        } catch (staticError) {
+          console.error('Failed to load static puzzle:', staticError);
         }
       }
 
@@ -69,31 +97,92 @@ class PlatformService {
   }
 
   async fetchStats() {
-    const url = `${this.apiUrl}/api/stats`;
+    // Try API first
+    const url = this.isNative
+      ? `https://www.tandemdaily.com/api/stats`
+      : `/api/stats`;
 
     try {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error('Failed to fetch stats');
-      return await res.json();
+      let stats;
+
+      // Use native HTTP on iOS to bypass CORS
+      if (this.isNative && this.isIOS) {
+        const response = await CapacitorHttp.get({
+          url: `https://www.tandemdaily.com/api/stats`,
+        });
+        stats = response.data;
+      } else {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error('Failed to fetch stats');
+        stats = await res.json();
+      }
+
+      // Cache stats locally on native
+      if (this.isNative) {
+        await Preferences.set({
+          key: 'tandem_stats',
+          value: JSON.stringify(stats),
+        });
+      }
+
+      return stats;
     } catch (error) {
-      // Error fetching stats - return empty stats
+      // Try local storage fallback on native
+      if (this.isNative) {
+        try {
+          const { value } = await Preferences.get({ key: 'tandem_stats' });
+          if (value) {
+            console.log('Using cached stats');
+            return JSON.parse(value);
+          }
+        } catch (cacheError) {
+          console.error('Failed to fetch cached stats:', cacheError);
+        }
+      }
+
       // Return empty stats on error
       return { played: 0, won: 0, currentStreak: 0, maxStreak: 0 };
     }
   }
 
   async updateStats(stats) {
-    const url = `${this.apiUrl}/api/stats`;
+    // Always save to local storage on native for offline support
+    if (this.isNative) {
+      try {
+        await Preferences.set({
+          key: 'tandem_stats',
+          value: JSON.stringify(stats),
+        });
+        console.log('Stats saved locally');
+      } catch (error) {
+        console.error('Failed to save local stats:', error);
+      }
+    }
+
+    // Try to sync with API
+    const url = this.isNative
+      ? `https://www.tandemdaily.com/api/stats`
+      : `/api/stats`;
 
     try {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(stats),
-      });
+      // Use native HTTP on iOS to bypass CORS
+      if (this.isNative && this.isIOS) {
+        const response = await CapacitorHttp.post({
+          url: `https://www.tandemdaily.com/api/stats`,
+          headers: { 'Content-Type': 'application/json' },
+          data: stats,
+        });
+        return response.data;
+      } else {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(stats),
+        });
 
-      if (!res.ok) throw new Error('Failed to update stats');
-      return await res.json();
+        if (!res.ok) throw new Error('Failed to update stats');
+        return await res.json();
+      }
     } catch (error) {
       // Error updating stats
       throw error;
@@ -135,14 +224,18 @@ class PlatformService {
     if (!this.isNative) return;
 
     try {
-      const today = new Date();
+      const today = this.getTodayDateString();
+      const todayDate = new Date(today + 'T00:00:00');
       const promises = [];
 
       // Cache last 7 days of puzzles
       for (let i = 0; i < this.CACHE_DAYS; i++) {
-        const date = new Date(today);
+        const date = new Date(todayDate);
         date.setDate(date.getDate() - i);
-        const dateStr = date.toISOString().split('T')[0];
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const dateStr = `${year}-${month}-${day}`;
         promises.push(this.fetchPuzzle(dateStr).catch(() => null));
       }
 
@@ -158,14 +251,15 @@ class PlatformService {
 
     try {
       const { keys } = await Preferences.keys();
-      const today = new Date();
-      const oldestDate = new Date(today);
+      const today = this.getTodayDateString();
+      const todayDate = new Date(today + 'T00:00:00');
+      const oldestDate = new Date(todayDate);
       oldestDate.setDate(oldestDate.getDate() - this.CACHE_DAYS);
 
       for (const key of keys) {
         if (key.startsWith(this.CACHE_PREFIX)) {
           const dateStr = key.replace(this.CACHE_PREFIX, '');
-          const keyDate = new Date(dateStr);
+          const keyDate = new Date(dateStr + 'T00:00:00');
 
           if (keyDate < oldestDate) {
             await Preferences.remove({ key });
@@ -275,6 +369,21 @@ class PlatformService {
   // Check if device is online
   isOnline() {
     return navigator.onLine;
+  }
+
+  // Get today's date in Eastern Time (consistent with puzzle release schedule)
+  getTodayDateString() {
+    const now = new Date();
+    // Convert to Eastern Time
+    const etOffset = -5; // EST offset (will need DST handling for production)
+    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+    const etTime = new Date(utc + (3600000 * etOffset));
+
+    const year = etTime.getFullYear();
+    const month = String(etTime.getMonth() + 1).padStart(2, '0');
+    const day = String(etTime.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
   }
 }
 

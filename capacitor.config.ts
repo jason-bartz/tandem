@@ -17,6 +17,9 @@ const config: CapacitorConfig = {
     limitsNavigationsToAppBoundDomains: false,
   },
   plugins: {
+    CapacitorHttp: {
+      enabled: true, // This bypasses CORS on iOS by using native HTTP
+    },
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
