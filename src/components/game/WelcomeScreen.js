@@ -1,20 +1,37 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { playStartSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
+import { Capacitor } from '@capacitor/core';
+import subscriptionService from '@/services/subscriptionService';
 
 export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, currentState, onSelectPuzzle, puzzle }) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [isPremium, setIsPremium] = useState(false);
   const { preloadArchive } = useArchivePreload();
   const { lightTap, mediumTap } = useHaptics();
+
+  useEffect(() => {
+    // Check premium status on mount
+    checkPremiumStatus();
+  }, []);
+
+  const checkPremiumStatus = async () => {
+    if (Capacitor.isNativePlatform()) {
+      const isSubscribed = await subscriptionService.isSubscribed();
+      setIsPremium(isSubscribed);
+    }
+  };
 
   const handlePlayClick = () => {
     try {
@@ -46,11 +63,28 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             setShowArchive(true);
           }}
           onMouseEnter={() => preloadArchive()}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className={`w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all relative ${
+            isPremium ? 'ring-2 ring-sky-400 ring-offset-2' : ''
+          }`}
           title="Archive"
         >
           📅
+          {isPremium && (
+            <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"></span>
+          )}
         </button>
+        {Capacitor.isNativePlatform() && (
+          <button
+            onClick={() => {
+              lightTap();
+              setShowSettings(true);
+            }}
+            className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+            title="Settings"
+          >
+            ⚙️
+          </button>
+        )}
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
@@ -113,8 +147,8 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
       </div>
       
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModal 
-        isOpen={showArchive} 
+      <ArchiveModal
+        isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={(date) => {
           setShowArchive(false);
@@ -122,6 +156,14 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
           setTimeout(() => {
             onSelectPuzzle(date);
           }, 100);
+        }}
+      />
+      <Settings
+        isOpen={showSettings}
+        onClose={() => {
+          setShowSettings(false);
+          // Refresh premium status when settings close
+          checkPremiumStatus();
         }}
       />
     </div>
