@@ -100,31 +100,18 @@ export function useTheme() {
   }, [themeMode, applyTheme, detectSystemTheme]);
 
   const toggleTheme = () => {
-    const currentMode = themeMode;
-    let newMode;
-    let newTheme;
+    // Simple toggle between light and dark (manual override of system preference)
+    const newTheme = theme === THEME_CONFIG.DARK ? THEME_CONFIG.LIGHT : THEME_CONFIG.DARK;
 
-    if (currentMode === THEME_MODE.AUTO) {
-      newMode = THEME_MODE.MANUAL;
-      newTheme = THEME_CONFIG.LIGHT;
-    } else if (theme === THEME_CONFIG.LIGHT) {
-      newMode = THEME_MODE.MANUAL;
-      newTheme = THEME_CONFIG.DARK;
-    } else {
-      newMode = THEME_MODE.AUTO;
-      newTheme = systemTheme;
-    }
+    // Save manual preference
+    localStorage.setItem(STORAGE_KEYS.THEME_MODE, THEME_MODE.MANUAL);
+    localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
 
-    setThemeMode(newMode);
-    localStorage.setItem(STORAGE_KEYS.THEME_MODE, newMode);
+    // Update state and apply theme
+    setThemeMode(THEME_MODE.MANUAL);
+    applyTheme(newTheme);
 
-    if (newMode === THEME_MODE.MANUAL) {
-      localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
-      applyTheme(newTheme);
-    } else {
-      applyTheme(newTheme);
-    }
-
+    // Update status bar if on iOS
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.StatusBar) {
       window.Capacitor.Plugins.StatusBar.setStyle({
         style: newTheme === THEME_CONFIG.DARK ? 'DARK' : 'LIGHT'
