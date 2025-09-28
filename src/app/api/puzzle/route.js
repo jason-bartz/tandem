@@ -1,7 +1,14 @@
 import { NextResponse } from 'next/server';
-import { getPuzzleForDate, incrementStats } from '@/lib/db';
+import {
+  getPuzzleForDate,
+  incrementStats,
+  updatePuzzleStats,
+  trackUniquePlayer,
+  updateDailyStats
+} from '@/lib/db';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { z } from 'zod';
+import crypto from 'crypto';
 
 export async function GET(request) {
   try {
@@ -25,6 +32,12 @@ export async function GET(request) {
     }
     
     await incrementStats('views');
+
+    // Track unique player via session ID
+    const sessionId = request.headers.get('x-session-id') ||
+                     request.headers.get('x-forwarded-for') ||
+                     crypto.randomBytes(16).toString('hex');
+    await trackUniquePlayer(sessionId);
     
     // Use puzzle's puzzleNumber if available, otherwise calculate it
     const puzzleNumber = puzzle?.puzzleNumber || 
@@ -65,11 +78,41 @@ export async function POST(request) {
     });
     
     const validatedData = completionSchema.parse(body);
-    
+    const puzzleDate = body.date || getCurrentPuzzleInfo().isoDate;
+    const sessionId = request.headers.get('x-session-id') ||
+                     request.headers.get('x-forwarded-for') ||
+                     crypto.randomBytes(16).toString('hex');
+
+    // Update global stats
     await incrementStats('played');
     if (validatedData.completed) {
       await incrementStats('completed');
+      if (validatedData.mistakes === 0) {
+        await incrementStats('perfectGames');
+      }
     }
+    if (validatedData.time) {
+      await incrementStats('totalTime');
+    }
+
+    // Update puzzle-specific stats
+    await updatePuzzleStats(puzzleDate, {
+      played: true,
+      completed: validatedData.completed,
+      time: validatedData.time,
+      mistakes: validatedData.mistakes,
+      hintsUsed: body.hintsUsed || 0,
+      shared: body.shared || false
+    });
+
+    // Update daily stats
+    await updateDailyStats('plays');
+    if (validatedData.completed) {
+      await updateDailyStats('completions');
+    }
+
+    // Track unique player
+    await trackUniquePlayer(sessionId);
     
     return NextResponse.json({
       success: true,

@@ -1,15 +1,23 @@
 'use client';
 import { useState, useEffect } from 'react';
 import statsService from '@/services/stats.service';
+import { ActivityChart, CompletionRateChart, MetricsOverview } from './StatsChart';
 
 export default function StatsOverview() {
   const [stats, setStats] = useState({
     played: 0,
     completed: 0,
     views: 0,
-    completionRate: 0
+    completionRate: 0,
+    uniquePlayers: 0,
+    averageTime: 0,
+    perfectGames: 0,
+    gamesShared: 0
   });
+  const [popularPuzzles, setPopularPuzzles] = useState([]);
+  const [dailyActivity, setDailyActivity] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -17,8 +25,13 @@ export default function StatsOverview() {
 
   const loadStats = async () => {
     try {
-      const globalStats = await statsService.getGlobalStats();
-      setStats(globalStats);
+      const response = await fetch('/api/stats');
+      const data = await response.json();
+      if (data.success) {
+        setStats(data.stats);
+        setPopularPuzzles(data.popularPuzzles || []);
+        setDailyActivity(data.dailyActivity || []);
+      }
     } catch (error) {
       console.error('Failed to load stats:', error);
     } finally {
@@ -45,8 +58,107 @@ export default function StatsOverview() {
     );
   }
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const exportToCSV = async () => {
+    setExporting(true);
+    try {
+      // Prepare CSV data
+      const csvData = [];
+
+      // Add header
+      csvData.push(['Tandem Puzzle Statistics Export']);
+      csvData.push(['Generated on', new Date().toLocaleString()]);
+      csvData.push([]);
+
+      // Global stats
+      csvData.push(['Global Statistics']);
+      csvData.push(['Metric', 'Value']);
+      csvData.push(['Total Views', stats.views]);
+      csvData.push(['Games Played', stats.played]);
+      csvData.push(['Games Completed', stats.completed]);
+      csvData.push(['Completion Rate', `${stats.completionRate}%`]);
+      csvData.push(['Unique Players', stats.uniquePlayers]);
+      csvData.push(['Average Time', formatTime(stats.averageTime)]);
+      csvData.push(['Perfect Games', stats.perfectGames]);
+      csvData.push(['Games Shared', stats.gamesShared]);
+      csvData.push([]);
+
+      // Daily activity
+      csvData.push(['Daily Activity']);
+      csvData.push(['Date', 'Plays', 'Completions', 'Unique Players']);
+      dailyActivity.forEach(day => {
+        csvData.push([
+          new Date(day.date).toLocaleDateString(),
+          day.plays,
+          day.completions,
+          day.uniquePlayers
+        ]);
+      });
+      csvData.push([]);
+
+      // Popular puzzles
+      csvData.push(['Top Performing Puzzles']);
+      csvData.push(['Date', 'Theme', 'Plays', 'Completions', 'Completion Rate']);
+      popularPuzzles.forEach(puzzle => {
+        csvData.push([
+          new Date(puzzle.date).toLocaleDateString(),
+          puzzle.theme,
+          puzzle.played,
+          puzzle.completed,
+          `${puzzle.completionRate}%`
+        ]);
+      });
+
+      // Convert to CSV string
+      const csvContent = csvData.map(row => row.map(cell => {
+        // Escape quotes and wrap in quotes if contains comma
+        const cellStr = String(cell);
+        if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+          return `"${cellStr.replace(/"/g, '""')}"`;
+        }
+        return cellStr;
+      }).join(',')).join('\n');
+
+      // Create blob and download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `tandem-stats-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+    } catch (error) {
+      console.error('Export failed:', error);
+      alert('Failed to export statistics');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6 w-full" style={{ minWidth: '700px' }}>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Statistics Overview</h2>
+        <button
+          onClick={exportToCSV}
+          disabled={exporting || loading}
+          className="px-4 py-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>{exporting ? 'Exporting...' : 'Export CSV'}</span>
+        </button>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard title="Total Views" value={stats.views} />
         <StatCard title="Games Played" value={stats.played} />
@@ -54,33 +166,45 @@ export default function StatsOverview() {
         <StatCard title="Completion Rate" value={`${stats.completionRate}%`} />
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          Daily Activity
-        </h3>
-        <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
-          <p>Activity chart coming soon...</p>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard title="Unique Players" value={stats.uniquePlayers} color="sky" />
+        <StatCard title="Avg Time" value={stats.averageTime ? formatTime(stats.averageTime) : '0:00'} color="emerald" />
+        <StatCard title="Perfect Games" value={stats.perfectGames} color="amber" />
+        <StatCard title="Games Shared" value={stats.gamesShared} color="rose" />
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          Popular Puzzles
+          Engagement Metrics
         </h3>
-        <div className="space-y-3">
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-700 dark:text-gray-300">Weather Patterns</span>
-            <span className="text-gray-500 dark:text-gray-400">89% completion</span>
+        <MetricsOverview stats={stats} />
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Daily Activity (Last 7 Days)
+        </h3>
+        {dailyActivity.length > 0 ? (
+          <ActivityChart data={dailyActivity} />
+        ) : (
+          <div className="h-64 flex items-center justify-center text-gray-500 dark:text-gray-400">
+            <p>No activity data available yet</p>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-700 dark:text-gray-300">Kitchen Items</span>
-            <span className="text-gray-500 dark:text-gray-400">76% completion</span>
+        )}
+      </div>
+
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
+          Top Performing Puzzles
+        </h3>
+        {popularPuzzles.length > 0 ? (
+          <CompletionRateChart data={popularPuzzles} />
+        ) : (
+          <div className="text-gray-500 dark:text-gray-400 text-center py-8">
+            <p>Not enough data yet</p>
+            <p className="text-sm mt-1">Puzzles need at least 10 plays to appear here</p>
           </div>
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-gray-700 dark:text-gray-300">Sports</span>
-            <span className="text-gray-500 dark:text-gray-400">71% completion</span>
-          </div>
-        </div>
+        )}
       </div>
     </div>
   );

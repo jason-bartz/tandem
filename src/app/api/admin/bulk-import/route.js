@@ -2,8 +2,9 @@ import { NextResponse } from 'next/server';
 import { setPuzzleForDate, getPuzzlesRange } from '@/lib/db';
 import { verifyAdminToken } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
+import { z } from 'zod';
 import {
-  bulkImportSchema,
+  puzzleSchema,
   parseAndValidateJson,
   sanitizeErrorMessage,
   escapeHtml
@@ -45,7 +46,7 @@ export async function POST(request) {
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
-    
+
     const admin = await requireAdmin(request);
     if (!admin) {
       return NextResponse.json(
@@ -53,18 +54,56 @@ export async function POST(request) {
         { status: 401 }
       );
     }
-    
+
+    // Get the raw body to debug
+    const rawBody = await request.text();
+    console.log('Raw request body:', rawBody);
+    const bodyData = JSON.parse(rawBody);
+    console.log('Parsed body data:', bodyData);
+    console.log('Body data type:', typeof bodyData);
+    console.log('Is array?', Array.isArray(bodyData));
+    console.log('Has puzzles field?', 'puzzles' in bodyData);
+    console.log('Puzzles field type:', typeof bodyData.puzzles, Array.isArray(bodyData.puzzles));
+
+    // Log each puzzle to see the structure
+    if (bodyData.puzzles && Array.isArray(bodyData.puzzles)) {
+      bodyData.puzzles.forEach((puzzle, index) => {
+        console.log(`Puzzle ${index}:`, puzzle);
+        if (puzzle.puzzles) {
+          puzzle.puzzles.forEach((p, i) => {
+            console.log(`  Item ${i}: emoji="${p.emoji}", answer="${p.answer}", answer type=${typeof p.answer}`);
+          });
+        }
+      });
+    }
+
     // Enhanced bulk import schema with date validation
-    const enhancedBulkImportSchema = bulkImportSchema.extend({
+    const enhancedBulkImportSchema = z.object({
+      puzzles: z.array(puzzleSchema).min(1).max(365),
       startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
       overwrite: z.boolean().optional().default(false)
     });
-    
-    // Parse and validate with size limits
-    const { startDate, overwrite, puzzles: importedPuzzles } = await parseAndValidateJson(
-      request, 
-      enhancedBulkImportSchema
-    );
+
+    // Validate with the schema
+    let validatedData;
+    try {
+      validatedData = enhancedBulkImportSchema.parse(bodyData);
+    } catch (validationError) {
+      console.error('Validation error:', validationError);
+      if (validationError instanceof z.ZodError) {
+        console.error('Zod errors:', validationError.errors);
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Validation error: ${validationError.errors.map(e => e.message).join(', ')}`
+          },
+          { status: 400 }
+        );
+      }
+      throw validationError;
+    }
+
+    const { startDate, overwrite, puzzles: importedPuzzles } = validatedData;
     
     for (const puzzle of importedPuzzles) {
       if (!isValidPuzzle(puzzle)) {
