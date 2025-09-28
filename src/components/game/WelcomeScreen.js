@@ -62,7 +62,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             lightTap();
             setShowStats(true);
           }}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
@@ -73,7 +73,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             setShowArchive(true);
           }}
           onMouseEnter={() => preloadArchive()}
-          className={`w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all relative ${
+          className={`w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all relative ${
             isPremium ? 'ring-2 ring-sky-400 ring-offset-2' : ''
           }`}
           title="Archive"
@@ -83,18 +83,16 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"></span>
           )}
         </button>
-        {Capacitor.isNativePlatform() && (
-          <button
-            onClick={() => {
-              lightTap();
-              setShowSettings(true);
-            }}
-            className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
-            title="Settings"
-          >
-            ⚙️
-          </button>
-        )}
+        <button
+          onClick={() => {
+            lightTap();
+            setShowSettings(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="Settings"
+        >
+          ⚙️
+        </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
