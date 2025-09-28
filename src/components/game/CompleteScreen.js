@@ -147,7 +147,7 @@ export default function CompleteScreen({
         >
           ⚙️
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       {/* Main completion card */}

@@ -100,7 +100,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             ⚙️
           </button>
         )}
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
+        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       {/* Main welcome card */}
