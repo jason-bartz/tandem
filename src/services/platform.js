@@ -34,6 +34,11 @@ class PlatformService {
     // If no date provided, use today's date in Eastern Time
     const targetDate = date || this.getTodayDateString();
 
+    // Check if we need to clear yesterday's cache for today's puzzle
+    if (!date && this.isNative) {
+      await this.clearYesterdayCache();
+    }
+
     // Build the full URL
     const url = this.isNative
       ? `https://www.tandemdaily.com/api/puzzle?date=${targetDate}`
@@ -271,6 +276,34 @@ class PlatformService {
     }
   }
 
+  // Clear yesterday's cache to ensure fresh puzzle load
+  async clearYesterdayCache() {
+    if (!this.isNative) return;
+
+    try {
+      const today = this.getTodayDateString();
+      const yesterday = new Date(today + 'T00:00:00');
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+      const todayKey = `${this.CACHE_PREFIX}${today}`;
+      const yesterdayKey = `${this.CACHE_PREFIX}${yesterdayStr}`;
+
+      // Check if cached puzzle is for yesterday
+      const { value: cachedToday } = await Preferences.get({ key: todayKey });
+      if (cachedToday) {
+        const cached = JSON.parse(cachedToday);
+        // If cached puzzle date doesn't match today, clear it
+        if (cached.date !== today) {
+          await Preferences.remove({ key: todayKey });
+          console.log('Cleared stale cache for today');
+        }
+      }
+    } catch (error) {
+      // Error clearing cache - non-critical
+    }
+  }
+
   // Native feature wrappers
   async share(data) {
     try {
@@ -469,14 +502,20 @@ class PlatformService {
   // Get today's date in Eastern Time (consistent with puzzle release schedule)
   getTodayDateString() {
     const now = new Date();
-    // Convert to Eastern Time
-    const etOffset = -5; // EST offset (will need DST handling for production)
-    const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
-    const etTime = new Date(utc + (3600000 * etOffset));
 
-    const year = etTime.getFullYear();
-    const month = String(etTime.getMonth() + 1).padStart(2, '0');
-    const day = String(etTime.getDate()).padStart(2, '0');
+    // Use Intl.DateTimeFormat to get the correct date in Eastern Time
+    // This properly handles DST automatically
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit'
+    });
+
+    const parts = formatter.formatToParts(now);
+    const year = parts.find(p => p.type === 'year').value;
+    const month = parts.find(p => p.type === 'month').value;
+    const day = parts.find(p => p.type === 'day').value;
 
     return `${year}-${month}-${day}`;
   }
