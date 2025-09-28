@@ -19,11 +19,21 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
   const [showSettings, setShowSettings] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const { preloadArchive } = useArchivePreload();
-  const { lightTap, mediumTap } = useHaptics();
+  const { lightTap, mediumTap, welcomeMelody } = useHaptics();
 
   useEffect(() => {
     // Check premium status on mount
     checkPremiumStatus();
+
+    // Play welcome sound and haptics on iOS when component mounts
+    if (Capacitor.isNativePlatform()) {
+      try {
+        playStartSound();
+        welcomeMelody();
+      } catch (e) {
+        // Sound/haptics might fail on some devices
+      }
+    }
   }, []);
 
   const checkPremiumStatus = async () => {

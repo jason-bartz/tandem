@@ -67,6 +67,24 @@ export function useHaptics() {
     await platformService.hapticSelectionEnd();
   }, []);
 
+  // Welcome melody haptic pattern - synchronized with start tune
+  const welcomeMelody = useCallback(async () => {
+    // Haptic pattern matching the 5-note melody
+    const pattern = [
+      { delay: 0, type: 'light' },      // C5 - welcoming
+      { delay: 150, type: 'light' },    // E5 - bright
+      { delay: 300, type: 'medium' },   // G5 - lifting
+      { delay: 450, type: 'light' },    // E5 - quick bounce
+      { delay: 550, type: 'medium' },   // G5 - settling
+    ];
+
+    for (const { delay, type } of pattern) {
+      setTimeout(() => {
+        platformService.hapticImpact(type);
+      }, delay);
+    }
+  }, []);
+
   return {
     lightTap,
     mediumTap,
@@ -78,5 +96,6 @@ export function useHaptics() {
     selectionStart,
     selectionChanged,
     selectionEnd,
+    welcomeMelody,
   };
 }

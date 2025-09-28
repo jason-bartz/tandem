@@ -152,56 +152,41 @@ export function playErrorSound() {
   oscillator.stop(context.currentTime + 0.15);
 }
 
-// Play a playful, game-like sound when starting the game
+// Play a cute, cheerful welcome melody when starting the game
 export function playStartSound() {
   const context = initAudio();
   if (!context) return;
 
   const currentTime = context.currentTime;
-  
-  // Create a bouncy, ascending melody - like a happy little jump
+
+  // Cheerful welcome melody - cute and inviting
   const notes = [
-    { freq: 392, start: 0, duration: 0.08 },        // G4
-    { freq: 523.25, start: 0.05, duration: 0.08 },  // C5
-    { freq: 659.25, start: 0.1, duration: 0.12 },   // E5
+    { frequency: 523.25, start: 0, duration: 0.2 },     // C5 - welcoming
+    { frequency: 659.25, start: 0.15, duration: 0.2 },  // E5 - bright
+    { frequency: 783.99, start: 0.3, duration: 0.2 },   // G5 - lifting
+    { frequency: 659.25, start: 0.45, duration: 0.15 }, // E5 - quick bounce
+    { frequency: 783.99, start: 0.55, duration: 0.3 },  // G5 - settling
   ];
-  
-  notes.forEach(({ freq, start, duration }) => {
+
+  notes.forEach(note => {
     const oscillator = context.createOscillator();
     const gainNode = context.createGain();
-    
-    // Mix of sine and triangle for a softer, more playful tone
-    oscillator.type = 'triangle';
-    oscillator.frequency.setValueAtTime(freq, currentTime + start);
-    
-    // Quick, bouncy envelope
-    gainNode.gain.setValueAtTime(0, currentTime + start);
-    gainNode.gain.linearRampToValueAtTime(0.15, currentTime + start + 0.01);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + start + duration);
-    
+
+    // Use sine wave for a soft, pleasant tone
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(note.frequency, currentTime + note.start);
+
+    // Gentle envelope for each note
+    gainNode.gain.setValueAtTime(0, currentTime + note.start);
+    gainNode.gain.linearRampToValueAtTime(0.3, currentTime + note.start + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, currentTime + note.start + note.duration);
+
     oscillator.connect(gainNode);
     gainNode.connect(context.destination);
-    
-    oscillator.start(currentTime + start);
-    oscillator.stop(currentTime + start + duration);
+
+    oscillator.start(currentTime + note.start);
+    oscillator.stop(currentTime + note.start + note.duration);
   });
-  
-  // Add a little "pop" at the end for extra playfulness
-  const pop = context.createOscillator();
-  const popGain = context.createGain();
-  
-  pop.type = 'sine';
-  pop.frequency.setValueAtTime(1046.5, currentTime + 0.15); // C6
-  
-  popGain.gain.setValueAtTime(0, currentTime + 0.15);
-  popGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.16);
-  popGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.25);
-  
-  pop.connect(popGain);
-  popGain.connect(context.destination);
-  
-  pop.start(currentTime + 0.15);
-  pop.stop(currentTime + 0.25);
 }
 
 // Play a gentle failure sound - soft and not harsh
