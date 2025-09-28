@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
-import { savePuzzleProgress, savePuzzleResult, updateGameStats, hasPlayedToday } from '@/lib/storage';
+import { savePuzzleProgress, savePuzzleResult, updateGameStats, hasPlayedPuzzle } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 
 export function useGameWithInitialData(initialPuzzleData) {
@@ -166,12 +166,11 @@ export function useGameWithInitialData(initialPuzzleData) {
       playFailureSound();
     }
     
-    // Check if this is the first attempt for today's puzzle
-    const today = new Date().toISOString().split('T')[0];
-    const isFirstAttempt = !isArchiveGame && currentPuzzleDate === today && !hasPlayedToday();
-    
+    // Check if this is the first attempt for this puzzle (both daily and archive)
+    const isFirstAttempt = currentPuzzleDate && !hasPlayedPuzzle(currentPuzzleDate);
+
     // Update stats with proper parameters
-    updateGameStats(won, isFirstAttempt, isArchiveGame);
+    updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
     
     if (!isArchiveGame) {
       try {
