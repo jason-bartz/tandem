@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import PuzzleEditor from '@/components/admin/PuzzleEditor';
 import PuzzleCalendar from '@/components/admin/PuzzleCalendar';
 import StatsOverview from '@/components/admin/StatsOverview';
+import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
 
 export default function AdminDashboard() {
@@ -82,6 +83,18 @@ export default function AdminDashboard() {
           >
             Statistics
           </button>
+          <button
+            onClick={() => setActiveTab('themes')}
+            className={`
+              py-2 px-1 border-b-2 font-medium text-sm
+              ${activeTab === 'themes'
+                ? 'border-sky-500 text-sky-600'
+                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }
+            `}
+          >
+            Theme Tracker
+          </button>
         </nav>
       </div>
 
@@ -105,6 +118,7 @@ export default function AdminDashboard() {
           />
         )}
         {activeTab === 'stats' && <StatsOverview />}
+        {activeTab === 'themes' && <ThemeTracker />}
       </div>
 
       {showBulkImport && (
