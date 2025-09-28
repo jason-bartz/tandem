@@ -2,9 +2,9 @@ import { Capacitor } from '@capacitor/core';
 
 // Product IDs - must match App Store Connect configuration
 const PRODUCTS = {
-  BUDDY_MONTHLY: 'com.tandemdaily.app.buddy',
+  BUDDY_MONTHLY: 'com.tandemdaily.app.buddypass',
   BEST_FRIENDS_YEARLY: 'com.tandemdaily.app.bestfriends',
-  SOULMATE_LIFETIME: 'com.tandemdaily.app.soulmate'
+  SOULMATE_LIFETIME: 'com.tandemdaily.app.soulmates'
 };
 
 // Storage keys
@@ -44,39 +44,60 @@ class SubscriptionService {
     }
 
     try {
-      // Dynamic import to avoid errors on web
-      const { InAppPurchase2 } = await import('@awesome-cordova-plugins/in-app-purchase-2');
-      this.store = InAppPurchase2;
+      // Access the global CdvPurchase object that cordova-plugin-purchase v13 provides
+      if (typeof window !== 'undefined' && window.CdvPurchase) {
+        this.store = window.CdvPurchase.store;
 
-      // Configure store
-      this.store.verbosity = this.store.DEBUG;
+        // Configure verbosity for debugging
+        this.store.verbosity = window.CdvPurchase.LogLevel.DEBUG;
 
-      // Register products
-      this.store.register([
-        {
-          id: PRODUCTS.BUDDY_MONTHLY,
-          type: this.store.PAID_SUBSCRIPTION
-        },
-        {
-          id: PRODUCTS.BEST_FRIENDS_YEARLY,
-          type: this.store.PAID_SUBSCRIPTION
-        },
-        {
-          id: PRODUCTS.SOULMATE_LIFETIME,
-          type: this.store.NON_CONSUMABLE
-        }
-      ]);
+        // Register products with platform specification
+        this.store.register([
+          {
+            id: PRODUCTS.BUDDY_MONTHLY,
+            type: window.CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+            platform: window.CdvPurchase.Platform.APPLE_APPSTORE
+          },
+          {
+            id: PRODUCTS.BEST_FRIENDS_YEARLY,
+            type: window.CdvPurchase.ProductType.PAID_SUBSCRIPTION,
+            platform: window.CdvPurchase.Platform.APPLE_APPSTORE
+          },
+          {
+            id: PRODUCTS.SOULMATE_LIFETIME,
+            type: window.CdvPurchase.ProductType.NON_CONSUMABLE,
+            platform: window.CdvPurchase.Platform.APPLE_APPSTORE
+          }
+        ]);
 
-      // Set up event handlers
-      this.setupEventHandlers();
+        // Set up event handlers
+        this.setupEventHandlers();
 
-      // Refresh store
-      await this.store.refresh();
+        // Initialize the store with Apple App Store platform
+        await this.store.initialize([{
+          platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
+          options: {
+            needAppReceipt: false
+          }
+        }]);
 
-      this.isInitialized = true;
-      await this.loadSubscriptionStatus();
+        // Wait a bit for products to load
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-      console.log('IAP: Store initialized successfully');
+        // Store products for easy access
+        const allProducts = this.store.products;
+        allProducts.forEach(product => {
+          this.products[product.id] = product;
+          console.log('IAP: Product loaded:', product.id, product);
+        });
+
+        this.isInitialized = true;
+        await this.loadSubscriptionStatus();
+
+        console.log('IAP: Store initialized successfully');
+      } else {
+        throw new Error('CdvPurchase not available - plugin may not be installed correctly');
+      }
     } catch (error) {
       console.error('IAP: Failed to initialize store:', error);
       this.isInitialized = true; // Still mark as initialized to prevent blocking
@@ -87,40 +108,59 @@ class SubscriptionService {
   setupEventHandlers() {
     if (!this.store) return;
 
-    // When product is updated
-    this.store.when('product').updated((product) => {
-      this.products[product.id] = product;
-      console.log('IAP: Product updated:', product.id, product.state);
-    });
+    const CdvPurchase = window.CdvPurchase;
 
-    // When purchase is approved
-    this.store.when('product').approved((product) => {
-      console.log('IAP: Purchase approved:', product.id);
-      product.finish();
-      this.handleSuccessfulPurchase(product);
-    });
-
-    // When purchase is cancelled
-    this.store.when('product').cancelled((product) => {
-      console.log('IAP: Purchase cancelled:', product.id);
-    });
-
-    // When purchase fails
-    this.store.when('product').error((error) => {
-      console.error('IAP: Purchase error:', error);
-    });
+    // When products are updated
+    this.store.when()
+      .productUpdated((product) => {
+        this.products[product.id] = product;
+        console.log('IAP: Product updated:', product.id, product);
+      })
+      .approved((transaction) => {
+        console.log('IAP: Purchase approved:', transaction);
+        // Verify the transaction
+        transaction.verify();
+      })
+      .verified((receipt) => {
+        console.log('IAP: Purchase verified:', receipt);
+        // Finish the transaction
+        receipt.finish();
+        // Handle successful purchase
+        this.handleSuccessfulPurchase(receipt);
+      })
+      .finished((transaction) => {
+        console.log('IAP: Transaction finished:', transaction);
+      })
+      .cancelled((transaction) => {
+        console.log('IAP: Purchase cancelled:', transaction);
+      })
+      .failed((transaction) => {
+        console.error('IAP: Purchase failed:', transaction);
+      });
   }
 
-  async handleSuccessfulPurchase(product) {
+  async handleSuccessfulPurchase(receipt) {
     const now = new Date().toISOString();
     let expiryDate = null;
+    let productId = null;
+
+    // Find the product ID from the receipt
+    if (receipt.transactions && receipt.transactions.length > 0) {
+      const transaction = receipt.transactions[0];
+      productId = transaction.products[0]?.id;
+    }
+
+    if (!productId) {
+      console.error('IAP: Could not determine product ID from receipt');
+      return;
+    }
 
     // Calculate expiry date based on product type
-    if (product.id === PRODUCTS.BUDDY_MONTHLY) {
+    if (productId === PRODUCTS.BUDDY_MONTHLY) {
       const expiry = new Date();
       expiry.setMonth(expiry.getMonth() + 1);
       expiryDate = expiry.toISOString();
-    } else if (product.id === PRODUCTS.BEST_FRIENDS_YEARLY) {
+    } else if (productId === PRODUCTS.BEST_FRIENDS_YEARLY) {
       const expiry = new Date();
       expiry.setFullYear(expiry.getFullYear() + 1);
       expiryDate = expiry.toISOString();
@@ -131,7 +171,7 @@ class SubscriptionService {
     if (typeof window !== 'undefined') {
       localStorage.setItem(STORAGE_KEYS.SUBSCRIPTION_STATUS, 'active');
       localStorage.setItem(STORAGE_KEYS.PURCHASE_DATE, now);
-      localStorage.setItem(STORAGE_KEYS.PRODUCT_ID, product.id);
+      localStorage.setItem(STORAGE_KEYS.PRODUCT_ID, productId);
       if (expiryDate) {
         localStorage.setItem(STORAGE_KEYS.EXPIRY_DATE, expiryDate);
       }
@@ -139,7 +179,7 @@ class SubscriptionService {
 
     this.subscriptionStatus = {
       isActive: true,
-      productId: product.id,
+      productId: productId,
       purchaseDate: now,
       expiryDate
     };
@@ -208,26 +248,29 @@ class SubscriptionService {
       throw new Error('Product not found: ' + productId);
     }
 
-    if (!product.canPurchase) {
-      throw new Error('Product cannot be purchased');
+    // Get the first offer from the product
+    const offer = product.offers && product.offers.length > 0 ? product.offers[0] : null;
+
+    if (!offer) {
+      throw new Error('No offers available for product: ' + productId);
     }
 
     return new Promise((resolve, reject) => {
-      // Set up one-time handlers for this purchase
-      const approved = this.store.once(productId).approved(() => {
-        resolve(true);
-      });
-
-      const cancelled = this.store.once(productId).cancelled(() => {
-        reject(new Error('Purchase cancelled'));
-      });
-
-      const error = this.store.once(productId).error((err) => {
-        reject(err);
-      });
-
-      // Initiate purchase
-      this.store.order(productId);
+      try {
+        // Initiate purchase with the offer
+        this.store.order(offer)
+          .then(() => {
+            console.log('IAP: Order initiated for:', productId);
+            resolve(true);
+          })
+          .catch(error => {
+            console.error('IAP: Order failed:', error);
+            reject(error);
+          });
+      } catch (error) {
+        console.error('IAP: Failed to initiate purchase:', error);
+        reject(error);
+      }
     });
   }
 
@@ -241,24 +284,37 @@ class SubscriptionService {
     }
 
     return new Promise((resolve, reject) => {
-      let restored = false;
+      try {
+        // Use v13's restorePurchases method
+        this.store.restorePurchases()
+          .then(() => {
+            console.log('IAP: Restore completed');
 
-      // Check each product for owned status after refresh
-      const checkProducts = () => {
-        for (const productId of Object.keys(PRODUCTS)) {
-          const product = this.products[PRODUCTS[productId]];
-          if (product && product.owned) {
-            this.handleSuccessfulPurchase(product);
-            restored = true;
-          }
-        }
-        resolve(restored);
-      };
+            // Check if any products are now owned
+            let restored = false;
+            Object.values(this.products).forEach(product => {
+              if (product.owned) {
+                console.log('IAP: Product owned after restore:', product.id);
+                restored = true;
+                // Update local storage with the restored purchase
+                this.handleSuccessfulPurchase({
+                  transactions: [{
+                    products: [{ id: product.id }]
+                  }]
+                });
+              }
+            });
 
-      // Refresh to get latest purchase info
-      this.store.refresh().then(() => {
-        setTimeout(checkProducts, 500); // Give store time to update
-      }).catch(reject);
+            resolve(restored);
+          })
+          .catch(error => {
+            console.error('IAP: Restore failed:', error);
+            reject(error);
+          });
+      } catch (error) {
+        console.error('IAP: Failed to restore purchases:', error);
+        reject(error);
+      }
     });
   }
 
@@ -270,12 +326,18 @@ class SubscriptionService {
     const product = this.products[productId];
     if (!product) return null;
 
+    // Get pricing from the first offer
+    const offer = product.offers && product.offers.length > 0 ? product.offers[0] : null;
+    const pricing = offer?.pricingPhases && offer.pricingPhases.length > 0
+      ? offer.pricingPhases[0]
+      : null;
+
     return {
       id: product.id,
       title: product.title,
       description: product.description,
-      price: product.price,
-      currency: product.currency,
+      price: pricing?.price || 'N/A',
+      currency: pricing?.currency || 'USD',
       canPurchase: product.canPurchase
     };
   }

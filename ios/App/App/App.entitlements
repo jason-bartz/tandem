@@ -4,9 +4,9 @@
 <dict>
 	<key>com.apple.developer.in-app-payments</key>
 	<array>
-		<string>com.tandemdaily.app.buddy</string>
+		<string>com.tandemdaily.app.buddypass</string>
 		<string>com.tandemdaily.app.bestfriends</string>
-		<string>com.tandemdaily.app.soulmate</string>
+		<string>com.tandemdaily.app.soulmates</string>
 	</array>
 </dict>
 </plist>

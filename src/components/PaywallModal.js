@@ -22,8 +22,15 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       await subscriptionService.initialize();
       const allProducts = subscriptionService.getProducts();
       setProducts(allProducts);
+      console.log('PaywallModal: Loaded products:', allProducts);
+
+      // If no products loaded, show error
+      if (!allProducts || Object.keys(allProducts).length === 0) {
+        setError('Products are still loading. Please try again in a moment.');
+      }
     } catch (err) {
       console.error('Failed to load products:', err);
+      setError('Failed to load subscription options. Please try again.');
     }
   };
 
@@ -96,10 +103,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         <div className="flex justify-between items-start mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-              ✨ Tandem Plus
+              ✨ Tandem Unlimited
             </h2>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              Unlock all puzzles & support indie gaming
+              Unlock all puzzles & support a solo developer
             </p>
           </div>
           <button
@@ -116,15 +123,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           <div className="space-y-3">
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Play any puzzle from our archive</span>
+              <span className="text-gray-700 dark:text-gray-300">Play any puzzle from the archive</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">New puzzles added daily</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Support an indie game studio</span>
+              <span className="text-gray-700 dark:text-gray-300">Support a solo developer</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
@@ -137,7 +140,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         <div className="space-y-3 mb-6">
           {/* Buddy Pass - Monthly */}
           <button
-            onClick={() => handlePurchase('com.tandemdaily.app.buddy')}
+            onClick={() => handlePurchase('com.tandemdaily.app.buddypass')}
             disabled={loading || restoring}
             className={`w-full p-4 rounded-2xl border-2 transition-all ${
               loading ? 'opacity-50' : 'hover:scale-[1.02] hover:shadow-lg'
@@ -206,7 +209,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
           {/* Soulmate - Lifetime */}
           <button
-            onClick={() => handlePurchase('com.tandemdaily.app.soulmate')}
+            onClick={() => handlePurchase('com.tandemdaily.app.soulmates')}
             disabled={loading || restoring}
             className={`w-full p-4 rounded-2xl border-2 transition-all ${
               loading ? 'opacity-50' : 'hover:scale-[1.02] hover:shadow-lg'
@@ -263,13 +266,13 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </p>
           <div className="flex justify-center gap-4 mt-3">
             <a
-              href="https://tandemdaily.com/terms"
+              href="/terms"
               className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
             >
               Terms of Use
             </a>
             <a
-              href="https://tandemdaily.com/privacy"
+              href="/privacypolicy"
               className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
             >
               Privacy Policy
