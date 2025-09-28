@@ -244,6 +244,63 @@ export function playFailureSound() {
   harmony.stop(currentTime + 0.8);
 }
 
+// Play a quick, punchy button click sound for starting the game - distinct from intro melody
+export function playButtonTone() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Quick two-tone ascending pattern - punchy and distinct
+  const notes = [
+    { frequency: 440, start: 0, duration: 0.08 },      // A4 - quick punch
+    { frequency: 659.25, start: 0.06, duration: 0.12 }, // E5 - bright lift
+  ];
+
+  notes.forEach(note => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    // Square wave for a more digital, punchy sound
+    oscillator.type = 'square';
+    oscillator.frequency.setValueAtTime(note.frequency, currentTime + note.start);
+
+    // Quick attack, short sustain for a button-like feel
+    gainNode.gain.setValueAtTime(0, currentTime + note.start);
+    gainNode.gain.linearRampToValueAtTime(0.15, currentTime + note.start + 0.01);
+    gainNode.gain.setValueAtTime(0.12, currentTime + note.start + 0.03);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + note.start + note.duration);
+
+    // Add a filter to soften the square wave slightly
+    const filter = context.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 2000;
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start(currentTime + note.start);
+    oscillator.stop(currentTime + note.start + note.duration);
+  });
+
+  // Add a subtle click at the beginning for tactile feel
+  const click = context.createOscillator();
+  const clickGain = context.createGain();
+
+  click.type = 'sine';
+  click.frequency.value = 100;
+
+  clickGain.gain.setValueAtTime(0.05, currentTime);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.02);
+
+  click.connect(clickGain);
+  clickGain.connect(context.destination);
+
+  click.start(currentTime);
+  click.stop(currentTime + 0.02);
+}
+
 // Play a magical hint sound - like a lightbulb moment
 export function playHintSound() {
   const context = initAudio();

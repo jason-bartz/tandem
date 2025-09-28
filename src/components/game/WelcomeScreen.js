@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
-import { playStartSound } from '@/lib/sounds';
+import { playStartSound, playButtonTone } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
@@ -25,14 +25,19 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
     // Check premium status on mount
     checkPremiumStatus();
 
-    // Play welcome sound and haptics on iOS when component mounts
+    // Play welcome sound and haptics on iOS after a delay to ensure splash is gone
     if (Capacitor.isNativePlatform()) {
-      try {
-        playStartSound();
-        welcomeMelody();
-      } catch (e) {
-        // Sound/haptics might fail on some devices
-      }
+      // Wait 500ms to ensure the splash screen has completely faded and the view is ready
+      const timer = setTimeout(() => {
+        try {
+          playStartSound();
+          welcomeMelody();
+        } catch (e) {
+          // Sound/haptics might fail on some devices
+        }
+      }, 500);
+
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -45,7 +50,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
 
   const handlePlayClick = () => {
     try {
-      playStartSound();
+      playButtonTone();  // Use the new distinct button tone
       mediumTap();  // Medium tap for starting the game
     } catch (e) {
       // Sound might fail on some browsers
@@ -83,16 +88,18 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"></span>
           )}
         </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowSettings(true);
-          }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
-          title="Settings"
-        >
-          ⚙️
-        </button>
+        {Capacitor.isNativePlatform() && (
+          <button
+            onClick={() => {
+              lightTap();
+              setShowSettings(true);
+            }}
+            className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+            title="Settings"
+          >
+            ⚙️
+          </button>
+        )}
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
