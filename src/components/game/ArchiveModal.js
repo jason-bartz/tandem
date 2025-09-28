@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import puzzleService from '@/services/puzzle.service';
@@ -11,7 +11,8 @@ import { Capacitor } from '@capacitor/core';
 const globalArchiveCache = {
   puzzles: [],
   lastFetch: null,
-  isLoading: false
+  isLoading: false,
+  puzzleAccessMap: {} // Cache access permissions
 };
 
 const CACHE_DURATION = 30000; // 30 seconds
@@ -21,7 +22,9 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
+  const [puzzleAccessMap, setPuzzleAccessMap] = useState(globalArchiveCache.puzzleAccessMap || {});
+  const scrollContainerRef = useRef(null);
+  const scrollPositionRef = useRef(0);
 
   const loadAvailablePuzzles = useCallback(async (forceRefresh = false) => {
     // Check if we have recent cached data (unless forcing refresh)
@@ -203,16 +206,35 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
     // Check access for all puzzles when they change
     const checkAllAccess = async () => {
       const accessMap = {};
+
+      // Start with cached values to prevent flashing
       for (const puzzle of puzzles) {
-        accessMap[puzzle.date] = await checkPuzzleAccess(puzzle.date);
+        if (globalArchiveCache.puzzleAccessMap[puzzle.date] !== undefined) {
+          accessMap[puzzle.date] = globalArchiveCache.puzzleAccessMap[puzzle.date];
+        }
       }
       setPuzzleAccessMap(accessMap);
+
+      // Then update with fresh values
+      for (const puzzle of puzzles) {
+        const hasAccess = await checkPuzzleAccess(puzzle.date);
+        accessMap[puzzle.date] = hasAccess;
+        // Update cache
+        globalArchiveCache.puzzleAccessMap[puzzle.date] = hasAccess;
+      }
+
+      // Maintain scroll position while updating
+      const currentScroll = scrollContainerRef.current?.scrollTop;
+      setPuzzleAccessMap(accessMap);
+      if (scrollContainerRef.current && currentScroll) {
+        scrollContainerRef.current.scrollTop = currentScroll;
+      }
     };
 
-    if (puzzles.length > 0) {
+    if (puzzles.length > 0 && isOpen) {
       checkAllAccess();
     }
-  }, [puzzles, checkPuzzleAccess]);
+  }, [puzzles, checkPuzzleAccess, isOpen]);
 
   const handlePuzzleClick = async (puzzle) => {
     const hasAccess = puzzleAccessMap[puzzle.date] !== false;
@@ -228,10 +250,14 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const handlePurchaseComplete = async () => {
     // Refresh subscription status
     await checkSubscriptionStatus();
+    // Clear cache to force re-check
+    globalArchiveCache.puzzleAccessMap = {};
     // Re-check puzzle access
     const accessMap = {};
     for (const puzzle of puzzles) {
-      accessMap[puzzle.date] = await checkPuzzleAccess(puzzle.date);
+      const hasAccess = await checkPuzzleAccess(puzzle.date);
+      accessMap[puzzle.date] = hasAccess;
+      globalArchiveCache.puzzleAccessMap[puzzle.date] = hasAccess;
     }
     setPuzzleAccessMap(accessMap);
   };
@@ -270,7 +296,13 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           </button>
         </div>
         
-        <div className="flex-1 overflow-y-auto space-y-2">
+        <div
+          ref={scrollContainerRef}
+          className="flex-1 overflow-y-auto space-y-2"
+          onScroll={(e) => {
+            scrollPositionRef.current = e.currentTarget.scrollTop;
+          }}
+        >
           {puzzles.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
@@ -278,7 +310,8 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
             </div>
           ) : (
             puzzles.map((puzzle) => {
-              const hasAccess = puzzleAccessMap[puzzle.date] !== false;
+              // Default to unlocked if we haven't checked yet to prevent flashing
+              const hasAccess = puzzleAccessMap[puzzle.date] === undefined ? true : puzzleAccessMap[puzzle.date] !== false;
               const isLocked = !hasAccess;
 
               return (
