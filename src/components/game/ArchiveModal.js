@@ -3,6 +3,9 @@ import { useEffect, useState, useCallback } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import puzzleService from '@/services/puzzle.service';
+import subscriptionService from '@/services/subscriptionService';
+import PaywallModal from '@/components/PaywallModal';
+import { Capacitor } from '@capacitor/core';
 
 // Global cache to persist across component mounts/unmounts
 const globalArchiveCache = {
@@ -16,6 +19,9 @@ const CACHE_DURATION = 30000; // 30 seconds
 export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [puzzles, setPuzzles] = useState(globalArchiveCache.puzzles || []);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
 
   const loadAvailablePuzzles = useCallback(async (forceRefresh = false) => {
     // Check if we have recent cached data (unless forcing refresh)
@@ -176,8 +182,59 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
     if (isOpen) {
       // Always load puzzles when opening (this will update status from cache)
       loadAvailablePuzzles();
+      // Check subscription status
+      checkSubscriptionStatus();
     }
   }, [isOpen, loadAvailablePuzzles]);
+
+  const checkSubscriptionStatus = async () => {
+    if (Capacitor.isNativePlatform()) {
+      const subscribed = await subscriptionService.isSubscribed();
+      setIsSubscribed(subscribed);
+    }
+  };
+
+  const checkPuzzleAccess = useCallback(async (puzzleDate) => {
+    if (!Capacitor.isNativePlatform()) return true; // All free on web for now
+    return await subscriptionService.canAccessPuzzle(puzzleDate);
+  }, []);
+
+  useEffect(() => {
+    // Check access for all puzzles when they change
+    const checkAllAccess = async () => {
+      const accessMap = {};
+      for (const puzzle of puzzles) {
+        accessMap[puzzle.date] = await checkPuzzleAccess(puzzle.date);
+      }
+      setPuzzleAccessMap(accessMap);
+    };
+
+    if (puzzles.length > 0) {
+      checkAllAccess();
+    }
+  }, [puzzles, checkPuzzleAccess]);
+
+  const handlePuzzleClick = async (puzzle) => {
+    const hasAccess = puzzleAccessMap[puzzle.date] !== false;
+
+    if (!hasAccess) {
+      // Show paywall for locked puzzles
+      setShowPaywall(true);
+    } else {
+      onSelectPuzzle(puzzle.date);
+    }
+  };
+
+  const handlePurchaseComplete = async () => {
+    // Refresh subscription status
+    await checkSubscriptionStatus();
+    // Re-check puzzle access
+    const accessMap = {};
+    for (const puzzle of puzzles) {
+      accessMap[puzzle.date] = await checkPuzzleAccess(puzzle.date);
+    }
+    setPuzzleAccessMap(accessMap);
+  };
 
   if (!isOpen) return null;
 
@@ -220,15 +277,21 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading puzzles...</p>
             </div>
           ) : (
-            puzzles.map((puzzle) => (
-              <button
-                key={puzzle.date}
-                onClick={() => {
-                  onSelectPuzzle(puzzle.date);
-                }}
-                className="w-full p-3 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-left"
-              >
-                <div className="flex justify-between items-center">
+            puzzles.map((puzzle) => {
+              const hasAccess = puzzleAccessMap[puzzle.date] !== false;
+              const isLocked = !hasAccess;
+
+              return (
+                <button
+                  key={puzzle.date}
+                  onClick={() => handlePuzzleClick(puzzle)}
+                  className={`w-full p-3 rounded-xl transition-all text-left ${
+                    isLocked
+                      ? 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 opacity-75 hover:opacity-100'
+                      : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600'
+                  }`}
+                >
+                  <div className="flex justify-between items-center">
                   <div>
                     <div className="font-semibold text-gray-800 dark:text-gray-200">
                       {formatDate(puzzle.date)}
@@ -243,30 +306,42 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    {puzzle.status === 'completed' && (
-                      <div className="text-green-500 text-xl" title="Completed">
-                        ✓
+                    {isLocked ? (
+                      <div className="flex items-center gap-1">
+                        <span className="text-gray-500 dark:text-gray-400 text-xl">🔒</span>
+                        {Capacitor.isNativePlatform() && (
+                          <span className="text-xs text-sky-600 dark:text-sky-400 font-medium">Plus</span>
+                        )}
                       </div>
-                    )}
-                    {puzzle.status === 'failed' && (
-                      <div className="text-red-500 text-xl" title="Failed">
-                        ✗
-                      </div>
-                    )}
-                    {puzzle.status === 'attempted' && (
-                      <div className="text-yellow-500 text-xl" title="In Progress">
-                        ◐
-                      </div>
-                    )}
-                    {puzzle.status === 'not_played' && (
-                      <div className="text-gray-400 text-xl" title="Not Played">
-                        ○
-                      </div>
+                    ) : (
+                      <>
+                        {puzzle.status === 'completed' && (
+                          <div className="text-green-500 text-xl" title="Completed">
+                            ✓
+                          </div>
+                        )}
+                        {puzzle.status === 'failed' && (
+                          <div className="text-red-500 text-xl" title="Failed">
+                            ✗
+                          </div>
+                        )}
+                        {puzzle.status === 'attempted' && (
+                          <div className="text-yellow-500 text-xl" title="In Progress">
+                            ◐
+                          </div>
+                        )}
+                        {puzzle.status === 'not_played' && (
+                          <div className="text-gray-400 text-xl" title="Not Played">
+                            ○
+                          </div>
+                        )}
+                      </>
                     )}
                   </div>
                 </div>
-              </button>
-            ))
+                </button>
+              );
+            })
           )}
         </div>
         
@@ -277,6 +352,13 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
           Close
         </button>
       </div>
+
+      {/* Paywall Modal */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseComplete={handlePurchaseComplete}
+      />
     </div>
   );
 }

@@ -20,6 +20,7 @@
     "ios:build": "npm run build:ios && npm run cap:sync"
   },
   "dependencies": {
+    "@awesome-cordova-plugins/in-app-purchase-2": "^8.1.0",
     "@capacitor/app": "^5.0.6",
     "@capacitor/core": "^5.5.1",
     "@capacitor/haptics": "^5.0.6",
@@ -33,6 +34,7 @@
     "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.0",
+    "cordova-plugin-purchase": "^13.12.1",
     "date-fns": "^3.0.0",
     "date-fns-tz": "^3.2.0",
     "html2canvas": "^1.4.1",
