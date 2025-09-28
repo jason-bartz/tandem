@@ -171,16 +171,18 @@ export default function PlayingScreen({
         >
           📅
         </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowSettings(true);
-          }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
-          title="Settings"
-        >
-          ⚙️
-        </button>
+        {platformService.isPlatformNative() && (
+          <button
+            onClick={() => {
+              lightTap();
+              setShowSettings(true);
+            }}
+            className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+            title="Settings"
+          >
+            ⚙️
+          </button>
+        )}
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
 
@@ -221,7 +223,9 @@ export default function PlayingScreen({
                 lightTap();
                 onReturnToWelcome();
               }}
-              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
+              className={`absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors ${
+                platformService.isPlatformNative() ? '' : 'hidden'
+              }`}
               title="Back to Home"
             >
               <svg className="w-5 h-5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
