@@ -9,6 +9,7 @@ import ThemeToggle from './ThemeToggle';
 import RulesModal from './RulesModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
 import platformService from '@/services/platform';
@@ -39,6 +40,7 @@ export default function PlayingScreen({
   const [showRules, setShowRules] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { preloadArchive } = useArchivePreload();
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed, selectionStart } = useHaptics();
@@ -153,7 +155,7 @@ export default function PlayingScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
@@ -164,10 +166,20 @@ export default function PlayingScreen({
             setShowArchive(true);
           }}
           onMouseEnter={() => preloadArchive()}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Archive"
         >
           📅
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
+            setShowSettings(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="Settings"
+        >
+          ⚙️
         </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
@@ -203,8 +215,20 @@ export default function PlayingScreen({
               priority
             />
           </button>
-          <div className="text-white/90 text-sm font-medium">
-            Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}
+          <div className="text-white/90 text-sm font-medium flex items-center justify-center gap-2 relative">
+            <button
+              onClick={() => {
+                lightTap();
+                onReturnToWelcome();
+              }}
+              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
+              title="Back to Home"
+            >
+              <svg className="w-5 h-5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
           </div>
         </div>
 
@@ -275,11 +299,15 @@ export default function PlayingScreen({
       
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModal 
+      <ArchiveModal
         key={showArchive ? Date.now() : 'closed'}
-        isOpen={showArchive} 
+        isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}
+      />
+      <Settings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </div>
   );

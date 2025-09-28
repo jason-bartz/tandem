@@ -11,6 +11,7 @@ import ArchiveModal from './ArchiveModal';
 import ShareButton from './ShareButton';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
+import Settings from '@/components/Settings';
 
 export default function CompleteScreen({
   won,
@@ -32,6 +33,7 @@ export default function CompleteScreen({
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { preloadArchive } = useArchivePreload();
   const { celebration, lightTap } = useHaptics();
@@ -119,7 +121,7 @@ export default function CompleteScreen({
             lightTap();
             setShowPlayerStats(true);
           }}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
@@ -130,10 +132,20 @@ export default function CompleteScreen({
             setShowArchive(true);
           }}
           onMouseEnter={() => preloadArchive()}
-          className="w-12 h-12 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-xl hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Archive"
         >
           📅
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
+            setShowSettings(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="Settings"
+        >
+          ⚙️
         </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} isAuto={isAuto} currentState={currentState} />
       </div>
@@ -187,7 +199,7 @@ export default function CompleteScreen({
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
                 {formatDateShort(puzzleDate)}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
@@ -249,8 +261,8 @@ export default function CompleteScreen({
       )}
       
       <PlayerStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
-      <ArchiveModal 
-        isOpen={showArchive} 
+      <ArchiveModal
+        isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={(date) => {
           setShowArchive(false);
@@ -259,6 +271,10 @@ export default function CompleteScreen({
             onSelectPuzzle(date);
           }, 100);
         }}
+      />
+      <Settings
+        isOpen={showSettings}
+        onClose={() => setShowSettings(false)}
       />
     </div>
   );
