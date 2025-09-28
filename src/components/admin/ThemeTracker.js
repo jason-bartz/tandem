@@ -171,7 +171,7 @@ export default function ThemeTracker() {
           similarTo.length > 0 ? `"${similarTo.join(', ')}"` : ''
         ].join(',');
       })
-    ].join('\\n');
+    ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a');
