@@ -74,9 +74,9 @@ export default function Settings({ isOpen, onClose }) {
     if (!subscriptionInfo?.productId) return null;
 
     const tierMap = {
-      'com.tandemdaily.app.buddy': { name: 'Buddy Pass', emoji: '🤝' },
+      'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝' },
       'com.tandemdaily.app.bestfriends': { name: 'Best Friends', emoji: '👯' },
-      'com.tandemdaily.app.soulmate': { name: 'Soulmates', emoji: '💕' }
+      'com.tandemdaily.app.soulmates': { name: 'Soulmates', emoji: '💕' }
     };
 
     return tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨' };
@@ -136,7 +136,7 @@ export default function Settings({ isOpen, onClose }) {
 
                 {subscriptionInfo.expiryDate && (
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {subscriptionInfo.productId.includes('soulmate')
+                    {subscriptionInfo.productId.includes('soulmates')
                       ? 'Lifetime access'
                       : `Renews ${formatDate(subscriptionInfo.expiryDate)}`}
                   </p>
@@ -153,7 +153,7 @@ export default function Settings({ isOpen, onClose }) {
               <div className="space-y-3">
                 <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
                   <p className="text-gray-600 dark:text-gray-400 mb-3">
-                    Get unlimited access to all puzzles with Tandem Plus!
+                    Get unlimited access to all puzzles with Tandem Unlimited!
                   </p>
                   <button
                     onClick={() => setShowPaywall(true)}
@@ -185,13 +185,13 @@ export default function Settings({ isOpen, onClose }) {
             <p>© 2025 Good Vibes Games</p>
             <div className="flex gap-4 pt-2">
               <a
-                href="https://tandemdaily.com/terms"
+                href="/terms"
                 className="text-sky-600 dark:text-sky-400 hover:underline"
               >
                 Terms
               </a>
               <a
-                href="https://tandemdaily.com/privacy"
+                href="/privacypolicy"
                 className="text-sky-600 dark:text-sky-400 hover:underline"
               >
                 Privacy
