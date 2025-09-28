@@ -4,6 +4,7 @@ import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/hooks/useTheme';
 import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { GAME_STATES } from '@/lib/constants';
 import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
@@ -20,6 +21,16 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
+
+  // Auto-refresh puzzle at midnight ET for iOS app
+  useMidnightRefresh(() => {
+    console.log('[GameContainerClient] Midnight detected, refreshing puzzle...');
+    // If not in the middle of playing, reload the puzzle
+    if (game.gameState !== GAME_STATES.PLAYING) {
+      // Force reload to get today's puzzle
+      game.loadPuzzle(null);
+    }
+  });
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();
