@@ -2,7 +2,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import adminService from '@/services/admin.service';
 
-export default function ThemeTracker() {
+export default function ThemeTracker({ onEditPuzzle }) {
   const [puzzles, setPuzzles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,6 +14,14 @@ export default function ThemeTracker() {
   const [sortBy, setSortBy] = useState('date');
   const [sortOrder, setSortOrder] = useState('desc');
   const [showDuplicatesOnly, setShowDuplicatesOnly] = useState(false);
+
+  const formatDateDisplay = (dateString) => {
+    const date = new Date(dateString + 'T00:00:00');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${month}/${day}/${year}`;
+  };
 
   useEffect(() => {
     fetchAllPuzzles();
@@ -358,6 +366,9 @@ export default function ThemeTracker() {
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                   Indicator
                 </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -367,7 +378,7 @@ export default function ThemeTracker() {
                 return (
                   <tr key={puzzle.date} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      {puzzle.date}
+                      {formatDateDisplay(puzzle.date)}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-900 dark:text-white">
                       <div>
@@ -399,6 +410,14 @@ export default function ThemeTracker() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       {getThemeIndicator(puzzle)}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <button
+                        onClick={() => onEditPuzzle && onEditPuzzle(puzzle.date)}
+                        className="px-3 py-1 bg-sky-500 text-white text-xs rounded hover:bg-sky-600 transition-colors"
+                      >
+                        Edit
+                      </button>
                     </td>
                   </tr>
                 );

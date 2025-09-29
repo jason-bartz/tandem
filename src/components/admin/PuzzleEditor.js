@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { PUZZLE_TEMPLATES } from '@/lib/constants';
 import adminService from '@/services/admin.service';
 
 export default function PuzzleEditor({ initialPuzzle, onClose }) {
@@ -33,12 +32,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       setMessage('');
     }
   }, [initialPuzzle]);
-
-  const handleTemplateSelect = (template) => {
-    setTheme(template.theme);
-    setPuzzles(template.puzzles.map(p => ({ ...p })));
-    setMessage('Template loaded: ' + template.name);
-  };
 
   const handlePuzzleChange = (index, field, value) => {
     const newPuzzles = [...puzzles];
@@ -95,23 +88,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           </p>
         </div>
       )}
-      <div className="mb-6">
-        <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-          Quick Templates
-        </h3>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {PUZZLE_TEMPLATES.map((template) => (
-            <button
-              key={template.id}
-              onClick={() => handleTemplateSelect(template)}
-              className="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm"
-            >
-              {template.name}
-            </button>
-          ))}
-        </div>
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
