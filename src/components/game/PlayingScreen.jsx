@@ -311,7 +311,7 @@ export default function PlayingScreen({
                 }
               }}
               disabled={!hasAnyInput}
-              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none check-button
                 ${
                   highContrast
                     ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
@@ -328,7 +328,7 @@ export default function PlayingScreen({
                   lightTap();
                   handleUseHint();
                 }}
-                className={`w-full p-3 rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2
+                className={`w-full p-3 rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button
                   ${
                     highContrast
                       ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'

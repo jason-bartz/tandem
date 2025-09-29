@@ -215,10 +215,10 @@ export default function Settings({ isOpen, onClose }) {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                  High Contrast Mode
+                  Color Blind Friendly Mode
                 </p>
                 <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Better visibility for colorblind users
+                  High contrast with patterns for accessibility
                 </p>
               </div>
               <button
