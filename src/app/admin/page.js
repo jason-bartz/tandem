@@ -118,7 +118,14 @@ export default function AdminDashboard() {
           />
         )}
         {activeTab === 'stats' && <StatsOverview />}
-        {activeTab === 'themes' && <ThemeTracker />}
+        {activeTab === 'themes' && (
+          <ThemeTracker
+            onEditPuzzle={(date) => {
+              setEditingPuzzle({ date, theme: '', puzzles: [] });
+              setActiveTab('editor');
+            }}
+          />
+        )}
       </div>
 
       {showBulkImport && (
