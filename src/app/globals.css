@@ -241,7 +241,7 @@ body {
   display: none;
 }
 
-/* High Contrast Mode Styles */
+/* High Contrast & Color Blind Friendly Mode */
 .high-contrast {
   /* Remove gradients and use solid high-contrast colors */
 }
@@ -263,63 +263,112 @@ body {
   background-color: var(--hc-surface) !important;
 }
 
-/* Light mode high contrast */
+/* Light mode high contrast - Color blind friendly palette */
 .high-contrast:not(.dark) {
-  --hc-primary: #003d7a;
+  --hc-primary: #0055cc;
   --hc-primary-text: #ffffff;
-  --hc-success: #0066cc;
-  --hc-error: #8b0000;
-  --hc-warning: #cc6600;
+  --hc-success: #117733;
+  --hc-error: #882255;
+  --hc-warning: #ee7733;
   --hc-background: #ffffff;
-  --hc-surface: #f0f0f0;
+  --hc-surface: #f5f5f5;
   --hc-text: #000000;
-  --hc-border: #000000;
-  --hc-focus: #0066cc;
+  --hc-border: #333333;
+  --hc-focus: #0055cc;
+  --hc-neutral: #666666;
 }
 
-/* Dark mode high contrast */
+/* Dark mode high contrast - Color blind friendly palette */
 .high-contrast.dark {
-  --hc-primary: #4a90e2;
+  --hc-primary: #5599ff;
   --hc-primary-text: #000000;
-  --hc-success: #5cb85c;
-  --hc-error: #ff6b6b;
-  --hc-warning: #ffb347;
+  --hc-success: #44aa77;
+  --hc-error: #cc6677;
+  --hc-warning: #ffaa44;
   --hc-background: #000000;
   --hc-surface: #1a1a1a;
   --hc-text: #ffffff;
-  --hc-border: #ffffff;
-  --hc-focus: #4a90e2;
+  --hc-border: #cccccc;
+  --hc-focus: #5599ff;
+  --hc-neutral: #999999;
 }
 
-/* Patterns for visual differentiation */
+/* Color blind friendly patterns for visual differentiation */
+/* Correct answer - Checkmark pattern */
 .high-contrast .pattern-correct {
+  position: relative;
+  background-color: var(--hc-success) !important;
   background-image: repeating-linear-gradient(
     45deg,
     transparent,
-    transparent 10px,
-    rgba(0, 102, 204, 0.1) 10px,
-    rgba(0, 102, 204, 0.1) 20px
-  );
+    transparent 15px,
+    rgba(255, 255, 255, 0.2) 15px,
+    rgba(255, 255, 255, 0.2) 30px
+  ) !important;
+  border: 3px solid var(--hc-success) !important;
 }
 
+/* Wrong answer - Softer diagonal stripes pattern */
 .high-contrast .pattern-wrong {
+  position: relative;
+  background-color: var(--hc-surface) !important;
   background-image: repeating-linear-gradient(
-    -45deg,
+    135deg,
     transparent,
-    transparent 10px,
-    rgba(139, 0, 0, 0.1) 10px,
-    rgba(139, 0, 0, 0.1) 20px
-  );
+    transparent 12px,
+    var(--hc-error) 12px,
+    var(--hc-error) 13px,
+    transparent 13px,
+    transparent 24px
+  ) !important;
+  border: 2px solid var(--hc-error) !important;
+  color: var(--hc-text) !important;
+  opacity: 0.95;
 }
 
+/* Hint active - Softer dotted pattern */
 .high-contrast .pattern-hint {
-  background-image: repeating-linear-gradient(
-    90deg,
-    transparent,
-    transparent 10px,
-    rgba(204, 102, 0, 0.1) 10px,
-    rgba(204, 102, 0, 0.1) 20px
-  );
+  position: relative;
+  background-color: var(--hc-surface) !important;
+  background-image: radial-gradient(circle, var(--hc-warning) 1px, transparent 1px) !important;
+  background-size: 16px 16px !important;
+  border: 2px dashed var(--hc-warning) !important;
+  border-opacity: 0.6 !important;
+  opacity: 0.95;
+}
+
+/* Additional visual indicators for color blind users */
+.high-contrast .pattern-correct::after {
+  content: '✓';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.high-contrast .pattern-wrong::after {
+  content: '✗';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 24px;
+  font-weight: bold;
+  color: var(--hc-error);
+  text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.high-contrast .pattern-hint::after {
+  content: '💡';
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 20px;
 }
 
 /* High contrast focus states */
@@ -337,4 +386,90 @@ body {
 .high-contrast button:hover {
   transform: scale(1.05);
   box-shadow: 0 0 0 3px var(--hc-focus);
+}
+
+/* Color blind friendly button styles */
+.high-contrast button.check-button {
+  background: var(--hc-primary) !important;
+  border: 3px solid var(--hc-border) !important;
+  position: relative;
+}
+
+.high-contrast button.check-button::before {
+  content: '▶';
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+.high-contrast button.hint-button {
+  background: var(--hc-warning) !important;
+  border: 3px dashed var(--hc-border) !important;
+  color: var(--hc-background) !important;
+  position: relative;
+}
+
+.high-contrast button.hint-button::before {
+  content: '💡';
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 16px;
+}
+
+/* Score display with better visual separation */
+.high-contrast .score-display {
+  border: 2px solid var(--hc-border) !important;
+  background: var(--hc-surface) !important;
+  font-weight: bold !important;
+}
+
+/* High contrast styles for all gradient buttons */
+.high-contrast button[class*='bg-gradient'],
+.high-contrast button[class*='from-sky'],
+.high-contrast button[class*='from-teal'] {
+  background: var(--hc-primary) !important;
+  border: 3px solid var(--hc-border) !important;
+  color: var(--hc-primary-text) !important;
+  font-weight: bold !important;
+  position: relative;
+  padding-left: 2.5rem !important;
+}
+
+.high-contrast button[class*='bg-gradient']:hover,
+.high-contrast button[class*='from-sky']:hover,
+.high-contrast button[class*='from-teal']:hover {
+  background: var(--hc-focus) !important;
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px var(--hc-focus);
+}
+
+/* Add icon to primary action buttons */
+.high-contrast button[class*='bg-gradient']:not(.check-button):not(.hint-button)::before {
+  content: '→';
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* High contrast toggle switches */
+.high-contrast button[role='switch'] {
+  background: var(--hc-neutral) !important;
+  border: 2px solid var(--hc-border) !important;
+}
+
+.high-contrast button[role='switch'][aria-checked='true'] {
+  background: var(--hc-success) !important;
+  border: 2px solid var(--hc-success) !important;
+}
+
+.high-contrast button[role='switch'] span {
+  background: var(--hc-background) !important;
+  border: 1px solid var(--hc-border) !important;
 }

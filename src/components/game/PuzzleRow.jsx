@@ -125,23 +125,6 @@ export default function PuzzleRow({
             </span>
           </>
         )}
-        {/* High contrast visual indicators */}
-        {highContrast && isCorrect && (
-          <span
-            className="absolute right-10 top-1/2 -translate-y-1/2 text-2xl font-bold text-hc-success"
-            aria-label="Correct"
-          >
-            ✓
-          </span>
-        )}
-        {highContrast && isWrong && (
-          <span
-            className="absolute right-10 top-1/2 -translate-y-1/2 text-2xl font-bold text-hc-error"
-            aria-label="Wrong"
-          >
-            ✗
-          </span>
-        )}
       </div>
     </div>
   );
