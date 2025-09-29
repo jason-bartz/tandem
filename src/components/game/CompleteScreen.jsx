@@ -2,12 +2,19 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import confetti from 'canvas-confetti';
-import { formatTime, getCurrentPuzzleInfo, generateShareText, formatDateShort, getRandomCongratulation } from '@/lib/utils';
+import {
+  formatTime,
+  getCurrentPuzzleInfo,
+  generateShareText,
+  formatDateShort,
+  getRandomCongratulation,
+} from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import HowToPlayModal from './HowToPlayModal';
 import ShareButton from './ShareButton';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -17,27 +24,28 @@ export default function CompleteScreen({
   won,
   time,
   mistakes,
-  correctAnswers,
+  _correctAnswers,
   puzzle,
   puzzleTheme,
-  onPlayAgain,
+  _onPlayAgain,
   theme,
   toggleTheme,
-  isAuto,
-  currentState,
+  _isAuto,
+  _currentState,
   hintsUsed,
   activeHints = [],
   onSelectPuzzle,
-  onReturnToWelcome
+  onReturnToWelcome,
 }) {
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { preloadArchive } = useArchivePreload();
   const { celebration, lightTap } = useHaptics();
-  
+
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
 
@@ -51,7 +59,7 @@ export default function CompleteScreen({
       }
     });
   }
-  
+
   const shareText = generateShareText(
     puzzleDate,
     puzzleTheme || 'Tandem Puzzle',
@@ -69,7 +77,7 @@ export default function CompleteScreen({
       // Play success sound and trigger celebration haptics
       try {
         playSuccessSound();
-        celebration();  // Trigger haptic celebration pattern
+        celebration(); // Trigger haptic celebration pattern
       } catch (e) {
         // Sound might fail on some browsers
       }
@@ -83,7 +91,7 @@ export default function CompleteScreen({
         return Math.random() * (max - min) + min;
       }
 
-      const interval = setInterval(function() {
+      const interval = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
@@ -91,26 +99,25 @@ export default function CompleteScreen({
         }
 
         const particleCount = 50 * (timeLeft / duration);
-        
+
         // Sky and teal colored confetti
         confetti({
           ...defaults,
           particleCount,
           origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4']
+          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
         });
         confetti({
           ...defaults,
           particleCount,
           origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4']
+          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
         });
       }, 250);
 
       return () => clearInterval(interval);
     }
-  }, [won]);
-
+  }, [won, celebration]);
 
   return (
     <div className="animate-fade-in">
@@ -140,6 +147,16 @@ export default function CompleteScreen({
         <button
           onClick={() => {
             lightTap();
+            setShowHowToPlay(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="How to Play"
+        >
+          ❓
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
             setShowSettings(true);
           }}
           className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
@@ -162,20 +179,20 @@ export default function CompleteScreen({
             title="Return to Welcome Screen"
           >
             <Image
-              src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/main-logo.webp"}
+              src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}
               alt="Tandem Logo"
               width={96}
               height={96}
               className="rounded-2xl"
             />
           </button>
-        
+
           <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
             {won ? congratsMessage : 'Better luck next time!'}
           </h1>
-          
+
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {won ? 'You solved today\'s puzzle!' : 'You\'ll get it tomorrow!'}
+            {won ? "You solved today's puzzle!" : "You'll get it tomorrow!"}
           </p>
 
           {puzzleTheme && (
@@ -205,7 +222,7 @@ export default function CompleteScreen({
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
             </div>
           </div>
-          
+
           {hintsUsed > 0 && (
             <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
               💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
@@ -214,15 +231,22 @@ export default function CompleteScreen({
 
           {!won && puzzle?.puzzles && (
             <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 mb-6">
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">Correct Answers:</p>
+              <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">
+                Correct Answers:
+              </p>
               <div className="space-y-3">
                 {puzzle.puzzles.map((item, index) => {
                   // Get first answer if multiple are comma-separated
                   const firstAnswer = item.answer.split(',')[0].trim();
                   return (
-                    <div key={index} className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-4 py-3">
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-4 py-3"
+                    >
                       <span className="text-2xl">{item.emoji}</span>
-                      <span className="font-semibold text-gray-800 dark:text-gray-100">{firstAnswer}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">
+                        {firstAnswer}
+                      </span>
                     </div>
                   );
                 })}
@@ -232,7 +256,7 @@ export default function CompleteScreen({
         </div>
 
         <div className="space-y-3 mb-6">
-          <ShareButton shareText={shareText} />
+          {won && <ShareButton shareText={shareText} />}
           <button
             onClick={() => {
               lightTap();
@@ -256,10 +280,8 @@ export default function CompleteScreen({
         </button>
       </div>
 
-      {showStats && (
-        <StatsModal onClose={() => setShowStats(false)} />
-      )}
-      
+      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+
       <PlayerStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
       <ArchiveModal
         isOpen={showArchive}
@@ -272,10 +294,8 @@ export default function CompleteScreen({
           }, 100);
         }}
       />
-      <Settings
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }

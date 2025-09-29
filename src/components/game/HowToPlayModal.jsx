@@ -1,0 +1,105 @@
+'use client';
+
+export default function HowToPlayModal({ isOpen, onClose }) {
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">How To Play</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+          <p className="text-base">Find 4 words from emoji pairs that share a theme.</p>
+
+          <div className="space-y-2">
+            <p className="text-sm">• Each emoji pair represents one word or tandem</p>
+            <p className="text-sm">• The theme connects all 4 answers</p>
+            <p className="text-sm">• You have 4 mistakes to find all the words</p>
+            <p className="text-sm">• Press Enter or tap Check Answers to submit</p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Examples</h3>
+            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-2xl">🗺️📍</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= MAP</span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Navigation emojis → something you unfold
+              </p>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-2xl">👔🧺</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">
+                  = LAUNDRY
+                </span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Shirt + basket → clothes you fold
+              </p>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-2xl">♠️❤️</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= POKER</span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Card suits → a folding card game
+              </p>
+
+              <div className="flex items-center justify-between pt-2">
+                <span className="text-2xl">✉️💌</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= LETTER</span>
+              </div>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Envelopes → paper you fold</p>
+
+              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Theme: Things That Fold
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4">
+            <p className="text-sm">
+              <span className="font-semibold">💡 Hint:</span> Get a hint to reveal a random
+              unanswered word's first letter and length.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Streaks 🔥</h3>
+            <p className="text-sm">
+              Complete the daily puzzle on your first try and play consecutive days to build your
+              streak!
+            </p>
+          </div>
+
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new puzzle is released daily at midnight. Come back tomorrow!
+            </p>
+          </div>
+        </div>
+
+        <button
+          onClick={onClose}
+          className="mt-6 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+        >
+          Got it!
+        </button>
+      </div>
+    </div>
+  );
+}

@@ -7,6 +7,7 @@ import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
 import ThemeToggle from './ThemeToggle';
 import RulesModal from './RulesModal';
+import HowToPlayModal from './HowToPlayModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import Settings from '@/components/Settings';
@@ -27,29 +28,32 @@ export default function PlayingScreen({
   onCheckSingleAnswer,
   theme,
   toggleTheme,
-  isAuto,
-  currentState,
+  _isAuto,
+  _currentState,
   onSelectPuzzle,
   hintsUsed,
   onUseHint,
-  hasCheckedAnswers,
+  _hasCheckedAnswers,
   onReturnToWelcome,
-  activeHints
+  activeHints,
 }) {
-  const hasAnyInput = answers.some(answer => answer.trim() !== '');
+  const hasAnyInput = answers.some((answer) => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { preloadArchive } = useArchivePreload();
-  const { lightTap, correctAnswer, incorrectAnswer, hintUsed, selectionStart } = useHaptics();
+  const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
-  
+
   // Handle iOS keyboard visibility and scrolling
   useEffect(() => {
-    if (!platformService.isPlatformNative()) {return;}
+    if (!platformService.isPlatformNative()) {
+      return;
+    }
 
     const handleFocusIn = (e) => {
       if (e.target.tagName === 'INPUT') {
@@ -66,7 +70,7 @@ export default function PlayingScreen({
 
             container.scrollTo({
               top: desiredPosition,
-              behavior: 'smooth'
+              behavior: 'smooth',
             });
           }
         }, 300); // Wait for keyboard animation
@@ -96,23 +100,25 @@ export default function PlayingScreen({
       if (!result.gameComplete) {
         try {
           if (result.isCorrect) {
-            playCorrectSound();  // Simple ding for individual correct answer
-            correctAnswer();     // Haptic feedback for correct answer
+            playCorrectSound(); // Simple ding for individual correct answer
+            correctAnswer(); // Haptic feedback for correct answer
           } else if (answers[index].trim()) {
             // Only play error sound if there was actually an answer entered
             playErrorSound();
-            incorrectAnswer();   // Haptic feedback for wrong answer
+            incorrectAnswer(); // Haptic feedback for wrong answer
           }
         } catch (e) {
           // Sound might fail on some browsers
         }
       }
-      
+
       // Only move to next field if the answer was correct and game isn't complete
       if (result.isCorrect && !result.gameComplete) {
         setTimeout(() => {
           const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
-          const currentIndex = Array.from(inputs).findIndex(input => document.activeElement === input);
+          const currentIndex = Array.from(inputs).findIndex(
+            (input) => document.activeElement === input
+          );
           if (currentIndex < inputs.length - 1) {
             inputs[currentIndex + 1].focus();
           }
@@ -121,7 +127,7 @@ export default function PlayingScreen({
       // If wrong or game complete, cursor stays in the same field
     }
   };
-  
+
   const handleUseHint = () => {
     // Find all unsolved puzzles and randomly select one for the hint
     const unsolvedIndices = [];
@@ -138,14 +144,14 @@ export default function PlayingScreen({
 
       try {
         playHintSound();
-        hintUsed();  // Haptic feedback for hint usage
+        hintUsed(); // Haptic feedback for hint usage
       } catch (e) {
         // Sound might fail on some browsers
       }
       onUseHint(hintIndex);
     }
   };
-  
+
   return (
     <div className="animate-slide-up relative h-full flex flex-col">
       {/* Control buttons with safe area padding for iOS */}
@@ -174,6 +180,16 @@ export default function PlayingScreen({
         <button
           onClick={() => {
             lightTap();
+            setShowHowToPlay(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="How to Play"
+        >
+          ❓
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
             setShowSettings(true);
           }}
           className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
@@ -192,7 +208,7 @@ export default function PlayingScreen({
         }`}
         style={{
           maxHeight: platformService.isPlatformNative() ? 'calc(100vh - 120px)' : 'auto',
-          paddingBottom: isKeyboardVisible ? '280px' : '0'
+          paddingBottom: isKeyboardVisible ? '280px' : '0',
         }}
       >
         {/* Header with gradient - Logo hidden on mobile */}
@@ -207,7 +223,7 @@ export default function PlayingScreen({
             title="Return to Welcome Screen"
           >
             <Image
-              src={theme === 'dark' ? "/images/dark-mode-logo-2.webp" : "/images/alt-logo.webp"}
+              src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/alt-logo.webp'}
               alt="Tandem Logo"
               width={64}
               height={64}
@@ -224,8 +240,19 @@ export default function PlayingScreen({
               className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
               title="Back to Home"
             >
-              <svg className="w-5 h-5 text-white/90" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <svg
+                className="w-5 h-5 text-white/90"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
               </svg>
             </button>
             <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
@@ -233,17 +260,15 @@ export default function PlayingScreen({
         </div>
 
         <div className="p-6 flex-1" ref={contentRef}>
-          <StatsBar
-            time={formatTime(time)}
-            mistakes={mistakes}
-            solved={solved}
-          />
+          <StatsBar time={formatTime(time)} mistakes={mistakes} solved={solved} />
 
           {/* Theme Display */}
           {puzzle?.theme && (
             <div className="text-center mb-4">
               <div className="inline-block px-4 py-2 bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900/30 dark:to-teal-900/30 rounded-full">
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">Theme: </span>
+                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                  Theme:{' '}
+                </span>
                 <span className="text-base font-semibold text-sky-700 dark:text-sky-300">
                   {puzzle.theme}
                 </span>
@@ -252,19 +277,21 @@ export default function PlayingScreen({
           )}
 
           <div className="flex flex-col gap-4 mb-6">
-            {puzzle && puzzle.puzzles && puzzle.puzzles.map((p, index) => (
-              <PuzzleRow
-                key={index}
-                emoji={p.emoji || '❓❓'}
-                value={answers[index]}
-                onChange={(value) => onUpdateAnswer(index, value)}
-                isCorrect={correctAnswers[index]}
-                isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
-                index={index}
-                onEnterPress={() => handleEnterPress(index)}
-                hintData={activeHints && activeHints[index]}
-              />
-            ))}
+            {puzzle &&
+              puzzle.puzzles &&
+              puzzle.puzzles.map((p, index) => (
+                <PuzzleRow
+                  key={index}
+                  emoji={p.emoji || '❓❓'}
+                  value={answers[index]}
+                  onChange={(value) => onUpdateAnswer(index, value)}
+                  isCorrect={correctAnswers[index]}
+                  isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
+                  index={index}
+                  onEnterPress={() => handleEnterPress(index)}
+                  hintData={activeHints && activeHints[index]}
+                />
+              ))}
           </div>
 
           <div className="space-y-3">
@@ -280,7 +307,7 @@ export default function PlayingScreen({
             >
               Check Answers
             </button>
-            
+
             {hintsUsed === 0 && solved < 4 && (
               <button
                 onClick={() => {
@@ -296,7 +323,7 @@ export default function PlayingScreen({
           </div>
         </div>
       </div>
-      
+
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal
@@ -304,10 +331,8 @@ export default function PlayingScreen({
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}
       />
-      <Settings
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </div>
   );
 }
