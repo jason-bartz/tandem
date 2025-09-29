@@ -27,7 +27,7 @@ export default function PuzzleRow({ emoji, value, onChange, isCorrect, isWrong, 
 
   // Generate hint placeholder text
   const getHintPlaceholder = () => {
-    if (!hintData) return "Enter answer";
+    if (!hintData) {return "Enter answer";}
     
     // Create the hint pattern: first letter + underscores for remaining characters
     const blanks = Array(hintData.length - 1).fill('_').join(' ');

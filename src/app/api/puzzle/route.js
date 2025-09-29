@@ -9,6 +9,7 @@ import {
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { z } from 'zod';
 import crypto from 'crypto';
+import logger from '@/lib/logger';
 
 export async function GET(request) {
   try {
@@ -51,7 +52,7 @@ export async function GET(request) {
       displayDate: requestedDate ? validatedDate : currentInfo.date,
     });
   } catch (error) {
-    console.error('GET /api/puzzle error:', error);
+    logger.error('GET /api/puzzle error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(
@@ -119,7 +120,7 @@ export async function POST(request) {
       message: 'Stats recorded successfully',
     });
   } catch (error) {
-    console.error('POST /api/puzzle error:', error);
+    logger.error('POST /api/puzzle error', error);
     
     if (error instanceof z.ZodError) {
       return NextResponse.json(

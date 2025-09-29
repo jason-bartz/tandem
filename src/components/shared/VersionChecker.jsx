@@ -12,7 +12,7 @@ export default function VersionChecker() {
 
   useEffect(() => {
     // Only check version on native platforms
-    if (!platformService.isPlatformNative()) return;
+    if (!platformService.isPlatformNative()) {return;}
 
     const checkVersion = async () => {
       try {
@@ -48,13 +48,13 @@ export default function VersionChecker() {
     for (let i = 0; i < 3; i++) {
       const c = currentParts[i] || 0;
       const r = requiredParts[i] || 0;
-      if (c < r) return true;
-      if (c > r) return false;
+      if (c < r) {return true;}
+      if (c > r) {return false;}
     }
     return false;
   };
 
-  if (!updateRequired) return null;
+  if (!updateRequired) {return null;}
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">

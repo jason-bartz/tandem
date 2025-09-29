@@ -101,8 +101,8 @@ class APIService {
     }
 
     const params = new URLSearchParams();
-    if (startDate) params.append('start', startDate);
-    if (endDate) params.append('end', endDate);
+    if (startDate) {params.append('start', startDate);}
+    if (endDate) {params.append('end', endDate);}
 
     return await this.fetchWithErrorHandling(`/api/admin/puzzles?${params}`);
   }
@@ -154,7 +154,7 @@ class APIService {
 
   // Preload puzzles for offline use (iOS only)
   async preloadPuzzlesForOffline() {
-    if (!platformService.isPlatformNative()) return;
+    if (!platformService.isPlatformNative()) {return;}
 
     try {
       await platformService.cacheRecentPuzzles();

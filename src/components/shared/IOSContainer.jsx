@@ -7,7 +7,7 @@ import platformService from '@/services/platform';
 
 export default function IOSContainer({ children }) {
   useEffect(() => {
-    if (!platformService.isPlatformNative()) return;
+    if (!platformService.isPlatformNative()) {return;}
 
     // Setup iOS-specific configurations
     const setupIOS = async () => {
@@ -75,7 +75,7 @@ export default function IOSContainer({ children }) {
 
         // Prevent bounce scrolling on iOS
         document.body.addEventListener('touchmove', (e) => {
-          if (e.target.closest('.scrollable')) return;
+          if (e.target.closest('.scrollable')) {return;}
           e.preventDefault();
         }, { passive: false });
 
@@ -104,7 +104,7 @@ export default function IOSContainer({ children }) {
 
   // Add global iOS styles
   useEffect(() => {
-    if (!platformService.isPlatformNative()) return;
+    if (!platformService.isPlatformNative()) {return;}
 
     const style = document.createElement('style');
     style.textContent = `

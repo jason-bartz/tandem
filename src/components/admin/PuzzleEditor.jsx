@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import adminService from '@/services/admin.service';
+import logger from '@/lib/logger';
 
 export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const [selectedDate, setSelectedDate] = useState(
@@ -60,18 +61,18 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         }
       } else {
         setMessage(`❌ Failed to save puzzle: ${result.error || 'Unknown error'}`);
-        console.error('Puzzle save failed:', result);
+        logger.error('Puzzle save failed', result);
       }
     } catch (error) {
       setMessage('❌ Error saving puzzle');
-      console.error('Save puzzle error:', error);
+      logger.error('Save puzzle error', error);
     } finally {
       setLoading(false);
     }
   };
 
   const validateForm = () => {
-    if (!theme.trim()) return false;
+    if (!theme.trim()) {return false;}
     return puzzles.every(p => 
       p.emoji.trim().length >= 1 && 
       p.answer.trim().length >= 2 && 

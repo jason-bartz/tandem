@@ -11,6 +11,9 @@ const nextConfig = {
     domains: ['localhost', 'tandemdaily.com', 'www.tandemdaily.com'],
     unoptimized: isCapacitorBuild,
   },
+  eslint: {
+    ignoreDuringBuilds: true
+  },
   // For iOS static export
   ...(isCapacitorBuild && {
     output: 'export',

@@ -12,7 +12,7 @@ export function initAudio() {
 // Create a happy success sound using Web Audio API
 export function playSuccessSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
   
@@ -80,7 +80,7 @@ export function playSuccessSound() {
 // Play a pleasant ding for correct individual answers
 export function playCorrectSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
   
@@ -112,7 +112,7 @@ export function playCorrectSound() {
 // Play a simple click sound for interactions
 export function playClickSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const oscillator = context.createOscillator();
   const gainNode = context.createGain();
@@ -133,7 +133,7 @@ export function playClickSound() {
 // Play error sound
 export function playErrorSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const oscillator = context.createOscillator();
   const gainNode = context.createGain();
@@ -155,7 +155,7 @@ export function playErrorSound() {
 // Play a cute, cheerful welcome melody when starting the game
 export function playStartSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
 
@@ -192,7 +192,7 @@ export function playStartSound() {
 // Play a gentle failure sound - soft and not harsh
 export function playFailureSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
   
@@ -247,7 +247,7 @@ export function playFailureSound() {
 // Play a quick, punchy button click sound for starting the game - distinct from intro melody
 export function playButtonTone() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
 
@@ -304,7 +304,7 @@ export function playButtonTone() {
 // Play a magical hint sound - like a lightbulb moment
 export function playHintSound() {
   const context = initAudio();
-  if (!context) return;
+  if (!context) {return;}
 
   const currentTime = context.currentTime;
   

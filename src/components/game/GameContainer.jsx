@@ -10,6 +10,7 @@ import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import logger from '@/lib/logger';
 
 export default function GameContainer() {
   const game = useGame();
@@ -19,7 +20,7 @@ export default function GameContainer() {
   
   // Auto-refresh puzzle at midnight ET
   useMidnightRefresh(() => {
-    console.log('[GameContainer] Midnight detected, refreshing puzzle...');
+    logger.info('Midnight detected, refreshing puzzle');
     // If not in the middle of playing, reload the puzzle
     if (game.gameState !== GAME_STATES.PLAYING) {
       game.loadPuzzle(null); // Load today's puzzle

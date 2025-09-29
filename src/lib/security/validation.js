@@ -18,7 +18,7 @@ const PATTERNS = {
 
 // XSS prevention - escape HTML entities
 export function escapeHtml(text) {
-  if (typeof text !== 'string') return text;
+  if (typeof text !== 'string') {return text;}
   
   const map = {
     '&': '&amp;',
@@ -34,7 +34,7 @@ export function escapeHtml(text) {
 
 // Strip potentially dangerous characters
 export function sanitizeString(input, maxLength = MAX_STRING_LENGTH) {
-  if (typeof input !== 'string') return '';
+  if (typeof input !== 'string') {return '';}
   
   // Remove null bytes
   let sanitized = input.replace(/\0/g, '');
@@ -63,13 +63,13 @@ export const passwordSchema = z
   .max(100, 'Password must be at most 100 characters')
   .refine((password) => {
     // Check for at least one uppercase letter
-    if (!/[A-Z]/.test(password)) return false;
+    if (!/[A-Z]/.test(password)) {return false;}
     // Check for at least one lowercase letter
-    if (!/[a-z]/.test(password)) return false;
+    if (!/[a-z]/.test(password)) {return false;}
     // Check for at least one number
-    if (!/[0-9]/.test(password)) return false;
+    if (!/[0-9]/.test(password)) {return false;}
     // Check for at least one special character
-    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) return false;
+    if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {return false;}
     return true;
   }, 'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character');
 

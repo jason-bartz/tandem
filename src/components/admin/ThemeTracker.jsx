@@ -89,7 +89,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
       const s1 = str1.toLowerCase().trim();
       const s2 = str2.toLowerCase().trim();
 
-      if (s1 === s2) return 1;
+      if (s1 === s2) {return 1;}
 
       const words1 = new Set(s1.split(' '));
       const words2 = new Set(s2.split(' '));
@@ -101,12 +101,12 @@ export default function ThemeTracker({ onEditPuzzle }) {
 
     puzzles.forEach((puzzle1, i) => {
       puzzles.forEach((puzzle2, j) => {
-        if (i >= j) return;
+        if (i >= j) {return;}
 
         const similarity = calculateSimilarity(puzzle1.theme, puzzle2.theme);
         if (similarity > 0.5 && similarity < 1) {
-          if (!similar[puzzle1.date]) similar[puzzle1.date] = [];
-          if (!similar[puzzle2.date]) similar[puzzle2.date] = [];
+          if (!similar[puzzle1.date]) {similar[puzzle1.date] = [];}
+          if (!similar[puzzle2.date]) {similar[puzzle2.date] = [];}
           similar[puzzle1.date].push(puzzle2.date);
           similar[puzzle2.date].push(puzzle1.date);
         }

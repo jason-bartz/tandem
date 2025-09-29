@@ -18,7 +18,7 @@ export default function Settings({ isOpen, onClose }) {
   }, [isOpen]);
 
   const loadSubscriptionInfo = async () => {
-    if (!Capacitor.isNativePlatform()) return;
+    if (!Capacitor.isNativePlatform()) {return;}
 
     setLoading(true);
     try {
@@ -61,7 +61,7 @@ export default function Settings({ isOpen, onClose }) {
   };
 
   const formatDate = (dateStr) => {
-    if (!dateStr) return null;
+    if (!dateStr) {return null;}
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
       month: 'long',
@@ -71,7 +71,7 @@ export default function Settings({ isOpen, onClose }) {
   };
 
   const getSubscriptionTier = () => {
-    if (!subscriptionInfo?.productId) return null;
+    if (!subscriptionInfo?.productId) {return null;}
 
     const tierMap = {
       'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝' },
@@ -82,7 +82,7 @@ export default function Settings({ isOpen, onClose }) {
     return tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨' };
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const tier = getSubscriptionTier();
 
