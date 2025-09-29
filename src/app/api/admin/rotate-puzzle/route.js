@@ -1,27 +1,9 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
+import { requireAdmin } from '@/lib/auth';
 import { manualRotatePuzzle, getCurrentPuzzleDateET } from '@/lib/scheduler';
+import { withRateLimit } from '@/lib/security/rateLimiter';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-change-in-production';
-
-async function verifyAdmin() {
-  try {
-    const cookieStore = cookies();
-    const token = cookieStore.get('admin-token');
-    
-    if (!token) {
-      return false;
-    }
-    
-    const decoded = jwt.verify(token.value, JWT_SECRET);
-    return decoded.isAdmin === true;
-  } catch (error) {
-    return false;
-  }
-}
-
-export async function GET(request) {
+export async function GET() {
   try {
     // Check current puzzle date without requiring auth
     const currentDate = getCurrentPuzzleDateET();
@@ -47,14 +29,16 @@ export async function GET(request) {
 
 export async function POST(request) {
   try {
-    // Verify admin authentication
-    const isAdmin = await verifyAdmin();
-    
-    if (!isAdmin) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    // Apply rate limiting for write operations
+    const rateLimitResponse = await withRateLimit(request, 'write');
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // Verify admin authentication with CSRF protection
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return authError;
     }
     
     const body = await request.json();

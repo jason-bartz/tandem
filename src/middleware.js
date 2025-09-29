@@ -8,7 +8,10 @@ const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
+  'X-Download-Options': 'noopen',
+  'X-Permitted-Cross-Domain-Policies': 'none',
 };
 
 // Content Security Policy for admin routes
@@ -17,14 +20,15 @@ const adminCSP = {
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Next.js requires these
     "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob:",
-    "font-src 'self'",
-    "connect-src 'self'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https:",
     "frame-src 'none'",
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
+    "block-all-mixed-content",
     "upgrade-insecure-requests",
   ].join('; '),
 };
