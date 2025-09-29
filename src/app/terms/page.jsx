@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
 export default function TermsOfUse() {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage = theme === 'dark'
-    ? "url('/images/dark-mode-bg.webp')"
-    : "url('/images/light-mode-bg.webp')";
+  const backgroundImage =
+    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
 
   const sections = [
     {
@@ -20,19 +19,20 @@ export default function TermsOfUse() {
         <div className="space-y-3 text-sm">
           <p>
             By accessing or playing Tandem ("the Game") at tandemdaily.com or through our iOS app,
-            you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these Terms,
-            please do not use the Game.
+            you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
+            Terms, please do not use the Game.
           </p>
           <p>
-            These Terms apply to all users of the Game, including those who access it through our website,
-            progressive web app (PWA), or iOS application.
+            These Terms apply to all users of the Game, including those who access it through our
+            website, progressive web app (PWA), or iOS application.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            <strong>Effective Date</strong>: January 1, 2025<br />
+            <strong>Effective Date</strong>: January 1, 2025
+            <br />
             <strong>Last Updated</strong>: January 1, 2025
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'game-description',
@@ -40,9 +40,9 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Tandem is a daily word puzzle game where players decode emoji pairs to guess words related
-            to a daily theme. The Game is provided by Good Vibes Games ("we," "us," or "our") for
-            entertainment purposes.
+            Tandem is a daily word puzzle game where players decode emoji pairs to guess words
+            related to a daily theme. The Game is provided by Good Vibes Games ("we," "us," or
+            "our") for entertainment purposes.
           </p>
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
@@ -52,7 +52,7 @@ export default function TermsOfUse() {
             <li>Optional in-app purchases for premium features</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'use-license',
@@ -73,7 +73,7 @@ export default function TermsOfUse() {
             <li>Interfere with or disrupt the Game's operation</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'subscriptions',
@@ -84,9 +84,15 @@ export default function TermsOfUse() {
             <h4 className="font-semibold mb-2">Tandem Unlimited Subscriptions</h4>
             <p className="mb-2">We offer optional subscriptions for premium features:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li><strong>Buddy Pass</strong>: Monthly subscription ($1.99/month)</li>
-              <li><strong>Best Friends</strong>: Annual subscription ($14.99/year)</li>
-              <li><strong>Soulmates</strong>: Lifetime access ($29.99 one-time)</li>
+              <li>
+                <strong>Buddy Pass</strong>: Monthly subscription ($1.99/month)
+              </li>
+              <li>
+                <strong>Best Friends</strong>: Annual subscription ($14.99/year)
+              </li>
+              <li>
+                <strong>Soulmates</strong>: Lifetime access ($29.99 one-time)
+              </li>
             </ul>
           </div>
 
@@ -108,7 +114,7 @@ export default function TermsOfUse() {
             </p>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'intellectual-property',
@@ -128,10 +134,11 @@ export default function TermsOfUse() {
             <li>Remove copyright or proprietary notices</li>
           </ul>
           <p className="mt-2">
-            Sharing game results on social media as intended by the share feature is permitted and encouraged.
+            Sharing game results on social media as intended by the share feature is permitted and
+            encouraged.
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'user-content',
@@ -139,11 +146,12 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            While the Game doesn't currently support user-generated content, if you provide feedback,
-            suggestions, or ideas, you grant us the right to use them without compensation or attribution.
+            While the Game doesn't currently support user-generated content, if you provide
+            feedback, suggestions, or ideas, you grant us the right to use them without compensation
+            or attribution.
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'privacy',
@@ -151,8 +159,9 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Your use of the Game is also governed by our Privacy Policy, which describes how we collect,
-            use, and protect your information. By using the Game, you consent to our privacy practices.
+            Your use of the Game is also governed by our Privacy Policy, which describes how we
+            collect, use, and protect your information. By using the Game, you consent to our
+            privacy practices.
           </p>
           <p>
             <Link href="/privacypolicy" className="text-sky-600 dark:text-sky-400 hover:underline">
@@ -160,7 +169,7 @@ export default function TermsOfUse() {
             </Link>
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'disclaimers',
@@ -197,7 +206,7 @@ export default function TermsOfUse() {
             </p>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'modifications',
@@ -215,7 +224,7 @@ export default function TermsOfUse() {
             Continued use of the Game after changes constitutes acceptance of modified Terms.
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'termination',
@@ -232,7 +241,7 @@ export default function TermsOfUse() {
             <li>No refunds will be provided</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'age-requirements',
@@ -249,7 +258,7 @@ export default function TermsOfUse() {
             <li>Parents are responsible for their children's use</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'apple-terms',
@@ -265,7 +274,7 @@ export default function TermsOfUse() {
             <li>You must comply with Apple's Terms of Service</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'governing-law',
@@ -278,7 +287,7 @@ export default function TermsOfUse() {
             courts of New York.
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'contact',
@@ -287,12 +296,14 @@ export default function TermsOfUse() {
         <div className="space-y-3 text-sm">
           <p>For questions about these Terms, contact us at:</p>
           <div className="mt-3 space-y-1">
-            <p><strong>Good Vibes Games</strong></p>
+            <p>
+              <strong>Good Vibes Games</strong>
+            </p>
             <p>Email: jason@goodvibesgames.com</p>
             <p>Website: tandemdaily.com</p>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'entire-agreement',
@@ -308,8 +319,8 @@ export default function TermsOfUse() {
             full force and effect.
           </p>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -320,10 +331,9 @@ export default function TermsOfUse() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
       }}
     >
-
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
@@ -333,7 +343,12 @@ export default function TermsOfUse() {
             className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             <span className="text-sm font-medium">Back to Game</span>
           </Link>
@@ -377,19 +392,31 @@ export default function TermsOfUse() {
             <div className="p-6 pt-0">
               <div className="space-y-2">
                 {sections.map((section) => (
-                  <div key={section.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                  <div
+                    key={section.id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                  >
                     <button
-                      onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
+                      onClick={() =>
+                        setActiveSection(activeSection === section.id ? null : section.id)
+                      }
                       className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
                     >
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">{section.title}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
+                        {section.title}
+                      </span>
                       <svg
                         className={`h-5 w-5 text-gray-500 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                     {activeSection === section.id && (

@@ -1,11 +1,10 @@
 'use client';
 import { useGame } from '@/hooks/useGame';
 import { useTimer } from '@/hooks/useTimer';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSound } from '@/hooks/useSound';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { GAME_STATES } from '@/lib/constants';
-import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
@@ -17,7 +16,7 @@ export default function GameContainer() {
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
   const { theme, toggleTheme, isAuto, currentState } = useTheme();
   const { playSound } = useSound();
-  
+
   // Auto-refresh puzzle at midnight ET
   useMidnightRefresh(() => {
     logger.info('Midnight detected, refreshing puzzle');
@@ -29,7 +28,7 @@ export default function GameContainer() {
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();
-    
+
     if (result.correct > 0) {
       playSound('correct');
     }
@@ -38,18 +37,6 @@ export default function GameContainer() {
     }
   };
 
-  const handleComplete = (won) => {
-    if (won) {
-      playSound('complete');
-    } else {
-      // Play the gentle failure sound
-      if (soundEnabled) {
-        playFailureSound();
-      }
-    }
-    game.completeGame(won);
-  };
-  
   const handleSelectPuzzle = async (date) => {
     // Load the selected puzzle (loadPuzzle handles resetting internally)
     const success = await game.loadPuzzle(date);
@@ -61,19 +48,18 @@ export default function GameContainer() {
     }
   };
 
-  const backgroundImage = theme === 'dark' 
-    ? "url('/images/dark-mode-bg.webp')" 
-    : "url('/images/light-mode-bg.webp')";
+  const backgroundImage =
+    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
 
   if (game.loading) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{ 
+        style={{
           backgroundImage: "url('/images/light-mode-bg.webp')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <LoadingSpinner />
@@ -83,22 +69,18 @@ export default function GameContainer() {
 
   if (game.error) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{ 
+        style={{
           backgroundImage,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-            Oops!
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {game.error}
-          </p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
           <button
             onClick={game.loadPuzzle}
             className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
@@ -112,13 +94,13 @@ export default function GameContainer() {
 
   // Main container with wallpaper background
   return (
-    <div 
+    <div
       className={`fixed inset-0 w-full h-full overflow-auto ${theme}`}
-      style={{ 
+      style={{
         backgroundImage,
         backgroundSize: 'cover',
         backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat'
+        backgroundRepeat: 'no-repeat',
       }}
     >
       <div className="min-h-screen flex items-center justify-center p-4 pb-12">
@@ -181,12 +163,10 @@ export default function GameContainer() {
           )}
         </div>
       </div>
-      
+
       {/* Copyright notice - positioned at bottom */}
       <div className="fixed bottom-4 left-0 right-0 text-center pointer-events-none">
-        <p className="text-white/60 text-xs">
-          © 2025 Tandem
-        </p>
+        <p className="text-white/60 text-xs">© 2025 Tandem</p>
       </div>
     </div>
   );

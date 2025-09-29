@@ -8,6 +8,7 @@ export const GAME_CONFIG = {
 export const STORAGE_KEYS = {
   THEME: 'tandemTheme',
   THEME_MODE: 'tandemThemeMode',
+  HIGH_CONTRAST: 'tandemHighContrast',
   SOUND: 'tandemSound',
   STATS: 'tandemStats',
   AUTH_TOKEN: 'adminToken',
@@ -98,7 +99,7 @@ export const SOUND_CONFIG = {
       duration: 0.2,
     },
     COMPLETE: {
-      frequencies: [523.25, 659.25, 783.99, 1046.50],
+      frequencies: [523.25, 659.25, 783.99, 1046.5],
       duration: 0.5,
     },
   },
@@ -140,7 +141,7 @@ export const VALIDATION_RULES = {
 
 export const MESSAGES = {
   ERRORS: {
-    PUZZLE_LOAD_FAILED: 'Failed to load today\'s puzzle',
+    PUZZLE_LOAD_FAILED: "Failed to load today's puzzle",
     AUTH_FAILED: 'Authentication failed',
     SAVE_FAILED: 'Failed to save your progress',
     NETWORK_ERROR: 'Network error. Please try again.',

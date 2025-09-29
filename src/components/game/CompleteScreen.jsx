@@ -18,6 +18,7 @@ import HowToPlayModal from './HowToPlayModal';
 import ShareButton from './ShareButton';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 import Settings from '@/components/Settings';
 
 export default function CompleteScreen({
@@ -45,6 +46,7 @@ export default function CompleteScreen({
   const [congratsMessage, setCongratsMessage] = useState('');
   const { preloadArchive } = useArchivePreload();
   const { celebration, lightTap } = useHaptics();
+  const { highContrast } = useTheme();
 
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
@@ -196,7 +198,13 @@ export default function CompleteScreen({
           </p>
 
           {puzzleTheme && (
-            <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 rounded-2xl p-4 mb-6">
+            <div
+              className={`rounded-2xl p-4 mb-6 ${
+                highContrast
+                  ? 'bg-hc-surface border-4 border-hc-border'
+                  : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+              }`}
+            >
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
               <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
             </div>

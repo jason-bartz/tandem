@@ -13,6 +13,7 @@ import ArchiveModal from './ArchiveModal';
 import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
 
 export default function PlayingScreen({
@@ -46,6 +47,7 @@ export default function PlayingScreen({
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
   const { preloadArchive } = useArchivePreload();
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
+  const { highContrast } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
@@ -212,7 +214,13 @@ export default function PlayingScreen({
         }}
       >
         {/* Header with gradient - Logo hidden on mobile */}
-        <div className="bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900 p-5 text-center flex-shrink-0">
+        <div
+          className={`p-5 text-center flex-shrink-0 ${
+            highContrast
+              ? 'bg-hc-primary border-b-4 border-hc-border'
+              : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900'
+          }`}
+        >
           {/* Only show logo on larger screens */}
           <button
             onClick={() => {
@@ -303,7 +311,13 @@ export default function PlayingScreen({
                 }
               }}
               disabled={!hasAnyInput}
-              className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white border-none rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+                ${
+                  highContrast
+                    ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
+                    : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 border-none hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20'
+                }
+              `}
             >
               Check Answers
             </button>
@@ -314,7 +328,13 @@ export default function PlayingScreen({
                   lightTap();
                   handleUseHint();
                 }}
-                className="w-full p-3 bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2"
+                className={`w-full p-3 rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2
+                  ${
+                    highContrast
+                      ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
+                      : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
+                  }
+                `}
               >
                 <span className="text-xl">💡</span>
                 Use Hint (1 available)

@@ -4,12 +4,14 @@ import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const { playHaptic } = useHaptics();
+  const { theme, toggleTheme, highContrast, toggleHighContrast } = useTheme();
 
   useEffect(() => {
     if (isOpen) {
@@ -182,6 +184,58 @@ export default function Settings({ isOpen, onClose }) {
             )}
           </div>
         )}
+
+        {/* Accessibility Section */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Accessibility
+          </h3>
+          <div className="space-y-4">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Dark Mode</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">Reduce eye strain</p>
+              </div>
+              <button
+                onClick={toggleTheme}
+                className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                role="switch"
+                aria-checked={theme === 'dark'}
+              >
+                <span
+                  className={`${
+                    theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />
+              </button>
+            </div>
+
+            {/* High Contrast Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  High Contrast Mode
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Better visibility for colorblind users
+                </p>
+              </div>
+              <button
+                onClick={toggleHighContrast}
+                className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                role="switch"
+                aria-checked={highContrast}
+              >
+                <span
+                  className={`${
+                    highContrast ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                />
+              </button>
+            </div>
+          </div>
+        </div>
 
         {/* About Section */}
         <div className="mb-6">

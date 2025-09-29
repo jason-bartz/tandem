@@ -1,11 +1,13 @@
 'use client';
 import { useState, useCallback, useEffect } from 'react';
 import platformService from '@/services/platform';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function ShareButton({ shareText, className = '' }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
   const [isNative, setIsNative] = useState(false);
+  const { highContrast } = useTheme();
 
   useEffect(() => {
     // Check if running on native platform
@@ -18,7 +20,7 @@ export default function ShareButton({ shareText, className = '' }) {
       const result = await platformService.share({
         title: 'Tandem Daily',
         text: shareText,
-        url: 'https://tandemdaily.com'
+        url: 'https://tandemdaily.com',
       });
 
       // Add haptic feedback on iOS
@@ -36,7 +38,6 @@ export default function ShareButton({ shareText, className = '' }) {
           setCopied(false);
         }, 3000);
       }
-
     } catch (err) {
       // Failed to share - will try clipboard fallback
 
@@ -86,15 +87,25 @@ export default function ShareButton({ shareText, className = '' }) {
         onClick={handleShare}
         className={`
           w-full py-3 px-4
-          bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600
           text-white rounded-xl font-semibold
           hover:shadow-lg transition-all
           flex items-center justify-center gap-2
+          ${
+            highContrast
+              ? 'bg-hc-success border-4 border-hc-border hover:bg-hc-focus'
+              : 'bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600'
+          }
           ${className}
         `}
         aria-label="Share results"
       >
-        {copied ? 'Copied!' : error ? 'Failed to copy' : isNative ? 'Share Results' : 'Share Results'}
+        {copied
+          ? 'Copied!'
+          : error
+            ? 'Failed to copy'
+            : isNative
+              ? 'Share Results'
+              : 'Share Results'}
       </button>
 
       {/* Visual feedback tooltip */}
