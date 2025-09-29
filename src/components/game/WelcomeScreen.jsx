@@ -6,16 +6,26 @@ import { playStartSound, playButtonTone } from '@/lib/sounds';
 import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
+import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
 import subscriptionService from '@/services/subscriptionService';
 
-export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, currentState, onSelectPuzzle, puzzle }) {
+export default function WelcomeScreen({
+  onStart,
+  theme,
+  toggleTheme,
+  _isAuto,
+  _currentState,
+  onSelectPuzzle,
+  puzzle,
+}) {
   const puzzleInfo = getCurrentPuzzleInfo();
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
   const { preloadArchive } = useArchivePreload();
@@ -39,7 +49,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
 
       return () => clearTimeout(timer);
     }
-  }, []);
+  }, [welcomeMelody]);
 
   const checkPremiumStatus = async () => {
     if (Capacitor.isNativePlatform()) {
@@ -50,8 +60,8 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
 
   const handlePlayClick = () => {
     try {
-      playButtonTone();  // Use the new distinct button tone
-      mediumTap();  // Medium tap for starting the game
+      playButtonTone(); // Use the new distinct button tone
+      mediumTap(); // Medium tap for starting the game
     } catch (e) {
       // Sound might fail on some browsers
     }
@@ -88,18 +98,26 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"></span>
           )}
         </button>
-        {Capacitor.isNativePlatform() && (
-          <button
-            onClick={() => {
-              lightTap();
-              setShowSettings(true);
-            }}
-            className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
-            title="Settings"
-          >
-            ⚙️
-          </button>
-        )}
+        <button
+          onClick={() => {
+            lightTap();
+            setShowHowToPlay(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="How to Play"
+        >
+          ❓
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
+            setShowSettings(true);
+          }}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          title="Settings"
+        >
+          ⚙️
+        </button>
         <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
@@ -107,7 +125,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
         <div className="w-24 h-24 mx-auto mb-5 relative">
           <Image
-            src={theme === 'dark' ? "/images/dark-mode-logo.webp" : "/images/main-logo.webp"}
+            src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
             alt="Tandem Logo"
             width={96}
             height={96}
@@ -115,11 +133,11 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
             priority
           />
         </div>
-        
+
         <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
           4 answers. 2 emojis each. 1 theme.
         </p>
-        
+
         <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
           <h3 className="text-sm uppercase tracking-wider text-gray-text dark:text-gray-300 mb-4 font-semibold">
             How to Play
@@ -129,7 +147,9 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 🎯
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">Use the theme to guide your answers</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+                Use the theme to guide your answers
+              </span>
             </div>
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
@@ -143,24 +163,24 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 ❌
               </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">4 mistakes allowed</span>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+                4 mistakes allowed
+              </span>
             </div>
           </div>
         </div>
-        
+
         <button
           onClick={handlePlayClick}
           disabled={!puzzle}
           className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
         >
-          {puzzle ? "Play Today's Puzzle" : "Loading Puzzle..."}
+          {puzzle ? "Play Today's Puzzle" : 'Loading Puzzle...'}
         </button>
-        
-        <div className="text-gray-text dark:text-gray-400 text-sm mt-4">
-          {puzzleInfo.date}
-        </div>
+
+        <div className="text-gray-text dark:text-gray-400 text-sm mt-4">{puzzleInfo.date}</div>
       </div>
-      
+
       <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal
         isOpen={showArchive}
@@ -173,6 +193,7 @@ export default function WelcomeScreen({ onStart, theme, toggleTheme, isAuto, cur
           }, 100);
         }}
       />
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings
         isOpen={showSettings}
         onClose={() => {
