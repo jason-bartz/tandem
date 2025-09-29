@@ -32,7 +32,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{ 
+    <div style={{
       minHeight: '100vh',
       display: 'flex',
       alignItems: 'center',
@@ -41,11 +41,12 @@ export default function AdminLogin() {
       backgroundSize: 'cover',
       backgroundPosition: 'center',
       backgroundRepeat: 'no-repeat',
-      backgroundColor: 'white',
+      backgroundAttachment: 'fixed',
+      backgroundColor: '#87CEEB',
       padding: '1rem'
     }}>
       <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+        backgroundColor: 'rgba(255, 255, 255, 0.90)',
         backdropFilter: 'blur(10px)',
         padding: '2rem',
         borderRadius: '1.5rem',

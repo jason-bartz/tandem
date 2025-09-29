@@ -58,13 +58,15 @@ export default function AdminLayout({ children }) {
   // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{ 
+        style={{
           backgroundImage: "url('/images/light-mode-bg.webp')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+          backgroundColor: '#87CEEB'
         }}
       >
         <LoadingSpinner />
@@ -79,18 +81,19 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div 
+    <div
       className="min-h-screen"
       style={{
         backgroundImage: "url('/images/light-mode-bg.webp')",
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundColor: 'white'
+        backgroundAttachment: 'fixed',
+        backgroundColor: '#87CEEB'
       }}
     >
-      <nav className="bg-white/95 backdrop-blur-sm shadow-lg border-b border-sky-200">
-        <div className="px-4 sm:px-6 lg:px-8">
+      <nav className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-sky-200">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
               <h1 className="text-xl font-bold bg-gradient-to-r from-sky-500 to-teal-400 bg-clip-text text-transparent">
@@ -120,7 +123,7 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-7xl mx-auto" style={{ minWidth: '1100px' }}>
+        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-7xl mx-auto">
           {children}
         </div>
       </main>
