@@ -10,6 +10,7 @@ import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
 import subscriptionService from '@/services/subscriptionService';
 
@@ -30,6 +31,7 @@ export default function WelcomeScreen({
   const [isPremium, setIsPremium] = useState(false);
   const { preloadArchive } = useArchivePreload();
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
+  const { highContrast } = useTheme();
 
   useEffect(() => {
     // Check premium status on mount
@@ -173,7 +175,13 @@ export default function WelcomeScreen({
         <button
           onClick={handlePlayClick}
           disabled={!puzzle}
-          className="w-full p-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white border-none rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+          className={`w-full p-4 text-white rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+            ${
+              highContrast
+                ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
+                : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 border-none hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20'
+            }
+          `}
         >
           {puzzle ? "Play Today's Puzzle" : 'Loading Puzzle...'}
         </button>

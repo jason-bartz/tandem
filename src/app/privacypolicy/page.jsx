@@ -1,16 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
 export default function PrivacyPolicy() {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage = theme === 'dark'
-    ? "url('/images/dark-mode-bg.webp')"
-    : "url('/images/light-mode-bg.webp')";
+  const backgroundImage =
+    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
 
   const sections = [
     {
@@ -19,18 +18,22 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Tandem ("we," "our," or "us"), a daily word puzzle game developed by Good Vibes Games.
-            We respect your privacy and are committed to protecting your personal data. This privacy policy
-            explains how we collect, use, and safeguard information when you play our game at tandemdaily.com
-            (the "Service").
+            Welcome to Tandem ("we," "our," or "us"), a daily word puzzle game developed by Good
+            Vibes Games. We respect your privacy and are committed to protecting your personal data.
+            This privacy policy explains how we collect, use, and safeguard information when you
+            play our game at tandemdaily.com (the "Service").
           </p>
-          <p>By using Tandem, you agree to the collection and use of information in accordance with this policy.</p>
+          <p>
+            By using Tandem, you agree to the collection and use of information in accordance with
+            this policy.
+          </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            <strong>Effective Date</strong>: January 1, 2025<br />
+            <strong>Effective Date</strong>: January 1, 2025
+            <br />
             <strong>Last Updated</strong>: January 1, 2025
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'information-collected',
@@ -39,7 +42,9 @@ export default function PrivacyPolicy() {
         <div className="space-y-4 text-sm">
           <div>
             <h4 className="font-semibold mb-2">1. Game Statistics</h4>
-            <p className="mb-2">We collect and store the following gameplay information locally on your device:</p>
+            <p className="mb-2">
+              We collect and store the following gameplay information locally on your device:
+            </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Number of games played</li>
               <li>Number of games won</li>
@@ -49,7 +54,10 @@ export default function PrivacyPolicy() {
               <li>Time taken to complete puzzles</li>
               <li>Number of mistakes made per puzzle</li>
             </ul>
-            <p className="mt-2 text-xs italic">Storage Method: This data is stored in your browser's localStorage and remains on your device.</p>
+            <p className="mt-2 text-xs italic">
+              Storage Method: This data is stored in your browser's localStorage and remains on your
+              device.
+            </p>
           </div>
 
           <div>
@@ -83,7 +91,7 @@ export default function PrivacyPolicy() {
             </ul>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'how-we-use',
@@ -100,7 +108,7 @@ export default function PrivacyPolicy() {
             <li>Ensure the Service operates correctly</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'data-storage',
@@ -134,7 +142,7 @@ export default function PrivacyPolicy() {
             </ul>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'cookies-tracking',
@@ -143,27 +151,49 @@ export default function PrivacyPolicy() {
         <div className="space-y-3 text-sm">
           <p>Tandem uses minimal tracking:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li><strong>localStorage</strong>: For game state and preferences (not cookies)</li>
-            <li><strong>No Third-Party Trackers</strong>: We do not use Google Analytics or similar services</li>
-            <li><strong>No Advertising</strong>: We do not serve ads or use advertising networks</li>
-            <li><strong>No Social Media Tracking</strong>: Social sharing features do not track your activity</li>
+            <li>
+              <strong>localStorage</strong>: For game state and preferences (not cookies)
+            </li>
+            <li>
+              <strong>No Third-Party Trackers</strong>: We do not use Google Analytics or similar
+              services
+            </li>
+            <li>
+              <strong>No Advertising</strong>: We do not serve ads or use advertising networks
+            </li>
+            <li>
+              <strong>No Social Media Tracking</strong>: Social sharing features do not track your
+              activity
+            </li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'data-sharing',
       title: 'Data Sharing',
       content: (
         <div className="space-y-3 text-sm">
-          <p>We do not sell, trade, or rent your information to third parties. We may share data only in these circumstances:</p>
+          <p>
+            We do not sell, trade, or rent your information to third parties. We may share data only
+            in these circumstances:
+          </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li><strong>With Your Consent</strong>: When you explicitly choose to share (e.g., sharing game results)</li>
-            <li><strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game improvements</li>
-            <li><strong>Legal Requirements</strong>: If required by law or to protect rights and safety</li>
+            <li>
+              <strong>With Your Consent</strong>: When you explicitly choose to share (e.g., sharing
+              game results)
+            </li>
+            <li>
+              <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game
+              improvements
+            </li>
+            <li>
+              <strong>Legal Requirements</strong>: If required by law or to protect rights and
+              safety
+            </li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'pwa-features',
@@ -178,7 +208,7 @@ export default function PrivacyPolicy() {
             <li>Uninstalling removes all locally stored data</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'childrens-privacy',
@@ -186,8 +216,8 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Tandem is suitable for all ages. We do not knowingly collect personal information from children under 13.
-            The game:
+            Tandem is suitable for all ages. We do not knowingly collect personal information from
+            children under 13. The game:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Does not require account creation</li>
@@ -196,7 +226,7 @@ export default function PrivacyPolicy() {
             <li>Contains no inappropriate content</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'your-rights',
@@ -224,7 +254,7 @@ export default function PrivacyPolicy() {
             </ul>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'international',
@@ -232,25 +262,29 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Our Service is hosted on Vercel's global infrastructure. By using Tandem, you consent to your
-            information being processed in the United States and other countries where Vercel operates data centers.
+            Our Service is hosted on Vercel's global infrastructure. By using Tandem, you consent to
+            your information being processed in the United States and other countries where Vercel
+            operates data centers.
           </p>
         </div>
-      )
+      ),
     },
     {
       id: 'changes',
       title: 'Changes to This Policy',
       content: (
         <div className="space-y-3 text-sm">
-          <p>We may update this privacy policy from time to time. We will notify you of any changes by:</p>
+          <p>
+            We may update this privacy policy from time to time. We will notify you of any changes
+            by:
+          </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Posting the new policy on this page</li>
             <li>Updating the "Last Updated" date</li>
             <li>Displaying an in-game notice for significant changes</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'retention',
@@ -258,12 +292,18 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li><strong>Local Data</strong>: Retained indefinitely until you clear it</li>
-            <li><strong>Server Data</strong>: Anonymous statistics retained for up to 1 year</li>
-            <li><strong>Admin Logs</strong>: Security logs retained for 30 days</li>
+            <li>
+              <strong>Local Data</strong>: Retained indefinitely until you clear it
+            </li>
+            <li>
+              <strong>Server Data</strong>: Anonymous statistics retained for up to 1 year
+            </li>
+            <li>
+              <strong>Admin Logs</strong>: Security logs retained for 30 days
+            </li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'california',
@@ -278,7 +318,7 @@ export default function PrivacyPolicy() {
             <li>Right to non-discrimination</li>
           </ul>
         </div>
-      )
+      ),
     },
     {
       id: 'contact',
@@ -287,13 +327,15 @@ export default function PrivacyPolicy() {
         <div className="space-y-3 text-sm">
           <p>If you have questions or concerns about this privacy policy, please contact us:</p>
           <div className="mt-3 space-y-1">
-            <p><strong>Good Vibes Games</strong></p>
+            <p>
+              <strong>Good Vibes Games</strong>
+            </p>
             <p>Email: jason@goodvibesgames.com</p>
             <p>Website: tandemdaily.com</p>
             <p>For game support: jason@goodvibesgames.com</p>
           </div>
         </div>
-      )
+      ),
     },
     {
       id: 'compliance',
@@ -308,8 +350,8 @@ export default function PrivacyPolicy() {
             <li>Other applicable privacy laws and regulations</li>
           </ul>
         </div>
-      )
-    }
+      ),
+    },
   ];
 
   return (
@@ -320,10 +362,9 @@ export default function PrivacyPolicy() {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
       }}
     >
-
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
@@ -333,7 +374,12 @@ export default function PrivacyPolicy() {
             className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             <span className="text-sm font-medium">Back to Game</span>
           </Link>
@@ -355,37 +401,61 @@ export default function PrivacyPolicy() {
               <ul className="text-sm space-y-1">
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   No account required
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   No personal data collection
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   Data stored locally on your device
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   No ads or trackers
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   No data sales to third parties
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   Family-friendly and safe for all ages
                 </li>
@@ -396,19 +466,31 @@ export default function PrivacyPolicy() {
             <div className="p-6 pt-0">
               <div className="space-y-2">
                 {sections.map((section) => (
-                  <div key={section.id} className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden">
+                  <div
+                    key={section.id}
+                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
+                  >
                     <button
-                      onClick={() => setActiveSection(activeSection === section.id ? null : section.id)}
+                      onClick={() =>
+                        setActiveSection(activeSection === section.id ? null : section.id)
+                      }
                       className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
                     >
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">{section.title}</span>
+                      <span className="font-semibold text-gray-800 dark:text-gray-200">
+                        {section.title}
+                      </span>
                       <svg
                         className={`h-5 w-5 text-gray-500 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
                       >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19 9l-7 7-7-7"
+                        />
                       </svg>
                     </button>
                     {activeSection === section.id && (

@@ -1,13 +1,19 @@
 'use client';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function HowToPlayModal({ isOpen, onClose }) {
+  const { highContrast } = useTheme();
   if (!isOpen) {
     return null;
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto">
+      <div
+        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto ${
+          highContrast ? 'bg-hc-background border-4 border-hc-border' : 'bg-white dark:bg-gray-800'
+        }`}
+      >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">How To Play</h2>
           <button
@@ -30,7 +36,13 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Examples</h3>
-            <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 space-y-2">
+            <div
+              className={`rounded-xl p-4 space-y-2 ${
+                highContrast
+                  ? 'bg-hc-surface border-2 border-hc-border'
+                  : 'bg-gray-50 dark:bg-gray-700'
+              }`}
+            >
               <div className="flex items-center justify-between">
                 <span className="text-2xl">🗺️📍</span>
                 <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= MAP</span>
@@ -71,7 +83,13 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             </div>
           </div>
 
-          <div className="bg-amber-50 dark:bg-amber-900/20 rounded-xl p-4">
+          <div
+            className={`rounded-xl p-4 ${
+              highContrast
+                ? 'bg-hc-warning text-white border-2 border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20'
+            }`}
+          >
             <p className="text-sm">
               <span className="font-semibold">💡 Hint:</span> Get a hint to reveal a random
               unanswered word's first letter and length.
@@ -95,7 +113,11 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
         <button
           onClick={onClose}
-          className="mt-6 w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+          className={`mt-6 w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all ${
+            highContrast
+              ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus'
+              : 'bg-gradient-to-r from-sky-500 to-teal-400'
+          }`}
         >
           Got it!
         </button>

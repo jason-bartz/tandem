@@ -1,12 +1,11 @@
 'use client';
 import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
-import { useTheme } from '@/hooks/useTheme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { GAME_STATES } from '@/lib/constants';
-import { playFailureSound } from '@/lib/sounds';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
@@ -24,7 +23,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   // Auto-refresh puzzle at midnight ET for iOS app
   useMidnightRefresh(() => {
-    console.log('[GameContainerClient] Midnight detected, refreshing puzzle...');
     // If not in the middle of playing, reload the puzzle
     if (game.gameState !== GAME_STATES.PLAYING) {
       // Force reload to get today's puzzle
@@ -37,24 +35,14 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
     if (result.correct > 0) {
       playSound('correct');
-      correctAnswer();  // Add haptic feedback for correct answers
+      correctAnswer(); // Add haptic feedback for correct answers
     }
     if (result.incorrect > 0) {
       playSound('incorrect');
-      incorrectAnswer();  // Add haptic feedback for incorrect answers
+      incorrectAnswer(); // Add haptic feedback for incorrect answers
     }
   };
 
-  const handleComplete = (won) => {
-    if (won) {
-      playSound('complete');
-    } else {
-      // Play the gentle failure sound
-      playFailureSound();
-    }
-    game.completeGame(won);
-  };
-  
   const handleSelectPuzzle = async (date) => {
     const success = await game.loadPuzzle(date);
     if (success) {
@@ -63,19 +51,18 @@ export default function GameContainerClient({ initialPuzzleData }) {
     }
   };
 
-  const backgroundImage = theme === 'dark' 
-    ? "url('/images/dark-mode-bg.webp')" 
-    : "url('/images/light-mode-bg.webp')";
+  const backgroundImage =
+    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
 
   if (game.loading) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{ 
+        style={{
           backgroundImage: "url('/images/light-mode-bg.webp')",
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <LoadingSpinner />
@@ -85,22 +72,18 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   if (game.error) {
     return (
-      <div 
+      <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{ 
+        style={{
           backgroundImage,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat'
+          backgroundRepeat: 'no-repeat',
         }}
       >
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
-          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">
-            Oops!
-          </h2>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {game.error}
-          </p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
           <button
             onClick={game.loadPuzzle}
             className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
@@ -121,7 +104,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed'
+        backgroundAttachment: 'fixed',
       }}
     >
       {/* Version checker for iOS app updates */}
@@ -156,13 +139,13 @@ export default function GameContainerClient({ initialPuzzleData }) {
           </p>
         </div>
       )}
-      
+
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         {/* Content wrapper - constrains width but allows height to adjust */}
         <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
           {game.gameState === GAME_STATES.WELCOME && (
-            <WelcomeScreen 
+            <WelcomeScreen
               onStart={game.startGame}
               theme={theme}
               toggleTheme={toggleTheme}
@@ -170,7 +153,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
               puzzle={game.puzzle}
             />
           )}
-          
+
           {game.gameState === GAME_STATES.PLAYING && (
             <PlayingScreen
               puzzle={game.puzzle}
@@ -193,7 +176,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
               activeHints={game.activeHints}
             />
           )}
-          
+
           {game.gameState === GAME_STATES.COMPLETE && (
             <CompleteScreen
               won={game.won}

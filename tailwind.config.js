@@ -9,6 +9,19 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // High Contrast colors
+        hc: {
+          primary: 'var(--hc-primary)',
+          'primary-text': 'var(--hc-primary-text)',
+          success: 'var(--hc-success)',
+          error: 'var(--hc-error)',
+          warning: 'var(--hc-warning)',
+          background: 'var(--hc-background)',
+          surface: 'var(--hc-surface)',
+          text: 'var(--hc-text)',
+          border: 'var(--hc-border)',
+          focus: 'var(--hc-focus)',
+        },
         // Violet/Purple - complementing sky blues
         plum: {
           DEFAULT: '#8B5CF6',
@@ -44,18 +57,18 @@ module.exports = {
       animation: {
         'fade-in': 'fadeIn 0.5s ease',
         'slide-up': 'slideUp 0.5s ease',
-        'pulse': 'pulse 2s infinite',
+        pulse: 'pulse 2s infinite',
         'link-snap': 'linkSnap 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
-        'shake': 'shake 0.5s',
+        shake: 'shake 0.5s',
       },
       keyframes: {
         fadeIn: {
-          'from': { opacity: 0, transform: 'translateY(20px)' },
-          'to': { opacity: 1, transform: 'translateY(0)' },
+          from: { opacity: 0, transform: 'translateY(20px)' },
+          to: { opacity: 1, transform: 'translateY(0)' },
         },
         slideUp: {
-          'from': { opacity: 0, transform: 'translateY(100%)' },
-          'to': { opacity: 1, transform: 'translateY(0)' },
+          from: { opacity: 0, transform: 'translateY(100%)' },
+          to: { opacity: 1, transform: 'translateY(0)' },
         },
         linkSnap: {
           '0%': { transform: 'scale(1)' },
@@ -74,4 +87,4 @@ module.exports = {
     },
   },
   plugins: [],
-}
+};
