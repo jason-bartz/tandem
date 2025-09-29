@@ -114,12 +114,12 @@ export function getTodayKey() {
 }
 
 export function hasPlayedToday() {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {return false;}
   return localStorage.getItem(getTodayKey()) !== null;
 }
 
 export function hasPlayedPuzzle(date) {
-  if (typeof window === 'undefined') return false;
+  if (typeof window === 'undefined') {return false;}
   const dateObj = new Date(date + 'T00:00:00');
   const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
   return localStorage.getItem(key) !== null;
@@ -161,7 +161,7 @@ export function savePuzzleProgress(date, progress) {
 }
 
 export function getTodayResult() {
-  if (typeof window === 'undefined') return null;
+  if (typeof window === 'undefined') {return null;}
   const result = localStorage.getItem(getTodayKey());
   return result ? JSON.parse(result) : null;
 }
@@ -190,7 +190,7 @@ export function getStoredStats() {
 }
 
 export function getGameHistory() {
-  if (typeof window === 'undefined') return {};
+  if (typeof window === 'undefined') {return {};}
   
   const history = {};
   const keys = Object.keys(localStorage);

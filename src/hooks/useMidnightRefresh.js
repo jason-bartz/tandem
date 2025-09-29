@@ -55,7 +55,7 @@ export function useMidnightRefresh(onMidnight) {
 
     return () => {
       clearInterval(interval);
-      if (cleanupTimeout) cleanupTimeout();
+      if (cleanupTimeout) {cleanupTimeout();}
     };
   }, [onMidnight]);
 }

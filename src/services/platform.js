@@ -2,6 +2,7 @@ import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { Share } from '@capacitor/share';
 import { Haptics, ImpactStyle, NotificationType, HapticsNotificationType } from '@capacitor/haptics';
 import { Preferences } from '@capacitor/preferences';
+import logger from '@/lib/logger';
 
 class PlatformService {
   constructor() {
@@ -72,28 +73,28 @@ class PlatformService {
       // Cache successful fetch for offline use
       if (this.isNative) {
         await this.cachePuzzle(targetDate, data);
-        console.log('Puzzle cached for offline use:', targetDate);
+        logger.debug('Puzzle cached for offline use:', targetDate);
       }
 
       return data;
     } catch (error) {
-      console.error('Error fetching puzzle from API:', error);
+      logger.error('Error fetching puzzle from API', error);
 
       // Try offline fallback on native
       if (this.isNative) {
         const cachedPuzzle = await this.getOfflinePuzzle(targetDate);
         if (cachedPuzzle) {
-          console.log('Using cached puzzle for:', targetDate);
+          logger.debug('Using cached puzzle for:', targetDate);
           return cachedPuzzle;
         }
 
         // Last resort: try static puzzles
         try {
           const { getStaticPuzzle } = await import('../data/staticPuzzles');
-          console.log('Falling back to static puzzle for:', targetDate);
+          logger.debug('Falling back to static puzzle for:', targetDate);
           return getStaticPuzzle(targetDate);
         } catch (staticError) {
-          console.error('Failed to load static puzzle:', staticError);
+          logger.error('Failed to load static puzzle', staticError);
         }
       }
 
@@ -118,7 +119,7 @@ class PlatformService {
         stats = response.data;
       } else {
         const res = await fetch(url);
-        if (!res.ok) throw new Error('Failed to fetch stats');
+        if (!res.ok) {throw new Error('Failed to fetch stats');}
         stats = await res.json();
       }
 
@@ -137,11 +138,11 @@ class PlatformService {
         try {
           const { value } = await Preferences.get({ key: 'tandem_stats' });
           if (value) {
-            console.log('Using cached stats');
+            logger.debug('Using cached stats');
             return JSON.parse(value);
           }
         } catch (cacheError) {
-          console.error('Failed to fetch cached stats:', cacheError);
+          logger.error('Failed to fetch cached stats', cacheError);
         }
       }
 
@@ -158,9 +159,9 @@ class PlatformService {
           key: 'tandem_stats',
           value: JSON.stringify(stats),
         });
-        console.log('Stats saved locally');
+        logger.debug('Stats saved locally');
       } catch (error) {
-        console.error('Failed to save local stats:', error);
+        logger.error('Failed to save local stats', error);
       }
     }
 
@@ -185,7 +186,7 @@ class PlatformService {
           body: JSON.stringify(stats),
         });
 
-        if (!res.ok) throw new Error('Failed to update stats');
+        if (!res.ok) {throw new Error('Failed to update stats');}
         return await res.json();
       }
     } catch (error) {
@@ -196,7 +197,7 @@ class PlatformService {
 
   // Offline puzzle cache management
   async cachePuzzle(date, puzzleData) {
-    if (!this.isNative) return;
+    if (!this.isNative) {return;}
 
     try {
       const key = `${this.CACHE_PREFIX}${date}`;
@@ -213,7 +214,7 @@ class PlatformService {
   }
 
   async getOfflinePuzzle(date) {
-    if (!this.isNative) return null;
+    if (!this.isNative) {return null;}
 
     try {
       const key = `${this.CACHE_PREFIX}${date}`;
@@ -226,7 +227,7 @@ class PlatformService {
   }
 
   async cacheRecentPuzzles() {
-    if (!this.isNative) return;
+    if (!this.isNative) {return;}
 
     try {
       const today = this.getTodayDateString();
@@ -252,7 +253,7 @@ class PlatformService {
   }
 
   async cleanOldCache() {
-    if (!this.isNative) return;
+    if (!this.isNative) {return;}
 
     try {
       const { keys } = await Preferences.keys();
@@ -278,7 +279,7 @@ class PlatformService {
 
   // Clear yesterday's cache to ensure fresh puzzle load
   async clearYesterdayCache() {
-    if (!this.isNative) return;
+    if (!this.isNative) {return;}
 
     try {
       const today = this.getTodayDateString();
@@ -296,7 +297,7 @@ class PlatformService {
         // If cached puzzle date doesn't match today, clear it
         if (cached.date !== today) {
           await Preferences.remove({ key: todayKey });
-          console.log('Cleared stale cache for today');
+          logger.debug('Cleared stale cache for today');
         }
       }
     } catch (error) {
@@ -338,7 +339,7 @@ class PlatformService {
   }
 
   async haptic(type = 'medium') {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       const impactStyles = {
@@ -361,7 +362,7 @@ class PlatformService {
   }
 
   async hapticNotification(type = 'success') {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       // Use Haptics notification method if available
@@ -395,7 +396,7 @@ class PlatformService {
   }
 
   async hapticSelection() {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       // Use selection changed if available
@@ -411,7 +412,7 @@ class PlatformService {
   }
 
   async hapticSelectionStart() {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       if (Haptics.selectionStart) {
@@ -425,7 +426,7 @@ class PlatformService {
   }
 
   async hapticSelectionChanged() {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       if (Haptics.selectionChanged) {
@@ -439,7 +440,7 @@ class PlatformService {
   }
 
   async hapticSelectionEnd() {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       if (Haptics.selectionEnd) {
@@ -451,7 +452,7 @@ class PlatformService {
   }
 
   async vibrate() {
-    if (!this.isNative || !Haptics) return;
+    if (!this.isNative || !Haptics) {return;}
 
     try {
       await Haptics.vibrate({ duration: 100 });

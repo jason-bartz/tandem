@@ -49,7 +49,7 @@ export default function PlayingScreen({
   
   // Handle iOS keyboard visibility and scrolling
   useEffect(() => {
-    if (!platformService.isPlatformNative()) return;
+    if (!platformService.isPlatformNative()) {return;}
 
     const handleFocusIn = (e) => {
       if (e.target.tagName === 'INPUT') {

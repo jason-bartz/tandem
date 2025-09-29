@@ -9,8 +9,13 @@
     "build:ios": "BUILD_TARGET=capacitor next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "format": "prettier --write 'src/**/*.{js,jsx,json,css}'",
+    "format:check": "prettier --check 'src/**/*.{js,jsx,json,css}'",
     "test": "jest --watch",
     "test:ci": "jest --ci",
+    "test:coverage": "jest --coverage",
+    "prepare": "husky",
     "hash-password": "node scripts/hash-password.js",
     "seed": "node scripts/seed-puzzles.js",
     "cap:add": "cap add ios",
@@ -48,6 +53,15 @@
     "zod": "^3.25.76",
     "zustand": "^4.4.7"
   },
+  "lint-staged": {
+    "*.{js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,css,md}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@capacitor/cli": "^5.5.1",
     "@testing-library/jest-dom": "^6.1.5",
@@ -55,9 +69,13 @@
     "autoprefixer": "^10.0.1",
     "eslint": "^8",
     "eslint-config-next": "14.0.4",
+    "eslint-config-prettier": "^10.1.8",
+    "husky": "^9.1.7",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
+    "lint-staged": "^16.2.3",
     "postcss": "^8",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.3.0"
   }
 }

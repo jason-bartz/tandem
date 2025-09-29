@@ -17,14 +17,14 @@ export function useSound() {
   };
 
   const playSound = (type) => {
-    if (!soundEnabled || !SOUND_CONFIG.ENABLED) return;
+    if (!soundEnabled || !SOUND_CONFIG.ENABLED) {return;}
     
     initAudio();
     const audioContext = audioContextRef.current;
-    if (!audioContext) return;
+    if (!audioContext) {return;}
 
     const soundConfig = SOUND_CONFIG.SOUNDS[type.toUpperCase()];
-    if (!soundConfig) return;
+    if (!soundConfig) {return;}
 
     const { frequencies, duration } = soundConfig;
     

@@ -66,7 +66,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   const handleDeletePuzzle = async (date) => {
-    if (!confirm('Are you sure you want to delete this puzzle?')) return;
+    if (!confirm('Are you sure you want to delete this puzzle?')) {return;}
     
     try {
       const result = await adminService.deletePuzzle(date);
@@ -79,14 +79,14 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   const getPuzzleForDay = (day) => {
-    if (!day) return null;
+    if (!day) {return null;}
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
       .toISOString().split('T')[0];
     return puzzles[date];
   };
 
   const isToday = (day) => {
-    if (!day) return false;
+    if (!day) {return false;}
     const today = new Date();
     return (
       day === today.getDate() &&

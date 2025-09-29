@@ -218,7 +218,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   };
 
   const checkPuzzleAccess = useCallback(async (puzzleDate) => {
-    if (!Capacitor.isNativePlatform()) return true; // All free on web for now
+    if (!Capacitor.isNativePlatform()) {return true;} // All free on web for now
 
     // Use cached value if available and access check is complete
     if (accessCheckComplete && globalArchiveCache.puzzleAccessMap[puzzleDate] !== undefined) {
@@ -316,7 +316,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
     setPuzzleAccessMap(accessMap);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   const formatDate = (dateStr) => {
     const date = new Date(dateStr + 'T00:00:00');
@@ -325,8 +325,8 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
-    if (date.getTime() === today.getTime()) return 'Today';
-    if (date.getTime() === yesterday.getTime()) return 'Yesterday';
+    if (date.getTime() === today.getTime()) {return 'Today';}
+    if (date.getTime() === yesterday.getTime()) {return 'Yesterday';}
     
     return date.toLocaleDateString('en-US', { 
       weekday: 'short', 

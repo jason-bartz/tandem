@@ -29,7 +29,7 @@ export const analyticsConfig = {
 
 // Track page views
 export function trackPageView(url, title) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {return;}
   
   // Google Analytics 4
   if (analyticsConfig.ga4.enabled && window.gtag) {
@@ -54,7 +54,7 @@ export function trackPageView(url, title) {
 
 // Track custom events
 export function trackEvent(eventName, parameters = {}) {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {return;}
   
   // Google Analytics 4
   if (analyticsConfig.ga4.enabled && window.gtag) {
@@ -167,7 +167,7 @@ export function getEngagementTime() {
 
 // Track performance metrics
 export function trackPerformance() {
-  if (typeof window === 'undefined' || !window.performance) return;
+  if (typeof window === 'undefined' || !window.performance) {return;}
   
   // Wait for page load to complete
   window.addEventListener('load', () => {
@@ -263,7 +263,7 @@ function logEvent(eventName, data) {
 
 // Initialize analytics on page load
 export function initializeAnalytics() {
-  if (typeof window === 'undefined') return;
+  if (typeof window === 'undefined') {return;}
   
   // Track initial page view
   trackPageView(window.location.pathname, document.title);

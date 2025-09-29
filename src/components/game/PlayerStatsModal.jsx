@@ -12,7 +12,7 @@ export default function PlayerStatsModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  if (!isOpen || !stats) return null;
+  if (!isOpen || !stats) {return null;}
 
   const winRate = stats.gamesPlayed > 0 
     ? Math.round((stats.gamesWon / stats.gamesPlayed) * 100) 

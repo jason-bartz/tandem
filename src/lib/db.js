@@ -163,7 +163,7 @@ export async function getPuzzlesRange(startDate, endDate) {
   const end = new Date(endDate);
   
   // Load all-puzzles.json once at the start
-  let allPuzzlesData = {};
+  const allPuzzlesData = {};
   try {
     const fs = require('fs');
     const path = require('path');
@@ -300,18 +300,18 @@ export async function updatePuzzleStats(date, stats) {
 
     if (redis) {
       // Increment puzzle-specific stats
-      if (stats.played) await redis.hIncrBy(key, 'played', 1);
-      if (stats.completed) await redis.hIncrBy(key, 'completed', 1);
+      if (stats.played) {await redis.hIncrBy(key, 'played', 1);}
+      if (stats.completed) {await redis.hIncrBy(key, 'completed', 1);}
       if (stats.time) {
         await redis.hIncrBy(key, 'totalTime', stats.time);
         await redis.hIncrBy(key, 'timeCount', 1);
       }
       if (stats.mistakes !== undefined) {
         await redis.hIncrBy(key, 'totalMistakes', stats.mistakes);
-        if (stats.mistakes === 0) await redis.hIncrBy(key, 'perfectGames', 1);
+        if (stats.mistakes === 0) {await redis.hIncrBy(key, 'perfectGames', 1);}
       }
-      if (stats.hintsUsed) await redis.hIncrBy(key, 'hintsUsed', stats.hintsUsed);
-      if (stats.shared) await redis.hIncrBy(key, 'shared', 1);
+      if (stats.hintsUsed) {await redis.hIncrBy(key, 'hintsUsed', stats.hintsUsed);}
+      if (stats.shared) {await redis.hIncrBy(key, 'shared', 1);}
 
       // Set expiry to 1 year
       await redis.expire(key, 365 * 24 * 60 * 60);
@@ -331,18 +331,18 @@ export async function updatePuzzleStats(date, stats) {
       }
 
       const puzzleStats = inMemoryDB.puzzleStats[date];
-      if (stats.played) puzzleStats.played++;
-      if (stats.completed) puzzleStats.completed++;
+      if (stats.played) {puzzleStats.played++;}
+      if (stats.completed) {puzzleStats.completed++;}
       if (stats.time) {
         puzzleStats.totalTime += stats.time;
         puzzleStats.timeCount++;
       }
       if (stats.mistakes !== undefined) {
         puzzleStats.totalMistakes += stats.mistakes;
-        if (stats.mistakes === 0) puzzleStats.perfectGames++;
+        if (stats.mistakes === 0) {puzzleStats.perfectGames++;}
       }
-      if (stats.hintsUsed) puzzleStats.hintsUsed += stats.hintsUsed;
-      if (stats.shared) puzzleStats.shared++;
+      if (stats.hintsUsed) {puzzleStats.hintsUsed += stats.hintsUsed;}
+      if (stats.shared) {puzzleStats.shared++;}
     }
 
     return true;
@@ -381,7 +381,7 @@ export async function getPuzzleStats(date) {
       };
     } else {
       const stats = inMemoryDB.puzzleStats[date];
-      if (!stats) return null;
+      if (!stats) {return null;}
 
       return {
         played: stats.played,

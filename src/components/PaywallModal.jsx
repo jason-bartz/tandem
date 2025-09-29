@@ -94,7 +94,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     }
   };
 
-  if (!isOpen) return null;
+  if (!isOpen) {return null;}
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn">

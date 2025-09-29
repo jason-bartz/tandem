@@ -165,13 +165,13 @@ export function CompletionRateChart({ data }) {
           completed: d.completed
         })),
         backgroundColor: data.map(d => {
-          if (d.completionRate >= 80) return 'rgba(52, 211, 153, 0.8)';
-          if (d.completionRate >= 60) return 'rgba(56, 189, 248, 0.8)';
+          if (d.completionRate >= 80) {return 'rgba(52, 211, 153, 0.8)';}
+          if (d.completionRate >= 60) {return 'rgba(56, 189, 248, 0.8)';}
           return 'rgba(251, 191, 36, 0.8)';
         }),
         borderColor: data.map(d => {
-          if (d.completionRate >= 80) return 'rgb(52, 211, 153)';
-          if (d.completionRate >= 60) return 'rgb(56, 189, 248)';
+          if (d.completionRate >= 80) {return 'rgb(52, 211, 153)';}
+          if (d.completionRate >= 60) {return 'rgb(56, 189, 248)';}
           return 'rgb(251, 191, 36)';
         }),
         borderWidth: 1

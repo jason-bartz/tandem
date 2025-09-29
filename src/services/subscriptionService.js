@@ -106,7 +106,7 @@ class SubscriptionService {
   }
 
   setupEventHandlers() {
-    if (!this.store) return;
+    if (!this.store) {return;}
 
     const CdvPurchase = window.CdvPurchase;
 
@@ -324,7 +324,7 @@ class SubscriptionService {
 
   getProductInfo(productId) {
     const product = this.products[productId];
-    if (!product) return null;
+    if (!product) {return null;}
 
     // Get pricing from the first offer
     const offer = product.offers && product.offers.length > 0 ? product.offers[0] : null;
@@ -367,7 +367,7 @@ class SubscriptionService {
     const isSubscribed = await this.isSubscribed();
 
     // Subscribers can access everything
-    if (isSubscribed) return true;
+    if (isSubscribed) {return true;}
 
     // Free users get today + last 5 puzzles
     const today = new Date();
@@ -384,7 +384,7 @@ class SubscriptionService {
 
   // Get user's subscription tier name
   getSubscriptionTierName() {
-    if (!this.subscriptionStatus?.isActive) return null;
+    if (!this.subscriptionStatus?.isActive) {return null;}
 
     switch (this.subscriptionStatus.productId) {
       case PRODUCTS.BUDDY_MONTHLY:
