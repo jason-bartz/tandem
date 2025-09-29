@@ -1,20 +1,17 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import { getApiUrl } from '@/lib/api-helper';
+import authService from './auth.service';
 
 class AdminService {
-  getAuthHeaders() {
-    const token = localStorage.getItem('adminToken');
-    return {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${token}`
-    };
+  getAuthHeaders(includeCSRF = false) {
+    return authService.getAuthHeaders(includeCSRF);
   }
 
   async savePuzzle(date, puzzle) {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_PUZZLES), {
         method: 'POST',
-        headers: this.getAuthHeaders(),
+        headers: this.getAuthHeaders(true),
         body: JSON.stringify({ date, puzzle }),
       });
 
@@ -55,7 +52,7 @@ class AdminService {
         getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}?date=${date}`),
         {
           method: 'DELETE',
-          headers: this.getAuthHeaders(),
+          headers: this.getAuthHeaders(true),
         }
       );
 
@@ -71,7 +68,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}/bulk`), {
         method: 'POST',
-        headers: this.getAuthHeaders(),
+        headers: this.getAuthHeaders(true),
         body: JSON.stringify({ puzzles }),
       });
 
@@ -87,7 +84,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl('/api/admin/bulk-import'), {
         method: 'POST',
-        headers: this.getAuthHeaders(),
+        headers: this.getAuthHeaders(true),
         body: JSON.stringify({ puzzles, startDate, overwrite }),
       });
 

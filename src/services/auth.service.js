@@ -2,6 +2,17 @@ import { API_ENDPOINTS } from '@/lib/constants';
 import { getApiUrl } from '@/lib/api-helper';
 
 class AuthService {
+  constructor() {
+    this.csrfToken = null;
+  }
+
+  setCSRFToken(token) {
+    this.csrfToken = token;
+  }
+
+  getCSRFToken() {
+    return this.csrfToken;
+  }
   async login(username, password) {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_AUTH), {
@@ -15,6 +26,10 @@ class AuthService {
       const data = await response.json();
       
       if (response.ok && data.success) {
+        // Store CSRF token if provided
+        if (data.csrfToken) {
+          this.setCSRFToken(data.csrfToken);
+        }
         return {
           success: true,
           token: data.token,
@@ -42,6 +57,10 @@ class AuthService {
 
       if (response.ok) {
         const data = await response.json();
+        // Update CSRF token if provided
+        if (data.csrfToken) {
+          this.setCSRFToken(data.csrfToken);
+        }
         return data.valid === true;
       }
       
@@ -54,6 +73,7 @@ class AuthService {
 
   logout() {
     localStorage.removeItem('adminToken');
+    this.csrfToken = null;
   }
 
   getToken() {
@@ -65,6 +85,24 @@ class AuthService {
 
   isAuthenticated() {
     return this.getToken() !== null;
+  }
+
+  // Helper method to get headers with CSRF token for write operations
+  getAuthHeaders(includeCSRF = false) {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    const token = this.getToken();
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    if (includeCSRF && this.csrfToken) {
+      headers['x-csrf-token'] = this.csrfToken;
+    }
+
+    return headers;
   }
 }
 

@@ -1,0 +1,43 @@
+# Security Policy for Tandem Daily Game
+# If you discover a security vulnerability, please report it to us responsibly.
+
+Contact: mailto:jason@goodvibesgames.com
+Expires: 2025-12-31T23:59:59.000Z
+Preferred-Languages: en
+Canonical: https://tandem-game.vercel.app/.well-known/security.txt
+
+# Our commitment to security
+# We take security seriously and will respond to valid reports within 72 hours.
+# We appreciate responsible disclosure and ask that you:
+# - Allow us reasonable time to respond before public disclosure
+# - Avoid accessing or modifying user data
+# - Report vulnerabilities directly through the contact above
+
+# Scope
+# The following are in scope for security reports:
+# - Authentication/authorization bypass
+# - Remote code execution
+# - SQL injection (though we use KV store)
+# - Cross-site scripting (XSS)
+# - Cross-site request forgery (CSRF)
+# - Server-side request forgery (SSRF)
+# - Information disclosure
+# - Privilege escalation
+
+# Out of scope:
+# - Denial of Service attacks
+# - Social engineering
+# - Physical attacks
+# - Attacks requiring physical access to a user's device
+# - Issues in third-party services not under our control
+
+# Recognition
+# We appreciate security researchers who help keep our users safe.
+# While we don't currently offer a bug bounty program, we will acknowledge
+# responsible reporters in our security hall of fame (with permission).
+
+# PGP Key
+# For encrypted communications, please request our PGP key via the contact email above.
+
+# This policy is subject to change without notice.
+# Last updated: 09-29-2025

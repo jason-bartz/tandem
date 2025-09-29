@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { 
-  getPuzzlesRange, 
-  setPuzzleForDate, 
-  deletePuzzleForDate 
+import {
+  getPuzzlesRange,
+  setPuzzleForDate,
+  deletePuzzleForDate
 } from '@/lib/db';
-import { verifyAdminToken } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
 import {
   dateRangeSchema,
@@ -16,17 +16,6 @@ import {
 } from '@/lib/security/validation';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 
-async function requireAdmin(request) {
-  const authHeader = request.headers.get('authorization');
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  const token = authHeader.replace('Bearer ', '');
-  return verifyAdminToken(token);
-}
-
 export async function GET(request) {
   try {
     // Apply rate limiting
@@ -35,12 +24,9 @@ export async function GET(request) {
       return rateLimitResponse;
     }
     
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return authError;
     }
     
     const { searchParams } = new URL(request.url);
@@ -83,12 +69,9 @@ export async function POST(request) {
       return rateLimitResponse;
     }
     
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return authError;
     }
     
     // Parse and validate request body with size limits
@@ -149,12 +132,9 @@ export async function DELETE(request) {
       return rateLimitResponse;
     }
     
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return authError;
     }
     
     const { searchParams } = new URL(request.url);

@@ -22,7 +22,11 @@
     "cap:sync": "cap sync",
     "cap:open": "cap open ios",
     "ios:dev": "npm run build:ios && npm run cap:sync && npm run cap:open",
-    "ios:build": "npm run build:ios && npm run cap:sync"
+    "ios:build": "npm run build:ios && npm run cap:sync",
+    "audit": "npm audit --audit-level=moderate",
+    "audit:fix": "npm audit fix",
+    "audit:ci": "npm audit --audit-level=moderate --json",
+    "security:check": "npm run audit && npm run lint"
   },
   "dependencies": {
     "@capacitor/app": "^5.0.6",

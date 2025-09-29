@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-import { 
-  authCredentialsSchema, 
+import {
+  authCredentialsSchema,
   parseAndValidateJson,
   sanitizeErrorMessage,
-  validateEnvironmentVariables 
+  validateEnvironmentVariables
 } from '@/lib/security/validation';
 import {
   getClientIdentifier,
@@ -14,6 +14,8 @@ import {
   clearFailedAttempts,
   withRateLimit
 } from '@/lib/security/rateLimiter';
+import { generateCSRFToken } from '@/lib/security/csrf';
+import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
 
 export async function POST(request) {
   try {
@@ -56,10 +58,17 @@ export async function POST(request) {
     if (!isValidUsername || !isValidPassword) {
       // Record failed attempt
       const attemptResult = await recordFailedAttempt(clientId);
-      
+
+      // Log failed login attempt
+      await logFailedLogin(
+        clientId,
+        username,
+        isValidUsername ? 'Invalid password' : 'Invalid username'
+      );
+
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: attemptResult.message || 'Invalid credentials',
           remainingAttempts: attemptResult.remainingAttempts,
           locked: attemptResult.locked || false
@@ -70,9 +79,12 @@ export async function POST(request) {
     
     // Clear failed attempts on successful login
     await clearFailedAttempts(clientId);
-    
+
+    // Log successful login
+    await logSuccessfulLogin(clientId, username);
+
     const token = jwt.sign(
-      { 
+      {
         username,
         role: 'admin',
         iat: Math.floor(Date.now() / 1000),
@@ -80,10 +92,14 @@ export async function POST(request) {
       process.env.JWT_SECRET,
       { expiresIn: '7d' }
     );
-    
+
+    // Generate CSRF token for the session
+    const csrfToken = await generateCSRFToken();
+
     return NextResponse.json({
       success: true,
       token,
+      csrfToken,
       user: { username, role: 'admin' },
     });
   } catch (error) {
@@ -128,9 +144,13 @@ export async function GET(request) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
       
+      // Generate new CSRF token on token validation
+      const csrfToken = await generateCSRFToken();
+
       return NextResponse.json({
         success: true,
         valid: true,
+        csrfToken,
         user: {
           username: decoded.username,
           role: decoded.role,

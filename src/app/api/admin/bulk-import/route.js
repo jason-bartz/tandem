@@ -1,26 +1,14 @@
 import { NextResponse } from 'next/server';
 import { setPuzzleForDate, getPuzzlesRange } from '@/lib/db';
-import { verifyAdminToken } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
 import { z } from 'zod';
 import {
   puzzleSchema,
-  parseAndValidateJson,
   sanitizeErrorMessage,
   escapeHtml
 } from '@/lib/security/validation';
 import { withRateLimit } from '@/lib/security/rateLimiter';
-
-async function requireAdmin(request) {
-  const authHeader = request.headers.get('authorization');
-  
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return null;
-  }
-  
-  const token = authHeader.replace('Bearer ', '');
-  return verifyAdminToken(token);
-}
 
 function getNextAvailableDates(startDate, count, existingPuzzles) {
   const availableDates = [];
@@ -47,12 +35,9 @@ export async function POST(request) {
       return rateLimitResponse;
     }
 
-    const admin = await requireAdmin(request);
-    if (!admin) {
-      return NextResponse.json(
-        { success: false, error: 'Unauthorized' },
-        { status: 401 }
-      );
+    const authError = await requireAdmin(request);
+    if (authError) {
+      return authError;
     }
 
     // Get the raw body to debug
