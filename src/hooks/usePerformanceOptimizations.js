@@ -17,15 +17,18 @@ export function useDebouncedCallback(callback, delay) {
     callbackRef.current = callback;
   }, [callback]);
 
-  return useCallback((...args) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  return useCallback(
+    (...args) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
 
-    timeoutRef.current = setTimeout(() => {
-      callbackRef.current(...args);
-    }, delay);
-  }, [delay]);
+      timeoutRef.current = setTimeout(() => {
+        callbackRef.current(...args);
+      }, delay);
+    },
+    [delay]
+  );
 }
 
 /**
@@ -39,13 +42,16 @@ export function useThrottledCallback(callback, delay) {
     callbackRef.current = callback;
   }, [callback]);
 
-  return useCallback((...args) => {
-    const now = Date.now();
-    if (now - lastRunRef.current >= delay) {
-      lastRunRef.current = now;
-      callbackRef.current(...args);
-    }
-  }, [delay]);
+  return useCallback(
+    (...args) => {
+      const now = Date.now();
+      if (now - lastRunRef.current >= delay) {
+        lastRunRef.current = now;
+        callbackRef.current(...args);
+      }
+    },
+    [delay]
+  );
 }
 
 /**
@@ -53,25 +59,23 @@ export function useThrottledCallback(callback, delay) {
  */
 export function useMemoizedStats(stats) {
   return useMemo(() => {
-    if (!stats) {return null;}
+    if (!stats) {
+      return null;
+    }
 
-    const winRate = stats.played > 0
-      ? Math.round((stats.won / stats.played) * 100)
-      : 0;
+    const winRate = stats.played > 0 ? Math.round((stats.won / stats.played) * 100) : 0;
 
-    const averageTime = stats.totalTime && stats.played
-      ? Math.round(stats.totalTime / stats.played)
-      : 0;
+    const averageTime =
+      stats.totalTime && stats.played ? Math.round(stats.totalTime / stats.played) : 0;
 
-    const averageMistakes = stats.totalMistakes && stats.played
-      ? (stats.totalMistakes / stats.played).toFixed(1)
-      : '0';
+    const averageMistakes =
+      stats.totalMistakes && stats.played ? (stats.totalMistakes / stats.played).toFixed(1) : '0';
 
     return {
       ...stats,
       winRate,
       averageTime,
-      averageMistakes
+      averageMistakes,
     };
   }, [stats]);
 }
@@ -81,14 +85,16 @@ export function useMemoizedStats(stats) {
  */
 export function useMemoizedPuzzleData(puzzle) {
   return useMemo(() => {
-    if (!puzzle) {return null;}
+    if (!puzzle) {
+      return null;
+    }
 
     return {
       ...puzzle,
       formattedDate: puzzle.date ? new Date(puzzle.date).toLocaleDateString() : '',
       puzzleCount: puzzle.puzzles ? puzzle.puzzles.length : 0,
       isValid: puzzle.puzzles && puzzle.puzzles.length === 4,
-      answers: puzzle.puzzles ? puzzle.puzzles.map(p => p.answer) : []
+      answers: puzzle.puzzles ? puzzle.puzzles.map((p) => p.answer) : [],
     };
   }, [puzzle]);
 }
@@ -102,8 +108,8 @@ export function useLazyValue(computeFn, deps = []) {
   const isComputedRef = useRef(false);
 
   // Check if deps changed
-  const depsChanged = deps.length !== depsRef.current.length ||
-    deps.some((dep, i) => dep !== depsRef.current[i]);
+  const depsChanged =
+    deps.length !== depsRef.current.length || deps.some((dep, i) => dep !== depsRef.current[i]);
 
   if (depsChanged) {
     depsRef.current = deps;
@@ -128,7 +134,9 @@ export function useIntersectionObserver(options = {}) {
 
   useEffect(() => {
     const element = elementRef.current;
-    if (!element) {return;}
+    if (!element) {
+      return;
+    }
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -136,7 +144,7 @@ export function useIntersectionObserver(options = {}) {
       },
       {
         threshold: options.threshold || 0.1,
-        rootMargin: options.rootMargin || '0px'
+        rootMargin: options.rootMargin || '0px',
       }
     );
 
@@ -183,10 +191,12 @@ export function useVirtualList(items, itemHeight, containerHeight) {
   const [scrollTop, setScrollTop] = useState(0);
 
   const visibleItems = useMemo(() => {
-    const startIndex = Math.floor(scrollTop / itemHeight);
+    // Add buffer zones to prevent white space
+    const bufferSize = 3; // Render extra items above and below viewport
+    const startIndex = Math.max(0, Math.floor(scrollTop / itemHeight) - bufferSize);
     const endIndex = Math.min(
       items.length - 1,
-      Math.ceil((scrollTop + containerHeight) / itemHeight)
+      Math.ceil((scrollTop + containerHeight) / itemHeight) + bufferSize
     );
 
     return {
@@ -194,7 +204,7 @@ export function useVirtualList(items, itemHeight, containerHeight) {
       startIndex,
       endIndex,
       totalHeight: items.length * itemHeight,
-      offsetY: startIndex * itemHeight
+      offsetY: startIndex * itemHeight,
     };
   }, [items, itemHeight, containerHeight, scrollTop]);
 
@@ -204,6 +214,6 @@ export function useVirtualList(items, itemHeight, containerHeight) {
 
   return {
     visibleItems,
-    handleScroll
+    handleScroll,
   };
 }

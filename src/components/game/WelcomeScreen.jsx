@@ -4,10 +4,9 @@ import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
 import StatsModal from './StatsModal';
-import ArchiveModal from './ArchiveModal';
+import ArchiveModalPaginated from './ArchiveModalPaginated';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
-import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
@@ -27,7 +26,6 @@ export default function WelcomeScreen({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isPremium, setIsPremium] = useState(false);
-  const { preloadArchive } = useArchivePreload();
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
 
@@ -87,7 +85,6 @@ export default function WelcomeScreen({
             lightTap();
             setShowArchive(true);
           }}
-          onMouseEnter={() => preloadArchive()}
           className={`w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all relative ${
             isPremium ? 'ring-2 ring-sky-400 ring-offset-2' : ''
           }`}
@@ -195,7 +192,7 @@ export default function WelcomeScreen({
       </div>
 
       <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModal
+      <ArchiveModalPaginated
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={(date) => {
