@@ -432,9 +432,6 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
                           </span>
                         )}
                       </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-400">
-                        {puzzle.theme || 'No theme'}
-                      </div>
                     </div>
                     <div className="flex items-center gap-2">
                       {isChecking ? (

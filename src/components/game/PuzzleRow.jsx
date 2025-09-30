@@ -11,6 +11,7 @@ export default function PuzzleRow({
   index,
   onEnterPress,
   hintData,
+  answerLength = 0,
 }) {
   const { selectionStart } = useHaptics();
   const { highContrast } = useTheme();
@@ -42,25 +43,39 @@ export default function PuzzleRow({
       return 'Enter answer';
     }
 
-    // Create the hint pattern: first letter + underscores for remaining characters
-    const blanks = Array(hintData.length - 1)
-      .fill('_')
-      .join(' ');
-    return `${hintData.firstLetter} ${blanks}`;
+    // Create the hint pattern with two revealed letters
+    const pattern = [];
+    for (let i = 0; i < hintData.length; i++) {
+      if (i === 0) {
+        pattern.push(hintData.firstLetter);
+      } else if (i === hintData.secondLetterPosition) {
+        pattern.push(hintData.secondLetter);
+      } else {
+        pattern.push('_');
+      }
+    }
+    return pattern.join(' ');
   };
 
   return (
     <div className="flex gap-2 sm:gap-3 items-center" style={{ animationDelay }}>
-      <div
-        className={`w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0 ${
-          highContrast
-            ? 'bg-hc-surface border-2 border-hc-border'
-            : 'bg-light-sand dark:bg-gray-700'
-        }`}
-      >
-        <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap">
-          {emoji}
-        </span>
+      <div className="flex items-center gap-2">
+        <div
+          className={`w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0 ${
+            highContrast
+              ? 'bg-hc-surface border-2 border-hc-border'
+              : 'bg-light-sand dark:bg-gray-700'
+          }`}
+        >
+          <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap">
+            {emoji}
+          </span>
+        </div>
+        {answerLength > 0 && (
+          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
+            [{answerLength} letters]
+          </div>
+        )}
       </div>
       <div className="relative flex-1">
         <input
@@ -106,14 +121,29 @@ export default function PuzzleRow({
                   className={`text-sm sm:text-base font-medium uppercase tracking-wider ${highContrast ? 'text-hc-text font-bold' : 'text-gray-500 dark:text-gray-400'}`}
                   style={{ letterSpacing: '0.15em' }}
                 >
-                  {hintData.firstLetter}
-                  {Array(hintData.length - 1)
-                    .fill(null)
-                    .map((_, i) => (
-                      <span key={i} className="ml-1">
-                        _
-                      </span>
-                    ))}
+                  {(() => {
+                    const pattern = [];
+                    for (let i = 0; i < hintData.length; i++) {
+                      if (i === 0) {
+                        pattern.push(
+                          <span key={i}>{hintData.firstLetter}</span>
+                        );
+                      } else if (i === hintData.secondLetterPosition) {
+                        pattern.push(
+                          <span key={i} className="ml-1">
+                            {hintData.secondLetter}
+                          </span>
+                        );
+                      } else {
+                        pattern.push(
+                          <span key={i} className="ml-1">
+                            _
+                          </span>
+                        );
+                      }
+                    }
+                    return pattern;
+                  })()}
                 </span>
               </div>
             )}

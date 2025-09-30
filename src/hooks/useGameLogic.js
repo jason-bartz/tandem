@@ -7,7 +7,6 @@ import { useCallback } from 'react';
 import { GAME_CONFIG } from '@/lib/constants';
 import { checkAnswerWithPlurals } from '@/lib/utils';
 import { savePuzzleProgress } from '@/lib/storage';
-import logger from '@/lib/logger';
 
 export function useGameLogic(
   puzzle,
@@ -197,8 +196,14 @@ export function useGameLogic(
       ? fullAnswer.split(',')[0].trim()
       : fullAnswer;
 
+    // Generate a random position for the second letter (not the first position)
+    const secondLetterPosition = Math.floor(Math.random() * (firstAnswer.length - 1)) + 1;
+    const secondLetter = firstAnswer.charAt(secondLetterPosition).toUpperCase();
+
     const hintData = {
       firstLetter: firstAnswer.charAt(0).toUpperCase(),
+      secondLetter: secondLetter,
+      secondLetterPosition: secondLetterPosition,
       length: firstAnswer.length,
       fullAnswer: firstAnswer.toUpperCase()
     };
@@ -209,6 +214,7 @@ export function useGameLogic(
 
     setAnswers(prev => {
       const newAnswers = [...prev];
+      // Start with just the first letter, user needs to add the second letter
       newAnswers[hintIndex] = hintData.firstLetter;
       return newAnswers;
     });

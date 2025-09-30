@@ -23,7 +23,7 @@ export default function CompleteScreen({
   won,
   time,
   mistakes,
-  _correctAnswers,
+  correctAnswers,
   puzzle,
   puzzleTheme,
   _onPlayAgain,
@@ -65,7 +65,8 @@ export default function CompleteScreen({
     time,
     mistakes,
     hintsUsed,
-    hintPositions
+    hintPositions,
+    won ? 4 : (correctAnswers || 0)
   );
 
   useEffect(() => {
@@ -195,14 +196,31 @@ export default function CompleteScreen({
 
           {puzzleTheme && (
             <div
-              className={`rounded-2xl p-4 mb-6 ${
+              className={`rounded-2xl p-5 mb-6 relative overflow-hidden ${
                 highContrast
                   ? 'bg-hc-surface border-4 border-hc-border'
-                  : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+                  : won
+                    ? 'bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100 dark:from-yellow-900/40 dark:via-amber-900/40 dark:to-orange-900/40 border-2 border-amber-300 dark:border-amber-700'
+                    : 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'
               }`}
             >
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Theme:</p>
-              <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">{puzzleTheme}</p>
+              {won && (
+                <div className="absolute top-2 right-2">
+                  <span className="text-2xl animate-bounce inline-block">✨</span>
+                </div>
+              )}
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
+                {won ? 'You discovered the theme!' : 'The theme was:'}
+              </p>
+              <p className={`text-2xl font-bold ${
+                highContrast
+                  ? 'text-hc-text'
+                  : won
+                    ? 'text-amber-800 dark:text-amber-200'
+                    : 'text-gray-800 dark:text-gray-200'
+              }`}>
+                {puzzleTheme}
+              </p>
             </div>
           )}
 

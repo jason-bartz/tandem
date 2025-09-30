@@ -29,11 +29,12 @@ export default function HowToPlayModal({ isOpen, onClose }) {
         </div>
 
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <p className="text-base">Find 4 words from emoji pairs that share a theme.</p>
+          <p className="text-base">Solve 4 emoji puzzles to discover their hidden theme!</p>
 
           <div className="space-y-2">
             <p className="text-sm">• Each emoji pair represents one word or tandem</p>
-            <p className="text-sm">• The theme connects all 4 answers</p>
+            <p className="text-sm">• Character count is shown for each answer [e.g., 5 letters]</p>
+            <p className="text-sm">• The connecting theme is revealed only after completion</p>
             <p className="text-sm">• You have 4 mistakes to find all the words</p>
             <p className="text-sm">• Press Enter or tap Check Answers to submit</p>
           </div>
@@ -81,7 +82,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
               <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Theme: Things That Fold
+                  Theme revealed after solving: Things That Fold ✨
                 </p>
               </div>
             </div>
@@ -95,8 +96,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             }`}
           >
             <p className="text-sm">
-              <span className="font-semibold">💡 Hint:</span> Get a hint to reveal a random
-              unanswered word's first letter and length.
+              <span className="font-semibold">💡 Hint:</span> Stuck? Use a hint to reveal two letters
+              from a random unanswered word.
             </p>
           </div>
 
