@@ -37,23 +37,29 @@ export default function PuzzleRow({
     }
   };
 
-  // Generate hint placeholder text
-  const getHintPlaceholder = () => {
-    if (!hintData) {
-      return 'Enter answer';
-    }
+  // Generate placeholder with underscores for each character
+  const getPlaceholder = () => {
+    // Don't show placeholder - we'll use the visual overlay instead
+    return '';
+  };
 
-    // Create the hint pattern with two revealed letters
+  // Generate visual overlay showing typed letters over underscores
+  const getVisualOverlay = () => {
+    if (answerLength === 0) return null;
+
+    const displayValue = hintData && !value ? hintData.firstLetter : value;
     const pattern = [];
-    for (let i = 0; i < hintData.length; i++) {
-      if (i === 0) {
-        pattern.push(hintData.firstLetter);
-      } else if (i === hintData.secondLetterPosition) {
-        pattern.push(hintData.secondLetter);
+
+    for (let i = 0; i < answerLength; i++) {
+      if (displayValue && i < displayValue.length) {
+        // Show the typed letter
+        pattern.push(displayValue[i].toUpperCase());
       } else {
+        // Show underscore for remaining positions
         pattern.push('_');
       }
     }
+
     return pattern.join(' ');
   };
 
@@ -71,11 +77,6 @@ export default function PuzzleRow({
             {emoji}
           </span>
         </div>
-        {answerLength > 0 && (
-          <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap">
-            [{answerLength} letters]
-          </div>
-        )}
       </div>
       <div className="relative flex-1">
         <input
@@ -84,7 +85,7 @@ export default function PuzzleRow({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => selectionStart()}
-          placeholder={getHintPlaceholder()}
+          placeholder={getPlaceholder()}
           maxLength={15}
           disabled={isCorrect}
           className={`
@@ -108,50 +109,39 @@ export default function PuzzleRow({
                       : 'bg-off-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-border-color dark:border-gray-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
             }
             disabled:cursor-not-allowed
-            ${hintData && (!value || value.toUpperCase() === hintData.firstLetter) ? 'text-transparent' : ''}
-            ${hintData ? 'placeholder:text-gray-700 dark:placeholder:text-gray-300 placeholder:font-semibold placeholder:tracking-wider' : ''}
+            placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:tracking-wider
+            ${!isCorrect ? 'text-transparent' : ''}
           `}
         />
-        {hintData && !isCorrect && (
-          <>
-            {/* Show hint pattern only when input shows just the first letter or less */}
-            {(!value || value.toUpperCase() === hintData.firstLetter) && (
-              <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
-                <span
-                  className={`text-sm sm:text-base font-medium uppercase tracking-wider ${highContrast ? 'text-hc-text font-bold' : 'text-gray-500 dark:text-gray-400'}`}
-                  style={{ letterSpacing: '0.15em' }}
-                >
-                  {(() => {
-                    const pattern = [];
-                    for (let i = 0; i < hintData.length; i++) {
-                      if (i === 0) {
-                        pattern.push(<span key={i}>{hintData.firstLetter}</span>);
-                      } else if (i === hintData.secondLetterPosition) {
-                        pattern.push(
-                          <span key={i} className="ml-1">
-                            {hintData.secondLetter}
-                          </span>
-                        );
-                      } else {
-                        pattern.push(
-                          <span key={i} className="ml-1">
-                            _
-                          </span>
-                        );
-                      }
-                    }
-                    return pattern;
-                  })()}
-                </span>
-              </div>
-            )}
+        {!isCorrect && answerLength > 0 && (
+          <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
             <span
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xl"
-              aria-label="Hint active"
+              className={`text-sm sm:text-base font-medium uppercase tracking-wider ${
+                isWrong
+                  ? highContrast
+                    ? 'text-hc-error'
+                    : 'text-red-900 dark:text-red-400'
+                  : hintData
+                    ? highContrast
+                      ? 'text-hc-text'
+                      : 'text-dark-text dark:text-gray-200'
+                    : highContrast
+                      ? 'text-hc-text'
+                      : 'text-dark-text dark:text-gray-200'
+              }`}
+              style={{ letterSpacing: '0.15em' }}
             >
-              💡
+              {getVisualOverlay()}
             </span>
-          </>
+          </div>
+        )}
+        {hintData && !isCorrect && (
+          <span
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl"
+            aria-label="Hint active"
+          >
+            💡
+          </span>
         )}
       </div>
     </div>

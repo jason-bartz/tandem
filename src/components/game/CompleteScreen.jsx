@@ -184,7 +184,11 @@ export default function CompleteScreen({
           </button>
 
           <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
-            {won ? congratsMessage : 'Better luck next time!'}
+            {won ? (
+              <span className="inline-block animate-bounce-in">{congratsMessage}</span>
+            ) : (
+              'Better luck next time'
+            )}
           </h1>
 
           <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -195,19 +199,14 @@ export default function CompleteScreen({
             <div
               className={`rounded-2xl p-5 mb-6 relative overflow-hidden ${
                 highContrast
-                  ? 'bg-hc-surface border-4 border-hc-border'
+                  ? 'bg-hc-surface'
                   : won
-                    ? 'bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100 dark:from-yellow-900/40 dark:via-amber-900/40 dark:to-orange-900/40 border-2 border-amber-300 dark:border-amber-700'
+                    ? 'bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100 dark:from-yellow-900/40 dark:via-amber-900/40 dark:to-orange-900/40'
                     : 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'
               }`}
             >
-              {won && (
-                <div className="absolute top-2 right-2">
-                  <span className="text-2xl animate-bounce inline-block">✨</span>
-                </div>
-              )}
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
-                {won ? 'You discovered the theme!' : 'The theme was:'}
+                {won ? "You discovered today's theme:" : 'The theme was:'}
               </p>
               <p
                 className={`text-2xl font-bold ${
@@ -225,15 +224,13 @@ export default function CompleteScreen({
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
                 {formatTime(time)}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-                {mistakes}/4
-              </div>
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{mistakes}/4</div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
