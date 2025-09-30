@@ -3,7 +3,7 @@ import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
 
 /**
@@ -196,31 +196,59 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         headers['If-None-Match'] = paginatedCache.etag;
       }
 
-      const response = await fetch(
-        `/api/puzzles/paginated?page=${page}&limit=${PAGE_SIZE}&sort=desc`,
-        {
+      let response;
+      let data;
+
+      // Use CapacitorHttp on iOS to bypass CORS
+      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+        const baseUrl = window.location.origin;
+        response = await CapacitorHttp.get({
+          url: `${baseUrl}/api/puzzles/paginated?page=${page}&limit=${PAGE_SIZE}&sort=desc`,
+          headers,
+        });
+
+        // CapacitorHttp returns data directly
+        data = response.data;
+
+        // Handle 304 Not Modified
+        if (response.status === 304 && paginatedCache.pages[cacheKey]) {
+          setPuzzles(paginatedCache.pages[cacheKey]);
+          setTotalCount(paginatedCache.totalCount);
+          setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
+          return;
+        }
+
+        if (response.status >= 400) {
+          throw new Error('Failed to fetch puzzles');
+        }
+      } else {
+        // Use regular fetch for web
+        response = await fetch(`/api/puzzles/paginated?page=${page}&limit=${PAGE_SIZE}&sort=desc`, {
           signal: abortControllerRef.current.signal,
           headers,
+        });
+
+        // Handle 304 Not Modified
+        if (response.status === 304 && paginatedCache.pages[cacheKey]) {
+          setPuzzles(paginatedCache.pages[cacheKey]);
+          setTotalCount(paginatedCache.totalCount);
+          setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
+          return;
         }
-      );
 
-      // Handle 304 Not Modified
-      if (response.status === 304 && paginatedCache.pages[cacheKey]) {
-        setPuzzles(paginatedCache.pages[cacheKey]);
-        setTotalCount(paginatedCache.totalCount);
-        setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
-        return;
+        if (!response.ok) {
+          throw new Error('Failed to fetch puzzles');
+        }
+
+        data = await response.json();
       }
-
-      if (!response.ok) {
-        throw new Error('Failed to fetch puzzles');
-      }
-
-      const data = await response.json();
 
       if (data.success) {
         // Store ETag for caching
-        const etag = response.headers.get('ETag');
+        const etag =
+          Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios'
+            ? response.headers?.ETag || response.headers?.etag
+            : response.headers.get('ETag');
         if (etag) {
           paginatedCache.etag = etag;
         }
@@ -378,13 +406,27 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         // Fetch full puzzle details if needed
         if (!puzzle.puzzles && puzzle.hasData !== false) {
           try {
-            const response = await fetch('/api/puzzles/paginated', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ date: puzzle.date }),
-            });
+            let response;
+            let data;
 
-            const data = await response.json();
+            // Use CapacitorHttp on iOS to bypass CORS
+            if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+              const baseUrl = window.location.origin;
+              response = await CapacitorHttp.post({
+                url: `${baseUrl}/api/puzzles/paginated`,
+                headers: { 'Content-Type': 'application/json' },
+                data: { date: puzzle.date },
+              });
+              data = response.data;
+            } else {
+              response = await fetch('/api/puzzles/paginated', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ date: puzzle.date }),
+              });
+              data = await response.json();
+            }
+
             if (data.success) {
               onSelectPuzzle(puzzle.date);
             }

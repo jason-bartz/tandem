@@ -37,30 +37,20 @@ export default function PuzzleRow({
     }
   };
 
-  // Generate placeholder with underscores for each character
-  const getPlaceholder = () => {
-    // Don't show placeholder - we'll use the visual overlay instead
-    return '';
-  };
-
-  // Generate visual overlay showing typed letters over underscores
-  const getVisualOverlay = () => {
-    if (answerLength === 0) return null;
+  // Generate placeholder with underscores for remaining characters
+  const getDynamicPlaceholder = () => {
+    if (answerLength === 0) return '';
 
     const displayValue = hintData && !value ? hintData.firstLetter : value;
-    const pattern = [];
+    const placeholders = [];
 
     for (let i = 0; i < answerLength; i++) {
-      if (displayValue && i < displayValue.length) {
-        // Show the typed letter
-        pattern.push(displayValue[i].toUpperCase());
-      } else {
-        // Show underscore for remaining positions
-        pattern.push('_');
+      if (!displayValue || i >= displayValue.length) {
+        placeholders.push('_');
       }
     }
 
-    return pattern.join(' ');
+    return placeholders.join('');
   };
 
   return (
@@ -85,11 +75,11 @@ export default function PuzzleRow({
           onChange={(e) => onChange(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => selectionStart()}
-          placeholder={getPlaceholder()}
+          placeholder={getDynamicPlaceholder()}
           maxLength={15}
           disabled={isCorrect}
           className={`
-            w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase
+            w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase tracking-[0.15em]
             ${highContrast ? 'border-4' : 'border-2'}
             ${
               isCorrect
@@ -110,31 +100,8 @@ export default function PuzzleRow({
             }
             disabled:cursor-not-allowed
             placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:tracking-wider
-            ${!isCorrect ? 'text-transparent' : ''}
           `}
         />
-        {!isCorrect && answerLength > 0 && (
-          <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
-            <span
-              className={`text-sm sm:text-base font-medium uppercase tracking-wider ${
-                isWrong
-                  ? highContrast
-                    ? 'text-hc-error'
-                    : 'text-red-900 dark:text-red-400'
-                  : hintData
-                    ? highContrast
-                      ? 'text-hc-text'
-                      : 'text-dark-text dark:text-gray-200'
-                    : highContrast
-                      ? 'text-hc-text'
-                      : 'text-dark-text dark:text-gray-200'
-              }`}
-              style={{ letterSpacing: '0.15em' }}
-            >
-              {getVisualOverlay()}
-            </span>
-          </div>
-        )}
         {hintData && !isCorrect && (
           <span
             className="absolute right-3 top-1/2 -translate-y-1/2 text-xl"
