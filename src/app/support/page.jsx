@@ -25,13 +25,16 @@ export default function Support() {
                 <strong>Look at 4 emoji pairs</strong> - Each pair represents a word or phrase
               </li>
               <li>
-                <strong>Guess what they represent</strong> - Type your answer for each pair (character count is shown)
+                <strong>Guess what they represent</strong> - Type your answer for each pair
+                (character count is shown)
               </li>
               <li>
-                <strong>Solve all 4 puzzles</strong> - Complete all answers to discover the hidden theme
+                <strong>Solve all 4 puzzles</strong> - Complete all answers to discover the hidden
+                theme
               </li>
               <li>
-                <strong>Theme revealed upon completion</strong> - The connecting theme is shown only after solving
+                <strong>Theme revealed upon completion</strong> - The connecting theme is shown only
+                after solving
               </li>
               <li>
                 <strong>Complete within 4 mistakes</strong> - You can make up to 4 incorrect guesses
@@ -58,7 +61,8 @@ export default function Support() {
                 <strong>Statistics</strong>: Track your performance over time
               </li>
               <li>
-                <strong>Hint System</strong>: One hint per game reveals two letters from a random unsolved word
+                <strong>Hint System</strong>: One hint per game reveals two letters from a random
+                unsolved word
               </li>
               <li>
                 <strong>Dark Mode</strong>: Easy on the eyes for night play
@@ -148,8 +152,9 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get one hint per game. It reveals two letters (first letter and one random letter) from a
-                  random unsolved answer. Character counts are always visible for each puzzle.
+                  A: You get one hint per game. It reveals two letters (first letter and one random
+                  letter) from a random unsolved answer. Character counts are always visible for
+                  each puzzle.
                 </p>
               </div>
               <div>
@@ -161,7 +166,9 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Can I see the theme before solving?</p>
                 <p>
-                  A: No! The theme is hidden during gameplay and only revealed after you complete the puzzle or use all your mistakes. This adds an element of discovery to the game.
+                  A: No! The theme is hidden during gameplay and only revealed after you complete
+                  the puzzle or use all your mistakes. This adds an element of discovery to the
+                  game.
                 </p>
               </div>
             </div>

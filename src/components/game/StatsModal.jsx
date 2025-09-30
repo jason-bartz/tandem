@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { loadStats } from '@/lib/storage';
 import { getStreakMilestone } from '@/lib/streakMilestones';
+import ShareButton from './ShareButton';
 
 export default function StatsModal({ isOpen, onClose }) {
   const [stats, setStats] = useState({
@@ -22,6 +23,16 @@ export default function StatsModal({ isOpen, onClose }) {
   }
 
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
+
+  // Generate shareable stats text
+  const shareableStatsText = `My Tandem Stats
+═══════════════
+Current Streak: ${stats.currentStreak} ${stats.currentStreak > 0 ? '🔥' : ''}
+Best Streak: ${stats.bestStreak}
+Total Solved: ${stats.wins}
+Completion: ${winRate}%
+═══════════════
+#TandemPuzzle`;
 
   return (
     <div
@@ -87,6 +98,10 @@ export default function StatsModal({ isOpen, onClose }) {
           <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
             Total Wins
           </div>
+        </div>
+
+        <div className="mt-6">
+          <ShareButton shareText={shareableStatsText} className="w-full" />
         </div>
       </div>
     </div>

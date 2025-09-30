@@ -281,7 +281,13 @@ export default function PlayingScreen({
                   index={index}
                   onEnterPress={() => handleEnterPress(index)}
                   hintData={activeHints && activeHints[index]}
-                  answerLength={p.answer ? (p.answer.includes(',') ? p.answer.split(',')[0].trim().length : p.answer.length) : 0}
+                  answerLength={
+                    p.answer
+                      ? p.answer.includes(',')
+                        ? p.answer.split(',')[0].trim().length
+                        : p.answer.length
+                      : 0
+                  }
                 />
               ))}
           </div>
