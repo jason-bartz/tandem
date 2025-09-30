@@ -24,8 +24,14 @@ export default function StatsModal({ isOpen, onClose }) {
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
 
   return (
-    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-fade-in">
-      <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full animate-modalSlide shadow-2xl">
+    <div
+      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-fade-in"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full animate-modalSlide shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-200">Statistics</h2>
           <button
