@@ -31,9 +31,9 @@ export function useGame() {
         const puzzleInfo = getCurrentPuzzleInfo();
         const today = puzzleInfo.isoDate;
         setCurrentPuzzleDate(today);
-        
+
         const response = await puzzleService.getPuzzle();
-        
+
         if (response && response.puzzle) {
           setPuzzle({ ...response.puzzle, date: today });
         } else if (response) {
@@ -48,7 +48,7 @@ export function useGame() {
         setLoading(false);
       }
     }
-    
+
     loadPuzzle();
   }, []);
 
@@ -57,11 +57,11 @@ export function useGame() {
     try {
       setLoading(true);
       setError(null);
-      
+
       // Check if this is an archive game (has a specific date)
       const isArchive = date !== null;
       setIsArchiveGame(isArchive);
-      
+
       // Set the current puzzle date (use ET today if not specified)
       let puzzleDate = date;
       if (!date) {
@@ -70,11 +70,11 @@ export function useGame() {
         puzzleDate = puzzleInfo.isoDate;
       }
       setCurrentPuzzleDate(puzzleDate);
-      
+
       const response = await puzzleService.getPuzzle(date);
-      
+
       if (response && response.puzzle) {
-        setPuzzle({ ...response.puzzle, date: puzzleDate }); // Add date to puzzle
+        setPuzzle({ ...response.puzzle, date: response.date || puzzleDate }); // Add date to puzzle
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
@@ -84,7 +84,7 @@ export function useGame() {
         setActiveHints([null, null, null, null]);
         return true;
       } else if (response) {
-        setPuzzle({ ...response, date: puzzleDate }); // Add date to puzzle
+        setPuzzle({ ...response, date: response.date || puzzleDate }); // Add date to puzzle
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
@@ -109,7 +109,7 @@ export function useGame() {
     if (!puzzle) {
       return;
     }
-    
+
     setGameState(GAME_STATES.PLAYING);
     setMistakes(0);
     setSolved(0);
@@ -120,189 +120,208 @@ export function useGame() {
     setHintsUsed(0);
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
-    
+
     // Save initial progress to mark as attempted
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
         started: true,
         solved: 0,
         mistakes: 0,
-        hintsUsed: 0
+        hintsUsed: 0,
       });
     }
   }, [puzzle, currentPuzzleDate, isArchiveGame]);
 
-  const updateAnswer = useCallback((index, value) => {
-    // Check if there's an active hint for this index
-    const hint = activeHints[index];
-    let processedValue = value;
+  const updateAnswer = useCallback(
+    (index, value) => {
+      // Check if there's an active hint for this index
+      const hint = activeHints[index];
+      let processedValue = value;
 
-    if (hint) {
-      // If there's a hint, ensure the first letter is preserved
-      const hintLetter = hint.firstLetter;
+      if (hint) {
+        // If there's a hint, ensure the first letter is preserved
+        const hintLetter = hint.firstLetter;
 
-      if (value.length === 0) {
-        // If user tries to clear the field, keep the hint letter
-        processedValue = hintLetter;
-      } else if (!value.toUpperCase().startsWith(hintLetter)) {
-        // If the value doesn't start with the hint letter, add it
-        processedValue = hintLetter + value;
-      } else if (value.toUpperCase() === hintLetter) {
-        // If only the hint letter is present, keep it
-        processedValue = hintLetter;
+        if (value.length === 0) {
+          // If user tries to clear the field, keep the hint letter
+          processedValue = hintLetter;
+        } else if (!value.toUpperCase().startsWith(hintLetter)) {
+          // If the value doesn't start with the hint letter, add it
+          processedValue = hintLetter + value;
+        } else if (value.toUpperCase() === hintLetter) {
+          // If only the hint letter is present, keep it
+          processedValue = hintLetter;
+        }
       }
-    }
 
-    const sanitized = sanitizeInput(processedValue);
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[index] = sanitized;
-      return newAnswers;
-    });
-    // Clear the wrong status when user starts typing again
-    if (checkedWrongAnswers[index]) {
-      setCheckedWrongAnswers(prev => {
-        const newCheckedWrong = [...prev];
-        newCheckedWrong[index] = false;
-        return newCheckedWrong;
+      const sanitized = sanitizeInput(processedValue);
+      setAnswers((prev) => {
+        const newAnswers = [...prev];
+        newAnswers[index] = sanitized;
+        return newAnswers;
       });
-    }
-  }, [checkedWrongAnswers, activeHints]);
-
-  const completeGame = useCallback(async (won) => {
-    setGameState(GAME_STATES.COMPLETE);
-
-    // Play appropriate sound
-    if (won) {
-      playSuccessSound();
-    } else {
-      playFailureSound();
-    }
-
-    // Get the puzzle date from the puzzle object itself as a fallback
-    const puzzleDateToUse = currentPuzzleDate || puzzle?.date || null;
-    const todayDate = getCurrentPuzzleInfo().isoDate;
-    const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
-
-    // Check if this is the first attempt BEFORE saving the result
-    const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
-
-    // Update stats BEFORE saving the puzzle result to preserve first attempt status
-    try {
-      await statsService.updateStats({
-        completed: won,
-        mistakes,
-        solved,
-        hintsUsed,
-        isArchive: isArchive, // Pass archive flag to stats service
-        puzzleDate: puzzleDateToUse, // Pass the puzzle date for streak tracking
-        isFirstAttempt, // Pass the first attempt flag directly
-      });
-    } catch (err) {
-      // Silently fail saving stats
-    }
-
-    // Save the final result AFTER updating stats
-    if (puzzleDateToUse) {
-      savePuzzleResult(puzzleDateToUse, {
-        won,
-        mistakes,
-        solved,
-        hintsUsed,
-        time: null // Could add time tracking if needed
-      });
-    }
-  }, [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]);
-
-  const checkSingleAnswer = useCallback((index) => {
-    if (!puzzle || !puzzle.puzzles || !puzzle.puzzles[index]) {
-      return { isCorrect: false, gameComplete: false };
-    }
-
-    // Don't check if already correct
-    if (correctAnswers[index]) {
-      return { isCorrect: true, gameComplete: false };
-    }
-
-    const userAnswer = answers[index].trim();
-    if (!userAnswer) {
-      return { isCorrect: false, gameComplete: false };
-    }
-
-    const isCorrect = checkAnswerWithPlurals(userAnswer, puzzle.puzzles[index].answer);
-    
-    if (isCorrect) {
-      // Mark as correct
-      const newCorrectAnswers = [...correctAnswers];
-      newCorrectAnswers[index] = true;
-      setCorrectAnswers(newCorrectAnswers);
-      
-      // Clear wrong status if it was wrong before
+      // Clear the wrong status when user starts typing again
       if (checkedWrongAnswers[index]) {
-        const newCheckedWrongAnswers = [...checkedWrongAnswers];
-        newCheckedWrongAnswers[index] = false;
-        setCheckedWrongAnswers(newCheckedWrongAnswers);
-      }
-      
-      // Clear hint for this puzzle if it was active
-      if (activeHints[index]) {
-        const newActiveHints = [...activeHints];
-        newActiveHints[index] = null;
-        setActiveHints(newActiveHints);
-      }
-      
-      // Update solved count
-      const newSolved = solved + 1;
-      setSolved(newSolved);
-      
-      // Save progress
-      if (currentPuzzleDate) {
-        savePuzzleProgress(currentPuzzleDate, {
-          started: true,
-          solved: newSolved,
-          mistakes,
-          hintsUsed
+        setCheckedWrongAnswers((prev) => {
+          const newCheckedWrong = [...prev];
+          newCheckedWrong[index] = false;
+          return newCheckedWrong;
         });
       }
-      
-      // Check if game is complete
-      if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
-        completeGame(true);
-        return { isCorrect: true, gameComplete: true };
+    },
+    [checkedWrongAnswers, activeHints]
+  );
+
+  const completeGame = useCallback(
+    async (won) => {
+      setGameState(GAME_STATES.COMPLETE);
+
+      // Play appropriate sound
+      if (won) {
+        playSuccessSound();
+      } else {
+        playFailureSound();
       }
-      
-      return { isCorrect: true, gameComplete: false };
-    } else {
-      // Mark as wrong only if not already marked
-      if (!checkedWrongAnswers[index]) {
-        const newCheckedWrongAnswers = [...checkedWrongAnswers];
-        newCheckedWrongAnswers[index] = true;
-        setCheckedWrongAnswers(newCheckedWrongAnswers);
-        
-        // Increment mistakes
-        const newMistakes = mistakes + 1;
-        setMistakes(newMistakes);
-        
+
+      // Get the puzzle date from the puzzle object itself as a fallback
+      const puzzleDateToUse = currentPuzzleDate || puzzle?.date || null;
+      const todayDate = getCurrentPuzzleInfo().isoDate;
+      const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
+
+      // Check if this is the first attempt BEFORE saving the result
+      const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
+
+      // Update stats BEFORE saving the puzzle result to preserve first attempt status
+      try {
+        await statsService.updateStats({
+          completed: won,
+          mistakes,
+          solved,
+          hintsUsed,
+          isArchive: isArchive, // Pass archive flag to stats service
+          puzzleDate: puzzleDateToUse, // Pass the puzzle date for streak tracking
+          isFirstAttempt, // Pass the first attempt flag directly
+        });
+      } catch (err) {
+        // Silently fail saving stats
+      }
+
+      // Save the final result AFTER updating stats
+      if (puzzleDateToUse) {
+        savePuzzleResult(puzzleDateToUse, {
+          won,
+          mistakes,
+          solved,
+          hintsUsed,
+          time: null, // Could add time tracking if needed
+        });
+      }
+    },
+    [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]
+  );
+
+  const checkSingleAnswer = useCallback(
+    (index) => {
+      if (!puzzle || !puzzle.puzzles || !puzzle.puzzles[index]) {
+        return { isCorrect: false, gameComplete: false };
+      }
+
+      // Don't check if already correct
+      if (correctAnswers[index]) {
+        return { isCorrect: true, gameComplete: false };
+      }
+
+      const userAnswer = answers[index].trim();
+      if (!userAnswer) {
+        return { isCorrect: false, gameComplete: false };
+      }
+
+      const isCorrect = checkAnswerWithPlurals(userAnswer, puzzle.puzzles[index].answer);
+
+      if (isCorrect) {
+        // Mark as correct
+        const newCorrectAnswers = [...correctAnswers];
+        newCorrectAnswers[index] = true;
+        setCorrectAnswers(newCorrectAnswers);
+
+        // Clear wrong status if it was wrong before
+        if (checkedWrongAnswers[index]) {
+          const newCheckedWrongAnswers = [...checkedWrongAnswers];
+          newCheckedWrongAnswers[index] = false;
+          setCheckedWrongAnswers(newCheckedWrongAnswers);
+        }
+
+        // Clear hint for this puzzle if it was active
+        if (activeHints[index]) {
+          const newActiveHints = [...activeHints];
+          newActiveHints[index] = null;
+          setActiveHints(newActiveHints);
+        }
+
+        // Update solved count
+        const newSolved = solved + 1;
+        setSolved(newSolved);
+
         // Save progress
         if (currentPuzzleDate) {
           savePuzzleProgress(currentPuzzleDate, {
             started: true,
-            solved,
-            mistakes: newMistakes,
-            hintsUsed
+            solved: newSolved,
+            mistakes,
+            hintsUsed,
           });
         }
-        
-        // Check if game is over
-        if (newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
-          completeGame(false);
-          return { isCorrect: false, gameComplete: true };
+
+        // Check if game is complete
+        if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
+          completeGame(true);
+          return { isCorrect: true, gameComplete: true };
         }
+
+        return { isCorrect: true, gameComplete: false };
+      } else {
+        // Mark as wrong only if not already marked
+        if (!checkedWrongAnswers[index]) {
+          const newCheckedWrongAnswers = [...checkedWrongAnswers];
+          newCheckedWrongAnswers[index] = true;
+          setCheckedWrongAnswers(newCheckedWrongAnswers);
+
+          // Increment mistakes
+          const newMistakes = mistakes + 1;
+          setMistakes(newMistakes);
+
+          // Save progress
+          if (currentPuzzleDate) {
+            savePuzzleProgress(currentPuzzleDate, {
+              started: true,
+              solved,
+              mistakes: newMistakes,
+              hintsUsed,
+            });
+          }
+
+          // Check if game is over
+          if (newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
+            completeGame(false);
+            return { isCorrect: false, gameComplete: true };
+          }
+        }
+
+        return { isCorrect: false, gameComplete: false };
       }
-      
-      return { isCorrect: false, gameComplete: false };
-    }
-  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed, activeHints]);
+    },
+    [
+      puzzle,
+      answers,
+      correctAnswers,
+      checkedWrongAnswers,
+      mistakes,
+      solved,
+      currentPuzzleDate,
+      hintsUsed,
+      activeHints,
+    ]
+  );
 
   const checkAnswers = useCallback(() => {
     if (!puzzle || !puzzle.puzzles) {
@@ -340,7 +359,7 @@ export function useGame() {
 
     setCorrectAnswers(newCorrectAnswers);
     setCheckedWrongAnswers(newCheckedWrongAnswers);
-    setMistakes(prev => prev + newMistakes);
+    setMistakes((prev) => prev + newMistakes);
     setSolved(newSolved);
 
     // Save progress after checking answers
@@ -349,7 +368,7 @@ export function useGame() {
         started: true,
         solved: newSolved,
         mistakes: mistakes + newMistakes,
-        hintsUsed
+        hintsUsed,
       });
     }
 
@@ -363,7 +382,17 @@ export function useGame() {
       correct: newSolved - solved,
       incorrect: newMistakes,
     };
-  }, [puzzle, answers, correctAnswers, checkedWrongAnswers, mistakes, solved, currentPuzzleDate, hintsUsed, activeHints]);
+  }, [
+    puzzle,
+    answers,
+    correctAnswers,
+    checkedWrongAnswers,
+    mistakes,
+    solved,
+    currentPuzzleDate,
+    hintsUsed,
+    activeHints,
+  ]);
 
   const resetGame = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -377,69 +406,70 @@ export function useGame() {
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
   }, []);
-  
-  const useHint = useCallback((targetIndex) => {
-    if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
-      return;
-    }
-    
-    // Use the provided index or find a random unanswered puzzle
-    let hintIndex = targetIndex;
-    
-    if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-      // Find all unanswered puzzles
-      const unansweredIndices = [];
-      for (let i = 0; i < puzzle.puzzles.length; i++) {
-        if (!correctAnswers[i]) {
-          unansweredIndices.push(i);
-        }
-      }
-      
-      if (unansweredIndices.length === 0) {
+
+  const useHint = useCallback(
+    (targetIndex) => {
+      if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
         return;
       }
-      
-      // Randomly select one
-      hintIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
-    }
-    
-    // Get the answer and create hint data
-    const fullAnswer = puzzle.puzzles[hintIndex].answer;
-    const firstAnswer = fullAnswer.includes(',') 
-      ? fullAnswer.split(',')[0].trim() 
-      : fullAnswer;
-    
-    // Create hint data with first letter and character count
-    const hintData = {
-      firstLetter: firstAnswer.charAt(0).toUpperCase(),
-      length: firstAnswer.length,
-      fullAnswer: firstAnswer.toUpperCase()
-    };
-    
-    // Update active hints
-    const newActiveHints = [...activeHints];
-    newActiveHints[hintIndex] = hintData;
-    setActiveHints(newActiveHints);
 
-    // Pre-fill the answer with the hint letter
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[hintIndex] = hintData.firstLetter;
-      return newAnswers;
-    });
+      // Use the provided index or find a random unanswered puzzle
+      let hintIndex = targetIndex;
 
-    setHintsUsed(1);
-    
-    // Save progress with hint usage
-    if (currentPuzzleDate) {
-      savePuzzleProgress(currentPuzzleDate, {
-        started: true,
-        solved,
-        mistakes,
-        hintsUsed: 1
+      if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
+        // Find all unanswered puzzles
+        const unansweredIndices = [];
+        for (let i = 0; i < puzzle.puzzles.length; i++) {
+          if (!correctAnswers[i]) {
+            unansweredIndices.push(i);
+          }
+        }
+
+        if (unansweredIndices.length === 0) {
+          return;
+        }
+
+        // Randomly select one
+        hintIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
+      }
+
+      // Get the answer and create hint data
+      const fullAnswer = puzzle.puzzles[hintIndex].answer;
+      const firstAnswer = fullAnswer.includes(',') ? fullAnswer.split(',')[0].trim() : fullAnswer;
+
+      // Create hint data with first letter and character count
+      const hintData = {
+        firstLetter: firstAnswer.charAt(0).toUpperCase(),
+        length: firstAnswer.length,
+        fullAnswer: firstAnswer.toUpperCase(),
+      };
+
+      // Update active hints
+      const newActiveHints = [...activeHints];
+      newActiveHints[hintIndex] = hintData;
+      setActiveHints(newActiveHints);
+
+      // Pre-fill the answer with the hint letter
+      setAnswers((prev) => {
+        const newAnswers = [...prev];
+        newAnswers[hintIndex] = hintData.firstLetter;
+        return newAnswers;
       });
-    }
-  }, [puzzle, correctAnswers, hintsUsed, activeHints, currentPuzzleDate, solved, mistakes]);
+
+      setHintsUsed(1);
+
+      // Save progress with hint usage
+      if (currentPuzzleDate) {
+        savePuzzleProgress(currentPuzzleDate, {
+          started: true,
+          solved,
+          mistakes,
+          hintsUsed: 1,
+        });
+      }
+    },
+    [puzzle, correctAnswers, hintsUsed, activeHints, currentPuzzleDate, solved, mistakes]
+  );
 
   return {
     gameState,
