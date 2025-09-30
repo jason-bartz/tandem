@@ -4,6 +4,7 @@ import { getGameHistory } from '@/lib/storage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import puzzleService from '@/services/puzzle.service';
 import subscriptionService from '@/services/subscriptionService';
+import platformService from '@/services/platform';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -90,9 +91,9 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
       const datesToFetch = availableDates;
 
-      // Try batch endpoint first - disabled for iOS
-      // Skip batch endpoint on iOS since API routes aren't available
-      const skipBatch = true; // Always skip for now since we're on mobile
+      // Try batch endpoint first - disabled for native iOS
+      // Skip batch endpoint on native iOS since API routes aren't available locally
+      const skipBatch = platformService.isPlatformNative();
 
       if (!skipBatch) {
         try {
