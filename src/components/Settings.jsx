@@ -382,6 +382,11 @@ export default function Settings({ isOpen, onClose }) {
           </div>
         </div>
 
+        {/* Copyright */}
+        <div className="mb-4 text-center">
+          <p className="text-xs text-gray-500 dark:text-gray-400">© 2025 Good Vibes Games</p>
+        </div>
+
         {/* Close Button */}
         <button
           onClick={onClose}
