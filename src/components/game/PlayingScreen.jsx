@@ -7,7 +7,7 @@ import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
-import PlayerStatsModal from './PlayerStatsModal';
+import StatsModal from './StatsModal';
 import ArchiveModal from './ArchiveModal';
 import Settings from '@/components/Settings';
 import { useArchivePreload } from '@/hooks/useArchivePreload';
@@ -342,7 +342,7 @@ export default function PlayingScreen({
       </div>
 
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
-      <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

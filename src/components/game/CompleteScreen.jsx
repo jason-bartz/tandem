@@ -11,7 +11,6 @@ import {
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import StatsModal from './StatsModal';
-import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import HowToPlayModal from './HowToPlayModal';
 import ShareButton from './ShareButton';
@@ -287,7 +286,7 @@ export default function CompleteScreen({
 
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
 
-      <PlayerStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
+      <StatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
       <ArchiveModal
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
