@@ -62,7 +62,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                                 willPresent notification: UNNotification,
                                 withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         // Show notification even when app is in foreground
-        completionHandler([.banner, .sound, .badge])
+        if #available(iOS 14.0, *) {
+            completionHandler([.banner, .sound, .badge])
+        } else {
+            // For iOS 13 and earlier, use .alert instead of .banner
+            completionHandler([.alert, .sound, .badge])
+        }
     }
 
     // Handle notification tap
