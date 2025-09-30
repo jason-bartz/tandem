@@ -10,7 +10,6 @@ import {
   getRandomCongratulation,
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
-import ThemeToggle from './ThemeToggle';
 import StatsModal from './StatsModal';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
@@ -30,7 +29,6 @@ export default function CompleteScreen({
   puzzleTheme,
   _onPlayAgain,
   theme,
-  toggleTheme,
   _isAuto,
   _currentState,
   hintsUsed,
@@ -166,7 +164,6 @@ export default function CompleteScreen({
         >
           ⚙️
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       {/* Main completion card */}

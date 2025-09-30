@@ -5,7 +5,6 @@ import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
-import ThemeToggle from './ThemeToggle';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
 import PlayerStatsModal from './PlayerStatsModal';
@@ -28,7 +27,6 @@ export default function PlayingScreen({
   onCheckAnswers,
   onCheckSingleAnswer,
   theme,
-  toggleTheme,
   _isAuto,
   _currentState,
   onSelectPuzzle,
@@ -199,7 +197,6 @@ export default function PlayingScreen({
         >
           ⚙️
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       {/* Main game card with scroll container */}

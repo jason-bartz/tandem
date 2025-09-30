@@ -3,7 +3,6 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
-import ThemeToggle from './ThemeToggle';
 import PlayerStatsModal from './PlayerStatsModal';
 import ArchiveModal from './ArchiveModal';
 import HowToPlayModal from './HowToPlayModal';
@@ -17,7 +16,6 @@ import subscriptionService from '@/services/subscriptionService';
 export default function WelcomeScreen({
   onStart,
   theme,
-  toggleTheme,
   _isAuto,
   _currentState,
   onSelectPuzzle,
@@ -120,7 +118,6 @@ export default function WelcomeScreen({
         >
           ⚙️
         </button>
-        <ThemeToggle theme={theme} toggleTheme={toggleTheme} />
       </div>
 
       {/* Main welcome card */}

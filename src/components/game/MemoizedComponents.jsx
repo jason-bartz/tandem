@@ -4,10 +4,9 @@
  */
 
 'use client';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import PuzzleRow from './PuzzleRow';
 import StatsBar from './StatsBar';
-import ThemeToggle from './ThemeToggle';
 
 // Memoized PuzzleRow - only re-renders when its specific props change
 export const MemoizedPuzzleRow = memo(PuzzleRow, (prevProps, nextProps) => {
@@ -33,19 +32,8 @@ export const MemoizedStatsBar = memo(StatsBar, (prevProps, nextProps) => {
 });
 MemoizedStatsBar.displayName = 'MemoizedStatsBar';
 
-// Memoized ThemeToggle - only re-renders when theme changes
-export const MemoizedThemeToggle = memo(ThemeToggle, (prevProps, nextProps) => {
-  return (
-    prevProps.theme === nextProps.theme &&
-    prevProps.isAuto === nextProps.isAuto &&
-    prevProps.currentState === nextProps.currentState
-  );
-});
-MemoizedThemeToggle.displayName = 'MemoizedThemeToggle';
-
 // Export all memoized components
 export default {
   MemoizedPuzzleRow,
   MemoizedStatsBar,
-  MemoizedThemeToggle
 };
