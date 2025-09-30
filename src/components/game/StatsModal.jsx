@@ -60,18 +60,11 @@ export default function StatsModal({ isOpen, onClose }) {
             </div>
           </div>
           <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
-            <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
-              {stats.currentStreak}{' '}
-              <span
-                style={{
-                  fontFamily:
-                    'system-ui, -apple-system, "Segoe UI Emoji", "Apple Color Emoji", "Noto Color Emoji", sans-serif',
-                  fontStyle: 'normal',
-                  fontWeight: 'normal',
-                }}
-              >
-                {getStreakMilestone(stats.currentStreak)}
-              </span>
+            <div className="text-3xl font-extrabold">
+              <span className="bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
+                {stats.currentStreak}
+              </span>{' '}
+              <span className="text-3xl">{getStreakMilestone(stats.currentStreak)}</span>
             </div>
             <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
               Current Streak
