@@ -96,8 +96,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             }`}
           >
             <p className="text-sm">
-              <span className="font-semibold">💡 Hint:</span> Stuck? Use a hint to reveal two
-              letters from a random unanswered word.
+              <span className="font-semibold">💡 Hint:</span> Stuck? Use a hint to reveal the first
+              letter from a random unanswered word.
             </p>
           </div>
 
