@@ -432,6 +432,13 @@ export function useGameWithInitialData(initialPuzzleData) {
       newHintPositions[hintIndex] = true;
       setHintPositionsUsed(newHintPositions);
 
+      // Update the answer with the first letter if it's empty
+      if (!answers[hintIndex]) {
+        const newAnswers = [...answers];
+        newAnswers[hintIndex] = hintData.firstLetter;
+        setAnswers(newAnswers);
+      }
+
       setHintsUsed(1);
 
       // Save progress with hint usage
