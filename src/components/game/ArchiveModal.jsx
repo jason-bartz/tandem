@@ -21,6 +21,7 @@ const CACHE_DURATION = 30000; // 30 seconds
 
 export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
   const [puzzles, setPuzzles] = useState(globalArchiveCache.puzzles || []);
+  const [isLoading, setIsLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleAccessMap, setPuzzleAccessMap] = useState(globalArchiveCache.puzzleAccessMap || {});
   const [accessCheckComplete, setAccessCheckComplete] = useState(false);
@@ -379,10 +380,14 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
             e.stopPropagation();
           }}
         >
-          {puzzles.length === 0 ? (
+          {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
               <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500"></div>
               <p className="mt-4 text-gray-600 dark:text-gray-400">Loading puzzles...</p>
+            </div>
+          ) : puzzles.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <p className="text-gray-600 dark:text-gray-400">No puzzles available</p>
             </div>
           ) : (
             puzzles.map((puzzle) => {
