@@ -136,7 +136,13 @@ export default function PlayingScreen({
           return;
         }
 
-        const currentValue = answers[focusedIndex];
+        let currentValue = answers[focusedIndex];
+
+        // If there's a hint and the field is empty, start with the hint letter
+        if (activeHints && activeHints[focusedIndex] && !currentValue) {
+          currentValue = activeHints[focusedIndex].firstLetter;
+        }
+
         const answerLength = puzzle?.puzzles[focusedIndex]?.answer
           ? puzzle.puzzles[focusedIndex].answer.includes(',')
             ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
@@ -243,7 +249,13 @@ export default function PlayingScreen({
         return;
       }
 
-      const currentValue = answers[focusedIndex];
+      let currentValue = answers[focusedIndex];
+
+      // If there's a hint and the field is empty, start with the hint letter
+      if (activeHints && activeHints[focusedIndex] && !currentValue) {
+        currentValue = activeHints[focusedIndex].firstLetter;
+      }
+
       const answerLength = puzzle?.puzzles[focusedIndex]?.answer
         ? puzzle.puzzles[focusedIndex].answer.includes(',')
           ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
