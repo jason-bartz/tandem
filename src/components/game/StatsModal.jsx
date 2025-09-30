@@ -1,18 +1,25 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { loadStats } from '@/lib/storage';
+import { getStreakMilestone } from '@/lib/streakMilestones';
 
-export default function StatsModal({ onClose }) {
+export default function StatsModal({ isOpen, onClose }) {
   const [stats, setStats] = useState({
     played: 0,
     wins: 0,
     currentStreak: 0,
-    bestStreak: 0
+    bestStreak: 0,
   });
 
   useEffect(() => {
-    setStats(loadStats());
-  }, []);
+    if (isOpen !== false) {
+      setStats(loadStats());
+    }
+  }, [isOpen]);
+
+  if (isOpen === false) {
+    return null;
+  }
 
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
 
@@ -28,39 +35,49 @@ export default function StatsModal({ onClose }) {
             ×
           </button>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
             <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
               {stats.played}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">Played</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
+              Played
+            </div>
           </div>
           <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
             <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
               {winRate}%
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">Win Rate</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
+              Win Rate
+            </div>
           </div>
           <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
             <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
-              {stats.currentStreak}
+              {stats.currentStreak} {getStreakMilestone(stats.currentStreak)}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">Current Streak</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
+              Current Streak
+            </div>
           </div>
           <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
             <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
               {stats.bestStreak}
             </div>
-            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">Best Streak</div>
+            <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
+              Best Streak
+            </div>
           </div>
         </div>
-        
+
         <div className="bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900 p-4 rounded-xl text-center">
           <div className="text-3xl font-extrabold bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent">
             {stats.wins}
           </div>
-          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">Total Wins</div>
+          <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 uppercase tracking-wide">
+            Total Wins
+          </div>
         </div>
       </div>
     </div>

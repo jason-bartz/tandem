@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
-import PlayerStatsModal from './PlayerStatsModal';
+import StatsModal from './StatsModal';
 import ArchiveModal from './ArchiveModal';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
@@ -186,7 +186,7 @@ export default function WelcomeScreen({
         <div className="text-gray-text dark:text-gray-400 text-sm mt-4">{puzzleInfo.date}</div>
       </div>
 
-      <PlayerStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveModal
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
