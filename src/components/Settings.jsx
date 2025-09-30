@@ -5,19 +5,36 @@ import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import notificationService from '@/services/notificationService';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [notificationSettings, setNotificationSettings] = useState(null);
+  const [notificationPermission, setNotificationPermission] = useState(null);
   const { playHaptic } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast } = useTheme();
 
   useEffect(() => {
     if (isOpen) {
       loadSubscriptionInfo();
+      loadNotificationSettings();
     }
   }, [isOpen]);
+
+  const loadNotificationSettings = async () => {
+    if (!Capacitor.isNativePlatform()) return;
+
+    try {
+      const settings = await notificationService.getSettings();
+      setNotificationSettings(settings);
+      const hasPermission = await notificationService.checkPermission();
+      setNotificationPermission(hasPermission);
+    } catch (error) {
+      console.error('Failed to load notification settings:', error);
+    }
+  };
 
   const loadSubscriptionInfo = async () => {
     if (!Capacitor.isNativePlatform()) {
@@ -186,6 +203,278 @@ export default function Settings({ isOpen, onClose }) {
                 >
                   Restore Purchase
                 </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Notifications Section */}
+        {Capacitor.isNativePlatform() && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Notifications
+            </h3>
+            {notificationPermission === false ? (
+              <div className="bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 mb-4">
+                <p className="text-sm text-yellow-800 dark:text-yellow-200 mb-3">
+                  Enable notifications to never miss your daily puzzle and protect your streak
+                </p>
+                <button
+                  onClick={async () => {
+                    const granted = await notificationService.requestPermission();
+                    if (granted) {
+                      await loadNotificationSettings();
+                      await notificationService.rescheduleAllNotifications();
+                      playHaptic('success');
+                    } else {
+                      alert('Please enable notifications in your device settings');
+                    }
+                  }}
+                  className="w-full py-2 bg-yellow-600 text-white font-medium rounded-lg hover:bg-yellow-700"
+                >
+                  Enable Notifications
+                </button>
+              </div>
+            ) : notificationSettings ? (
+              <div className="space-y-4">
+                {/* Master Toggle */}
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Notifications
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Get reminders for your daily puzzle
+                    </p>
+                  </div>
+                  <button
+                    onClick={async () => {
+                      const newValue = !notificationSettings.notificationsEnabled;
+                      setNotificationSettings((prev) => ({
+                        ...prev,
+                        notificationsEnabled: newValue,
+                      }));
+                      await notificationService.updateSettings({ notifications_enabled: newValue });
+                      playHaptic('light');
+                    }}
+                    className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                    role="switch"
+                    aria-checked={notificationSettings.notificationsEnabled}
+                  >
+                    <span
+                      className={`${
+                        notificationSettings.notificationsEnabled
+                          ? 'translate-x-6'
+                          : 'translate-x-1'
+                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                    />
+                  </button>
+                </div>
+
+                {notificationSettings.notificationsEnabled && (
+                  <>
+                    {/* Daily Reminder */}
+                    <div className="pl-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            Daily Reminder
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Get notified when puzzle is ready
+                          </p>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const newValue = !notificationSettings.dailyReminderEnabled;
+                            setNotificationSettings((prev) => ({
+                              ...prev,
+                              dailyReminderEnabled: newValue,
+                            }));
+                            await notificationService.updateSettings({
+                              daily_reminder_enabled: newValue,
+                            });
+                            playHaptic('light');
+                          }}
+                          className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                          role="switch"
+                          aria-checked={notificationSettings.dailyReminderEnabled}
+                        >
+                          <span
+                            className={`${
+                              notificationSettings.dailyReminderEnabled
+                                ? 'translate-x-6'
+                                : 'translate-x-1'
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                          />
+                        </button>
+                      </div>
+
+                      {notificationSettings.dailyReminderEnabled && (
+                        <div className="flex items-center justify-between pl-4">
+                          <label className="text-xs text-gray-600 dark:text-gray-400">Time</label>
+                          <input
+                            type="time"
+                            value={notificationSettings.dailyReminderTime || '10:00'}
+                            onChange={async (e) => {
+                              const newTime = e.target.value;
+                              setNotificationSettings((prev) => ({
+                                ...prev,
+                                dailyReminderTime: newTime,
+                              }));
+                              await notificationService.updateSettings({
+                                daily_reminder_time: newTime,
+                              });
+                            }}
+                            className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-md"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Streak Protection */}
+                    <div className="pl-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            Streak Protection
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            Evening reminder if streak at risk
+                          </p>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const newValue = !notificationSettings.streakProtectionEnabled;
+                            setNotificationSettings((prev) => ({
+                              ...prev,
+                              streakProtectionEnabled: newValue,
+                            }));
+                            await notificationService.updateSettings({
+                              streak_protection_enabled: newValue,
+                            });
+                            playHaptic('light');
+                          }}
+                          className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                          role="switch"
+                          aria-checked={notificationSettings.streakProtectionEnabled}
+                        >
+                          <span
+                            className={`${
+                              notificationSettings.streakProtectionEnabled
+                                ? 'translate-x-6'
+                                : 'translate-x-1'
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                          />
+                        </button>
+                      </div>
+
+                      {notificationSettings.streakProtectionEnabled && (
+                        <div className="flex items-center justify-between pl-4">
+                          <label className="text-xs text-gray-600 dark:text-gray-400">Time</label>
+                          <input
+                            type="time"
+                            value={notificationSettings.streakProtectionTime || '20:00'}
+                            onChange={async (e) => {
+                              const newTime = e.target.value;
+                              setNotificationSettings((prev) => ({
+                                ...prev,
+                                streakProtectionTime: newTime,
+                              }));
+                              await notificationService.updateSettings({
+                                streak_protection_time: newTime,
+                              });
+                            }}
+                            className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-md"
+                          />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Quiet Hours */}
+                    <div className="pl-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                            Quiet Hours
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            No notifications during sleep time
+                          </p>
+                        </div>
+                        <button
+                          onClick={async () => {
+                            const newValue = !notificationSettings.quietHoursEnabled;
+                            setNotificationSettings((prev) => ({
+                              ...prev,
+                              quietHoursEnabled: newValue,
+                            }));
+                            await notificationService.updateSettings({
+                              quiet_hours_enabled: newValue,
+                            });
+                            playHaptic('light');
+                          }}
+                          className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                          role="switch"
+                          aria-checked={notificationSettings.quietHoursEnabled}
+                        >
+                          <span
+                            className={`${
+                              notificationSettings.quietHoursEnabled
+                                ? 'translate-x-6'
+                                : 'translate-x-1'
+                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                          />
+                        </button>
+                      </div>
+
+                      {notificationSettings.quietHoursEnabled && (
+                        <div className="flex items-center justify-between pl-4 gap-2">
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs text-gray-600 dark:text-gray-400">From</label>
+                            <input
+                              type="time"
+                              value={notificationSettings.quietHoursStart || '21:30'}
+                              onChange={async (e) => {
+                                const newTime = e.target.value;
+                                setNotificationSettings((prev) => ({
+                                  ...prev,
+                                  quietHoursStart: newTime,
+                                }));
+                                await notificationService.updateSettings({
+                                  quiet_hours_start: newTime,
+                                });
+                              }}
+                              className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-md"
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <label className="text-xs text-gray-600 dark:text-gray-400">To</label>
+                            <input
+                              type="time"
+                              value={notificationSettings.quietHoursEnd || '07:30'}
+                              onChange={async (e) => {
+                                const newTime = e.target.value;
+                                setNotificationSettings((prev) => ({
+                                  ...prev,
+                                  quietHoursEnd: newTime,
+                                }));
+                                await notificationService.updateSettings({
+                                  quiet_hours_end: newTime,
+                                });
+                              }}
+                              className="px-2 py-1 text-sm bg-gray-100 dark:bg-gray-700 rounded-md"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center py-4">
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-500"></div>
               </div>
             )}
           </div>
