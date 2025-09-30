@@ -48,7 +48,7 @@ export default function PlayingScreen({
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
-  // Focus first empty input on mount and handle hardware keyboard
+  // Focus first empty input on mount only
   useEffect(() => {
     const firstEmptyIndex = answers.findIndex(
       (answer, idx) => !correctAnswers[idx] && !answer.trim()
@@ -56,7 +56,9 @@ export default function PlayingScreen({
     if (firstEmptyIndex !== -1) {
       setFocusedIndex(firstEmptyIndex);
     }
-  }, [answers, correctAnswers]);
+    // Only run on mount and when puzzle changes
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPuzzleIndex]);
 
   // Hardware keyboard support for desktop
   useEffect(() => {
@@ -109,6 +111,11 @@ export default function PlayingScreen({
       } else if (e.key === 'Backspace') {
         e.preventDefault();
 
+        // Skip if this field is already correct
+        if (correctAnswers[focusedIndex]) {
+          return;
+        }
+
         const currentValue = answers[focusedIndex];
         if (currentValue.length > 0) {
           // Prevent deleting hint letter if present
@@ -123,6 +130,11 @@ export default function PlayingScreen({
         }
       } else if (/^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
+
+        // Skip if this field is already correct
+        if (correctAnswers[focusedIndex]) {
+          return;
+        }
 
         const currentValue = answers[focusedIndex];
         const answerLength = puzzle?.puzzles[focusedIndex]?.answer
@@ -162,6 +174,10 @@ export default function PlayingScreen({
   ]);
 
   const handleKeyboardInput = (key) => {
+    // Ignore if the field is already correct
+    if (correctAnswers[focusedIndex]) {
+      return;
+    }
     // Handle ENTER key
     if (key === 'ENTER') {
       // Check the current answer
@@ -200,6 +216,11 @@ export default function PlayingScreen({
 
     // Handle BACKSPACE key
     if (key === 'BACKSPACE') {
+      // Skip if this field is already correct
+      if (correctAnswers[focusedIndex]) {
+        return;
+      }
+
       const currentValue = answers[focusedIndex];
       if (currentValue.length > 0) {
         // Prevent deleting hint letter if present
@@ -217,6 +238,11 @@ export default function PlayingScreen({
 
     // Handle letter keys
     if (key.length === 1 && /^[A-Z]$/i.test(key)) {
+      // Skip if this field is already correct
+      if (correctAnswers[focusedIndex]) {
+        return;
+      }
+
       const currentValue = answers[focusedIndex];
       const answerLength = puzzle?.puzzles[focusedIndex]?.answer
         ? puzzle.puzzles[focusedIndex].answer.includes(',')
