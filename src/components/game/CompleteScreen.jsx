@@ -121,8 +121,8 @@ export default function CompleteScreen({
 
   return (
     <div className="animate-fade-in">
-      {/* Control buttons positioned above the card */}
-      <div className="flex justify-end gap-2 mb-4">
+      {/* Control buttons positioned above the card - Dynamic Island aware */}
+      <div className="flex justify-end gap-2 mb-4 pt-safe-ios px-4 sm:px-0">
         <button
           onClick={() => {
             lightTap();
