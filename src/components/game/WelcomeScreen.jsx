@@ -144,18 +144,26 @@ export default function WelcomeScreen({
           <div className="space-y-3">
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                🎯
+                ✌️
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                Use the theme to guide your answers
+                Each emoji pair represents one word
               </span>
             </div>
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                ✌️
+                📖
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                Each emoji pair = one word, or <em>tandem</em>
+                All 4 answers share a hidden theme
+              </span>
+            </div>
+            <div className="flex items-start">
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
+                🔍
+              </div>
+              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+                Solve all 4 to reveal the theme
               </span>
             </div>
             <div className="flex items-start">
@@ -163,7 +171,7 @@ export default function WelcomeScreen({
                 ❌
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                4 mistakes allowed
+                You get 4 chances to be wrong
               </span>
             </div>
           </div>

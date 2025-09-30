@@ -72,14 +72,21 @@ export function formatDateShort(dateString) {
   return `${month}/${day}/${year}`;
 }
 
-export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, hintsUsed = 0, hintPositions = []) {
+export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, _hintsUsed = 0, hintPositions = [], solved = 0) {
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
   const formattedDate = formatDateShort(puzzleDate);
-  
+
   // Build the header
   let shareText = `Daily Puzzle ${formattedDate}\n`;
-  shareText += `${theme}\n`;
+
+  // Add status instead of theme
+  if (solved === 4) {
+    shareText += `✨ Theme Discovered!\n`;
+  } else {
+    shareText += `❓ Theme Hidden\n`;
+  }
+
   shareText += `━━━━━━━━━━━━\n`;
   
   // Build the stats line
@@ -87,13 +94,17 @@ export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, hi
   shareText += `\n\n`;
   
   // Build emoji representation of puzzle completion
-  // 4 puzzles, each represented by 🔷 or 💡 (if hint was used on that position)
+  // Show solved puzzles with 🔷 or 💡 (if hint was used), unsolved with ⬜
   const puzzleEmojis = [];
   for (let i = 0; i < 4; i++) {
-    if (hintPositions.includes(i)) {
-      puzzleEmojis.push('💡');
+    if (i < solved) {
+      if (hintPositions.includes(i)) {
+        puzzleEmojis.push('💡');
+      } else {
+        puzzleEmojis.push('🔷');
+      }
     } else {
-      puzzleEmojis.push('🔷');
+      puzzleEmojis.push('⬜');
     }
   }
   shareText += puzzleEmojis.join(' ');
