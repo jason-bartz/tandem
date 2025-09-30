@@ -5,11 +5,13 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function PuzzleRow({
   emoji,
   value,
-  onChange,
+  onChange: _onChange,
   isCorrect,
   isWrong,
   index,
-  onEnterPress,
+  onFocus,
+  isFocused,
+  readonly: _readonly = false,
   hintData,
   answerLength = 0,
 }) {
@@ -17,40 +19,30 @@ export default function PuzzleRow({
   const { highContrast } = useTheme();
   const animationDelay = `${(index + 1) * 100}ms`;
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && onEnterPress) {
-      e.preventDefault();
-      onEnterPress();
-    }
-
-    // Prevent deleting the hint letter with backspace
-    if (hintData && e.key === 'Backspace') {
-      const currentValue = e.target.value;
-      const hintLetter = hintData.firstLetter;
-
-      // If only the hint letter remains or trying to delete it, prevent default
-      if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
-        e.preventDefault();
-        // Set the value to just the hint letter
-        onChange(hintLetter);
-      }
+  const handleClick = () => {
+    if (!isCorrect && onFocus) {
+      selectionStart();
+      onFocus();
     }
   };
 
-  // Generate placeholder with underscores for remaining characters
-  const getDynamicPlaceholder = () => {
+  // Generate visual representation with spaced underscores
+  const getVisualDisplay = () => {
     if (answerLength === 0) return '';
 
-    const displayValue = hintData && !value ? hintData.firstLetter : value;
-    const placeholders = [];
+    const currentValue = hintData && !value ? hintData.firstLetter : value;
+    const chars = [];
 
     for (let i = 0; i < answerLength; i++) {
-      if (!displayValue || i >= displayValue.length) {
-        placeholders.push('_');
+      if (currentValue && i < currentValue.length) {
+        chars.push(currentValue[i].toUpperCase());
+      } else {
+        chars.push('_');
       }
     }
 
-    return placeholders.join('');
+    // Add spacing between characters
+    return chars.join(' ');
   };
 
   return (
@@ -69,23 +61,46 @@ export default function PuzzleRow({
         </div>
       </div>
       <div className="relative flex-1">
+        {/* Visual display overlay - hide when answer is correct */}
+        {!isCorrect && (
+          <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
+            <span
+              className={`
+              text-sm sm:text-base font-medium uppercase tracking-[0.2em]
+              ${
+                isWrong
+                  ? highContrast
+                    ? 'text-hc-error'
+                    : 'text-red-900 dark:text-red-400'
+                  : highContrast
+                    ? 'text-hc-text'
+                    : 'text-dark-text dark:text-gray-200'
+              }
+            `}
+            >
+              {getVisualDisplay()}
+            </span>
+          </div>
+        )}
+        {/* Hidden input for focus management */}
         <input
           type="text"
           value={hintData && !value ? hintData.firstLetter : value}
-          onChange={(e) => onChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onFocus={() => selectionStart()}
-          placeholder={getDynamicPlaceholder()}
-          maxLength={15}
+          onChange={() => {}}
+          onClick={handleClick}
+          onFocus={handleClick}
+          maxLength={answerLength || 15}
           disabled={isCorrect}
+          readOnly={true}
+          aria-label={`Answer ${index + 1}`}
           className={`
             w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase tracking-[0.15em]
             ${highContrast ? 'border-4' : 'border-2'}
             ${
               isCorrect
                 ? highContrast
-                  ? 'bg-hc-success text-white border-hc-success pattern-correct'
-                  : 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap'
+                  ? 'bg-hc-success text-white border-hc-success pattern-correct text-opacity-100'
+                  : 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap text-opacity-100'
                 : isWrong
                   ? highContrast
                     ? 'bg-hc-surface border-hc-error text-hc-error pattern-wrong border-double'
@@ -99,12 +114,14 @@ export default function PuzzleRow({
                       : 'bg-off-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-border-color dark:border-gray-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
             }
             disabled:cursor-not-allowed
-            placeholder:text-gray-500 dark:placeholder:text-gray-400 placeholder:tracking-wider
+            ${isCorrect ? '' : 'text-transparent caret-transparent'}
+            ${isFocused && !isCorrect ? 'ring-2 ring-sky-500 dark:ring-sky-400' : ''}
+            cursor-pointer
           `}
         />
         {hintData && !isCorrect && (
           <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl"
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl z-10"
             aria-label="Hint active"
           >
             💡
