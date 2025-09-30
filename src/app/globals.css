@@ -58,10 +58,17 @@ select {
   padding-top: max(1rem, env(safe-area-inset-top));
 }
 
+.pb-safe-ios {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
+}
+
 /* Enhanced safe area for iOS devices with Dynamic Island/Notch */
 @supports (padding-top: max(0px)) {
   .pt-safe-ios {
     padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 1rem));
+  }
+  .pb-safe-ios {
+    padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
 }
 
@@ -70,10 +77,39 @@ select {
   padding-top: max(3rem, calc(env(safe-area-inset-top) + 1.5rem));
 }
 
+.ios-app .pb-safe-ios {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+}
+
 /* Scrollable container for iOS */
 .scrollable {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
+}
+
+/* On-screen keyboard styles */
+.keyboard-container {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Keyboard key press animation */
+@keyframes keyPress {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.keyboard-key-press {
+  animation: keyPress 0.1s ease;
 }
 
 /* Ensure inputs don't zoom on iOS devices */

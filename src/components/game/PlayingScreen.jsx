@@ -10,6 +10,7 @@ import HowToPlayModal from './HowToPlayModal';
 import StatsModal from './StatsModal';
 import ArchiveModalPaginated from './ArchiveModalPaginated';
 import Settings from '@/components/Settings';
+import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
@@ -23,7 +24,7 @@ export default function PlayingScreen({
   solved,
   time,
   onUpdateAnswer,
-  onCheckAnswers,
+  onCheckAnswers: _onCheckAnswers,
   onCheckSingleAnswer,
   theme,
   _isAuto,
@@ -35,94 +36,198 @@ export default function PlayingScreen({
   onReturnToWelcome,
   activeHints,
 }) {
-  const hasAnyInput = answers.some((answer) => answer.trim() !== '');
+  // const hasAnyInput = answers.some((answer) => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(0);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
-  // Handle iOS keyboard visibility and scrolling
+  // Focus first empty input on mount and handle hardware keyboard
   useEffect(() => {
-    if (!platformService.isPlatformNative()) {
+    const firstEmptyIndex = answers.findIndex(
+      (answer, idx) => !correctAnswers[idx] && !answer.trim()
+    );
+    if (firstEmptyIndex !== -1) {
+      setFocusedIndex(firstEmptyIndex);
+    }
+  }, [answers, correctAnswers]);
+
+  // Hardware keyboard support for desktop
+  useEffect(() => {
+    if (platformService.isPlatformNative()) return;
+
+    const handleKeyDown = (e) => {
+      // Ignore if any modal is open or game is complete
+      if (showRules || showHowToPlay || showStats || showArchive || showSettings || solved === 4)
+        return;
+
+      // Ignore if typing in another input field (but not our readonly game inputs)
+      const isOurInput = e.target.getAttribute('aria-label')?.startsWith('Answer');
+      if (!isOurInput && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
+
+      // Handle Enter, Backspace, and letter keys
+      if (e.key === 'Enter') {
+        e.preventDefault();
+
+        // Check the current answer at focused index
+        if (answers[focusedIndex].trim()) {
+          const result = onCheckSingleAnswer(focusedIndex);
+
+          // Play sounds and haptics
+          if (!result.gameComplete) {
+            try {
+              if (result.isCorrect) {
+                playCorrectSound();
+                correctAnswer();
+              } else {
+                playErrorSound();
+                incorrectAnswer();
+              }
+            } catch (err) {
+              // Sound might fail
+            }
+          }
+
+          // Move to next field if correct
+          if (result.isCorrect && !result.gameComplete) {
+            setTimeout(() => {
+              const nextEmptyIndex = answers.findIndex(
+                (answer, idx) => idx > focusedIndex && !correctAnswers[idx]
+              );
+              if (nextEmptyIndex !== -1) {
+                setFocusedIndex(nextEmptyIndex);
+              }
+            }, 300);
+          }
+        }
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+
+        const currentValue = answers[focusedIndex];
+        if (currentValue.length > 0) {
+          // Prevent deleting hint letter if present
+          if (activeHints && activeHints[focusedIndex]) {
+            const hintLetter = activeHints[focusedIndex].firstLetter;
+            if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
+              onUpdateAnswer(focusedIndex, hintLetter);
+              return;
+            }
+          }
+          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+        }
+      } else if (/^[a-zA-Z]$/.test(e.key)) {
+        e.preventDefault();
+
+        const currentValue = answers[focusedIndex];
+        const answerLength = puzzle?.puzzles[focusedIndex]?.answer
+          ? puzzle.puzzles[focusedIndex].answer.includes(',')
+            ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
+            : puzzle.puzzles[focusedIndex].answer.length
+          : 15;
+
+        // Don't add if already at max length
+        if (currentValue.length < answerLength) {
+          onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [
+    focusedIndex,
+    answers,
+    correctAnswers,
+    activeHints,
+    showRules,
+    showHowToPlay,
+    showStats,
+    showArchive,
+    showSettings,
+    solved,
+    puzzle,
+    onUpdateAnswer,
+    onCheckSingleAnswer,
+    correctAnswer,
+    incorrectAnswer,
+  ]);
+
+  const handleKeyboardInput = (key) => {
+    // Handle ENTER key
+    if (key === 'ENTER') {
+      // Check the current answer
+      if (onCheckSingleAnswer && answers[focusedIndex].trim()) {
+        const result = onCheckSingleAnswer(focusedIndex);
+
+        // Only play individual answer sounds if the game isn't complete
+        if (!result.gameComplete) {
+          try {
+            if (result.isCorrect) {
+              playCorrectSound();
+              correctAnswer();
+            } else {
+              playErrorSound();
+              incorrectAnswer();
+            }
+          } catch (e) {
+            // Sound might fail on some browsers
+          }
+        }
+
+        // Move to next field if correct and game isn't complete
+        if (result.isCorrect && !result.gameComplete) {
+          setTimeout(() => {
+            const nextEmptyIndex = answers.findIndex(
+              (answer, idx) => idx > focusedIndex && !correctAnswers[idx]
+            );
+            if (nextEmptyIndex !== -1) {
+              setFocusedIndex(nextEmptyIndex);
+            }
+          }, 300);
+        }
+      }
       return;
     }
 
-    const handleFocusIn = (e) => {
-      if (e.target.tagName === 'INPUT') {
-        setIsKeyboardVisible(true);
-        // Scroll the input into view with some padding
-        setTimeout(() => {
-          const inputRect = e.target.getBoundingClientRect();
-          const container = puzzleContainerRef.current;
-          if (container) {
-            const containerRect = container.getBoundingClientRect();
-            const scrollTop = container.scrollTop;
-            const inputTop = inputRect.top - containerRect.top + scrollTop;
-            const desiredPosition = inputTop - 100; // 100px padding from top
-
-            container.scrollTo({
-              top: desiredPosition,
-              behavior: 'smooth',
-            });
+    // Handle BACKSPACE key
+    if (key === 'BACKSPACE') {
+      const currentValue = answers[focusedIndex];
+      if (currentValue.length > 0) {
+        // Prevent deleting hint letter if present
+        if (activeHints && activeHints[focusedIndex]) {
+          const hintLetter = activeHints[focusedIndex].firstLetter;
+          if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
+            onUpdateAnswer(focusedIndex, hintLetter);
+            return;
           }
-        }, 300); // Wait for keyboard animation
-      }
-    };
-
-    const handleFocusOut = () => {
-      setIsKeyboardVisible(false);
-    };
-
-    document.addEventListener('focusin', handleFocusIn);
-    document.addEventListener('focusout', handleFocusOut);
-
-    return () => {
-      document.removeEventListener('focusin', handleFocusIn);
-      document.removeEventListener('focusout', handleFocusOut);
-    };
-  }, []);
-
-  const handleEnterPress = (index) => {
-    // Check the current answer
-    if (onCheckSingleAnswer) {
-      const result = onCheckSingleAnswer(index);
-
-      // Only play individual answer sounds if the game isn't complete
-      // (game completion sounds are handled in completeGame function)
-      if (!result.gameComplete) {
-        try {
-          if (result.isCorrect) {
-            playCorrectSound(); // Simple ding for individual correct answer
-            correctAnswer(); // Haptic feedback for correct answer
-          } else if (answers[index].trim()) {
-            // Only play error sound if there was actually an answer entered
-            playErrorSound();
-            incorrectAnswer(); // Haptic feedback for wrong answer
-          }
-        } catch (e) {
-          // Sound might fail on some browsers
         }
+        onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
       }
+      return;
+    }
 
-      // Only move to next field if the answer was correct and game isn't complete
-      if (result.isCorrect && !result.gameComplete) {
-        setTimeout(() => {
-          const inputs = document.querySelectorAll('input[type="text"]:not([disabled])');
-          const currentIndex = Array.from(inputs).findIndex(
-            (input) => document.activeElement === input
-          );
-          if (currentIndex < inputs.length - 1) {
-            inputs[currentIndex + 1].focus();
-          }
-        }, 300);
+    // Handle letter keys
+    if (key.length === 1 && /^[A-Z]$/i.test(key)) {
+      const currentValue = answers[focusedIndex];
+      const answerLength = puzzle?.puzzles[focusedIndex]?.answer
+        ? puzzle.puzzles[focusedIndex].answer.includes(',')
+          ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
+          : puzzle.puzzles[focusedIndex].answer.length
+        : 15;
+
+      // Don't add if already at max length
+      if (currentValue.length < answerLength) {
+        onUpdateAnswer(focusedIndex, currentValue + key);
       }
-      // If wrong or game complete, cursor stays in the same field
     }
   };
 
@@ -153,7 +258,7 @@ export default function PlayingScreen({
   return (
     <div className="animate-slide-up relative h-full flex flex-col">
       {/* Control buttons with safe area padding for iOS - Dynamic Island aware */}
-      <div className="flex justify-end gap-2 mb-3 sm:mb-4 pt-safe-ios px-4 sm:px-0">
+      <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-safe-ios px-4 sm:px-0">
         <button
           onClick={() => {
             lightTap();
@@ -196,19 +301,13 @@ export default function PlayingScreen({
         </button>
       </div>
 
-      {/* Main game card with scroll container */}
+      {/* Main game card */}
       <div
         ref={puzzleContainerRef}
-        className={`bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex-1 flex flex-col ${
-          platformService.isPlatformNative() ? 'overflow-y-auto scrollable' : ''
-        }`}
-        style={{
-          maxHeight: platformService.isPlatformNative() ? 'calc(100vh - 120px)' : 'auto',
-          paddingBottom: isKeyboardVisible ? '280px' : '0',
-        }}
+        className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden flex-1 flex flex-col min-h-0"
       >
         {/* Header with white background - Logo visible on all screens */}
-        <div className="p-5 text-center flex-shrink-0 bg-white dark:bg-gray-900">
+        <div className="p-3 sm:p-5 text-center flex-shrink-0 bg-white dark:bg-gray-900">
           {/* Show logo on all screen sizes using main logo */}
           <button
             onClick={() => {
@@ -255,73 +354,64 @@ export default function PlayingScreen({
           </div>
         </div>
 
-        <div className="p-6 flex-1" ref={contentRef}>
-          <StatsBar time={formatTime(time)} mistakes={mistakes} solved={solved} />
+        <div className="p-4 sm:p-6 flex-1 overflow-y-auto min-h-0" ref={contentRef}>
+          <div className="max-w-lg mx-auto">
+            <StatsBar time={formatTime(time)} mistakes={mistakes} solved={solved} />
 
-          <div className="flex flex-col gap-4 mb-6 mt-4">
-            {puzzle &&
-              puzzle.puzzles &&
-              puzzle.puzzles.map((p, index) => (
-                <PuzzleRow
-                  key={index}
-                  emoji={p.emoji || '❓❓'}
-                  value={answers[index]}
-                  onChange={(value) => onUpdateAnswer(index, value)}
-                  isCorrect={correctAnswers[index]}
-                  isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
-                  index={index}
-                  onEnterPress={() => handleEnterPress(index)}
-                  hintData={activeHints && activeHints[index]}
-                  answerLength={
-                    p.answer
-                      ? p.answer.includes(',')
-                        ? p.answer.split(',')[0].trim().length
-                        : p.answer.length
-                      : 0
-                  }
-                />
-              ))}
-          </div>
+            <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4">
+              {puzzle &&
+                puzzle.puzzles &&
+                puzzle.puzzles.map((p, index) => (
+                  <PuzzleRow
+                    key={index}
+                    emoji={p.emoji || '❓❓'}
+                    value={answers[index]}
+                    onChange={(value) => onUpdateAnswer(index, value)}
+                    isCorrect={correctAnswers[index]}
+                    isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
+                    index={index}
+                    onFocus={() => setFocusedIndex(index)}
+                    isFocused={focusedIndex === index}
+                    readonly={true}
+                    hintData={activeHints && activeHints[index]}
+                    answerLength={
+                      p.answer
+                        ? p.answer.includes(',')
+                          ? p.answer.split(',')[0].trim().length
+                          : p.answer.length
+                        : 0
+                    }
+                  />
+                ))}
+            </div>
 
-          <div className="space-y-3">
-            <button
-              onClick={() => {
-                if (hasAnyInput) {
-                  lightTap();
-                  onCheckAnswers();
-                }
-              }}
-              disabled={!hasAnyInput}
-              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none check-button
-                ${
-                  highContrast
-                    ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
-                    : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 border-none hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20'
-                }
-              `}
-            >
-              Check Answers
-            </button>
-
+            {/* Hint button - positioned before keyboard */}
             {hintsUsed === 0 && solved < 4 && (
-              <button
-                onClick={() => {
-                  lightTap();
-                  handleUseHint();
-                }}
-                className={`w-full p-3 rounded-xl text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button
+              <div className="mb-3">
+                <button
+                  onClick={() => {
+                    lightTap();
+                    handleUseHint();
+                  }}
+                  className={`w-full p-2.5 sm:p-3 rounded-xl text-sm sm:text-base font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button
                   ${
                     highContrast
                       ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
                       : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
                   }
                 `}
-              >
-                <span className="text-xl">💡</span>
-                Use Hint (1 available)
-              </button>
+                >
+                  <span className="text-lg sm:text-xl">💡</span>
+                  Use Hint (1 available)
+                </button>
+              </div>
             )}
           </div>
+        </div>
+
+        {/* On-screen keyboard */}
+        <div className="bg-white dark:bg-gray-900 keyboard-container flex-shrink-0 pb-safe-ios">
+          <OnScreenKeyboard onKeyPress={handleKeyboardInput} disabled={solved === 4} />
         </div>
       </div>
 

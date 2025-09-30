@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C56EB932E8B004100AA549D /* StoreKit.framework */; };
+		2CDC8CB52E8C56E2004A2B26 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */; };
+		2CDC8CB72E8C56EC004A2B26 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */; };
 		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
 		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
@@ -22,6 +24,8 @@
 		23D8A6C3F7D0C7260E456ECA /* Pods-App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-App.release.xcconfig"; path = "Target Support Files/Pods-App/Pods-App.release.xcconfig"; sourceTree = "<group>"; };
 		2C56EB932E8B004100AA549D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2C56EB952E8B005E00AA549D /* Tandem.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tandem.entitlements; sourceTree = "<group>"; };
+		2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		2FAD9762203C412B000D30F8 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = config.xml; sourceTree = "<group>"; };
 		50379B222058CBB4000EE86E /* capacitor.config.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = capacitor.config.json; sourceTree = "<group>"; };
 		504EC3041FED79650016851F /* Tandem.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Tandem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -42,6 +46,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CDC8CB72E8C56EC004A2B26 /* UserNotifications.framework in Frameworks */,
+				2CDC8CB52E8C56E2004A2B26 /* CloudKit.framework in Frameworks */,
 				D9B1BD70F9629F90B069E515 /* Pods_Tandem.framework in Frameworks */,
 				2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */,
 			);
@@ -87,6 +93,8 @@
 		734FAD552BD15A2C820DDD35 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */,
+				2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */,
 				2C56EB932E8B004100AA549D /* StoreKit.framework */,
 				95B4BFA80327C430B3C9DA8B /* Pods_Tandem.framework */,
 			);
@@ -379,7 +387,7 @@
 				CODE_SIGN_ENTITLEMENTS = Tandem.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PQHL7LA8AX;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = App/Info.plist;
@@ -390,7 +398,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.1;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -410,7 +418,7 @@
 				CODE_SIGN_ENTITLEMENTS = Tandem.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = PQHL7LA8AX;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = App/Info.plist;
@@ -421,7 +429,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.1;
+				MARKETING_VERSION = 1.2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
