@@ -157,14 +157,6 @@ export default function WelcomeScreen({
             </div>
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                🔍
-              </div>
-              <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                Solve all 4 to reveal the theme
-              </span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
                 ❌
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
