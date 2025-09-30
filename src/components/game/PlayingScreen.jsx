@@ -58,7 +58,7 @@ export default function PlayingScreen({
     }
     // Only run on mount and when puzzle changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentPuzzleIndex]);
+  }, [puzzle]);
 
   // Hardware keyboard support for desktop
   useEffect(() => {
