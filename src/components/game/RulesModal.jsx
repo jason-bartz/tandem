@@ -47,6 +47,7 @@ export default function RulesModal({ isOpen, onClose }) {
               <li>All answers relate to one theme</li>
               <li>Think about what connects the emojis</li>
               <li>The theme is revealed when you win!</li>
+              <li>One hint per game reveals first letter</li>
             </ul>
           </div>
 

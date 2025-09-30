@@ -61,7 +61,7 @@ export default function Support() {
                 <strong>Statistics</strong>: Track your performance over time
               </li>
               <li>
-                <strong>Hint System</strong>: One hint per game reveals two letters from a random
+                <strong>Hint System</strong>: One hint per game reveals first letter from a random
                 unsolved word
               </li>
               <li>
@@ -152,9 +152,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get one hint per game. It reveals two letters (first letter and one random
-                  letter) from a random unsolved answer. Character counts are always visible for
-                  each puzzle.
+                  A: You get one hint per game. It reveals first letter from a random unsolved
+                  answer. Character counts are always visible for each puzzle.
                 </p>
               </div>
               <div>
