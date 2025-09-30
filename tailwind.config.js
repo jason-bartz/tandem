@@ -60,6 +60,7 @@ module.exports = {
         pulse: 'pulse 2s infinite',
         'link-snap': 'linkSnap 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
         shake: 'shake 0.5s',
+        'bounce-in': 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
       },
       keyframes: {
         fadeIn: {
@@ -82,6 +83,23 @@ module.exports = {
           '40%': { transform: 'translateX(6px)' },
           '60%': { transform: 'translateX(-3px)' },
           '80%': { transform: 'translateX(3px)' },
+        },
+        bounceIn: {
+          '0%': {
+            opacity: '0',
+            transform: 'scale(0.3) translateY(-20px)',
+          },
+          '50%': {
+            opacity: '0.9',
+            transform: 'scale(1.05) translateY(-5px)',
+          },
+          '70%': {
+            transform: 'scale(0.95) translateY(0)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'scale(1) translateY(0)',
+          },
         },
       },
     },

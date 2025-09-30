@@ -60,11 +60,12 @@ const PuzzleItem = memo(
                 </span>
               )}
             </div>
-            {puzzle.status === 'completed' && (puzzle.savedTheme || puzzle.theme) && (
-              <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
-                {puzzle.savedTheme || puzzle.theme}
-              </div>
-            )}
+            {(puzzle.status === 'completed' || puzzle.status === 'failed') &&
+              (puzzle.savedTheme || puzzle.theme) && (
+                <div className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                  {puzzle.savedTheme || puzzle.theme}
+                </div>
+              )}
           </div>
           <div className="flex items-center gap-2">
             {actuallyLocked ? (

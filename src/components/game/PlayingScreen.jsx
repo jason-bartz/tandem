@@ -207,25 +207,19 @@ export default function PlayingScreen({
           paddingBottom: isKeyboardVisible ? '280px' : '0',
         }}
       >
-        {/* Header with gradient - Logo hidden on mobile */}
-        <div
-          className={`p-5 text-center flex-shrink-0 ${
-            highContrast
-              ? 'bg-hc-primary border-b-4 border-hc-border'
-              : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-gray-900 dark:to-gray-900'
-          }`}
-        >
-          {/* Only show logo on larger screens */}
+        {/* Header with white background - Logo visible on all screens */}
+        <div className="p-5 text-center flex-shrink-0 bg-white dark:bg-gray-900">
+          {/* Show logo on all screen sizes using main logo */}
           <button
             onClick={() => {
               lightTap();
               onReturnToWelcome();
             }}
-            className="hidden sm:block w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
+            className="w-16 h-16 mx-auto mb-2 relative cursor-pointer hover:scale-110 transition-transform"
             title="Return to Welcome Screen"
           >
             <Image
-              src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/alt-logo.webp'}
+              src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
               alt="Tandem Logo"
               width={64}
               height={64}
@@ -233,17 +227,17 @@ export default function PlayingScreen({
               priority
             />
           </button>
-          <div className="text-white/90 text-sm font-medium flex items-center justify-center gap-2 relative">
+          <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative">
             <button
               onClick={() => {
                 lightTap();
                 onReturnToWelcome();
               }}
-              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-white/10 rounded-lg transition-colors"
+              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               title="Back to Home"
             >
               <svg
-                className="w-5 h-5 text-white/90"
+                className="w-5 h-5 text-gray-600 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -298,7 +292,7 @@ export default function PlayingScreen({
                 }
               }}
               disabled={!hasAnyInput}
-              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none check-button
+              className={`w-full p-4 text-white rounded-xl text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none check-button
                 ${
                   highContrast
                     ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'

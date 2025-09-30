@@ -177,7 +177,7 @@ export default function WelcomeScreen({
         <button
           onClick={handlePlayClick}
           disabled={!puzzle}
-          className={`w-full p-4 text-white rounded-2xl text-base font-bold cursor-pointer transition-all uppercase tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+          className={`w-full p-4 text-white rounded-2xl text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
             ${
               highContrast
                 ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
