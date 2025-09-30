@@ -11,10 +11,9 @@ import {
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import StatsModal from './StatsModal';
-import ArchiveModal from './ArchiveModal';
+import ArchiveModalPaginated from './ArchiveModalPaginated';
 import HowToPlayModal from './HowToPlayModal';
 import ShareButton from './ShareButton';
-import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import Settings from '@/components/Settings';
@@ -41,7 +40,6 @@ export default function CompleteScreen({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
-  const { preloadArchive } = useArchivePreload();
   const { celebration, lightTap } = useHaptics();
   const { highContrast } = useTheme();
 
@@ -138,7 +136,6 @@ export default function CompleteScreen({
             lightTap();
             setShowArchive(true);
           }}
-          onMouseEnter={() => preloadArchive()}
           className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Archive"
         >
@@ -286,7 +283,6 @@ export default function CompleteScreen({
               lightTap();
               setShowArchive(true);
             }}
-            onMouseEnter={() => preloadArchive()}
             className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
           >
             Play from Archive
@@ -307,7 +303,7 @@ export default function CompleteScreen({
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
 
       <StatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
-      <ArchiveModal
+      <ArchiveModalPaginated
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={(date) => {

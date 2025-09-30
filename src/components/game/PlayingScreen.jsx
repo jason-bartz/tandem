@@ -8,9 +8,8 @@ import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
 import StatsModal from './StatsModal';
-import ArchiveModal from './ArchiveModal';
+import ArchiveModalPaginated from './ArchiveModalPaginated';
 import Settings from '@/components/Settings';
-import { useArchivePreload } from '@/hooks/useArchivePreload';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
@@ -43,7 +42,6 @@ export default function PlayingScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
-  const { preloadArchive } = useArchivePreload();
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast } = useTheme();
   const contentRef = useRef(null);
@@ -171,7 +169,6 @@ export default function PlayingScreen({
             lightTap();
             setShowArchive(true);
           }}
-          onMouseEnter={() => preloadArchive()}
           className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Archive"
         >
@@ -336,7 +333,7 @@ export default function PlayingScreen({
 
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModal
+      <ArchiveModalPaginated
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}

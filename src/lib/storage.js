@@ -18,13 +18,15 @@ export function loadStats() {
   if (typeof window === 'undefined') {
     return { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
   }
-  
+
   const stats = localStorage.getItem(STORAGE_KEYS.STATS);
-  const parsedStats = stats ? JSON.parse(stats) : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
-  
+  const parsedStats = stats
+    ? JSON.parse(stats)
+    : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+
   // Check if streak should be reset due to missed days
   checkAndUpdateStreak(parsedStats);
-  
+
   return parsedStats;
 }
 
@@ -33,7 +35,7 @@ function checkAndUpdateStreak(stats) {
   if (stats.currentStreak > 0 && stats.lastStreakDate) {
     const today = getTodayDateString();
     const yesterday = getYesterdayDateString(today);
-    
+
     // If last streak date is not yesterday or today, reset streak
     if (stats.lastStreakDate !== yesterday && stats.lastStreakDate !== today) {
       stats.currentStreak = 0;
@@ -49,27 +51,32 @@ export function saveStats(stats) {
   }
 }
 
-export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = false, puzzleDate = null) {
+export function updateGameStats(
+  won,
+  isFirstAttempt = true,
+  isArchiveGame = false,
+  puzzleDate = null
+) {
   const stats = loadStats();
-  
+
   // Count games played for first attempts only (both daily and archive)
   if (isFirstAttempt) {
     stats.played++;
   }
-  
+
   if (won) {
     // Count wins for first attempts only (both daily and archive)
     if (isFirstAttempt) {
       stats.wins++;
     }
-    
+
     // Streak logic - only for daily puzzle first attempts
     if (isFirstAttempt && !isArchiveGame) {
       // Check if we played yesterday (for consecutive days)
       const lastStreakDate = stats.lastStreakDate;
       const today = puzzleDate || getTodayDateString();
       const yesterday = getYesterdayDateString(today);
-      
+
       if (!lastStreakDate) {
         // No previous streak, start at 1
         stats.currentStreak = 1;
@@ -83,10 +90,10 @@ export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = fals
         // Missed one or more days, restart streak
         stats.currentStreak = 1;
       }
-      
+
       // Update last streak date
       stats.lastStreakDate = today;
-      
+
       // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
         stats.bestStreak = stats.currentStreak;
@@ -99,7 +106,7 @@ export function updateGameStats(won, isFirstAttempt = true, isArchiveGame = fals
       stats.lastStreakDate = puzzleDate || getTodayDateString();
     }
   }
-  
+
   saveStats(stats);
   return stats;
 }
@@ -114,12 +121,16 @@ export function getTodayKey() {
 }
 
 export function hasPlayedToday() {
-  if (typeof window === 'undefined') {return false;}
+  if (typeof window === 'undefined') {
+    return false;
+  }
   return localStorage.getItem(getTodayKey()) !== null;
 }
 
 export function hasPlayedPuzzle(date) {
-  if (typeof window === 'undefined') {return false;}
+  if (typeof window === 'undefined') {
+    return false;
+  }
   const dateObj = new Date(date + 'T00:00:00');
   const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
   return localStorage.getItem(key) !== null;
@@ -127,10 +138,13 @@ export function hasPlayedPuzzle(date) {
 
 export function saveTodayResult(result) {
   if (typeof window !== 'undefined') {
-    localStorage.setItem(getTodayKey(), JSON.stringify({
-      ...result,
-      timestamp: new Date().toISOString()
-    }));
+    localStorage.setItem(
+      getTodayKey(),
+      JSON.stringify({
+        ...result,
+        timestamp: new Date().toISOString(),
+      })
+    );
   }
 }
 
@@ -138,10 +152,13 @@ export function savePuzzleResult(date, result) {
   if (typeof window !== 'undefined') {
     const dateObj = new Date(date + 'T00:00:00');
     const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
-    localStorage.setItem(key, JSON.stringify({
-      ...result,
-      timestamp: new Date().toISOString()
-    }));
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        ...result,
+        timestamp: new Date().toISOString(),
+      })
+    );
   }
 }
 
@@ -151,17 +168,22 @@ export function savePuzzleProgress(date, progress) {
     const key = `tandem_progress_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
     const existing = localStorage.getItem(key);
     const existingData = existing ? JSON.parse(existing) : {};
-    
-    localStorage.setItem(key, JSON.stringify({
-      ...existingData,
-      ...progress,
-      lastUpdated: new Date().toISOString()
-    }));
+
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        ...existingData,
+        ...progress,
+        lastUpdated: new Date().toISOString(),
+      })
+    );
   }
 }
 
 export function getTodayResult() {
-  if (typeof window === 'undefined') {return null;}
+  if (typeof window === 'undefined') {
+    return null;
+  }
   const result = localStorage.getItem(getTodayKey());
   return result ? JSON.parse(result) : null;
 }
@@ -173,32 +195,34 @@ export function getStoredStats() {
       gamesWon: 0,
       currentStreak: 0,
       maxStreak: 0,
-      averageTime: null
+      averageTime: null,
     };
   }
-  
+
   const stats = localStorage.getItem(STORAGE_KEYS.STATS);
   const parsedStats = stats ? JSON.parse(stats) : {};
-  
+
   return {
     gamesPlayed: parsedStats.played || 0,
     gamesWon: parsedStats.wins || 0,
     currentStreak: parsedStats.currentStreak || 0,
     maxStreak: parsedStats.bestStreak || 0,
-    averageTime: parsedStats.averageTime || null
+    averageTime: parsedStats.averageTime || null,
   };
 }
 
 export function getGameHistory() {
-  if (typeof window === 'undefined') {return {};}
-  
+  if (typeof window === 'undefined') {
+    return {};
+  }
+
   const history = {};
   const keys = Object.keys(localStorage);
-  
-  keys.forEach(key => {
+
+  keys.forEach((key) => {
     if (key.startsWith('tandem_')) {
       const parts = key.split('_');
-      
+
       // Handle completed/failed games
       if (parts.length === 4 && parts[0] === 'tandem' && parts[1] !== 'progress') {
         const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
@@ -211,11 +235,12 @@ export function getGameHistory() {
             failed: parsed.won === false, // Explicitly failed
             time: parsed.time,
             mistakes: parsed.mistakes,
-            status: parsed.won ? 'completed' : 'failed'
+            theme: parsed.theme, // Include the saved theme
+            status: parsed.won ? 'completed' : 'failed',
           };
         }
       }
-      
+
       // Handle in-progress/attempted games
       if (parts[1] === 'progress' && parts.length === 5) {
         const date = `${parts[2]}-${parts[3].padStart(2, '0')}-${parts[4].padStart(2, '0')}`;
@@ -230,13 +255,13 @@ export function getGameHistory() {
               status: 'attempted',
               lastPlayed: parsed.lastUpdated,
               solved: parsed.solved || 0,
-              mistakes: parsed.mistakes || 0
+              mistakes: parsed.mistakes || 0,
             };
           }
         }
       }
     }
   });
-  
+
   return history;
 }

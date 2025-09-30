@@ -215,6 +215,7 @@ export function useGame() {
           mistakes,
           solved,
           hintsUsed,
+          theme: puzzle?.theme, // Save the theme with the result
           time: null, // Could add time tracking if needed
         });
       }

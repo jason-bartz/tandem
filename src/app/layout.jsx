@@ -1,4 +1,5 @@
 import './globals.css';
+import '@/styles/ios-optimizations.css';
 import { Inter } from 'next/font/google';
 import { siteConfig } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
