@@ -14,11 +14,11 @@ export function getPuzzleNumber(targetDate = null) {
   // Start from the oldest puzzle we have: August 16, 2025
   const start = new Date('2025-08-16');
   const target = targetDate ? new Date(targetDate) : new Date();
-  
+
   // Calculate difference in days
   const diffTime = target - start;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-  
+
   // Puzzle #1 is August 16, 2025
   return diffDays + 1;
 }
@@ -29,17 +29,17 @@ export function getCurrentPuzzleInfo() {
   const etTimeZone = 'America/New_York';
   const now = new Date();
   const etNow = toZonedTime(now, etTimeZone);
-  
-  const options = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
+
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
     day: 'numeric',
-    timeZone: 'America/New_York'
+    timeZone: 'America/New_York',
   };
-  
+
   const isoDate = `${etNow.getFullYear()}-${String(etNow.getMonth() + 1).padStart(2, '0')}-${String(etNow.getDate()).padStart(2, '0')}`;
-  
+
   return {
     number: getPuzzleNumber(isoDate),
     date: now.toLocaleDateString('en-US', options),
@@ -49,13 +49,13 @@ export function getCurrentPuzzleInfo() {
 
 export function getPuzzleInfoForDate(date) {
   const d = new Date(date);
-  const options = { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
+  const options = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
   };
-  
+
   return {
     number: getPuzzleNumber(date),
     date: d.toLocaleDateString('en-US', options),
@@ -72,7 +72,15 @@ export function formatDateShort(dateString) {
   return `${month}/${day}/${year}`;
 }
 
-export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, _hintsUsed = 0, hintPositions = [], solved = 0) {
+export function generateShareText(
+  puzzleDate,
+  theme,
+  timeInSeconds,
+  mistakes,
+  _hintsUsed = 0,
+  hintPositions = [],
+  solved = 0
+) {
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
   const formattedDate = formatDateShort(puzzleDate);
@@ -88,11 +96,11 @@ export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, _h
   }
 
   shareText += `━━━━━━━━━━━━\n`;
-  
+
   // Build the stats line
   shareText += `⏱️ ${formattedTime} | ❌ ${mistakes}/4`;
   shareText += `\n\n`;
-  
+
   // Build emoji representation of puzzle completion
   // Show solved puzzles with 🔷 or 💡 (if hint was used), unsolved with ⬜
   const puzzleEmojis = [];
@@ -108,9 +116,9 @@ export function generateShareText(puzzleDate, theme, timeInSeconds, mistakes, _h
     }
   }
   shareText += puzzleEmojis.join(' ');
-  
+
   shareText += '\n\n#TandemPuzzle';
-  
+
   return shareText;
 }
 
@@ -127,22 +135,25 @@ export function debounce(func, wait) {
 }
 
 export function isMobile() {
-  if (typeof window === 'undefined') {return false;}
-  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-    navigator.userAgent
-  );
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 export function isValidPuzzle(puzzle) {
-  if (!puzzle || typeof puzzle !== 'object') {return false;}
-  if (!puzzle.theme || typeof puzzle.theme !== 'string') {return false;}
-  if (!Array.isArray(puzzle.puzzles) || puzzle.puzzles.length !== 4) {return false;}
-  
-  return puzzle.puzzles.every(p => 
-    p.emoji && 
-    typeof p.emoji === 'string' && 
-    p.answer && 
-    typeof p.answer === 'string'
+  if (!puzzle || typeof puzzle !== 'object') {
+    return false;
+  }
+  if (!puzzle.theme || typeof puzzle.theme !== 'string') {
+    return false;
+  }
+  if (!Array.isArray(puzzle.puzzles) || puzzle.puzzles.length !== 4) {
+    return false;
+  }
+
+  return puzzle.puzzles.every(
+    (p) => p.emoji && typeof p.emoji === 'string' && p.answer && typeof p.answer === 'string'
   );
 }
 
@@ -155,39 +166,61 @@ export function sanitizeInput(input) {
 
 export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
   const user = userAnswer.trim().toUpperCase();
-  
+
   // Split correct answer by comma to handle multiple acceptable answers
-  const acceptableAnswers = correctAnswer.split(',').map(ans => ans.trim().toUpperCase());
-  
+  const acceptableAnswers = correctAnswer.split(',').map((ans) => ans.trim().toUpperCase());
+
   // Check each acceptable answer
   for (const correct of acceptableAnswers) {
     // Exact match
-    if (user === correct) {return true;}
-    
+    if (user === correct) {
+      return true;
+    }
+
     // Check if user answer is the plural of correct answer
-    if (user === correct + 'S') {return true;}
-    if (user === correct + 'ES') {return true;}
-    
+    if (user === correct + 'S') {
+      return true;
+    }
+    if (user === correct + 'ES') {
+      return true;
+    }
+
     // Check if correct answer is the plural of user answer
-    if (correct === user + 'S') {return true;}
-    if (correct === user + 'ES') {return true;}
-    
+    if (correct === user + 'S') {
+      return true;
+    }
+    if (correct === user + 'ES') {
+      return true;
+    }
+
     // Handle special cases for words ending in Y (e.g., PIRACY -> PIRACIES)
-    if (correct.endsWith('Y') && user === correct.slice(0, -1) + 'IES') {return true;}
-    if (user.endsWith('Y') && correct === user.slice(0, -1) + 'IES') {return true;}
-    
+    if (correct.endsWith('Y') && user === correct.slice(0, -1) + 'IES') {
+      return true;
+    }
+    if (user.endsWith('Y') && correct === user.slice(0, -1) + 'IES') {
+      return true;
+    }
+
     // Handle words ending in F/FE (e.g., THIEF -> THIEVES, KNIFE -> KNIVES)
-    if (correct.endsWith('F') && user === correct.slice(0, -1) + 'VES') {return true;}
-    if (correct.endsWith('FE') && user === correct.slice(0, -2) + 'VES') {return true;}
-    if (user.endsWith('F') && correct === user.slice(0, -1) + 'VES') {return true;}
-    if (user.endsWith('FE') && correct === user.slice(0, -2) + 'VES') {return true;}
+    if (correct.endsWith('F') && user === correct.slice(0, -1) + 'VES') {
+      return true;
+    }
+    if (correct.endsWith('FE') && user === correct.slice(0, -2) + 'VES') {
+      return true;
+    }
+    if (user.endsWith('F') && correct === user.slice(0, -1) + 'VES') {
+      return true;
+    }
+    if (user.endsWith('FE') && correct === user.slice(0, -2) + 'VES') {
+      return true;
+    }
   }
-  
+
   return false;
 }
 
 export function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export function safeJsonParse(json, fallback = null) {
@@ -204,11 +237,11 @@ export function generateId() {
 
 export function formatDate(date, format = 'short') {
   const d = new Date(date);
-  
+
   if (format === 'short') {
     return d.toLocaleDateString();
   }
-  
+
   if (format === 'long') {
     return d.toLocaleDateString('en-US', {
       weekday: 'long',
@@ -217,7 +250,7 @@ export function formatDate(date, format = 'short') {
       day: 'numeric',
     });
   }
-  
+
   return d.toISOString().split('T')[0];
 }
 
@@ -228,10 +261,12 @@ export function deepClone(obj) {
 export function isSameDay(date1, date2) {
   const d1 = new Date(date1);
   const d2 = new Date(date2);
-  
-  return d1.getFullYear() === d2.getFullYear() &&
-         d1.getMonth() === d2.getMonth() &&
-         d1.getDate() === d2.getDate();
+
+  return (
+    d1.getFullYear() === d2.getFullYear() &&
+    d1.getMonth() === d2.getMonth() &&
+    d1.getDate() === d2.getDate()
+  );
 }
 
 export function getRandomCongratulation() {
@@ -259,8 +294,8 @@ export function getRandomCongratulation() {
     'Incredible!',
     'Remarkable!',
     'Congratulations!',
-    'Congrats!'
+    'Congrats!',
   ];
-  
+
   return congratulations[Math.floor(Math.random() * congratulations.length)];
 }

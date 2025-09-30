@@ -66,7 +66,7 @@ export default function CompleteScreen({
     mistakes,
     hintsUsed,
     hintPositions,
-    won ? 4 : (correctAnswers || 0)
+    won ? 4 : correctAnswers || 0
   );
 
   useEffect(() => {
@@ -212,13 +212,15 @@ export default function CompleteScreen({
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
                 {won ? 'You discovered the theme!' : 'The theme was:'}
               </p>
-              <p className={`text-2xl font-bold ${
-                highContrast
-                  ? 'text-hc-text'
-                  : won
-                    ? 'text-amber-800 dark:text-amber-200'
-                    : 'text-gray-800 dark:text-gray-200'
-              }`}>
+              <p
+                className={`text-2xl font-bold ${
+                  highContrast
+                    ? 'text-hc-text'
+                    : won
+                      ? 'text-amber-800 dark:text-amber-200'
+                      : 'text-gray-800 dark:text-gray-200'
+                }`}
+              >
                 {puzzleTheme}
               </p>
             </div>

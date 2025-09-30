@@ -20,7 +20,6 @@ export default function ShareButton({ shareText, className = '' }) {
       const result = await platformService.share({
         title: 'Tandem Daily',
         text: shareText,
-        url: 'https://tandemdaily.com',
       });
 
       // Add haptic feedback on iOS

@@ -125,9 +125,7 @@ export default function PuzzleRow({
                     const pattern = [];
                     for (let i = 0; i < hintData.length; i++) {
                       if (i === 0) {
-                        pattern.push(
-                          <span key={i}>{hintData.firstLetter}</span>
-                        );
+                        pattern.push(<span key={i}>{hintData.firstLetter}</span>);
                       } else if (i === hintData.secondLetterPosition) {
                         pattern.push(
                           <span key={i} className="ml-1">
