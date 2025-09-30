@@ -5,6 +5,8 @@ import statsService from '@/services/stats.service';
 import { sanitizeInput, checkAnswerWithPlurals, getCurrentPuzzleInfo } from '@/lib/utils';
 import { savePuzzleProgress, savePuzzleResult, hasPlayedPuzzle } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
+import { Capacitor } from '@capacitor/core';
+import notificationService from '@/services/notificationService';
 
 export function useGame() {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -216,7 +218,17 @@ export function useGame() {
           time: null, // Could add time tracking if needed
         });
       }
+
+      // Handle notifications if the puzzle was won and it's today's puzzle
+      if (won && !isArchive && Capacitor.isNativePlatform()) {
+        try {
+          await notificationService.onPuzzleCompleted();
+        } catch (err) {
+          console.error('Failed to handle notification on puzzle completion:', err);
+        }
+      }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]
   );
 
@@ -320,6 +332,7 @@ export function useGame() {
       currentPuzzleDate,
       hintsUsed,
       activeHints,
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     ]
   );
 
@@ -392,6 +405,7 @@ export function useGame() {
     currentPuzzleDate,
     hintsUsed,
     activeHints,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   ]);
 
   const resetGame = useCallback(() => {

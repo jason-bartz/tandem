@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -13,6 +14,8 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
 import Link from 'next/link';
 import platformService from '@/services/platform';
+import { Capacitor } from '@capacitor/core';
+import notificationService from '@/services/notificationService';
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
@@ -20,6 +23,15 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
+
+  // Initialize notifications on app launch (iOS only)
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      notificationService.onAppLaunch().catch((err) => {
+        console.error('Failed to initialize notifications:', err);
+      });
+    }
+  }, []);
 
   // Auto-refresh puzzle at midnight ET for iOS app
   useMidnightRefresh(() => {
