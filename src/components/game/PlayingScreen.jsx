@@ -154,8 +154,8 @@ export default function PlayingScreen({
 
   return (
     <div className="animate-slide-up relative h-full flex flex-col">
-      {/* Control buttons with safe area padding for iOS */}
-      <div className="flex justify-end gap-2 mb-2 sm:mb-4 pt-safe-ios">
+      {/* Control buttons with safe area padding for iOS - Dynamic Island aware */}
+      <div className="flex justify-end gap-2 mb-3 sm:mb-4 pt-safe-ios px-4 sm:px-0">
         <button
           onClick={() => {
             lightTap();

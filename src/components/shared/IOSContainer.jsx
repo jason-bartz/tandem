@@ -7,7 +7,9 @@ import platformService from '@/services/platform';
 
 export default function IOSContainer({ children }) {
   useEffect(() => {
-    if (!platformService.isPlatformNative()) {return;}
+    if (!platformService.isPlatformNative()) {
+      return;
+    }
 
     // Setup iOS-specific configurations
     const setupIOS = async () => {
@@ -47,7 +49,7 @@ export default function IOSContainer({ children }) {
 
                   scrollContainer.scrollTo({
                     top: desiredPosition,
-                    behavior: 'smooth'
+                    behavior: 'smooth',
                   });
                 }
               }
@@ -64,7 +66,7 @@ export default function IOSContainer({ children }) {
           if (scrollContainer) {
             scrollContainer.scrollTo({
               top: 0,
-              behavior: 'smooth'
+              behavior: 'smooth',
             });
           }
         };
@@ -74,15 +76,22 @@ export default function IOSContainer({ children }) {
         Keyboard.addListener('keyboardWillHide', handleKeyboardHide);
 
         // Prevent bounce scrolling on iOS
-        document.body.addEventListener('touchmove', (e) => {
-          if (e.target.closest('.scrollable')) {return;}
-          e.preventDefault();
-        }, { passive: false });
+        document.body.addEventListener(
+          'touchmove',
+          (e) => {
+            if (e.target.closest('.scrollable')) {
+              return;
+            }
+            e.preventDefault();
+          },
+          { passive: false }
+        );
 
         // Add viewport meta for iOS
         const viewport = document.querySelector('meta[name="viewport"]');
         if (viewport) {
-          viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+          viewport.content =
+            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
         }
 
         // Cache recent puzzles for offline use
@@ -104,7 +113,9 @@ export default function IOSContainer({ children }) {
 
   // Add global iOS styles
   useEffect(() => {
-    if (!platformService.isPlatformNative()) {return;}
+    if (!platformService.isPlatformNative()) {
+      return;
+    }
 
     const style = document.createElement('style');
     style.textContent = `
@@ -185,9 +196,17 @@ export default function IOSContainer({ children }) {
         overflow: hidden;
       }
 
-      /* Safe area adjustments for control buttons */
+      /* Safe area adjustments for control buttons - Dynamic Island aware */
       .ios-app .pt-safe-ios {
-        padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 1.5rem));
+        padding-top: max(3rem, calc(env(safe-area-inset-top) + 1.5rem));
+        transition: padding-top 0.3s ease;
+      }
+
+      /* Additional spacing for devices with Dynamic Island */
+      @supports (padding: max(0px)) {
+        .ios-app .pt-safe-ios {
+          padding-top: max(3.5rem, calc(env(safe-area-inset-top) + 2rem));
+        }
       }
 
       /* Ensure modals appear above everything on iOS */

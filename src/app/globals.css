@@ -53,9 +53,21 @@ select {
   text-size-adjust: 100%;
 }
 
-/* iOS Safe area padding for control buttons */
+/* iOS Safe area padding for control buttons - accounts for Dynamic Island */
 .pt-safe-ios {
   padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+/* Enhanced safe area for iOS devices with Dynamic Island/Notch */
+@supports (padding-top: max(0px)) {
+  .pt-safe-ios {
+    padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 1rem));
+  }
+}
+
+/* Specific adjustments for iOS native app */
+.ios-app .pt-safe-ios {
+  padding-top: max(3rem, calc(env(safe-area-inset-top) + 1.5rem));
 }
 
 /* Scrollable container for iOS */
