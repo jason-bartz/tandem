@@ -13,8 +13,8 @@ export default function Settings({ isOpen, onClose }) {
   const [showPaywall, setShowPaywall] = useState(false);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
-  const { playHaptic } = useHaptics();
-  const { theme, toggleTheme, highContrast, toggleHighContrast } = useTheme();
+  const { playHaptic, lightTap } = useHaptics();
+  const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
 
   useEffect(() => {
     if (isOpen) {
@@ -336,17 +336,66 @@ export default function Settings({ isOpen, onClose }) {
             Accessibility
           </h3>
           <div className="space-y-4">
+            {/* Theme Mode Selection */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Theme Mode</p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {isAuto ? 'Following system' : 'Manual override'}
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setThemeMode('auto');
+                    lightTap();
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                    isAuto
+                      ? 'bg-sky-500 text-white'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  Auto
+                </button>
+                <button
+                  onClick={() => {
+                    setThemeMode('manual');
+                    lightTap();
+                  }}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                    !isAuto
+                      ? 'bg-sky-500 text-white'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  Manual
+                </button>
+              </div>
+            </div>
+
             {/* Theme Toggle */}
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Dark Mode</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">Reduce eye strain</p>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  {isAuto ? 'Current Appearance' : 'Appearance'}
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  {theme === 'dark' ? 'Dark mode' : 'Light mode'}
+                  {isAuto && ' (auto)'}
+                </p>
               </div>
               <button
-                onClick={toggleTheme}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                onClick={() => {
+                  toggleTheme();
+                  lightTap();
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  isAuto ? 'bg-gray-300 dark:bg-gray-500' : 'bg-gray-200 dark:bg-gray-600'
+                }`}
                 role="switch"
                 aria-checked={theme === 'dark'}
+                disabled={isAuto}
               >
                 <span
                   className={`${
@@ -367,7 +416,10 @@ export default function Settings({ isOpen, onClose }) {
                 </p>
               </div>
               <button
-                onClick={toggleHighContrast}
+                onClick={() => {
+                  toggleHighContrast();
+                  lightTap();
+                }}
                 className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
                 role="switch"
                 aria-checked={highContrast}
