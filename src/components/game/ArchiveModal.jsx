@@ -93,7 +93,8 @@ export default function ArchiveModal({ isOpen, onClose, onSelectPuzzle }) {
 
       // Try batch endpoint first - disabled for native iOS
       // Skip batch endpoint on native iOS since API routes aren't available locally
-      const skipBatch = platformService.isPlatformNative();
+      // Use isWeb check instead of isPlatformNative to ensure we use batch on web
+      const skipBatch = !platformService.isPlatformWeb();
 
       if (!skipBatch) {
         try {
