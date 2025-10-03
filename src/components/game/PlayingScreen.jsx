@@ -43,10 +43,32 @@ export default function PlayingScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
+
+  // Load keyboard layout and listen for changes
+  useEffect(() => {
+    const loadLayout = () => {
+      const saved = localStorage.getItem('keyboardLayout');
+      if (saved) {
+        setKeyboardLayout(saved);
+      }
+    };
+
+    const handleLayoutChange = (event) => {
+      setKeyboardLayout(event.detail);
+    };
+
+    loadLayout();
+    window.addEventListener('keyboardLayoutChanged', handleLayoutChange);
+
+    return () => {
+      window.removeEventListener('keyboardLayoutChanged', handleLayoutChange);
+    };
+  }, []);
 
   // Focus first empty input on mount only
   useEffect(() => {
@@ -449,7 +471,11 @@ export default function PlayingScreen({
 
         {/* On-screen keyboard */}
         <div className="bg-white dark:bg-gray-900 keyboard-container flex-shrink-0 pb-safe-ios">
-          <OnScreenKeyboard onKeyPress={handleKeyboardInput} disabled={solved === 4} />
+          <OnScreenKeyboard
+            onKeyPress={handleKeyboardInput}
+            disabled={solved === 4}
+            layout={keyboardLayout}
+          />
         </div>
       </div>
 
