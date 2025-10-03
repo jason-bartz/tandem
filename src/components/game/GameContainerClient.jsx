@@ -122,6 +122,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const handleSelectPuzzle = async (date) => {
     const success = await game.loadPuzzle(date);
     if (success) {
+      // Reset timer when loading a new puzzle
+      timer.reset();
       // Start the game immediately after loading archive puzzle
       game.startGame();
     }
