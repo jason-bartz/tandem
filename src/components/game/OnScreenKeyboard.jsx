@@ -1,7 +1,8 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { playKeyPressSound } from '@/lib/sounds';
 
 const KEYBOARD_LAYOUTS = {
   QWERTY: [
@@ -25,6 +26,17 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
   const { lightTap } = useHaptics();
   const { highContrast, isDark } = useTheme();
   const [pressedKey, setPressedKey] = useState(null);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
+  // Load sound preference from localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('soundEnabled');
+      if (saved !== null) {
+        setSoundEnabled(saved === 'true');
+      }
+    }
+  }, []);
 
   const handleKeyPress = (key) => {
     if (disabled) return;
@@ -33,11 +45,22 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
     setPressedKey(key);
     lightTap();
 
+    // Play keypress sound if enabled
+    if (soundEnabled) {
+      playKeyPressSound();
+    }
+
     // Call the parent handler (convert Enter back to ENTER for consistency)
     onKeyPress(key === 'Enter' ? 'ENTER' : key);
 
     // Clear visual feedback after animation
     setTimeout(() => setPressedKey(null), 100);
+  };
+
+  const handleKeyRelease = () => {
+    // Ensure pressed state is cleared on pointer/touch release
+    // This is especially important for mobile devices
+    setPressedKey(null);
   };
 
   const getKeyClasses = (key) => {
@@ -203,6 +226,10 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
                   type="button"
                   disabled={disabled}
                   onClick={() => handleKeyPress(key)}
+                  onPointerUp={handleKeyRelease}
+                  onPointerLeave={handleKeyRelease}
+                  onTouchEnd={handleKeyRelease}
+                  onTouchCancel={handleKeyRelease}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} h-10 sm:h-12`}
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
                 >

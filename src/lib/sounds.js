@@ -420,3 +420,84 @@ export function playHintSound() {
   undertone.start(currentTime);
   undertone.stop(currentTime + 0.35);
 }
+
+// Play a soft, thocky keypress sound - like a quality mechanical keyboard
+export function playKeyPressSound() {
+  const context = initAudio();
+  if (!context) {
+    return;
+  }
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Low-frequency "thock" body - the satisfying deep sound
+  const thock = context.createOscillator();
+  const thockGain = context.createGain();
+
+  // Triangle wave for warm, rounded tone
+  thock.type = 'triangle';
+  thock.frequency.setValueAtTime(180, currentTime); // Low frequency for depth
+
+  // Quick attack and decay for that "thock" feel
+  thockGain.gain.setValueAtTime(0, currentTime);
+  thockGain.gain.linearRampToValueAtTime(0.15, currentTime + 0.005); // Very fast attack
+  thockGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.04); // Quick decay
+
+  // Add a lowpass filter for warmth
+  const thockFilter = context.createBiquadFilter();
+  thockFilter.type = 'lowpass';
+  thockFilter.frequency.value = 800; // Warm, muffled tone
+  thockFilter.Q.value = 0.5; // Gentle rolloff
+
+  thock.connect(thockFilter);
+  thockFilter.connect(thockGain);
+  thockGain.connect(context.destination);
+
+  thock.start(currentTime);
+  thock.stop(currentTime + 0.05);
+
+  // Layer 2: Mid-frequency "click" - the tactile feedback
+  const click = context.createOscillator();
+  const clickGain = context.createGain();
+
+  // Sine wave for clean, crisp click
+  click.type = 'sine';
+  click.frequency.setValueAtTime(1200, currentTime); // Mid-high frequency
+
+  // Very short, sharp envelope
+  clickGain.gain.setValueAtTime(0, currentTime);
+  clickGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.002); // Instant attack
+  clickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.015); // Very quick decay
+
+  click.connect(clickGain);
+  clickGain.connect(context.destination);
+
+  click.start(currentTime);
+  click.stop(currentTime + 0.02);
+
+  // Layer 3: Subtle high-frequency "tap" - adds airiness
+  const tap = context.createOscillator();
+  const tapGain = context.createGain();
+
+  // Triangle wave for softer highs
+  tap.type = 'triangle';
+  tap.frequency.setValueAtTime(2400, currentTime); // High frequency
+
+  // Very subtle, quick envelope
+  tapGain.gain.setValueAtTime(0, currentTime);
+  tapGain.gain.linearRampToValueAtTime(0.03, currentTime + 0.001); // Instant
+  tapGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.01); // Ultra quick
+
+  // High-shelf filter to soften the highs
+  const tapFilter = context.createBiquadFilter();
+  tapFilter.type = 'highshelf';
+  tapFilter.frequency.value = 3000;
+  tapFilter.gain.value = -3; // Reduce harshness
+
+  tap.connect(tapFilter);
+  tapFilter.connect(tapGain);
+  tapGain.connect(context.destination);
+
+  tap.start(currentTime);
+  tap.stop(currentTime + 0.012);
+}
