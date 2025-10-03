@@ -153,8 +153,12 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
   // Load puzzles with pagination
   const loadPuzzles = useCallback(async (page = 1, append = false) => {
+    console.log('[Archive] loadPuzzles called, page:', page, 'append:', append);
     // Prevent concurrent loads
-    if (loadingRef.current) return;
+    if (loadingRef.current) {
+      console.log('[Archive] Already loading, skipping...');
+      return;
+    }
     loadingRef.current = true;
 
     // Cancel previous request if any
@@ -244,6 +248,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       }
 
       if (data.success) {
+        console.log('[Archive] API success, received', data.puzzles?.length, 'puzzles');
         // Store ETag for caching
         const etag =
           Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios'
@@ -476,6 +481,12 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   // Load initial data when modal opens
   useEffect(() => {
     if (isOpen) {
+      console.log(
+        '[Archive] Modal opened, isInitialLoad:',
+        isInitialLoad.current,
+        'puzzles.length:',
+        puzzles.length
+      );
       // Always reset state when opening
       setCurrentPage(1);
       setHasMore(true);
@@ -483,6 +494,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
       if (isInitialLoad.current || puzzles.length === 0) {
         // First time opening OR puzzles are empty - fetch fresh data
+        console.log('[Archive] Loading fresh puzzles...');
         setPuzzles([]);
         setPuzzleAccessMap({}); // Reset access map
         loadPuzzles(1);
