@@ -11,15 +11,15 @@ export function formatTime(seconds) {
 }
 
 export function getPuzzleNumber(targetDate = null) {
-  // Start from the oldest puzzle we have: August 16, 2024
-  const start = new Date('2024-08-16');
+  // Start from the oldest puzzle we have: August 16, 2025
+  const start = new Date('2025-08-16');
   const target = targetDate ? new Date(targetDate) : new Date();
 
   // Calculate difference in days
   const diffTime = target - start;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-  // Puzzle #1 is August 16, 2024
+  // Puzzle #1 is August 16, 2025
   return diffDays + 1;
 }
 

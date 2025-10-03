@@ -29,8 +29,8 @@ export async function GET(request) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    // Start date is Aug 16, 2024
-    const startDate = new Date('2024-08-16T00:00:00');
+    // Start date is Aug 16, 2025
+    const startDate = new Date('2025-08-16T00:00:00');
 
     // Generate all available dates
     const allDates = [];
