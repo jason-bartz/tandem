@@ -1,6 +1,6 @@
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { Share } from '@capacitor/share';
-import { Haptics, ImpactStyle, NotificationType, HapticsNotificationType } from '@capacitor/haptics';
+import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Preferences } from '@capacitor/preferences';
 import logger from '@/lib/logger';
 
@@ -88,14 +88,8 @@ class PlatformService {
           return cachedPuzzle;
         }
 
-        // Last resort: try static puzzles
-        try {
-          const { getStaticPuzzle } = await import('../data/staticPuzzles');
-          logger.debug('Falling back to static puzzle for:', targetDate);
-          return getStaticPuzzle(targetDate);
-        } catch (staticError) {
-          logger.error('Failed to load static puzzle', staticError);
-        }
+        // No cached puzzle available
+        logger.warn('No cached puzzle available for:', targetDate);
       }
 
       throw error;
@@ -104,9 +98,7 @@ class PlatformService {
 
   async fetchStats() {
     // Try API first
-    const url = this.isNative
-      ? `https://www.tandemdaily.com/api/stats`
-      : `/api/stats`;
+    const url = this.isNative ? `https://www.tandemdaily.com/api/stats` : `/api/stats`;
 
     try {
       let stats;
@@ -119,7 +111,9 @@ class PlatformService {
         stats = response.data;
       } else {
         const res = await fetch(url);
-        if (!res.ok) {throw new Error('Failed to fetch stats');}
+        if (!res.ok) {
+          throw new Error('Failed to fetch stats');
+        }
         stats = await res.json();
       }
 
@@ -166,9 +160,7 @@ class PlatformService {
     }
 
     // Try to sync with API
-    const url = this.isNative
-      ? `https://www.tandemdaily.com/api/stats`
-      : `/api/stats`;
+    const url = this.isNative ? `https://www.tandemdaily.com/api/stats` : `/api/stats`;
 
     try {
       // Use native HTTP on iOS to bypass CORS
@@ -186,7 +178,9 @@ class PlatformService {
           body: JSON.stringify(stats),
         });
 
-        if (!res.ok) {throw new Error('Failed to update stats');}
+        if (!res.ok) {
+          throw new Error('Failed to update stats');
+        }
         return await res.json();
       }
     } catch (error) {
@@ -197,7 +191,9 @@ class PlatformService {
 
   // Offline puzzle cache management
   async cachePuzzle(date, puzzleData) {
-    if (!this.isNative) {return;}
+    if (!this.isNative) {
+      return;
+    }
 
     try {
       const key = `${this.CACHE_PREFIX}${date}`;
@@ -214,7 +210,9 @@ class PlatformService {
   }
 
   async getOfflinePuzzle(date) {
-    if (!this.isNative) {return null;}
+    if (!this.isNative) {
+      return null;
+    }
 
     try {
       const key = `${this.CACHE_PREFIX}${date}`;
@@ -227,7 +225,9 @@ class PlatformService {
   }
 
   async cacheRecentPuzzles() {
-    if (!this.isNative) {return;}
+    if (!this.isNative) {
+      return;
+    }
 
     try {
       const today = this.getTodayDateString();
@@ -253,7 +253,9 @@ class PlatformService {
   }
 
   async cleanOldCache() {
-    if (!this.isNative) {return;}
+    if (!this.isNative) {
+      return;
+    }
 
     try {
       const { keys } = await Preferences.keys();
@@ -279,16 +281,16 @@ class PlatformService {
 
   // Clear yesterday's cache to ensure fresh puzzle load
   async clearYesterdayCache() {
-    if (!this.isNative) {return;}
+    if (!this.isNative) {
+      return;
+    }
 
     try {
       const today = this.getTodayDateString();
       const yesterday = new Date(today + 'T00:00:00');
       yesterday.setDate(yesterday.getDate() - 1);
 
-      const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
       const todayKey = `${this.CACHE_PREFIX}${today}`;
-      const yesterdayKey = `${this.CACHE_PREFIX}${yesterdayStr}`;
 
       // Check if cached puzzle is for yesterday
       const { value: cachedToday } = await Preferences.get({ key: todayKey });
@@ -339,7 +341,9 @@ class PlatformService {
   }
 
   async haptic(type = 'medium') {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       const impactStyles = {
@@ -362,7 +366,9 @@ class PlatformService {
   }
 
   async hapticNotification(type = 'success') {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       // Use Haptics notification method if available
@@ -396,7 +402,9 @@ class PlatformService {
   }
 
   async hapticSelection() {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       // Use selection changed if available
@@ -412,7 +420,9 @@ class PlatformService {
   }
 
   async hapticSelectionStart() {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       if (Haptics.selectionStart) {
@@ -426,7 +436,9 @@ class PlatformService {
   }
 
   async hapticSelectionChanged() {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       if (Haptics.selectionChanged) {
@@ -440,7 +452,9 @@ class PlatformService {
   }
 
   async hapticSelectionEnd() {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       if (Haptics.selectionEnd) {
@@ -452,7 +466,9 @@ class PlatformService {
   }
 
   async vibrate() {
-    if (!this.isNative || !Haptics) {return;}
+    if (!this.isNative || !Haptics) {
+      return;
+    }
 
     try {
       await Haptics.vibrate({ duration: 100 });
@@ -510,13 +526,13 @@ class PlatformService {
       timeZone: 'America/New_York',
       year: 'numeric',
       month: '2-digit',
-      day: '2-digit'
+      day: '2-digit',
     });
 
     const parts = formatter.formatToParts(now);
-    const year = parts.find(p => p.type === 'year').value;
-    const month = parts.find(p => p.type === 'month').value;
-    const day = parts.find(p => p.type === 'day').value;
+    const year = parts.find((p) => p.type === 'year').value;
+    const month = parts.find((p) => p.type === 'month').value;
+    const day = parts.find((p) => p.type === 'day').value;
 
     return `${year}-${month}-${day}`;
   }
