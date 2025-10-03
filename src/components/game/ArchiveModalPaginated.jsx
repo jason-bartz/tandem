@@ -516,7 +516,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         abortControllerRef.current.abort();
       }
     };
-  }, [isOpen, loadPuzzles, checkAccessPermissions, puzzles.length]);
+  }, [isOpen, loadPuzzles, checkAccessPermissions]);
 
   if (!isOpen) {
     return null;
