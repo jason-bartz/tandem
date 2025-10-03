@@ -35,8 +35,7 @@ const PuzzleItem = memo(
 
     return (
       <button
-        onClick={() => !actuallyLocked && onClick(puzzle)}
-        disabled={actuallyLocked}
+        onClick={() => onClick(puzzle)}
         className={`w-full p-3 rounded-xl transition-all text-left transform ${
           highContrast
             ? actuallyLocked
@@ -412,9 +411,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
             // Use CapacitorHttp on iOS to bypass CORS
             if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-              const baseUrl = window.location.origin;
+              const apiUrl = platformService.getApiUrl('/api/puzzles/paginated');
               response = await CapacitorHttp.post({
-                url: `${baseUrl}/api/puzzles/paginated`,
+                url: apiUrl,
                 headers: { 'Content-Type': 'application/json' },
                 data: { date: puzzle.date },
               });
@@ -430,6 +429,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
             if (data.success) {
               onSelectPuzzle(puzzle.date);
+            } else {
+              setError('Failed to load puzzle. Please try again.');
             }
           } catch (error) {
             console.error('Error fetching puzzle details:', error);
@@ -475,14 +476,37 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   // Load initial data when modal opens
   useEffect(() => {
     if (isOpen) {
+      // Always reset state when opening
+      setCurrentPage(1);
+      setHasMore(true);
+      loadingRef.current = false;
+
       if (isInitialLoad.current) {
-        setCurrentPage(1);
+        // First time opening - fetch fresh data
         setPuzzles([]);
         setPuzzleAccessMap({}); // Reset access map
         loadPuzzles(1);
       } else {
-        // Reset loading state when reopening
-        loadingRef.current = false;
+        // Modal reopened - refresh game history for current puzzles
+        const gameHistory = getGameHistory();
+        setPuzzles((prev) =>
+          prev.map((puzzle) => {
+            const historyData = gameHistory[puzzle.date] || {};
+            return {
+              ...puzzle,
+              completed: historyData.completed || false,
+              failed: historyData.failed || false,
+              attempted: historyData.attempted || false,
+              status: historyData.status || 'not_played',
+              savedTheme: historyData.theme,
+              theme: puzzle.theme, // Preserve original theme
+            };
+          })
+        );
+        // Re-check permissions to ensure correct lock states
+        if (puzzles.length > 0) {
+          checkAccessPermissions(puzzles, false);
+        }
       }
     }
 
@@ -492,31 +516,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         abortControllerRef.current.abort();
       }
     };
-  }, [isOpen, loadPuzzles]);
-
-  // Refresh data if modal is reopened
-  useEffect(() => {
-    if (isOpen && !isInitialLoad.current) {
-      // Refresh game history for current puzzles
-      const gameHistory = getGameHistory();
-      setPuzzles((prev) =>
-        prev.map((puzzle) => {
-          const historyData = gameHistory[puzzle.date] || {};
-          return {
-            ...puzzle,
-            completed: historyData.completed || false,
-            failed: historyData.failed || false,
-            attempted: historyData.attempted || false,
-            status: historyData.status || 'not_played',
-            savedTheme: historyData.theme,
-            theme: puzzle.theme, // Preserve original theme
-          };
-        })
-      );
-
-      // Don't re-check permissions on reopen - use cached values
-    }
-  }, [isOpen]);
+  }, [isOpen, loadPuzzles, checkAccessPermissions, puzzles.length]);
 
   if (!isOpen) {
     return null;
