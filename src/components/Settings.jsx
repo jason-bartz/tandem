@@ -13,6 +13,7 @@ export default function Settings({ isOpen, onClose }) {
   const [showPaywall, setShowPaywall] = useState(false);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
+  const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const { playHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
 
@@ -20,8 +21,26 @@ export default function Settings({ isOpen, onClose }) {
     if (isOpen) {
       loadSubscriptionInfo();
       loadNotificationSettings();
+      loadKeyboardLayout();
     }
   }, [isOpen]);
+
+  const loadKeyboardLayout = () => {
+    const saved = localStorage.getItem('keyboardLayout');
+    if (saved) {
+      setKeyboardLayout(saved);
+    }
+  };
+
+  const handleKeyboardLayoutChange = (layout) => {
+    setKeyboardLayout(layout);
+    localStorage.setItem('keyboardLayout', layout);
+    lightTap();
+    // Notify parent component if needed
+    if (window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('keyboardLayoutChanged', { detail: layout }));
+    }
+  };
 
   const loadNotificationSettings = async () => {
     if (!Capacitor.isNativePlatform()) return;
@@ -430,6 +449,50 @@ export default function Settings({ isOpen, onClose }) {
                   } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
                 />
               </button>
+            </div>
+
+            {/* Keyboard Layout Selection */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Keyboard Layout
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Choose your preferred keyboard layout
+                </p>
+              </div>
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => handleKeyboardLayoutChange('QWERTY')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                    keyboardLayout === 'QWERTY'
+                      ? 'bg-sky-500 text-white'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  QWERTY
+                </button>
+                <button
+                  onClick={() => handleKeyboardLayoutChange('QWERTZ')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                    keyboardLayout === 'QWERTZ'
+                      ? 'bg-sky-500 text-white'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  QWERTZ
+                </button>
+                <button
+                  onClick={() => handleKeyboardLayoutChange('AZERTY')}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                    keyboardLayout === 'AZERTY'
+                      ? 'bg-sky-500 text-white'
+                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                  }`}
+                >
+                  AZERTY
+                </button>
+              </div>
             </div>
           </div>
         </div>

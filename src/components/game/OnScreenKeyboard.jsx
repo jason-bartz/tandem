@@ -3,13 +3,25 @@ import { useState } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const KEYBOARD_LAYOUT = [
-  ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
-  ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-  ['Enter', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
-];
+const KEYBOARD_LAYOUTS = {
+  QWERTY: [
+    ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['Enter', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+  ],
+  QWERTZ: [
+    ['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'],
+    ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
+    ['Enter', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+  ],
+  AZERTY: [
+    ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
+    ['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'],
+    ['Enter', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
+  ],
+};
 
-export default function OnScreenKeyboard({ onKeyPress, disabled = false }) {
+export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout = 'QWERTY' }) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark } = useTheme();
   const [pressedKey, setPressedKey] = useState(null);
@@ -119,41 +131,87 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false }) {
     return 'col-span-2';
   };
 
+  const rows = KEYBOARD_LAYOUTS[layout] || KEYBOARD_LAYOUTS.QWERTY;
+
+  // Calculate grid columns based on actual row content
+  const getGridConfig = (row, rowIndex) => {
+    const letterCount = row.filter((k) => k !== 'Enter' && k !== 'BACKSPACE').length;
+
+    // For AZERTY second row with 10 letters
+    if (rowIndex === 1 && letterCount === 10) {
+      return {
+        className: 'grid-cols-20',
+        style: 'repeat(20, minmax(0, 1fr))',
+        padding: '',
+      };
+    }
+
+    // Top row (10 letters, 2 cols each = 20 cols)
+    if (rowIndex === 0) {
+      return {
+        className: 'grid-cols-20',
+        style: 'repeat(20, minmax(0, 1fr))',
+        padding: '',
+      };
+    }
+
+    // Middle row (9 letters, 2 cols each = 18 cols)
+    if (rowIndex === 1) {
+      return {
+        className: 'grid-cols-18',
+        style: 'repeat(18, minmax(0, 1fr))',
+        padding: 'px-4 sm:px-5',
+      };
+    }
+
+    // Bottom row - AZERTY has fewer letters (7) so it needs centering
+    if (rowIndex === 2) {
+      // AZERTY: Enter (3) + 6 letters (12) + Backspace (2) = 17 cols
+      // QWERTY/QWERTZ: Enter (3) + 7 letters (14) + Backspace (2) = 19 cols
+      const totalCols = 3 + letterCount * 2 + 2;
+      const needsCentering = letterCount < 7;
+      return {
+        className: `grid-cols-${totalCols}`,
+        style: `repeat(${totalCols}, minmax(0, 1fr))`,
+        padding: needsCentering ? 'px-6 sm:px-8' : '',
+      };
+    }
+
+    return {
+      className: 'grid-cols-19',
+      style: 'repeat(19, minmax(0, 1fr))',
+      padding: '',
+    };
+  };
+
   return (
     <div className="w-full max-w-lg mx-auto px-2 pb-2">
       <div className="space-y-1 sm:space-y-2">
-        {KEYBOARD_LAYOUT.map((row, rowIndex) => (
-          <div
-            key={rowIndex}
-            className={`
-              grid gap-1 sm:gap-1.5
-              ${rowIndex === 0 ? 'grid-cols-20' : ''}
-              ${rowIndex === 1 ? 'grid-cols-18 px-4 sm:px-5' : ''}
-              ${rowIndex === 2 ? 'grid-cols-19' : ''}
-            `}
-            style={{
-              gridTemplateColumns:
-                rowIndex === 0
-                  ? 'repeat(20, minmax(0, 1fr))'
-                  : rowIndex === 1
-                    ? 'repeat(18, minmax(0, 1fr))'
-                    : 'repeat(19, minmax(0, 1fr))',
-            }}
-          >
-            {row.map((key) => (
-              <button
-                key={key}
-                type="button"
-                disabled={disabled}
-                onClick={() => handleKeyPress(key)}
-                className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} h-10 sm:h-12`}
-                aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
-              >
-                {getKeyContent(key)}
-              </button>
-            ))}
-          </div>
-        ))}
+        {rows.map((row, rowIndex) => {
+          const gridConfig = getGridConfig(row, rowIndex);
+          return (
+            <div
+              key={rowIndex}
+              className={`grid gap-1 sm:gap-1.5 ${gridConfig.className} ${gridConfig.padding}`}
+              style={{
+                gridTemplateColumns: gridConfig.style,
+              }}
+            >
+              {row.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => handleKeyPress(key)}
+                  className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} h-10 sm:h-12`}
+                  aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
+                >
+                  {getKeyContent(key)}
+                </button>
+              ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

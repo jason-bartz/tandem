@@ -15,6 +15,7 @@ import VersionChecker from '@/components/shared/VersionChecker';
 import Link from 'next/link';
 import platformService from '@/services/platform';
 import { Capacitor } from '@capacitor/core';
+import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
 
 export default function GameContainerClient({ initialPuzzleData }) {
@@ -23,6 +24,69 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
+
+  // Reset timer when puzzle changes or when returning to welcome screen
+  useEffect(() => {
+    if (game.gameState === GAME_STATES.WELCOME) {
+      timer.reset();
+    }
+  }, [game.puzzle?.id, game.puzzle?.date, game.gameState, timer]);
+
+  // Handle app lifecycle for timer pause/resume (Native apps)
+  useEffect(() => {
+    if (!Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    let listener;
+
+    const setupAppListener = async () => {
+      listener = await CapApp.addListener('appStateChange', (state) => {
+        if (game.gameState === GAME_STATES.PLAYING) {
+          if (state.isActive) {
+            // App came to foreground - resume timer
+            timer.resume();
+          } else {
+            // App went to background - pause timer
+            timer.pause();
+          }
+        }
+      });
+    };
+
+    setupAppListener();
+
+    return () => {
+      if (listener) {
+        listener.remove();
+      }
+    };
+  }, [game.gameState, timer]);
+
+  // Handle visibility change for timer pause/resume (Web PWA)
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      return;
+    }
+
+    const handleVisibilityChange = () => {
+      if (game.gameState === GAME_STATES.PLAYING) {
+        if (document.hidden) {
+          // Tab became inactive - pause timer
+          timer.pause();
+        } else {
+          // Tab became active - resume timer
+          timer.resume();
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [game.gameState, timer]);
 
   // Initialize notifications on app launch (iOS only)
   useEffect(() => {

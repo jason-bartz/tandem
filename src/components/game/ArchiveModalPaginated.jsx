@@ -5,6 +5,7 @@ import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
+import platformService from '@/services/platform';
 
 /**
  * Production-ready Archive Modal with pagination
@@ -201,9 +202,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
       // Use CapacitorHttp on iOS to bypass CORS
       if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-        const baseUrl = window.location.origin;
+        const apiUrl = platformService.getApiUrl('/api/puzzles/paginated');
         response = await CapacitorHttp.get({
-          url: `${baseUrl}/api/puzzles/paginated?page=${page}&limit=${PAGE_SIZE}&sort=desc`,
+          url: `${apiUrl}?page=${page}&limit=${PAGE_SIZE}&sort=desc`,
           headers,
         });
 
