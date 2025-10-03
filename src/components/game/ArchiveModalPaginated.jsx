@@ -481,13 +481,13 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       setHasMore(true);
       loadingRef.current = false;
 
-      if (isInitialLoad.current) {
-        // First time opening - fetch fresh data
+      if (isInitialLoad.current || puzzles.length === 0) {
+        // First time opening OR puzzles are empty - fetch fresh data
         setPuzzles([]);
         setPuzzleAccessMap({}); // Reset access map
         loadPuzzles(1);
       } else {
-        // Modal reopened - refresh game history for current puzzles
+        // Modal reopened with existing puzzles - refresh game history
         const gameHistory = getGameHistory();
         setPuzzles((prev) =>
           prev.map((puzzle) => {
