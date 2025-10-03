@@ -114,10 +114,15 @@ export default function PuzzleRow({
                       : 'bg-off-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-border-color dark:border-gray-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
             }
             disabled:cursor-not-allowed
-            ${isCorrect ? '' : 'text-transparent caret-transparent'}
+            ${isCorrect ? '' : 'caret-transparent'}
             ${isFocused && !isCorrect ? 'ring-2 ring-sky-500 dark:ring-sky-400' : ''}
             cursor-pointer
           `}
+          style={{
+            color: isCorrect ? undefined : 'transparent',
+            textShadow: isCorrect ? undefined : 'none',
+            WebkitTextFillColor: isCorrect ? undefined : 'transparent',
+          }}
         />
         {hintData && !isCorrect && (
           <span
