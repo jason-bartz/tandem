@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
+import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -56,12 +57,10 @@ const PuzzleItem = memo(
         <div className="flex justify-between items-center">
           <div className="flex-1">
             <div className="font-semibold text-gray-800 dark:text-gray-200">
+              Puzzle #{puzzle.number}
+            </div>
+            <div className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
               {formatDate(puzzle.date)}
-              {puzzle.puzzleNumber && (
-                <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
-                  #{puzzle.puzzleNumber}
-                </span>
-              )}
             </div>
             {(puzzle.status === 'completed' || puzzle.status === 'failed') &&
               (puzzle.savedTheme || puzzle.theme) && (
@@ -86,6 +85,7 @@ const PuzzleItem = memo(
   (prevProps, nextProps) => {
     // Custom comparison for performance optimization
     return (
+      prevProps.puzzle.number === nextProps.puzzle.number &&
       prevProps.puzzle.date === nextProps.puzzle.date &&
       prevProps.puzzle.status === nextProps.puzzle.status &&
       prevProps.puzzle.savedTheme === nextProps.puzzle.savedTheme &&
@@ -122,17 +122,15 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
   </>
 );
 
-// Cache for paginated data
+// Cache for number-based data
 const paginatedCache = {
-  pages: {},
-  lastFetch: {},
+  puzzles: {},
+  lastFetch: 0,
   puzzleAccessMap: {},
-  totalCount: 0,
   etag: null,
 };
 
-const CACHE_DURATION = 300000; // 5 minutes
-const PAGE_SIZE = 20;
+const BATCH_SIZE = 20;
 const SCROLL_THRESHOLD = 300; // Load more when within 300px of bottom
 
 export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle }) {
@@ -141,9 +139,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
-  const [currentPage, setCurrentPage] = useState(1);
+  const [startNumber, setStartNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
-  const [totalCount, setTotalCount] = useState(0);
+  const [currentPuzzleNumber, setCurrentPuzzleNumber] = useState(getCurrentPuzzleNumber());
   const [error, setError] = useState(null);
 
   const { highContrast } = useTheme();
@@ -154,8 +152,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const observerRef = useRef(null);
   const sentinelRef = useRef(null);
 
-  // Load puzzles with pagination
-  const loadPuzzles = useCallback(async (page = 1, append = false) => {
+  // Load puzzles using number-based archive API
+  const loadPuzzles = useCallback(async (loadStart = null, append = false) => {
     // Prevent concurrent loads
     if (loadingRef.current) return;
     loadingRef.current = true;
@@ -170,32 +168,22 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     try {
       setError(null);
 
-      if (page === 1) {
+      if (!append) {
         setIsLoading(true);
       } else {
         setIsLoadingMore(true);
       }
 
-      // Check cache first
-      const now = Date.now();
-      const cacheKey = `page-${page}`;
+      const currentNum = getCurrentPuzzleNumber();
+      setCurrentPuzzleNumber(currentNum);
 
-      if (
-        !append &&
-        paginatedCache.pages[cacheKey] &&
-        paginatedCache.lastFetch[cacheKey] &&
-        now - paginatedCache.lastFetch[cacheKey] < CACHE_DURATION
-      ) {
-        // Use cached data
-        setPuzzles(paginatedCache.pages[cacheKey]);
-        setTotalCount(paginatedCache.totalCount);
-        setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
-        return;
-      }
+      // Calculate range
+      const endNum = loadStart === null ? currentNum : loadStart - 1;
+      const calculatedStartNum = Math.max(1, endNum - BATCH_SIZE + 1);
 
-      // Fetch from paginated endpoint
+      // Fetch from new archive endpoint
       const headers = {};
-      if (paginatedCache.etag && !append) {
+      if (paginatedCache.etag) {
         headers['If-None-Match'] = paginatedCache.etag;
       }
 
@@ -204,43 +192,30 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
       // Use CapacitorHttp on iOS to bypass CORS
       if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-        const apiUrl = platformService.getApiUrl('/api/puzzles/paginated');
+        const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
         response = await CapacitorHttp.get({
-          url: `${apiUrl}?page=${page}&limit=${PAGE_SIZE}&sort=desc`,
+          url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
           headers,
         });
 
-        // CapacitorHttp returns data directly
         data = response.data;
 
-        // Handle 304 Not Modified
-        if (response.status === 304 && paginatedCache.pages[cacheKey]) {
-          setPuzzles(paginatedCache.pages[cacheKey]);
-          setTotalCount(paginatedCache.totalCount);
-          setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
-          return;
-        }
-
         if (response.status >= 400) {
-          throw new Error('Failed to fetch puzzles');
+          throw new Error(data.error || 'Failed to fetch puzzles');
         }
       } else {
         // Use regular fetch for web
-        response = await fetch(`/api/puzzles/paginated?page=${page}&limit=${PAGE_SIZE}&sort=desc`, {
-          signal: abortControllerRef.current.signal,
-          headers,
-        });
-
-        // Handle 304 Not Modified
-        if (response.status === 304 && paginatedCache.pages[cacheKey]) {
-          setPuzzles(paginatedCache.pages[cacheKey]);
-          setTotalCount(paginatedCache.totalCount);
-          setHasMore(page * PAGE_SIZE < paginatedCache.totalCount);
-          return;
-        }
+        response = await fetch(
+          `/api/puzzles/archive?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
+          {
+            signal: abortControllerRef.current.signal,
+            headers,
+          }
+        );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch puzzles');
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to fetch puzzles');
         }
 
         data = await response.json();
@@ -272,7 +247,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             mistakes: historyData.mistakes,
             solved: historyData.solved,
             savedTheme: historyData.theme,
-            theme: puzzle.theme, // Keep the original theme from API
+            theme: puzzle.theme,
           };
         });
 
@@ -281,21 +256,18 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           setPuzzles((prev) => [...prev, ...processedPuzzles]);
         } else {
           setPuzzles(processedPuzzles);
-          paginatedCache.pages[cacheKey] = processedPuzzles;
-          paginatedCache.lastFetch[cacheKey] = now;
         }
 
         setHasMore(data.pagination.hasMore);
-        setTotalCount(data.pagination.total);
-        paginatedCache.totalCount = data.pagination.total;
+        setStartNumber(calculatedStartNum);
 
-        // Check access permissions in background
+        // Check access permissions
         checkAccessPermissions(processedPuzzles, append);
       }
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('Error loading puzzles:', error);
-        setError('Failed to load puzzles. Please try again.');
+        setError(error.message || 'Failed to load puzzles. Please try again.');
       }
     } finally {
       setIsLoading(false);
@@ -317,18 +289,20 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       const accessMap = append ? { ...puzzleAccessMap } : {};
 
       puzzlesToCheck.forEach((puzzle) => {
+        const cacheKey = puzzle.number.toString();
+
         // Use cached value if available
-        if (paginatedCache.puzzleAccessMap[puzzle.date] !== undefined) {
-          accessMap[puzzle.date] = !paginatedCache.puzzleAccessMap[puzzle.date]; // Invert for lock display
+        if (paginatedCache.puzzleAccessMap[cacheKey] !== undefined) {
+          accessMap[cacheKey] = !paginatedCache.puzzleAccessMap[cacheKey]; // Invert for lock display
           return;
         }
 
-        // Synchronous check using cached subscription status
+        // Synchronous check using cached subscription status (use puzzle number)
         const hasAccess =
-          !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.date);
+          !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.number);
 
-        accessMap[puzzle.date] = !hasAccess; // Invert for lock display
-        paginatedCache.puzzleAccessMap[puzzle.date] = hasAccess;
+        accessMap[cacheKey] = !hasAccess; // Invert for lock display
+        paginatedCache.puzzleAccessMap[cacheKey] = hasAccess;
       });
 
       // Update state once with all results
@@ -357,9 +331,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
       observerRef.current = new IntersectionObserver(([entry]) => {
         if (entry.isIntersecting && hasMore && !loadingRef.current && !isLoadingMore) {
-          const nextPage = currentPage + 1;
-          setCurrentPage(nextPage);
-          loadPuzzles(nextPage, true);
+          // Load next batch starting from current startNumber
+          loadPuzzles(startNumber, true);
         }
       }, options);
 
@@ -374,7 +347,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         observerRef.current.disconnect();
       }
     };
-  }, [isOpen, hasMore, currentPage, loadPuzzles, isLoadingMore]);
+  }, [isOpen, hasMore, startNumber, loadPuzzles, isLoadingMore]);
 
   /**
    * Handle puzzle click - SYNCHRONOUS and INSTANT
@@ -383,7 +356,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const handlePuzzleClick = useCallback(
     (puzzle) => {
       // Get lock status from cache (synchronously populated on load)
-      const isLocked = puzzleAccessMap[puzzle.date] === true;
+      const isLocked = puzzleAccessMap[puzzle.number.toString()] === true;
 
       if (isLocked) {
         // Show paywall immediately - no waiting
@@ -391,8 +364,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         return;
       }
 
-      // Puzzle is accessible - load it immediately
-      onSelectPuzzle(puzzle.date);
+      // Puzzle is accessible - load it by puzzle number
+      onSelectPuzzle(puzzle.number);
     },
     [puzzleAccessMap, onSelectPuzzle]
   );
@@ -445,8 +418,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   // Load initial data when modal opens
   useEffect(() => {
     if (isOpen) {
-      // Reset pagination state
-      setCurrentPage(1);
+      // Reset state
       setHasMore(true);
       loadingRef.current = false;
 
@@ -454,7 +426,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         // First time opening OR puzzles are empty - fetch fresh data
         setPuzzles([]);
         setPuzzleAccessMap({}); // Reset access map
-        loadPuzzles(1);
+        loadPuzzles(null, false); // Load from current puzzle number
       } else {
         // Modal reopened with existing puzzles - refresh game history
         const gameHistory = getGameHistory();
@@ -508,9 +480,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         <div className="flex justify-between items-center mb-4">
           <div>
             <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Puzzle Archive</h2>
-            {totalCount > 0 && (
+            {currentPuzzleNumber > 0 && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {totalCount} puzzles available
+                {currentPuzzleNumber} puzzles available
               </p>
             )}
           </div>
@@ -549,9 +521,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
               !loadingRef.current &&
               !isLoadingMore
             ) {
-              const nextPage = currentPage + 1;
-              setCurrentPage(nextPage);
-              loadPuzzles(nextPage, true);
+              // Load next batch starting from current startNumber
+              loadPuzzles(startNumber, true);
             }
           }}
         >
@@ -565,9 +536,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             <div className="space-y-2">
               {puzzles.map((puzzle) => (
                 <PuzzleItem
-                  key={puzzle.date}
+                  key={puzzle.number}
                   puzzle={puzzle}
-                  isLocked={puzzleAccessMap[puzzle.date]}
+                  isLocked={puzzleAccessMap[puzzle.number.toString()]}
                   onClick={handlePuzzleClick}
                   formatDate={formatDate}
                   highContrast={highContrast}

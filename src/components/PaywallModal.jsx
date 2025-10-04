@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import subscriptionService from '@/services/subscriptionService';
+import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -17,26 +17,47 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     }
   }, [isOpen]);
 
-  const loadProducts = async () => {
+  const loadProducts = () => {
     try {
       setProductsLoading(true);
       setError(null);
 
-      await subscriptionService.initialize();
-      const allProducts = subscriptionService.getProducts();
+      // Check if service is already ready (initialized at app bootstrap)
+      if (subscriptionService.isReady()) {
+        const allProducts = subscriptionService.getProducts();
 
-      // If no products loaded, show helpful error
-      if (!allProducts || Object.keys(allProducts).length === 0) {
-        setError(
-          'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
-        );
+        // If no products loaded, show helpful error
+        if (!allProducts || Object.keys(allProducts).length === 0) {
+          setError(
+            'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
+          );
+        }
+        setProductsLoading(false);
+      } else {
+        // Subscribe to state changes if not ready
+        const unsubscribe = subscriptionService.onStateChange((state) => {
+          if (state === INIT_STATE.READY) {
+            const allProducts = subscriptionService.getProducts();
+
+            if (!allProducts || Object.keys(allProducts).length === 0) {
+              setError(
+                'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
+              );
+            }
+            setProductsLoading(false);
+            unsubscribe();
+          } else if (state === INIT_STATE.FAILED) {
+            setError('Unable to load subscription options. Please try again later.');
+            setProductsLoading(false);
+            unsubscribe();
+          }
+        });
       }
     } catch (err) {
       console.error('Failed to load products:', err);
       setError(
         "Unable to load subscription options. Please ensure you're connected to the internet and try again."
       );
-    } finally {
       setProductsLoading(false);
     }
   };
