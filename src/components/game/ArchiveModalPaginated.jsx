@@ -402,14 +402,26 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
       // If access hasn't been determined yet (undefined), wait for it or check now
       if (accessStatus === undefined && Capacitor.isNativePlatform()) {
-        // Access check is still pending, re-check now
-        const hasAccess = await subscriptionService.canAccessPuzzle(puzzle.date);
-        const isLocked = !hasAccess;
+        try {
+          // Access check is still pending, re-check now with timeout
+          const hasAccess = await Promise.race([
+            subscriptionService.canAccessPuzzle(puzzle.date),
+            new Promise((_, reject) =>
+              setTimeout(() => reject(new Error('Access check timeout')), 3000)
+            ),
+          ]);
+          const isLocked = !hasAccess;
 
-        // Update the access map
-        setPuzzleAccessMap((prev) => ({ ...prev, [puzzle.date]: isLocked }));
+          // Update the access map
+          setPuzzleAccessMap((prev) => ({ ...prev, [puzzle.date]: isLocked }));
 
-        if (isLocked) {
+          if (isLocked) {
+            setShowPaywall(true);
+            return;
+          }
+        } catch (error) {
+          console.error('Error checking puzzle access:', error);
+          // On error, default to showing paywall for safety
           setShowPaywall(true);
           return;
         }
@@ -467,6 +479,13 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       setCurrentPage(1);
       setHasMore(true);
       loadingRef.current = false;
+
+      // Initialize subscription service early (non-blocking)
+      if (Capacitor.isNativePlatform()) {
+        subscriptionService.initialize().catch((err) => {
+          console.error('Failed to initialize subscription service:', err);
+        });
+      }
 
       if (isInitialLoad.current || puzzles.length === 0) {
         // First time opening OR puzzles are empty - fetch fresh data
