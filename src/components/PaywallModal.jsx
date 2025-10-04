@@ -12,55 +12,49 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const { playHaptic } = useHaptics();
 
   useEffect(() => {
-    if (isOpen && Capacitor.isNativePlatform()) {
-      loadProducts();
+    if (!isOpen || !Capacitor.isNativePlatform()) {
+      return;
     }
-  }, [isOpen]);
 
-  const loadProducts = () => {
-    try {
-      setProductsLoading(true);
-      setError(null);
+    setProductsLoading(true);
+    setError(null);
 
-      // Check if service is already ready (initialized at app bootstrap)
-      if (subscriptionService.isReady()) {
+    // Check if service is already ready (initialized at app bootstrap)
+    if (subscriptionService.isReady()) {
+      const allProducts = subscriptionService.getProducts();
+
+      // If no products loaded, show helpful error
+      if (!allProducts || Object.keys(allProducts).length === 0) {
+        setError(
+          'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
+        );
+      }
+      setProductsLoading(false);
+      return;
+    }
+
+    // Subscribe to state changes if not ready
+    const unsubscribe = subscriptionService.onStateChange((state) => {
+      if (state === INIT_STATE.READY) {
         const allProducts = subscriptionService.getProducts();
 
-        // If no products loaded, show helpful error
         if (!allProducts || Object.keys(allProducts).length === 0) {
           setError(
             'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
           );
         }
         setProductsLoading(false);
-      } else {
-        // Subscribe to state changes if not ready
-        const unsubscribe = subscriptionService.onStateChange((state) => {
-          if (state === INIT_STATE.READY) {
-            const allProducts = subscriptionService.getProducts();
-
-            if (!allProducts || Object.keys(allProducts).length === 0) {
-              setError(
-                'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
-              );
-            }
-            setProductsLoading(false);
-            unsubscribe();
-          } else if (state === INIT_STATE.FAILED) {
-            setError('Unable to load subscription options. Please try again later.');
-            setProductsLoading(false);
-            unsubscribe();
-          }
-        });
+      } else if (state === INIT_STATE.FAILED) {
+        setError('Unable to load subscription options. Please try again later.');
+        setProductsLoading(false);
       }
-    } catch (err) {
-      console.error('Failed to load products:', err);
-      setError(
-        "Unable to load subscription options. Please ensure you're connected to the internet and try again."
-      );
-      setProductsLoading(false);
-    }
-  };
+    });
+
+    // Cleanup subscription on unmount or when modal closes
+    return () => {
+      unsubscribe();
+    };
+  }, [isOpen]);
 
   const handlePurchase = async (productId) => {
     setLoading(true);
