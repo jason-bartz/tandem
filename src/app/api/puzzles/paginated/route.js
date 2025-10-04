@@ -25,18 +25,27 @@ export async function GET(request) {
       );
     }
 
-    // Calculate date range based on current date
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Calculate date range based on current date in Eastern Time (puzzle release timezone)
+    const now = new Date();
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/New_York',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    });
+    const parts = formatter.formatToParts(now);
+    const todayET = new Date(
+      `${parts.find((p) => p.type === 'year').value}-${parts.find((p) => p.type === 'month').value}-${parts.find((p) => p.type === 'day').value}T00:00:00`
+    );
 
     // Start date is Aug 16, 2025
     const startDate = new Date('2025-08-16T00:00:00');
 
-    // Generate all available dates
+    // Generate all available dates (up to and including today in ET)
     const allDates = [];
     const currentDate = new Date(startDate);
 
-    while (currentDate < today) {
+    while (currentDate <= todayET) {
       const year = currentDate.getFullYear();
       const month = String(currentDate.getMonth() + 1).padStart(2, '0');
       const day = String(currentDate.getDate()).padStart(2, '0');

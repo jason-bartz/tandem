@@ -81,8 +81,11 @@ export function useGameWithInitialData(initialPuzzleData) {
       const isArchive = date !== null;
       setIsArchiveGame(isArchive);
 
-      const puzzleDate = date || new Date().toISOString().split('T')[0];
-      setCurrentPuzzleDate(puzzleDate);
+      // Use the date if provided, otherwise getPuzzle will fetch today's puzzle in ET
+      const puzzleDate = date || null;
+      if (puzzleDate) {
+        setCurrentPuzzleDate(puzzleDate);
+      }
 
       const response = await puzzleService.getPuzzle(date);
 
@@ -93,6 +96,8 @@ export function useGameWithInitialData(initialPuzzleData) {
           puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
           date: response.date || puzzleDate,
         };
+        // Update current puzzle date from response
+        setCurrentPuzzleDate(response.date || puzzleDate);
         setPuzzle(puzzleWithData);
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
@@ -104,6 +109,10 @@ export function useGameWithInitialData(initialPuzzleData) {
         setHintPositionsUsed([false, false, false, false]);
         return true;
       } else if (response) {
+        // Update current puzzle date from response if available
+        if (response.date) {
+          setCurrentPuzzleDate(response.date);
+        }
         setPuzzle(response);
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
@@ -477,8 +486,14 @@ export function useGameWithInitialData(initialPuzzleData) {
   }, []);
 
   const returnToWelcome = useCallback(() => {
-    setGameState(GAME_STATES.WELCOME);
-  }, []);
+    // If we were playing an archive game, reload today's puzzle
+    if (isArchiveGame) {
+      loadPuzzle(null); // Load today's puzzle
+    } else {
+      // Just return to welcome screen
+      setGameState(GAME_STATES.WELCOME);
+    }
+  }, [isArchiveGame, loadPuzzle]);
 
   return {
     gameState,
