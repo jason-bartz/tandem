@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { getCurrentPuzzleInfo } from '@/lib/utils';
+import { getCurrentPuzzleNumber, getDisplayDate } from '@/lib/puzzleNumber';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
 import StatsModal from './StatsModal';
 import ArchiveModalPaginated from './ArchiveModalPaginated';
@@ -20,7 +20,8 @@ export default function WelcomeScreen({
   onSelectPuzzle,
   puzzle,
 }) {
-  const puzzleInfo = getCurrentPuzzleInfo();
+  const puzzleNumber = getCurrentPuzzleNumber();
+  const displayDate = getDisplayDate(puzzleNumber);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -130,6 +131,14 @@ export default function WelcomeScreen({
           />
         </div>
 
+        {/* Puzzle number and date */}
+        <div className="mb-6">
+          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1">
+            Puzzle #{puzzleNumber}
+          </div>
+          <div className="text-sm text-gray-500 dark:text-gray-400">{displayDate}</div>
+        </div>
+
         <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
           4 answers. 2 emojis each. 1 theme.
         </p>
@@ -179,8 +188,6 @@ export default function WelcomeScreen({
         >
           {puzzle ? "Play Today's Puzzle" : 'Loading Puzzle...'}
         </button>
-
-        <div className="text-gray-text dark:text-gray-400 text-sm mt-4">{puzzleInfo.date}</div>
       </div>
 
       <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />

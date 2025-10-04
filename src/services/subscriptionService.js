@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 
 // Product IDs - must match App Store Connect configuration
 const PRODUCTS = {
@@ -531,10 +532,10 @@ class SubscriptionService {
   /**
    * Synchronously check if user can access a puzzle using cached subscription status
    * NEVER blocks UI - returns immediately
-   * @param {string} puzzleDate - Date string in YYYY-MM-DD format
+   * @param {number|string} identifier - Puzzle number or date string (YYYY-MM-DD)
    * @returns {boolean} True if puzzle is accessible
    */
-  canAccessPuzzle(puzzleDate) {
+  canAccessPuzzle(identifier) {
     const isSubscribed = this.isSubscribed();
 
     // Subscribers can access everything
@@ -542,17 +543,21 @@ class SubscriptionService {
       return true;
     }
 
-    // Free users get today + last 5 puzzles
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Convert identifier to puzzle number if needed
+    let puzzleNumber;
+    if (typeof identifier === 'number') {
+      puzzleNumber = identifier;
+    } else if (/^\d+$/.test(identifier)) {
+      puzzleNumber = parseInt(identifier);
+    } else {
+      // If date string provided, convert to number
+      puzzleNumber = getPuzzleNumberForDate(identifier);
+    }
 
-    const puzzle = new Date(puzzleDate + 'T00:00:00');
-    puzzle.setHours(0, 0, 0, 0);
+    const currentNumber = getCurrentPuzzleNumber();
 
-    const daysDiff = Math.floor((today - puzzle) / (1000 * 60 * 60 * 24));
-
-    // Today's puzzle or within last 5 days
-    return daysDiff <= 5;
+    // Free users get today + last 3 puzzles
+    return puzzleNumber >= currentNumber - 3 && puzzleNumber <= currentNumber;
   }
 
   // Get user's subscription tier name
