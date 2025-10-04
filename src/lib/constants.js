@@ -2,7 +2,7 @@ export const GAME_CONFIG = {
   MAX_MISTAKES: 4,
   PUZZLE_COUNT: 4,
   MAX_ANSWER_LENGTH: 10,
-  START_DATE: process.env.NEXT_PUBLIC_GAME_START_DATE || '2025-01-01',
+  START_DATE: process.env.NEXT_PUBLIC_GAME_START_DATE || '2025-08-15',
 };
 
 export const STORAGE_KEYS = {

@@ -38,8 +38,8 @@ export async function GET(request) {
       `${parts.find((p) => p.type === 'year').value}-${parts.find((p) => p.type === 'month').value}-${parts.find((p) => p.type === 'day').value}T00:00:00`
     );
 
-    // Start date is Aug 16, 2025
-    const startDate = new Date('2025-08-16T00:00:00');
+    // Start date is Aug 15, 2025
+    const startDate = new Date('2025-08-15T00:00:00');
 
     // Generate all available dates (up to and including today in ET)
     const allDates = [];

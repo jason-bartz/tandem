@@ -6,7 +6,8 @@
  */
 
 // Launch date in UTC for consistency across all environments
-export const LAUNCH_DATE = new Date('2025-01-01T00:00:00Z');
+// First puzzle was released on August 15, 2025
+export const LAUNCH_DATE = new Date('2025-08-15T00:00:00Z');
 
 /**
  * Get current puzzle number based on user's LOCAL timezone
@@ -15,10 +16,10 @@ export const LAUNCH_DATE = new Date('2025-01-01T00:00:00Z');
  *
  * @returns {number} Current puzzle number (1, 2, 3...)
  * @example
- * // User in PST on Jan 2, 2025 at 11:00 PM PST
+ * // User in PST on Aug 16, 2025 at 11:00 PM PST
  * getCurrentPuzzleNumber() // Returns 2
  *
- * // User in JST on Jan 3, 2025 at 1:00 AM JST
+ * // User in JST on Aug 17, 2025 at 1:00 AM JST
  * getCurrentPuzzleNumber() // Returns 3
  */
 export function getCurrentPuzzleNumber() {
@@ -44,8 +45,8 @@ export function getCurrentPuzzleNumber() {
  * @param {number} num - Puzzle number (1-based)
  * @returns {string} Date in YYYY-MM-DD format
  * @example
- * getDateForPuzzleNumber(1) // Returns "2025-01-01"
- * getDateForPuzzleNumber(10) // Returns "2025-01-10"
+ * getDateForPuzzleNumber(1) // Returns "2025-08-15"
+ * getDateForPuzzleNumber(10) // Returns "2025-08-24"
  */
 export function getDateForPuzzleNumber(num) {
   if (typeof num !== 'number' || num < 1) {
@@ -64,8 +65,8 @@ export function getDateForPuzzleNumber(num) {
  * @param {string} dateStr - Date in YYYY-MM-DD format
  * @returns {number} Puzzle number
  * @example
- * getPuzzleNumberForDate("2025-01-01") // Returns 1
- * getPuzzleNumberForDate("2025-01-10") // Returns 10
+ * getPuzzleNumberForDate("2025-08-15") // Returns 1
+ * getPuzzleNumberForDate("2025-08-24") // Returns 10
  */
 export function getPuzzleNumberForDate(dateStr) {
   if (typeof dateStr !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
@@ -93,8 +94,8 @@ export function getPuzzleNumberForDate(dateStr) {
  * @param {string} [locale='en-US'] - Locale for formatting
  * @returns {string} Formatted date string
  * @example
- * getDisplayDate(1) // Returns "Jan 1, 2025"
- * getDisplayDate(10, 'en-GB') // Returns "10 Jan 2025"
+ * getDisplayDate(1) // Returns "Aug 15, 2025"
+ * getDisplayDate(10, 'en-GB') // Returns "24 Aug 2025"
  */
 export function getDisplayDate(puzzleNumber, locale = 'en-US') {
   const dateStr = getDateForPuzzleNumber(puzzleNumber);
@@ -114,7 +115,7 @@ export function getDisplayDate(puzzleNumber, locale = 'en-US') {
  * @param {number} puzzleNumber - Puzzle number to check
  * @returns {boolean} True if puzzle is available
  * @example
- * // If today is Jan 5, 2025
+ * // If today is Aug 19, 2025
  * isPuzzleAvailable(5) // Returns true
  * isPuzzleAvailable(6) // Returns false
  */
