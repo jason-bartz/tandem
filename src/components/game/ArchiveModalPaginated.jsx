@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
-import subscriptionService from '@/services/subscriptionService';
+import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -10,7 +10,10 @@ import platformService from '@/services/platform';
 /**
  * Production-ready Archive Modal with pagination
  * Follows Apple iOS best practices for performance and UX
- * Supports infinite scroll with native scrolling for smooth performance
+ * - Synchronous subscription checks (never blocks UI)
+ * - Proper loading states and error boundaries
+ * - Eager initialization at app bootstrap
+ * - Optimistic UI updates
  */
 
 // Memoized puzzle item component for performance
@@ -300,75 +303,39 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       loadingRef.current = false;
       isInitialLoad.current = false;
     }
+    // checkAccessPermissions is intentionally excluded - it's called immediately after setting puzzles
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Check access permissions for puzzles
+  /**
+   * Check access permissions for puzzles - SYNCHRONOUS and INSTANT
+   * Uses cached subscription status from subscriptionService
+   * Never blocks UI thread
+   */
   const checkAccessPermissions = useCallback(
-    async (puzzlesToCheck, append = false) => {
-      if (!Capacitor.isNativePlatform()) {
-        // All puzzles are accessible on web
-        const accessMap = {};
-        puzzlesToCheck.forEach((puzzle) => {
-          accessMap[puzzle.date] = false; // false means accessible (not locked)
-        });
-        if (append) {
-          setPuzzleAccessMap((prev) => ({ ...prev, ...accessMap }));
-        } else {
-          setPuzzleAccessMap(accessMap);
-        }
-        return;
-      }
-
-      // Check permissions in batches for better performance
-      const batchSize = 10;
+    (puzzlesToCheck, append = false) => {
       const accessMap = append ? { ...puzzleAccessMap } : {};
 
-      for (let i = 0; i < puzzlesToCheck.length; i += batchSize) {
-        const batch = puzzlesToCheck.slice(i, i + batchSize);
-        const batchPromises = batch.map(async (puzzle) => {
-          // Use cached value if available
-          if (paginatedCache.puzzleAccessMap[puzzle.date] !== undefined) {
-            return {
-              date: puzzle.date,
-              hasAccess: paginatedCache.puzzleAccessMap[puzzle.date],
-            };
-          }
-
-          try {
-            // Add timeout to prevent hanging on subscription checks
-            const hasAccess = await Promise.race([
-              subscriptionService.canAccessPuzzle(puzzle.date),
-              new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Access check timeout')), 3000)
-              ),
-            ]);
-            return {
-              date: puzzle.date,
-              hasAccess,
-            };
-          } catch (error) {
-            console.error(`Error checking access for ${puzzle.date}:`, error);
-            // On error or timeout, default to locked for safety
-            return {
-              date: puzzle.date,
-              hasAccess: false,
-            };
-          }
-        });
-
-        const results = await Promise.all(batchPromises);
-
-        results.forEach(({ date, hasAccess }) => {
-          accessMap[date] = !hasAccess; // Invert for lock display
-          paginatedCache.puzzleAccessMap[date] = hasAccess;
-        });
-
-        // Update state after each batch
-        if (append) {
-          setPuzzleAccessMap((prev) => ({ ...prev, ...accessMap }));
-        } else {
-          setPuzzleAccessMap({ ...accessMap });
+      puzzlesToCheck.forEach((puzzle) => {
+        // Use cached value if available
+        if (paginatedCache.puzzleAccessMap[puzzle.date] !== undefined) {
+          accessMap[puzzle.date] = !paginatedCache.puzzleAccessMap[puzzle.date]; // Invert for lock display
+          return;
         }
+
+        // Synchronous check using cached subscription status
+        const hasAccess =
+          !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.date);
+
+        accessMap[puzzle.date] = !hasAccess; // Invert for lock display
+        paginatedCache.puzzleAccessMap[puzzle.date] = hasAccess;
+      });
+
+      // Update state once with all results
+      if (append) {
+        setPuzzleAccessMap((prev) => ({ ...prev, ...accessMap }));
+      } else {
+        setPuzzleAccessMap(accessMap);
       }
     },
     [puzzleAccessMap]
@@ -409,60 +376,35 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     };
   }, [isOpen, hasMore, currentPage, loadPuzzles, isLoadingMore]);
 
-  // Handle puzzle selection
+  /**
+   * Handle puzzle click - SYNCHRONOUS and INSTANT
+   * No async calls, no blocking, follows iOS best practices
+   */
   const handlePuzzleClick = useCallback(
-    async (puzzle) => {
-      // Check if we're still determining access for this puzzle
-      const accessStatus = puzzleAccessMap[puzzle.date];
+    (puzzle) => {
+      // Get lock status from cache (synchronously populated on load)
+      const isLocked = puzzleAccessMap[puzzle.date] === true;
 
-      // If access hasn't been determined yet (undefined), wait for it or check now
-      if (accessStatus === undefined && Capacitor.isNativePlatform()) {
-        try {
-          // Access check is still pending, re-check now with timeout
-          const hasAccess = await Promise.race([
-            subscriptionService.canAccessPuzzle(puzzle.date),
-            new Promise((_, reject) =>
-              setTimeout(() => reject(new Error('Access check timeout')), 3000)
-            ),
-          ]);
-          const isLocked = !hasAccess;
-
-          // Update the access map
-          setPuzzleAccessMap((prev) => ({ ...prev, [puzzle.date]: isLocked }));
-
-          if (isLocked) {
-            setShowPaywall(true);
-            return;
-          }
-        } catch (error) {
-          console.error('Error checking puzzle access:', error);
-          // On error, default to showing paywall for safety
-          setShowPaywall(true);
-          return;
-        }
-      } else if (accessStatus === true) {
-        // Explicitly locked - show paywall
+      if (isLocked) {
+        // Show paywall immediately - no waiting
         setShowPaywall(true);
         return;
       }
 
-      // Puzzle is accessible, load it
-      // Simply pass the date to onSelectPuzzle - it will handle fetching via the game hook
-      try {
-        onSelectPuzzle(puzzle.date);
-      } catch (error) {
-        console.error('Error selecting puzzle:', error);
-        setError('Failed to load puzzle. Please try again.');
-      }
+      // Puzzle is accessible - load it immediately
+      onSelectPuzzle(puzzle.date);
     },
     [puzzleAccessMap, onSelectPuzzle]
   );
 
   // Handle purchase complete
-  const handlePurchaseComplete = async () => {
-    // Clear cache and reload
-    paginatedCache.puzzleAccessMap = {};
-    await checkAccessPermissions(puzzles);
+  const handlePurchaseComplete = () => {
+    // Refresh subscription status in background
+    subscriptionService.refreshSubscriptionStatus().then(() => {
+      // Clear cache and re-check access synchronously with new subscription state
+      paginatedCache.puzzleAccessMap = {};
+      checkAccessPermissions(puzzles);
+    });
   };
 
   // Format date for display
@@ -487,62 +429,54 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     });
   }, []);
 
+  // Subscribe to subscription init state changes
+  useEffect(() => {
+    const unsubscribe = subscriptionService.onStateChange((newState) => {
+      // When subscription becomes ready, re-check puzzle access
+      if (newState === INIT_STATE.READY && puzzles.length > 0) {
+        paginatedCache.puzzleAccessMap = {}; // Clear cache
+        checkAccessPermissions(puzzles, false);
+      }
+    });
+
+    return unsubscribe;
+  }, [puzzles, checkAccessPermissions]);
+
   // Load initial data when modal opens
   useEffect(() => {
     if (isOpen) {
-      // Always reset state when opening
+      // Reset pagination state
       setCurrentPage(1);
       setHasMore(true);
       loadingRef.current = false;
 
-      // Initialize subscription service and load puzzles
-      const initializeAndLoad = async () => {
-        // Initialize subscription service on native platforms (with timeout)
-        if (Capacitor.isNativePlatform()) {
-          try {
-            await Promise.race([
-              subscriptionService.initialize(),
-              new Promise((_, reject) =>
-                setTimeout(() => reject(new Error('Subscription init timeout')), 5000)
-              ),
-            ]);
-            console.log('Subscription service initialized successfully');
-          } catch (err) {
-            console.error('Failed to initialize subscription service:', err);
-            // Continue even if subscription init fails
-          }
+      if (isInitialLoad.current || puzzles.length === 0) {
+        // First time opening OR puzzles are empty - fetch fresh data
+        setPuzzles([]);
+        setPuzzleAccessMap({}); // Reset access map
+        loadPuzzles(1);
+      } else {
+        // Modal reopened with existing puzzles - refresh game history
+        const gameHistory = getGameHistory();
+        setPuzzles((prev) =>
+          prev.map((puzzle) => {
+            const historyData = gameHistory[puzzle.date] || {};
+            return {
+              ...puzzle,
+              completed: historyData.completed || false,
+              failed: historyData.failed || false,
+              attempted: historyData.attempted || false,
+              status: historyData.status || 'not_played',
+              savedTheme: historyData.theme,
+              theme: puzzle.theme, // Preserve original theme
+            };
+          })
+        );
+        // Re-check permissions synchronously with current subscription state
+        if (puzzles.length > 0) {
+          checkAccessPermissions(puzzles, false);
         }
-
-        if (isInitialLoad.current || puzzles.length === 0) {
-          // First time opening OR puzzles are empty - fetch fresh data
-          setPuzzles([]);
-          setPuzzleAccessMap({}); // Reset access map
-          loadPuzzles(1);
-        } else {
-          // Modal reopened with existing puzzles - refresh game history
-          const gameHistory = getGameHistory();
-          setPuzzles((prev) =>
-            prev.map((puzzle) => {
-              const historyData = gameHistory[puzzle.date] || {};
-              return {
-                ...puzzle,
-                completed: historyData.completed || false,
-                failed: historyData.failed || false,
-                attempted: historyData.attempted || false,
-                status: historyData.status || 'not_played',
-                savedTheme: historyData.theme,
-                theme: puzzle.theme, // Preserve original theme
-              };
-            })
-          );
-          // Re-check permissions to ensure correct lock states
-          if (puzzles.length > 0) {
-            checkAccessPermissions(puzzles, false);
-          }
-        }
-      };
-
-      initializeAndLoad();
+      }
     }
 
     // Cleanup on unmount
@@ -551,6 +485,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         abortControllerRef.current.abort();
       }
     };
+    // checkAccessPermissions and puzzles are intentionally excluded to avoid circular deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, loadPuzzles]);
 
   if (!isOpen) {
