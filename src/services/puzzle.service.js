@@ -3,13 +3,23 @@ import platformService from './platform';
 
 class PuzzleService {
   async getPuzzle(identifier = null) {
+    console.log(
+      '[PuzzleService] getPuzzle called with identifier:',
+      identifier,
+      'type:',
+      typeof identifier
+    );
     try {
       // identifier can be a puzzle number, date string, or null for today
       // Platform service handles all three cases
+      console.log('[PuzzleService] Calling platformService.fetchPuzzle');
       const data = await platformService.fetchPuzzle(identifier);
+      console.log('[PuzzleService] Data received from platformService:', data);
       return data;
     } catch (error) {
-      console.error('PuzzleService.getPuzzle error:', error);
+      console.error('[PuzzleService] getPuzzle error:', error);
+      console.error('[PuzzleService] Error message:', error.message);
+      console.error('[PuzzleService] Error stack:', error.stack);
       throw error;
     }
   }
