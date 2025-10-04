@@ -12,6 +12,12 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const { playHaptic } = useHaptics();
 
   useEffect(() => {
+    console.log(
+      '[PaywallModal] useEffect triggered - isOpen:',
+      isOpen,
+      'isNative:',
+      Capacitor.isNativePlatform()
+    );
     if (!isOpen || !Capacitor.isNativePlatform()) {
       return;
     }
@@ -20,11 +26,17 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     setError(null);
 
     // Check if service is already ready (initialized at app bootstrap)
-    if (subscriptionService.isReady()) {
+    const serviceReady = subscriptionService.isReady();
+    const initState = subscriptionService.getInitState();
+    console.log('[PaywallModal] Subscription service ready:', serviceReady, 'state:', initState);
+
+    if (serviceReady) {
       const allProducts = subscriptionService.getProducts();
+      console.log('[PaywallModal] Products available:', allProducts);
 
       // If no products loaded, show helpful error
       if (!allProducts || Object.keys(allProducts).length === 0) {
+        console.warn('[PaywallModal] No products available');
         setError(
           'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
         );
@@ -34,17 +46,22 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     }
 
     // Subscribe to state changes if not ready
+    console.log('[PaywallModal] Service not ready - subscribing to state changes');
     const unsubscribe = subscriptionService.onStateChange((state) => {
+      console.log('[PaywallModal] onStateChange callback - new state:', state);
       if (state === INIT_STATE.READY) {
         const allProducts = subscriptionService.getProducts();
+        console.log('[PaywallModal] Service became READY - products:', allProducts);
 
         if (!allProducts || Object.keys(allProducts).length === 0) {
+          console.warn('[PaywallModal] Service READY but no products');
           setError(
             'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
           );
         }
         setProductsLoading(false);
       } else if (state === INIT_STATE.FAILED) {
+        console.error('[PaywallModal] Service initialization FAILED');
         setError('Unable to load subscription options. Please try again later.');
         setProductsLoading(false);
       }
@@ -52,6 +69,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
     // Cleanup subscription on unmount or when modal closes
     return () => {
+      console.log('[PaywallModal] Cleanup - unsubscribing from state changes');
       unsubscribe();
     };
   }, [isOpen]);

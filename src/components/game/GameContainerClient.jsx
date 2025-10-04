@@ -29,10 +29,22 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Initialize subscription service on app bootstrap (iOS only)
   // This runs ONCE when the app starts, ensuring subscription state is ready
   useEffect(() => {
+    console.log(
+      '[GameContainerClient] Bootstrap useEffect - isNative:',
+      Capacitor.isNativePlatform()
+    );
     if (Capacitor.isNativePlatform()) {
-      subscriptionService.initialize().catch(() => {
-        // App continues to work even if subscription init fails
-      });
+      console.log('[GameContainerClient] Starting subscription service initialization');
+      subscriptionService
+        .initialize()
+        .then(() => {
+          console.log('[GameContainerClient] Subscription service initialized successfully');
+          console.log('[GameContainerClient] Final state:', subscriptionService.getInitState());
+        })
+        .catch((error) => {
+          console.error('[GameContainerClient] Subscription service initialization failed:', error);
+          // App continues to work even if subscription init fails
+        });
     }
   }, []);
 

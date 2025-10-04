@@ -39,6 +39,12 @@ class PlatformService {
    * @returns {Promise<Object>} Puzzle data
    */
   async fetchPuzzle(identifier = null) {
+    console.log(
+      '[PlatformService] fetchPuzzle called with identifier:',
+      identifier,
+      'type:',
+      typeof identifier
+    );
     let puzzleNumber;
     let date;
 
@@ -46,13 +52,21 @@ class PlatformService {
       // No identifier - use current puzzle in user's timezone
       puzzleNumber = getCurrentPuzzleNumber();
       date = getDateForPuzzleNumber(puzzleNumber);
+      console.log('[PlatformService] No identifier - using current:', puzzleNumber, date);
     } else if (typeof identifier === 'number' || /^\d+$/.test(identifier)) {
       // Identifier is a puzzle number
       puzzleNumber = typeof identifier === 'number' ? identifier : parseInt(identifier);
       date = getDateForPuzzleNumber(puzzleNumber);
+      console.log(
+        '[PlatformService] Puzzle number detected:',
+        puzzleNumber,
+        'converted to date:',
+        date
+      );
     } else {
       // Identifier is a date string (backward compatibility)
       date = identifier;
+      console.log('[PlatformService] Date string detected:', date);
       // Don't calculate number from date - let API handle it
     }
 
@@ -67,17 +81,25 @@ class PlatformService {
       ? `https://www.tandemdaily.com/api/puzzle?${queryParam}`
       : `/api/puzzle?${queryParam}`;
 
+    console.log('[PlatformService] Request URL:', url);
+    console.log('[PlatformService] isNative:', this.isNative, 'isIOS:', this.isIOS);
+
     try {
       let data;
 
       // Use native HTTP on iOS to bypass CORS
       if (this.isNative && this.isIOS) {
+        console.log('[PlatformService] Using CapacitorHttp for iOS');
         const response = await CapacitorHttp.get({
           url: `https://www.tandemdaily.com/api/puzzle?${queryParam}`,
         });
+        console.log('[PlatformService] CapacitorHttp response:', response);
+        console.log('[PlatformService] Response status:', response.status);
+        console.log('[PlatformService] Response data:', response.data);
         data = response.data;
       } else {
         // Use regular fetch for web
+        console.log('[PlatformService] Using regular fetch for web');
         const res = await fetch(url, {
           method: 'GET',
           headers: {
@@ -85,12 +107,16 @@ class PlatformService {
           },
         });
 
+        console.log('[PlatformService] Fetch response status:', res.status);
         if (!res.ok) {
           throw new Error(`API Error: ${res.status}`);
         }
 
         data = await res.json();
+        console.log('[PlatformService] Fetch response data:', data);
       }
+
+      console.log('[PlatformService] Data before caching:', data);
 
       // Cache successful fetch for offline use (use date for cache key)
       if (this.isNative) {
@@ -99,6 +125,7 @@ class PlatformService {
         logger.debug('Puzzle cached for offline use:', cacheDate);
       }
 
+      console.log('[PlatformService] Returning data:', data);
       return data;
     } catch (error) {
       logger.error('Error fetching puzzle from API', error);

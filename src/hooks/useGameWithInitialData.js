@@ -74,23 +74,34 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   // Load specific puzzle for archive
   const loadPuzzle = useCallback(async (identifier = null) => {
+    console.log(
+      '[useGameWithInitialData] loadPuzzle called with identifier:',
+      identifier,
+      'type:',
+      typeof identifier
+    );
     try {
       setLoading(true);
       setError(null);
 
       const isArchive = identifier !== null;
       setIsArchiveGame(isArchive);
+      console.log('[useGameWithInitialData] isArchive:', isArchive);
 
       // identifier can be a puzzle number, date string, or null for today
+      console.log('[useGameWithInitialData] Calling puzzleService.getPuzzle with:', identifier);
       const response = await puzzleService.getPuzzle(identifier);
+      console.log('[useGameWithInitialData] Response received:', response);
 
       if (response && response.puzzle) {
+        console.log('[useGameWithInitialData] Response has puzzle:', response.puzzle);
         // Add puzzleNumber and date to the puzzle object if it's not there
         const puzzleWithData = {
           ...response.puzzle,
           puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
           date: response.date || response.puzzle.date,
         };
+        console.log('[useGameWithInitialData] Puzzle with data:', puzzleWithData);
         // Update current puzzle date from response
         setCurrentPuzzleDate(response.date);
         setPuzzle(puzzleWithData);
@@ -102,8 +113,10 @@ export function useGameWithInitialData(initialPuzzleData) {
         setSolved(0);
         setActiveHints([null, null, null, null]);
         setHintPositionsUsed([false, false, false, false]);
+        console.log('[useGameWithInitialData] Puzzle loaded successfully');
         return true;
       } else if (response) {
+        console.log('[useGameWithInitialData] Response but no puzzle property:', response);
         // Update current puzzle date from response if available
         if (response.date) {
           setCurrentPuzzleDate(response.date);
@@ -119,11 +132,15 @@ export function useGameWithInitialData(initialPuzzleData) {
         setHintPositionsUsed([false, false, false, false]);
         return true;
       } else {
+        console.error('[useGameWithInitialData] No response or empty response');
         setError('No puzzle available');
         return false;
       }
     } catch (err) {
-      setError('Failed to load puzzle');
+      console.error('[useGameWithInitialData] Error loading puzzle:', err);
+      console.error('[useGameWithInitialData] Error message:', err.message);
+      console.error('[useGameWithInitialData] Error stack:', err.stack);
+      setError(`Failed to load puzzle: ${err.message}`);
       return false;
     } finally {
       setLoading(false);

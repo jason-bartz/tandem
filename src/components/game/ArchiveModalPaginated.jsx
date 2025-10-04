@@ -355,15 +355,24 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
    */
   const handlePuzzleClick = useCallback(
     (puzzle) => {
+      console.log('[ArchiveModal] handlePuzzleClick - puzzle:', puzzle);
+      console.log('[ArchiveModal] Puzzle number:', puzzle.number, 'type:', typeof puzzle.number);
+
       // Get lock status from cache (synchronously populated on load)
       const isLocked = puzzleAccessMap[puzzle.number.toString()] === true;
+      console.log('[ArchiveModal] isLocked:', isLocked, 'puzzleAccessMap:', puzzleAccessMap);
 
       if (isLocked) {
+        console.log('[ArchiveModal] Puzzle is locked - showing paywall');
         // Show paywall immediately - no waiting
         setShowPaywall(true);
         return;
       }
 
+      console.log(
+        '[ArchiveModal] Puzzle is unlocked - calling onSelectPuzzle with:',
+        puzzle.number
+      );
       // Puzzle is accessible - load it by puzzle number
       onSelectPuzzle(puzzle.number);
     },
