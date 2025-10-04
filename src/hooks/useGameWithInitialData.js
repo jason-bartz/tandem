@@ -73,31 +73,26 @@ export function useGameWithInitialData(initialPuzzleData) {
   }, [initialPuzzleData]);
 
   // Load specific puzzle for archive
-  const loadPuzzle = useCallback(async (date = null) => {
+  const loadPuzzle = useCallback(async (identifier = null) => {
     try {
       setLoading(true);
       setError(null);
 
-      const isArchive = date !== null;
+      const isArchive = identifier !== null;
       setIsArchiveGame(isArchive);
 
-      // Use the date if provided, otherwise getPuzzle will fetch today's puzzle in ET
-      const puzzleDate = date || null;
-      if (puzzleDate) {
-        setCurrentPuzzleDate(puzzleDate);
-      }
-
-      const response = await puzzleService.getPuzzle(date);
+      // identifier can be a puzzle number, date string, or null for today
+      const response = await puzzleService.getPuzzle(identifier);
 
       if (response && response.puzzle) {
         // Add puzzleNumber and date to the puzzle object if it's not there
         const puzzleWithData = {
           ...response.puzzle,
           puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
-          date: response.date || puzzleDate,
+          date: response.date || response.puzzle.date,
         };
         // Update current puzzle date from response
-        setCurrentPuzzleDate(response.date || puzzleDate);
+        setCurrentPuzzleDate(response.date);
         setPuzzle(puzzleWithData);
         setGameState(GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
