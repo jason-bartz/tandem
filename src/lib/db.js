@@ -1,5 +1,6 @@
 import { PUZZLE_TEMPLATES } from './constants';
 import { createClient } from 'redis';
+import { getPuzzleNumberForDate, getDateForPuzzleNumber } from './puzzleNumber';
 
 let redisClient = null;
 
@@ -8,23 +9,23 @@ async function getRedisClient() {
     // Use KV_REST_API_URL if available (Vercel KV), otherwise use standard Redis URL
     const url = process.env.KV_REST_API_URL || process.env.REDIS_URL;
     const token = process.env.KV_REST_API_TOKEN;
-    
+
     if (url && token) {
       // Vercel KV configuration
       redisClient = createClient({
         url,
-        token
+        token,
       });
     } else if (url) {
       // Standard Redis configuration
       redisClient = createClient({
-        url
+        url,
       });
     } else {
       // No Redis available, will use in-memory
       return null;
     }
-    
+
     if (redisClient) {
       await redisClient.connect();
     }
@@ -42,11 +43,11 @@ const inMemoryDB = {
     totalTime: 0,
     perfectGames: 0,
     hintsUsed: 0,
-    gamesShared: 0
+    gamesShared: 0,
   },
   puzzleStats: {},
   dailyStats: {},
-  playerSessions: new Set()
+  playerSessions: new Set(),
 };
 
 function getDailyPuzzleFromTemplates(date) {
@@ -60,7 +61,7 @@ export async function getPuzzleForDate(date) {
   try {
     // First, check database (edited puzzles take priority)
     const redis = await getRedisClient();
-    
+
     if (redis) {
       const puzzle = await redis.get(`puzzle:${date}`);
       if (puzzle) {
@@ -72,7 +73,7 @@ export async function getPuzzleForDate(date) {
         return inMemoryDB.puzzles[date];
       }
     }
-    
+
     // Then try to load from all-puzzles.json
     try {
       const fs = require('fs');
@@ -81,12 +82,12 @@ export async function getPuzzleForDate(date) {
       if (fs.existsSync(allPuzzlesFile)) {
         const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
         if (data.puzzles && Array.isArray(data.puzzles)) {
-          const puzzle = data.puzzles.find(p => p.date === date);
+          const puzzle = data.puzzles.find((p) => p.date === date);
           if (puzzle) {
             console.log(`Loaded puzzle from all-puzzles.json: ${date}`);
             return {
               theme: puzzle.theme,
-              puzzles: puzzle.puzzles
+              puzzles: puzzle.puzzles,
             };
           }
         }
@@ -94,7 +95,7 @@ export async function getPuzzleForDate(date) {
     } catch (fileError) {
       // File doesn't exist or couldn't be read, continue to other methods
     }
-    
+
     // Then try individual JSON file
     try {
       const fs = require('fs');
@@ -108,31 +109,77 @@ export async function getPuzzleForDate(date) {
     } catch (fileError) {
       // File doesn't exist or couldn't be read, continue to other methods
     }
-    
+
     // Finally, fall back to template puzzles
     const templatePuzzle = getDailyPuzzleFromTemplates(date);
-    const { getPuzzleNumber } = require('./utils');
     return {
       ...templatePuzzle,
       date,
-      puzzleNumber: getPuzzleNumber(date)
+      puzzleNumber: getPuzzleNumberForDate(date),
     };
   } catch (error) {
     console.error('Error getting puzzle:', error);
-    return getDailyPuzzleFromTemplates(date);
+    const fallback = getDailyPuzzleFromTemplates(date);
+    return {
+      ...fallback,
+      date,
+      puzzleNumber: getPuzzleNumberForDate(date),
+    };
+  }
+}
+
+/**
+ * Get puzzle by either date string or puzzle number
+ * Supports backward compatibility with date-based lookups
+ * and new puzzle number system
+ *
+ * @param {string|number} identifier - Date (YYYY-MM-DD) or puzzle number
+ * @returns {Promise<Object>} Puzzle object with puzzleNumber and date
+ */
+export async function getPuzzle(identifier) {
+  try {
+    // Determine if identifier is a puzzle number or date string
+    const isNumber = typeof identifier === 'number' || /^\d+$/.test(String(identifier));
+
+    let date;
+    let puzzleNumber;
+
+    if (isNumber) {
+      // Convert puzzle number to date
+      puzzleNumber = parseInt(identifier);
+      date = getDateForPuzzleNumber(puzzleNumber);
+    } else {
+      // Use date directly
+      date = identifier;
+      puzzleNumber = getPuzzleNumberForDate(date);
+    }
+
+    // Get puzzle data using existing function
+    const puzzle = await getPuzzleForDate(date);
+
+    // Ensure puzzle has both date and number
+    if (puzzle) {
+      puzzle.puzzleNumber = puzzleNumber;
+      puzzle.date = date;
+    }
+
+    return puzzle;
+  } catch (error) {
+    console.error('Error getting puzzle:', error);
+    throw error;
   }
 }
 
 export async function setPuzzleForDate(date, puzzle) {
   try {
     const redis = await getRedisClient();
-    
+
     if (redis) {
       await redis.set(`puzzle:${date}`, JSON.stringify(puzzle), { EX: 60 * 60 * 24 * 365 });
     } else {
       inMemoryDB.puzzles[date] = puzzle;
     }
-    
+
     return true;
   } catch (error) {
     console.error('Error setting puzzle:', error);
@@ -143,13 +190,13 @@ export async function setPuzzleForDate(date, puzzle) {
 export async function deletePuzzleForDate(date) {
   try {
     const redis = await getRedisClient();
-    
+
     if (redis) {
       await redis.del(`puzzle:${date}`);
     } else {
       delete inMemoryDB.puzzles[date];
     }
-    
+
     return true;
   } catch (error) {
     console.error('Error deleting puzzle:', error);
@@ -161,7 +208,7 @@ export async function getPuzzlesRange(startDate, endDate) {
   const puzzles = {};
   const start = new Date(startDate);
   const end = new Date(endDate);
-  
+
   // Load all-puzzles.json once at the start
   const allPuzzlesData = {};
   try {
@@ -172,7 +219,7 @@ export async function getPuzzlesRange(startDate, endDate) {
       const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
       // Convert array to object keyed by date
       if (data.puzzles && Array.isArray(data.puzzles)) {
-        data.puzzles.forEach(puzzle => {
+        data.puzzles.forEach((puzzle) => {
           allPuzzlesData[puzzle.date] = puzzle;
         });
       }
@@ -180,14 +227,14 @@ export async function getPuzzlesRange(startDate, endDate) {
   } catch (error) {
     console.error('Error loading all-puzzles.json:', error);
   }
-  
+
   try {
     const redis = await getRedisClient();
-    
+
     for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
       const dateStr = d.toISOString().split('T')[0];
       let puzzleFound = false;
-      
+
       // First check database (edited puzzles take priority)
       if (redis) {
         const puzzleData = await redis.get(`puzzle:${dateStr}`);
@@ -201,16 +248,16 @@ export async function getPuzzlesRange(startDate, endDate) {
           puzzleFound = true;
         }
       }
-      
+
       // If not in database, check all-puzzles.json data
       if (!puzzleFound && allPuzzlesData[dateStr]) {
         puzzles[dateStr] = {
           theme: allPuzzlesData[dateStr].theme,
-          puzzles: allPuzzlesData[dateStr].puzzles
+          puzzles: allPuzzlesData[dateStr].puzzles,
         };
         puzzleFound = true;
       }
-      
+
       // Finally, try individual JSON file
       if (!puzzleFound) {
         try {
@@ -229,14 +276,14 @@ export async function getPuzzlesRange(startDate, endDate) {
   } catch (error) {
     console.error('Error getting puzzles range:', error);
   }
-  
+
   return puzzles;
 }
 
 export async function incrementStats(stat) {
   try {
     const redis = await getRedisClient();
-    
+
     if (redis) {
       await redis.hIncrBy('stats', stat, 1);
     } else {
@@ -244,7 +291,7 @@ export async function incrementStats(stat) {
         inMemoryDB.stats[stat]++;
       }
     }
-    
+
     return true;
   } catch (error) {
     console.error('Error incrementing stats:', error);
@@ -266,7 +313,7 @@ export async function getStats() {
         totalTime: parseInt(stats.totalTime) || 0,
         perfectGames: parseInt(stats.perfectGames) || 0,
         hintsUsed: parseInt(stats.hintsUsed) || 0,
-        gamesShared: parseInt(stats.gamesShared) || 0
+        gamesShared: parseInt(stats.gamesShared) || 0,
       };
     } else {
       return {
@@ -275,7 +322,7 @@ export async function getStats() {
         totalTime: inMemoryDB.stats.totalTime || 0,
         perfectGames: inMemoryDB.stats.perfectGames || 0,
         hintsUsed: inMemoryDB.stats.hintsUsed || 0,
-        gamesShared: inMemoryDB.stats.gamesShared || 0
+        gamesShared: inMemoryDB.stats.gamesShared || 0,
       };
     }
   } catch (error) {
@@ -288,7 +335,7 @@ export async function getStats() {
       totalTime: 0,
       perfectGames: 0,
       hintsUsed: 0,
-      gamesShared: 0
+      gamesShared: 0,
     };
   }
 }
@@ -300,18 +347,28 @@ export async function updatePuzzleStats(date, stats) {
 
     if (redis) {
       // Increment puzzle-specific stats
-      if (stats.played) {await redis.hIncrBy(key, 'played', 1);}
-      if (stats.completed) {await redis.hIncrBy(key, 'completed', 1);}
+      if (stats.played) {
+        await redis.hIncrBy(key, 'played', 1);
+      }
+      if (stats.completed) {
+        await redis.hIncrBy(key, 'completed', 1);
+      }
       if (stats.time) {
         await redis.hIncrBy(key, 'totalTime', stats.time);
         await redis.hIncrBy(key, 'timeCount', 1);
       }
       if (stats.mistakes !== undefined) {
         await redis.hIncrBy(key, 'totalMistakes', stats.mistakes);
-        if (stats.mistakes === 0) {await redis.hIncrBy(key, 'perfectGames', 1);}
+        if (stats.mistakes === 0) {
+          await redis.hIncrBy(key, 'perfectGames', 1);
+        }
       }
-      if (stats.hintsUsed) {await redis.hIncrBy(key, 'hintsUsed', stats.hintsUsed);}
-      if (stats.shared) {await redis.hIncrBy(key, 'shared', 1);}
+      if (stats.hintsUsed) {
+        await redis.hIncrBy(key, 'hintsUsed', stats.hintsUsed);
+      }
+      if (stats.shared) {
+        await redis.hIncrBy(key, 'shared', 1);
+      }
 
       // Set expiry to 1 year
       await redis.expire(key, 365 * 24 * 60 * 60);
@@ -326,23 +383,33 @@ export async function updatePuzzleStats(date, stats) {
           totalMistakes: 0,
           perfectGames: 0,
           hintsUsed: 0,
-          shared: 0
+          shared: 0,
         };
       }
 
       const puzzleStats = inMemoryDB.puzzleStats[date];
-      if (stats.played) {puzzleStats.played++;}
-      if (stats.completed) {puzzleStats.completed++;}
+      if (stats.played) {
+        puzzleStats.played++;
+      }
+      if (stats.completed) {
+        puzzleStats.completed++;
+      }
       if (stats.time) {
         puzzleStats.totalTime += stats.time;
         puzzleStats.timeCount++;
       }
       if (stats.mistakes !== undefined) {
         puzzleStats.totalMistakes += stats.mistakes;
-        if (stats.mistakes === 0) {puzzleStats.perfectGames++;}
+        if (stats.mistakes === 0) {
+          puzzleStats.perfectGames++;
+        }
       }
-      if (stats.hintsUsed) {puzzleStats.hintsUsed += stats.hintsUsed;}
-      if (stats.shared) {puzzleStats.shared++;}
+      if (stats.hintsUsed) {
+        puzzleStats.hintsUsed += stats.hintsUsed;
+      }
+      if (stats.shared) {
+        puzzleStats.shared++;
+      }
     }
 
     return true;
@@ -377,11 +444,13 @@ export async function getPuzzleStats(date) {
         averageMistakes: played > 0 ? (totalMistakes / played).toFixed(1) : 0,
         perfectGames: parseInt(stats.perfectGames) || 0,
         hintsUsed: parseInt(stats.hintsUsed) || 0,
-        shared: parseInt(stats.shared) || 0
+        shared: parseInt(stats.shared) || 0,
       };
     } else {
       const stats = inMemoryDB.puzzleStats[date];
-      if (!stats) {return null;}
+      if (!stats) {
+        return null;
+      }
 
       return {
         played: stats.played,
@@ -391,7 +460,7 @@ export async function getPuzzleStats(date) {
         averageMistakes: stats.played > 0 ? (stats.totalMistakes / stats.played).toFixed(1) : 0,
         perfectGames: stats.perfectGames,
         hintsUsed: stats.hintsUsed,
-        shared: stats.shared
+        shared: stats.shared,
       };
     }
   } catch (error) {
@@ -402,7 +471,7 @@ export async function getPuzzleStats(date) {
 
 export async function getPopularPuzzles(limit = 5) {
   try {
-    const redis = await getRedisClient();
+    await getRedisClient(); // Ensure redis is initialized
     const allStats = [];
 
     // Get stats for last 30 days
@@ -414,14 +483,15 @@ export async function getPopularPuzzles(limit = 5) {
       const dateStr = d.toISOString().split('T')[0];
       const stats = await getPuzzleStats(dateStr);
 
-      if (stats && stats.played >= 10) { // Only include puzzles with at least 10 plays
+      if (stats && stats.played >= 10) {
+        // Only include puzzles with at least 10 plays
         const puzzle = await getPuzzleForDate(dateStr);
         allStats.push({
           date: dateStr,
           theme: puzzle?.theme || 'Unknown Theme',
           completionRate: stats.completionRate,
           played: stats.played,
-          completed: stats.completed
+          completed: stats.completed,
         });
       }
     }
@@ -453,7 +523,7 @@ export async function getDailyActivity(days = 7) {
           date: dateStr,
           plays: parseInt(stats.plays) || 0,
           completions: parseInt(stats.completions) || 0,
-          uniquePlayers: parseInt(stats.uniquePlayers) || 0
+          uniquePlayers: parseInt(stats.uniquePlayers) || 0,
         });
       } else {
         const stats = inMemoryDB.dailyStats[dateStr] || {};
@@ -461,7 +531,7 @@ export async function getDailyActivity(days = 7) {
           date: dateStr,
           plays: stats.plays || 0,
           completions: stats.completions || 0,
-          uniquePlayers: stats.uniquePlayers || 0
+          uniquePlayers: stats.uniquePlayers || 0,
         });
       }
     }
@@ -497,7 +567,7 @@ export async function trackUniquePlayer(sessionId) {
         inMemoryDB.dailyStats[today] = {
           plays: 0,
           completions: 0,
-          uniquePlayers: 0
+          uniquePlayers: 0,
         };
       }
 
@@ -534,7 +604,7 @@ export async function updateDailyStats(stat) {
         inMemoryDB.dailyStats[today] = {
           plays: 0,
           completions: 0,
-          uniquePlayers: 0
+          uniquePlayers: 0,
         };
       }
 
