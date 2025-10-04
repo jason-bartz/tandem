@@ -84,7 +84,8 @@ export async function GET(request) {
 
     // Calculate pagination info
     const totalAvailable = currentNumber;
-    const hasMore = endNum > startNum + limit;
+    // hasMore is true if there are older puzzles (startNum > 1)
+    const hasMore = startNum > 1;
 
     // Generate ETag for caching
     const etag = `"archive-${startNum}-${endNum}-${limit}-${currentNumber}"`;
