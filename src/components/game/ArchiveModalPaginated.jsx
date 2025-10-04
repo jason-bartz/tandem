@@ -334,11 +334,26 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             };
           }
 
-          const hasAccess = await subscriptionService.canAccessPuzzle(puzzle.date);
-          return {
-            date: puzzle.date,
-            hasAccess,
-          };
+          try {
+            // Add timeout to prevent hanging on subscription checks
+            const hasAccess = await Promise.race([
+              subscriptionService.canAccessPuzzle(puzzle.date),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Access check timeout')), 3000)
+              ),
+            ]);
+            return {
+              date: puzzle.date,
+              hasAccess,
+            };
+          } catch (error) {
+            console.error(`Error checking access for ${puzzle.date}:`, error);
+            // On error or timeout, default to locked for safety
+            return {
+              date: puzzle.date,
+              hasAccess: false,
+            };
+          }
         });
 
         const results = await Promise.all(batchPromises);
@@ -480,40 +495,54 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       setHasMore(true);
       loadingRef.current = false;
 
-      // Initialize subscription service early (non-blocking)
-      if (Capacitor.isNativePlatform()) {
-        subscriptionService.initialize().catch((err) => {
-          console.error('Failed to initialize subscription service:', err);
-        });
-      }
-
-      if (isInitialLoad.current || puzzles.length === 0) {
-        // First time opening OR puzzles are empty - fetch fresh data
-        setPuzzles([]);
-        setPuzzleAccessMap({}); // Reset access map
-        loadPuzzles(1);
-      } else {
-        // Modal reopened with existing puzzles - refresh game history
-        const gameHistory = getGameHistory();
-        setPuzzles((prev) =>
-          prev.map((puzzle) => {
-            const historyData = gameHistory[puzzle.date] || {};
-            return {
-              ...puzzle,
-              completed: historyData.completed || false,
-              failed: historyData.failed || false,
-              attempted: historyData.attempted || false,
-              status: historyData.status || 'not_played',
-              savedTheme: historyData.theme,
-              theme: puzzle.theme, // Preserve original theme
-            };
-          })
-        );
-        // Re-check permissions to ensure correct lock states
-        if (puzzles.length > 0) {
-          checkAccessPermissions(puzzles, false);
+      // Initialize subscription service and load puzzles
+      const initializeAndLoad = async () => {
+        // Initialize subscription service on native platforms (with timeout)
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await Promise.race([
+              subscriptionService.initialize(),
+              new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('Subscription init timeout')), 5000)
+              ),
+            ]);
+            console.log('Subscription service initialized successfully');
+          } catch (err) {
+            console.error('Failed to initialize subscription service:', err);
+            // Continue even if subscription init fails
+          }
         }
-      }
+
+        if (isInitialLoad.current || puzzles.length === 0) {
+          // First time opening OR puzzles are empty - fetch fresh data
+          setPuzzles([]);
+          setPuzzleAccessMap({}); // Reset access map
+          loadPuzzles(1);
+        } else {
+          // Modal reopened with existing puzzles - refresh game history
+          const gameHistory = getGameHistory();
+          setPuzzles((prev) =>
+            prev.map((puzzle) => {
+              const historyData = gameHistory[puzzle.date] || {};
+              return {
+                ...puzzle,
+                completed: historyData.completed || false,
+                failed: historyData.failed || false,
+                attempted: historyData.attempted || false,
+                status: historyData.status || 'not_played',
+                savedTheme: historyData.theme,
+                theme: puzzle.theme, // Preserve original theme
+              };
+            })
+          );
+          // Re-check permissions to ensure correct lock states
+          if (puzzles.length > 0) {
+            checkAccessPermissions(puzzles, false);
+          }
+        }
+      };
+
+      initializeAndLoad();
     }
 
     // Cleanup on unmount

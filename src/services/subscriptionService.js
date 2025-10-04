@@ -44,10 +44,10 @@ class SubscriptionService {
     }
 
     try {
-      // Wait for window to be ready and CdvPurchase to load
+      // Wait for window to be ready and CdvPurchase to load (max 3 seconds)
       let attempts = 0;
-      while (attempts < 10 && (!window.CdvPurchase || !window.CdvPurchase.store)) {
-        console.log(`IAP: Waiting for CdvPurchase to be available (attempt ${attempts + 1}/10)`);
+      while (attempts < 6 && (!window.CdvPurchase || !window.CdvPurchase.store)) {
+        console.log(`IAP: Waiting for CdvPurchase to be available (attempt ${attempts + 1}/6)`);
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempts++;
       }
@@ -102,11 +102,11 @@ class SubscriptionService {
 
         console.log('IAP: Store initialized successfully');
 
-        // Wait for products to load with better timeout handling
+        // Wait for products to load with reduced timeout (max 1.6 seconds)
         console.log('IAP: Waiting for products to load...');
         let productLoadAttempts = 0;
-        while (productLoadAttempts < 5) {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+        while (productLoadAttempts < 4) {
+          await new Promise((resolve) => setTimeout(resolve, 400));
 
           // Store products for easy access
           const allProducts = this.store.products;
@@ -127,7 +127,7 @@ class SubscriptionService {
           }
 
           productLoadAttempts++;
-          console.log(`IAP: No products loaded yet, attempt ${productLoadAttempts}/5`);
+          console.log(`IAP: No products loaded yet, attempt ${productLoadAttempts}/4`);
         }
 
         if (Object.keys(this.products).length === 0) {
