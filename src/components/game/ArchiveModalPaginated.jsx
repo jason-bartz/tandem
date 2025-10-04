@@ -397,48 +397,35 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   // Handle puzzle selection
   const handlePuzzleClick = useCallback(
     async (puzzle) => {
-      // Only show paywall if explicitly locked (true), not if undefined
-      const isLocked = puzzleAccessMap[puzzle.date] === true;
+      // Check if we're still determining access for this puzzle
+      const accessStatus = puzzleAccessMap[puzzle.date];
 
-      if (isLocked) {
-        setShowPaywall(true);
-      } else {
-        // Fetch full puzzle details if needed
-        if (!puzzle.puzzles && puzzle.hasData !== false) {
-          try {
-            let response;
-            let data;
+      // If access hasn't been determined yet (undefined), wait for it or check now
+      if (accessStatus === undefined && Capacitor.isNativePlatform()) {
+        // Access check is still pending, re-check now
+        const hasAccess = await subscriptionService.canAccessPuzzle(puzzle.date);
+        const isLocked = !hasAccess;
 
-            // Use CapacitorHttp on iOS to bypass CORS
-            if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-              const apiUrl = platformService.getApiUrl('/api/puzzles/paginated');
-              response = await CapacitorHttp.post({
-                url: apiUrl,
-                headers: { 'Content-Type': 'application/json' },
-                data: { date: puzzle.date },
-              });
-              data = response.data;
-            } else {
-              response = await fetch('/api/puzzles/paginated', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ date: puzzle.date }),
-              });
-              data = await response.json();
-            }
+        // Update the access map
+        setPuzzleAccessMap((prev) => ({ ...prev, [puzzle.date]: isLocked }));
 
-            if (data.success) {
-              onSelectPuzzle(puzzle.date);
-            } else {
-              setError('Failed to load puzzle. Please try again.');
-            }
-          } catch (error) {
-            console.error('Error fetching puzzle details:', error);
-            setError('Failed to load puzzle. Please try again.');
-          }
-        } else {
-          onSelectPuzzle(puzzle.date);
+        if (isLocked) {
+          setShowPaywall(true);
+          return;
         }
+      } else if (accessStatus === true) {
+        // Explicitly locked - show paywall
+        setShowPaywall(true);
+        return;
+      }
+
+      // Puzzle is accessible, load it
+      // Simply pass the date to onSelectPuzzle - it will handle fetching via the game hook
+      try {
+        onSelectPuzzle(puzzle.date);
+      } catch (error) {
+        console.error('Error selecting puzzle:', error);
+        setError('Failed to load puzzle. Please try again.');
       }
     },
     [puzzleAccessMap, onSelectPuzzle]
