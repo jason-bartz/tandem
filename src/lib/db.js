@@ -52,7 +52,7 @@ const inMemoryDB = {
 
 function getDailyPuzzleFromTemplates(date) {
   const dateObj = new Date(date);
-  const daysSinceStart = Math.floor((dateObj - new Date('2025-01-01')) / (1000 * 60 * 60 * 24));
+  const daysSinceStart = Math.floor((dateObj - new Date('2025-08-15')) / (1000 * 60 * 60 * 24));
   const templateIndex = daysSinceStart % PUZZLE_TEMPLATES.length;
   return PUZZLE_TEMPLATES[templateIndex];
 }
