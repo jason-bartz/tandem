@@ -53,6 +53,8 @@ const PuzzleItem = memo(
           WebkitTapHighlightColor: 'transparent',
           touchAction: 'manipulation',
         }}
+        aria-label={`Puzzle ${puzzle.number}, ${formatDate(puzzle.date)}${actuallyLocked ? ', locked' : ''}, ${status.title}`}
+        role="button"
       >
         <div className="flex justify-between items-center">
           <div className="flex-1">
@@ -122,12 +124,13 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
   </>
 );
 
-// Cache for number-based data
+// Cache for number-based data with memory management
 const paginatedCache = {
-  puzzles: {},
+  puzzles: {}, // Store actual puzzle data by range key
   lastFetch: 0,
   puzzleAccessMap: {},
   etag: null,
+  maxCacheEntries: 10, // Limit cache size to prevent memory issues
 };
 
 const BATCH_SIZE = 20;
@@ -152,132 +155,206 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const observerRef = useRef(null);
   const sentinelRef = useRef(null);
 
-  // Load puzzles using number-based archive API
-  const loadPuzzles = useCallback(async (loadStart = null, append = false) => {
-    // Prevent concurrent loads
-    if (loadingRef.current) return;
-    loadingRef.current = true;
-
-    // Cancel previous request if any
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+  /**
+   * Clean up old cache entries to prevent memory bloat
+   * Following Apple's memory management best practices
+   */
+  const cleanupCache = useCallback(() => {
+    const entries = Object.keys(paginatedCache.puzzles);
+    if (entries.length > paginatedCache.maxCacheEntries) {
+      // Remove oldest entries (keep most recent)
+      const entriesToRemove = entries.slice(0, entries.length - paginatedCache.maxCacheEntries);
+      entriesToRemove.forEach((key) => {
+        delete paginatedCache.puzzles[key];
+      });
     }
-
-    abortControllerRef.current = new AbortController();
-
-    try {
-      setError(null);
-
-      if (!append) {
-        setIsLoading(true);
-      } else {
-        setIsLoadingMore(true);
-      }
-
-      const currentNum = getCurrentPuzzleNumber();
-      setCurrentPuzzleNumber(currentNum);
-
-      // Calculate range
-      const endNum = loadStart === null ? currentNum : loadStart - 1;
-      const calculatedStartNum = Math.max(1, endNum - BATCH_SIZE + 1);
-
-      // Fetch from new archive endpoint
-      const headers = {};
-      if (paginatedCache.etag) {
-        headers['If-None-Match'] = paginatedCache.etag;
-      }
-
-      let response;
-      let data;
-
-      // Use CapacitorHttp on iOS to bypass CORS
-      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-        const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
-        response = await CapacitorHttp.get({
-          url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
-          headers,
-        });
-
-        data = response.data;
-
-        if (response.status >= 400) {
-          throw new Error(data.error || 'Failed to fetch puzzles');
-        }
-      } else {
-        // Use regular fetch for web
-        response = await fetch(
-          `/api/puzzles/archive?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
-          {
-            signal: abortControllerRef.current.signal,
-            headers,
-          }
-        );
-
-        if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.error || 'Failed to fetch puzzles');
-        }
-
-        data = await response.json();
-      }
-
-      if (data.success) {
-        // Store ETag for caching
-        const etag =
-          Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios'
-            ? response.headers?.ETag || response.headers?.etag
-            : response.headers.get('ETag');
-        if (etag) {
-          paginatedCache.etag = etag;
-        }
-
-        // Get game history for status
-        const gameHistory = getGameHistory();
-
-        // Process puzzles with game history
-        const processedPuzzles = data.puzzles.map((puzzle) => {
-          const historyData = gameHistory[puzzle.date] || {};
-          return {
-            ...puzzle,
-            completed: historyData.completed || false,
-            failed: historyData.failed || false,
-            attempted: historyData.attempted || false,
-            status: historyData.status || 'not_played',
-            time: historyData.time,
-            mistakes: historyData.mistakes,
-            solved: historyData.solved,
-            savedTheme: historyData.theme,
-            theme: puzzle.theme,
-          };
-        });
-
-        // Update state
-        if (append) {
-          setPuzzles((prev) => [...prev, ...processedPuzzles]);
-        } else {
-          setPuzzles(processedPuzzles);
-        }
-
-        setHasMore(data.pagination.hasMore);
-        setStartNumber(calculatedStartNum);
-
-        // Check access permissions
-        checkAccessPermissions(processedPuzzles, append);
-      }
-    } catch (error) {
-      if (error.name !== 'AbortError') {
-        console.error('Error loading puzzles:', error);
-        setError(error.message || 'Failed to load puzzles. Please try again.');
-      }
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-      loadingRef.current = false;
-      isInitialLoad.current = false;
-    }
-    // checkAccessPermissions is intentionally excluded - it's called immediately after setting puzzles
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Load puzzles using number-based archive API
+  const loadPuzzles = useCallback(
+    async (loadStart = null, append = false) => {
+      // Prevent concurrent loads
+      if (loadingRef.current) return;
+      loadingRef.current = true;
+
+      // Cancel previous request if any
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+
+      abortControllerRef.current = new AbortController();
+
+      try {
+        setError(null);
+
+        if (!append) {
+          setIsLoading(true);
+        } else {
+          setIsLoadingMore(true);
+        }
+
+        const currentNum = getCurrentPuzzleNumber();
+        setCurrentPuzzleNumber(currentNum);
+
+        // Calculate range
+        const endNum = loadStart === null ? currentNum : loadStart - 1;
+        const calculatedStartNum = Math.max(1, endNum - BATCH_SIZE + 1);
+        const cacheKey = `${calculatedStartNum}-${endNum}`;
+
+        // Check if we have cached data for this exact range (don't use ETag on initial load)
+        const useCachedData = paginatedCache.puzzles[cacheKey] && !isInitialLoad.current;
+
+        // Fetch from new archive endpoint
+        const headers = {};
+        // Only send ETag if we're reloading the same range
+        if (useCachedData && paginatedCache.etag) {
+          headers['If-None-Match'] = paginatedCache.etag;
+        }
+
+        let response;
+        let data;
+        let useCache = false;
+
+        // Use CapacitorHttp on iOS to bypass CORS
+        if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
+          const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
+          response = await CapacitorHttp.get({
+            url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
+            headers,
+          });
+
+          // Handle 304 Not Modified - use cached data
+          if (response.status === 304) {
+            useCache = true;
+          } else if (response.status >= 400) {
+            throw new Error(response.data?.error || 'Failed to fetch puzzles');
+          } else {
+            data = response.data;
+          }
+        } else {
+          // Use regular fetch for web
+          response = await fetch(
+            `/api/puzzles/archive?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
+            {
+              signal: abortControllerRef.current.signal,
+              headers,
+            }
+          );
+
+          // Handle 304 Not Modified - use cached data
+          if (response.status === 304) {
+            useCache = true;
+          } else if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || 'Failed to fetch puzzles');
+          } else {
+            data = await response.json();
+          }
+        }
+
+        // Use cached data if 304 response
+        if (useCache && paginatedCache.puzzles[cacheKey]) {
+          // Get fresh game history to update status
+          const gameHistory = getGameHistory();
+          const cachedPuzzles = paginatedCache.puzzles[cacheKey];
+
+          // Update with latest game history
+          const refreshedPuzzles = cachedPuzzles.map((puzzle) => {
+            const historyData = gameHistory[puzzle.date] || {};
+            return {
+              ...puzzle,
+              completed: historyData.completed || false,
+              failed: historyData.failed || false,
+              attempted: historyData.attempted || false,
+              status: historyData.status || 'not_played',
+              time: historyData.time,
+              mistakes: historyData.mistakes,
+              solved: historyData.solved,
+              savedTheme: historyData.theme,
+            };
+          });
+
+          // Update state
+          if (append) {
+            setPuzzles((prev) => [...prev, ...refreshedPuzzles]);
+          } else {
+            setPuzzles(refreshedPuzzles);
+          }
+
+          setHasMore(true); // Assume more for cached data (will be updated on next fetch)
+          setStartNumber(calculatedStartNum);
+
+          // Check access permissions
+          checkAccessPermissions(refreshedPuzzles, append);
+        } else if (data && data.success) {
+          // Store ETag for caching
+          const etag =
+            Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios'
+              ? response.headers?.ETag || response.headers?.etag
+              : response.headers.get('ETag');
+          if (etag) {
+            paginatedCache.etag = etag;
+          }
+
+          // Get game history for status
+          const gameHistory = getGameHistory();
+
+          // Process puzzles with game history
+          const processedPuzzles = data.puzzles.map((puzzle) => {
+            const historyData = gameHistory[puzzle.date] || {};
+            return {
+              ...puzzle,
+              completed: historyData.completed || false,
+              failed: historyData.failed || false,
+              attempted: historyData.attempted || false,
+              status: historyData.status || 'not_played',
+              time: historyData.time,
+              mistakes: historyData.mistakes,
+              solved: historyData.solved,
+              savedTheme: historyData.theme,
+              theme: puzzle.theme,
+            };
+          });
+
+          // Cache the processed puzzles with timestamp
+          paginatedCache.puzzles[cacheKey] = processedPuzzles;
+          paginatedCache.lastFetch = Date.now();
+
+          // Cleanup old cache entries
+          cleanupCache();
+
+          // Update state
+          if (append) {
+            setPuzzles((prev) => [...prev, ...processedPuzzles]);
+          } else {
+            setPuzzles(processedPuzzles);
+          }
+
+          setHasMore(data.pagination.hasMore);
+          setStartNumber(calculatedStartNum);
+
+          // Check access permissions
+          checkAccessPermissions(processedPuzzles, append);
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          // Log error for debugging in development
+          if (process.env.NODE_ENV === 'development') {
+            console.error('[ArchiveModal] Failed to load puzzles:', error);
+          }
+          setError(error.message || 'Failed to load puzzles. Please try again.');
+        }
+      } finally {
+        setIsLoading(false);
+        setIsLoadingMore(false);
+        loadingRef.current = false;
+        isInitialLoad.current = false;
+      }
+      // checkAccessPermissions is intentionally excluded - it's called immediately after setting puzzles
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [cleanupCache]
+  );
 
   /**
    * Check access permissions for puzzles - SYNCHRONOUS and INSTANT
@@ -355,24 +432,15 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
    */
   const handlePuzzleClick = useCallback(
     (puzzle) => {
-      console.log('[ArchiveModal] handlePuzzleClick - puzzle:', puzzle);
-      console.log('[ArchiveModal] Puzzle number:', puzzle.number, 'type:', typeof puzzle.number);
-
       // Get lock status from cache (synchronously populated on load)
       const isLocked = puzzleAccessMap[puzzle.number.toString()] === true;
-      console.log('[ArchiveModal] isLocked:', isLocked, 'puzzleAccessMap:', puzzleAccessMap);
 
       if (isLocked) {
-        console.log('[ArchiveModal] Puzzle is locked - showing paywall');
         // Show paywall immediately - no waiting
         setShowPaywall(true);
         return;
       }
 
-      console.log(
-        '[ArchiveModal] Puzzle is unlocked - calling onSelectPuzzle with:',
-        puzzle.number
-      );
       // Puzzle is accessible - load it by puzzle number
       onSelectPuzzle(puzzle.number);
     },
@@ -478,6 +546,9 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
       onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="archive-modal-title"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -488,7 +559,12 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Puzzle Archive</h2>
+            <h2
+              id="archive-modal-title"
+              className="text-2xl font-bold text-gray-800 dark:text-gray-200"
+            >
+              Puzzle Archive
+            </h2>
             {currentPuzzleNumber > 0 && (
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 {currentPuzzleNumber} puzzles available
