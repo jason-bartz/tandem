@@ -3,6 +3,7 @@ import { Share } from '@capacitor/share';
 import { Haptics, ImpactStyle } from '@capacitor/haptics';
 import { Preferences } from '@capacitor/preferences';
 import logger from '@/lib/logger';
+import { getCurrentPuzzleNumber, getDateForPuzzleNumber } from '@/lib/puzzleNumber';
 
 class PlatformService {
   constructor() {
@@ -30,20 +31,41 @@ class PlatformService {
     return this.isWeb;
   }
 
-  // API methods with offline support
-  async fetchPuzzle(date) {
-    // If no date provided, use today's date in Eastern Time
-    const targetDate = date || this.getTodayDateString();
+  /**
+   * Fetch puzzle by number or date (backward compatible)
+   * Uses puzzle numbers based on user's timezone (Wordle approach)
+   *
+   * @param {number|string|null} identifier - Puzzle number, date (YYYY-MM-DD), or null for current
+   * @returns {Promise<Object>} Puzzle data
+   */
+  async fetchPuzzle(identifier = null) {
+    let puzzleNumber;
+    let date;
+
+    if (identifier === null || identifier === undefined) {
+      // No identifier - use current puzzle in user's timezone
+      puzzleNumber = getCurrentPuzzleNumber();
+      date = getDateForPuzzleNumber(puzzleNumber);
+    } else if (typeof identifier === 'number' || /^\d+$/.test(identifier)) {
+      // Identifier is a puzzle number
+      puzzleNumber = typeof identifier === 'number' ? identifier : parseInt(identifier);
+      date = getDateForPuzzleNumber(puzzleNumber);
+    } else {
+      // Identifier is a date string (backward compatibility)
+      date = identifier;
+      // Don't calculate number from date - let API handle it
+    }
 
     // Check if we need to clear yesterday's cache for today's puzzle
-    if (!date && this.isNative) {
+    if (!identifier && this.isNative) {
       await this.clearYesterdayCache();
     }
 
-    // Build the full URL
+    // Build the URL - prefer puzzle number for new system
+    const queryParam = puzzleNumber ? `number=${puzzleNumber}` : `date=${date}`;
     const url = this.isNative
-      ? `https://www.tandemdaily.com/api/puzzle?date=${targetDate}`
-      : `/api/puzzle?date=${targetDate}`;
+      ? `https://www.tandemdaily.com/api/puzzle?${queryParam}`
+      : `/api/puzzle?${queryParam}`;
 
     try {
       let data;
@@ -51,7 +73,7 @@ class PlatformService {
       // Use native HTTP on iOS to bypass CORS
       if (this.isNative && this.isIOS) {
         const response = await CapacitorHttp.get({
-          url: `https://www.tandemdaily.com/api/puzzle?date=${targetDate}`,
+          url: `https://www.tandemdaily.com/api/puzzle?${queryParam}`,
         });
         data = response.data;
       } else {
@@ -70,10 +92,11 @@ class PlatformService {
         data = await res.json();
       }
 
-      // Cache successful fetch for offline use
+      // Cache successful fetch for offline use (use date for cache key)
       if (this.isNative) {
-        await this.cachePuzzle(targetDate, data);
-        logger.debug('Puzzle cached for offline use:', targetDate);
+        const cacheDate = data.date || date;
+        await this.cachePuzzle(cacheDate, data);
+        logger.debug('Puzzle cached for offline use:', cacheDate);
       }
 
       return data;
@@ -81,15 +104,14 @@ class PlatformService {
       logger.error('Error fetching puzzle from API', error);
 
       // Try offline fallback on native
-      if (this.isNative) {
-        const cachedPuzzle = await this.getOfflinePuzzle(targetDate);
+      if (this.isNative && date) {
+        const cachedPuzzle = await this.getOfflinePuzzle(date);
         if (cachedPuzzle) {
-          logger.debug('Using cached puzzle for:', targetDate);
+          logger.debug('Using cached puzzle for:', date);
           return cachedPuzzle;
         }
 
-        // No cached puzzle available
-        logger.warn('No cached puzzle available for:', targetDate);
+        logger.warn('No cached puzzle available for:', date);
       }
 
       throw error;
