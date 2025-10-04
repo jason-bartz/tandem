@@ -15,21 +15,81 @@ const STORAGE_KEYS = {
   EXPIRY_DATE: 'tandem_expiry_date',
 };
 
+// Initialization states following iOS best practices
+const INIT_STATE = {
+  NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+};
+
 class SubscriptionService {
   constructor() {
     this.store = null;
     this.products = {};
-    this.isInitialized = false;
+    this.initState = INIT_STATE.NOT_STARTED;
     this.subscriptionStatus = null;
     this.initPromise = null;
+    this.stateListeners = [];
   }
 
+  /**
+   * Get current initialization state
+   * @returns {string} One of INIT_STATE values
+   */
+  getInitState() {
+    return this.initState;
+  }
+
+  /**
+   * Check if service is ready for synchronous operations
+   * @returns {boolean}
+   */
+  isReady() {
+    return this.initState === INIT_STATE.READY;
+  }
+
+  /**
+   * Subscribe to initialization state changes
+   * @param {Function} callback - Called with new state
+   * @returns {Function} Unsubscribe function
+   */
+  onStateChange(callback) {
+    this.stateListeners.push(callback);
+    // Immediately call with current state
+    callback(this.initState);
+    return () => {
+      this.stateListeners = this.stateListeners.filter((cb) => cb !== callback);
+    };
+  }
+
+  /**
+   * Notify all listeners of state change
+   * @private
+   */
+  _notifyStateChange(newState) {
+    this.initState = newState;
+    this.stateListeners.forEach((callback) => {
+      try {
+        callback(newState);
+      } catch (error) {
+        console.error('Error in subscription state listener:', error);
+      }
+    });
+  }
+
+  /**
+   * Initialize subscription service
+   * Should be called once at app bootstrap
+   * @returns {Promise<void>}
+   */
   async initialize() {
     // Only initialize once
     if (this.initPromise) {
       return this.initPromise;
     }
 
+    this._notifyStateChange(INIT_STATE.INITIALIZING);
     this.initPromise = this._doInitialize();
     return this.initPromise;
   }
@@ -38,8 +98,8 @@ class SubscriptionService {
     // Only initialize on native iOS
     if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
       console.log('IAP: Skipping initialization - not on iOS');
-      this.isInitialized = true;
       await this.loadSubscriptionStatus();
+      this._notifyStateChange(INIT_STATE.READY);
       return;
     }
 
@@ -138,8 +198,8 @@ class SubscriptionService {
           console.warn('4. Need to wait longer for App Store Connect to propagate changes');
         }
 
-        this.isInitialized = true;
         await this.loadSubscriptionStatus();
+        this._notifyStateChange(INIT_STATE.READY);
 
         console.log(
           'IAP: Initialization complete. Products loaded:',
@@ -152,8 +212,8 @@ class SubscriptionService {
       }
     } catch (error) {
       console.error('IAP: Failed to initialize store:', error);
-      this.isInitialized = true; // Still mark as initialized to prevent blocking
       await this.loadSubscriptionStatus();
+      this._notifyStateChange(INIT_STATE.FAILED);
     }
   }
 
@@ -277,19 +337,33 @@ class SubscriptionService {
     return this.subscriptionStatus;
   }
 
-  async isSubscribed() {
-    if (!this.isInitialized) {
-      await this.initialize();
+  /**
+   * Synchronously check if user is subscribed using cached status
+   * NEVER blocks UI - returns immediately
+   * @returns {boolean}
+   */
+  isSubscribed() {
+    // If not initialized yet, assume not subscribed
+    if (!this.isReady()) {
+      return false;
     }
 
-    // Reload status to check for expiry
+    return this.subscriptionStatus?.isActive || false;
+  }
+
+  /**
+   * Asynchronously refresh subscription status
+   * Use this to update the cache in the background
+   * @returns {Promise<boolean>}
+   */
+  async refreshSubscriptionStatus() {
     await this.loadSubscriptionStatus();
     return this.subscriptionStatus?.isActive || false;
   }
 
   async purchase(productId) {
-    if (!this.isInitialized) {
-      await this.initialize();
+    if (!this.isReady()) {
+      throw new Error('Subscription service is not ready. Please try again in a moment.');
     }
 
     if (!this.store) {
@@ -307,7 +381,7 @@ class SubscriptionService {
       if (Object.keys(this.products).length === 0) {
         console.log('IAP: No products loaded, attempting to re-initialize...');
         this.initPromise = null;
-        this.isInitialized = false;
+        this._notifyStateChange(INIT_STATE.NOT_STARTED);
         await this.initialize();
 
         // Check again after re-initialization
@@ -357,8 +431,8 @@ class SubscriptionService {
   }
 
   async restorePurchases() {
-    if (!this.isInitialized) {
-      await this.initialize();
+    if (!this.isReady()) {
+      throw new Error('Subscription service is not ready. Please try again in a moment.');
     }
 
     if (!this.store) {
@@ -454,9 +528,14 @@ class SubscriptionService {
     });
   }
 
-  // Check if archive puzzle is accessible
-  async canAccessPuzzle(puzzleDate) {
-    const isSubscribed = await this.isSubscribed();
+  /**
+   * Synchronously check if user can access a puzzle using cached subscription status
+   * NEVER blocks UI - returns immediately
+   * @param {string} puzzleDate - Date string in YYYY-MM-DD format
+   * @returns {boolean} True if puzzle is accessible
+   */
+  canAccessPuzzle(puzzleDate) {
+    const isSubscribed = this.isSubscribed();
 
     // Subscribers can access everything
     if (isSubscribed) {
@@ -467,7 +546,7 @@ class SubscriptionService {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
-    const puzzle = new Date(puzzleDate);
+    const puzzle = new Date(puzzleDate + 'T00:00:00');
     puzzle.setHours(0, 0, 0, 0);
 
     const daysDiff = Math.floor((today - puzzle) / (1000 * 60 * 60 * 24));
@@ -497,4 +576,7 @@ class SubscriptionService {
 
 // Create singleton instance
 const subscriptionService = new SubscriptionService();
+
+// Export init states for component use
+export { INIT_STATE };
 export default subscriptionService;

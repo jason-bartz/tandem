@@ -17,6 +17,7 @@ import platformService from '@/services/platform';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
+import subscriptionService from '@/services/subscriptionService';
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
@@ -24,6 +25,16 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
+
+  // Initialize subscription service on app bootstrap (iOS only)
+  // This runs ONCE when the app starts, ensuring subscription state is ready
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      subscriptionService.initialize().catch(() => {
+        // App continues to work even if subscription init fails
+      });
+    }
+  }, []);
 
   // Reset timer when puzzle changes or when returning to welcome screen
   useEffect(() => {
