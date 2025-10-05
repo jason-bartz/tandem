@@ -31,32 +31,29 @@ export async function requireAdmin(request) {
   const authHeader = request.headers.get('authorization');
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return NextResponse.json(
-      { error: 'Unauthorized - No token provided' },
-      { status: 401 }
-    );
+    return {
+      error: NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 }),
+    };
   }
 
   const token = authHeader.replace('Bearer ', '');
   const decoded = verifyAdminToken(token);
 
   if (!decoded) {
-    return NextResponse.json(
-      { error: 'Unauthorized - Invalid token' },
-      { status: 401 }
-    );
+    return {
+      error: NextResponse.json({ error: 'Unauthorized - Invalid token' }, { status: 401 }),
+    };
   }
 
   // Validate CSRF token for state-changing operations
   if (request.method !== 'GET' && request.method !== 'HEAD') {
     const isValidCSRF = await validateCSRFToken(request);
     if (!isValidCSRF) {
-      return NextResponse.json(
-        { error: 'CSRF validation failed' },
-        { status: 403 }
-      );
+      return {
+        error: NextResponse.json({ error: 'CSRF validation failed' }, { status: 403 }),
+      };
     }
   }
 
-  return null; // Auth passed
+  return { admin: decoded }; // Auth passed, return admin info
 }
