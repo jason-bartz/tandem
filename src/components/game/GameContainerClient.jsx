@@ -258,8 +258,12 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
       {/* Content container - mobile phones get full height, tablets/desktop get scrollable centered layout */}
       {isMobilePhone ? (
-        // Mobile phone: Fixed full-height layout with no scrolling
-        <div className="h-full w-full max-w-xl mx-auto animate-fade-in relative">
+        // Mobile phone: Fixed full-height layout with no scrolling (PLAYING only), scrollable for WELCOME/COMPLETE
+        <div
+          className={`h-full w-full max-w-xl mx-auto animate-fade-in relative ${
+            game.gameState === GAME_STATES.COMPLETE ? 'overflow-y-auto' : ''
+          }`}
+        >
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}

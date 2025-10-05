@@ -8,17 +8,17 @@ const KEYBOARD_LAYOUTS = {
   QWERTY: [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['Enter', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['SUBMIT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   QWERTZ: [
     ['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['Enter', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['SUBMIT', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   AZERTY: [
     ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'],
-    ['Enter', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
+    ['SUBMIT', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
   ],
 };
 
@@ -56,8 +56,8 @@ export default function OnScreenKeyboard({
       playKeyPressSound();
     }
 
-    // Call the parent handler (convert Enter back to ENTER for consistency)
-    onKeyPress(key === 'Enter' ? 'ENTER' : key);
+    // Call the parent handler (convert SUBMIT to ENTER for consistency with existing logic)
+    onKeyPress(key === 'SUBMIT' ? 'ENTER' : key);
 
     // Clear visual feedback after animation - remove specific key from set
     setTimeout(() => {
@@ -81,7 +81,9 @@ export default function OnScreenKeyboard({
 
   const getKeyClasses = (key) => {
     const isPressed = pressedKeys.has(key);
-    const isSpecialKey = key === 'Enter' || key === 'BACKSPACE';
+    const isSubmitKey = key === 'SUBMIT';
+    const isBackspaceKey = key === 'BACKSPACE';
+    const isSpecialKey = isSubmitKey || isBackspaceKey;
 
     let baseClasses = `
       select-none cursor-pointer touch-manipulation font-bold
@@ -95,9 +97,11 @@ export default function OnScreenKeyboard({
       if (isDark) {
         baseClasses += `
           ${
-            isSpecialKey
-              ? 'bg-hc-warning text-black border-2 border-hc-border'
-              : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+            isSubmitKey
+              ? 'bg-hc-primary text-white border-2 border-hc-border'
+              : isBackspaceKey
+                ? 'bg-hc-warning text-black border-2 border-hc-border'
+                : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:border-hc-focus }'}
           ${isPressed && 'bg-hc-focus border-hc-focus'}
@@ -105,9 +109,11 @@ export default function OnScreenKeyboard({
       } else {
         baseClasses += `
           ${
-            isSpecialKey
+            isSubmitKey
               ? 'bg-hc-primary text-white border-2 border-hc-border'
-              : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+              : isBackspaceKey
+                ? 'bg-hc-warning text-white border-2 border-hc-border'
+                : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-white }'}
           ${isPressed && 'bg-hc-focus text-white'}
@@ -117,22 +123,26 @@ export default function OnScreenKeyboard({
       if (isDark) {
         baseClasses += `
           ${
-            isSpecialKey
-              ? 'bg-gray-600 text-gray-100 border border-gray-500'
-              : 'bg-gray-700 text-gray-200 border border-gray-600'
+            isSubmitKey
+              ? 'bg-gradient-to-r from-sky-600 to-teal-600 text-white border border-sky-700'
+              : isBackspaceKey
+                ? 'bg-gray-600 text-gray-100 border border-gray-500'
+                : 'bg-gray-700 text-gray-200 border border-gray-600'
           }
-          ${!disabled && 'md:hover:bg-gray-600 md:hover:border-gray-500'}
-          ${isPressed && 'bg-gray-600 border-gray-500'}
+          ${!disabled && (isSubmitKey ? 'md:hover:from-sky-700 md:hover:to-teal-700' : 'md:hover:bg-gray-600 md:hover:border-gray-500')}
+          ${isPressed && (isSubmitKey ? 'from-sky-700 to-teal-700' : 'bg-gray-600 border-gray-500')}
         `;
       } else {
         baseClasses += `
           ${
-            isSpecialKey
-              ? 'bg-gray-400 text-white border border-gray-500'
-              : 'bg-gray-200 text-gray-800 border border-gray-300'
+            isSubmitKey
+              ? 'bg-gradient-to-r from-sky-500 to-teal-500 text-white border border-sky-600'
+              : isBackspaceKey
+                ? 'bg-gray-400 text-white border border-gray-500'
+                : 'bg-gray-200 text-gray-800 border border-gray-300'
           }
-          ${!disabled && 'md:hover:bg-gray-300 md:hover:border-gray-400'}
-          ${isPressed && 'bg-gray-300 border-gray-400'}
+          ${!disabled && (isSubmitKey ? 'md:hover:from-sky-600 md:hover:to-teal-600' : 'md:hover:bg-gray-300 md:hover:border-gray-400')}
+          ${isPressed && (isSubmitKey ? 'from-sky-600 to-teal-600' : 'bg-gray-300 border-gray-400')}
         `;
       }
     }
@@ -162,11 +172,14 @@ export default function OnScreenKeyboard({
         </svg>
       );
     }
+    if (key === 'SUBMIT') {
+      return 'Submit';
+    }
     return key;
   };
 
   const getKeyWidth = (key) => {
-    if (key === 'Enter') return 'col-span-3';
+    if (key === 'SUBMIT') return 'col-span-3';
     if (key === 'BACKSPACE') return 'col-span-2';
     return 'col-span-2';
   };
