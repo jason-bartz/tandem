@@ -50,12 +50,31 @@ export function isSmallPhone() {
  * @returns {object} Device detection state
  */
 export function useDeviceType() {
-  const [deviceType, setDeviceType] = useState({
-    isMobilePhone: false,
-    isSmallPhone: false,
-    isTablet: false,
-    viewportHeight: 0,
-    viewportWidth: 0,
+  // Initialize with detection to prevent layout flash
+  const [deviceType, setDeviceType] = useState(() => {
+    if (typeof window === 'undefined') {
+      return {
+        isMobilePhone: false,
+        isSmallPhone: false,
+        isTablet: false,
+        viewportHeight: 0,
+        viewportWidth: 0,
+      };
+    }
+
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const isPhone =
+      width <= DEVICE_BREAKPOINTS.PHONE_WIDTH && height <= DEVICE_BREAKPOINTS.PHONE_HEIGHT;
+    const isSmall = isPhone && height < DEVICE_BREAKPOINTS.SMALL_PHONE_HEIGHT;
+
+    return {
+      isMobilePhone: isPhone,
+      isSmallPhone: isSmall,
+      isTablet: !isPhone,
+      viewportHeight: height,
+      viewportWidth: width,
+    };
   });
 
   useEffect(() => {
@@ -74,9 +93,6 @@ export function useDeviceType() {
         viewportWidth: width,
       });
     };
-
-    // Initial detection
-    updateDeviceType();
 
     // Listen for resize and orientation changes
     window.addEventListener('resize', updateDeviceType);

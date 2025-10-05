@@ -180,7 +180,7 @@ export default function OnScreenKeyboard({
 
   const getKeyWidth = (key) => {
     if (key === 'SUBMIT') return 'col-span-3';
-    if (key === 'BACKSPACE') return 'col-span-2';
+    if (key === 'BACKSPACE') return 'col-span-3';
     return 'col-span-2';
   };
 
@@ -188,7 +188,7 @@ export default function OnScreenKeyboard({
 
   // Calculate grid columns based on actual row content
   const getGridConfig = (row, rowIndex) => {
-    const letterCount = row.filter((k) => k !== 'Enter' && k !== 'BACKSPACE').length;
+    const letterCount = row.filter((k) => k !== 'SUBMIT' && k !== 'BACKSPACE').length;
 
     // For AZERTY second row with 10 letters
     if (rowIndex === 1 && letterCount === 10) {
@@ -217,22 +217,21 @@ export default function OnScreenKeyboard({
       };
     }
 
-    // Bottom row - AZERTY has fewer letters (7) so it needs centering
+    // Bottom row - Now perfectly symmetric with SUBMIT (3) and BACKSPACE (3)
     if (rowIndex === 2) {
-      // AZERTY: Enter (3) + 6 letters (12) + Backspace (2) = 17 cols
-      // QWERTY/QWERTZ: Enter (3) + 7 letters (14) + Backspace (2) = 19 cols
-      const totalCols = 3 + letterCount * 2 + 2;
-      const needsCentering = letterCount < 7;
+      // AZERTY: SUBMIT (3) + 6 letters (12) + BACKSPACE (3) = 18 cols (centered!)
+      // QWERTY/QWERTZ: SUBMIT (3) + 7 letters (14) + BACKSPACE (3) = 20 cols (matches top row!)
+      const totalCols = 3 + letterCount * 2 + 3;
       return {
         className: `grid-cols-${totalCols}`,
         style: `repeat(${totalCols}, minmax(0, 1fr))`,
-        padding: needsCentering ? 'px-6 sm:px-8' : '',
+        padding: '', // No padding needed - now perfectly centered
       };
     }
 
     return {
-      className: 'grid-cols-19',
-      style: 'repeat(19, minmax(0, 1fr))',
+      className: 'grid-cols-20',
+      style: 'repeat(20, minmax(0, 1fr))',
       padding: '',
     };
   };
