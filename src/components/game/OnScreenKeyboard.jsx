@@ -25,7 +25,7 @@ const KEYBOARD_LAYOUTS = {
 export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout = 'QWERTY' }) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark } = useTheme();
-  const [pressedKey, setPressedKey] = useState(null);
+  const [pressedKeys, setPressedKeys] = useState(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
 
   // Load sound preference from localStorage
@@ -41,8 +41,8 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
   const handleKeyPress = (key) => {
     if (disabled) return;
 
-    // Visual and haptic feedback
-    setPressedKey(key);
+    // Visual and haptic feedback - add key to pressed set
+    setPressedKeys((prev) => new Set(prev).add(key));
     lightTap();
 
     // Play keypress sound if enabled
@@ -53,25 +53,36 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
     // Call the parent handler (convert Enter back to ENTER for consistency)
     onKeyPress(key === 'Enter' ? 'ENTER' : key);
 
-    // Clear visual feedback after animation
-    setTimeout(() => setPressedKey(null), 100);
+    // Clear visual feedback after animation - remove specific key from set
+    setTimeout(() => {
+      setPressedKeys((prev) => {
+        const next = new Set(prev);
+        next.delete(key);
+        return next;
+      });
+    }, 150);
   };
 
-  const handleKeyRelease = () => {
+  const handleKeyRelease = (key) => {
     // Ensure pressed state is cleared on pointer/touch release
     // This is especially important for mobile devices
-    setPressedKey(null);
+    setPressedKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
   };
 
   const getKeyClasses = (key) => {
-    const isPressed = pressedKey === key;
+    const isPressed = pressedKeys.has(key);
     const isSpecialKey = key === 'Enter' || key === 'BACKSPACE';
 
     let baseClasses = `
-      select-none cursor-pointer transition-all duration-75 font-semibold
+      select-none cursor-pointer touch-manipulation font-semibold
       rounded-md flex items-center justify-center
+      transition-[background-color,border-color,transform] duration-150 ease-out
       ${isSpecialKey ? 'text-xs sm:text-sm px-1 sm:px-2' : 'text-sm sm:text-base'}
-      ${isPressed ? 'scale-95' : 'hover:scale-105 active:scale-95'}
+      ${isPressed ? 'scale-95' : 'active:scale-95'}
     `;
 
     if (highContrast) {
@@ -82,7 +93,7 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
               ? 'bg-hc-warning text-black border-2 border-hc-border'
               : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
-          ${!disabled && 'hover:bg-hc-focus hover:border-hc-focus'}
+          ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:border-hc-focus }'}
           ${isPressed && 'bg-hc-focus border-hc-focus'}
         `;
       } else {
@@ -92,7 +103,7 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
               ? 'bg-hc-primary text-white border-2 border-hc-border'
               : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
-          ${!disabled && 'hover:bg-hc-focus hover:text-white'}
+          ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-white }'}
           ${isPressed && 'bg-hc-focus text-white'}
         `;
       }
@@ -104,7 +115,7 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
               ? 'bg-gray-600 text-gray-100 border border-gray-500'
               : 'bg-gray-700 text-gray-200 border border-gray-600'
           }
-          ${!disabled && 'hover:bg-gray-600 hover:border-gray-500'}
+          ${!disabled && 'md:hover:bg-gray-600 md:hover:border-gray-500'}
           ${isPressed && 'bg-gray-600 border-gray-500'}
         `;
       } else {
@@ -114,7 +125,7 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
               ? 'bg-gray-400 text-white border border-gray-500'
               : 'bg-gray-200 text-gray-800 border border-gray-300'
           }
-          ${!disabled && 'hover:bg-gray-300 hover:border-gray-400'}
+          ${!disabled && 'md:hover:bg-gray-300 md:hover:border-gray-400'}
           ${isPressed && 'bg-gray-300 border-gray-400'}
         `;
       }
@@ -226,10 +237,10 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
                   type="button"
                   disabled={disabled}
                   onClick={() => handleKeyPress(key)}
-                  onPointerUp={handleKeyRelease}
-                  onPointerLeave={handleKeyRelease}
-                  onTouchEnd={handleKeyRelease}
-                  onTouchCancel={handleKeyRelease}
+                  onPointerUp={() => handleKeyRelease(key)}
+                  onPointerLeave={() => handleKeyRelease(key)}
+                  onTouchEnd={() => handleKeyRelease(key)}
+                  onTouchCancel={() => handleKeyRelease(key)}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} h-10 sm:h-12`}
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
                 >
