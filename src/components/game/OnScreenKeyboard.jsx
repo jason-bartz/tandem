@@ -84,10 +84,10 @@ export default function OnScreenKeyboard({
     const isSpecialKey = key === 'Enter' || key === 'BACKSPACE';
 
     let baseClasses = `
-      select-none cursor-pointer touch-manipulation font-semibold
+      select-none cursor-pointer touch-manipulation font-bold
       rounded-md flex items-center justify-center
       transition-[background-color,border-color,transform] duration-150 ease-out
-      ${isSpecialKey ? 'text-xs sm:text-sm px-1 sm:px-2' : 'text-sm sm:text-base'}
+      ${isSpecialKey ? 'text-sm sm:text-base px-1 sm:px-2' : 'text-lg sm:text-xl'}
       ${isPressed ? 'scale-95' : 'active:scale-95'}
     `;
 
@@ -227,12 +227,12 @@ export default function OnScreenKeyboard({
   return (
     <div
       className={`w-full max-w-lg mx-auto ${
-        isSmallPhone ? 'px-1 pb-1' : isMobilePhone ? 'px-1.5 pb-1.5' : 'px-2 pb-2'
+        isSmallPhone ? 'px-1 pb-2' : isMobilePhone ? 'px-1.5 pb-2' : 'px-2 pb-3'
       }`}
     >
       <div
         className={
-          isSmallPhone ? 'space-y-0.5' : isMobilePhone ? 'space-y-1' : 'space-y-1 sm:space-y-2'
+          isSmallPhone ? 'space-y-1.5' : isMobilePhone ? 'space-y-2' : 'space-y-2 sm:space-y-2.5'
         }
       >
         {rows.map((row, rowIndex) => {
@@ -258,7 +258,7 @@ export default function OnScreenKeyboard({
                   onTouchEnd={() => handleKeyRelease(key)}
                   onTouchCancel={() => handleKeyRelease(key)}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
-                    isSmallPhone ? 'h-9' : isMobilePhone ? 'h-10' : 'h-10 sm:h-12'
+                    isSmallPhone ? 'h-[50px]' : isMobilePhone ? 'h-14' : 'h-14 sm:h-[58px]'
                   }`}
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
                 >
