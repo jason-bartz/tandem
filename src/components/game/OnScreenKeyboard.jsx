@@ -22,7 +22,13 @@ const KEYBOARD_LAYOUTS = {
   ],
 };
 
-export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout = 'QWERTY' }) {
+export default function OnScreenKeyboard({
+  onKeyPress,
+  disabled = false,
+  layout = 'QWERTY',
+  isSmallPhone = false,
+  isMobilePhone = false,
+}) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark } = useTheme();
   const [pressedKeys, setPressedKeys] = useState(new Set());
@@ -219,14 +225,24 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto px-2 pb-2">
-      <div className="space-y-1 sm:space-y-2">
+    <div
+      className={`w-full max-w-lg mx-auto ${
+        isSmallPhone ? 'px-1 pb-1' : isMobilePhone ? 'px-1.5 pb-1.5' : 'px-2 pb-2'
+      }`}
+    >
+      <div
+        className={
+          isSmallPhone ? 'space-y-0.5' : isMobilePhone ? 'space-y-1' : 'space-y-1 sm:space-y-2'
+        }
+      >
         {rows.map((row, rowIndex) => {
           const gridConfig = getGridConfig(row, rowIndex);
           return (
             <div
               key={rowIndex}
-              className={`grid gap-1 sm:gap-1.5 ${gridConfig.className} ${gridConfig.padding}`}
+              className={`grid ${
+                isSmallPhone ? 'gap-0.5' : isMobilePhone ? 'gap-1' : 'gap-1 sm:gap-1.5'
+              } ${gridConfig.className} ${gridConfig.padding}`}
               style={{
                 gridTemplateColumns: gridConfig.style,
               }}
@@ -241,7 +257,9 @@ export default function OnScreenKeyboard({ onKeyPress, disabled = false, layout 
                   onPointerLeave={() => handleKeyRelease(key)}
                   onTouchEnd={() => handleKeyRelease(key)}
                   onTouchCancel={() => handleKeyRelease(key)}
-                  className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} h-10 sm:h-12`}
+                  className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
+                    isSmallPhone ? 'h-9' : isMobilePhone ? 'h-10' : 'h-10 sm:h-12'
+                  }`}
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
                 >
                   {getKeyContent(key)}

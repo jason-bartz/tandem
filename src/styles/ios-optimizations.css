@@ -218,3 +218,96 @@
   inset: -8px;
   z-index: -1;
 }
+
+/* Mobile phone fixed layout optimizations */
+@media (max-width: 768px) and (max-height: 850px) {
+  /* Prevent pull-to-refresh and bounce on mobile phones */
+  .mobile-phone-layout {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+  }
+
+  /* Fixed height container */
+  .mobile-playing-screen {
+    touch-action: pan-y;
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Optimize keyboard rendering */
+  .keyboard-container {
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+    z-index: 10;
+    contain: layout style;
+  }
+
+  /* Prevent iOS rubber-band effect */
+  body.mobile-phone-active {
+    position: fixed;
+    overflow: hidden;
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+  }
+}
+
+/* Small phone optimizations (iPhone SE, compact devices) */
+@media (max-width: 768px) and (max-height: 700px) {
+  /* Tighter spacing for small screens */
+  .small-phone-layout .keyboard-container {
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+  }
+
+  /* Reduce animation overhead on small screens */
+  .small-phone-layout * {
+    transition-duration: 0.15s !important;
+  }
+
+  /* Optimize font rendering */
+  .small-phone-layout {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeSpeed;
+  }
+}
+
+/* Landscape mode optimizations for mobile phones */
+@media (orientation: landscape) and (max-height: 450px) {
+  .mobile-phone-layout {
+    font-size: 14px;
+  }
+
+  .mobile-phone-layout .keyboard-container {
+    padding-top: 0.25rem;
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom));
+  }
+
+  /* Further compress header in landscape */
+  .mobile-phone-layout .pt-safe-ios {
+    padding-top: env(safe-area-inset-top, 0.5rem) !important;
+  }
+}
+
+/* Performance optimizations for mobile */
+@media (max-width: 768px) {
+  /* GPU acceleration for smooth animations */
+  .mobile-playing-screen,
+  .keyboard-container,
+  .puzzle-scroll-area {
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: auto; /* Only set when needed */
+  }
+
+  /* Contain layout calculations */
+  .mobile-phone-layout > * {
+    contain: layout style paint;
+  }
+
+  /* Optimize repaint regions */
+  .keyboard-container button {
+    contain: layout style;
+  }
+}

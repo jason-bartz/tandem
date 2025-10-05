@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
+import { useDeviceType } from '@/lib/deviceDetection';
 import { GAME_STATES } from '@/lib/constants';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
@@ -25,6 +26,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
+  const { isMobilePhone, isSmallPhone } = useDeviceType();
 
   // Initialize subscription service on app bootstrap (iOS only)
   // This runs ONCE when the app starts, ensuring subscription state is ready
@@ -196,22 +198,28 @@ export default function GameContainerClient({ initialPuzzleData }) {
     );
   }
 
-  // Main container with wallpaper background
+  // Main container with conditional wallpaper background
+  // On mobile phones: use solid background (no wallpaper)
+  // On tablets/desktop: use beautiful wallpaper background
   return (
     <div
-      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
+      className={`fixed inset-0 w-full h-full ${
+        isMobilePhone ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'
+      } ${isMobilePhone ? 'mobile-phone-layout' : ''} ${isSmallPhone ? 'small-phone-layout' : ''}`}
       style={{
-        backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
+        // Hide background image on phones, show on tablets/desktop
+        backgroundImage: isMobilePhone ? 'none' : backgroundImage,
+        backgroundColor: isMobilePhone ? (theme === 'dark' ? '#1a1a1a' : '#ffffff') : undefined,
+        backgroundSize: isMobilePhone ? undefined : 'cover',
+        backgroundPosition: isMobilePhone ? undefined : 'center',
+        backgroundRepeat: isMobilePhone ? undefined : 'no-repeat',
+        backgroundAttachment: isMobilePhone ? undefined : 'fixed',
       }}
     >
       {/* Version checker for iOS app updates */}
       <VersionChecker />
-      {/* Footer - only show for PWA, not iOS app */}
-      {!platformService.isNative && (
+      {/* Footer - only show for PWA on non-mobile-phone devices */}
+      {!platformService.isNative && !isMobilePhone && (
         <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
           <p className="text-xs text-white/60">
             © 2025{' '}
@@ -241,10 +249,10 @@ export default function GameContainerClient({ initialPuzzleData }) {
         </div>
       )}
 
-      {/* Scrollable content container */}
-      <div className="min-h-screen flex items-center justify-center py-6">
-        {/* Content wrapper - constrains width but allows height to adjust */}
-        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
+      {/* Content container - mobile phones get full height, tablets/desktop get scrollable centered layout */}
+      {isMobilePhone ? (
+        // Mobile phone: Fixed full-height layout with no scrolling
+        <div className="h-full w-full max-w-xl mx-auto animate-fade-in relative">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}
@@ -275,6 +283,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.returnToWelcome}
               activeHints={game.activeHints}
+              isMobilePhone={isMobilePhone}
+              isSmallPhone={isSmallPhone}
             />
           )}
 
@@ -296,7 +306,65 @@ export default function GameContainerClient({ initialPuzzleData }) {
             />
           )}
         </div>
-      </div>
+      ) : (
+        // Tablet/Desktop: Original scrollable centered layout
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
+            {game.gameState === GAME_STATES.WELCOME && (
+              <WelcomeScreen
+                onStart={game.startGame}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                onSelectPuzzle={handleSelectPuzzle}
+                puzzle={game.puzzle}
+              />
+            )}
+
+            {game.gameState === GAME_STATES.PLAYING && (
+              <PlayingScreen
+                puzzle={game.puzzle}
+                answers={game.answers}
+                correctAnswers={game.correctAnswers}
+                checkedWrongAnswers={game.checkedWrongAnswers}
+                mistakes={game.mistakes}
+                solved={game.solved}
+                time={timer.elapsed}
+                onUpdateAnswer={game.updateAnswer}
+                onCheckAnswers={handleCheckAnswers}
+                onCheckSingleAnswer={game.checkSingleAnswer}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                onSelectPuzzle={handleSelectPuzzle}
+                hintsUsed={game.hintsUsed}
+                onUseHint={game.useHint}
+                hasCheckedAnswers={game.hasCheckedAnswers}
+                onReturnToWelcome={game.returnToWelcome}
+                activeHints={game.activeHints}
+                isMobilePhone={false}
+                isSmallPhone={false}
+              />
+            )}
+
+            {game.gameState === GAME_STATES.COMPLETE && (
+              <CompleteScreen
+                won={game.won}
+                time={timer.elapsed}
+                mistakes={game.mistakes}
+                correctAnswers={game.solved}
+                puzzle={game.puzzle}
+                puzzleTheme={game.puzzle?.theme}
+                onPlayAgain={game.resetGame}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                hintsUsed={game.hintsUsed}
+                activeHints={game.hintPositionsUsed}
+                onSelectPuzzle={handleSelectPuzzle}
+                onReturnToWelcome={game.returnToWelcome}
+              />
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

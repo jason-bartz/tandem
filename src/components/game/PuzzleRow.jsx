@@ -14,6 +14,8 @@ export default function PuzzleRow({
   readonly: _readonly = false,
   hintData,
   answerLength = 0,
+  isSmallPhone = false,
+  isMobilePhone = false,
 }) {
   const { selectionStart } = useHaptics();
   const { highContrast } = useTheme();
@@ -46,16 +48,31 @@ export default function PuzzleRow({
   };
 
   return (
-    <div className="flex gap-2 sm:gap-3 items-center" style={{ animationDelay }}>
+    <div
+      className={`flex ${
+        isSmallPhone ? 'gap-1.5' : isMobilePhone ? 'gap-2' : 'gap-2 sm:gap-3'
+      } items-center`}
+      style={{ animationDelay }}
+    >
       <div className="flex items-center gap-2">
         <div
-          className={`w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2 rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0 ${
+          className={`${
+            isSmallPhone
+              ? 'w-[60px] h-[50px] px-1'
+              : isMobilePhone
+                ? 'w-[65px] h-[55px] px-1'
+                : 'w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2'
+          } rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0 ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-light-sand dark:bg-gray-700'
           }`}
         >
-          <span className="text-2xl sm:text-3xl flex items-center justify-center gap-0 whitespace-nowrap">
+          <span
+            className={`${
+              isSmallPhone ? 'text-xl' : isMobilePhone ? 'text-2xl' : 'text-2xl sm:text-3xl'
+            } flex items-center justify-center gap-0 whitespace-nowrap`}
+          >
             {emoji}
           </span>
         </div>
@@ -63,10 +80,14 @@ export default function PuzzleRow({
       <div className="relative flex-1">
         {/* Visual display overlay - hide when answer is correct */}
         {!isCorrect && (
-          <div className="absolute inset-0 pointer-events-none flex items-center px-3 sm:px-4">
+          <div
+            className={`absolute inset-0 pointer-events-none flex items-center ${
+              isSmallPhone ? 'px-2' : isMobilePhone ? 'px-2.5' : 'px-3 sm:px-4'
+            }`}
+          >
             <span
               className={`
-              text-sm sm:text-base font-medium uppercase tracking-[0.2em]
+              ${isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm sm:text-base'} font-medium uppercase tracking-[0.2em]
               ${
                 isWrong
                   ? highContrast
@@ -94,7 +115,9 @@ export default function PuzzleRow({
           readOnly={true}
           aria-label={`Answer ${index + 1}`}
           className={`
-            w-full p-3 sm:p-4 rounded-xl text-sm sm:text-base font-medium transition-all outline-none uppercase tracking-[0.15em]
+            w-full ${isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-4'} rounded-xl ${
+              isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm sm:text-base'
+            } font-medium transition-all outline-none uppercase tracking-[0.15em]
             ${highContrast ? 'border-4' : 'border-2'}
             ${
               isCorrect
@@ -126,7 +149,9 @@ export default function PuzzleRow({
         />
         {hintData && !isCorrect && (
           <span
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-xl z-10"
+            className={`absolute ${
+              isSmallPhone ? 'right-2 text-base' : 'right-3 text-xl'
+            } top-1/2 -translate-y-1/2 z-10`}
             aria-label="Hint active"
           >
             💡

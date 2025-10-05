@@ -8,6 +8,24 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      height: {
+        screen: ['100vh', '100dvh'], // Support for dynamic viewport height
+        svh: '100svh', // Small viewport height
+        lvh: '100lvh', // Large viewport height
+        dvh: '100dvh', // Dynamic viewport height
+      },
+      minHeight: {
+        screen: ['100vh', '100dvh'],
+        svh: '100svh',
+        lvh: '100lvh',
+        dvh: '100dvh',
+      },
+      maxHeight: {
+        screen: ['100vh', '100dvh'],
+        svh: '100svh',
+        lvh: '100lvh',
+        dvh: '100dvh',
+      },
       colors: {
         // High Contrast colors
         hc: {
