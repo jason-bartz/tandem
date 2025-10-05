@@ -173,7 +173,7 @@ class NotificationService {
     );
 
     // Get current stats for context
-    const stats = loadStats();
+    const stats = await loadStats();
     const isWeekend = this.isWeekend();
 
     // Get appropriate message
@@ -240,13 +240,13 @@ class NotificationService {
     await this.cancelNotification(NOTIFICATION_IDS.STREAK_SAVER);
 
     // Get current stats
-    const stats = loadStats();
+    const stats = await loadStats();
 
     // Only schedule if user has a streak of 3+ days
     if (stats.currentStreak < 3) return;
 
     // Check if already played today
-    if (hasPlayedToday()) return;
+    if (await hasPlayedToday()) return;
 
     // Get streak saver time
     const streakTime = await this.getNotificationPreference(
@@ -449,7 +449,7 @@ class NotificationService {
     await this.clearBadge();
 
     // Check for milestone
-    const stats = loadStats();
+    const stats = await loadStats();
     const milestones = [7, 14, 30, 50, 100];
     if (milestones.includes(stats.currentStreak)) {
       await this.scheduleMilestoneNotification(stats.currentStreak);

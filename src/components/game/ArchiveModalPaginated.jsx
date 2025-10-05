@@ -255,7 +255,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         // Use cached data if 304 response
         if (useCache && paginatedCache.puzzles[cacheKey]) {
           // Get fresh game history to update status
-          const gameHistory = getGameHistory();
+          const gameHistory = await getGameHistory();
           const cachedPuzzles = paginatedCache.puzzles[cacheKey];
 
           // Update with latest game history
@@ -297,7 +297,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           }
 
           // Get game history for status
-          const gameHistory = getGameHistory();
+          const gameHistory = await getGameHistory();
 
           // Process puzzles with game history
           const processedPuzzles = data.puzzles.map((puzzle) => {
@@ -506,21 +506,22 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         loadPuzzles(null, false); // Load from current puzzle number
       } else {
         // Modal reopened with existing puzzles - refresh game history
-        const gameHistory = getGameHistory();
-        setPuzzles((prev) =>
-          prev.map((puzzle) => {
-            const historyData = gameHistory[puzzle.date] || {};
-            return {
-              ...puzzle,
-              completed: historyData.completed || false,
-              failed: historyData.failed || false,
-              attempted: historyData.attempted || false,
-              status: historyData.status || 'not_played',
-              savedTheme: historyData.theme,
-              theme: puzzle.theme, // Preserve original theme
-            };
-          })
-        );
+        getGameHistory().then((gameHistory) => {
+          setPuzzles((prev) =>
+            prev.map((puzzle) => {
+              const historyData = gameHistory[puzzle.date] || {};
+              return {
+                ...puzzle,
+                completed: historyData.completed || false,
+                failed: historyData.failed || false,
+                attempted: historyData.attempted || false,
+                status: historyData.status || 'not_played',
+                savedTheme: historyData.theme,
+                theme: puzzle.theme, // Preserve original theme
+              };
+            })
+          );
+        });
         // Re-check permissions synchronously with current subscription state
         if (puzzles.length > 0) {
           checkAccessPermissions(puzzles, false);

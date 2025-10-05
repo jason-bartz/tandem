@@ -14,7 +14,7 @@ export default function StatsModal({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen !== false) {
-      setStats(loadStats());
+      loadStats().then(setStats);
     }
   }, [isOpen]);
 
