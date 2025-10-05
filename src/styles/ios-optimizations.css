@@ -250,18 +250,18 @@
     border-radius: 0 !important;
   }
 
-  /* Ensure the game card fills screen on mobile */
-  .mobile-phone-layout .bg-white,
-  .mobile-phone-layout .dark\:bg-gray-900 {
+  /* iOS native app: Ensure the game card fills screen on mobile */
+  .ios-app .mobile-phone-layout .bg-white,
+  .ios-app .mobile-phone-layout .dark\:bg-gray-900 {
     height: 100% !important;
   }
 
-  /* Remove rounded corners and shadows on mobile for full-screen feel */
-  .mobile-phone-layout .rounded-3xl {
+  /* iOS native app: Remove rounded corners and shadows on mobile for full-screen feel */
+  .ios-app .mobile-phone-layout .rounded-3xl {
     border-radius: 0 !important;
   }
 
-  .mobile-phone-layout .shadow-2xl {
+  .ios-app .mobile-phone-layout .shadow-2xl {
     box-shadow: none !important;
   }
 
