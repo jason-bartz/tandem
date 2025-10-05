@@ -128,10 +128,10 @@ export default function IOSContainer({ children }) {
         touch-action: manipulation;
       }
 
-      /* Safe area insets for iOS */
+      /* Safe area insets handled per-component via utility classes */
+      /* Root-level padding interferes with full-screen layouts */
       .ios-app {
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
+        /* Safe areas applied contextually via .pt-safe-ios, .pb-safe-ios */
       }
 
       /* Keyboard adjustments */
@@ -144,12 +144,10 @@ export default function IOSContainer({ children }) {
         transition: padding-bottom 0.3s ease;
       }
 
-      /* Disable bounce scroll */
+      /* Prevent bounce scroll while allowing natural scrolling on iPad */
       .ios-app body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: none;
       }
 
       /* Allow scrolling in specific areas */

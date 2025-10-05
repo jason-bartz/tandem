@@ -200,12 +200,10 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   // Main container with conditional wallpaper background
   // On mobile phones PLAYING screen: use solid background (no wallpaper) for better focus
-  // On iOS native app: ALWAYS hide wallpaper for full-screen native experience
   // On mobile phones WELCOME/COMPLETE screens: show wallpaper for aesthetic appeal
   // On tablets/desktop: always show beautiful wallpaper background
-  const isIOSNative = Capacitor.isNativePlatform();
-  const shouldHideWallpaper =
-    (isMobilePhone && game.gameState === GAME_STATES.PLAYING) || isIOSNative;
+  // Device detection works identically on web and iOS native - no platform-specific override needed
+  const shouldHideWallpaper = isMobilePhone && game.gameState === GAME_STATES.PLAYING;
 
   return (
     <div

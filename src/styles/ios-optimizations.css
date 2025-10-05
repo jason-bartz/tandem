@@ -238,34 +238,31 @@
     max-height: 100dvh !important;
   }
 
-  /* iOS app specific - remove any padding/margin that creates white frame */
-  .ios-app .mobile-phone-layout {
+  /* Phone-only overrides - remove padding/margin for full-screen experience */
+  /* Media query already ensures this only applies to phones (≤768px × ≤850px) */
+  /* Works identically on web and iOS native */
+  .mobile-phone-layout {
     margin: 0 !important;
     padding: 0 !important;
     border-radius: 0 !important;
   }
 
-  .ios-app .mobile-playing-screen {
+  .mobile-playing-screen {
     margin: 0 !important;
     border-radius: 0 !important;
   }
 
-  /* iOS native app: Ensure the game card fills screen on mobile */
-  .ios-app .mobile-phone-layout .bg-white,
-  .ios-app .mobile-phone-layout .dark\:bg-gray-900 {
-    height: 100% !important;
-  }
-
-  /* iOS native app: Remove rounded corners and shadows on mobile for full-screen feel */
-  .ios-app .mobile-phone-layout .rounded-3xl {
+  /* Phone-only: Remove rounded corners and shadows for full-screen feel */
+  .mobile-phone-layout .rounded-3xl {
     border-radius: 0 !important;
   }
 
-  .ios-app .mobile-phone-layout .shadow-2xl {
+  .mobile-phone-layout .shadow-2xl {
     box-shadow: none !important;
   }
 
-  /* Optimize keyboard rendering - anchor to bottom */
+  /* Optimize keyboard rendering - anchor to bottom on phones */
+  /* Works identically on web and iOS native */
   .keyboard-container {
     position: sticky;
     bottom: 0;
@@ -275,12 +272,6 @@
     z-index: 10;
     contain: layout style;
     width: 100%;
-  }
-
-  /* For iOS native app, ensure keyboard stays at bottom */
-  .ios-app .keyboard-container {
-    position: sticky;
-    bottom: 0;
   }
 
   /* Prevent iOS rubber-band effect */
