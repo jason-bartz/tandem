@@ -13,6 +13,7 @@ import { playSuccessSound } from '@/lib/sounds';
 import StatsModal from './StatsModal';
 import ArchiveModalPaginated from './ArchiveModalPaginated';
 import HowToPlayModal from './HowToPlayModal';
+import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -39,6 +40,7 @@ export default function CompleteScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showRevealAnswers, setShowRevealAnswers] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast } = useTheme();
@@ -248,28 +250,19 @@ export default function CompleteScreen({
           )}
 
           {!won && puzzle?.puzzles && (
-            <div className="bg-gradient-to-r from-rose-50 to-pink-50 dark:from-gray-800 dark:to-gray-700 rounded-2xl p-6 mb-6">
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-200 mb-4">
-                Correct Answers:
-              </p>
-              <div className="space-y-3">
-                {puzzle.puzzles.map((item, index) => {
-                  // Get first answer if multiple are comma-separated
-                  const firstAnswer = item.answer.split(',')[0].trim();
-                  return (
-                    <div
-                      key={index}
-                      className="flex items-center justify-between bg-white dark:bg-gray-900 rounded-xl px-4 py-3"
-                    >
-                      <span className="text-2xl">{item.emoji}</span>
-                      <span className="font-semibold text-gray-800 dark:text-gray-100">
-                        {firstAnswer}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            <button
+              onClick={() => {
+                lightTap();
+                setShowRevealAnswers(true);
+              }}
+              className={`w-full py-4 rounded-xl font-bold text-white transition-all shadow-md hover:shadow-lg mb-6 ${
+                highContrast
+                  ? 'bg-hc-primary border-2 border-hc-border hover:bg-hc-focus'
+                  : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
+              }`}
+            >
+              📖 Reveal Correct Answers
+            </button>
           )}
         </div>
 
@@ -313,6 +306,11 @@ export default function CompleteScreen({
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <RevealAnswersModal
+        isOpen={showRevealAnswers}
+        onClose={() => setShowRevealAnswers(false)}
+        puzzle={puzzle}
+      />
     </div>
   );
 }
