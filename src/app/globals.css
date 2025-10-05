@@ -117,15 +117,6 @@ select {
     height: 100dvh !important;
   }
 
-  /* Lock body scroll on mobile phones */
-  body:has(.mobile-phone-layout) {
-    overflow: hidden !important;
-    position: fixed !important;
-    width: 100% !important;
-    height: 100vh !important;
-    height: 100dvh !important;
-  }
-
   /* Ensure puzzle area can scroll if content is too tall */
   .mobile-phone-layout .puzzle-scroll-area {
     overflow-y: auto;
@@ -177,21 +168,11 @@ select {
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   background-color: #fafafa;
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
   transition: background 0.3s ease;
-}
-
-/* Desktop/tablet body layout - centered with padding */
-@media (min-width: 769px), (min-height: 851px) {
-  body {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-  }
 }
 
 [data-theme='dark'] body {

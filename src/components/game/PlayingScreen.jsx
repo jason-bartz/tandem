@@ -319,8 +319,8 @@ export default function PlayingScreen({
 
   return (
     <div
-      className={`animate-slide-up relative flex flex-col ${
-        isMobilePhone ? 'mobile-playing-screen h-full min-h-screen' : ''
+      className={`animate-slide-up relative h-full flex flex-col ${
+        isMobilePhone ? 'mobile-playing-screen' : ''
       }`}
     >
       {/* Control buttons with safe area padding for iOS - Dynamic Island aware */}
