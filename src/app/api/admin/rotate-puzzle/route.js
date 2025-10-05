@@ -9,14 +9,14 @@ export async function GET() {
     const currentDate = getCurrentPuzzleDateET();
     const lastRotation = global.lastPuzzleRotation || null;
     const schedulerStatus = global.schedulerRunning || false;
-    
+
     return NextResponse.json({
       success: true,
       currentPuzzleDate: currentDate,
       lastRotation: lastRotation,
       schedulerRunning: schedulerStatus,
       serverTime: new Date().toISOString(),
-      etTime: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+      etTime: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
     });
   } catch (error) {
     console.error('GET /api/admin/rotate-puzzle error:', error);
@@ -36,35 +36,29 @@ export async function POST(request) {
     }
 
     // Verify admin authentication with CSRF protection
-    const authError = await requireAdmin(request);
-    if (authError) {
-      return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
     }
-    
+
     const body = await request.json();
     const targetDate = body.date || null;
-    
+
     // Perform manual rotation
     const result = await manualRotatePuzzle(targetDate);
-    
+
     if (result.success) {
       return NextResponse.json({
         success: true,
         message: `Puzzle rotated to ${result.date}`,
         date: result.date,
-        puzzleInfo: result.puzzle
+        puzzleInfo: result.puzzle,
       });
     } else {
-      return NextResponse.json(
-        { success: false, error: result.error },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: result.error }, { status: 400 });
     }
   } catch (error) {
     console.error('POST /api/admin/rotate-puzzle error:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to rotate puzzle' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to rotate puzzle' }, { status: 500 });
   }
 }

@@ -1,9 +1,5 @@
 import { NextResponse } from 'next/server';
-import {
-  getPuzzlesRange,
-  setPuzzleForDate,
-  deletePuzzleForDate
-} from '@/lib/db';
+import { getPuzzlesRange, setPuzzleForDate, deletePuzzleForDate } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { isValidPuzzle } from '@/lib/utils';
 import {
@@ -12,7 +8,7 @@ import {
   puzzleWithDateSchema,
   parseAndValidateJson,
   sanitizeErrorMessage,
-  escapeHtml
+  escapeHtml,
 } from '@/lib/security/validation';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 
@@ -23,20 +19,20 @@ export async function GET(request) {
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
-    
-    const authError = await requireAdmin(request);
-    if (authError) {
-      return authError;
+
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
     }
-    
+
     const { searchParams } = new URL(request.url);
     const start = searchParams.get('start');
     const end = searchParams.get('end');
-    
+
     const { start: validStart, end: validEnd } = dateRangeSchema.parse({ start, end });
-    
+
     const puzzles = await getPuzzlesRange(validStart, validEnd);
-    
+
     return NextResponse.json({
       success: true,
       puzzles,
@@ -44,20 +40,14 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('GET /api/admin/puzzles error:', error);
-    
+
     const message = sanitizeErrorMessage(error);
-    
+
     if (error.message.includes('Validation error') || error.message.includes('Invalid date')) {
-      return NextResponse.json(
-        { success: false, error: message },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: message }, { status: 400 });
     }
-    
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -68,28 +58,29 @@ export async function POST(request) {
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
-    
-    const authError = await requireAdmin(request);
-    if (authError) {
-      return authError;
+
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
     }
-    
+    const { admin } = authResult;
+
     // Parse and validate request body with size limits
     const { date, puzzle } = await parseAndValidateJson(request, puzzleWithDateSchema);
-    
+
     if (!isValidPuzzle(puzzle)) {
       return NextResponse.json(
         { success: false, error: 'Invalid puzzle structure' },
         { status: 400 }
       );
     }
-    
+
     await setPuzzleForDate(date, {
       ...puzzle,
       createdBy: escapeHtml(admin.username),
       createdAt: new Date().toISOString(),
     });
-    
+
     return NextResponse.json({
       success: true,
       message: `Puzzle saved for ${date}`,
@@ -97,30 +88,24 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error('POST /api/admin/puzzles error:', error);
-    
+
     const message = sanitizeErrorMessage(error);
-    
+
     if (error.message.includes('Validation error') || error.message.includes('Invalid')) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: message
+        {
+          success: false,
+          error: message,
         },
         { status: 400 }
       );
     }
-    
+
     if (error.message.includes('too large')) {
-      return NextResponse.json(
-        { success: false, error: message },
-        { status: 413 }
-      );
+      return NextResponse.json({ success: false, error: message }, { status: 413 });
     }
-    
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
@@ -131,38 +116,32 @@ export async function DELETE(request) {
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
-    
-    const authError = await requireAdmin(request);
-    if (authError) {
-      return authError;
+
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
     }
-    
+
     const { searchParams } = new URL(request.url);
     const date = searchParams.get('date');
-    
+
     const validatedDate = dateSchema.parse(date);
-    
+
     await deletePuzzleForDate(validatedDate);
-    
+
     return NextResponse.json({
       success: true,
       message: `Puzzle deleted for ${validatedDate}`,
     });
   } catch (error) {
     console.error('DELETE /api/admin/puzzles error:', error);
-    
+
     const message = sanitizeErrorMessage(error);
-    
+
     if (error.message.includes('Invalid date')) {
-      return NextResponse.json(
-        { success: false, error: message },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: message }, { status: 400 });
     }
-    
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

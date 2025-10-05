@@ -10,9 +10,9 @@ export async function GET(request) {
       return rateLimitResponse;
     }
 
-    const authError = await requireAdmin(request);
-    if (authError) {
-      return authError;
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
     }
 
     const { searchParams } = new URL(request.url);
@@ -44,7 +44,7 @@ export async function GET(request) {
         themeAnalysis[normalizedTheme] = {
           theme,
           dates: [],
-          count: 0
+          count: 0,
         };
       }
 
@@ -54,11 +54,11 @@ export async function GET(request) {
       themes.push({
         date,
         theme,
-        puzzle
+        puzzle,
       });
     });
 
-    const duplicates = Object.values(themeAnalysis).filter(t => t.count > 1);
+    const duplicates = Object.values(themeAnalysis).filter((t) => t.count > 1);
 
     return NextResponse.json({
       success: true,
@@ -67,13 +67,13 @@ export async function GET(request) {
         total: Object.keys(puzzles).length,
         uniqueThemes: Object.keys(themeAnalysis).length,
         duplicateCount: duplicates.reduce((sum, d) => sum + d.count, 0),
-        duplicateThemes: duplicates.map(d => ({
+        duplicateThemes: duplicates.map((d) => ({
           theme: d.theme,
           dates: d.dates,
-          count: d.count
-        }))
+          count: d.count,
+        })),
       },
-      dateRange: { start, end }
+      dateRange: { start, end },
     });
   } catch (error) {
     console.error('GET /api/admin/themes error:', error);
