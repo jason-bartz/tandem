@@ -199,27 +199,34 @@ export default function GameContainerClient({ initialPuzzleData }) {
   }
 
   // Main container with conditional wallpaper background
-  // On mobile phones: use solid background (no wallpaper)
-  // On tablets/desktop: use beautiful wallpaper background
+  // On mobile phones PLAYING screen: use solid background (no wallpaper) for better focus
+  // On mobile phones WELCOME/COMPLETE screens: show wallpaper for aesthetic appeal
+  // On tablets/desktop: always show beautiful wallpaper background
+  const shouldHideWallpaper = isMobilePhone && game.gameState === GAME_STATES.PLAYING;
+
   return (
     <div
       className={`fixed inset-0 w-full h-full ${
         isMobilePhone ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'
       } ${isMobilePhone ? 'mobile-phone-layout' : ''} ${isSmallPhone ? 'small-phone-layout' : ''}`}
       style={{
-        // Hide background image on phones, show on tablets/desktop
-        backgroundImage: isMobilePhone ? 'none' : backgroundImage,
-        backgroundColor: isMobilePhone ? (theme === 'dark' ? '#1a1a1a' : '#ffffff') : undefined,
-        backgroundSize: isMobilePhone ? undefined : 'cover',
-        backgroundPosition: isMobilePhone ? undefined : 'center',
-        backgroundRepeat: isMobilePhone ? undefined : 'no-repeat',
-        backgroundAttachment: isMobilePhone ? undefined : 'fixed',
+        // Hide background image only on phones during PLAYING state
+        backgroundImage: shouldHideWallpaper ? 'none' : backgroundImage,
+        backgroundColor: shouldHideWallpaper
+          ? theme === 'dark'
+            ? '#1a1a1a'
+            : '#ffffff'
+          : undefined,
+        backgroundSize: shouldHideWallpaper ? undefined : 'cover',
+        backgroundPosition: shouldHideWallpaper ? undefined : 'center',
+        backgroundRepeat: shouldHideWallpaper ? undefined : 'no-repeat',
+        backgroundAttachment: shouldHideWallpaper ? undefined : 'fixed',
       }}
     >
       {/* Version checker for iOS app updates */}
       <VersionChecker />
-      {/* Footer - only show for PWA on non-mobile-phone devices */}
-      {!platformService.isNative && !isMobilePhone && (
+      {/* Footer - show for PWA, hide on mobile phones during PLAYING state only */}
+      {!platformService.isNative && !shouldHideWallpaper && (
         <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
           <p className="text-xs text-white/60">
             © 2025{' '}
