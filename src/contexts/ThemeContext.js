@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { STORAGE_KEYS, THEME_CONFIG, THEME_MODE } from '@/lib/constants';
+import cloudKitService from '@/services/cloudkit.service';
 
 const ThemeContext = createContext();
 
@@ -130,6 +131,18 @@ export function ThemeProvider({ children }) {
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME_MODE, THEME_MODE.MANUAL);
     applyThemeToDOM(newTheme, highContrast);
+
+    // Sync preferences to iCloud
+    cloudKitService
+      .syncPreferences({
+        theme: newTheme,
+        themeMode: THEME_MODE.MANUAL,
+        highContrast,
+        sound: localStorage.getItem(STORAGE_KEYS.SOUND) !== 'false',
+      })
+      .catch(() => {
+        // Failed to sync theme preference to iCloud (non-critical)
+      });
   }, [getEffectiveTheme, highContrast, applyThemeToDOM]);
 
   const setThemeMode_ = useCallback(
@@ -155,7 +168,19 @@ export function ThemeProvider({ children }) {
     localStorage.setItem(STORAGE_KEYS.HIGH_CONTRAST, newHighContrast.toString());
     const effectiveTheme = getEffectiveTheme();
     applyThemeToDOM(effectiveTheme, newHighContrast);
-  }, [highContrast, getEffectiveTheme, applyThemeToDOM]);
+
+    // Sync preferences to iCloud
+    cloudKitService
+      .syncPreferences({
+        theme,
+        themeMode,
+        highContrast: newHighContrast,
+        sound: localStorage.getItem(STORAGE_KEYS.SOUND) !== 'false',
+      })
+      .catch(() => {
+        // Failed to sync high contrast preference to iCloud (non-critical)
+      });
+  }, [highContrast, getEffectiveTheme, applyThemeToDOM, theme, themeMode]);
 
   const effectiveTheme = getEffectiveTheme();
 

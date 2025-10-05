@@ -6,6 +6,8 @@ import { Capacitor } from '@capacitor/core';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
+import { useCloudKitSync } from '@/hooks/useCloudKitSync';
+import { restoreFromiCloud } from '@/lib/storage';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
@@ -14,8 +16,11 @@ export default function Settings({ isOpen, onClose }) {
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
+  const [restoring, setRestoring] = useState(false);
+  const [restoreMessage, setRestoreMessage] = useState(null);
   const { playHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
+  const { syncStatus, toggleSync } = useCloudKitSync();
 
   useEffect(() => {
     if (isOpen) {
@@ -195,6 +200,154 @@ export default function Settings({ isOpen, onClose }) {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* iCloud Sync Section */}
+        {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              iCloud Sync
+            </h3>
+
+            <div className="space-y-4">
+              {/* Sync Status */}
+              {!syncStatus.available ? (
+                <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
+                  <p className="text-sm text-gray-600 dark:text-gray-400">
+                    iCloud sync is not available. Make sure you're signed in to iCloud on your
+                    device.
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* Sync Toggle */}
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Sync with iCloud
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">
+                        Keep your stats and progress synced across devices
+                      </p>
+                    </div>
+                    <button
+                      onClick={async () => {
+                        await toggleSync(!syncStatus.enabled);
+                        lightTap();
+                      }}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        syncStatus.enabled ? 'bg-sky-500' : 'bg-gray-200 dark:bg-gray-600'
+                      }`}
+                      role="switch"
+                      aria-checked={syncStatus.enabled}
+                    >
+                      <span
+                        className={`${
+                          syncStatus.enabled ? 'translate-x-6' : 'translate-x-1'
+                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      />
+                    </button>
+                  </div>
+
+                  {/* Last Sync Time */}
+                  {syncStatus.enabled && syncStatus.lastSync && (
+                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path
+                          fillRule="evenodd"
+                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Last synced: {new Date(syncStatus.lastSync).toLocaleString()}
+                    </div>
+                  )}
+
+                  {/* Restore from iCloud Button */}
+                  {syncStatus.enabled && (
+                    <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                        Restore your data from iCloud. This will merge your cloud data with local
+                        data, keeping the highest values for stats.
+                      </p>
+                      <button
+                        onClick={async () => {
+                          setRestoring(true);
+                          setRestoreMessage(null);
+                          try {
+                            const result = await restoreFromiCloud();
+                            if (result.success) {
+                              setRestoreMessage({
+                                type: 'success',
+                                text: result.message,
+                              });
+                              playHaptic('success');
+                              // Reload the page after a brief delay to show fresh data
+                              setTimeout(() => {
+                                window.location.reload();
+                              }, 2000);
+                            } else {
+                              setRestoreMessage({
+                                type: 'error',
+                                text: result.message || 'Failed to restore from iCloud',
+                              });
+                              playHaptic('error');
+                            }
+                          } catch (error) {
+                            setRestoreMessage({
+                              type: 'error',
+                              text: 'An error occurred while restoring',
+                            });
+                            playHaptic('error');
+                          } finally {
+                            setRestoring(false);
+                          }
+                        }}
+                        disabled={restoring || syncStatus.syncing}
+                        className="w-full py-2 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                      >
+                        {restoring ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                            Restoring...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                              <path
+                                fillRule="evenodd"
+                                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+                                clipRule="evenodd"
+                              />
+                            </svg>
+                            Restore from iCloud
+                          </>
+                        )}
+                      </button>
+                      {restoreMessage && (
+                        <p
+                          className={`text-xs mt-2 ${
+                            restoreMessage.type === 'success'
+                              ? 'text-green-600 dark:text-green-400'
+                              : 'text-red-600 dark:text-red-400'
+                          }`}
+                        >
+                          {restoreMessage.text}
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Sync Error */}
+                  {syncStatus.error && (
+                    <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
+                      <p className="text-sm text-red-800 dark:text-red-200">{syncStatus.error}</p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         )}
 
