@@ -227,20 +227,60 @@
     -webkit-overflow-scrolling: auto;
   }
 
-  /* Fixed height container */
+  /* Fixed height container - full screen, no white frame */
   .mobile-playing-screen {
     touch-action: pan-y;
     position: relative;
     isolation: isolate;
+    height: 100vh !important;
+    height: 100dvh !important;
+    max-height: 100vh !important;
+    max-height: 100dvh !important;
   }
 
-  /* Optimize keyboard rendering */
+  /* iOS app specific - remove any padding/margin that creates white frame */
+  .ios-app .mobile-phone-layout {
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  .ios-app .mobile-playing-screen {
+    margin: 0 !important;
+    border-radius: 0 !important;
+  }
+
+  /* Ensure the game card fills screen on mobile */
+  .mobile-phone-layout .bg-white,
+  .mobile-phone-layout .dark\:bg-gray-900 {
+    height: 100% !important;
+  }
+
+  /* Remove rounded corners and shadows on mobile for full-screen feel */
+  .mobile-phone-layout .rounded-3xl {
+    border-radius: 0 !important;
+  }
+
+  .mobile-phone-layout .shadow-2xl {
+    box-shadow: none !important;
+  }
+
+  /* Optimize keyboard rendering - anchor to bottom */
   .keyboard-container {
     position: sticky;
     bottom: 0;
+    left: 0;
+    right: 0;
     background: inherit;
     z-index: 10;
     contain: layout style;
+    width: 100%;
+  }
+
+  /* For iOS native app, ensure keyboard stays at bottom */
+  .ios-app .keyboard-container {
+    position: sticky;
+    bottom: 0;
   }
 
   /* Prevent iOS rubber-band effect */

@@ -128,12 +128,10 @@ export default function IOSContainer({ children }) {
         touch-action: manipulation;
       }
 
-      /* Safe area insets for iOS */
+      /* Safe area insets for iOS - apply to content, not root */
       .ios-app {
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
+        /* Don't add padding to root - this creates the white frame */
+        /* Let individual components handle safe areas */
       }
 
       /* Keyboard adjustments */
@@ -146,12 +144,10 @@ export default function IOSContainer({ children }) {
         transition: padding-bottom 0.3s ease;
       }
 
-      /* Disable bounce scroll */
+      /* Disable bounce scroll - let the mobile-phone-layout handle positioning */
       .ios-app body {
-        position: fixed;
-        width: 100%;
-        height: 100%;
-        overflow: hidden;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: none;
       }
 
       /* Allow scrolling in specific areas */
@@ -192,7 +188,6 @@ export default function IOSContainer({ children }) {
       /* Fix for iOS rubber band scrolling */
       .ios-app .game-container {
         position: relative;
-        min-height: 100vh;
         overflow: hidden;
       }
 
