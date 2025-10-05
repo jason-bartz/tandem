@@ -81,6 +81,58 @@ select {
   padding-bottom: max(1rem, env(safe-area-inset-bottom));
 }
 
+/* Mobile Phone Layout - No Scroll, Full Height */
+.mobile-phone-layout {
+  --mobile-spacing: clamp(0.5rem, 1.5vh, 1rem);
+  --mobile-header-height: clamp(80px, 12vh, 120px);
+  --mobile-keyboard-height: clamp(160px, 20vh, 200px);
+  --mobile-puzzle-row-height: clamp(56px, 8vh, 70px);
+}
+
+.small-phone-layout {
+  --mobile-spacing: clamp(0.25rem, 1vh, 0.5rem);
+  --mobile-header-height: clamp(70px, 10vh, 90px);
+  --mobile-keyboard-height: clamp(140px, 18vh, 170px);
+  --mobile-puzzle-row-height: clamp(48px, 7vh, 60px);
+}
+
+/* Mobile phone playing screen */
+.mobile-playing-screen {
+  height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+}
+
+/* Prevent scrolling on mobile phone layout */
+@media (max-width: 768px) and (max-height: 850px) {
+  .mobile-phone-layout {
+    overflow: hidden !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+  }
+
+  /* Ensure puzzle area can scroll if content is too tall */
+  .mobile-phone-layout .puzzle-scroll-area {
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+}
+
+/* Small phone specific adjustments (iPhone SE, etc.) */
+@media (max-width: 768px) and (max-height: 700px) {
+  .small-phone-layout .pt-safe-ios {
+    padding-top: max(1.5rem, calc(env(safe-area-inset-top) + 0.5rem)) !important;
+  }
+
+  .small-phone-layout .pb-safe-ios {
+    padding-bottom: max(0.25rem, env(safe-area-inset-bottom)) !important;
+  }
+}
+
 /* Scrollable container for iOS */
 .scrollable {
   -webkit-overflow-scrolling: touch;
