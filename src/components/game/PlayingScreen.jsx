@@ -369,7 +369,9 @@ export default function PlayingScreen({
         className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden"
       >
         {/* Header with logo - hidden on mobile phones, visible on tablets/desktop */}
-        <div className="p-3 sm:p-5 text-center bg-white dark:bg-gray-900">
+        <div
+          className={`p-3 sm:p-5 text-center bg-white dark:bg-gray-900 ${isMobilePhone ? 'flex items-center justify-center min-h-[60px]' : ''}`}
+        >
           {/* Logo - Only show on tablet/desktop (not mobile phones) */}
           {!isMobilePhone && (
             <button
@@ -390,7 +392,9 @@ export default function PlayingScreen({
               />
             </button>
           )}
-          <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative">
+          <div
+            className={`text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative ${isMobilePhone ? 'w-full' : ''}`}
+          >
             <button
               onClick={() => {
                 lightTap();
