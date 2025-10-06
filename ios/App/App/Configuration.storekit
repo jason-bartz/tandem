@@ -1,0 +1,143 @@
+{
+  "identifier" : "61E8A47F",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+    {
+      "displayPrice" : "29.99",
+      "familyShareable" : false,
+      "internalID" : "6738654321",
+      "localizations" : [
+        {
+          "description" : "Lifetime access to all puzzles in the archive. Support indie development!",
+          "displayName" : "Soulmates - Lifetime Access",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "com.tandemdaily.app.soulmates",
+      "referenceName" : "Soulmates Lifetime",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+    "_applicationInternalID" : "6738611111",
+    "_developerTeamID" : "PQHL7LA8AX",
+    "_failTransactionsEnabled" : false,
+    "_lastSynchronizedDate" : 762825600.0,
+    "_locale" : "en_US",
+    "_storefront" : "USA",
+    "_storeKitErrors" : [
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Load Products"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Purchase"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Verification"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Store Sync"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Subscription Status"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "App Transaction"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Manage Subscriptions Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Refund Request Sheet"
+      },
+      {
+        "current" : null,
+        "enabled" : false,
+        "name" : "Offer Code Redeem Sheet"
+      }
+    ]
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21645379",
+      "localizations" : [
+
+      ],
+      "name" : "Tandem Unlimited",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6738622222",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access to all puzzles in the archive. Billed monthly.",
+              "displayName" : "Buddy Pass - Monthly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tandemdaily.app.buddypass",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Buddy Pass Monthly",
+          "subscriptionGroupID" : "21645379",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "14.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6738633333",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access to all puzzles in the archive. Billed yearly. Save 37%!",
+              "displayName" : "Best Friends - Yearly",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "com.tandemdaily.app.bestfriends",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Best Friends Yearly",
+          "subscriptionGroupID" : "21645379",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 4,
+    "minor" : 0
+  }
+}
