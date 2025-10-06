@@ -22,6 +22,8 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>NSUserTrackingUsageDescription</key>
 	<string>This app does not track you.</string>
+	<key>NSUserNotificationsUsageDescription</key>
+	<string>Tandem sends you friendly reminders to play the daily puzzle and maintain your streak.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>

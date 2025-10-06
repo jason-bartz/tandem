@@ -3,14 +3,17 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C56EB932E8B004100AA549D /* StoreKit.framework */; };
 		2CC4A9D32E940E150021A996 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BF2E940E150021A996 /* config.xml */; };
-		50B271D11FEDC1A000F3C39C /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
+		2CC4A9DC2E940E150021A996 /* Configuration.storekit in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C02E940E150021A996 /* Configuration.storekit */; };
+		2CC4A9F02E940E150021A996 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C32E940E150021A996 /* LaunchScreen.storyboard */; };
+		2CC4A9FC2E940E150021A996 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C12E940E150021A996 /* Info.plist */; };
 		2CC4AA002E940E150021A996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C52E940E150021A996 /* Main.storyboard */; };
+		2CC4AA092E940E150021A996 /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BE2E940E150021A996 /* capacitor.config.json */; };
 		2CC4AA0B2E940E150021A996 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C62E940E150021A996 /* PrivacyInfo.xcprivacy */; };
 		2CC4AA132E940E150021A996 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BD2E940E150021A996 /* Assets.xcassets */; };
 		2CC4AA212E940E150021A996 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BC2E940E150021A996 /* AppDelegate.swift */; };
@@ -18,9 +21,13 @@
 		2CC4AA232E940E150021A996 /* CloudKitSyncPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC4A94C2E940E150021A996 /* CloudKitSyncPlugin.swift */; };
 		2CDC8CB52E8C56E2004A2B26 /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */; };
 		2CDC8CB72E8C56EC004A2B26 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */; };
+		2FAD9763203C412B000D30F8 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2FAD9762203C412B000D30F8 /* config.xml */; };
+		50379B232058CBB4000EE86E /* capacitor.config.json in Resources */ = {isa = PBXBuildFile; fileRef = 50379B222058CBB4000EE86E /* capacitor.config.json */; };
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
+		504EC30D1FED79650016851F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30B1FED79650016851F /* Main.storyboard */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		50B271D11FEDC1A000F3C39B /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		D918B4515ACD7D39E30EEE26 /* Pods_Tandem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B45D82A5C5B520424EB7B17 /* Pods_Tandem.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,9 +61,9 @@
 		85FDEDB488779D76934DE30D /* Pods-Tandem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.debug.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-
-
-
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		2C9564AB2E940FAC000DF709 /* public */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = public; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		504EC3011FED79650016851F /* Frameworks */ = {
@@ -85,7 +92,7 @@
 		2CC4A9C72E940E150021A996 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				50B271D01FEDC1A000F3C39B /* public */,
+				2C9564AB2E940FAC000DF709 /* public */,
 				2CC4A94D2E940E150021A996 /* Plugins */,
 				2CC4A9BC2E940E150021A996 /* AppDelegate.swift */,
 				2CC4A9BD2E940E150021A996 /* Assets.xcassets */,
@@ -172,6 +179,9 @@
 			);
 			dependencies = (
 			);
+			fileSystemSynchronizedGroups = (
+				2C9564AB2E940FAC000DF709 /* public */,
+			);
 			name = Tandem;
 			productName = App;
 			productReference = 504EC3041FED79650016851F /* Tandem.app */;
@@ -222,12 +232,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */,
+				50B271D11FEDC1A000F3C39B /* public in Resources */,
 				504EC30F1FED79650016851F /* Assets.xcassets in Resources */,
 				2CC4A9D32E940E150021A996 /* config.xml in Resources */,
+				2CC4A9DC2E940E150021A996 /* Configuration.storekit in Resources */,
+				2CC4A9F02E940E150021A996 /* LaunchScreen.storyboard in Resources */,
+				2CC4A9FC2E940E150021A996 /* Info.plist in Resources */,
 				2CC4AA002E940E150021A996 /* Main.storyboard in Resources */,
+				2CC4AA092E940E150021A996 /* capacitor.config.json in Resources */,
 				2CC4AA0B2E940E150021A996 /* PrivacyInfo.xcprivacy in Resources */,
 				2CC4AA132E940E150021A996 /* Assets.xcassets in Resources */,
-				50B271D11FEDC1A000F3C39C /* public in Resources */,
+				50379B232058CBB4000EE86E /* capacitor.config.json in Resources */,
+				504EC30D1FED79650016851F /* Main.storyboard in Resources */,
+				2FAD9763203C412B000D30F8 /* config.xml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
