@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playKeyPressSound } from '@/lib/sounds';
@@ -33,6 +33,8 @@ export default function OnScreenKeyboard({
   const { highContrast, isDark } = useTheme();
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const backspaceIntervalRef = useRef(null);
+  const backspaceTimeoutRef = useRef(null);
 
   // Load sound preference from localStorage
   useEffect(() => {
@@ -42,6 +44,18 @@ export default function OnScreenKeyboard({
         setSoundEnabled(saved === 'true');
       }
     }
+  }, []);
+
+  // Cleanup intervals on unmount
+  useEffect(() => {
+    return () => {
+      if (backspaceIntervalRef.current) {
+        clearInterval(backspaceIntervalRef.current);
+      }
+      if (backspaceTimeoutRef.current) {
+        clearTimeout(backspaceTimeoutRef.current);
+      }
+    };
   }, []);
 
   const handleKeyPress = (key) => {
@@ -77,6 +91,39 @@ export default function OnScreenKeyboard({
       next.delete(key);
       return next;
     });
+
+    // Clear backspace repeat if backspace key is released
+    if (key === 'BACKSPACE') {
+      if (backspaceIntervalRef.current) {
+        clearInterval(backspaceIntervalRef.current);
+        backspaceIntervalRef.current = null;
+      }
+      if (backspaceTimeoutRef.current) {
+        clearTimeout(backspaceTimeoutRef.current);
+        backspaceTimeoutRef.current = null;
+      }
+    }
+  };
+
+  const handleBackspaceStart = () => {
+    if (disabled) return;
+
+    // First backspace - immediate
+    handleKeyPress('BACKSPACE');
+
+    // Set up delayed repeat
+    backspaceTimeoutRef.current = setTimeout(() => {
+      // Start repeating after initial delay (500ms)
+      backspaceIntervalRef.current = setInterval(() => {
+        if (!disabled) {
+          onKeyPress('BACKSPACE');
+          // Play sound for each repeat
+          if (soundEnabled) {
+            playKeyPressSound();
+          }
+        }
+      }, 100); // Repeat every 100ms
+    }, 500);
   };
 
   const getKeyClasses = (key) => {
@@ -264,9 +311,11 @@ export default function OnScreenKeyboard({
                   key={key}
                   type="button"
                   disabled={disabled}
-                  onClick={() => handleKeyPress(key)}
+                  onClick={() => (key === 'BACKSPACE' ? null : handleKeyPress(key))}
+                  onPointerDown={() => (key === 'BACKSPACE' ? handleBackspaceStart() : null)}
                   onPointerUp={() => handleKeyRelease(key)}
                   onPointerLeave={() => handleKeyRelease(key)}
+                  onTouchStart={() => (key === 'BACKSPACE' ? handleBackspaceStart() : null)}
                   onTouchEnd={() => handleKeyRelease(key)}
                   onTouchCancel={() => handleKeyRelease(key)}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
