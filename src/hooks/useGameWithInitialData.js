@@ -205,7 +205,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       }
 
       // Check if this is the first attempt for this puzzle (both daily and archive)
-      const isFirstAttempt = currentPuzzleDate && !hasPlayedPuzzle(currentPuzzleDate);
+      const isFirstAttempt = currentPuzzleDate && !(await hasPlayedPuzzle(currentPuzzleDate));
 
       // Update stats with proper parameters
       updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
