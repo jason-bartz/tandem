@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playKeyPressSound } from '@/lib/sounds';
@@ -34,6 +34,12 @@ export default function OnScreenKeyboard({
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
 
+  // Refs for hold-to-delete functionality
+  const holdTimerRef = useRef(null);
+  const rafRef = useRef(null);
+  const isHoldingRef = useRef(false);
+  const lastDeleteTimeRef = useRef(0);
+
   // Load sound preference from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -42,6 +48,18 @@ export default function OnScreenKeyboard({
         setSoundEnabled(saved === 'true');
       }
     }
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      if (holdTimerRef.current) {
+        clearTimeout(holdTimerRef.current);
+      }
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   const handleKeyPress = (key) => {
@@ -77,6 +95,80 @@ export default function OnScreenKeyboard({
       next.delete(key);
       return next;
     });
+  };
+
+  // Single function to perform backspace deletion
+  const performBackspaceDeletion = () => {
+    if (disabled) return;
+
+    // Play sound for each deletion
+    if (soundEnabled) {
+      playKeyPressSound();
+    }
+
+    // Call parent handler
+    onKeyPress('BACKSPACE');
+  };
+
+  // Handle backspace press start (pointer/touch down)
+  const handleBackspaceDown = () => {
+    if (disabled) return;
+
+    // Set holding flag to prevent onClick from firing
+    isHoldingRef.current = true;
+
+    // Visual feedback
+    setPressedKeys((prev) => new Set(prev).add('BACKSPACE'));
+    lightTap();
+
+    // First deletion - immediate
+    performBackspaceDeletion();
+
+    // Start hold-to-delete after 500ms delay
+    holdTimerRef.current = setTimeout(() => {
+      lastDeleteTimeRef.current = Date.now();
+
+      // Start requestAnimationFrame loop for smooth deletion
+      const deleteLoop = () => {
+        const now = Date.now();
+
+        // Delete every 50ms for controlled speed
+        if (now - lastDeleteTimeRef.current >= 50) {
+          performBackspaceDeletion();
+          lastDeleteTimeRef.current = now;
+        }
+
+        // Continue loop
+        rafRef.current = requestAnimationFrame(deleteLoop);
+      };
+
+      rafRef.current = requestAnimationFrame(deleteLoop);
+    }, 500);
+  };
+
+  // Handle backspace press end (pointer/touch up)
+  const handleBackspaceUp = () => {
+    // Clear all timers
+    if (holdTimerRef.current) {
+      clearTimeout(holdTimerRef.current);
+      holdTimerRef.current = null;
+    }
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
+    // Clear visual feedback
+    setPressedKeys((prev) => {
+      const next = new Set(prev);
+      next.delete('BACKSPACE');
+      return next;
+    });
+
+    // Reset holding flag after a small delay to prevent onClick from firing
+    setTimeout(() => {
+      isHoldingRef.current = false;
+    }, 50);
   };
 
   const getKeyClasses = (key) => {
@@ -264,11 +356,54 @@ export default function OnScreenKeyboard({
                   key={key}
                   type="button"
                   disabled={disabled}
-                  onClick={() => handleKeyPress(key)}
-                  onPointerUp={() => handleKeyRelease(key)}
-                  onPointerLeave={() => handleKeyRelease(key)}
-                  onTouchEnd={() => handleKeyRelease(key)}
-                  onTouchCancel={() => handleKeyRelease(key)}
+                  onClick={() => {
+                    // For backspace, only handle click if not in holding mode
+                    if (key === 'BACKSPACE') {
+                      if (!isHoldingRef.current) {
+                        handleKeyPress(key);
+                      }
+                    } else {
+                      handleKeyPress(key);
+                    }
+                  }}
+                  onPointerDown={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceDown();
+                    }
+                  }}
+                  onPointerUp={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceUp();
+                    } else {
+                      handleKeyRelease(key);
+                    }
+                  }}
+                  onPointerLeave={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceUp();
+                    } else {
+                      handleKeyRelease(key);
+                    }
+                  }}
+                  onTouchStart={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceDown();
+                    }
+                  }}
+                  onTouchEnd={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceUp();
+                    } else {
+                      handleKeyRelease(key);
+                    }
+                  }}
+                  onTouchCancel={() => {
+                    if (key === 'BACKSPACE') {
+                      handleBackspaceUp();
+                    } else {
+                      handleKeyRelease(key);
+                    }
+                  }}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
                     isSmallPhone ? 'h-[50px]' : isMobilePhone ? 'h-14' : 'h-14 sm:h-[58px]'
                   }`}
