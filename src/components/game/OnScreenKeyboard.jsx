@@ -8,17 +8,17 @@ const KEYBOARD_LAYOUTS = {
   QWERTY: [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['SUBMIT', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   QWERTZ: [
     ['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['SUBMIT', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['ENTER', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   AZERTY: [
     ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'],
-    ['SUBMIT', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
+    ['ENTER', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
   ],
 };
 
@@ -56,8 +56,8 @@ export default function OnScreenKeyboard({
       playKeyPressSound();
     }
 
-    // Call the parent handler (convert SUBMIT to ENTER for consistency with existing logic)
-    onKeyPress(key === 'SUBMIT' ? 'ENTER' : key);
+    // Call the parent handler
+    onKeyPress(key);
 
     // Clear visual feedback after animation - remove specific key from set
     setTimeout(() => {
@@ -81,9 +81,9 @@ export default function OnScreenKeyboard({
 
   const getKeyClasses = (key) => {
     const isPressed = pressedKeys.has(key);
-    const isSubmitKey = key === 'SUBMIT';
+    const isEnterKey = key === 'ENTER';
     const isBackspaceKey = key === 'BACKSPACE';
-    const isSpecialKey = isSubmitKey || isBackspaceKey;
+    const isSpecialKey = isEnterKey || isBackspaceKey;
 
     let baseClasses = `
       select-none cursor-pointer touch-manipulation font-bold
@@ -97,7 +97,7 @@ export default function OnScreenKeyboard({
       if (isDark) {
         baseClasses += `
           ${
-            isSubmitKey
+            isEnterKey
               ? 'bg-hc-primary text-white border-2 border-hc-border'
               : isBackspaceKey
                 ? 'bg-hc-warning text-black border-2 border-hc-border'
@@ -109,7 +109,7 @@ export default function OnScreenKeyboard({
       } else {
         baseClasses += `
           ${
-            isSubmitKey
+            isEnterKey
               ? 'bg-hc-primary text-white border-2 border-hc-border'
               : isBackspaceKey
                 ? 'bg-hc-warning text-white border-2 border-hc-border'
@@ -123,7 +123,7 @@ export default function OnScreenKeyboard({
       if (isDark) {
         baseClasses += `
           ${
-            isSubmitKey
+            isEnterKey
               ? 'bg-gray-600 text-gray-100 border border-gray-500'
               : isBackspaceKey
                 ? 'bg-gray-600 text-gray-100 border border-gray-500'
@@ -135,7 +135,7 @@ export default function OnScreenKeyboard({
       } else {
         baseClasses += `
           ${
-            isSubmitKey
+            isEnterKey
               ? 'bg-gray-400 text-white border border-gray-500'
               : isBackspaceKey
                 ? 'bg-gray-400 text-white border border-gray-500'
@@ -172,14 +172,14 @@ export default function OnScreenKeyboard({
         </svg>
       );
     }
-    if (key === 'SUBMIT') {
-      return 'Submit';
+    if (key === 'ENTER') {
+      return 'Enter';
     }
     return key;
   };
 
   const getKeyWidth = (key) => {
-    if (key === 'SUBMIT') return 'col-span-3';
+    if (key === 'ENTER') return 'col-span-3';
     if (key === 'BACKSPACE') return 'col-span-3';
     return 'col-span-2';
   };
@@ -188,7 +188,7 @@ export default function OnScreenKeyboard({
 
   // Calculate grid columns based on actual row content
   const getGridConfig = (row, rowIndex) => {
-    const letterCount = row.filter((k) => k !== 'SUBMIT' && k !== 'BACKSPACE').length;
+    const letterCount = row.filter((k) => k !== 'ENTER' && k !== 'BACKSPACE').length;
 
     // For AZERTY second row with 10 letters
     if (rowIndex === 1 && letterCount === 10) {
@@ -217,10 +217,10 @@ export default function OnScreenKeyboard({
       };
     }
 
-    // Bottom row - Now perfectly symmetric with SUBMIT (3) and BACKSPACE (3)
+    // Bottom row - Now perfectly symmetric with ENTER (3) and BACKSPACE (3)
     if (rowIndex === 2) {
-      // AZERTY: SUBMIT (3) + 6 letters (12) + BACKSPACE (3) = 18 cols (centered!)
-      // QWERTY/QWERTZ: SUBMIT (3) + 7 letters (14) + BACKSPACE (3) = 20 cols (matches top row!)
+      // AZERTY: ENTER (3) + 6 letters (12) + BACKSPACE (3) = 18 cols (centered!)
+      // QWERTY/QWERTZ: ENTER (3) + 7 letters (14) + BACKSPACE (3) = 20 cols (matches top row!)
       const totalCols = 3 + letterCount * 2 + 3;
       return {
         className: `grid-cols-${totalCols}`,
