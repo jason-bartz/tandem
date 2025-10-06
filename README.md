@@ -1,17 +1,44 @@
 # Tandem - Daily Emoji Word Puzzle Game
 
-A progressive web application (PWA) and native iOS game where players solve emoji-based word puzzles. Built with Next.js and Capacitor for cross-platform deployment.
+A progressive web application (PWA) and native iOS game where players solve emoji-based word puzzles. Built with Next.js 14 and Capacitor 5 for seamless cross-platform deployment.
 
 ## 📱 Features
 
-- **Daily Puzzle:** New puzzle every day at midnight Eastern Time
-- **Archive Mode:** Play previous puzzles
-- **Statistics Tracking:** Monitor wins, streaks, and performance
-- **Offline Support:** Play even without internet connection
-- **Dark Mode:** System-aware theme switching
-- **PWA Support:** Installable on web and mobile
-- **Native iOS App:** Full Capacitor integration
-- **Admin Panel:** Manage puzzles, view analytics (web only)
+### Core Gameplay
+
+- **Daily Puzzle:** New puzzle every day at midnight Eastern Time with automatic rotation
+- **Archive Mode:** Access and play previous puzzles with pagination
+- **Smart Input System:** On-screen keyboard with multiple layouts (QWERTY, QWERTZ, AZERTY)
+- **Single-Press Delete:** Simple, reliable backspace functionality
+- **Hint System:** One hint per puzzle revealing the first letter
+- **Answer Validation:** Smart checking with support for variations and alternate forms
+- **Statistics Tracking:** Comprehensive stats including wins, streaks, solve times, and accuracy
+
+### User Experience
+
+- **Responsive Design:** Unified layout across all devices with mobile-first approach
+- **Dark Mode:** Automatic theme switching based on system preferences with manual override
+- **High Contrast Mode:** Color blind friendly mode with enhanced patterns
+- **Offline Support:** Full PWA support with service workers and offline caching
+- **Sound Effects:** Optional keyboard sounds and game feedback
+- **Haptic Feedback:** Native haptics on iOS for enhanced tactile experience
+
+### iOS Native Features
+
+- **iCloud Sync:** Automatic stats and progress synchronization across devices
+- **Push Notifications:** Daily puzzle reminders and streak protection alerts
+- **Share Functionality:** Native iOS share sheet integration
+- **In-App Subscriptions:** Three-tier subscription system (Buddy Pass, Best Friends, Soulmates)
+- **App Lifecycle Management:** Proper timer handling during background/foreground transitions
+- **Status Bar Theming:** Dynamic status bar styling based on theme
+
+### Admin Panel
+
+- **Puzzle Management:** Create, edit, and delete puzzles
+- **Bulk Import:** CSV/JSON import for batch puzzle creation
+- **Analytics Dashboard:** View play statistics and user engagement metrics
+- **Theme Management:** Organize puzzles by categories
+- **Manual Rotation:** Force puzzle updates when needed
 
 ## 🏗️ Architecture
 
@@ -21,59 +48,134 @@ A progressive web application (PWA) and native iOS game where players solve emoj
 
 - Next.js 14 (App Router)
 - React 18
-- Tailwind CSS
-- Zustand (state management)
+- Tailwind CSS for styling
+- Zustand for state management
 
 **Mobile:**
 
-- Capacitor 5 (iOS)
-- Native iOS integrations (Haptics, Notifications, Share, etc.)
+- Capacitor 5 (iOS native integration)
+- Native plugins: Haptics, Notifications, Share, Keyboard, Status Bar, Preferences
+- In-App Purchase plugin (cordova-plugin-purchase)
 
 **Backend:**
 
 - Next.js API Routes
 - Vercel KV (Redis) for data persistence
 - JWT authentication for admin panel
+- Bcrypt for password hashing
 
-**Testing:**
+**Development Tools:**
 
 - Jest + React Testing Library
-- Coverage threshold: 60%
+- ESLint + Prettier (with pre-commit hooks via Husky)
+- Lint-staged for staged file linting
+- Playwright for E2E testing
 
 ### Project Structure
 
 ```
 tandem/
 ├── src/
-│   ├── app/                    # Next.js App Router pages
+│   ├── app/                    # Next.js App Router
 │   │   ├── api/                # API routes
-│   │   ├── admin/              # Admin panel pages
-│   │   └── page.jsx            # Main game page
+│   │   │   ├── puzzles/        # Puzzle CRUD endpoints
+│   │   │   ├── stats/          # Statistics endpoints
+│   │   │   ├── admin/          # Admin authentication & management
+│   │   │   └── version/        # Version checking
+│   │   ├── admin/              # Admin panel UI
+│   │   │   ├── login/          # Admin login page
+│   │   │   └── page.jsx        # Admin dashboard
+│   │   ├── support/            # Support page
+│   │   ├── terms/              # Terms of service
+│   │   ├── privacypolicy/      # Privacy policy
+│   │   ├── page.jsx            # Main game page
+│   │   ├── layout.jsx          # Root layout with metadata
+│   │   └── globals.css         # Global styles & Tailwind
 │   ├── components/             # React components
-│   │   ├── game/               # Game-specific components
-│   │   ├── admin/              # Admin panel components
-│   │   └── shared/             # Shared/reusable components
+│   │   ├── game/               # Game components
+│   │   │   ├── GameContainerClient.jsx  # Main game container
+│   │   │   ├── WelcomeScreen.jsx        # Welcome/home screen
+│   │   │   ├── PlayingScreen.jsx        # Active game screen
+│   │   │   ├── CompleteScreen.jsx       # Game completion screen
+│   │   │   ├── OnScreenKeyboard.jsx     # Virtual keyboard
+│   │   │   ├── PuzzleRow.jsx            # Individual puzzle input
+│   │   │   ├── StatsBar.jsx             # Timer/mistakes display
+│   │   │   └── [modals]                 # Various modal dialogs
+│   │   ├── admin/              # Admin components
+│   │   │   ├── PuzzleEditor.jsx         # Puzzle creation/editing
+│   │   │   ├── BulkImport.jsx           # Bulk puzzle import
+│   │   │   └── ThemeTracker.jsx         # Theme statistics
+│   │   ├── shared/             # Reusable components
+│   │   │   ├── LoadingSpinner.jsx
+│   │   │   └── VersionChecker.jsx       # iOS version management
+│   │   ├── Settings.jsx        # Settings modal
+│   │   ├── PaywallModal.jsx    # Subscription paywall (iOS)
+│   │   └── SEOHead.jsx         # SEO metadata
 │   ├── hooks/                  # Custom React hooks
+│   │   ├── useGame.js          # Core game logic
+│   │   ├── useGameLogic.js     # Game state management
+│   │   ├── useGameWithInitialData.js
+│   │   ├── useTimer.js         # Timer functionality
+│   │   ├── useHaptics.js       # Haptic feedback
+│   │   ├── useSound.js         # Sound effects
+│   │   ├── useTheme.js         # Theme management (deprecated - use context)
+│   │   ├── useCloudKitSync.js  # iCloud synchronization
+│   │   ├── useMidnightRefresh.js  # Auto-refresh at midnight
+│   │   └── usePerformanceOptimizations.js
 │   ├── services/               # Business logic & API clients
+│   │   ├── api.js              # API client wrapper
+│   │   ├── platform.js         # Platform detection & services
+│   │   ├── cloudkit.service.js # iCloud/CloudKit integration
+│   │   ├── notificationService.js  # Push notifications
+│   │   ├── subscriptionService.js  # In-app purchases
+│   │   ├── puzzle.service.js   # Puzzle data management
+│   │   ├── stats.service.js    # Statistics management
+│   │   ├── admin.service.js    # Admin operations
+│   │   └── auth.service.js     # Authentication
 │   ├── lib/                    # Utilities & helpers
-│   │   ├── security/           # Security utilities (CSRF, rate limiting)
-│   │   ├── db.js               # Database operations
-│   │   ├── auth.js             # Authentication logic
-│   │   └── validation.js       # Input validation (Zod)
+│   │   ├── security/           # Security utilities
+│   │   │   ├── csrf.js         # CSRF protection
+│   │   │   ├── rateLimiter.js  # Rate limiting
+│   │   │   └── headers.js      # Security headers
+│   │   ├── db.js               # Database operations (Vercel KV)
+│   │   ├── auth.js             # JWT authentication
+│   │   ├── validation.js       # Zod schemas for validation
+│   │   ├── storage.js          # Local/iCloud storage management
+│   │   ├── sounds.js           # Sound effect management
+│   │   ├── deviceDetection.js  # Device type detection
+│   │   ├── puzzleNumber.js     # Puzzle numbering logic
+│   │   ├── constants.js        # App-wide constants
+│   │   ├── utils.js            # General utilities
+│   │   ├── analytics.js        # Google Analytics
+│   │   ├── errorHandler.js     # Error handling
+│   │   ├── logger.js           # Logging utilities
+│   │   └── notificationMessages.js  # Notification templates
 │   ├── contexts/               # React contexts
-│   ├── data/                   # Static data & puzzle templates
-│   └── styles/                 # Global CSS
-├── ios/                        # iOS app (Capacitor)
+│   │   └── ThemeContext.js     # Theme provider (auto/manual modes)
+│   ├── data/                   # Static data
+│   │   └── puzzle-templates/   # Template puzzles
+│   └── styles/                 # Additional styles
+├── ios/                        # iOS native app (Capacitor)
 │   └── App/
 │       ├── App/                # iOS native code
-│       └── Podfile             # CocoaPods dependencies
+│       │   ├── AppDelegate.swift
+│       │   ├── Info.plist
+│       │   ├── PrivacyInfo.xcprivacy
+│       │   ├── capacitor.config.json
+│       │   └── Plugins/        # Native plugin implementations
+│       ├── Podfile             # CocoaPods dependencies
+│       └── App.xcworkspace     # Xcode workspace
 ├── public/                     # Static assets
 │   ├── puzzles/                # Puzzle JSON files
-│   ├── images/                 # Images & icons
-│   └── icons/                  # PWA icons
+│   ├── images/                 # Images & backgrounds
+│   ├── icons/                  # PWA & app icons
+│   ├── sounds/                 # Sound effects
+│   ├── manifest.json           # PWA manifest
+│   └── sw.js                   # Service worker
 ├── scripts/                    # Utility scripts
+│   ├── hash-password.js        # Password hash generator
+│   └── seed-puzzles.js         # Puzzle seeding script
 └── tests/                      # Test files
-
 ```
 
 ## 🚀 Getting Started
@@ -82,15 +184,15 @@ tandem/
 
 - Node.js 18+ and npm
 - Xcode 14+ (for iOS development)
-- CocoaPods (for iOS dependencies)
-- Redis (local development) or Vercel KV (production)
+- CocoaPods (for iOS dependencies): `sudo gem install cocoapods`
+- Vercel account (for KV database)
 
 ### Installation
 
 1. **Clone the repository**
 
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/jason-bartz/tandem.git
    cd tandem
    ```
 
@@ -102,7 +204,7 @@ tandem/
 
 3. **Set up environment variables**
 
-   Copy `.env.example` to `.env.local`:
+   Create `.env.local`:
 
    ```bash
    cp .env.example .env.local
@@ -111,22 +213,37 @@ tandem/
    Required environment variables:
 
    ```env
-   # Database
-   KV_REST_API_URL=your_redis_url
+   # Vercel KV (Redis) - Required for production
+   KV_URL=your_redis_url
+   KV_REST_API_URL=your_redis_rest_url
    KV_REST_API_TOKEN=your_redis_token
+   KV_REST_API_READ_ONLY_TOKEN=your_redis_readonly_token
 
    # Admin Authentication
    JWT_SECRET=your_jwt_secret_key
    ADMIN_PASSWORD_HASH=your_bcrypt_hash
 
-   # Optional: Analytics
+   # API Configuration
+   NEXT_PUBLIC_API_URL=https://www.tandemdaily.com
+
+   # Optional: Google Analytics
    NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+
+   # Optional: Logging level
+   NEXT_PUBLIC_LOG_LEVEL=WARN
+
+   # Environment
+   NODE_ENV=development
    ```
 
-4. **Generate admin credentials** (if needed)
+4. **Generate admin credentials**
+
    ```bash
+   # Generate password hash
    npm run hash-password
-   npm run generate-jwt-secret
+   # Copy the hash to ADMIN_PASSWORD_HASH in .env.local
+
+   # JWT_SECRET can be any secure random string
    ```
 
 ### Development
@@ -142,7 +259,7 @@ Visit `http://localhost:3000`
 **iOS Development:**
 
 ```bash
-# Build for iOS
+# Build for iOS with Capacitor target
 npm run build:ios
 
 # Sync with Capacitor
@@ -151,7 +268,7 @@ npm run cap:sync
 # Open in Xcode
 npm run cap:open
 
-# Or run all at once
+# Or run all steps at once
 npm run ios:dev
 ```
 
@@ -167,8 +284,13 @@ npm start
 **iOS Build:**
 
 ```bash
+# Build and sync for iOS
 npm run ios:build
-# Then build in Xcode for distribution
+
+# Then open in Xcode and:
+# 1. Select "Any iOS Device (arm64)"
+# 2. Product → Archive
+# 3. Validate and distribute to App Store
 ```
 
 ## 🧪 Testing
@@ -182,6 +304,9 @@ npm run test:ci
 
 # Generate coverage report
 npm run test:coverage
+
+# E2E tests with Playwright
+npx playwright test
 ```
 
 ## 📝 Code Quality
@@ -189,28 +314,40 @@ npm run test:coverage
 **Linting:**
 
 ```bash
-npm run lint
-npm run lint:fix
+npm run lint          # Check for issues
+npm run lint:fix      # Auto-fix issues
 ```
 
 **Formatting:**
 
 ```bash
-npm run format
-npm run format:check
+npm run format        # Format all files
+npm run format:check  # Check formatting
 ```
 
-**Pre-commit hooks:**
-Husky is configured to run linting and formatting on staged files automatically.
+**Pre-commit Hooks:**
+Husky automatically runs ESLint and Prettier on staged files before each commit.
+
+**Security Audit:**
+
+```bash
+npm run audit         # Check for vulnerabilities
+npm run audit:fix     # Attempt to fix vulnerabilities
+npm run security:check # Run audit + lint
+```
 
 ## 🔒 Security Features
 
-- **CSRF Protection:** Token-based protection for state-changing operations
-- **Rate Limiting:** Prevents brute force attacks (5 attempts per 15 minutes)
+- **CSRF Protection:** Token-based protection for all state-changing operations
+- **Rate Limiting:** Prevents brute force attacks
+  - Auth endpoints: 5 attempts per 15 minutes
+  - General API: 30 requests per minute
+  - Write operations: 10 requests per minute
 - **Input Validation:** Zod schemas validate all user input
-- **JWT Authentication:** Secure admin panel access
-- **Security Headers:** Comprehensive security headers via middleware
+- **JWT Authentication:** Secure admin panel access with token expiration
+- **Security Headers:** Comprehensive headers via Next.js middleware
 - **Content Security Policy:** Strict CSP for admin routes
+- **Password Security:** Bcrypt hashing with salt rounds
 
 ## 🎮 Game Logic
 
@@ -218,139 +355,344 @@ Husky is configured to run linting and formatting on staged files automatically.
 
 Each puzzle contains:
 
-- **Theme:** Category or hint (e.g., "Kitchen Appliances")
-- **4 Emoji-Word Pairs:** Emoji clues and corresponding answers
+- **Theme:** Category hint (e.g., "Kitchen Appliances", "Sports Equipment")
+- **4 Emoji-Word Pairs:** Emoji clues with corresponding answers
 - **Date:** ISO date string (YYYY-MM-DD)
+- **Puzzle Number:** Sequential numbering from app launch date
 
 ### Game Rules
 
-- 4 mistakes allowed
-- 1 hint available per puzzle
-- Answers accept variations (plurals, alternate forms)
-- Timer tracks solving time
-- Statistics persist locally
+- **Mistakes:** 4 incorrect answers allowed before game over
+- **Hints:** 1 hint per puzzle (reveals first letter of random unsolved answer)
+- **Answer Checking:** Individual answer validation on Enter key
+- **Timer:** Tracks solve time, pauses when app backgrounded
+- **Variations:** Accepts plurals and common alternate forms
+- **Statistics:** Tracks wins, losses, streaks, average time, accuracy
 
 ### Puzzle Rotation
 
-Puzzles rotate daily at midnight Eastern Time. The system:
+Puzzles rotate daily at **midnight Eastern Time (ET)**. The system:
 
-1. Checks Redis/Vercel KV for custom puzzles
+1. Checks Vercel KV/Redis for custom puzzles by date
 2. Falls back to local JSON files in `/public/puzzles/`
-3. Uses template puzzles if no custom puzzle exists
+3. Uses template puzzles if no puzzle exists for the date
+4. Auto-refreshes on iOS apps at midnight
+
+### Keyboard Layouts
+
+Supports three keyboard layouts:
+
+- **QWERTY** (English, default)
+- **QWERTZ** (German)
+- **AZERTY** (French)
 
 ## 📊 Admin Panel
 
-Access at `/admin` (web only)
+Access at `/admin` (web only - not available in iOS app)
 
-**Features:**
+### Features
 
-- View and edit puzzles
-- Bulk import puzzles
-- View statistics and analytics
-- Manage themes
-- Force puzzle rotation
+- **Puzzle Management:** Create, edit, delete, and preview puzzles
+- **Bulk Import:** Import multiple puzzles via CSV or JSON
+- **Analytics Dashboard:**
+  - Total plays, wins, completion rate
+  - Average solve time and mistake rate
+  - Theme distribution and popularity
+- **Theme Management:** Organize and categorize puzzles
+- **Manual Rotation:** Force immediate puzzle update
+- **Statistics Viewer:** View global and per-puzzle stats
 
-**Authentication:**
+### Authentication
 
 ```bash
 # Generate admin password hash
 npm run hash-password
+# Enter password when prompted
 # Add hash to .env.local as ADMIN_PASSWORD_HASH
+
+# JWT_SECRET should be a secure random string (min 32 chars)
 ```
+
+Login at `/admin/login` with your configured password.
 
 ## 📱 iOS-Specific Features
 
-### Capabilities
+### Native Capabilities
 
-- Haptic feedback on interactions
-- Local notifications for daily puzzles
-- Share functionality
-- Status bar theming
-- Keyboard handling
-- Offline puzzle caching
+- **Haptic Feedback:** Light, medium, heavy, success, error, warning patterns
+- **Local Notifications:**
+  - Daily puzzle reminder (6:00 AM ET)
+  - Streak protection alert (8:00 PM ET if puzzle not completed)
+- **Share Functionality:** Native iOS share sheet for results
+- **Status Bar Theming:** Matches light/dark mode
+- **Keyboard Management:** Auto-resize handling for on-screen keyboard
+- **iCloud Sync:** CloudKit-based stats and progress synchronization
+- **App Lifecycle:** Proper pause/resume timer management
+
+### In-App Subscriptions
+
+Three subscription tiers:
+
+- **Buddy Pass:** Basic premium features
+- **Best Friends:** Enhanced features + archive access
+- **Soulmates:** Lifetime access with all features
+
+Managed via `subscriptionService.js` and iOS StoreKit.
 
 ### Configuration
 
 - **Bundle ID:** `com.tandemdaily.app`
 - **Min iOS Version:** 13.0
-- **Entitlements:** CloudKit, iCloud, Push Notifications
+- **Deployment Target:** iOS 13.0+
+- **Supported Devices:** iPhone, iPad
+- **Orientation:** Portrait only
+- **Entitlements:**
+  - CloudKit
+  - iCloud Key-Value Storage
+  - Push Notifications
+  - In-App Purchase
+
+### Privacy
+
+The app includes a comprehensive `PrivacyInfo.xcprivacy` file detailing:
+
+- Data collection practices
+- Third-party SDK usage
+- API endpoints accessed
+- Required by Apple for App Store submission
 
 ## 🌐 API Endpoints
 
 ### Public API
 
+**Puzzles:**
+
 - `GET /api/puzzles` - Get today's puzzle
+- `GET /api/puzzles?date=YYYY-MM-DD` - Get puzzle by date
 - `POST /api/puzzles/batch` - Get multiple puzzles
-- `GET /api/puzzles/paginated` - Paginated puzzle list
+- `GET /api/puzzles/paginated?page=1&limit=10` - Paginated puzzle list
+
+**Statistics:**
+
 - `GET /api/stats` - Get global statistics
-- `POST /api/stats` - Update statistics
-- `GET /api/version` - Get API version
+- `POST /api/stats` - Update user statistics
 
-### Admin API (requires JWT)
+**System:**
 
-- `POST /api/admin/auth` - Authenticate
-- `GET /api/admin/puzzles` - List puzzles
+- `GET /api/version` - Get API version for update checking
+
+### Admin API (JWT Required)
+
+**Authentication:**
+
+- `POST /api/admin/auth` - Login (returns JWT token)
+
+**Puzzle Management:**
+
+- `GET /api/admin/puzzles` - List all puzzles
 - `POST /api/admin/puzzles` - Create puzzle
 - `PUT /api/admin/puzzles` - Update puzzle
-- `DELETE /api/admin/puzzles` - Delete puzzle
-- `POST /api/admin/bulk-import` - Bulk import
-- `POST /api/admin/rotate-puzzle` - Force rotation
+- `DELETE /api/admin/puzzles?id=puzzle-id` - Delete puzzle
+- `POST /api/admin/bulk-import` - Bulk import puzzles
+- `POST /api/admin/rotate-puzzle` - Force puzzle rotation
 
 **Rate Limits:**
 
-- Auth: 5 requests/minute
-- General: 30 requests/minute
-- Write: 10 requests/minute
+- Auth endpoints: 5 requests/15 minutes
+- Read operations: 30 requests/minute
+- Write operations: 10 requests/minute
+
+### CSRF Protection
+
+All state-changing operations require a valid CSRF token in the `X-CSRF-Token` header.
 
 ## 🚢 Deployment
 
-### Vercel (Web)
+### Vercel (Web/PWA)
 
-1. Connect repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push to main
+1. **Connect Repository**
+   - Import repository in Vercel dashboard
+   - Select the `main` branch for production
+
+2. **Configure Environment Variables**
+   - Add all variables from `.env.example` to Vercel
+   - Ensure `NEXT_PUBLIC_API_URL` points to your production domain
+
+3. **Configure Vercel KV**
+   - Create a KV database in Vercel dashboard
+   - Copy connection strings to environment variables
+
+4. **Deploy**
+   - Push to `main` branch triggers automatic deployment
+   - Preview deployments created for pull requests
+
+**Custom Domain:**
+
+- Add domain in Vercel dashboard
+- Update `NEXT_PUBLIC_API_URL` to match custom domain
 
 ### App Store (iOS)
 
-1. Build in Xcode (Product → Archive)
-2. Validate app
-3. Upload to App Store Connect
-4. Submit for review
+1. **Prepare for Build**
 
-**Note:** Ensure `Info.plist` has proper privacy settings before submission.
+   ```bash
+   # Ensure version is updated in package.json and Info.plist
+   npm run ios:build
+   ```
+
+2. **Build in Xcode**
+   - Open `ios/App/App.xcworkspace`
+   - Select "Any iOS Device (arm64)"
+   - Product → Archive
+   - Wait for archive to complete
+
+3. **Validate & Upload**
+   - Click "Validate App" in Organizer
+   - Fix any issues found
+   - Click "Distribute App"
+   - Select "App Store Connect"
+   - Upload to App Store Connect
+
+4. **App Store Connect**
+   - Complete app metadata
+   - Upload screenshots (required sizes)
+   - Submit for review
+
+**Pre-submission Checklist:**
+
+- ✅ Privacy policy URL updated in Info.plist
+- ✅ PrivacyInfo.xcprivacy is complete
+- ✅ All entitlements configured
+- ✅ In-app purchases tested in sandbox
+- ✅ Push notifications working
+- ✅ iCloud sync functional
+- ✅ No console warnings in production build
+
+### Environment-Specific Builds
+
+**Development:**
+
+```bash
+npm run dev
+```
+
+**Production Web:**
+
+```bash
+npm run build
+```
+
+**Production iOS:**
+
+```bash
+BUILD_TARGET=capacitor npm run build
+```
+
+The `BUILD_TARGET=capacitor` environment variable ensures:
+
+- Static export for Capacitor
+- Proper asset paths
+- iOS-optimized builds
 
 ## 🐛 Troubleshooting
 
-**iOS build fails:**
+### iOS Build Issues
 
-- Clean build folder: `xcodebuild clean`
-- Reinstall pods: `cd ios/App && pod deintegrate && pod install`
-- Check Xcode version compatibility
+**Build fails in Xcode:**
 
-**Database connection issues:**
+```bash
+# Clean build folder
+xcodebuild clean -workspace ios/App/App.xcworkspace -scheme App
 
-- Verify Redis/KV credentials in `.env.local`
-- Check Vercel KV dashboard for connection status
-- Falls back to in-memory storage if Redis unavailable
+# Reinstall pods
+cd ios/App
+pod deintegrate
+pod install
+cd ../..
 
-**Puzzle not loading:**
+# Rebuild
+npm run ios:build
+```
 
-- Check `/public/puzzles/` directory
-- Verify date format (YYYY-MM-DD)
+**Capacitor sync fails:**
+
+```bash
+# Remove and re-add iOS platform
+npx cap remove ios
+npx cap add ios
+npm run cap:sync
+```
+
+**Code signing errors:**
+
+- Verify team and bundle ID in Xcode
+- Check provisioning profiles in Apple Developer portal
+- Clean build folder and retry
+
+### Database Issues
+
+**KV connection fails:**
+
+- Verify credentials in `.env.local`
+- Check Vercel KV dashboard for status
+- App falls back to in-memory storage if KV unavailable
+
+**Data not persisting:**
+
+- Check browser localStorage permissions
+- Verify iCloud is enabled (iOS)
+- Check network connection for KV sync
+
+### Puzzle Loading Issues
+
+**Puzzle not appearing:**
+
+- Check `/public/puzzles/` for puzzle file
+- Verify date format is YYYY-MM-DD
 - Check browser console for errors
+- Ensure puzzle JSON is valid
+
+**Wrong puzzle showing:**
+
+- Verify timezone (app uses Eastern Time)
+- Check system date/time settings
+- Clear browser cache and reload
+
+### Performance Issues
+
+**Slow loading:**
+
+- Check network connection
+- Verify assets are properly optimized
+- Check browser DevTools Performance tab
+
+**Memory leaks:**
+
+- Ensure proper cleanup in useEffect hooks
+- Verify service worker is not holding stale data
+- Check for infinite re-renders in React DevTools
 
 ## 📄 License
 
-[Add your license here]
+© 2025 Good Vibes Games. All rights reserved.
 
 ## 🤝 Contributing
 
-See [CONTRIBUTING.md](./CONTRIBUTING.md) for development guidelines.
+This is a private repository. For internal development guidelines:
+
+1. Create feature branches from `main`
+2. Follow existing code style (enforced by ESLint/Prettier)
+3. Write tests for new features
+4. Ensure all tests pass before PR
+5. Use conventional commit messages
 
 ## 📞 Support
 
-For issues or questions, please [create an issue](link-to-issues).
+- **In-App:** Settings → Support
+- **Web:** [www.tandemdaily.com/support](https://www.tandemdaily.com/support)
+- **Email:** support@goodvibesgames.com
+- **Privacy Policy:** [www.tandemdaily.com/privacypolicy](https://www.tandemdaily.com/privacypolicy)
 
 ---
 
-**Built with ❤️ for puzzle enthusiasts**
+**Built with ❤️ for puzzle enthusiasts worldwide**
