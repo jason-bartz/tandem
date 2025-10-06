@@ -140,7 +140,7 @@ export default function WelcomeScreen({
         </div>
 
         <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
-          4 pairs to solve
+          4 pairs. 1 hidden theme.
         </p>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
@@ -153,7 +153,7 @@ export default function WelcomeScreen({
                 ✌️
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                Each emoji pair represents one word
+                Each emoji pair = 1 word
               </span>
             </div>
             <div className="flex items-start">
@@ -161,7 +161,7 @@ export default function WelcomeScreen({
                 📖
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                All 4 answers share a hidden theme
+                All answers share a hidden theme
               </span>
             </div>
             <div className="flex items-start">
@@ -169,7 +169,7 @@ export default function WelcomeScreen({
                 ❌
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
-                You get 4 chances to be wrong
+                4 chances to be wrong
               </span>
             </div>
           </div>
