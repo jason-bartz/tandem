@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from './constants';
 import cloudKitService from '@/services/cloudkit.service';
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 
 // Platform-agnostic storage helpers
 async function getStorageItem(key) {
@@ -11,7 +12,6 @@ async function getStorageItem(key) {
   const isNative = Capacitor.isNativePlatform();
 
   if (isNative) {
-    const { Preferences } = Capacitor.Plugins;
     const { value } = await Preferences.get({ key });
     return value;
   } else {
@@ -27,7 +27,6 @@ async function setStorageItem(key, value) {
   const isNative = Capacitor.isNativePlatform();
 
   if (isNative) {
-    const { Preferences } = Capacitor.Plugins;
     await Preferences.set({ key, value });
   } else {
     localStorage.setItem(key, value);
@@ -270,7 +269,6 @@ export async function getGameHistory() {
   let keys = [];
 
   if (isNative) {
-    const { Preferences } = Capacitor.Plugins;
     const result = await Preferences.keys();
     keys = result.keys;
   } else {

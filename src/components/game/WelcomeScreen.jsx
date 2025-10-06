@@ -140,7 +140,7 @@ export default function WelcomeScreen({
         </div>
 
         <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
-          4 answers. 2 emojis each. 1 theme.
+          4 pairs to solve
         </p>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">

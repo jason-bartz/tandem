@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import logger from '@/lib/logger';
 
 /**
@@ -41,7 +42,6 @@ class CloudKitService {
       this.iCloudAvailable = result.available;
 
       // Check if user has enabled sync in preferences
-      const { Preferences } = Capacitor.Plugins;
       const { value } = await Preferences.get({ key: 'cloudkit_sync_enabled' });
       this.syncEnabled = this.iCloudAvailable && (value === null || value === 'true');
 
@@ -69,7 +69,6 @@ class CloudKitService {
     }
 
     try {
-      const { Preferences } = Capacitor.Plugins;
       await Preferences.set({
         key: 'cloudkit_sync_enabled',
         value: enabled ? 'true' : 'false',
