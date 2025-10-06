@@ -124,25 +124,25 @@ export default function OnScreenKeyboard({
         baseClasses += `
           ${
             isSubmitKey
-              ? 'bg-gradient-to-r from-sky-600 to-teal-600 text-white border border-sky-700'
+              ? 'bg-gray-600 text-gray-100 border border-gray-500'
               : isBackspaceKey
                 ? 'bg-gray-600 text-gray-100 border border-gray-500'
                 : 'bg-gray-700 text-gray-200 border border-gray-600'
           }
-          ${!disabled && (isSubmitKey ? 'md:hover:from-sky-700 md:hover:to-teal-700' : 'md:hover:bg-gray-600 md:hover:border-gray-500')}
-          ${isPressed && (isSubmitKey ? 'from-sky-700 to-teal-700' : 'bg-gray-600 border-gray-500')}
+          ${!disabled && 'md:hover:bg-gray-600 md:hover:border-gray-500'}
+          ${isPressed && 'bg-gray-600 border-gray-500'}
         `;
       } else {
         baseClasses += `
           ${
             isSubmitKey
-              ? 'bg-gradient-to-r from-sky-500 to-teal-500 text-white border border-sky-600'
+              ? 'bg-gray-400 text-white border border-gray-500'
               : isBackspaceKey
                 ? 'bg-gray-400 text-white border border-gray-500'
                 : 'bg-gray-200 text-gray-800 border border-gray-300'
           }
-          ${!disabled && (isSubmitKey ? 'md:hover:from-sky-600 md:hover:to-teal-600' : 'md:hover:bg-gray-300 md:hover:border-gray-400')}
-          ${isPressed && (isSubmitKey ? 'from-sky-600 to-teal-600' : 'bg-gray-300 border-gray-400')}
+          ${!disabled && 'md:hover:bg-gray-300 md:hover:border-gray-400'}
+          ${isPressed && 'bg-gray-300 border-gray-400'}
         `;
       }
     }
