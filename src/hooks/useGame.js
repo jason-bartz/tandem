@@ -191,7 +191,7 @@ export function useGame() {
       const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
 
       // Check if this is the first attempt BEFORE saving the result
-      const isFirstAttempt = puzzleDateToUse ? !hasPlayedPuzzle(puzzleDateToUse) : true;
+      const isFirstAttempt = puzzleDateToUse ? !(await hasPlayedPuzzle(puzzleDateToUse)) : true;
 
       // Update stats BEFORE saving the puzzle result to preserve first attempt status
       try {
