@@ -211,8 +211,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
       <VersionChecker />
 
       {/* Content container - centered scrollable layout for all devices */}
-      <div className="min-h-screen flex items-center justify-center py-6">
-        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
+      <div className="min-h-screen flex items-center justify-center py-6 px-4">
+        <div className="w-full max-w-xl mx-auto animate-fade-in relative z-10 my-auto">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}

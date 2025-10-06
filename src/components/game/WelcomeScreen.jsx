@@ -68,9 +68,9 @@ export default function WelcomeScreen({
   };
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in px-2">
       {/* Control buttons positioned above the card - Dynamic Island aware */}
-      <div className="flex justify-end gap-2 mb-4 pt-safe-ios px-4 sm:px-0">
+      <div className="flex justify-end gap-2 mb-4 pt-safe-ios">
         <button
           onClick={() => {
             lightTap();
