@@ -650,9 +650,36 @@ export default function Settings({ isOpen, onClose }) {
           </div>
         </div>
 
-        {/* Copyright */}
+        {/* Copyright and Links */}
         <div className="mb-4 text-center">
-          <p className="text-xs text-gray-500 dark:text-gray-400">© 2025 Good Vibes Games</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">© 2025 Good Vibes Games</p>
+          <div className="flex items-center justify-center gap-3 text-xs">
+            <a
+              href="/privacypolicy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-600 dark:text-sky-400 hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open('/privacypolicy', '_blank');
+              }}
+            >
+              Privacy Policy
+            </a>
+            <span className="text-gray-400 dark:text-gray-600">|</span>
+            <a
+              href="/support"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sky-600 dark:text-sky-400 hover:underline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open('/support', '_blank');
+              }}
+            >
+              Support
+            </a>
+          </div>
         </div>
 
         {/* Close Button */}

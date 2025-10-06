@@ -13,8 +13,6 @@ import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
-import Link from 'next/link';
-import platformService from '@/services/platform';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
@@ -198,69 +196,23 @@ export default function GameContainerClient({ initialPuzzleData }) {
     );
   }
 
-  // Main container with conditional wallpaper background
-  // On mobile phones PLAYING screen: use solid background (no wallpaper) for better focus
-  // On mobile phones WELCOME/COMPLETE screens: show wallpaper for aesthetic appeal
-  // On tablets/desktop: always show beautiful wallpaper background
-  // Device detection works identically on web and iOS native - no platform-specific override needed
-  const shouldHideWallpaper = isMobilePhone && game.gameState === GAME_STATES.PLAYING;
-
   return (
     <div
-      className={`fixed inset-0 w-full h-full ${
-        isMobilePhone ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'
-      } ${isMobilePhone ? 'mobile-phone-layout' : ''} ${isSmallPhone ? 'small-phone-layout' : ''}`}
+      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
       style={{
-        // Hide background image only on phones during PLAYING state
-        backgroundImage: shouldHideWallpaper ? 'none' : backgroundImage,
-        backgroundColor: shouldHideWallpaper
-          ? theme === 'dark'
-            ? '#1a1a1a'
-            : '#ffffff'
-          : undefined,
-        backgroundSize: shouldHideWallpaper ? undefined : 'cover',
-        backgroundPosition: shouldHideWallpaper ? undefined : 'center',
-        backgroundRepeat: shouldHideWallpaper ? undefined : 'no-repeat',
-        backgroundAttachment: shouldHideWallpaper ? undefined : 'fixed',
+        backgroundImage: backgroundImage,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
       }}
     >
       {/* Version checker for iOS app updates */}
       <VersionChecker />
-      {/* Footer - show for PWA, hide on mobile phones during PLAYING state only */}
-      {!platformService.isNative && !shouldHideWallpaper && (
-        <div className="fixed bottom-0 left-0 right-0 py-3 px-4 text-center">
-          <p className="text-xs text-white/60">
-            © 2025{' '}
-            <a
-              href="https://www.goodvibesgames.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-white/70 hover:text-white/90 transition-colors underline"
-            >
-              Good Vibes Games
-            </a>
-            {' | '}
-            <Link
-              href="/privacypolicy"
-              className="text-white/70 hover:text-white/90 transition-colors underline"
-            >
-              Privacy Policy
-            </Link>
-            {' | '}
-            <Link
-              href="/support"
-              className="text-white/70 hover:text-white/90 transition-colors underline"
-            >
-              Support
-            </Link>
-          </p>
-        </div>
-      )}
 
-      {/* Content container - mobile phones get full height, tablets/desktop get scrollable centered layout */}
-      {isMobilePhone ? (
-        // Mobile phone: Fixed full-height layout with no scrolling
-        <div className="h-full w-full max-w-xl mx-auto animate-fade-in relative">
+      {/* Content container - centered scrollable layout for all devices */}
+      <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
           {game.gameState === GAME_STATES.WELCOME && (
             <WelcomeScreen
               onStart={game.startGame}
@@ -314,65 +266,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
             />
           )}
         </div>
-      ) : (
-        // Tablet/Desktop: Original scrollable centered layout
-        <div className="min-h-screen flex items-center justify-center py-6">
-          <div className="w-full max-w-xl mx-auto p-6 animate-fade-in relative z-10 my-auto">
-            {game.gameState === GAME_STATES.WELCOME && (
-              <WelcomeScreen
-                onStart={game.startGame}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                onSelectPuzzle={handleSelectPuzzle}
-                puzzle={game.puzzle}
-              />
-            )}
-
-            {game.gameState === GAME_STATES.PLAYING && (
-              <PlayingScreen
-                puzzle={game.puzzle}
-                answers={game.answers}
-                correctAnswers={game.correctAnswers}
-                checkedWrongAnswers={game.checkedWrongAnswers}
-                mistakes={game.mistakes}
-                solved={game.solved}
-                time={timer.elapsed}
-                onUpdateAnswer={game.updateAnswer}
-                onCheckAnswers={handleCheckAnswers}
-                onCheckSingleAnswer={game.checkSingleAnswer}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                onSelectPuzzle={handleSelectPuzzle}
-                hintsUsed={game.hintsUsed}
-                onUseHint={game.useHint}
-                hasCheckedAnswers={game.hasCheckedAnswers}
-                onReturnToWelcome={game.returnToWelcome}
-                activeHints={game.activeHints}
-                isMobilePhone={false}
-                isSmallPhone={false}
-              />
-            )}
-
-            {game.gameState === GAME_STATES.COMPLETE && (
-              <CompleteScreen
-                won={game.won}
-                time={timer.elapsed}
-                mistakes={game.mistakes}
-                correctAnswers={game.solved}
-                puzzle={game.puzzle}
-                puzzleTheme={game.puzzle?.theme}
-                onPlayAgain={game.resetGame}
-                theme={theme}
-                toggleTheme={toggleTheme}
-                hintsUsed={game.hintsUsed}
-                activeHints={game.hintPositionsUsed}
-                onSelectPuzzle={handleSelectPuzzle}
-                onReturnToWelcome={game.returnToWelcome}
-              />
-            )}
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -14,7 +14,6 @@ import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
-import { Capacitor } from '@capacitor/core';
 
 export default function PlayingScreen({
   puzzle,
@@ -47,76 +46,10 @@ export default function PlayingScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
-  const [shouldHideLogo, setShouldHideLogo] = useState(false);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
-
-  // Detect if logo should be hidden based on available viewport space
-  // Following Apple HIG: prioritize game content over branding when space is limited
-  useEffect(() => {
-    const checkLogoVisibility = () => {
-      if (typeof window === 'undefined') return;
-
-      const viewportHeight = window.visualViewport?.height || window.innerHeight;
-      const isNative = Capacitor.isNativePlatform();
-      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-
-      // Estimated heights of game elements
-      const CONTROL_BUTTONS_HEIGHT = isSmallPhone ? 36 : 40; // Top buttons
-      const STATS_BAR_HEIGHT = isSmallPhone ? 45 : 50; // Timer/mistakes/solved
-      const PUZZLE_ROWS_HEIGHT = isSmallPhone ? 56 * 4 + 8 * 3 : 64 * 4 + 10 * 3; // 4 rows + gaps
-      const HINT_BUTTON_HEIGHT = hintsUsed === 0 && solved < 4 ? (isSmallPhone ? 36 : 44) : 0;
-      const KEYBOARD_HEIGHT = isSmallPhone ? 160 : 180; // Keyboard container
-      const DATE_LINE_HEIGHT = isSmallPhone ? 28 : 32; // Daily puzzle date line
-      const LOGO_HEIGHT = isSmallPhone ? 48 + 8 : 56 + 8; // Logo + margin
-      const PADDING_BUFFER = isSmallPhone ? 20 : 30; // Additional padding/spacing
-
-      const REQUIRED_HEIGHT_WITHOUT_LOGO =
-        CONTROL_BUTTONS_HEIGHT +
-        STATS_BAR_HEIGHT +
-        PUZZLE_ROWS_HEIGHT +
-        HINT_BUTTON_HEIGHT +
-        KEYBOARD_HEIGHT +
-        DATE_LINE_HEIGHT +
-        PADDING_BUFFER;
-
-      const REQUIRED_HEIGHT_WITH_LOGO = REQUIRED_HEIGHT_WITHOUT_LOGO + LOGO_HEIGHT;
-
-      // Hide logo if:
-      // 1. On mobile phone (not tablet/desktop)
-      // 2. AND either in iOS native app OR PWA standalone mode (bookmarked)
-      // 3. AND insufficient vertical space for all elements with logo
-      const shouldHide =
-        isMobilePhone &&
-        (isNative || !isStandalone) && // iOS app or non-bookmarked mobile web (browser chrome visible)
-        viewportHeight < REQUIRED_HEIGHT_WITH_LOGO &&
-        viewportHeight >= REQUIRED_HEIGHT_WITHOUT_LOGO;
-
-      setShouldHideLogo(shouldHide);
-    };
-
-    checkLogoVisibility();
-
-    // Re-check on viewport changes (keyboard open/close, orientation, resize)
-    const visualViewport = window.visualViewport;
-    if (visualViewport) {
-      visualViewport.addEventListener('resize', checkLogoVisibility);
-      visualViewport.addEventListener('scroll', checkLogoVisibility);
-    }
-    window.addEventListener('resize', checkLogoVisibility);
-    window.addEventListener('orientationchange', checkLogoVisibility);
-
-    return () => {
-      if (visualViewport) {
-        visualViewport.removeEventListener('resize', checkLogoVisibility);
-        visualViewport.removeEventListener('scroll', checkLogoVisibility);
-      }
-      window.removeEventListener('resize', checkLogoVisibility);
-      window.removeEventListener('orientationchange', checkLogoVisibility);
-    };
-  }, [isMobilePhone, isSmallPhone, hintsUsed, solved]);
 
   // Load keyboard layout and listen for changes
   useEffect(() => {
@@ -385,25 +318,15 @@ export default function PlayingScreen({
   };
 
   return (
-    <div
-      className={`animate-slide-up relative h-full flex flex-col ${
-        isMobilePhone ? 'mobile-playing-screen' : ''
-      }`}
-    >
-      {/* Control buttons with safe area padding for iOS - Dynamic Island aware */}
-      <div
-        className={`flex justify-end gap-2 ${
-          isMobilePhone ? 'mb-1' : 'mb-2 sm:mb-3'
-        } pt-safe-ios ${isMobilePhone ? 'px-2' : 'px-4 sm:px-0'}`}
-      >
+    <div className="animate-slide-up">
+      {/* Control buttons */}
+      <div className="flex justify-end gap-2 mb-2 sm:mb-3 px-4 sm:px-0">
         <button
           onClick={() => {
             lightTap();
             setShowStats(true);
           }}
-          className={`${
-            isSmallPhone ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
-          } rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all`}
+          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
           title="Statistics"
         >
           📊
@@ -413,9 +336,7 @@ export default function PlayingScreen({
             lightTap();
             setShowArchive(true);
           }}
-          className={`${
-            isSmallPhone ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
-          } rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all`}
+          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
           title="Archive"
         >
           📅
@@ -425,9 +346,7 @@ export default function PlayingScreen({
             lightTap();
             setShowHowToPlay(true);
           }}
-          className={`${
-            isSmallPhone ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
-          } rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all`}
+          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
           title="How to Play"
         >
           ❓
@@ -437,69 +356,51 @@ export default function PlayingScreen({
             lightTap();
             setShowSettings(true);
           }}
-          className={`${
-            isSmallPhone ? 'w-9 h-9 text-base' : 'w-10 h-10 text-lg'
-          } rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all`}
+          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
           title="Settings"
         >
           ⚙️
         </button>
       </div>
 
-      {/* Main game card - full screen on mobile phones, card on tablets */}
+      {/* Main game card */}
       <div
         ref={puzzleContainerRef}
-        className={`bg-white dark:bg-gray-900 overflow-hidden flex-1 flex flex-col min-h-0 ${
-          isMobilePhone ? 'rounded-none shadow-none' : 'rounded-3xl shadow-2xl'
-        }`}
+        className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden"
       >
-        {/* Header with white background - Logo hidden when space is constrained */}
-        <div
-          className={`${
-            isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-5'
-          } text-center flex-shrink-0 bg-white dark:bg-gray-900 transition-all duration-200`}
-        >
-          {/* Logo - Hidden when viewport space is insufficient (iOS app, non-bookmarked web) */}
-          {!shouldHideLogo && (
+        {/* Header with logo - hidden on mobile phones, visible on tablets/desktop */}
+        <div className="p-3 sm:p-5 text-center bg-white dark:bg-gray-900">
+          {/* Logo - Only show on tablet/desktop (not mobile phones) */}
+          {!isMobilePhone && (
             <button
               onClick={() => {
                 lightTap();
                 onReturnToWelcome();
               }}
-              className={`${
-                isSmallPhone ? 'w-12 h-12' : isMobilePhone ? 'w-14 h-14' : 'w-16 h-16'
-              } mx-auto mb-1 relative cursor-pointer hover:scale-110 transition-transform`}
+              className="w-16 h-16 mx-auto mb-1 relative cursor-pointer hover:scale-110 transition-transform"
               title="Return to Welcome Screen"
             >
               <Image
                 src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
                 alt="Tandem Logo"
-                width={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
-                height={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
+                width={64}
+                height={64}
                 className="rounded-xl"
                 priority
               />
             </button>
           )}
-          <div
-            className={`text-gray-600 dark:text-gray-300 ${
-              isSmallPhone ? 'text-xs' : 'text-sm'
-            } font-medium flex items-center justify-center gap-2 relative ${
-              shouldHideLogo ? 'mt-0' : ''
-            }`}
-          >
+          <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative">
             <button
               onClick={() => {
                 lightTap();
                 onReturnToWelcome();
               }}
-              className={`absolute left-0 ${
-                isSmallPhone ? 'w-7 h-7' : 'w-8 h-8'
-              } flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors`}
+              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               title="Back to Home"
             >
               <svg
-                className={`${isSmallPhone ? 'w-4 h-4' : 'w-5 h-5'} text-gray-600 dark:text-gray-300`}
+                className="w-5 h-5 text-gray-600 dark:text-gray-300"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -517,12 +418,7 @@ export default function PlayingScreen({
           </div>
         </div>
 
-        <div
-          className={`${
-            isSmallPhone ? 'p-2' : isMobilePhone ? 'p-3' : 'p-4 sm:p-6'
-          } flex-1 overflow-y-auto min-h-0`}
-          ref={contentRef}
-        >
+        <div className="p-4 sm:p-6" ref={contentRef}>
           <div className="max-w-lg mx-auto">
             <StatsBar
               time={formatTime(time)}
@@ -532,15 +428,7 @@ export default function PlayingScreen({
               isMobilePhone={isMobilePhone}
             />
 
-            <div
-              className={`flex flex-col ${
-                isSmallPhone
-                  ? 'gap-2 mb-2 mt-2'
-                  : isMobilePhone
-                    ? 'gap-2.5 mb-3 mt-2.5'
-                    : 'gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4'
-              }`}
-            >
+            <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4">
               {puzzle &&
                 puzzle.puzzles &&
                 puzzle.puzzles.map((p, index) => (
@@ -571,43 +459,33 @@ export default function PlayingScreen({
 
             {/* Hint button - positioned before keyboard */}
             {hintsUsed === 0 && solved < 4 && (
-              <div className={isSmallPhone ? 'mb-2' : 'mb-3'}>
+              <div className="mb-3">
                 <button
                   onClick={() => {
                     lightTap();
                     handleUseHint();
                   }}
-                  className={`w-full ${
-                    isSmallPhone
-                      ? 'p-2 text-xs'
-                      : isMobilePhone
-                        ? 'p-2.5 text-sm'
-                        : 'p-2.5 sm:p-3 text-sm sm:text-base'
-                  } rounded-xl font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button
-                  ${
+                  className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-xl font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button ${
                     highContrast
                       ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
                       : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
-                  }
-                `}
+                  }`}
                 >
-                  <span className={isSmallPhone ? 'text-base' : 'text-lg sm:text-xl'}>💡</span>
+                  <span className="text-lg sm:text-xl">💡</span>
                   Use Hint (1 available)
                 </button>
               </div>
             )}
-          </div>
-        </div>
 
-        {/* On-screen keyboard */}
-        <div className="bg-white dark:bg-gray-900 keyboard-container flex-shrink-0 pb-safe-ios">
-          <OnScreenKeyboard
-            onKeyPress={handleKeyboardInput}
-            disabled={solved === 4}
-            layout={keyboardLayout}
-            isSmallPhone={isSmallPhone}
-            isMobilePhone={isMobilePhone}
-          />
+            {/* On-screen keyboard */}
+            <OnScreenKeyboard
+              onKeyPress={handleKeyboardInput}
+              disabled={solved === 4}
+              layout={keyboardLayout}
+              isSmallPhone={isSmallPhone}
+              isMobilePhone={isMobilePhone}
+            />
+          </div>
         </div>
       </div>
 
