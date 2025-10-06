@@ -14,6 +14,7 @@ import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
+import { Capacitor } from '@capacitor/core';
 
 export default function PlayingScreen({
   puzzle,
@@ -46,10 +47,76 @@ export default function PlayingScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
+  const [shouldHideLogo, setShouldHideLogo] = useState(false);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
+
+  // Detect if logo should be hidden based on available viewport space
+  // Following Apple HIG: prioritize game content over branding when space is limited
+  useEffect(() => {
+    const checkLogoVisibility = () => {
+      if (typeof window === 'undefined') return;
+
+      const viewportHeight = window.visualViewport?.height || window.innerHeight;
+      const isNative = Capacitor.isNativePlatform();
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+
+      // Estimated heights of game elements
+      const CONTROL_BUTTONS_HEIGHT = isSmallPhone ? 36 : 40; // Top buttons
+      const STATS_BAR_HEIGHT = isSmallPhone ? 45 : 50; // Timer/mistakes/solved
+      const PUZZLE_ROWS_HEIGHT = isSmallPhone ? 56 * 4 + 8 * 3 : 64 * 4 + 10 * 3; // 4 rows + gaps
+      const HINT_BUTTON_HEIGHT = hintsUsed === 0 && solved < 4 ? (isSmallPhone ? 36 : 44) : 0;
+      const KEYBOARD_HEIGHT = isSmallPhone ? 160 : 180; // Keyboard container
+      const DATE_LINE_HEIGHT = isSmallPhone ? 28 : 32; // Daily puzzle date line
+      const LOGO_HEIGHT = isSmallPhone ? 48 + 8 : 56 + 8; // Logo + margin
+      const PADDING_BUFFER = isSmallPhone ? 20 : 30; // Additional padding/spacing
+
+      const REQUIRED_HEIGHT_WITHOUT_LOGO =
+        CONTROL_BUTTONS_HEIGHT +
+        STATS_BAR_HEIGHT +
+        PUZZLE_ROWS_HEIGHT +
+        HINT_BUTTON_HEIGHT +
+        KEYBOARD_HEIGHT +
+        DATE_LINE_HEIGHT +
+        PADDING_BUFFER;
+
+      const REQUIRED_HEIGHT_WITH_LOGO = REQUIRED_HEIGHT_WITHOUT_LOGO + LOGO_HEIGHT;
+
+      // Hide logo if:
+      // 1. On mobile phone (not tablet/desktop)
+      // 2. AND either in iOS native app OR PWA standalone mode (bookmarked)
+      // 3. AND insufficient vertical space for all elements with logo
+      const shouldHide =
+        isMobilePhone &&
+        (isNative || !isStandalone) && // iOS app or non-bookmarked mobile web (browser chrome visible)
+        viewportHeight < REQUIRED_HEIGHT_WITH_LOGO &&
+        viewportHeight >= REQUIRED_HEIGHT_WITHOUT_LOGO;
+
+      setShouldHideLogo(shouldHide);
+    };
+
+    checkLogoVisibility();
+
+    // Re-check on viewport changes (keyboard open/close, orientation, resize)
+    const visualViewport = window.visualViewport;
+    if (visualViewport) {
+      visualViewport.addEventListener('resize', checkLogoVisibility);
+      visualViewport.addEventListener('scroll', checkLogoVisibility);
+    }
+    window.addEventListener('resize', checkLogoVisibility);
+    window.addEventListener('orientationchange', checkLogoVisibility);
+
+    return () => {
+      if (visualViewport) {
+        visualViewport.removeEventListener('resize', checkLogoVisibility);
+        visualViewport.removeEventListener('scroll', checkLogoVisibility);
+      }
+      window.removeEventListener('resize', checkLogoVisibility);
+      window.removeEventListener('orientationchange', checkLogoVisibility);
+    };
+  }, [isMobilePhone, isSmallPhone, hintsUsed, solved]);
 
   // Load keyboard layout and listen for changes
   useEffect(() => {
@@ -386,36 +453,40 @@ export default function PlayingScreen({
           isMobilePhone ? 'rounded-none shadow-none' : 'rounded-3xl shadow-2xl'
         }`}
       >
-        {/* Header with white background - Logo visible on all screens */}
+        {/* Header with white background - Logo hidden when space is constrained */}
         <div
           className={`${
             isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-5'
-          } text-center flex-shrink-0 bg-white dark:bg-gray-900`}
+          } text-center flex-shrink-0 bg-white dark:bg-gray-900 transition-all duration-200`}
         >
-          {/* Show logo on all screen sizes using main logo */}
-          <button
-            onClick={() => {
-              lightTap();
-              onReturnToWelcome();
-            }}
-            className={`${
-              isSmallPhone ? 'w-12 h-12' : isMobilePhone ? 'w-14 h-14' : 'w-16 h-16'
-            } mx-auto mb-1 relative cursor-pointer hover:scale-110 transition-transform`}
-            title="Return to Welcome Screen"
-          >
-            <Image
-              src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
-              alt="Tandem Logo"
-              width={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
-              height={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
-              className="rounded-xl"
-              priority
-            />
-          </button>
+          {/* Logo - Hidden when viewport space is insufficient (iOS app, non-bookmarked web) */}
+          {!shouldHideLogo && (
+            <button
+              onClick={() => {
+                lightTap();
+                onReturnToWelcome();
+              }}
+              className={`${
+                isSmallPhone ? 'w-12 h-12' : isMobilePhone ? 'w-14 h-14' : 'w-16 h-16'
+              } mx-auto mb-1 relative cursor-pointer hover:scale-110 transition-transform`}
+              title="Return to Welcome Screen"
+            >
+              <Image
+                src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+                alt="Tandem Logo"
+                width={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
+                height={isSmallPhone ? 48 : isMobilePhone ? 56 : 64}
+                className="rounded-xl"
+                priority
+              />
+            </button>
+          )}
           <div
             className={`text-gray-600 dark:text-gray-300 ${
               isSmallPhone ? 'text-xs' : 'text-sm'
-            } font-medium flex items-center justify-center gap-2 relative`}
+            } font-medium flex items-center justify-center gap-2 relative ${
+              shouldHideLogo ? 'mt-0' : ''
+            }`}
           >
             <button
               onClick={() => {
