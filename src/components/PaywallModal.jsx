@@ -122,6 +122,33 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     }
   };
 
+  const retryInitialization = async () => {
+    console.log('[PaywallModal] Retrying initialization...');
+    setError(null);
+    setProductsLoading(true);
+
+    try {
+      // Force re-initialize the subscription service
+      await subscriptionService.forceReinitialize();
+
+      // Check if products are now available
+      const products = subscriptionService.getProducts();
+      console.log('[PaywallModal] Products after retry:', products);
+
+      if (Object.keys(products).length > 0) {
+        setProductsLoading(false);
+        setError(null);
+      } else {
+        setError('No products available. Please check your internet connection and try again.');
+        setProductsLoading(false);
+      }
+    } catch (err) {
+      console.error('[PaywallModal] Retry failed:', err);
+      setError('Failed to initialize. Please close and try again.');
+      setProductsLoading(false);
+    }
+  };
+
   const handleRestore = async () => {
     setRestoring(true);
     setError(null);
@@ -313,9 +340,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             }`}
           >
             {error}
-            {error.includes('loading') && (
+            {(error.includes('loading') ||
+              error.includes('No products') ||
+              error.includes('Failed')) && (
               <button
-                onClick={loadProducts}
+                onClick={retryInitialization}
                 className="block mx-auto mt-2 text-xs text-sky-600 dark:text-sky-400 hover:underline"
               >
                 Retry

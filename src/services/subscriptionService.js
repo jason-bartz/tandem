@@ -95,6 +95,21 @@ class SubscriptionService {
     return this.initPromise;
   }
 
+  /**
+   * Force re-initialization of the service
+   * Use this when initialization fails and you want to retry
+   * @returns {Promise<void>}
+   */
+  async forceReinitialize() {
+    console.log('IAP: Force re-initializing subscription service...');
+    this.initPromise = null;
+    this.initState = INIT_STATE.NOT_STARTED;
+    this.store = null;
+    this.products = {};
+    this.subscriptionStatus = null;
+    return this.initialize();
+  }
+
   async _doInitialize() {
     // Only initialize on native iOS
     if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
@@ -105,10 +120,20 @@ class SubscriptionService {
     }
 
     try {
-      // Wait for window to be ready and CdvPurchase to load (max 3 seconds)
+      // Check if cordova.js is loaded first
+      console.log('IAP: Checking for required files...');
+      console.log('IAP: window.cordova exists?', typeof window?.cordova !== 'undefined');
+      console.log('IAP: window.CdvPurchase exists?', typeof window?.CdvPurchase !== 'undefined');
+
+      if (!window.cordova) {
+        console.error('IAP: CRITICAL - cordova.js not loaded. This is required for IAP to work.');
+        console.error('IAP: Make sure cordova.js is included in your HTML');
+      }
+
+      // Wait for window to be ready and CdvPurchase to load (max 10 seconds)
       let attempts = 0;
-      while (attempts < 6 && (!window.CdvPurchase || !window.CdvPurchase.store)) {
-        console.log(`IAP: Waiting for CdvPurchase to be available (attempt ${attempts + 1}/6)`);
+      while (attempts < 20 && (!window.CdvPurchase || !window.CdvPurchase.store)) {
+        console.log(`IAP: Waiting for CdvPurchase to be available (attempt ${attempts + 1}/20)`);
         await new Promise((resolve) => setTimeout(resolve, 500));
         attempts++;
       }
