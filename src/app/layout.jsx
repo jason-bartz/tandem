@@ -180,6 +180,9 @@ export default function RootLayout({ children }) {
             />
           </>
         )}
+
+        {/* Load Cordova.js for iOS app - Required for cordova-plugin-purchase */}
+        {process.env.BUILD_TARGET === 'capacitor' && <script src="/cordova.js" defer />}
       </head>
       <body className={`${inter.className} antialiased`}>
         <ErrorBoundary name="RootLayout">
