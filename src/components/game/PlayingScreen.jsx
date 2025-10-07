@@ -1,6 +1,5 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import Image from 'next/image';
 import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
@@ -26,7 +25,7 @@ export default function PlayingScreen({
   onUpdateAnswer,
   onCheckAnswers: _onCheckAnswers,
   onCheckSingleAnswer,
-  theme,
+  _theme,
   _isAuto,
   _currentState,
   onSelectPuzzle,
@@ -368,33 +367,9 @@ export default function PlayingScreen({
         ref={puzzleContainerRef}
         className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden"
       >
-        {/* Header with logo - hidden on mobile phones, visible on tablets/desktop */}
-        <div
-          className={`p-3 sm:p-5 text-center bg-white dark:bg-gray-900 ${isMobilePhone ? 'flex items-center justify-center min-h-[60px]' : ''}`}
-        >
-          {/* Logo - Only show on tablet/desktop (not mobile phones) */}
-          {!isMobilePhone && (
-            <button
-              onClick={() => {
-                lightTap();
-                onReturnToWelcome();
-              }}
-              className="w-16 h-16 mx-auto mb-1 relative cursor-pointer hover:scale-110 transition-transform"
-              title="Return to Welcome Screen"
-            >
-              <Image
-                src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
-                alt="Tandem Logo"
-                width={64}
-                height={64}
-                className="rounded-xl"
-                priority
-              />
-            </button>
-          )}
-          <div
-            className={`text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative ${isMobilePhone ? 'w-full' : ''}`}
-          >
+        {/* Header - logo hidden on all devices, content centered */}
+        <div className="p-3 sm:p-5 text-center bg-white dark:bg-gray-900 flex items-center justify-center min-h-[60px]">
+          <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
             <button
               onClick={() => {
                 lightTap();

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 
@@ -102,6 +103,22 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       playHaptic('error');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleOpenLink = async (url) => {
+    // On native platforms, use the Capacitor Browser plugin
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await Browser.open({ url });
+      } catch (error) {
+        console.error('Error opening link:', error);
+        // Fallback to window.open
+        window.open(url, '_blank');
+      }
+    } else {
+      // On web, use regular link opening
+      window.open(url, '_blank');
     }
   };
 
@@ -215,7 +232,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Monthly subscription
+                    Monthly subscription • Auto-renews
                   </p>
                 </div>
                 <div className="text-right">
@@ -249,7 +266,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Best value • Save 37%
+                    Annual subscription • Auto-renews • Save 37%
                   </p>
                 </div>
                 <div className="text-right">
@@ -324,15 +341,20 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             the current period. Manage subscriptions in your Account Settings.
           </p>
           <div className="flex justify-center gap-4 mt-3">
-            <a href="/terms" className="text-xs text-sky-600 dark:text-sky-400 hover:underline">
+            <button
+              onClick={() =>
+                handleOpenLink('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')
+              }
+              className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
+            >
               Terms of Use
-            </a>
-            <a
-              href="/privacypolicy"
+            </button>
+            <button
+              onClick={() => handleOpenLink('https://tandemdaily.com/privacypolicy')}
               className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
             >
               Privacy Policy
-            </a>
+            </button>
           </div>
         </div>
 

@@ -3,13 +3,12 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C56EB932E8B004100AA549D /* StoreKit.framework */; };
 		2CC4A9D32E940E150021A996 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BF2E940E150021A996 /* config.xml */; };
-		50B271D11FEDC1A000F3C39C /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		2CC4AA002E940E150021A996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C52E940E150021A996 /* Main.storyboard */; };
 		2CC4AA0B2E940E150021A996 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C62E940E150021A996 /* PrivacyInfo.xcprivacy */; };
 		2CC4AA132E940E150021A996 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BD2E940E150021A996 /* Assets.xcassets */; };
@@ -21,6 +20,7 @@
 		504EC3081FED79650016851F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 504EC3071FED79650016851F /* AppDelegate.swift */; };
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
+		50B271D11FEDC1A000F3C39C /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
 		D918B4515ACD7D39E30EEE26 /* Pods_Tandem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B45D82A5C5B520424EB7B17 /* Pods_Tandem.framework */; };
 /* End PBXBuildFile section */
 
@@ -54,10 +54,6 @@
 		85FDEDB488779D76934DE30D /* Pods-Tandem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.debug.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-
-
-
-
 /* Begin PBXFrameworksBuildPhase section */
 		504EC3011FED79650016851F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
@@ -85,7 +81,6 @@
 		2CC4A9C72E940E150021A996 /* App */ = {
 			isa = PBXGroup;
 			children = (
-				50B271D01FEDC1A000F3C39B /* public */,
 				2CC4A94D2E940E150021A996 /* Plugins */,
 				2CC4A9BC2E940E150021A996 /* AppDelegate.swift */,
 				2CC4A9BD2E940E150021A996 /* Assets.xcassets */,
@@ -461,7 +456,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.4;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -492,7 +487,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6;
+				MARKETING_VERSION = 1.6.4;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
