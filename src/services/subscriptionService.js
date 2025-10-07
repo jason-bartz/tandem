@@ -155,7 +155,7 @@ class SubscriptionService {
           {
             platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
             options: {
-              needAppReceipt: false,
+              needAppReceipt: true, // Enable receipt collection for validation
               autoRefreshReceipt: true, // Important for TestFlight/Sandbox
             },
           },
@@ -235,12 +235,22 @@ class SubscriptionService {
         // Verify the transaction
         transaction.verify();
       })
-      .verified((receipt) => {
-        console.log('IAP: Purchase verified:', receipt);
-        // Finish the transaction
-        receipt.finish();
-        // Handle successful purchase
-        this.handleSuccessfulPurchase(receipt);
+      .verified(async (receipt) => {
+        console.log('IAP: Purchase verified locally:', receipt);
+
+        // Validate receipt with our server
+        const isValid = await this.validateReceiptWithServer(receipt);
+
+        if (isValid) {
+          // Finish the transaction
+          receipt.finish();
+          // Handle successful purchase
+          this.handleSuccessfulPurchase(receipt);
+        } else {
+          console.error('IAP: Server receipt validation failed');
+          // Still finish the transaction to avoid getting stuck
+          receipt.finish();
+        }
       })
       .finished((transaction) => {
         console.log('IAP: Transaction finished:', transaction);
@@ -251,6 +261,61 @@ class SubscriptionService {
       .failed((transaction) => {
         console.error('IAP: Purchase failed:', transaction);
       });
+  }
+
+  async validateReceiptWithServer(receipt) {
+    try {
+      // Get the app receipt data
+      let receiptData = null;
+
+      if (receipt.appStoreReceipt) {
+        // For iOS, use the base64 encoded receipt
+        receiptData = receipt.appStoreReceipt;
+      } else if (receipt.transactionReceipt) {
+        // Fallback to transaction receipt
+        receiptData = receipt.transactionReceipt;
+      }
+
+      if (!receiptData) {
+        console.error('IAP: No receipt data available for validation');
+        return false;
+      }
+
+      // Call our validation API
+      const response = await fetch('/api/iap/validate-receipt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ receiptData }),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('IAP: Server validation successful:', result);
+        // Store the validation result for reference
+        if (result.subscriptionInfo && typeof window !== 'undefined') {
+          localStorage.setItem(
+            'tandem_last_receipt_validation',
+            JSON.stringify({
+              timestamp: new Date().toISOString(),
+              environment: result.environment,
+              subscriptionInfo: result.subscriptionInfo,
+            })
+          );
+        }
+        return true;
+      } else {
+        console.error('IAP: Server validation failed:', result.error);
+        return false;
+      }
+    } catch (error) {
+      console.error('IAP: Error validating receipt with server:', error);
+      // In case of network error, allow the purchase to proceed
+      // Apple has already validated it locally
+      return true;
+    }
   }
 
   async handleSuccessfulPurchase(receipt) {
@@ -449,25 +514,52 @@ class SubscriptionService {
         // Use v13's restorePurchases method
         this.store
           .restorePurchases()
-          .then(() => {
+          .then(async () => {
             console.log('IAP: Restore completed');
 
             // Check if any products are now owned
             let restored = false;
-            Object.values(this.products).forEach((product) => {
-              if (product.owned) {
-                console.log('IAP: Product owned after restore:', product.id);
-                restored = true;
-                // Update local storage with the restored purchase
-                this.handleSuccessfulPurchase({
-                  transactions: [
-                    {
-                      products: [{ id: product.id }],
-                    },
-                  ],
+
+            // Get the latest receipt for validation
+            const receipt = this.store.applicationReceipt;
+            if (receipt) {
+              console.log('IAP: Validating restored purchases with server');
+              const isValid = await this.validateReceiptWithServer({ appStoreReceipt: receipt });
+
+              if (isValid) {
+                // Check owned products
+                Object.values(this.products).forEach((product) => {
+                  if (product.owned) {
+                    console.log('IAP: Product owned after restore:', product.id);
+                    restored = true;
+                    // Update local storage with the restored purchase
+                    this.handleSuccessfulPurchase({
+                      transactions: [
+                        {
+                          products: [{ id: product.id }],
+                        },
+                      ],
+                    });
+                  }
                 });
               }
-            });
+            } else {
+              // Fallback to checking product ownership without server validation
+              Object.values(this.products).forEach((product) => {
+                if (product.owned) {
+                  console.log('IAP: Product owned after restore:', product.id);
+                  restored = true;
+                  // Update local storage with the restored purchase
+                  this.handleSuccessfulPurchase({
+                    transactions: [
+                      {
+                        products: [{ id: product.id }],
+                      },
+                    ],
+                  });
+                }
+              });
+            }
 
             resolve(restored);
           })

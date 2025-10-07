@@ -9,6 +9,7 @@ import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useDeviceType } from '@/lib/deviceDetection';
 import { Capacitor } from '@capacitor/core';
 import subscriptionService from '@/services/subscriptionService';
 
@@ -29,6 +30,7 @@ export default function WelcomeScreen({
   const [isPremium, setIsPremium] = useState(false);
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
+  const { isMobilePhone } = useDeviceType();
 
   useEffect(() => {
     // Check premium status on mount
@@ -120,16 +122,19 @@ export default function WelcomeScreen({
 
       {/* Main welcome card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
-        <div className="w-24 h-24 mx-auto mb-5 relative">
-          <Image
-            src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
-            alt="Tandem Logo"
-            width={96}
-            height={96}
-            className="rounded-2xl"
-            priority
-          />
-        </div>
+        {/* Logo - Only show on tablet/desktop (not mobile phones) */}
+        {!isMobilePhone && (
+          <div className="w-24 h-24 mx-auto mb-5 relative">
+            <Image
+              src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+              alt="Tandem Logo"
+              width={96}
+              height={96}
+              className="rounded-2xl"
+              priority
+            />
+          </div>
+        )}
 
         {/* Puzzle number and date */}
         <div className="mb-6">

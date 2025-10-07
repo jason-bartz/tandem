@@ -17,6 +17,7 @@ import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useDeviceType } from '@/lib/deviceDetection';
 import Settings from '@/components/Settings';
 
 export default function CompleteScreen({
@@ -44,6 +45,7 @@ export default function CompleteScreen({
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast } = useTheme();
+  const { isMobilePhone } = useDeviceType();
 
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
@@ -168,22 +170,25 @@ export default function CompleteScreen({
       {/* Main completion card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
         <div>
-          <button
-            onClick={() => {
-              lightTap();
-              onReturnToWelcome();
-            }}
-            className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
-            title="Return to Welcome Screen"
-          >
-            <Image
-              src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}
-              alt="Tandem Logo"
-              width={96}
-              height={96}
-              className="rounded-2xl"
-            />
-          </button>
+          {/* Logo - Only show on tablet/desktop (not mobile phones) */}
+          {!isMobilePhone && (
+            <button
+              onClick={() => {
+                lightTap();
+                onReturnToWelcome();
+              }}
+              className="w-24 h-24 mx-auto mb-6 relative flex items-center justify-center cursor-pointer hover:scale-110 transition-transform"
+              title="Return to Welcome Screen"
+            >
+              <Image
+                src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}
+                alt="Tandem Logo"
+                width={96}
+                height={96}
+                className="rounded-2xl"
+              />
+            </button>
+          )}
 
           <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
             {won ? (
