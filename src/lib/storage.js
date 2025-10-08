@@ -334,7 +334,10 @@ export async function restoreFromiCloud() {
     logger.info('[RESTORE] syncData received:', syncData);
 
     if (!syncData.success || !syncData.data) {
-      logger.error('[RESTORE] No data found', { success: syncData.success, hasData: !!syncData.data });
+      logger.error('[RESTORE] No data found', {
+        success: syncData.success,
+        hasData: !!syncData.data,
+      });
       return { success: false, message: 'No iCloud data found' };
     }
 
@@ -401,9 +404,10 @@ export async function restoreFromiCloud() {
     logger.info('[RESTORE] Successfully restored', restored, 'items');
 
     // Even if restored count is 0, still return success if no errors occurred
-    const message = restored > 0
-      ? `Successfully restored ${restored} items from iCloud`
-      : 'iCloud sync completed (no new data to restore)';
+    const message =
+      restored > 0
+        ? `Successfully restored ${restored} items from iCloud`
+        : 'iCloud sync completed (no new data to restore)';
 
     const result = {
       success: true,

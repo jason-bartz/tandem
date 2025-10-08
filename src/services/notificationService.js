@@ -159,13 +159,13 @@ class NotificationService {
   // Get random daily reminder time between 9 AM and 10:30 AM at 15-minute intervals
   getRandomDailyReminderTime() {
     const timeSlots = [
-      { hours: 9, minutes: 0 },    // 9:00 AM
-      { hours: 9, minutes: 15 },   // 9:15 AM
-      { hours: 9, minutes: 30 },   // 9:30 AM
-      { hours: 9, minutes: 45 },   // 9:45 AM
-      { hours: 10, minutes: 0 },   // 10:00 AM
-      { hours: 10, minutes: 15 },  // 10:15 AM
-      { hours: 10, minutes: 30 },  // 10:30 AM
+      { hours: 9, minutes: 0 }, // 9:00 AM
+      { hours: 9, minutes: 15 }, // 9:15 AM
+      { hours: 9, minutes: 30 }, // 9:30 AM
+      { hours: 9, minutes: 45 }, // 9:45 AM
+      { hours: 10, minutes: 0 }, // 10:00 AM
+      { hours: 10, minutes: 15 }, // 10:15 AM
+      { hours: 10, minutes: 30 }, // 10:30 AM
     ];
 
     // Get last used time to avoid consecutive repeats
@@ -174,7 +174,7 @@ class NotificationService {
     // Filter out last used time if it exists
     let availableSlots = timeSlots;
     if (lastUsedTime) {
-      availableSlots = timeSlots.filter(slot => {
+      availableSlots = timeSlots.filter((slot) => {
         const slotStr = `${slot.hours}:${String(slot.minutes).padStart(2, '0')}`;
         return slotStr !== lastUsedTime;
       });
@@ -196,7 +196,10 @@ class NotificationService {
     if (!this.isNative) return;
 
     // Always enabled if master notifications are on
-    const notificationsEnabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
+    const notificationsEnabled = await this.getNotificationPreference(
+      PREFS_KEYS.NOTIFICATIONS_ENABLED,
+      true
+    );
     if (!notificationsEnabled) return;
 
     // Cancel existing daily reminder
@@ -265,7 +268,10 @@ class NotificationService {
     if (!this.isNative) return;
 
     // Always enabled if master notifications are on
-    const notificationsEnabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
+    const notificationsEnabled = await this.getNotificationPreference(
+      PREFS_KEYS.NOTIFICATIONS_ENABLED,
+      true
+    );
     if (!notificationsEnabled) return;
 
     // Cancel existing streak saver
