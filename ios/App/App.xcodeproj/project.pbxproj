@@ -21,12 +21,11 @@
 		504EC30F1FED79650016851F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 504EC30E1FED79650016851F /* Assets.xcassets */; };
 		504EC3121FED79650016851F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 504EC3101FED79650016851F /* LaunchScreen.storyboard */; };
 		50B271D11FEDC1A000F3C39C /* public in Resources */ = {isa = PBXBuildFile; fileRef = 50B271D01FEDC1A000F3C39B /* public */; };
-		D918B4515ACD7D39E30EEE26 /* Pods_Tandem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B45D82A5C5B520424EB7B17 /* Pods_Tandem.framework */; };
+		BE64064A9BBFDEAE599EF10C /* Pods_Tandem.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B4086BB4D1901ACD82A0C15 /* Pods_Tandem.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		08190148275B047B83A9787D /* Pods-Tandem.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.release.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.release.xcconfig"; sourceTree = "<group>"; };
-		2B45D82A5C5B520424EB7B17 /* Pods_Tandem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tandem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		2B4086BB4D1901ACD82A0C15 /* Pods_Tandem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tandem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C56EB932E8B004100AA549D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2C56EB952E8B005E00AA549D /* Tandem.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tandem.entitlements; sourceTree = "<group>"; };
 		2CC4A94B2E940E150021A996 /* CloudKitSyncPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CloudKitSyncPlugin.m; sourceTree = "<group>"; };
@@ -51,7 +50,8 @@
 		504EC3111FED79650016851F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		504EC3131FED79650016851F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		50B271D01FEDC1A000F3C39B /* public */ = {isa = PBXFileReference; lastKnownFileType = folder; path = public; sourceTree = "<group>"; };
-		85FDEDB488779D76934DE30D /* Pods-Tandem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.debug.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.debug.xcconfig"; sourceTree = "<group>"; };
+		B1E2ECA6A5FA75698EEEB1A7 /* Pods-Tandem.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.release.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.release.xcconfig"; sourceTree = "<group>"; };
+		C26AD156DD5C3FD31D481312 /* Pods-Tandem.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Tandem.debug.xcconfig"; path = "Target Support Files/Pods-Tandem/Pods-Tandem.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -62,7 +62,7 @@
 				2CDC8CB72E8C56EC004A2B26 /* UserNotifications.framework in Frameworks */,
 				2CDC8CB52E8C56E2004A2B26 /* CloudKit.framework in Frameworks */,
 				2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */,
-				D918B4515ACD7D39E30EEE26 /* Pods_Tandem.framework in Frameworks */,
+				BE64064A9BBFDEAE599EF10C /* Pods_Tandem.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -136,7 +136,7 @@
 				2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */,
 				2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */,
 				2C56EB932E8B004100AA549D /* StoreKit.framework */,
-				2B45D82A5C5B520424EB7B17 /* Pods_Tandem.framework */,
+				2B4086BB4D1901ACD82A0C15 /* Pods_Tandem.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -144,8 +144,8 @@
 		D9088FA1DB1BBE16209DB52F /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				85FDEDB488779D76934DE30D /* Pods-Tandem.debug.xcconfig */,
-				08190148275B047B83A9787D /* Pods-Tandem.release.xcconfig */,
+				C26AD156DD5C3FD31D481312 /* Pods-Tandem.debug.xcconfig */,
+				B1E2ECA6A5FA75698EEEB1A7 /* Pods-Tandem.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -157,11 +157,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 504EC3161FED79650016851F /* Build configuration list for PBXNativeTarget "Tandem" */;
 			buildPhases = (
-				BB637371048D0C05EDE0B76B /* [CP] Check Pods Manifest.lock */,
+				933027BE20F297BD77D349E6 /* [CP] Check Pods Manifest.lock */,
 				504EC3001FED79650016851F /* Sources */,
 				504EC3011FED79650016851F /* Frameworks */,
 				504EC3021FED79650016851F /* Resources */,
-				77B908E376F6693FFD5F4F45 /* [CP] Embed Pods Frameworks */,
+				083D578AEA3A49072BC61F1F /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -187,6 +187,12 @@
 						LastSwiftMigration = 1100;
 						SystemCapabilities = {
 							com.apple.InAppPurchase = {
+								enabled = 1;
+							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
 								enabled = 1;
 							};
 						};
@@ -229,7 +235,7 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		77B908E376F6693FFD5F4F45 /* [CP] Embed Pods Frameworks */ = {
+		083D578AEA3A49072BC61F1F /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -244,7 +250,7 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Tandem/Pods-Tandem-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
-		BB637371048D0C05EDE0B76B /* [CP] Check Pods Manifest.lock */ = {
+		933027BE20F297BD77D349E6 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -438,7 +444,7 @@
 		};
 		504EC3171FED79650016851F /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 85FDEDB488779D76934DE30D /* Pods-Tandem.debug.xcconfig */;
+			baseConfigurationReference = C26AD156DD5C3FD31D481312 /* Pods-Tandem.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -456,7 +462,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -469,7 +475,7 @@
 		};
 		504EC3181FED79650016851F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 08190148275B047B83A9787D /* Pods-Tandem.release.xcconfig */;
+			baseConfigurationReference = B1E2ECA6A5FA75698EEEB1A7 /* Pods-Tandem.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
@@ -487,7 +493,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.6.4;
+				MARKETING_VERSION = 1.6.5;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
