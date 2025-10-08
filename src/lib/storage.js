@@ -328,9 +328,13 @@ export async function getGameHistory() {
  */
 export async function restoreFromiCloud() {
   try {
+    logger.info('[RESTORE] Starting iCloud restore...');
     const syncData = await cloudKitService.performFullSync();
 
+    logger.info('[RESTORE] syncData received:', syncData);
+
     if (!syncData.success || !syncData.data) {
+      logger.error('[RESTORE] No data found', { success: syncData.success, hasData: !!syncData.data });
       return { success: false, message: 'No iCloud data found' };
     }
 
@@ -338,7 +342,7 @@ export async function restoreFromiCloud() {
     let restored = 0;
 
     // Merge stats (prefer CloudKit for higher values)
-    if (stats && typeof window !== 'undefined') {
+    if (stats) {
       const localStats = await loadStats();
 
       const mergedStats = {
@@ -354,7 +358,7 @@ export async function restoreFromiCloud() {
     }
 
     // Restore preferences
-    if (preferences && typeof window !== 'undefined') {
+    if (preferences) {
       if (preferences.theme) {
         await setStorageItem(STORAGE_KEYS.THEME, preferences.theme);
       }
@@ -371,7 +375,7 @@ export async function restoreFromiCloud() {
     }
 
     // Restore puzzle results (use most recent timestamp)
-    if (puzzleResults && Array.isArray(puzzleResults) && typeof window !== 'undefined') {
+    if (puzzleResults && Array.isArray(puzzleResults)) {
       for (const result of puzzleResults) {
         if (result.date) {
           const dateObj = new Date(result.date + 'T00:00:00');
@@ -394,16 +398,34 @@ export async function restoreFromiCloud() {
       }
     }
 
+    logger.info('[RESTORE] Successfully restored', restored, 'items');
+
+    // Even if restored count is 0, still return success if no errors occurred
+    const message = restored > 0
+      ? `Successfully restored ${restored} items from iCloud`
+      : 'iCloud sync completed (no new data to restore)';
+
+    const result = {
+      success: true,
+      restored,
+      message,
+    };
+
+    logger.info('[RESTORE] Returning result:', result);
+
+    // Debug: Force success return
     return {
       success: true,
       restored,
-      message: `Restored ${restored} items from iCloud`,
+      message: `Successfully restored ${restored} items from iCloud`,
     };
   } catch (error) {
-    console.error('Failed to restore from iCloud:', error);
+    logger.error('[RESTORE] Failed with error:', error);
+    logger.error('[RESTORE] Error message:', error.message);
+    logger.error('[RESTORE] Error stack:', error.stack);
     return {
       success: false,
-      error: error.message,
+      message: error.message || 'Failed to restore from iCloud',
     };
   }
 }

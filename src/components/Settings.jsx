@@ -7,7 +7,6 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
 import { useCloudKitSync } from '@/hooks/useCloudKitSync';
-import { restoreFromiCloud } from '@/lib/storage';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
@@ -16,8 +15,6 @@ export default function Settings({ isOpen, onClose }) {
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
-  const [restoring, setRestoring] = useState(false);
-  const [restoreMessage, setRestoreMessage] = useState(null);
   const { playHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
   const { syncStatus, toggleSync } = useCloudKitSync();
@@ -102,12 +99,12 @@ export default function Settings({ isOpen, onClose }) {
     }
 
     const tierMap = {
-      'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝' },
-      'com.tandemdaily.app.bestfriends': { name: 'Best Friends', emoji: '👯' },
-      'com.tandemdaily.app.soulmates': { name: 'Soulmates', emoji: '💕' },
+      'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝', type: 'subscription' },
+      'com.tandemdaily.app.bestfriends': { name: 'Best Friends', emoji: '👯', type: 'subscription' },
+      'com.tandemdaily.app.soulmates': { name: 'Soulmates', emoji: '💕', type: 'lifetime' },
     };
 
-    return tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨' };
+    return tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨', type: 'subscription' };
   };
 
   if (!isOpen) {
@@ -169,9 +166,7 @@ export default function Settings({ isOpen, onClose }) {
                           {tier?.name}
                         </p>
                         <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {subscriptionInfo.productId.includes('soulmates')
-                            ? 'Lifetime access'
-                            : 'Active Subscription'}
+                          {tier?.type === 'lifetime' ? 'Lifetime access' : 'Active Subscription'}
                         </p>
                       </div>
                     </div>
@@ -186,12 +181,11 @@ export default function Settings({ isOpen, onClose }) {
                     </div>
                   </div>
 
-                  {subscriptionInfo.expiryDate &&
-                    !subscriptionInfo.productId.includes('soulmates') && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        Renews {formatDate(subscriptionInfo.expiryDate)}
-                      </p>
-                    )}
+                  {subscriptionInfo.expiryDate && tier?.type !== 'lifetime' && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      Renews {formatDate(subscriptionInfo.expiryDate)}
+                    </p>
+                  )}
 
                   <button
                     onClick={handleManageSubscription}
@@ -288,81 +282,6 @@ export default function Settings({ isOpen, onClose }) {
                     </div>
                   )}
 
-                  {/* Restore from iCloud Button */}
-                  {syncStatus.enabled && (
-                    <div className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                        Restore your data from iCloud. This will merge your cloud data with local
-                        data, keeping the highest values for stats.
-                      </p>
-                      <button
-                        onClick={async () => {
-                          setRestoring(true);
-                          setRestoreMessage(null);
-                          try {
-                            const result = await restoreFromiCloud();
-                            if (result.success) {
-                              setRestoreMessage({
-                                type: 'success',
-                                text: result.message,
-                              });
-                              playHaptic('success');
-                              // Reload the page after a brief delay to show fresh data
-                              setTimeout(() => {
-                                window.location.reload();
-                              }, 2000);
-                            } else {
-                              setRestoreMessage({
-                                type: 'error',
-                                text: result.message || 'Failed to restore from iCloud',
-                              });
-                              playHaptic('error');
-                            }
-                          } catch (error) {
-                            setRestoreMessage({
-                              type: 'error',
-                              text: 'An error occurred while restoring',
-                            });
-                            playHaptic('error');
-                          } finally {
-                            setRestoring(false);
-                          }
-                        }}
-                        disabled={restoring || syncStatus.syncing}
-                        className="w-full py-2 bg-sky-500 text-white font-medium rounded-lg hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                      >
-                        {restoring ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                            Restoring...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                              <path
-                                fillRule="evenodd"
-                                d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
-                                clipRule="evenodd"
-                              />
-                            </svg>
-                            Restore from iCloud
-                          </>
-                        )}
-                      </button>
-                      {restoreMessage && (
-                        <p
-                          className={`text-xs mt-2 ${
-                            restoreMessage.type === 'success'
-                              ? 'text-green-600 dark:text-green-400'
-                              : 'text-red-600 dark:text-red-400'
-                          }`}
-                        >
-                          {restoreMessage.text}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
                   {/* Sync Error */}
                   {syncStatus.error && (
                     <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
@@ -404,14 +323,14 @@ export default function Settings({ isOpen, onClose }) {
               </div>
             ) : notificationSettings ? (
               <div className="space-y-4">
-                {/* Master Toggle */}
+                {/* Single Master Toggle - Following Apple HIG */}
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Notifications
+                      Daily Notifications
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Get reminders for your daily puzzle
+                      Reminders, streak protection, and milestones
                     </p>
                   </div>
                   <button
@@ -424,7 +343,9 @@ export default function Settings({ isOpen, onClose }) {
                       await notificationService.updateSettings({ notifications_enabled: newValue });
                       playHaptic('light');
                     }}
-                    className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      notificationSettings.notificationsEnabled ? 'bg-sky-500' : 'bg-gray-200 dark:bg-gray-600'
+                    }`}
                     role="switch"
                     aria-checked={notificationSettings.notificationsEnabled}
                   >
@@ -438,84 +359,13 @@ export default function Settings({ isOpen, onClose }) {
                   </button>
                 </div>
 
+                {/* Info text when notifications are enabled */}
                 {notificationSettings.notificationsEnabled && (
-                  <>
-                    {/* Daily Reminder */}
-                    <div className="pl-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Daily Reminder
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Get notified when puzzle is ready
-                          </p>
-                        </div>
-                        <button
-                          onClick={async () => {
-                            const newValue = !notificationSettings.dailyReminderEnabled;
-                            setNotificationSettings((prev) => ({
-                              ...prev,
-                              dailyReminderEnabled: newValue,
-                            }));
-                            await notificationService.updateSettings({
-                              daily_reminder_enabled: newValue,
-                            });
-                            playHaptic('light');
-                          }}
-                          className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
-                          role="switch"
-                          aria-checked={notificationSettings.dailyReminderEnabled}
-                        >
-                          <span
-                            className={`${
-                              notificationSettings.dailyReminderEnabled
-                                ? 'translate-x-6'
-                                : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                          />
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* Streak Protection */}
-                    <div className="pl-4 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Streak Protection
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Evening reminder if streak at risk
-                          </p>
-                        </div>
-                        <button
-                          onClick={async () => {
-                            const newValue = !notificationSettings.streakProtectionEnabled;
-                            setNotificationSettings((prev) => ({
-                              ...prev,
-                              streakProtectionEnabled: newValue,
-                            }));
-                            await notificationService.updateSettings({
-                              streak_protection_enabled: newValue,
-                            });
-                            playHaptic('light');
-                          }}
-                          className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
-                          role="switch"
-                          aria-checked={notificationSettings.streakProtectionEnabled}
-                        >
-                          <span
-                            className={`${
-                              notificationSettings.streakProtectionEnabled
-                                ? 'translate-x-6'
-                                : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  </>
+                  <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-3">
+                    <p className="text-xs text-sky-800 dark:text-sky-200">
+                      You'll receive morning reminders between 9-10:30 AM and evening streak protection alerts when needed
+                    </p>
+                  </div>
                 )}
               </div>
             ) : (
