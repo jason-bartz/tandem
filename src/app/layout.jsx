@@ -1,6 +1,7 @@
 import './globals.css';
 import '@/styles/ios-optimizations.css';
 import { Inter } from 'next/font/google';
+import Script from 'next/script';
 import { siteConfig } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
@@ -180,11 +181,15 @@ export default function RootLayout({ children }) {
             />
           </>
         )}
-
-        {/* Load Cordova.js for iOS app - Required for cordova-plugin-purchase */}
-        {process.env.BUILD_TARGET === 'capacitor' && <script src="/cordova.js" defer />}
       </head>
       <body className={`${inter.className} antialiased`}>
+        {/* Load Cordova for iOS app - Required for cordova-plugin-purchase */}
+        {process.env.BUILD_TARGET === 'capacitor' && (
+          <>
+            <Script src="/cordova.js" strategy="beforeInteractive" />
+            <Script src="/cordova_plugins.js" strategy="beforeInteractive" />
+          </>
+        )}
         <ErrorBoundary name="RootLayout">
           <ThemeProvider>
             <IOSContainerWrapper>{children}</IOSContainerWrapper>

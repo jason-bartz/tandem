@@ -14,6 +14,7 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
     // MARK: - Properties
 
+    // Use the explicit container identifier that matches our entitlements
     private let container = CKContainer(identifier: "iCloud.com.tandemdaily.app")
     private var privateDatabase: CKDatabase {
         return container.privateCloudDatabase
@@ -74,10 +75,10 @@ public class CloudKitSyncPlugin: CAPPlugin {
         let recordID = CKRecord.ID(recordName: "userStats_\(deviceId)")
         let record = CKRecord(recordType: RecordType.userStats.rawValue, recordID: recordID)
 
-        record["played"] = (stats["played"] as? Int) ?? 0
-        record["wins"] = (stats["wins"] as? Int) ?? 0
-        record["currentStreak"] = (stats["currentStreak"] as? Int) ?? 0
-        record["bestStreak"] = (stats["bestStreak"] as? Int) ?? 0
+        record["played"] = Int64((stats["played"] as? Int) ?? 0)
+        record["wins"] = Int64((stats["wins"] as? Int) ?? 0)
+        record["currentStreak"] = Int64((stats["currentStreak"] as? Int) ?? 0)
+        record["bestStreak"] = Int64((stats["bestStreak"] as? Int) ?? 0)
         record["lastStreakDate"] = stats["lastStreakDate"] as? String
         record["deviceId"] = deviceId
         record["modifiedAt"] = Date()
@@ -101,7 +102,8 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
-                call.reject("Failed to fetch stats", nil, error)
+                print("CloudKit fetchStats error: \(error.localizedDescription)")
+                call.reject("Failed to fetch stats: \(error.localizedDescription)")
                 return
             }
 
@@ -122,10 +124,27 @@ public class CloudKitSyncPlugin: CAPPlugin {
             var latestDate: Date?
 
             for record in records {
-                let played = record["played"] as? Int ?? 0
-                let wins = record["wins"] as? Int ?? 0
-                let currentStreak = record["currentStreak"] as? Int ?? 0
-                let bestStreak = record["bestStreak"] as? Int ?? 0
+                // Handle both Int and Int64 types from CloudKit
+                let played: Int = {
+                    if let val = record["played"] as? Int64 { return Int(val) }
+                    if let val = record["played"] as? Int { return val }
+                    return 0
+                }()
+                let wins: Int = {
+                    if let val = record["wins"] as? Int64 { return Int(val) }
+                    if let val = record["wins"] as? Int { return val }
+                    return 0
+                }()
+                let currentStreak: Int = {
+                    if let val = record["currentStreak"] as? Int64 { return Int(val) }
+                    if let val = record["currentStreak"] as? Int { return val }
+                    return 0
+                }()
+                let bestStreak: Int = {
+                    if let val = record["bestStreak"] as? Int64 { return Int(val) }
+                    if let val = record["bestStreak"] as? Int { return val }
+                    return 0
+                }()
                 let modifiedAt = record["modifiedAt"] as? Date
 
                 // Sum plays and wins across devices
@@ -160,11 +179,17 @@ public class CloudKitSyncPlugin: CAPPlugin {
         let record = CKRecord(recordType: RecordType.puzzleResult.rawValue, recordID: recordID)
 
         record["date"] = date
-        record["won"] = result["won"] as? Bool ?? false
-        record["mistakes"] = (result["mistakes"] as? Int) ?? 0
-        record["solved"] = (result["solved"] as? Int) ?? 0
-        record["hintsUsed"] = (result["hintsUsed"] as? Int) ?? 0
-        record["theme"] = result["theme"] as? String
+        // Store won as Int64 for CloudKit
+        record["won"] = Int64((result["won"] as? Bool ?? false) ? 1 : 0)
+        record["mistakes"] = Int64((result["mistakes"] as? Int) ?? 0)
+        record["solved"] = Int64((result["solved"] as? Int) ?? 0)
+        record["hintsUsed"] = Int64((result["hintsUsed"] as? Int) ?? 0)
+        // Store theme as Int64 if it's a number, otherwise as String
+        if let themeString = result["theme"] as? String, let themeInt = Int64(themeString) {
+            record["theme"] = themeInt
+        } else {
+            record["theme"] = result["theme"] as? String
+        }
         record["timestamp"] = result["timestamp"] as? String
         record["deviceId"] = deviceId
 
@@ -193,7 +218,8 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
-                call.reject("Failed to fetch puzzle results", nil, error)
+                print("CloudKit fetchPuzzleResults error: \(error.localizedDescription)")
+                call.reject("Failed to fetch puzzle results: \(error.localizedDescription)")
                 return
             }
 
@@ -211,13 +237,47 @@ public class CloudKitSyncPlugin: CAPPlugin {
                     continue
                 }
 
+                // Handle both Bool and Int64 for won field
+                let wonValue = record["won"]
+                let won: Bool = {
+                    if let boolValue = wonValue as? Bool {
+                        return boolValue
+                    } else if let intValue = wonValue as? Int64 {
+                        return intValue != 0
+                    } else if let intValue = wonValue as? Int {
+                        return intValue != 0
+                    }
+                    return false
+                }()
+
+                let mistakes: Int = {
+                    if let val = record["mistakes"] as? Int64 { return Int(val) }
+                    if let val = record["mistakes"] as? Int { return val }
+                    return 0
+                }()
+                let solved: Int = {
+                    if let val = record["solved"] as? Int64 { return Int(val) }
+                    if let val = record["solved"] as? Int { return val }
+                    return 0
+                }()
+                let hintsUsed: Int = {
+                    if let val = record["hintsUsed"] as? Int64 { return Int(val) }
+                    if let val = record["hintsUsed"] as? Int { return val }
+                    return 0
+                }()
+                let theme: String = {
+                    if let val = record["theme"] as? Int64 { return String(val) }
+                    if let val = record["theme"] as? String { return val }
+                    return ""
+                }()
+
                 results[date] = [
                     "date": date,
-                    "won": record["won"] as? Bool ?? false,
-                    "mistakes": record["mistakes"] as? Int ?? 0,
-                    "solved": record["solved"] as? Int ?? 0,
-                    "hintsUsed": record["hintsUsed"] as? Int ?? 0,
-                    "theme": record["theme"] as? String ?? "",
+                    "won": won,
+                    "mistakes": mistakes,
+                    "solved": solved,
+                    "hintsUsed": hintsUsed,
+                    "theme": theme,
                     "timestamp": timestamp
                 ]
             }
@@ -239,10 +299,11 @@ public class CloudKitSyncPlugin: CAPPlugin {
         let record = CKRecord(recordType: RecordType.puzzleProgress.rawValue, recordID: recordID)
 
         record["date"] = date
-        record["started"] = progress["started"] as? Bool ?? false
-        record["solved"] = (progress["solved"] as? Int) ?? 0
-        record["mistakes"] = (progress["mistakes"] as? Int) ?? 0
-        record["hintsUsed"] = (progress["hintsUsed"] as? Int) ?? 0
+        // Store started as Int64 for CloudKit (1 for true, 0 for false)
+        record["started"] = Int64((progress["started"] as? Bool ?? false) ? 1 : 0)
+        record["solved"] = Int64((progress["solved"] as? Int) ?? 0)
+        record["mistakes"] = Int64((progress["mistakes"] as? Int) ?? 0)
+        record["hintsUsed"] = Int64((progress["hintsUsed"] as? Int) ?? 0)
         record["lastUpdated"] = progress["lastUpdated"] as? String ?? ISO8601DateFormatter().string(from: Date())
         record["deviceId"] = deviceId
 
@@ -277,11 +338,39 @@ public class CloudKitSyncPlugin: CAPPlugin {
                 return
             }
 
+            // Handle started as Int64 or Bool
+            let startedValue: Bool = {
+                if let intValue = record["started"] as? Int64 {
+                    return intValue != 0
+                } else if let intValue = record["started"] as? Int {
+                    return intValue != 0
+                } else if let boolValue = record["started"] as? Bool {
+                    return boolValue
+                }
+                return false
+            }()
+
+            let solved: Int = {
+                if let val = record["solved"] as? Int64 { return Int(val) }
+                if let val = record["solved"] as? Int { return val }
+                return 0
+            }()
+            let mistakes: Int = {
+                if let val = record["mistakes"] as? Int64 { return Int(val) }
+                if let val = record["mistakes"] as? Int { return val }
+                return 0
+            }()
+            let hintsUsed: Int = {
+                if let val = record["hintsUsed"] as? Int64 { return Int(val) }
+                if let val = record["hintsUsed"] as? Int { return val }
+                return 0
+            }()
+
             let progress: [String: Any] = [
-                "started": record["started"] as? Bool ?? false,
-                "solved": record["solved"] as? Int ?? 0,
-                "mistakes": record["mistakes"] as? Int ?? 0,
-                "hintsUsed": record["hintsUsed"] as? Int ?? 0,
+                "started": startedValue,
+                "solved": solved,
+                "mistakes": mistakes,
+                "hintsUsed": hintsUsed,
                 "lastUpdated": record["lastUpdated"] as? String ?? ""
             ]
 
@@ -302,8 +391,10 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
         record["theme"] = preferences["theme"] as? String
         record["themeMode"] = preferences["themeMode"] as? String
-        record["highContrast"] = preferences["highContrast"] as? Bool ?? false
-        record["sound"] = preferences["sound"] as? Bool ?? true
+        // Store highContrast as String for CloudKit
+        record["highContrast"] = (preferences["highContrast"] as? Bool ?? false) ? "true" : "false"
+        // Store sound as Int64 for CloudKit
+        record["sound"] = Int64((preferences["sound"] as? Bool ?? true) ? 1 : 0)
         record["deviceId"] = deviceId
         record["modifiedAt"] = Date()
 
@@ -323,7 +414,8 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
-                call.reject("Failed to fetch preferences", nil, error)
+                print("CloudKit fetchPreferences error: \(error.localizedDescription)")
+                call.reject("Failed to fetch preferences: \(error.localizedDescription)")
                 return
             }
 
@@ -332,11 +424,33 @@ public class CloudKitSyncPlugin: CAPPlugin {
                 return
             }
 
+            // Handle highContrast as String (stored as "true"/"false" in CloudKit)
+            let highContrastValue: Bool = {
+                if let stringValue = record["highContrast"] as? String {
+                    return stringValue == "true" || stringValue == "1"
+                } else if let boolValue = record["highContrast"] as? Bool {
+                    return boolValue
+                }
+                return false
+            }()
+
+            // Handle sound as Int64 or Bool
+            let soundValue: Bool = {
+                if let intValue = record["sound"] as? Int64 {
+                    return intValue != 0
+                } else if let intValue = record["sound"] as? Int {
+                    return intValue != 0
+                } else if let boolValue = record["sound"] as? Bool {
+                    return boolValue
+                }
+                return true
+            }()
+
             let preferences: [String: Any] = [
                 "theme": record["theme"] as? String ?? "light",
                 "themeMode": record["themeMode"] as? String ?? "auto",
-                "highContrast": record["highContrast"] as? Bool ?? false,
-                "sound": record["sound"] as? Bool ?? true
+                "highContrast": highContrastValue,
+                "sound": soundValue
             ]
 
             call.resolve(["preferences": preferences])

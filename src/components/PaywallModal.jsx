@@ -10,15 +10,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [restoring, setRestoring] = useState(false);
   const [error, setError] = useState(null);
   const [productsLoading, setProductsLoading] = useState(true);
-  const { playHaptic } = useHaptics();
+  const [products, setProducts] = useState({});
+  const [currentSubscription, setCurrentSubscription] = useState(null);
+  const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
 
   useEffect(() => {
-    console.log(
-      '[PaywallModal] useEffect triggered - isOpen:',
-      isOpen,
-      'isNative:',
-      Capacitor.isNativePlatform()
-    );
     if (!isOpen || !Capacitor.isNativePlatform()) {
       return;
     }
@@ -26,43 +22,36 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     setProductsLoading(true);
     setError(null);
 
-    // Check if service is already ready (initialized at app bootstrap)
-    const serviceReady = subscriptionService.isReady();
-    const initState = subscriptionService.getInitState();
-    console.log('[PaywallModal] Subscription service ready:', serviceReady, 'state:', initState);
-
-    if (serviceReady) {
+    // Load products and subscription status
+    const loadProductsAndStatus = () => {
       const allProducts = subscriptionService.getProducts();
-      console.log('[PaywallModal] Products available:', allProducts);
+      const status = subscriptionService.getSubscriptionStatus();
+
+      setProducts(allProducts);
+      setCurrentSubscription(status?.productId || null);
 
       // If no products loaded, show helpful error
       if (!allProducts || Object.keys(allProducts).length === 0) {
-        console.warn('[PaywallModal] No products available');
         setError(
           'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
         );
       }
       setProductsLoading(false);
+    };
+
+    // Check if service is already ready (initialized at app bootstrap)
+    const serviceReady = subscriptionService.isReady();
+
+    if (serviceReady) {
+      loadProductsAndStatus();
       return;
     }
 
     // Subscribe to state changes if not ready
-    console.log('[PaywallModal] Service not ready - subscribing to state changes');
     const unsubscribe = subscriptionService.onStateChange((state) => {
-      console.log('[PaywallModal] onStateChange callback - new state:', state);
       if (state === INIT_STATE.READY) {
-        const allProducts = subscriptionService.getProducts();
-        console.log('[PaywallModal] Service became READY - products:', allProducts);
-
-        if (!allProducts || Object.keys(allProducts).length === 0) {
-          console.warn('[PaywallModal] Service READY but no products');
-          setError(
-            'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
-          );
-        }
-        setProductsLoading(false);
+        loadProductsAndStatus();
       } else if (state === INIT_STATE.FAILED) {
-        console.error('[PaywallModal] Service initialization FAILED');
         setError('Unable to load subscription options. Please try again later.');
         setProductsLoading(false);
       }
@@ -70,20 +59,25 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
     // Cleanup subscription on unmount or when modal closes
     return () => {
-      console.log('[PaywallModal] Cleanup - unsubscribing from state changes');
       unsubscribe();
     };
   }, [isOpen]);
 
   const handlePurchase = async (productId) => {
+    // Check if already owned
+    const product = products[productId];
+    if (product?.owned) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
       await subscriptionService.purchase(productId);
 
-      // Success! Show confetti and haptic feedback
-      playHaptic('success');
+      // Success! Show confetti and haptic feedback ONLY for actual new purchase
+      successHaptic();
       confetti({
         particleCount: 100,
         spread: 70,
@@ -100,7 +94,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       }, 1500);
     } catch (err) {
       setError(err.message || 'Purchase failed. Please try again.');
-      playHaptic('error');
+      errorHaptic();
     } finally {
       setLoading(false);
     }
@@ -111,8 +105,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     if (Capacitor.isNativePlatform()) {
       try {
         await Browser.open({ url });
-      } catch (error) {
-        console.error('Error opening link:', error);
+      } catch {
         // Fallback to window.open
         window.open(url, '_blank');
       }
@@ -123,7 +116,6 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   };
 
   const retryInitialization = async () => {
-    console.log('[PaywallModal] Retrying initialization...');
     setError(null);
     setProductsLoading(true);
 
@@ -132,18 +124,19 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       await subscriptionService.forceReinitialize();
 
       // Check if products are now available
-      const products = subscriptionService.getProducts();
-      console.log('[PaywallModal] Products after retry:', products);
+      const allProducts = subscriptionService.getProducts();
+      const status = subscriptionService.getSubscriptionStatus();
 
-      if (Object.keys(products).length > 0) {
+      if (Object.keys(allProducts).length > 0) {
+        setProducts(allProducts);
+        setCurrentSubscription(status?.productId || null);
         setProductsLoading(false);
         setError(null);
       } else {
         setError('No products available. Please check your internet connection and try again.');
         setProductsLoading(false);
       }
-    } catch (err) {
-      console.error('[PaywallModal] Retry failed:', err);
+    } catch {
       setError('Failed to initialize. Please close and try again.');
       setProductsLoading(false);
     }
@@ -156,8 +149,8 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     try {
       const restored = await subscriptionService.restorePurchases();
 
-      if (restored) {
-        playHaptic('success');
+      if (restored && restored.isActive) {
+        successHaptic();
         setError('Purchases restored successfully!');
 
         if (onPurchaseComplete) {
@@ -172,15 +165,57 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       }
     } catch (err) {
       setError(err.message || 'Restore failed. Please try again.');
-      playHaptic('error');
+      errorHaptic();
     } finally {
       setRestoring(false);
     }
   };
 
+  // Helper to check if a product is the ACTIVE subscription
+  const isActive = (productId) => {
+    return currentSubscription === productId;
+  };
+
+  // Helper to get the displayed price
+  const getPrice = (productId) => {
+    return products[productId]?.pricing?.price || products[productId]?.price;
+  };
+
+  // Helper to determine if upgrade is possible
+  const canUpgrade = (productId) => {
+    // If product is already active, can't purchase it again
+    if (isActive(productId)) return false;
+
+    // If no current subscription, all are available
+    if (!currentSubscription) return true;
+
+    // Soulmates is always available (lifetime > any subscription)
+    if (productId === 'com.tandemdaily.app.soulmates') return true;
+
+    // If on Buddy Pass, can upgrade to Best Friends
+    if (
+      currentSubscription === 'com.tandemdaily.app.buddypass' &&
+      productId === 'com.tandemdaily.app.bestfriends'
+    ) {
+      return true;
+    }
+
+    // Already have this or higher tier
+    return false;
+  };
+
   if (!isOpen) {
     return null;
   }
+
+  // Product IDs
+  const BUDDY_PASS = 'com.tandemdaily.app.buddypass';
+  const BEST_FRIENDS = 'com.tandemdaily.app.bestfriends';
+  const SOULMATES = 'com.tandemdaily.app.soulmates';
+
+  const buddyActive = isActive(BUDDY_PASS);
+  const bestFriendsActive = isActive(BEST_FRIENDS);
+  const soulmatesActive = isActive(SOULMATES);
 
   return (
     <div
@@ -200,10 +235,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 text-2xl transition-colors"
+            className="w-8 h-8 rounded-full border-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-lg cursor-pointer transition-all hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center"
             aria-label="Close"
           >
-            ✕
+            ×
           </button>
         </div>
 
@@ -244,26 +279,55 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           <div className="space-y-3 mb-6">
             {/* Buddy Pass - Monthly */}
             <button
-              onClick={() => handlePurchase('com.tandemdaily.app.buddypass')}
-              disabled={loading || restoring}
-              className={`w-full p-4 rounded-2xl border-2 transition-all ${
-                loading ? 'opacity-50' : 'hover:scale-[1.02] hover:shadow-lg'
-              } border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-700`}
+              onClick={() => handlePurchase(BUDDY_PASS)}
+              disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
+              className={`w-full p-4 rounded-2xl border-2 transition-all relative ${
+                buddyActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? 'opacity-50 border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-700'
+                    : 'hover:scale-[1.02] hover:shadow-lg border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-700'
+              }`}
             >
+              {buddyActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  ✓ ACTIVE
+                </div>
+              )}
               <div className="flex items-center justify-between">
                 <div className="text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🤝</span>
-                    <span className="font-bold text-lg text-gray-800 dark:text-gray-200">
+                    <span
+                      className={`font-bold text-lg ${
+                        buddyActive
+                          ? 'text-gray-500 dark:text-gray-500'
+                          : 'text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
                       Buddy Pass
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                  <p
+                    className={`text-sm mt-1 ${
+                      buddyActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
                     Monthly subscription • Auto-renews
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-sky-600 dark:text-sky-400">$1.99</p>
+                  <p
+                    className={`text-xl font-bold ${
+                      buddyActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : 'text-sky-600 dark:text-sky-400'
+                    }`}
+                  >
+                    {getPrice(BUDDY_PASS) || '$1.99'}
+                  </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">per month</p>
                 </div>
               </div>
@@ -271,59 +335,129 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
             {/* Best Friends - Yearly */}
             <button
-              onClick={() => handlePurchase('com.tandemdaily.app.bestfriends')}
-              disabled={loading || restoring}
-              className={`w-full p-4 rounded-2xl border-2 transition-all relative ${
-                loading ? 'opacity-50' : 'hover:scale-[1.02] hover:shadow-lg'
-              } border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700`}
+              onClick={() => handlePurchase(BEST_FRIENDS)}
+              disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
+              className={`w-full p-4 pt-6 rounded-2xl border-2 transition-all relative ${
+                bestFriendsActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? 'opacity-50 border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+                    : 'hover:scale-[1.02] hover:shadow-lg border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+              }`}
             >
-              {/* Most Popular badge */}
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              {/* Best Value badge */}
+              <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
                 <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  MOST POPULAR
+                  BEST VALUE • SAVE 37%
                 </span>
               </div>
+
+              {bestFriendsActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                  ✓ ACTIVE
+                </div>
+              )}
 
               <div className="flex items-center justify-between">
                 <div className="text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">👯</span>
-                    <span className="font-bold text-lg text-gray-800 dark:text-gray-200">
+                    <span
+                      className={`font-bold text-lg ${
+                        bestFriendsActive
+                          ? 'text-gray-500 dark:text-gray-500'
+                          : 'text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
                       Best Friends
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                    Annual subscription • Auto-renews • Save 37%
+                  <p
+                    className={`text-sm mt-1 ${
+                      bestFriendsActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Yearly subscription • Auto-renews
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-teal-600 dark:text-teal-400">$14.99</p>
+                  <p
+                    className={`text-xl font-bold ${
+                      bestFriendsActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : 'text-teal-600 dark:text-teal-400'
+                    }`}
+                  >
+                    {getPrice(BEST_FRIENDS) || '$14.99'}
+                  </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">per year</p>
                 </div>
               </div>
             </button>
 
-            {/* Soulmate - Lifetime */}
+            {/* Soulmates - Lifetime */}
             <button
-              onClick={() => handlePurchase('com.tandemdaily.app.soulmates')}
-              disabled={loading || restoring}
-              className={`w-full p-4 rounded-2xl border-2 transition-all ${
-                loading ? 'opacity-50' : 'hover:scale-[1.02] hover:shadow-lg'
-              } border-purple-200 dark:border-purple-700 bg-white dark:bg-gray-700`}
+              onClick={() => handlePurchase(SOULMATES)}
+              disabled={loading || restoring || soulmatesActive}
+              className={`w-full p-4 rounded-2xl border-2 transition-all relative ${
+                soulmatesActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? 'opacity-50 border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+                    : currentSubscription && !soulmatesActive
+                      ? 'hover:scale-[1.02] hover:shadow-lg border-purple-500 dark:border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 ring-2 ring-purple-400'
+                      : 'hover:scale-[1.02] hover:shadow-lg border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+              }`}
             >
-              <div className="flex items-center justify-between">
+              {soulmatesActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                  ✓ ACTIVE
+                </div>
+              )}
+              {currentSubscription && !soulmatesActive && (
+                <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    ⭐ UPGRADE TO LIFETIME
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-1">
                 <div className="text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">💕</span>
-                    <span className="font-bold text-lg text-gray-800 dark:text-gray-200">
+                    <span
+                      className={`font-bold text-lg ${
+                        soulmatesActive
+                          ? 'text-gray-500 dark:text-gray-500'
+                          : 'text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
                       Soulmates
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">One-time purchase</p>
+                  <p
+                    className={`text-sm mt-1 ${
+                      soulmatesActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Lifetime access • One-time purchase
+                  </p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xl font-bold text-purple-600 dark:text-purple-400">$29.99</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">lifetime</p>
+                  <p
+                    className={`text-xl font-bold ${
+                      soulmatesActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : 'text-purple-600 dark:text-purple-400'
+                    }`}
+                  >
+                    {getPrice(SOULMATES) || '$29.99'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
                 </div>
               </div>
             </button>
@@ -367,7 +501,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
             Payment will be charged to your Apple ID account at confirmation of purchase.
             Subscription automatically renews unless canceled at least 24 hours before the end of
-            the current period. Manage subscriptions in your Account Settings.
+            the current period. Your account will be charged for renewal within 24 hours prior to
+            the end of the current period. You can manage and cancel your subscriptions by going to
+            your account settings on the App Store after purchase.
           </p>
           <div className="flex justify-center gap-4 mt-3">
             <button

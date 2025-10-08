@@ -22,9 +22,10 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">How To Play</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+            className="w-8 h-8 rounded-full border-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-lg cursor-pointer transition-all hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center"
+            aria-label="Close"
           >
-            ✕
+            ×
           </button>
         </div>
 
