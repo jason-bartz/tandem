@@ -14,10 +14,43 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
     // MARK: - Properties
 
-    // Use the explicit container identifier that matches our entitlements
-    private let container = CKContainer(identifier: "iCloud.com.tandemdaily.app")
+    // Use the default container (reads from entitlements)
+    // This is more reliable than hardcoding the identifier
+    private let container = CKContainer.default()
     private var privateDatabase: CKDatabase {
         return container.privateCloudDatabase
+    }
+
+    // MARK: - Initialization
+
+    override public func load() {
+        super.load()
+        // Log container information for debugging
+        print("CloudKit container identifier: \(container.containerIdentifier ?? "nil")")
+
+        // Log which environment we're using
+        #if DEBUG
+        print("CloudKit environment: Development (running from Xcode)")
+        #else
+        print("CloudKit environment: Production (release build)")
+        #endif
+
+        // Verify the container identifier matches our expectations
+        if let identifier = container.containerIdentifier {
+            if identifier != "iCloud.com.tandemdaily.app" {
+                print("⚠️ WARNING: Container identifier mismatch!")
+                print("Expected: iCloud.com.tandemdaily.app")
+                print("Got: \(identifier)")
+            }
+        }
+
+        container.accountStatus { status, error in
+            if let error = error {
+                print("CloudKit account status error: \(error.localizedDescription)")
+            } else {
+                print("CloudKit account status: \(self.accountStatusString(status))")
+            }
+        }
     }
 
     private let deviceId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
@@ -97,19 +130,34 @@ public class CloudKitSyncPlugin: CAPPlugin {
     }
 
     @objc func fetchStats(_ call: CAPPluginCall) {
-        let query = CKQuery(recordType: RecordType.userStats.rawValue, predicate: NSPredicate(value: true))
-        query.sortDescriptors = [NSSortDescriptor(key: "modifiedAt", ascending: false)]
+        // Query for all records where deviceId exists (all records should have this)
+        // This uses a queryable field instead of TRUEPREDICATE
+        let predicate = NSPredicate(format: "deviceId != %@", "")
+        let query = CKQuery(recordType: RecordType.userStats.rawValue, predicate: predicate)
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
+                let ckError = error as NSError
                 print("CloudKit fetchStats error: \(error.localizedDescription)")
+                print("CloudKit error code: \(ckError.code), domain: \(ckError.domain)")
+                print("CloudKit error userInfo: \(ckError.userInfo)")
                 call.reject("Failed to fetch stats: \(error.localizedDescription)")
                 return
             }
 
             guard let records = records, !records.isEmpty else {
+                print("CloudKit fetchStats: No records found")
                 call.resolve(["stats": nil])
                 return
+            }
+
+            print("CloudKit fetchStats: Found \(records.count) record(s)")
+
+            // Sort records by modifiedAt client-side
+            let sortedRecords = records.sorted { record1, record2 in
+                let date1 = record1["modifiedAt"] as? Date ?? Date.distantPast
+                let date2 = record2["modifiedAt"] as? Date ?? Date.distantPast
+                return date1 > date2
             }
 
             // Merge stats from all devices
@@ -123,7 +171,7 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
             var latestDate: Date?
 
-            for record in records {
+            for record in sortedRecords {
                 // Handle both Int and Int64 types from CloudKit
                 let played: Int = {
                     if let val = record["played"] as? Int64 { return Int(val) }
@@ -211,7 +259,8 @@ public class CloudKitSyncPlugin: CAPPlugin {
         if let start = startDate, let end = endDate {
             predicate = NSPredicate(format: "date >= %@ AND date <= %@", start, end)
         } else {
-            predicate = NSPredicate(value: true)
+            // Query for all records where deviceId exists
+            predicate = NSPredicate(format: "deviceId != %@", "")
         }
 
         let query = CKQuery(recordType: RecordType.puzzleResult.rawValue, predicate: predicate)
@@ -325,7 +374,7 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
         let predicate = NSPredicate(format: "date == %@", date)
         let query = CKQuery(recordType: RecordType.puzzleProgress.rawValue, predicate: predicate)
-        query.sortDescriptors = [NSSortDescriptor(key: "lastUpdated", ascending: false)]
+        // Don't use sort descriptors
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
@@ -333,7 +382,19 @@ public class CloudKitSyncPlugin: CAPPlugin {
                 return
             }
 
-            guard let record = records?.first else {
+            guard let records = records, !records.isEmpty else {
+                call.resolve(["progress": nil])
+                return
+            }
+
+            // Sort by lastUpdated client-side
+            let sortedRecords = records.sorted { record1, record2 in
+                let ts1 = record1["lastUpdated"] as? String ?? ""
+                let ts2 = record2["lastUpdated"] as? String ?? ""
+                return ts1 > ts2
+            }
+
+            guard let record = sortedRecords.first else {
                 call.resolve(["progress": nil])
                 return
             }
@@ -409,8 +470,9 @@ public class CloudKitSyncPlugin: CAPPlugin {
     }
 
     @objc func fetchPreferences(_ call: CAPPluginCall) {
-        let query = CKQuery(recordType: RecordType.userPreferences.rawValue, predicate: NSPredicate(value: true))
-        query.sortDescriptors = [NSSortDescriptor(key: "modifiedAt", ascending: false)]
+        // Query for all records where deviceId exists
+        let predicate = NSPredicate(format: "deviceId != %@", "")
+        let query = CKQuery(recordType: RecordType.userPreferences.rawValue, predicate: predicate)
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
@@ -419,7 +481,22 @@ public class CloudKitSyncPlugin: CAPPlugin {
                 return
             }
 
-            guard let record = records?.first else {
+            guard let records = records, !records.isEmpty else {
+                print("CloudKit fetchPreferences: No records found")
+                call.resolve(["preferences": nil])
+                return
+            }
+
+            print("CloudKit fetchPreferences: Found \(records.count) record(s)")
+
+            // Sort by modifiedAt and take the most recent
+            let sortedRecords = records.sorted { record1, record2 in
+                let date1 = record1["modifiedAt"] as? Date ?? Date.distantPast
+                let date2 = record2["modifiedAt"] as? Date ?? Date.distantPast
+                return date1 > date2
+            }
+
+            guard let record = sortedRecords.first else {
                 call.resolve(["preferences": nil])
                 return
             }

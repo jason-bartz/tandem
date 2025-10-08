@@ -149,28 +149,61 @@ class NotificationService {
   // Get default notification times
   getDefaultTimes() {
     return {
-      dailyReminder: '10:00', // 10 AM
+      dailyReminder: '10:00', // Not used anymore - using random times
       streakSaver: '20:00', // 8 PM
       quietStart: '21:30', // 9:30 PM
       quietEnd: '07:30', // 7:30 AM
     };
   }
 
+  // Get random daily reminder time between 9 AM and 10:30 AM at 15-minute intervals
+  getRandomDailyReminderTime() {
+    const timeSlots = [
+      { hours: 9, minutes: 0 },    // 9:00 AM
+      { hours: 9, minutes: 15 },   // 9:15 AM
+      { hours: 9, minutes: 30 },   // 9:30 AM
+      { hours: 9, minutes: 45 },   // 9:45 AM
+      { hours: 10, minutes: 0 },   // 10:00 AM
+      { hours: 10, minutes: 15 },  // 10:15 AM
+      { hours: 10, minutes: 30 },  // 10:30 AM
+    ];
+
+    // Get last used time to avoid consecutive repeats
+    const lastUsedTime = this.getNotificationPreference('last_daily_reminder_time', null);
+
+    // Filter out last used time if it exists
+    let availableSlots = timeSlots;
+    if (lastUsedTime) {
+      availableSlots = timeSlots.filter(slot => {
+        const slotStr = `${slot.hours}:${String(slot.minutes).padStart(2, '0')}`;
+        return slotStr !== lastUsedTime;
+      });
+    }
+
+    // Select random slot from available ones
+    const randomIndex = Math.floor(Math.random() * availableSlots.length);
+    const selectedSlot = availableSlots[randomIndex];
+
+    // Store the selected time as last used
+    const selectedTimeStr = `${selectedSlot.hours}:${String(selectedSlot.minutes).padStart(2, '0')}`;
+    this.setNotificationPreference('last_daily_reminder_time', selectedTimeStr);
+
+    return selectedSlot;
+  }
+
   // Main scheduling methods
   async scheduleDailyReminder() {
     if (!this.isNative) return;
 
-    const enabled = await this.getNotificationPreference(PREFS_KEYS.DAILY_REMINDER_ENABLED, true);
-    if (!enabled) return;
+    // Always enabled if master notifications are on
+    const notificationsEnabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
+    if (!notificationsEnabled) return;
 
     // Cancel existing daily reminder
     await this.cancelNotification(NOTIFICATION_IDS.DAILY_REMINDER);
 
-    // Get user preferences
-    const reminderTime = await this.getNotificationPreference(
-      PREFS_KEYS.DAILY_REMINDER_TIME,
-      this.getDefaultTimes().dailyReminder
-    );
+    // Get random time for tomorrow's notification
+    const randomTime = this.getRandomDailyReminderTime();
 
     // Get current stats for context
     const stats = await loadStats();
@@ -182,17 +215,18 @@ class NotificationService {
       isWeekend,
     });
 
-    // Parse time
-    const [hours, minutes] = reminderTime.split(':').map(Number);
+    // Use random time
+    const hours = randomTime.hours;
+    const minutes = randomTime.minutes;
 
     // Schedule for tomorrow at the specified time
     const scheduleDate = new Date();
     scheduleDate.setDate(scheduleDate.getDate() + 1);
     scheduleDate.setHours(hours, minutes, 0, 0);
 
-    // Adjust for weekends (add 1 hour)
+    // Adjust for weekends (add 30 minutes for variety)
     if (this.isWeekend(scheduleDate)) {
-      scheduleDate.setHours(scheduleDate.getHours() + 1);
+      scheduleDate.setMinutes(scheduleDate.getMinutes() + 30);
     }
 
     // Check if in quiet hours
@@ -230,11 +264,9 @@ class NotificationService {
   async scheduleStreakSaver() {
     if (!this.isNative) return;
 
-    const enabled = await this.getNotificationPreference(
-      PREFS_KEYS.STREAK_PROTECTION_ENABLED,
-      true
-    );
-    if (!enabled) return;
+    // Always enabled if master notifications are on
+    const notificationsEnabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
+    if (!notificationsEnabled) return;
 
     // Cancel existing streak saver
     await this.cancelNotification(NOTIFICATION_IDS.STREAK_SAVER);
@@ -505,37 +537,10 @@ class NotificationService {
   }
 
   async getSettings() {
-    const defaults = this.getDefaultTimes();
-
     return {
       notificationsEnabled: await this.getNotificationPreference(
         PREFS_KEYS.NOTIFICATIONS_ENABLED,
         true
-      ),
-      dailyReminderEnabled: await this.getNotificationPreference(
-        PREFS_KEYS.DAILY_REMINDER_ENABLED,
-        true
-      ),
-      dailyReminderTime: await this.getNotificationPreference(
-        PREFS_KEYS.DAILY_REMINDER_TIME,
-        defaults.dailyReminder
-      ),
-      streakProtectionEnabled: await this.getNotificationPreference(
-        PREFS_KEYS.STREAK_PROTECTION_ENABLED,
-        true
-      ),
-      streakProtectionTime: await this.getNotificationPreference(
-        PREFS_KEYS.STREAK_PROTECTION_TIME,
-        defaults.streakSaver
-      ),
-      quietHoursEnabled: await this.getNotificationPreference(PREFS_KEYS.QUIET_HOURS_ENABLED, true),
-      quietHoursStart: await this.getNotificationPreference(
-        PREFS_KEYS.QUIET_HOURS_START,
-        defaults.quietStart
-      ),
-      quietHoursEnd: await this.getNotificationPreference(
-        PREFS_KEYS.QUIET_HOURS_END,
-        defaults.quietEnd
       ),
     };
   }
