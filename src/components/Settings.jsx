@@ -384,16 +384,6 @@ export default function Settings({ isOpen, onClose }) {
                     />
                   </button>
                 </div>
-
-                {/* Info text when notifications are enabled */}
-                {notificationSettings.notificationsEnabled && (
-                  <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-3">
-                    <p className="text-xs text-sky-800 dark:text-sky-200">
-                      You'll receive morning reminders between 9-10:30 AM and evening streak
-                      protection alerts when needed
-                    </p>
-                  </div>
-                )}
               </div>
             ) : (
               <div className="flex items-center justify-center py-4">
