@@ -93,9 +93,11 @@ export default function PuzzleRow({
                   ? highContrast
                     ? 'text-hc-error'
                     : 'text-red-900 dark:text-red-400'
-                  : highContrast
-                    ? 'text-hc-text'
-                    : 'text-dark-text dark:text-gray-200'
+                  : hintData && highContrast
+                    ? 'text-black dark:text-black'
+                    : highContrast
+                      ? 'text-hc-text'
+                      : 'text-dark-text dark:text-gray-200'
               }
             `}
             >
