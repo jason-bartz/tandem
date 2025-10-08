@@ -93,13 +93,9 @@ export default function PuzzleRow({
                   ? highContrast
                     ? 'text-hc-error'
                     : 'text-red-900 dark:text-red-400'
-                  : hintData
-                    ? highContrast
-                      ? 'text-black'
-                      : 'text-dark-text dark:text-gray-200'
-                    : highContrast
-                      ? 'text-hc-text'
-                      : 'text-dark-text dark:text-gray-200'
+                  : highContrast
+                    ? 'text-hc-text'
+                    : 'text-dark-text dark:text-gray-200'
               }
             `}
             >
@@ -134,7 +130,7 @@ export default function PuzzleRow({
                     : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 animate-shake'
                   : hintData
                     ? highContrast
-                      ? 'bg-hc-surface border-hc-warning text-black dark:text-black pattern-hint'
+                      ? 'bg-hc-background border-hc-warning text-hc-text'
                       : 'bg-yellow-50 dark:bg-yellow-900/20 text-dark-text dark:text-gray-200 border-yellow-400 dark:border-yellow-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
                     : highContrast
                       ? 'bg-hc-background text-hc-text border-hc-border focus:border-hc-focus'

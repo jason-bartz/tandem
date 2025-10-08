@@ -348,7 +348,7 @@ export default function Settings({ isOpen, onClose }) {
                       Daily Notifications
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Daily reminder to maintain your streak and celebrate your milestones
+                      Daily reminder to maintain your streak
                     </p>
                   </div>
                   <button
