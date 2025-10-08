@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
 import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [loading, setLoading] = useState(false);
@@ -13,6 +15,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [products, setProducts] = useState({});
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
+  const { theme } = useTheme();
 
   useEffect(() => {
     if (!isOpen || !Capacitor.isNativePlatform()) {
@@ -227,12 +230,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
-        <div className="flex justify-between items-start mb-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-              ✨ Tandem Unlimited
-            </h2>
-          </div>
+        <div className="flex justify-end mb-6">
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full border-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-lg cursor-pointer transition-all hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center"
@@ -241,6 +239,23 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             ×
           </button>
         </div>
+
+        {/* Logo */}
+        <div className="w-20 h-20 mx-auto mb-4 relative">
+          <Image
+            src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+            alt="Tandem Logo"
+            width={80}
+            height={80}
+            className="rounded-2xl"
+            priority
+          />
+        </div>
+
+        {/* Title */}
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-6">
+          Tandem Unlimited
+        </h2>
 
         {/* Benefits list */}
         <div className="bg-gradient-to-br from-sky-50 to-teal-50 dark:from-gray-700 dark:to-gray-700 rounded-2xl p-4 mb-6">
@@ -253,11 +268,21 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             </div>
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Support a solo developer</span>
+              <span className="text-gray-700 dark:text-gray-300">Ad-free experience</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-green-500 text-xl">✓</span>
+              <span className="text-gray-700 dark:text-gray-300">
+                Access to new planned game modes and features
+              </span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
               <span className="text-gray-700 dark:text-gray-300">Cancel anytime</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span className="text-green-500 text-xl">✓</span>
+              <span className="text-gray-700 dark:text-gray-300">Support a solo developer</span>
             </div>
           </div>
         </div>
@@ -455,7 +480,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         : 'text-purple-600 dark:text-purple-400'
                     }`}
                   >
-                    {getPrice(SOULMATES) || '$29.99'}
+                    {getPrice(SOULMATES) || '$49.99'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
                 </div>
