@@ -15,6 +15,7 @@ export default function Settings({ isOpen, onClose }) {
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
+  const [showAppBanner, setShowAppBanner] = useState(false);
   const { playHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
   const { syncStatus, toggleSync } = useCloudKitSync();
@@ -24,8 +25,36 @@ export default function Settings({ isOpen, onClose }) {
       loadSubscriptionInfo();
       loadNotificationSettings();
       loadKeyboardLayout();
+      checkAppBannerVisibility();
     }
   }, [isOpen]);
+
+  const checkAppBannerVisibility = () => {
+    // Only show banner on web version
+    if (Capacitor.isNativePlatform()) {
+      setShowAppBanner(false);
+      return;
+    }
+
+    const dismissedUntil = localStorage.getItem('appBannerDismissedUntil');
+    if (dismissedUntil) {
+      const dismissedDate = new Date(dismissedUntil);
+      const now = new Date();
+      if (now < dismissedDate) {
+        setShowAppBanner(false);
+        return;
+      }
+    }
+    setShowAppBanner(true);
+  };
+
+  const handleAppBannerDismiss = () => {
+    const dismissUntil = new Date();
+    dismissUntil.setDate(dismissUntil.getDate() + 7); // Dismiss for 7 days
+    localStorage.setItem('appBannerDismissedUntil', dismissUntil.toISOString());
+    setShowAppBanner(false);
+    lightTap();
+  };
 
   const loadKeyboardLayout = () => {
     const saved = localStorage.getItem('keyboardLayout');
@@ -143,6 +172,81 @@ export default function Settings({ isOpen, onClose }) {
             ×
           </button>
         </div>
+
+        {/* iOS App Promotion Banner - Web Only */}
+        {showAppBanner && !Capacitor.isNativePlatform() && (
+          <div className="mb-6">
+            <div
+              className={`relative overflow-hidden rounded-2xl ${
+                highContrast
+                  ? 'bg-gradient-to-r from-hc-primary to-hc-secondary border-2 border-hc-border'
+                  : 'bg-gradient-to-r from-sky-400 to-teal-400 dark:from-sky-500 dark:to-teal-500'
+              } p-5 shadow-lg`}
+            >
+              {/* Content */}
+              <div className="space-y-4">
+                {/* Header */}
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">📱</span>
+                  <h3 className="text-lg font-bold text-white">Get the iOS App</h3>
+                </div>
+
+                {/* Features List */}
+                <div className="space-y-2">
+                  <div className="flex items-start gap-2">
+                    <span className="text-white mt-0.5">✓</span>
+                    <p className="text-white/95 text-sm">Never lose your streaks & progress</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-white mt-0.5">✓</span>
+                    <p className="text-white/95 text-sm">Exclusive game modes & features</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-white mt-0.5">✓</span>
+                    <p className="text-white/95 text-sm">Automatic cloud sync across devices</p>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex items-center gap-3 pt-1">
+                  <a
+                    href="https://apps.apple.com/us/app/tandem-daily-word-puzzle/id6753114083"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-block hover:opacity-90 transition-opacity"
+                    onClick={() => lightTap()}
+                  >
+                    <img
+                      src={
+                        theme === 'dark'
+                          ? '/icons/App_Store_Badge_US-UK_RGB_blk_092917.svg'
+                          : '/icons/App_Store_Badge_US-UK_RGB_wht_092917.svg'
+                      }
+                      alt="Download on the App Store"
+                      className="h-10"
+                    />
+                  </a>
+                  <button
+                    onClick={handleAppBannerDismiss}
+                    className={`px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                      highContrast
+                        ? 'bg-white/20 text-white border border-white/30 hover:bg-white/30'
+                        : 'bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm'
+                    }`}
+                  >
+                    Maybe Later
+                  </button>
+                </div>
+              </div>
+
+              {/* Decorative Background Pattern */}
+              <div className="absolute top-0 right-0 w-32 h-32 opacity-10">
+                <div className="absolute top-4 right-4 w-24 h-24 rounded-full bg-white"></div>
+                <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-white"></div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Subscription Section */}
         {Capacitor.isNativePlatform() && (
