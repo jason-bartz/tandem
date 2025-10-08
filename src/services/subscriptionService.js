@@ -527,9 +527,11 @@ class SubscriptionService {
   }
 
   canAccessPuzzle(puzzleNumber) {
-    // Always allow access to the current puzzle
+    // Always allow access to the current puzzle and last 3 days (4 days total)
     const currentPuzzleNumber = getCurrentPuzzleNumber();
-    if (puzzleNumber === currentPuzzleNumber) {
+    const oldestFreePuzzle = currentPuzzleNumber - 3; // current day + 3 days back = 4 days total
+
+    if (puzzleNumber >= oldestFreePuzzle && puzzleNumber <= currentPuzzleNumber) {
       return true;
     }
 
