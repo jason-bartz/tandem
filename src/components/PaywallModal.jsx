@@ -15,7 +15,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [products, setProducts] = useState({});
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
-  const { theme } = useTheme();
+  const { theme, highContrast } = useTheme();
 
   useEffect(() => {
     if (!isOpen || !Capacitor.isNativePlatform()) {
@@ -366,8 +366,12 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                 bestFriendsActive
                   ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
-                    ? 'opacity-50 border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
-                    : 'hover:scale-[1.02] hover:shadow-lg border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+                    : highContrast
+                      ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-primary border-4'
+                      : 'hover:scale-[1.02] hover:shadow-lg border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
               }`}
             >
               {/* Best Value badge */}
@@ -391,7 +395,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                       className={`font-bold text-lg ${
                         bestFriendsActive
                           ? 'text-gray-500 dark:text-gray-500'
-                          : 'text-gray-800 dark:text-gray-200'
+                          : highContrast
+                            ? 'text-hc-text'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
                       Best Friends
@@ -401,7 +407,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     className={`text-sm mt-1 ${
                       bestFriendsActive
                         ? 'text-gray-400 dark:text-gray-500'
-                        : 'text-gray-600 dark:text-gray-400'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     Yearly subscription • Auto-renews
@@ -412,7 +420,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     className={`text-xl font-bold ${
                       bestFriendsActive
                         ? 'text-gray-500 dark:text-gray-500'
-                        : 'text-teal-600 dark:text-teal-400'
+                        : highContrast
+                          ? 'text-hc-primary'
+                          : 'text-teal-600 dark:text-teal-400'
                     }`}
                   >
                     {getPrice(BEST_FRIENDS) || '$14.99'}
@@ -430,10 +440,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                 soulmatesActive
                   ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
-                    ? 'opacity-50 border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
                     : currentSubscription && !soulmatesActive
-                      ? 'hover:scale-[1.02] hover:shadow-lg border-purple-500 dark:border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 ring-2 ring-purple-400'
-                      : 'hover:scale-[1.02] hover:shadow-lg border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+                      ? highContrast
+                        ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-warning border-4 ring-2 ring-hc-warning'
+                        : 'hover:scale-[1.02] hover:shadow-lg border-purple-500 dark:border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 ring-2 ring-purple-400'
+                      : highContrast
+                        ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-primary border-4'
+                        : 'hover:scale-[1.02] hover:shadow-lg border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
               }`}
             >
               {soulmatesActive && (
@@ -456,7 +472,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                       className={`font-bold text-lg ${
                         soulmatesActive
                           ? 'text-gray-500 dark:text-gray-500'
-                          : 'text-gray-800 dark:text-gray-200'
+                          : highContrast
+                            ? 'text-hc-text'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
                       Soulmates
@@ -466,7 +484,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     className={`text-sm mt-1 ${
                       soulmatesActive
                         ? 'text-gray-400 dark:text-gray-500'
-                        : 'text-gray-600 dark:text-gray-400'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     Lifetime access • One-time purchase
@@ -477,7 +497,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     className={`text-xl font-bold ${
                       soulmatesActive
                         ? 'text-gray-500 dark:text-gray-500'
-                        : 'text-purple-600 dark:text-purple-400'
+                        : highContrast
+                          ? 'text-hc-warning'
+                          : 'text-purple-600 dark:text-purple-400'
                     }`}
                   >
                     {getPrice(SOULMATES) || '$49.99'}
