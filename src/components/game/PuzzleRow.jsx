@@ -93,8 +93,10 @@ export default function PuzzleRow({
                   ? highContrast
                     ? 'text-hc-error'
                     : 'text-red-900 dark:text-red-400'
-                  : hintData && highContrast
-                    ? 'text-black dark:text-black'
+                  : hintData
+                    ? highContrast
+                      ? 'text-black'
+                      : 'text-dark-text dark:text-gray-200'
                     : highContrast
                       ? 'text-hc-text'
                       : 'text-dark-text dark:text-gray-200'
