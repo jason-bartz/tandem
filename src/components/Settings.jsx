@@ -100,11 +100,17 @@ export default function Settings({ isOpen, onClose }) {
 
     const tierMap = {
       'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝', type: 'subscription' },
-      'com.tandemdaily.app.bestfriends': { name: 'Best Friends', emoji: '👯', type: 'subscription' },
+      'com.tandemdaily.app.bestfriends': {
+        name: 'Best Friends',
+        emoji: '👯',
+        type: 'subscription',
+      },
       'com.tandemdaily.app.soulmates': { name: 'Soulmates', emoji: '💕', type: 'lifetime' },
     };
 
-    return tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨', type: 'subscription' };
+    return (
+      tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨', type: 'subscription' }
+    );
   };
 
   if (!isOpen) {
@@ -127,7 +133,11 @@ export default function Settings({ isOpen, onClose }) {
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Settings</h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full border-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-lg cursor-pointer transition-all hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center"
+            className={`w-8 h-8 rounded-full border-none text-lg cursor-pointer transition-all flex items-center justify-center ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white font-bold'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+            }`}
             aria-label="Close"
           >
             ×
@@ -255,7 +265,13 @@ export default function Settings({ isOpen, onClose }) {
                         lightTap();
                       }}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        syncStatus.enabled ? 'bg-sky-500' : 'bg-gray-200 dark:bg-gray-600'
+                        highContrast
+                          ? syncStatus.enabled
+                            ? 'bg-hc-primary border-2 border-hc-border'
+                            : 'bg-hc-surface border-2 border-hc-border'
+                          : syncStatus.enabled
+                            ? 'bg-sky-500'
+                            : 'bg-gray-200 dark:bg-gray-600'
                       }`}
                       role="switch"
                       aria-checked={syncStatus.enabled}
@@ -263,7 +279,9 @@ export default function Settings({ isOpen, onClose }) {
                       <span
                         className={`${
                           syncStatus.enabled ? 'translate-x-6' : 'translate-x-1'
-                        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                        } inline-block h-4 w-4 transform rounded-full ${
+                          highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                        } transition-transform`}
                       />
                     </button>
                   </div>
@@ -330,7 +348,7 @@ export default function Settings({ isOpen, onClose }) {
                       Daily Notifications
                     </p>
                     <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Reminders, streak protection, and milestones
+                      Daily reminder to maintain your streak and celebrate your milestones
                     </p>
                   </div>
                   <button
@@ -344,7 +362,13 @@ export default function Settings({ isOpen, onClose }) {
                       playHaptic('light');
                     }}
                     className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                      notificationSettings.notificationsEnabled ? 'bg-sky-500' : 'bg-gray-200 dark:bg-gray-600'
+                      highContrast
+                        ? notificationSettings.notificationsEnabled
+                          ? 'bg-hc-primary border-2 border-hc-border'
+                          : 'bg-hc-surface border-2 border-hc-border'
+                        : notificationSettings.notificationsEnabled
+                          ? 'bg-sky-500'
+                          : 'bg-gray-200 dark:bg-gray-600'
                     }`}
                     role="switch"
                     aria-checked={notificationSettings.notificationsEnabled}
@@ -354,7 +378,9 @@ export default function Settings({ isOpen, onClose }) {
                         notificationSettings.notificationsEnabled
                           ? 'translate-x-6'
                           : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                      } inline-block h-4 w-4 transform rounded-full ${
+                        highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                      } transition-transform`}
                     />
                   </button>
                 </div>
@@ -363,7 +389,8 @@ export default function Settings({ isOpen, onClose }) {
                 {notificationSettings.notificationsEnabled && (
                   <div className="bg-sky-50 dark:bg-sky-900/20 rounded-xl p-3">
                     <p className="text-xs text-sky-800 dark:text-sky-200">
-                      You'll receive morning reminders between 9-10:30 AM and evening streak protection alerts when needed
+                      You'll receive morning reminders between 9-10:30 AM and evening streak
+                      protection alerts when needed
                     </p>
                   </div>
                 )}
@@ -397,9 +424,13 @@ export default function Settings({ isOpen, onClose }) {
                     lightTap();
                   }}
                   className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                    isAuto
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    highContrast
+                      ? isAuto
+                        ? 'bg-hc-primary text-white border-2 border-hc-border'
+                        : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : isAuto
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                   }`}
                 >
                   Auto
@@ -410,9 +441,13 @@ export default function Settings({ isOpen, onClose }) {
                     lightTap();
                   }}
                   className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                    !isAuto
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    highContrast
+                      ? !isAuto
+                        ? 'bg-hc-primary text-white border-2 border-hc-border'
+                        : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : !isAuto
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                   }`}
                 >
                   Manual
@@ -437,7 +472,13 @@ export default function Settings({ isOpen, onClose }) {
                   lightTap();
                 }}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  isAuto ? 'bg-gray-300 dark:bg-gray-500' : 'bg-gray-200 dark:bg-gray-600'
+                  highContrast
+                    ? theme === 'dark'
+                      ? 'bg-hc-primary border-2 border-hc-border'
+                      : 'bg-hc-surface border-2 border-hc-border'
+                    : isAuto
+                      ? 'bg-gray-300 dark:bg-gray-500'
+                      : 'bg-gray-200 dark:bg-gray-600'
                 }`}
                 role="switch"
                 aria-checked={theme === 'dark'}
@@ -446,7 +487,9 @@ export default function Settings({ isOpen, onClose }) {
                 <span
                   className={`${
                     theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
-                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  } inline-block h-4 w-4 transform rounded-full ${
+                    highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                  } transition-transform`}
                 />
               </button>
             </div>
@@ -466,14 +509,22 @@ export default function Settings({ isOpen, onClose }) {
                   toggleHighContrast();
                   lightTap();
                 }}
-                className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-600 transition-colors"
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  highContrast
+                    ? highContrast
+                      ? 'bg-hc-primary border-2 border-hc-border'
+                      : 'bg-hc-surface border-2 border-hc-border'
+                    : 'bg-gray-200 dark:bg-gray-600'
+                }`}
                 role="switch"
                 aria-checked={highContrast}
               >
                 <span
                   className={`${
                     highContrast ? 'translate-x-6' : 'translate-x-1'
-                  } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+                  } inline-block h-4 w-4 transform rounded-full ${
+                    highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                  } transition-transform`}
                 />
               </button>
             </div>
@@ -492,9 +543,13 @@ export default function Settings({ isOpen, onClose }) {
                 <button
                   onClick={() => handleKeyboardLayoutChange('QWERTY')}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                    keyboardLayout === 'QWERTY'
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    highContrast
+                      ? keyboardLayout === 'QWERTY'
+                        ? 'bg-hc-primary text-white border-2 border-hc-border'
+                        : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : keyboardLayout === 'QWERTY'
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                   }`}
                 >
                   QWERTY
@@ -502,9 +557,13 @@ export default function Settings({ isOpen, onClose }) {
                 <button
                   onClick={() => handleKeyboardLayoutChange('QWERTZ')}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                    keyboardLayout === 'QWERTZ'
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    highContrast
+                      ? keyboardLayout === 'QWERTZ'
+                        ? 'bg-hc-primary text-white border-2 border-hc-border'
+                        : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : keyboardLayout === 'QWERTZ'
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                   }`}
                 >
                   QWERTZ
@@ -512,9 +571,13 @@ export default function Settings({ isOpen, onClose }) {
                 <button
                   onClick={() => handleKeyboardLayoutChange('AZERTY')}
                   className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
-                    keyboardLayout === 'AZERTY'
-                      ? 'bg-sky-500 text-white'
-                      : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                    highContrast
+                      ? keyboardLayout === 'AZERTY'
+                        ? 'bg-hc-primary text-white border-2 border-hc-border'
+                        : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                      : keyboardLayout === 'AZERTY'
+                        ? 'bg-sky-500 text-white'
+                        : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
                   }`}
                 >
                   AZERTY
