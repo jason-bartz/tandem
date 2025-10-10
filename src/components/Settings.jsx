@@ -313,7 +313,11 @@ export default function Settings({ isOpen, onClose }) {
                 {/* View Plans Button */}
                 <button
                   onClick={() => setShowPaywall(true)}
-                  className="w-full py-2 bg-white dark:bg-gray-700 border-2 border-sky-200 dark:border-sky-700 text-sky-600 dark:text-sky-400 font-semibold rounded-lg hover:bg-sky-50 dark:hover:bg-gray-600 transition-all"
+                  className={`w-full py-2 font-semibold rounded-lg transition-all ${
+                    highContrast
+                      ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-focus hover:text-white'
+                      : 'bg-white dark:bg-gray-700 border-2 border-sky-200 dark:border-sky-700 text-sky-600 dark:text-sky-400 hover:bg-sky-50 dark:hover:bg-gray-600'
+                  }`}
                 >
                   View Plans
                 </button>
@@ -326,7 +330,11 @@ export default function Settings({ isOpen, onClose }) {
                   </p>
                   <button
                     onClick={() => setShowPaywall(true)}
-                    className="w-full py-2 bg-gradient-to-r from-sky-500 to-teal-400 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                    className={`w-full py-2 font-semibold rounded-lg transition-all ${
+                      highContrast
+                        ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus'
+                        : 'bg-gradient-to-r from-sky-500 to-teal-400 text-white hover:shadow-lg'
+                    }`}
                   >
                     View Plans
                   </button>
@@ -719,7 +727,11 @@ export default function Settings({ isOpen, onClose }) {
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="w-full py-3 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white font-semibold rounded-xl hover:shadow-lg transition-all"
+          className={`w-full py-3 font-semibold rounded-xl transition-all ${
+            highContrast
+              ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus'
+              : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white hover:shadow-lg'
+          }`}
         >
           Done
         </button>

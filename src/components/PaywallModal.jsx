@@ -574,7 +574,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         <div className="mt-6">
           <button
             onClick={onClose}
-            className="w-full py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+            className={`w-full py-3 font-semibold rounded-xl transition-all ${
+              highContrast
+                ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus'
+                : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white hover:shadow-lg'
+            }`}
           >
             Done
           </button>
