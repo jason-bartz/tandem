@@ -168,7 +168,32 @@ export default function CompleteScreen({
       </div>
 
       {/* Main completion card */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
+      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center relative">
+        {/* Back arrow button at top left */}
+        <button
+          onClick={() => {
+            lightTap();
+            onReturnToWelcome();
+          }}
+          className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          title="Back to Home"
+        >
+          <svg
+            className="w-5 h-5 text-gray-600 dark:text-gray-300"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+
         <div>
           {/* Logo - Only show on tablet/desktop (not mobile phones) */}
           {!isMobilePhone && (
@@ -194,7 +219,7 @@ export default function CompleteScreen({
             {won ? (
               <span className="inline-block animate-bounce-in">{congratsMessage}</span>
             ) : (
-              'Better luck next time'
+              <span className="whitespace-nowrap">Better luck next time</span>
             )}
           </h1>
 
@@ -241,10 +266,10 @@ export default function CompleteScreen({
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200 text-center">
                 {formatDateShort(puzzleDate)}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 text-center">Date</div>
             </div>
           </div>
 
