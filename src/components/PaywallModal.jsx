@@ -489,7 +489,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
-                    Lifetime access • One-time purchase
+                    Lifetime • Shareable with Family
                   </p>
                 </div>
                 <div className="text-right">
@@ -502,7 +502,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           : 'text-purple-600 dark:text-purple-400'
                     }`}
                   >
-                    {getPrice(SOULMATES) || '$49.99'}
+                    {getPrice(SOULMATES) || '$29.99'}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
                 </div>
