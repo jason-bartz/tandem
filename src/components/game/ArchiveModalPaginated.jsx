@@ -365,16 +365,14 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     (puzzlesToCheck, append = false) => {
       const accessMap = append ? { ...puzzleAccessMap } : {};
 
+      // Force re-check subscription status to ensure it's current
+      // Note: isSubscribed is checked internally by canAccessPuzzle
+
       puzzlesToCheck.forEach((puzzle) => {
         const cacheKey = puzzle.number.toString();
 
-        // Use cached value if available
-        if (paginatedCache.puzzleAccessMap[cacheKey] !== undefined) {
-          accessMap[cacheKey] = !paginatedCache.puzzleAccessMap[cacheKey]; // Invert for lock display
-          return;
-        }
-
-        // Synchronous check using cached subscription status (use puzzle number)
+        // Always re-check access to ensure accuracy after restore/purchase
+        // This is synchronous and fast, so no performance impact
         const hasAccess =
           !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.number);
 
@@ -499,6 +497,15 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       setHasMore(true);
       loadingRef.current = false;
 
+      // Always refresh subscription status when modal opens to ensure it's current
+      // This is important after restoring purchases or app launch
+      if (Capacitor.isNativePlatform() && subscriptionService.isReady()) {
+        subscriptionService.refreshSubscriptionStatus().then(() => {
+          // Clear the access cache to force re-check with updated status
+          paginatedCache.puzzleAccessMap = {};
+        });
+      }
+
       if (isInitialLoad.current || puzzles.length === 0) {
         // First time opening OR puzzles are empty - fetch fresh data
         setPuzzles([]);
@@ -524,6 +531,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         });
         // Re-check permissions synchronously with current subscription state
         if (puzzles.length > 0) {
+          // Clear cache to ensure fresh check
+          paginatedCache.puzzleAccessMap = {};
           checkAccessPermissions(puzzles, false);
         }
       }

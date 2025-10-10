@@ -54,7 +54,10 @@ export default function WelcomeScreen({
 
   const checkPremiumStatus = async () => {
     if (Capacitor.isNativePlatform()) {
-      const isSubscribed = await subscriptionService.isSubscribed();
+      // Ensure subscription service is initialized
+      await subscriptionService.initialize();
+      // Use the correct method to check subscription status
+      const isSubscribed = subscriptionService.isSubscriptionActive();
       setIsPremium(isSubscribed);
     }
   };
