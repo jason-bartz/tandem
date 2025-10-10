@@ -1,4 +1,5 @@
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 
 // Product IDs - must match App Store Connect configuration
@@ -8,12 +9,15 @@ const PRODUCTS = {
   SOULMATES_LIFETIME: 'com.tandemdaily.app.soulmates',
 };
 
-// Storage keys
+// Storage keys - using Capacitor Preferences for iOS persistence
 const STORAGE_KEYS = {
   SUBSCRIPTION_STATUS: 'tandem_subscription_status',
   PURCHASE_DATE: 'tandem_purchase_date',
   PRODUCT_ID: 'tandem_product_id',
   EXPIRY_DATE: 'tandem_expiry_date',
+  RECEIPT_DATA: 'tandem_receipt_data',
+  TRANSACTION_ID: 'tandem_transaction_id',
+  ORIGINAL_TRANSACTION_ID: 'tandem_original_transaction_id',
 };
 
 // Initialization states following iOS best practices
@@ -34,6 +38,7 @@ class SubscriptionService {
     this.stateListeners = [];
     this.handlersSetup = false;
     this.pendingPurchases = {}; // Track pending purchases and their promise resolvers
+    this.restoringPurchases = false;
   }
 
   /**
@@ -110,6 +115,8 @@ class SubscriptionService {
           this.products[product.id] = product;
         }
       }
+      // Restore purchases automatically to refresh ownership status
+      await this.restorePurchases();
       return;
     }
 
@@ -195,7 +202,13 @@ class SubscriptionService {
         }
       }
 
+      // Load subscription status from persistent storage
       await this.loadSubscriptionStatus();
+
+      // Automatically restore purchases on app launch to ensure ownership is up-to-date
+      // This is a best practice recommended by Apple
+      await this.restorePurchases();
+
       this._notifyStateChange(INIT_STATE.READY);
     } catch (error) {
       await this.loadSubscriptionStatus();
@@ -218,13 +231,16 @@ class SubscriptionService {
 
     // When a transaction is approved (purchase successful)
     // Store the pending purchase resolver so we can call it when the purchase completes
-    this.store.when().approved((transaction) => {
-      // Finish the transaction
-      transaction.finish();
-
+    this.store.when().approved(async (transaction) => {
       // Handle success for each product in the transaction
       if (transaction.products && transaction.products.length > 0) {
         const productId = transaction.products[0].id;
+
+        // Handle the purchase success first (persist to storage)
+        await this.handlePurchaseSuccess(transaction.products[0], transaction);
+
+        // Then finish the transaction
+        transaction.finish();
 
         // Check if we have a pending purchase for this product
         if (this.pendingPurchases && this.pendingPurchases[productId]) {
@@ -233,46 +249,82 @@ class SubscriptionService {
           delete this.pendingPurchases[productId];
           resolve(transaction.products[0]);
         }
-
-        // Also handle the purchase success for storage
-        this.handlePurchaseSuccess(transaction.products[0]);
       }
     });
 
-    // When a transaction is verified
-    this.store.when().verified(() => {
-      // Receipt verified
+    // When a transaction is verified - update subscription status
+    this.store.when().verified(async (_receipt) => {
+      // Receipt verified - update local status
+      await this.loadSubscriptionStatus();
     });
 
     // When a transaction is finished
-    this.store.when().finished(() => {
-      // Transaction finished
+    this.store.when().finished(async () => {
+      // Transaction finished - ensure status is updated
+      await this.loadSubscriptionStatus();
     });
 
     // Handle receipts updated
-    this.store.when().receiptUpdated(() => {
-      // Receipt updated
+    this.store.when().receiptUpdated(async (_receipt) => {
+      // Receipt updated - refresh subscription status
+      await this.loadSubscriptionStatus();
+    });
+
+    // Handle product ownership changes
+    this.store.when().updated(async () => {
+      // Store state updated - refresh subscription status
+      if (!this.restoringPurchases) {
+        await this.loadSubscriptionStatus();
+      }
     });
 
     // Handle unverified receipts
     this.store.when().unverified(() => {
-      // Unverified receipt
+      // Unverified receipt - log for debugging
+      console.warn('[SubscriptionService] Unverified receipt detected');
     });
   }
 
-  async handlePurchaseSuccess(product) {
-    // Update local storage
+  async handlePurchaseSuccess(product, transaction) {
+    // Update persistent storage using Capacitor Preferences (works reliably on iOS)
     const purchaseDate = new Date().toISOString();
-    localStorage.setItem(STORAGE_KEYS.SUBSCRIPTION_STATUS, 'active');
-    localStorage.setItem(STORAGE_KEYS.PURCHASE_DATE, purchaseDate);
-    localStorage.setItem(STORAGE_KEYS.PRODUCT_ID, product.id);
+
+    // Use Capacitor Preferences for iOS, fallback to localStorage for web
+    const storage = Capacitor.isNativePlatform()
+      ? Preferences
+      : {
+          set: async ({ key, value }) => localStorage.setItem(key, value),
+          get: async ({ key }) => ({ value: localStorage.getItem(key) }),
+          remove: async ({ key }) => localStorage.removeItem(key),
+        };
+
+    await storage.set({ key: STORAGE_KEYS.SUBSCRIPTION_STATUS, value: 'active' });
+    await storage.set({ key: STORAGE_KEYS.PURCHASE_DATE, value: purchaseDate });
+    await storage.set({ key: STORAGE_KEYS.PRODUCT_ID, value: product.id });
+
+    // Store transaction ID for validation
+    if (transaction) {
+      const transactionId = transaction.transactionId || transaction.id;
+      const originalTransactionId =
+        transaction.originalTransactionId || transaction.originalId || transactionId;
+
+      if (transactionId) {
+        await storage.set({ key: STORAGE_KEYS.TRANSACTION_ID, value: transactionId });
+      }
+      if (originalTransactionId) {
+        await storage.set({
+          key: STORAGE_KEYS.ORIGINAL_TRANSACTION_ID,
+          value: originalTransactionId,
+        });
+      }
+    }
 
     // Set expiry date based on product type
     if (product.id === PRODUCTS.SOULMATES_LIFETIME) {
       // Lifetime purchase - set expiry far in future
       const expiryDate = new Date();
       expiryDate.setFullYear(expiryDate.getFullYear() + 100);
-      localStorage.setItem(STORAGE_KEYS.EXPIRY_DATE, expiryDate.toISOString());
+      await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
     } else {
       const expiryDate = new Date();
       if (product.id === PRODUCTS.BUDDY_MONTHLY) {
@@ -280,7 +332,7 @@ class SubscriptionService {
       } else if (product.id === PRODUCTS.BEST_FRIENDS_YEARLY) {
         expiryDate.setFullYear(expiryDate.getFullYear() + 1);
       }
-      localStorage.setItem(STORAGE_KEYS.EXPIRY_DATE, expiryDate.toISOString());
+      await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
     }
 
     // Force refresh the store to update product ownership
@@ -291,12 +343,12 @@ class SubscriptionService {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    // Update subscription status
+    // Update subscription status in memory
     await this.loadSubscriptionStatus();
   }
 
   async loadSubscriptionStatus() {
-    // Check store for owned products
+    // First check the store for owned products (most authoritative source)
     if (this.store && this.store.ready) {
       const monthly = this.store.get(PRODUCTS.BUDDY_MONTHLY);
       const yearly = this.store.get(PRODUCTS.BEST_FRIENDS_YEARLY);
@@ -358,40 +410,70 @@ class SubscriptionService {
           expiryDate: activeProduct?.expiryDate,
           lastRenewalDate: activeProduct?.lastRenewalDate,
         };
+
+        // Also persist this status to storage for offline access
+        const storage = Capacitor.isNativePlatform()
+          ? Preferences
+          : {
+              set: async ({ key, value }) => localStorage.setItem(key, value),
+            };
+
+        await storage.set({ key: STORAGE_KEYS.SUBSCRIPTION_STATUS, value: 'active' });
+        await storage.set({ key: STORAGE_KEYS.PRODUCT_ID, value: activeProductId });
+        if (activeProduct?.expiryDate) {
+          await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: activeProduct.expiryDate });
+        }
+
         return;
       }
     }
 
-    // Check local storage as fallback
-    const status = localStorage.getItem(STORAGE_KEYS.SUBSCRIPTION_STATUS);
-    const expiryDateStr = localStorage.getItem(STORAGE_KEYS.EXPIRY_DATE);
-    const productId = localStorage.getItem(STORAGE_KEYS.PRODUCT_ID);
+    // If store doesn't have ownership info, check persistent storage as fallback
+    // This handles cases where the store isn't initialized yet or offline scenarios
+    const storage = Capacitor.isNativePlatform()
+      ? Preferences
+      : {
+          get: async ({ key }) => ({ value: localStorage.getItem(key) }),
+          remove: async ({ key }) => localStorage.removeItem(key),
+        };
 
-    if (status === 'active' && expiryDateStr) {
-      const expiryDate = new Date(expiryDateStr);
+    const statusResult = await storage.get({ key: STORAGE_KEYS.SUBSCRIPTION_STATUS });
+    const expiryResult = await storage.get({ key: STORAGE_KEYS.EXPIRY_DATE });
+    const productResult = await storage.get({ key: STORAGE_KEYS.PRODUCT_ID });
+
+    if (statusResult.value === 'active' && expiryResult.value) {
+      const expiryDate = new Date(expiryResult.value);
       const now = new Date();
 
       if (expiryDate > now) {
         this.subscriptionStatus = {
           isActive: true,
           expiryDate,
-          productId,
+          productId: productResult.value,
         };
       } else {
         // Subscription expired
         this.subscriptionStatus = { isActive: false };
-        this.clearSubscriptionData();
+        await this.clearSubscriptionData();
       }
     } else {
       this.subscriptionStatus = { isActive: false };
     }
   }
 
-  clearSubscriptionData() {
-    localStorage.removeItem(STORAGE_KEYS.SUBSCRIPTION_STATUS);
-    localStorage.removeItem(STORAGE_KEYS.PURCHASE_DATE);
-    localStorage.removeItem(STORAGE_KEYS.PRODUCT_ID);
-    localStorage.removeItem(STORAGE_KEYS.EXPIRY_DATE);
+  async clearSubscriptionData() {
+    const storage = Capacitor.isNativePlatform()
+      ? Preferences
+      : {
+          remove: async ({ key }) => localStorage.removeItem(key),
+        };
+
+    await storage.remove({ key: STORAGE_KEYS.SUBSCRIPTION_STATUS });
+    await storage.remove({ key: STORAGE_KEYS.PURCHASE_DATE });
+    await storage.remove({ key: STORAGE_KEYS.PRODUCT_ID });
+    await storage.remove({ key: STORAGE_KEYS.EXPIRY_DATE });
+    await storage.remove({ key: STORAGE_KEYS.TRANSACTION_ID });
+    await storage.remove({ key: STORAGE_KEYS.ORIGINAL_TRANSACTION_ID });
   }
 
   getProducts() {
@@ -503,17 +585,31 @@ class SubscriptionService {
       throw new Error('Store not initialized');
     }
 
-    // v13 restore method
-    await this.store.restorePurchases();
+    this.restoringPurchases = true;
 
-    // Wait a moment for restore to complete
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+    try {
+      // v13 restore method
+      await this.store.restorePurchases();
 
-    await this.loadSubscriptionStatus();
-    return this.subscriptionStatus;
+      // Wait for restore to complete and ownership to update
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
+      // Load subscription status from the updated store
+      await this.loadSubscriptionStatus();
+
+      return this.subscriptionStatus;
+    } finally {
+      this.restoringPurchases = false;
+    }
   }
 
   async refreshSubscriptionStatus() {
+    // First try to refresh from the store if available
+    if (this.store && this.store.ready) {
+      await this.store.update();
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+
     await this.loadSubscriptionStatus();
     return this.subscriptionStatus;
   }
