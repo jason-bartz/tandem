@@ -570,6 +570,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         </div>
 
+        {/* Done button */}
+        <div className="mt-6">
+          <button
+            onClick={onClose}
+            className="w-full py-3 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 font-semibold rounded-xl hover:bg-gray-300 dark:hover:bg-gray-600 transition-all"
+          >
+            Done
+          </button>
+        </div>
+
         {/* Loading overlay */}
         {loading && (
           <div className="absolute inset-0 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center">
