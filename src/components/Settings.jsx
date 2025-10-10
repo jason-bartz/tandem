@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
+import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
@@ -94,7 +95,7 @@ export default function Settings({ isOpen, onClose }) {
     setLoading(true);
     try {
       await subscriptionService.initialize();
-      const status = await subscriptionService.loadSubscriptionStatus();
+      const status = await subscriptionService.refreshSubscriptionStatus();
       setSubscriptionInfo(status);
     } catch (error) {
       console.error('Failed to load subscription info:', error);
@@ -685,31 +686,33 @@ export default function Settings({ isOpen, onClose }) {
         <div className="mb-4 text-center">
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">© 2025 Good Vibes Games</p>
           <div className="flex items-center justify-center gap-3 text-xs">
-            <a
-              href="/privacypolicy"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
               className="text-sky-600 dark:text-sky-400 hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                window.open('/privacypolicy', '_blank');
+              onClick={async () => {
+                lightTap();
+                if (Capacitor.isNativePlatform()) {
+                  await Browser.open({ url: 'https://tandemdaily.com/privacypolicy' });
+                } else {
+                  window.open('/privacypolicy', '_blank');
+                }
               }}
             >
               Privacy Policy
-            </a>
+            </button>
             <span className="text-gray-400 dark:text-gray-600">|</span>
-            <a
-              href="/support"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
               className="text-sky-600 dark:text-sky-400 hover:underline"
-              onClick={(e) => {
-                e.preventDefault();
-                window.open('/support', '_blank');
+              onClick={async () => {
+                lightTap();
+                if (Capacitor.isNativePlatform()) {
+                  await Browser.open({ url: 'https://tandemdaily.com/support' });
+                } else {
+                  window.open('/support', '_blank');
+                }
               }}
             >
               Support
-            </a>
+            </button>
           </div>
         </div>
 

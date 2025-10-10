@@ -11,7 +11,6 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useDeviceType } from '@/lib/deviceDetection';
 import { Capacitor } from '@capacitor/core';
-import subscriptionService from '@/services/subscriptionService';
 
 export default function WelcomeScreen({
   onStart,
@@ -27,15 +26,11 @@ export default function WelcomeScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
-  const [isPremium, setIsPremium] = useState(false);
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
   const { isMobilePhone } = useDeviceType();
 
   useEffect(() => {
-    // Check premium status on mount
-    checkPremiumStatus();
-
     // Play welcome sound and haptics on iOS after a delay to ensure splash is gone
     if (Capacitor.isNativePlatform()) {
       // Wait 500ms to ensure the splash screen has completely faded and the view is ready
@@ -51,16 +46,6 @@ export default function WelcomeScreen({
       return () => clearTimeout(timer);
     }
   }, [welcomeMelody]);
-
-  const checkPremiumStatus = async () => {
-    if (Capacitor.isNativePlatform()) {
-      // Ensure subscription service is initialized
-      await subscriptionService.initialize();
-      // Use the correct method to check subscription status
-      const isSubscribed = subscriptionService.isSubscriptionActive();
-      setIsPremium(isSubscribed);
-    }
-  };
 
   const handlePlayClick = () => {
     try {
@@ -91,15 +76,10 @@ export default function WelcomeScreen({
             lightTap();
             setShowArchive(true);
           }}
-          className={`w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all relative ${
-            isPremium ? 'ring-2 ring-sky-400 ring-offset-2' : ''
-          }`}
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
           title="Archive"
         >
           📅
-          {isPremium && (
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-sky-500 to-teal-400 rounded-full"></span>
-          )}
         </button>
         <button
           onClick={() => {
