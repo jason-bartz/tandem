@@ -399,7 +399,7 @@ export default function PlayingScreen({
         className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden"
       >
         {/* Header - logo hidden on all devices, content centered */}
-        <div className="p-3 sm:p-5 text-center bg-white dark:bg-gray-900 flex items-center justify-center min-h-[60px]">
+        <div className="py-3 px-3 sm:px-5 text-center bg-white dark:bg-gray-900 flex items-center justify-center">
           <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
             <button
               onClick={() => {
