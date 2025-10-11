@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, checkAnswerWithPlurals, getCorrectPositions } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -35,6 +35,9 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [won, setWon] = useState(false);
   const [activeHints, setActiveHints] = useState([null, null, null, null]);
   const [hintPositionsUsed, setHintPositionsUsed] = useState([false, false, false, false]);
+  const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
+  const [isHardMode, setIsHardMode] = useState(false);
+  const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
 
   // Only load puzzle if we don't have initial data
   useEffect(() => {
@@ -113,6 +116,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setSolved(0);
         setActiveHints([null, null, null, null]);
         setHintPositionsUsed([false, false, false, false]);
+        setLockedLetters([null, null, null, null]);
         console.log('[useGameWithInitialData] Puzzle loaded successfully');
         return true;
       } else if (response) {
@@ -130,6 +134,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setSolved(0);
         setActiveHints([null, null, null, null]);
         setHintPositionsUsed([false, false, false, false]);
+        setLockedLetters([null, null, null, null]);
         return true;
       } else {
         console.error('[useGameWithInitialData] No response or empty response');
@@ -163,6 +168,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
     setHintPositionsUsed([false, false, false, false]);
+    setLockedLetters([null, null, null, null]);
 
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
@@ -261,11 +267,17 @@ export function useGameWithInitialData(initialPuzzleData) {
           return newCorrect;
         });
 
-        // Clear hint for this puzzle if it was active
+        // Clear hint and locked letters for this puzzle if they were active
         if (activeHints[index]) {
           const newActiveHints = [...activeHints];
           newActiveHints[index] = null;
           setActiveHints(newActiveHints);
+        }
+
+        if (lockedLetters[index]) {
+          const newLockedLetters = [...lockedLetters];
+          newLockedLetters[index] = null;
+          setLockedLetters(newLockedLetters);
         }
 
         setSolved((prev) => {
@@ -289,6 +301,44 @@ export function useGameWithInitialData(initialPuzzleData) {
 
         return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.PUZZLE_COUNT };
       } else {
+        // Check for correct positions (new mechanic)
+        const correctPositions = getCorrectPositions(userAnswer, puzzleItem.answer);
+
+        if (correctPositions) {
+          // We have some letters in correct positions!
+          // Update locked letters for this puzzle
+          setLockedLetters((prev) => {
+            const newLockedLetters = [...prev];
+            newLockedLetters[index] = correctPositions;
+            return newLockedLetters;
+          });
+
+          // Build the new answer with only locked letters
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            const positions = Object.keys(correctPositions)
+              .map(Number)
+              .sort((a, b) => a - b);
+            let newAnswer = '';
+            for (let i = 0; i <= Math.max(...positions); i++) {
+              if (correctPositions[i]) {
+                newAnswer += correctPositions[i];
+              } else {
+                newAnswer += '';
+              }
+            }
+            newAnswers[index] = newAnswer;
+            return newAnswers;
+          });
+        } else {
+          // No correct positions, clear the answer
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            newAnswers[index] = '';
+            return newAnswers;
+          });
+        }
+
         setMistakes((prev) => {
           const newMistakes = Math.min(prev + 1, GAME_CONFIG.MAX_MISTAKES);
 
@@ -326,6 +376,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       currentPuzzleDate,
       hintsUsed,
       activeHints,
+      lockedLetters,
     ]
   );
 
@@ -407,38 +458,78 @@ export function useGameWithInitialData(initialPuzzleData) {
   ]);
 
   const useHint = useCallback(
-    (targetIndex) => {
+    (_targetIndex) => {
       if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
         return;
       }
 
-      // Use the provided index or find a random unanswered puzzle
-      let hintIndex = targetIndex;
+      // Find the next unfilled position level across all answers
+      // For example, if all first positions are filled (via hints or locked letters),
+      // move to the second position, and so on
 
-      if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        // Find all unanswered puzzles
-        const unansweredIndices = [];
-        for (let i = 0; i < puzzle.puzzles.length; i++) {
-          if (!correctAnswers[i]) {
-            unansweredIndices.push(i);
+      let hintPosition = 0;
+      let candidateIndices = [];
+
+      // Find all unanswered puzzles
+      const unansweredIndices = [];
+      for (let i = 0; i < puzzle.puzzles.length; i++) {
+        if (!correctAnswers[i]) {
+          unansweredIndices.push(i);
+        }
+      }
+
+      if (unansweredIndices.length === 0) {
+        return;
+      }
+
+      // Determine which position to hint at by finding the first unfilled position across all answers
+      const maxAnswerLength = Math.max(
+        ...puzzle.puzzles.map((p) => {
+          const ans = p.answer.includes(',') ? p.answer.split(',')[0].trim() : p.answer;
+          return ans.length;
+        })
+      );
+
+      for (let pos = 0; pos < maxAnswerLength; pos++) {
+        candidateIndices = [];
+
+        for (const idx of unansweredIndices) {
+          const locked = lockedLetters[idx];
+          const answer = answers[idx];
+
+          // Check if this position is already filled (either locked or in answer)
+          const isPositionFilled = (locked && locked[pos]) || (answer && answer.length > pos);
+
+          if (!isPositionFilled) {
+            candidateIndices.push(idx);
           }
         }
 
-        if (unansweredIndices.length === 0) {
-          return;
+        // If we found puzzles with this position unfilled, use this position
+        if (candidateIndices.length > 0) {
+          hintPosition = pos;
+          break;
         }
-
-        // Randomly select one
-        hintIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
       }
+
+      // If no unfilled positions found (shouldn't happen), just use first unanswered puzzle
+      if (candidateIndices.length === 0) {
+        candidateIndices = unansweredIndices;
+        hintPosition = 0;
+      }
+
+      // Randomly select one of the candidates
+      const hintIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
 
       // Get the answer and create hint data
       const fullAnswer = puzzle.puzzles[hintIndex].answer;
       const firstAnswer = fullAnswer.includes(',') ? fullAnswer.split(',')[0].trim() : fullAnswer;
 
-      // Create hint data with first letter and character count
+      // Create hint data with the appropriate position letter
+      const hintLetter = firstAnswer.charAt(hintPosition).toUpperCase();
       const hintData = {
-        firstLetter: firstAnswer.charAt(0).toUpperCase(),
+        firstLetter: hintLetter,
+        position: hintPosition,
         length: firstAnswer.length,
         fullAnswer: firstAnswer.toUpperCase(),
       };
@@ -453,12 +544,26 @@ export function useGameWithInitialData(initialPuzzleData) {
       newHintPositions[hintIndex] = true;
       setHintPositionsUsed(newHintPositions);
 
-      // Update the answer with the first letter if it's empty
-      if (!answers[hintIndex]) {
-        const newAnswers = [...answers];
-        newAnswers[hintIndex] = hintData.firstLetter;
-        setAnswers(newAnswers);
+      // Update the answer to include the hint letter at the correct position
+      const newAnswers = [...answers];
+      const currentAnswer = answers[hintIndex] || '';
+      const locked = lockedLetters[hintIndex];
+
+      // Build new answer with hint letter at the right position
+      let newAnswer = '';
+      for (let i = 0; i <= hintPosition; i++) {
+        if (locked && locked[i]) {
+          newAnswer += locked[i];
+        } else if (i === hintPosition) {
+          newAnswer += hintLetter;
+        } else if (i < currentAnswer.length) {
+          newAnswer += currentAnswer[i];
+        } else {
+          newAnswer += '';
+        }
       }
+      newAnswers[hintIndex] = newAnswer;
+      setAnswers(newAnswers);
 
       setHintsUsed(1);
 
@@ -478,6 +583,8 @@ export function useGameWithInitialData(initialPuzzleData) {
       hintsUsed,
       activeHints,
       hintPositionsUsed,
+      lockedLetters,
+      answers,
       currentPuzzleDate,
       solved,
       mistakes,
@@ -495,6 +602,8 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
     setHintPositionsUsed([false, false, false, false]);
+    setLockedLetters([null, null, null, null]);
+    setHardModeTimeUp(false);
   }, []);
 
   const returnToWelcome = useCallback(() => {
@@ -506,6 +615,15 @@ export function useGameWithInitialData(initialPuzzleData) {
       setGameState(GAME_STATES.WELCOME);
     }
   }, [isArchiveGame, loadPuzzle]);
+
+  // Function to end game (used for hard mode timeout)
+  const endGame = useCallback((hasWon) => {
+    setWon(hasWon);
+    setGameState(GAME_STATES.COMPLETE);
+    if (!hasWon) {
+      playFailureSound();
+    }
+  }, []);
 
   return {
     gameState,
@@ -522,6 +640,11 @@ export function useGameWithInitialData(initialPuzzleData) {
     hasCheckedAnswers,
     activeHints,
     hintPositionsUsed,
+    lockedLetters,
+    isHardMode,
+    hardModeTimeUp,
+    setIsHardMode,
+    setHardModeTimeUp,
     startGame,
     updateAnswer,
     checkAnswers,
@@ -531,5 +654,6 @@ export function useGameWithInitialData(initialPuzzleData) {
     useHint,
     resetGame,
     returnToWelcome,
+    endGame,
   };
 }

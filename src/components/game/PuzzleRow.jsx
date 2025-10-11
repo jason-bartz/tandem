@@ -13,6 +13,7 @@ export default function PuzzleRow({
   isFocused,
   readonly: _readonly = false,
   hintData,
+  lockedLetters,
   answerLength = 0,
   isSmallPhone = false,
   isMobilePhone = false,
@@ -37,14 +38,42 @@ export default function PuzzleRow({
 
     for (let i = 0; i < answerLength; i++) {
       if (currentValue && i < currentValue.length) {
-        chars.push(currentValue[i].toUpperCase());
+        const char = currentValue[i].toUpperCase();
+        // Check if this position is locked (correct letter in correct position)
+        const isLocked = lockedLetters && lockedLetters[i];
+
+        if (isLocked) {
+          // Render locked letter in green with special styling
+          chars.push(
+            <span key={i} className="font-bold text-green-600 dark:text-green-400">
+              {char}
+            </span>
+          );
+        } else if (hintData && i === 0) {
+          // First letter hint - yellow
+          chars.push(
+            <span key={i} className="font-semibold text-amber-600 dark:text-amber-400">
+              {char}
+            </span>
+          );
+        } else {
+          chars.push(<span key={i}>{char}</span>);
+        }
       } else {
-        chars.push('_');
+        chars.push(<span key={i}>_</span>);
       }
     }
 
-    // Add spacing between characters
-    return chars.join(' ');
+    // Add spacing between characters using React fragments
+    const spacedChars = [];
+    chars.forEach((char, idx) => {
+      spacedChars.push(char);
+      if (idx < chars.length - 1) {
+        spacedChars.push(<span key={`space-${idx}`}> </span>);
+      }
+    });
+
+    return spacedChars;
   };
 
   return (

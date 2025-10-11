@@ -34,18 +34,51 @@ export default function HowToPlayModal({ isOpen, onClose }) {
         </div>
 
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <p className="text-base">Solve 4 emoji puzzles to discover their hidden theme!</p>
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">The Basics</h3>
+            <p className="text-sm mb-2">
+              Each puzzle shows two emojis that represent a single word. Type your guess and press
+              Enter to submit.
+            </p>
+            <p className="text-sm">
+              You have 4 mistakes across all puzzles. The theme is revealed only when you solve all
+              four.
+            </p>
+          </div>
 
-          <div className="space-y-2">
-            <p className="text-sm">• Each emoji pair represents one word or tandem</p>
-            <p className="text-sm">• Character count is shown for each answer [e.g., 5 letters]</p>
-            <p className="text-sm">• The connecting theme is revealed only after completion</p>
-            <p className="text-sm">• You have 4 mistakes to find all the words</p>
-            <p className="text-sm">• Press Enter or tap Check Answers to submit</p>
+          <div
+            className={`rounded-xl p-4 ${
+              highContrast
+                ? 'bg-hc-success text-white border-2 border-hc-border'
+                : 'bg-green-50 dark:bg-green-900/20'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Smart Hints</h4>
+            <p className="text-sm mb-2">
+              <strong className="text-green-600 dark:text-green-400">
+                Green letters = locked in!
+              </strong>{' '}
+              When you guess incorrectly, any letters in the correct position turn green and stay
+              locked. Just fill in the remaining blanks.
+            </p>
+            <div className="text-sm space-y-1 mt-2 font-mono bg-white dark:bg-gray-800 rounded p-2">
+              <p>
+                <strong>Example:</strong> Answer is PLAN
+              </p>
+              <p className="mt-1">
+                Guess: <span className="text-red-600 dark:text-red-400">PILL</span> → Result:{' '}
+                <span className="text-green-600 dark:text-green-400 font-bold">P</span>_ _ _
+              </p>
+              <p>Next guess: Only type 3 letters for the blanks</p>
+            </div>
+            <p className="text-sm mt-3">
+              <span className="font-semibold">💡 Need help?</span> Use a hint to reveal the next
+              letter (fills left to right, one position at a time).
+            </p>
           </div>
 
           <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Examples</h3>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h3>
             <div
               className={`rounded-xl p-4 space-y-2 ${
                 highContrast
@@ -54,56 +87,35 @@ export default function HowToPlayModal({ isOpen, onClose }) {
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-2xl">🗺️📍</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= MAP</span>
+                <span className="text-2xl">☀️🔥</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= SUN</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Navigation emojis → something you unfold
-              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Star → hot in the sky</p>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">👔🧺</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">
-                  = LAUNDRY
-                </span>
+                <span className="text-2xl">🌶️🔥</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= PEPPER</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Shirt + basket → clothes you fold
-              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Spice → burns your mouth</p>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">♠️❤️</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= POKER</span>
+                <span className="text-2xl">☕🍵</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= COFFEE</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Card suits → a folding card game
-              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Drink → served hot</p>
 
               <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">✉️💌</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= LETTER</span>
+                <span className="text-2xl">🏜️🌡️</span>
+                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= DESERT</span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Envelopes → paper you fold</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Climate → scorching heat</p>
 
               <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Theme revealed after solving: Things That Fold ✨
+                  Theme revealed: Things That Are Hot 🔥
                 </p>
               </div>
             </div>
-          </div>
-
-          <div
-            className={`rounded-xl p-4 ${
-              highContrast
-                ? 'bg-hc-warning text-white border-2 border-hc-border'
-                : 'bg-amber-50 dark:bg-amber-900/20'
-            }`}
-          >
-            <p className="text-sm">
-              <span className="font-semibold">💡 Hint:</span> Stuck? Use a hint to reveal the first
-              letter from a random unanswered word.
-            </p>
           </div>
 
           <div>
@@ -139,7 +151,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
               </li>
             </ul>
             <p className="text-xs mt-2 text-gray-600 dark:text-gray-400">
-              Enable Hard Mode in Settings when you have an active subscription.
+              Enable Hard Mode in Settings when you have an active subscription. Only available on
+              iOS.
             </p>
           </div>
 
