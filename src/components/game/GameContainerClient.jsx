@@ -7,7 +7,7 @@ import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useDeviceType } from '@/lib/deviceDetection';
-import { GAME_STATES } from '@/lib/constants';
+import { GAME_STATES, GAME_CONFIG, STORAGE_KEYS } from '@/lib/constants';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
@@ -20,7 +20,7 @@ import subscriptionService from '@/services/subscriptionService';
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
-  const timer = useTimer(game.gameState === GAME_STATES.PLAYING);
+  const timer = useTimer(game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp);
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
@@ -48,12 +48,29 @@ export default function GameContainerClient({ initialPuzzleData }) {
     }
   }, []);
 
+  // Load hard mode preference when component mounts
+  useEffect(() => {
+    const hardModeEnabled = localStorage.getItem(STORAGE_KEYS.HARD_MODE) === 'true';
+    game.setIsHardMode(hardModeEnabled);
+
+    // Listen for hard mode changes from settings
+    const handleHardModeChange = (event) => {
+      game.setIsHardMode(event.detail);
+    };
+
+    window.addEventListener('hardModeChanged', handleHardModeChange);
+    return () => {
+      window.removeEventListener('hardModeChanged', handleHardModeChange);
+    };
+  }, [game]);
+
   // Reset timer when puzzle changes or when returning to welcome screen
   useEffect(() => {
     if (game.gameState === GAME_STATES.WELCOME) {
       timer.reset();
+      game.setHardModeTimeUp(false);
     }
-  }, [game.puzzle?.id, game.puzzle?.date, game.gameState, timer]);
+  }, [game.puzzle?.id, game.puzzle?.date, game.gameState, timer, game]);
 
   // Handle app lifecycle for timer pause/resume (Native apps)
   useEffect(() => {
@@ -128,6 +145,27 @@ export default function GameContainerClient({ initialPuzzleData }) {
       game.loadPuzzle(null);
     }
   });
+
+  // Hard Mode timer check - fail game after 2 minutes
+  useEffect(() => {
+    if (game.isHardMode && game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp) {
+      if (timer.elapsed >= GAME_CONFIG.HARD_MODE_TIME_LIMIT) {
+        // Time's up in hard mode
+        game.setHardModeTimeUp(true);
+        game.endGame(false); // End game as failure
+        playSound('incorrect');
+        incorrectAnswer(); // Haptic feedback for failure
+      }
+    }
+  }, [
+    timer.elapsed,
+    game.isHardMode,
+    game.gameState,
+    game.hardModeTimeUp,
+    game,
+    playSound,
+    incorrectAnswer,
+  ]);
 
   const handleCheckAnswers = () => {
     const result = game.checkAnswers();
@@ -243,8 +281,11 @@ export default function GameContainerClient({ initialPuzzleData }) {
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.returnToWelcome}
               activeHints={game.activeHints}
+              lockedLetters={game.lockedLetters}
               isMobilePhone={isMobilePhone}
               isSmallPhone={isSmallPhone}
+              isHardMode={game.isHardMode}
+              hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
             />
           )}
 
@@ -263,6 +304,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
               activeHints={game.hintPositionsUsed}
               onSelectPuzzle={handleSelectPuzzle}
               onReturnToWelcome={game.returnToWelcome}
+              isHardMode={game.isHardMode}
+              hardModeTimeUp={game.hardModeTimeUp}
             />
           )}
         </div>

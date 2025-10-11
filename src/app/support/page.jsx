@@ -22,11 +22,15 @@ export default function Support() {
             <p className="text-sm">Tandem is a daily word puzzle game where you:</p>
             <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
               <li>
-                <strong>Look at 4 emoji pairs</strong> - Each pair represents a word or phrase
+                <strong>Look at 4 emoji pairs</strong> - Each pair represents a single word
               </li>
               <li>
                 <strong>Guess what they represent</strong> - Type your answer for each pair
                 (character count is shown)
+              </li>
+              <li>
+                <strong>Progressive hints on mistakes</strong> - Letters in correct positions turn
+                green and stay locked, helping you narrow down the answer
               </li>
               <li>
                 <strong>Solve all 4 puzzles</strong> - Complete all answers to discover the hidden
@@ -152,8 +156,19 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get one hint per game. It reveals first letter from a random unsolved
-                  answer. Character counts are always visible for each puzzle.
+                  A: You get one hint per game. It reveals the next unfilled letter position. If all
+                  first positions are filled (via correct guesses or locked letters), it moves to
+                  the second position, and so on. Character counts are always visible for each
+                  puzzle.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What are "locked letters"?</p>
+                <p>
+                  A: When you submit an incorrect answer, any letters that are correct AND in the
+                  correct position will turn green and stay locked in place. You only need to fill
+                  in the remaining letters. Example: If the answer is PAIN and you guess PILL, the P
+                  stays green and locked.
                 </p>
               </div>
               <div>
@@ -216,6 +231,126 @@ export default function Support() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'hard-mode',
+      title: 'Hard Mode (Tandem Unlimited)',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
+            <p className="text-sm mb-3">
+              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that adds a
+              challenging twist to the classic Tandem gameplay.
+            </p>
+            <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg p-4">
+              <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
+              <ul className="list-disc list-inside text-sm space-y-1">
+                <li>
+                  <strong>2-minute time limit</strong> - You must complete the puzzle within 120
+                  seconds
+                </li>
+                <li>
+                  <strong>No hints available</strong> - The hint button is completely removed
+                </li>
+                <li>
+                  <strong>Same mistake limit</strong> - You still have 4 mistakes maximum
+                </li>
+                <li>
+                  <strong>Timer shows remaining time</strong> - Watch the countdown in red
+                </li>
+                <li>
+                  <strong>Auto-fail on timeout</strong> - Game ends when time runs out
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">How to Enable Hard Mode</h4>
+            <ol className="list-decimal list-inside text-sm space-y-2">
+              <li>
+                Subscribe to <strong>Tandem Unlimited</strong> (any tier: Buddy Pass, Best Friends,
+                or Soulmates)
+              </li>
+              <li>
+                Open the <strong>Settings</strong> menu (gear icon)
+              </li>
+              <li>
+                Find the <strong>Hard Mode</strong> toggle in the Subscription section
+              </li>
+              <li>Toggle it ON to enable Hard Mode for your next game</li>
+              <li>The setting persists across sessions until you toggle it off</li>
+            </ol>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Hard Mode Features</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Visual Indicators:</p>
+                <ul className="list-disc list-inside ml-2">
+                  <li>🔥 HARD MODE badge below puzzle date</li>
+                  <li>Red countdown timer showing time remaining</li>
+                  <li>
+                    Red-tinted stats bar with pulsing animation when time is critical (30s left)
+                  </li>
+                  <li>Special completion messages for Hard Mode victories</li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-medium">Share Text:</p>
+                <ul className="list-disc list-inside ml-2">
+                  <li>Special "🔥 HARD MODE" header in share text</li>
+                  <li>Shows completion time vs 2:00 limit (e.g., "⏱️ 1:45/2:00")</li>
+                  <li>Fire emojis (🔥) for completed puzzles instead of diamonds</li>
+                  <li>#HardMode hashtag added automatically</li>
+                </ul>
+              </div>
+
+              <div>
+                <p className="font-medium">Statistics:</p>
+                <ul className="list-disc list-inside ml-2">
+                  <li>Hard Mode games count toward regular statistics</li>
+                  <li>No separate hard mode stats tracking</li>
+                  <li>Streaks include both regular and hard mode completions</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Strategy Tips</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Scan all puzzles first</strong> - Quickly identify the easiest ones
+              </li>
+              <li>
+                <strong>Start with obvious answers</strong> - Build momentum with quick solves
+              </li>
+              <li>
+                <strong>Watch for patterns</strong> - The theme can help guess remaining answers
+              </li>
+              <li>
+                <strong>Type quickly but accurately</strong> - Mistakes cost precious time
+              </li>
+              <li>
+                <strong>Practice in regular mode first</strong> - Master the puzzle before
+                attempting hard mode
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-sky-50 dark:bg-sky-900/20 rounded-lg p-4">
+            <p className="text-sm">
+              <strong>Note:</strong> Hard Mode is only available for subscribers with an active
+              Tandem Unlimited subscription. Non-subscribers will see the Hard Mode toggle greyed
+              out in Settings.
+            </p>
           </div>
         </div>
       ),

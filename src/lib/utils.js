@@ -79,7 +79,9 @@ export function generateShareText(
   mistakes,
   _hintsUsed = 0,
   hintPositions = [],
-  solved = 0
+  solved = 0,
+  isHardMode = false,
+  hardModeTimeUp = false
 ) {
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
@@ -87,6 +89,15 @@ export function generateShareText(
 
   // Build the header
   let shareText = `Daily Puzzle ${formattedDate}\n`;
+
+  // Add hard mode indicator if applicable
+  if (isHardMode) {
+    if (hardModeTimeUp) {
+      shareText += `🔥 HARD MODE - Time's Up!\n`;
+    } else {
+      shareText += `🔥 HARD MODE\n`;
+    }
+  }
 
   // Add status instead of theme
   if (solved === 4) {
@@ -98,16 +109,23 @@ export function generateShareText(
   shareText += `━━━━━━━━━━━━\n`;
 
   // Build the stats line
-  shareText += `⏱️ ${formattedTime} | ❌ ${mistakes}/4`;
+  shareText += `⏱️ ${formattedTime}`;
+  if (isHardMode) {
+    shareText += '/2:00';
+  }
+  shareText += ` | ❌ ${mistakes}/4`;
   shareText += `\n\n`;
 
   // Build emoji representation of puzzle completion
   // Show solved puzzles with 🔷 or 💡 (if hint was used), unsolved with ⬜
+  // In hard mode, use different emoji
   const puzzleEmojis = [];
   for (let i = 0; i < 4; i++) {
     if (i < solved) {
       if (hintPositions.includes(i)) {
         puzzleEmojis.push('💡');
+      } else if (isHardMode && solved === 4) {
+        puzzleEmojis.push('🔥'); // Fire emoji for hard mode completion
       } else {
         puzzleEmojis.push('🔷');
       }
@@ -118,6 +136,9 @@ export function generateShareText(
   shareText += puzzleEmojis.join(' ');
 
   shareText += '\n\n#TandemPuzzle';
+  if (isHardMode) {
+    shareText += ' #HardMode';
+  }
 
   return shareText;
 }
@@ -298,4 +319,43 @@ export function getRandomCongratulation() {
   ];
 
   return congratulations[Math.floor(Math.random() * congratulations.length)];
+}
+
+export function getCorrectPositions(userAnswer, correctAnswer) {
+  // Returns an object mapping positions to correct letters
+  // Example: { 0: 'P', 2: 'L' } means position 0 has 'P' and position 2 has 'L'
+  if (!userAnswer || !correctAnswer) {
+    return null;
+  }
+
+  const user = userAnswer.trim().toUpperCase();
+  // Handle multiple acceptable answers (comma-separated)
+  const acceptableAnswers = correctAnswer.split(',').map((ans) => ans.trim().toUpperCase());
+
+  // Find the best matching answer (one with most position matches)
+  let bestMatches = null;
+  let maxMatches = 0;
+
+  for (const correct of acceptableAnswers) {
+    const matches = {};
+    let matchCount = 0;
+
+    // Compare position by position
+    const minLength = Math.min(user.length, correct.length);
+    for (let i = 0; i < minLength; i++) {
+      if (user[i] === correct[i] && user[i] !== ' ') {
+        matches[i] = user[i];
+        matchCount++;
+      }
+    }
+
+    // Keep track of the answer with most matches
+    if (matchCount > maxMatches) {
+      maxMatches = matchCount;
+      bestMatches = matches;
+    }
+  }
+
+  // Return null if no positions match, otherwise return the matches object
+  return maxMatches > 0 ? bestMatches : null;
 }

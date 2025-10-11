@@ -34,8 +34,11 @@ export default function PlayingScreen({
   _hasCheckedAnswers,
   onReturnToWelcome,
   activeHints,
+  lockedLetters,
   isMobilePhone = false,
   isSmallPhone = false,
+  isHardMode = false,
+  hardModeTimeLimit = 120,
 }) {
   // const hasAnyInput = answers.some((answer) => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
@@ -251,6 +254,8 @@ export default function PlayingScreen({
       }
 
       const currentValue = answers[focusedIndex];
+      const locked = lockedLetters && lockedLetters[focusedIndex];
+
       if (currentValue.length > 0) {
         // Prevent deleting hint letter if present
         if (activeHints && activeHints[focusedIndex]) {
@@ -260,7 +265,23 @@ export default function PlayingScreen({
             return;
           }
         }
-        onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+
+        // Handle deletion with locked letters
+        if (locked) {
+          const newValue = currentValue.slice(0, -1);
+          // Rebuild value preserving locked positions
+          let result = '';
+          for (let i = 0; i < newValue.length || locked[i]; i++) {
+            if (locked[i]) {
+              result += locked[i];
+            } else if (i < newValue.length && !locked[i]) {
+              result += newValue[i];
+            }
+          }
+          onUpdateAnswer(focusedIndex, result);
+        } else {
+          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+        }
       }
       return;
     }
@@ -285,8 +306,18 @@ export default function PlayingScreen({
           : puzzle.puzzles[focusedIndex].answer.length
         : 15;
 
+      // Count non-locked positions
+      const locked = lockedLetters && lockedLetters[focusedIndex];
+      let actualLength = answerLength;
+      if (locked) {
+        // Calculate how many positions are available for user input
+        const lockedPositions = Object.keys(locked).map(Number);
+        const maxLockedPos = Math.max(...lockedPositions);
+        actualLength = Math.max(answerLength, maxLockedPos + 1);
+      }
+
       // Don't add if already at max length
-      if (currentValue.length < answerLength) {
+      if (currentValue.length < actualLength) {
         onUpdateAnswer(focusedIndex, currentValue + key);
       }
     }
@@ -393,7 +424,17 @@ export default function PlayingScreen({
                 />
               </svg>
             </button>
-            <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
+            <div className="flex flex-col items-center">
+              <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
+              {isHardMode && (
+                <div className="flex items-center gap-2 mt-1">
+                  <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                    <span className="text-sm">🔥</span>
+                    HARD MODE
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -405,6 +446,8 @@ export default function PlayingScreen({
               solved={solved}
               isSmallPhone={isSmallPhone}
               isMobilePhone={isMobilePhone}
+              isHardMode={isHardMode}
+              hardModeTimeLimit={hardModeTimeLimit}
             />
 
             <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4">
@@ -423,6 +466,7 @@ export default function PlayingScreen({
                     isFocused={focusedIndex === index}
                     readonly={true}
                     hintData={activeHints && activeHints[index]}
+                    lockedLetters={lockedLetters && lockedLetters[index]}
                     answerLength={
                       p.answer
                         ? p.answer.includes(',')
@@ -436,8 +480,8 @@ export default function PlayingScreen({
                 ))}
             </div>
 
-            {/* Hint button - positioned before keyboard */}
-            {hintsUsed === 0 && solved < 4 && (
+            {/* Hint button - positioned before keyboard (not shown in hard mode) */}
+            {!isHardMode && hintsUsed === 0 && solved < 4 && (
               <div className="mb-3">
                 <button
                   onClick={() => {

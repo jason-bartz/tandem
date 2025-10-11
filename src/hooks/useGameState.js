@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import { GAME_STATES, GAME_CONFIG } from '@/lib/constants';
+import { GAME_STATES } from '@/lib/constants';
 import { sanitizeInput } from '@/lib/utils';
 
 export function useGameState() {
@@ -18,8 +18,11 @@ export function useGameState() {
   const [hintsUsed, setHintsUsed] = useState(0);
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
   const [activeHints, setActiveHints] = useState([null, null, null, null]);
+  const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
   const [isArchiveGame, setIsArchiveGame] = useState(false);
   const [currentPuzzleDate, setCurrentPuzzleDate] = useState(null);
+  const [isHardMode, setIsHardMode] = useState(false);
+  const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
 
   const resetGameState = useCallback(() => {
     setGameState(GAME_STATES.WELCOME);
@@ -31,38 +34,72 @@ export function useGameState() {
     setHintsUsed(0);
     setHasCheckedAnswers(false);
     setActiveHints([null, null, null, null]);
+    setLockedLetters([null, null, null, null]);
+    setHardModeTimeUp(false);
+    // Note: We don't reset isHardMode here as it's a preference
   }, []);
 
-  const updateAnswer = useCallback((index, value) => {
-    const hint = activeHints[index];
-    let processedValue = value;
+  const updateAnswer = useCallback(
+    (index, value) => {
+      const hint = activeHints[index];
+      const locked = lockedLetters[index];
+      let processedValue = value;
 
-    if (hint) {
-      const hintLetter = hint.firstLetter;
-      if (value.length === 0) {
-        processedValue = hintLetter;
-      } else if (!value.toUpperCase().startsWith(hintLetter)) {
-        processedValue = hintLetter + value;
-      } else if (value.toUpperCase() === hintLetter) {
-        processedValue = hintLetter;
+      // If we have locked letters, preserve them
+      if (locked) {
+        const lockedPositions = Object.keys(locked)
+          .map(Number)
+          .sort((a, b) => a - b);
+        let result = '';
+        let valueIndex = 0;
+
+        // Rebuild the value with locked letters in their positions
+        for (let i = 0; i < value.length || lockedPositions.some((pos) => pos === i); i++) {
+          if (locked[i]) {
+            // This position is locked, use the locked letter
+            result += locked[i];
+          } else if (valueIndex < value.length) {
+            // This position is not locked, use input from value
+            if (value[valueIndex] === locked[i]) {
+              // Skip if trying to type the same locked letter
+              valueIndex++;
+            } else {
+              result += value[valueIndex];
+              valueIndex++;
+            }
+          }
+        }
+        processedValue = result;
       }
-    }
 
-    const sanitized = sanitizeInput(processedValue);
-    setAnswers(prev => {
-      const newAnswers = [...prev];
-      newAnswers[index] = sanitized;
-      return newAnswers;
-    });
+      if (hint) {
+        const hintLetter = hint.firstLetter;
+        if (processedValue.length === 0) {
+          processedValue = hintLetter;
+        } else if (!processedValue.toUpperCase().startsWith(hintLetter)) {
+          processedValue = hintLetter + processedValue;
+        } else if (processedValue.toUpperCase() === hintLetter) {
+          processedValue = hintLetter;
+        }
+      }
 
-    if (checkedWrongAnswers[index]) {
-      setCheckedWrongAnswers(prev => {
-        const newCheckedWrong = [...prev];
-        newCheckedWrong[index] = false;
-        return newCheckedWrong;
+      const sanitized = sanitizeInput(processedValue);
+      setAnswers((prev) => {
+        const newAnswers = [...prev];
+        newAnswers[index] = sanitized;
+        return newAnswers;
       });
-    }
-  }, [checkedWrongAnswers, activeHints]);
+
+      if (checkedWrongAnswers[index]) {
+        setCheckedWrongAnswers((prev) => {
+          const newCheckedWrong = [...prev];
+          newCheckedWrong[index] = false;
+          return newCheckedWrong;
+        });
+      }
+    },
+    [checkedWrongAnswers, activeHints, lockedLetters]
+  );
 
   return {
     // State
@@ -86,13 +123,19 @@ export function useGameState() {
     setHasCheckedAnswers,
     activeHints,
     setActiveHints,
+    lockedLetters,
+    setLockedLetters,
     isArchiveGame,
     setIsArchiveGame,
     currentPuzzleDate,
     setCurrentPuzzleDate,
+    isHardMode,
+    setIsHardMode,
+    hardModeTimeUp,
+    setHardModeTimeUp,
 
     // Actions
     resetGameState,
-    updateAnswer
+    updateAnswer,
   };
 }
