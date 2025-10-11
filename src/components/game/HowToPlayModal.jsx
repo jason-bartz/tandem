@@ -114,6 +114,35 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             </p>
           </div>
 
+          <div
+            className={`rounded-xl p-4 ${
+              highContrast
+                ? 'bg-hc-error text-white border-2 border-hc-border'
+                : 'bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20'
+            }`}
+          >
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2">
+              <span className="text-lg">🔥</span> Hard Mode
+              <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
+                Tandem Unlimited
+              </span>
+            </h3>
+            <p className="text-sm mb-2">
+              For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
+            </p>
+            <ul className="text-sm space-y-1 ml-4">
+              <li>
+                • <strong>2-minute time limit</strong> - Complete the puzzle before time runs out
+              </li>
+              <li>
+                • <strong>No hints available</strong> - Rely only on your word skills
+              </li>
+            </ul>
+            <p className="text-xs mt-2 text-gray-600 dark:text-gray-400">
+              Enable Hard Mode in Settings when you have an active subscription.
+            </p>
+          </div>
+
           <div className="text-center py-2">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               A new puzzle is released daily at midnight. Come back tomorrow!

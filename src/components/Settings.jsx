@@ -17,6 +17,7 @@ export default function Settings({ isOpen, onClose }) {
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showAppBanner, setShowAppBanner] = useState(false);
+  const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const { playHaptic, lightTap } = useHaptics();
   const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
   const { syncStatus, toggleSync } = useCloudKitSync();
@@ -26,6 +27,7 @@ export default function Settings({ isOpen, onClose }) {
       loadSubscriptionInfo();
       loadNotificationSettings();
       loadKeyboardLayout();
+      loadHardModePreference();
       checkAppBannerVisibility();
     }
   }, [isOpen]);
@@ -64,6 +66,13 @@ export default function Settings({ isOpen, onClose }) {
     }
   };
 
+  const loadHardModePreference = () => {
+    const saved = localStorage.getItem('tandemHardMode');
+    if (saved === 'true') {
+      setHardModeEnabled(true);
+    }
+  };
+
   const handleKeyboardLayoutChange = (layout) => {
     setKeyboardLayout(layout);
     localStorage.setItem('keyboardLayout', layout);
@@ -71,6 +80,17 @@ export default function Settings({ isOpen, onClose }) {
     // Notify parent component if needed
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('keyboardLayoutChanged', { detail: layout }));
+    }
+  };
+
+  const handleHardModeToggle = () => {
+    const newValue = !hardModeEnabled;
+    setHardModeEnabled(newValue);
+    localStorage.setItem('tandemHardMode', newValue.toString());
+    lightTap();
+    // Notify parent component if needed
+    if (window.dispatchEvent) {
+      window.dispatchEvent(new CustomEvent('hardModeChanged', { detail: newValue }));
     }
   };
 
@@ -104,50 +124,9 @@ export default function Settings({ isOpen, onClose }) {
     }
   };
 
-  const handleManageSubscription = () => {
-    // Opens iOS subscription management in Settings app
-    if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-      window.open('https://apps.apple.com/account/subscriptions', '_blank');
-    }
-  };
-
-  const formatDate = (dateStr) => {
-    if (!dateStr) {
-      return null;
-    }
-    const date = new Date(dateStr);
-    return date.toLocaleDateString('en-US', {
-      month: 'long',
-      day: 'numeric',
-      year: 'numeric',
-    });
-  };
-
-  const getSubscriptionTier = () => {
-    if (!subscriptionInfo?.productId) {
-      return null;
-    }
-
-    const tierMap = {
-      'com.tandemdaily.app.buddypass': { name: 'Buddy Pass', emoji: '🤝', type: 'subscription' },
-      'com.tandemdaily.app.bestfriends': {
-        name: 'Best Friends',
-        emoji: '👯',
-        type: 'subscription',
-      },
-      'com.tandemdaily.app.soulmates': { name: 'Soulmates', emoji: '💕', type: 'lifetime' },
-    };
-
-    return (
-      tierMap[subscriptionInfo.productId] || { name: 'Premium', emoji: '✨', type: 'subscription' }
-    );
-  };
-
   if (!isOpen) {
     return null;
   }
-
-  const tier = getSubscriptionTier();
 
   return (
     <div
@@ -271,43 +250,43 @@ export default function Settings({ isOpen, onClose }) {
                   <p className="text-white/90 text-sm">Active Player</p>
                 </div>
 
-                {/* Subscription Details */}
-                <div className="bg-gradient-to-br from-sky-50 to-teal-50 dark:from-gray-700 dark:to-gray-700 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{tier?.emoji}</span>
-                      <div>
-                        <p className="font-semibold text-gray-800 dark:text-gray-200">
-                          {tier?.name}
-                        </p>
-                        <p className="text-xs text-gray-600 dark:text-gray-400">
-                          {tier?.type === 'lifetime' ? 'Lifetime access' : 'Active Subscription'}
+                {/* Hard Mode Toggle - Only for Premium Users */}
+                <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-700 dark:to-gray-700 rounded-xl p-4">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🔥</span>
+                        <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                          Hard Mode
                         </p>
                       </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                        2-minute time limit • No hints available
+                      </p>
                     </div>
-                    <div className="text-green-500">
-                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                    </div>
+                    <button
+                      onClick={handleHardModeToggle}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                        highContrast
+                          ? hardModeEnabled
+                            ? 'bg-hc-primary border-2 border-hc-border'
+                            : 'bg-hc-surface border-2 border-hc-border'
+                          : hardModeEnabled
+                            ? 'bg-red-500'
+                            : 'bg-gray-200 dark:bg-gray-600'
+                      }`}
+                      role="switch"
+                      aria-checked={hardModeEnabled}
+                    >
+                      <span
+                        className={`${
+                          hardModeEnabled ? 'translate-x-6' : 'translate-x-1'
+                        } inline-block h-4 w-4 transform rounded-full ${
+                          highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                        } transition-transform`}
+                      />
+                    </button>
                   </div>
-
-                  {subscriptionInfo.expiryDate && tier?.type !== 'lifetime' && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      Renews {formatDate(subscriptionInfo.expiryDate)}
-                    </p>
-                  )}
-
-                  <button
-                    onClick={handleManageSubscription}
-                    className="w-full py-2 text-sky-600 dark:text-sky-400 text-sm font-medium hover:underline"
-                  >
-                    Manage Subscription
-                  </button>
                 </div>
 
                 {/* View Plans Button */}
@@ -338,6 +317,29 @@ export default function Settings({ isOpen, onClose }) {
                   >
                     View Plans
                   </button>
+                </div>
+
+                {/* Hard Mode - Disabled for non-subscribers */}
+                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 opacity-60">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">🔥</span>
+                        <p className="text-sm font-semibold text-gray-500 dark:text-gray-500">
+                          Hard Mode
+                        </p>
+                        <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
+                          Tandem Unlimited
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                        2-minute time limit • No hints available
+                      </p>
+                    </div>
+                    <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed">
+                      <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-gray-300 dark:bg-gray-600 transition-transform" />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
