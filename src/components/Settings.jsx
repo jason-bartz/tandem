@@ -179,7 +179,9 @@ export default function Settings({ isOpen, onClose }) {
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-white mt-0.5">✓</span>
-                    <p className="text-white/95 text-sm">Exclusive game modes & features</p>
+                    <p className="text-white/95 text-sm">
+                      Access Hard Mode and other exclusive modes and features
+                    </p>
                   </div>
                   <div className="flex items-start gap-2">
                     <span className="text-white mt-0.5">✓</span>

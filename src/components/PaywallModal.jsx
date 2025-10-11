@@ -273,7 +273,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <div className="flex items-center gap-3">
               <span className="text-green-500 text-xl">✓</span>
               <span className="text-gray-700 dark:text-gray-300">
-                Access to new planned game modes and features
+                Access to Hard Mode and future exclusive modes and features
               </span>
             </div>
             <div className="flex items-center gap-3">
