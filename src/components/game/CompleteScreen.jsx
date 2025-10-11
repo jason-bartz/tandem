@@ -35,6 +35,8 @@ export default function CompleteScreen({
   activeHints = [],
   onSelectPuzzle,
   onReturnToWelcome,
+  isHardMode = false,
+  hardModeTimeUp = false,
 }) {
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
@@ -68,7 +70,9 @@ export default function CompleteScreen({
     mistakes,
     hintsUsed,
     hintPositions,
-    won ? 4 : correctAnswers || 0
+    won ? 4 : correctAnswers || 0,
+    isHardMode,
+    hardModeTimeUp
   );
 
   useEffect(() => {
@@ -215,16 +219,28 @@ export default function CompleteScreen({
             </button>
           )}
 
-          <h1 className="text-4xl font-bold mb-2 text-gray-800 dark:text-gray-200">
+          <h1
+            className={`font-bold mb-2 text-gray-800 dark:text-gray-200 ${won ? 'text-4xl' : 'text-3xl'}`}
+          >
             {won ? (
               <span className="inline-block animate-bounce-in">{congratsMessage}</span>
+            ) : hardModeTimeUp ? (
+              <span className="whitespace-nowrap text-red-600 dark:text-red-400">
+                Time's Up! ⏰
+              </span>
             ) : (
               <span className="whitespace-nowrap">Better luck next time</span>
             )}
           </h1>
 
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {won ? "You solved today's puzzle!" : "You'll get it tomorrow!"}
+            {won
+              ? isHardMode
+                ? 'You conquered Hard Mode! 🔥'
+                : "You solved today's puzzle!"
+              : hardModeTimeUp
+                ? "2 minutes wasn't enough this time!"
+                : "You'll get it tomorrow!"}
           </p>
 
           {puzzleTheme && (
@@ -255,21 +271,31 @@ export default function CompleteScreen({
           )}
 
           <div className="grid grid-cols-3 gap-4 mb-6">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+            <div
+              className={`rounded-xl p-4 text-center ${
+                isHardMode
+                  ? 'bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700'
+                  : 'bg-gray-50 dark:bg-gray-800'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  isHardMode ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-200'
+                }`}
+              >
                 {formatTime(time)}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center">
               <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{mistakes}/4</div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200 text-center">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center flex flex-col items-center justify-center">
+              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
                 {formatDateShort(puzzleDate)}
               </div>
-              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 text-center">Date</div>
+              <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
             </div>
           </div>
 
