@@ -10,16 +10,21 @@ export function useMidnightRefresh(onMidnight) {
     const checkDate = () => {
       const currentInfo = getCurrentPuzzleInfo();
       const currentDate = currentInfo.isoDate;
-      
+
       // If the date has changed since last check
       if (currentDateRef.current && currentDateRef.current !== currentDate) {
-        console.log('[MidnightRefresh] Date changed from', currentDateRef.current, 'to', currentDate);
+        console.log(
+          '[MidnightRefresh] Date changed from',
+          currentDateRef.current,
+          'to',
+          currentDate
+        );
         // Trigger the callback
         if (onMidnight) {
           onMidnight();
         }
       }
-      
+
       currentDateRef.current = currentDate;
     };
 
@@ -27,26 +32,25 @@ export function useMidnightRefresh(onMidnight) {
     checkDate();
 
     // Check every 10 seconds for date change
+    // This works in all timezones since getCurrentPuzzleInfo() now uses local timezone
     const interval = setInterval(checkDate, 10000);
 
-    // Also check at the next midnight ET
+    // Also schedule a check at the next local midnight for immediate response
     const scheduleNextMidnightCheck = () => {
       const now = new Date();
-      const { toZonedTime } = require('date-fns-tz');
-      const etNow = toZonedTime(now, 'America/New_York');
-      
-      // Calculate milliseconds until next midnight ET
-      const nextMidnight = new Date(etNow);
-      nextMidnight.setHours(24, 0, 1, 0); // 12:00:01 AM next day
-      
-      const msUntilMidnight = nextMidnight - etNow;
-      
+
+      // Calculate milliseconds until next local midnight
+      const nextMidnight = new Date(now);
+      nextMidnight.setHours(24, 0, 1, 0); // 12:00:01 AM next day in local timezone
+
+      const msUntilMidnight = nextMidnight - now;
+
       if (msUntilMidnight > 0) {
         const timeout = setTimeout(() => {
           checkDate();
           scheduleNextMidnightCheck(); // Schedule the next one
         }, msUntilMidnight);
-        
+
         return () => clearTimeout(timeout);
       }
     };
@@ -55,7 +59,9 @@ export function useMidnightRefresh(onMidnight) {
 
     return () => {
       clearInterval(interval);
-      if (cleanupTimeout) {cleanupTimeout();}
+      if (cleanupTimeout) {
+        cleanupTimeout();
+      }
     };
   }, [onMidnight]);
 }

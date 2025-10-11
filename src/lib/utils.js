@@ -1,4 +1,5 @@
 import { clsx } from 'clsx';
+import { getCurrentPuzzleNumber } from './puzzleNumber';
 
 export function cn(...inputs) {
   return clsx(inputs);
@@ -24,24 +25,26 @@ export function getPuzzleNumber(targetDate = null) {
 }
 
 export function getCurrentPuzzleInfo() {
-  // Get current date in ET timezone
-  const { toZonedTime } = require('date-fns-tz');
-  const etTimeZone = 'America/New_York';
+  // Get current date in user's LOCAL timezone (following Wordle's approach)
+  // This ensures puzzles change at midnight in the user's timezone, not at a fixed time
   const now = new Date();
-  const etNow = toZonedTime(now, etTimeZone);
+
+  // Get local date at midnight
+  const localDate = new Date(now);
+  localDate.setHours(0, 0, 0, 0);
 
   const options = {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-    timeZone: 'America/New_York',
   };
 
-  const isoDate = `${etNow.getFullYear()}-${String(etNow.getMonth() + 1).padStart(2, '0')}-${String(etNow.getDate()).padStart(2, '0')}`;
+  // Format as ISO date string in local timezone
+  const isoDate = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
 
   return {
-    number: getPuzzleNumber(isoDate),
+    number: getCurrentPuzzleNumber(), // Use canonical puzzle number calculation
     date: now.toLocaleDateString('en-US', options),
     isoDate: isoDate,
   };
