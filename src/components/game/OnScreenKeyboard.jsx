@@ -44,8 +44,19 @@ export default function OnScreenKeyboard({
     }
   }, []);
 
-  const handleKeyPress = (key) => {
+  const handleKeyPress = (key, event) => {
     if (disabled) return;
+
+    // Prevent event from bubbling and causing duplicate presses
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+
+    // Check if this key is already pressed (prevent duplicate rapid presses)
+    if (pressedKeys.has(key)) {
+      return;
+    }
 
     // Visual and haptic feedback - add key to pressed set
     setPressedKeys((prev) => new Set(prev).add(key));
@@ -264,7 +275,7 @@ export default function OnScreenKeyboard({
                   key={key}
                   type="button"
                   disabled={disabled}
-                  onClick={() => handleKeyPress(key)}
+                  onPointerDown={(e) => handleKeyPress(key, e)}
                   onPointerUp={() => handleKeyRelease(key)}
                   onPointerLeave={() => handleKeyRelease(key)}
                   onTouchEnd={() => handleKeyRelease(key)}
