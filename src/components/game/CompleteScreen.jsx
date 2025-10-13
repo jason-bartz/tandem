@@ -125,7 +125,9 @@ export default function CompleteScreen({
         return () => clearInterval(interval);
       }
     }
-  }, [won, celebration, reduceMotion]);
+    // Only run once when component mounts with won=true
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [won]);
 
   return (
     <div className="animate-fade-in">
