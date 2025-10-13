@@ -3,6 +3,7 @@ export const GAME_CONFIG = {
   PUZZLE_COUNT: 4,
   MAX_ANSWER_LENGTH: 10,
   START_DATE: process.env.NEXT_PUBLIC_GAME_START_DATE || '2025-08-15',
+  HARD_MODE_TIME_LIMIT: 120, // 2 minutes in seconds
 };
 
 export const STORAGE_KEYS = {
@@ -12,6 +13,14 @@ export const STORAGE_KEYS = {
   SOUND: 'tandemSound',
   STATS: 'tandemStats',
   AUTH_TOKEN: 'adminToken',
+  HARD_MODE: 'tandemHardMode',
+  // Game Center
+  GAME_CENTER_AUTHENTICATED: 'tandem_gc_authenticated',
+  GAME_CENTER_PLAYER_ID: 'tandem_gc_player_id',
+  PENDING_ACHIEVEMENTS: 'tandem_pending_achievements',
+  PENDING_LEADERBOARD: 'tandem_pending_leaderboard',
+  LAST_SUBMITTED_STREAK: 'tandem_last_streak',
+  LAST_SUBMITTED_WINS: 'tandem_last_wins',
 };
 
 export const API_ENDPOINTS = {

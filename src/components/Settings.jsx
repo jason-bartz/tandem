@@ -8,6 +8,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
 import { useCloudKitSync } from '@/hooks/useCloudKitSync';
+import GameCenterButton from '@/components/GameCenterButton';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
@@ -507,6 +508,13 @@ export default function Settings({ isOpen, onClose }) {
                 <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-500"></div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Game Center Section (iOS only) */}
+        {Capacitor.isNativePlatform() && (
+          <div className="mb-6">
+            <GameCenterButton />
           </div>
         )}
 

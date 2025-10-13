@@ -40,6 +40,7 @@
     "@capacitor/share": "^5.0.6",
     "@capacitor/splash-screen": "^5.0.6",
     "@capacitor/status-bar": "^5.0.6",
+    "@openforge/capacitor-game-connect": "^5.0.2",
     "@vercel/kv": "^1.0.1",
     "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.3",

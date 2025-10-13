@@ -1,5 +1,7 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/lib/storage';
+import gameCenterService from '@/services/gameCenter.service';
+import { Capacitor } from '@capacitor/core';
 
 class StatsService {
   async getGlobalStats() {
@@ -59,6 +61,17 @@ class StatsService {
 
         if (!response.ok) {
           console.warn('Failed to update server stats:', response.status);
+        }
+      }
+
+      // Check and submit Game Center achievements (only for non-archive games)
+      if (!gameResult.isArchive && Capacitor.isNativePlatform()) {
+        try {
+          await gameCenterService.checkAndSubmitAchievements(localStats);
+          await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
+        } catch (error) {
+          // Fail silently - achievements will be queued for retry
+          console.warn('Game Center update failed (will retry):', error);
         }
       }
 

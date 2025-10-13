@@ -1,0 +1,32 @@
+Achievement ID,Name,Description,Points,Category,Emoji
+com.tandemdaily.app.first_pedal,First Pedal,Maintain a 3-day streak,5,Streak,🔥
+com.tandemdaily.app.finding_rhythm,Finding Rhythm,Maintain a 5-day streak,5,Streak,⭐
+com.tandemdaily.app.picking_up_speed,Picking Up Speed,Maintain a 7-day streak,10,Streak,💪
+com.tandemdaily.app.steady_cadence,Steady Cadence,Maintain a 10-day streak,10,Streak,🎯
+com.tandemdaily.app.cruising_along,Cruising Along,Maintain a 15-day streak,15,Streak,🚴
+com.tandemdaily.app.rolling_hills,Rolling Hills,Maintain a 20-day streak,15,Streak,⛰️
+com.tandemdaily.app.coast_to_coast,Coast to Coast,Maintain a 25-day streak,20,Streak,🌊
+com.tandemdaily.app.monthly_rider,Monthly Rider,Maintain a 30-day streak,25,Streak,🏆
+com.tandemdaily.app.swift_cyclist,Swift Cyclist,Maintain a 40-day streak,25,Streak,⚡
+com.tandemdaily.app.starlight_ride,Starlight Ride,Maintain a 50-day streak,30,Streak,🌟
+com.tandemdaily.app.seaside_route,Seaside Route,Maintain a 60-day streak,30,Streak,🏖️
+com.tandemdaily.app.summit_seeker,Summit Seeker,Maintain a 75-day streak,40,Streak,🗻
+com.tandemdaily.app.cross_country,Cross Country,Maintain a 90-day streak,40,Streak,🎖️
+com.tandemdaily.app.century_ride,Century Ride,Maintain a 100-day streak,50,Streak,💯
+com.tandemdaily.app.mountain_pass,Mountain Pass,Maintain a 125-day streak,60,Streak,🦅
+com.tandemdaily.app.pathfinder,Pathfinder,Maintain a 150-day streak,60,Streak,🧭
+com.tandemdaily.app.coastal_cruiser,Coastal Cruiser,Maintain a 175-day streak,75,Streak,🌊
+com.tandemdaily.app.horizon_chaser,Horizon Chaser,Maintain a 200-day streak,75,Streak,🌅
+com.tandemdaily.app.grand_tour,Grand Tour,Maintain a 250-day streak,80,Streak,🌍
+com.tandemdaily.app.world_traveler,World Traveler,Maintain a 300-day streak,100,Streak,🌎
+com.tandemdaily.app.round_the_sun,Round the Sun,Maintain a 365-day streak,100,Streak,☀️
+com.tandemdaily.app.infinite_road,Infinite Road,Maintain a 500-day streak,100,Streak,🛤️
+com.tandemdaily.app.legendary_journey,Legendary Journey,Maintain a 1000-day streak,100,Streak,🌟🏆🔥
+com.tandemdaily.app.first_win,First Win,Solve your first puzzle,5,Wins,🎉
+com.tandemdaily.app.getting_hang,Getting the Hang of It,Solve 10 puzzles,10,Wins,👍
+com.tandemdaily.app.puzzle_pal,Puzzle Pal,Solve 25 puzzles,25,Wins,🧩
+com.tandemdaily.app.clever_cookie,Clever Cookie,Solve 50 puzzles,30,Wins,🍪
+com.tandemdaily.app.brainy_buddy,Brainy Buddy,Solve 100 puzzles,50,Wins,🧠
+com.tandemdaily.app.puzzle_whiz,Puzzle Whiz,Solve 250 puzzles,75,Wins,⚡
+com.tandemdaily.app.word_wizard,Word Wizard,Solve 500 puzzles,100,Wins,🪄
+com.tandemdaily.app.puzzle_king,Puzzle King,Solve 1000 puzzles,100,Wins,👑

@@ -276,43 +276,71 @@ export async function getGameHistory() {
   }
 
   for (const key of keys) {
+    // Skip Game Center, subscription, notification, and other non-game storage keys
+    // These keys use the tandem_ prefix but are not game history data
+    if (
+      key.startsWith('tandem_gc_') || // Game Center keys
+      key.startsWith('tandem_pending_') || // Pending achievements/leaderboard
+      key.startsWith('tandem_last_') || // Last submitted stats
+      key.startsWith('tandem_product_') || // Subscription product ID
+      key.startsWith('tandem_subscription_') || // Subscription status
+      key === 'tandem_stats' || // Global stats
+      key === 'tandem_puzzle_' || // Puzzle cache (not game history)
+      key.startsWith('last_') || // Notification timestamps
+      key === 'notification_permission' // Notification permission status
+    ) {
+      continue; // Skip non-game data
+    }
+
     if (key.startsWith('tandem_')) {
       const parts = key.split('_');
 
-      // Handle completed/failed games
+      // Handle completed/failed games (format: tandem_YYYY_M_D)
       if (parts.length === 4 && parts[0] === 'tandem' && parts[1] !== 'progress') {
         const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
         const data = await getStorageItem(key);
         if (data) {
-          const parsed = JSON.parse(data);
-          history[date] = {
-            ...history[date],
-            completed: parsed.won || false,
-            failed: parsed.won === false, // Explicitly failed
-            time: parsed.time,
-            mistakes: parsed.mistakes,
-            theme: parsed.theme, // Include the saved theme
-            status: parsed.won ? 'completed' : 'failed',
-          };
+          try {
+            const parsed = JSON.parse(data);
+            history[date] = {
+              ...history[date],
+              completed: parsed.won || false,
+              failed: parsed.won === false, // Explicitly failed
+              time: parsed.time,
+              mistakes: parsed.mistakes,
+              theme: parsed.theme, // Include the saved theme
+              status: parsed.won ? 'completed' : 'failed',
+            };
+          } catch (error) {
+            // Skip corrupted or non-JSON data for this key
+            console.error(`[Storage] Failed to parse game result for ${key}:`, error.message);
+            continue;
+          }
         }
       }
 
-      // Handle in-progress/attempted games
+      // Handle in-progress/attempted games (format: tandem_progress_YYYY_M_D)
       if (parts[1] === 'progress' && parts.length === 5) {
         const date = `${parts[2]}-${parts[3].padStart(2, '0')}-${parts[4].padStart(2, '0')}`;
         const data = await getStorageItem(key);
         if (data) {
-          const parsed = JSON.parse(data);
-          // Only mark as attempted if there's no completion record
-          if (!history[date] || !history[date].status) {
-            history[date] = {
-              ...history[date],
-              attempted: true,
-              status: 'attempted',
-              lastPlayed: parsed.lastUpdated,
-              solved: parsed.solved || 0,
-              mistakes: parsed.mistakes || 0,
-            };
+          try {
+            const parsed = JSON.parse(data);
+            // Only mark as attempted if there's no completion record
+            if (!history[date] || !history[date].status) {
+              history[date] = {
+                ...history[date],
+                attempted: true,
+                status: 'attempted',
+                lastPlayed: parsed.lastUpdated,
+                solved: parsed.solved || 0,
+                mistakes: parsed.mistakes || 0,
+              };
+            }
+          } catch (error) {
+            // Skip corrupted or non-JSON data for this key
+            console.error(`[Storage] Failed to parse game progress for ${key}:`, error.message);
+            continue;
           }
         }
       }

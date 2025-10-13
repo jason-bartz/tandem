@@ -13,10 +13,12 @@ import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
+import AchievementToast from './AchievementToast';
 import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
 import subscriptionService from '@/services/subscriptionService';
+import gameCenterService from '@/services/gameCenter.service';
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
@@ -26,8 +28,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { correctAnswer, incorrectAnswer } = useHaptics();
   const { isMobilePhone, isSmallPhone } = useDeviceType();
 
-  // Initialize subscription service on app bootstrap (iOS only)
-  // This runs ONCE when the app starts, ensuring subscription state is ready
+  // Initialize subscription service and Game Center on app bootstrap (iOS only)
+  // This runs ONCE when the app starts, ensuring subscription state and Game Center are ready
   useEffect(() => {
     console.log(
       '[GameContainerClient] Bootstrap useEffect - isNative:',
@@ -44,6 +46,22 @@ export default function GameContainerClient({ initialPuzzleData }) {
         .catch((error) => {
           console.error('[GameContainerClient] Subscription service initialization failed:', error);
           // App continues to work even if subscription init fails
+        });
+
+      // Initialize Game Center (silent, non-blocking)
+      console.log('[GameContainerClient] Starting Game Center initialization');
+      gameCenterService
+        .initialize()
+        .then((success) => {
+          if (success) {
+            console.log('[GameContainerClient] Game Center authenticated successfully');
+          } else {
+            console.log('[GameContainerClient] Game Center not available or authentication failed');
+          }
+        })
+        .catch((error) => {
+          console.error('[GameContainerClient] Game Center initialization failed:', error);
+          // App continues to work even if Game Center init fails
         });
     }
   }, []);
@@ -247,6 +265,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
     >
       {/* Version checker for iOS app updates */}
       <VersionChecker />
+      <AchievementToast />
 
       {/* Content container - centered scrollable layout for all devices */}
       <div className="min-h-screen flex items-center justify-center py-6 px-4">
