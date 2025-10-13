@@ -27,9 +27,9 @@ export default function TermsOfUse() {
             website, progressive web app (PWA), or iOS application.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            <strong>Effective Date</strong>: January 1, 2025
+            <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: January 1, 2025
+            <strong>Last Updated</strong>: October 13, 2025
           </p>
         </div>
       ),
@@ -49,6 +49,8 @@ export default function TermsOfUse() {
             <li>One free daily puzzle for all users</li>
             <li>Archive of past puzzles (subscription required for full access)</li>
             <li>Statistics tracking and streak counting</li>
+            <li>Game Center achievements and leaderboards (iOS only)</li>
+            <li>iCloud sync across devices (iOS only)</li>
             <li>Optional in-app purchases for premium features</li>
           </ul>
         </div>
@@ -264,15 +266,42 @@ export default function TermsOfUse() {
       id: 'apple-terms',
       title: 'Apple App Store Terms',
       content: (
-        <div className="space-y-3 text-sm">
-          <p>For iOS users, additional terms apply:</p>
-          <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>These Terms are between you and Good Vibes Games, not Apple</li>
-            <li>Apple has no obligation to provide maintenance or support</li>
-            <li>Apple is not responsible for product claims or liabilities</li>
-            <li>Third-party beneficiary rights apply to Apple</li>
-            <li>You must comply with Apple's Terms of Service</li>
-          </ul>
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">General iOS Terms</h4>
+            <p className="mb-2">For iOS users, additional terms apply:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>These Terms are between you and Good Vibes Games, not Apple</li>
+              <li>Apple has no obligation to provide maintenance or support</li>
+              <li>Apple is not responsible for product claims or liabilities</li>
+              <li>Third-party beneficiary rights apply to Apple</li>
+              <li>You must comply with Apple's Terms of Service</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Game Center</h4>
+            <p className="mb-2">If you use Game Center features:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>You must comply with Apple's Game Center Terms and Conditions</li>
+              <li>Game Center data is managed by Apple according to their privacy policy</li>
+              <li>You are responsible for your Game Center profile and conduct</li>
+              <li>We may display your Game Center nickname and achievements to other players</li>
+              <li>Game Center authentication is optional and can be disabled in iOS Settings</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">iCloud Sync</h4>
+            <p className="mb-2">If you enable iCloud sync:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>You must have an active iCloud account</li>
+              <li>Data is stored in your personal iCloud storage</li>
+              <li>iCloud data is governed by Apple's iCloud Terms and Conditions</li>
+              <li>We are not responsible for iCloud sync failures or data loss</li>
+              <li>You can disable iCloud sync at any time in Settings</li>
+            </ul>
+          </div>
         </div>
       ),
     },
@@ -299,7 +328,7 @@ export default function TermsOfUse() {
             <p>
               <strong>Good Vibes Games</strong>
             </p>
-            <p>Email: jason@goodvibesgames.com</p>
+            <p>Email: support@goodvibesgames.com</p>
             <p>Website: tandemdaily.com</p>
           </div>
         </div>

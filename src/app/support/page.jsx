@@ -65,14 +65,19 @@ export default function Support() {
                 <strong>Statistics</strong>: Track your performance over time
               </li>
               <li>
-                <strong>Hint System</strong>: One hint per game reveals first letter from a random
-                unsolved word
+                <strong>Hint System</strong>: One hint per game reveals the first letter or next
+                available character of a random unsolved answer
               </li>
               <li>
                 <strong>Dark Mode</strong>: Easy on the eyes for night play
               </li>
               <li>
-                <strong>Sound Effects</strong>: Optional audio feedback
+                <strong>Colorblind/High Contrast Mode</strong>: Accessible colors and patterns for
+                better visibility
+              </li>
+              <li>
+                <strong>Reduced Motion Mode</strong>: Minimizes animations for improved
+                accessibility
               </li>
               <li>
                 <strong>Offline Play</strong>: Available in iOS native app only
@@ -156,10 +161,9 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get one hint per game. It reveals the next unfilled letter position. If all
-                  first positions are filled (via correct guesses or locked letters), it moves to
-                  the second position, and so on. Character counts are always visible for each
-                  puzzle.
+                  A: You get one hint per game. It reveals the first letter or next available
+                  character of a random unsolved answer. Character counts are always visible for
+                  each puzzle.
                 </p>
               </div>
               <div>
@@ -243,8 +247,8 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
-              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that adds a
-              challenging twist to the classic Tandem gameplay.
+              Hard Mode is an exclusive feature for Tandem Unlimited subscribers (iOS only) that
+              adds a challenging twist to the classic Tandem gameplay.
             </p>
             <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
@@ -303,16 +307,6 @@ export default function Support() {
               </div>
 
               <div>
-                <p className="font-medium">Share Text:</p>
-                <ul className="list-disc list-inside ml-2">
-                  <li>Special "🔥 HARD MODE" header in share text</li>
-                  <li>Shows completion time vs 2:00 limit (e.g., "⏱️ 1:45/2:00")</li>
-                  <li>Fire emojis (🔥) for completed puzzles instead of diamonds</li>
-                  <li>#HardMode hashtag added automatically</li>
-                </ul>
-              </div>
-
-              <div>
                 <p className="font-medium">Statistics:</p>
                 <ul className="list-disc list-inside ml-2">
                   <li>Hard Mode games count toward regular statistics</li>
@@ -367,7 +361,7 @@ export default function Support() {
             </p>
             <div className="space-y-2 text-sm">
               <p>
-                <strong>Email</strong>: jason@goodvibesgames.com
+                <strong>Email</strong>: support@goodvibesgames.com
               </p>
               <p>
                 <strong>Response Time</strong>: Within 24-48 hours
@@ -396,7 +390,7 @@ export default function Support() {
             <h4 className="font-semibold mb-2">Feedback & Suggestions</h4>
             <p className="text-sm">
               We love hearing from our players! Share your feedback, feature requests, bug reports,
-              and puzzle suggestions at jason@goodvibesgames.com
+              and puzzle suggestions at support@goodvibesgames.com
             </p>
           </div>
         </div>
