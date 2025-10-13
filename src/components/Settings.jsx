@@ -20,7 +20,16 @@ export default function Settings({ isOpen, onClose }) {
   const [showAppBanner, setShowAppBanner] = useState(false);
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const { playHaptic, lightTap } = useHaptics();
-  const { theme, toggleTheme, highContrast, toggleHighContrast, setThemeMode, isAuto } = useTheme();
+  const {
+    theme,
+    toggleTheme,
+    highContrast,
+    toggleHighContrast,
+    reduceMotion,
+    toggleReduceMotion,
+    setThemeMode,
+    isAuto,
+  } = useTheme();
   const { syncStatus, toggleSync } = useCloudKitSync();
 
   useEffect(() => {
@@ -637,6 +646,43 @@ export default function Settings({ isOpen, onClose }) {
                 <span
                   className={`${
                     highContrast ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full ${
+                    highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                  } transition-transform`}
+                />
+              </button>
+            </div>
+
+            {/* Reduce Motion Toggle */}
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Reduce Motion
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Minimizes animations and motion effects
+                </p>
+              </div>
+              <button
+                onClick={() => {
+                  toggleReduceMotion();
+                  lightTap();
+                }}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  highContrast
+                    ? reduceMotion
+                      ? 'bg-hc-primary border-2 border-hc-border'
+                      : 'bg-hc-surface border-2 border-hc-border'
+                    : reduceMotion
+                      ? 'bg-sky-500'
+                      : 'bg-gray-200 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={reduceMotion}
+              >
+                <span
+                  className={`${
+                    reduceMotion ? 'translate-x-6' : 'translate-x-1'
                   } inline-block h-4 w-4 transform rounded-full ${
                     highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
                   } transition-transform`}

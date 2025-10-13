@@ -367,21 +367,37 @@ export function createAnimation(name, duration, easing = EASING.EASE_OUT, delay 
 }
 
 /**
- * Check if user prefers reduced motion
+ * Check if user prefers reduced motion (system setting OR manual override)
  * @returns {boolean} True if reduced motion is preferred
  */
 export function prefersReducedMotion() {
   if (typeof window === 'undefined') return false;
+
+  // Check for manual user preference first
+  const userPreference = localStorage.getItem('tandemReduceMotion');
+  if (userPreference !== null) {
+    return userPreference === 'true';
+  }
+
+  // Fallback to system preference
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+/**
+ * Check if animations should be displayed
+ * @returns {boolean} True if animations should be shown
+ */
+export function shouldAnimate() {
+  return !prefersReducedMotion();
 }
 
 /**
  * Get animation duration based on reduced motion preference
  * @param {number} normalDuration - Normal duration in ms
- * @returns {number} Adjusted duration
+ * @returns {number} Adjusted duration (0ms if reduced motion enabled)
  */
 export function getAnimationDuration(normalDuration) {
-  return prefersReducedMotion() ? 1 : normalDuration;
+  return prefersReducedMotion() ? 0 : normalDuration;
 }
 
 /**
@@ -391,7 +407,10 @@ export function getAnimationDuration(normalDuration) {
  * @param {number} duration - Duration in ms
  */
 export function applyTemporaryAnimation(element, animationClass, duration) {
-  if (!element || prefersReducedMotion()) return;
+  if (!element) return;
+
+  // If reduced motion is enabled, skip the animation entirely
+  if (prefersReducedMotion()) return;
 
   element.classList.add(animationClass);
 
@@ -480,6 +499,7 @@ export default {
   getStaggerDelay,
   createAnimation,
   prefersReducedMotion,
+  shouldAnimate,
   getAnimationDuration,
   applyTemporaryAnimation,
   applyWillChange,

@@ -10,6 +10,7 @@ export const STORAGE_KEYS = {
   THEME: 'tandemTheme',
   THEME_MODE: 'tandemThemeMode',
   HIGH_CONTRAST: 'tandemHighContrast',
+  REDUCE_MOTION: 'tandemReduceMotion',
   SOUND: 'tandemSound',
   STATS: 'tandemStats',
   AUTH_TOKEN: 'adminToken',
