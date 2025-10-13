@@ -7,7 +7,8 @@ export default function ShareButton({ shareText, className = '' }) {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState(false);
   const [isNative, setIsNative] = useState(false);
-  const { highContrast } = useTheme();
+  const [showSuccessBurst, setShowSuccessBurst] = useState(false);
+  const { highContrast, reduceMotion } = useTheme();
 
   useEffect(() => {
     // Check if running on native platform
@@ -31,6 +32,10 @@ export default function ShareButton({ shareText, className = '' }) {
       if (result.activityType === 'clipboard') {
         setCopied(true);
         setError(false);
+        if (!reduceMotion) {
+          setShowSuccessBurst(true);
+          setTimeout(() => setShowSuccessBurst(false), 400);
+        }
 
         // Reset after 3 seconds
         setTimeout(() => {
@@ -67,6 +72,10 @@ export default function ShareButton({ shareText, className = '' }) {
 
         setCopied(true);
         setError(false);
+        if (!reduceMotion) {
+          setShowSuccessBurst(true);
+          setTimeout(() => setShowSuccessBurst(false), 400);
+        }
 
         setTimeout(() => {
           setCopied(false);
@@ -78,13 +87,14 @@ export default function ShareButton({ shareText, className = '' }) {
         }, 3000);
       }
     }
-  }, [shareText]);
+  }, [shareText, reduceMotion]);
 
   return (
     <div className="relative">
       <button
         onClick={handleShare}
         className={`
+          share-button
           w-full py-3 px-4
           text-white rounded-xl font-semibold
           hover:shadow-lg transition-all
@@ -94,6 +104,7 @@ export default function ShareButton({ shareText, className = '' }) {
               ? 'bg-hc-success border-4 border-hc-border hover:bg-hc-focus'
               : 'bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600'
           }
+          ${showSuccessBurst && !reduceMotion ? 'share-success' : ''}
           ${className}
         `}
         aria-label="Share results"

@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import micro-animations */
+@import '../styles/micro-animations.css';
+
 :root {
   --plum: #6b46c1;
   --peach: #ffb5a7;

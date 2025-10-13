@@ -4,15 +4,24 @@ import { loadStats } from '@/lib/storage';
 import { getStreakMilestone } from '@/lib/streakMilestones';
 import ShareButton from './ShareButton';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useCounterAnimation, useStaggerAnimation } from '@/hooks/useAnimation';
 
 export default function StatsModal({ isOpen, onClose }) {
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const [stats, setStats] = useState({
     played: 0,
     wins: 0,
     currentStreak: 0,
     bestStreak: 0,
   });
+
+  const { getStaggerStyle } = useStaggerAnimation(5, 80);
+
+  // Animated counter values
+  const animatedPlayed = useCounterAnimation(stats.played);
+  const animatedWins = useCounterAnimation(stats.wins);
+  const animatedCurrentStreak = useCounterAnimation(stats.currentStreak);
+  const animatedBestStreak = useCounterAnimation(stats.bestStreak);
 
   useEffect(() => {
     if (isOpen !== false) {
@@ -61,20 +70,21 @@ Completion: ${winRate}%
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div
-            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-1 ${
+            className={`p-4 rounded-xl text-center ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            }`}
+            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
+            style={!reduceMotion ? getStaggerStyle(0) : {}}
           >
             <div
               className={`text-3xl font-extrabold ${
                 highContrast
                   ? 'text-hc-primary'
                   : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
-              }`}
+              } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
-              {stats.played}
+              {animatedPlayed}
             </div>
             <div
               className={`text-xs mt-1 uppercase tracking-wide ${
@@ -85,18 +95,19 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-2 ${
+            className={`p-4 rounded-xl text-center ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            }`}
+            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
+            style={!reduceMotion ? getStaggerStyle(1) : {}}
           >
             <div
               className={`text-3xl font-extrabold ${
                 highContrast
                   ? 'text-hc-primary'
                   : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
-              }`}
+              } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
               {winRate}%
             </div>
@@ -109,21 +120,22 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-3 ${
+            className={`p-4 rounded-xl text-center ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            }`}
+            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
+            style={!reduceMotion ? getStaggerStyle(2) : {}}
           >
             <div className="text-3xl font-extrabold">
               <span
-                className={
+                className={`${
                   highContrast
                     ? 'text-hc-primary'
                     : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
-                }
+                } ${!reduceMotion ? 'animate-count-up' : ''}`}
               >
-                {stats.currentStreak}
+                {animatedCurrentStreak}
               </span>{' '}
               <span className="text-3xl">{getStreakMilestone(stats.currentStreak)}</span>
             </div>
@@ -136,20 +148,21 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-4 ${
+            className={`p-4 rounded-xl text-center ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            }`}
+            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
+            style={!reduceMotion ? getStaggerStyle(3) : {}}
           >
             <div
               className={`text-3xl font-extrabold ${
                 highContrast
                   ? 'text-hc-primary'
                   : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
-              }`}
+              } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
-              {stats.bestStreak}
+              {animatedBestStreak}
             </div>
             <div
               className={`text-xs mt-1 uppercase tracking-wide ${
@@ -162,20 +175,21 @@ Completion: ${winRate}%
         </div>
 
         <div
-          className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-5 ${
+          className={`p-4 rounded-xl text-center ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-          }`}
+          } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
+          style={!reduceMotion ? getStaggerStyle(4) : {}}
         >
           <div
             className={`text-3xl font-extrabold ${
               highContrast
                 ? 'text-hc-primary'
                 : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
-            }`}
+            } ${!reduceMotion ? 'animate-count-up' : ''}`}
           >
-            {stats.wins}
+            {animatedWins}
           </div>
           <div
             className={`text-xs mt-1 uppercase tracking-wide ${

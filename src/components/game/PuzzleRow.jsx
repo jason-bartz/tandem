@@ -1,6 +1,8 @@
 'use client';
+import { useRef, useEffect, useState } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoverAnimation, useTouchAnimation } from '@/hooks/useAnimation';
 
 export default function PuzzleRow({
   emoji,
@@ -19,8 +21,30 @@ export default function PuzzleRow({
   isMobilePhone = false,
 }) {
   const { selectionStart } = useHaptics();
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
+  const { hoverHandlers } = useHoverAnimation();
+  const { touchHandlers } = useTouchAnimation();
+  const emojiRef = useRef(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const previousIsCorrect = useRef(isCorrect);
   const animationDelay = `${(index + 1) * 100}ms`;
+
+  // Trigger celebration animation when answer becomes correct
+  useEffect(() => {
+    if (isCorrect && !previousIsCorrect.current && !reduceMotion) {
+      setShowCelebration(true);
+      // Trigger victory wiggle on emoji
+      if (emojiRef.current) {
+        emojiRef.current.classList.add('animate-victory-wiggle');
+        setTimeout(() => {
+          emojiRef.current?.classList.remove('animate-victory-wiggle');
+        }, 400);
+      }
+      // Reset celebration after animation
+      setTimeout(() => setShowCelebration(false), 600);
+    }
+    previousIsCorrect.current = isCorrect;
+  }, [isCorrect, reduceMotion]);
 
   const handleClick = () => {
     if (!isCorrect && onFocus) {
@@ -85,17 +109,26 @@ export default function PuzzleRow({
     >
       <div className="flex items-center gap-2">
         <div
+          ref={emojiRef}
+          {...hoverHandlers}
+          {...touchHandlers}
           className={`${
             isSmallPhone
               ? 'w-[60px] h-[50px] px-1'
               : isMobilePhone
                 ? 'w-[65px] h-[55px] px-1'
                 : 'w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2'
-          } rounded-[18px] flex items-center justify-center shadow-md transition-all hover:scale-105 hover:shadow-lg flex-shrink-0 ${
+          } rounded-[18px] flex items-center justify-center shadow-md transition-all flex-shrink-0 cursor-pointer select-none ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-light-sand dark:bg-gray-700'
+          } ${!reduceMotion ? 'hover:animate-hover-tilt active:animate-touch-squish' : ''} ${
+            isCorrect && !reduceMotion ? 'animate-victory-wiggle' : ''
           }`}
+          style={{
+            transformStyle: 'preserve-3d',
+            willChange: !reduceMotion && !isCorrect ? 'transform' : 'auto',
+          }}
         >
           <span
             className={`${
@@ -152,11 +185,15 @@ export default function PuzzleRow({
               isCorrect
                 ? highContrast
                   ? 'bg-hc-success text-white border-hc-success pattern-correct text-opacity-100'
-                  : 'bg-gradient-to-r from-teal-500 to-green-500 text-white border-teal-500 animate-link-snap text-opacity-100'
+                  : `bg-gradient-to-r from-teal-600 to-green-600 text-white border-teal-600 text-opacity-100 ${
+                      !reduceMotion && showCelebration ? 'animate-correct-celebration' : ''
+                    } ${!reduceMotion ? 'animate-soft-glow' : ''}`
                 : isWrong
                   ? highContrast
                     ? 'bg-hc-surface border-hc-error text-hc-error pattern-wrong border-double'
-                    : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 animate-shake'
+                    : `bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 ${
+                        !reduceMotion ? 'animate-enhanced-shake' : ''
+                      }`
                   : hintData
                     ? highContrast
                       ? 'bg-hc-background border-hc-warning text-hc-text'
@@ -167,13 +204,19 @@ export default function PuzzleRow({
             }
             disabled:cursor-not-allowed
             ${isCorrect ? '' : 'caret-transparent'}
-            ${isFocused && !isCorrect ? 'ring-2 ring-sky-500 dark:ring-sky-400' : ''}
+            ${isFocused && !isCorrect && !reduceMotion ? 'animate-focus-pulse' : isFocused && !isCorrect ? 'ring-2 ring-sky-500 dark:ring-sky-400' : ''}
             cursor-pointer
           `}
           style={{
             color: isCorrect ? undefined : 'transparent',
             textShadow: isCorrect ? undefined : 'none',
             WebkitTextFillColor: isCorrect ? undefined : 'transparent',
+            ...(isCorrect && !highContrast
+              ? {
+                  backgroundImage: 'linear-gradient(to right, #0d9488, #16a34a)',
+                  borderColor: '#0d9488',
+                }
+              : {}),
           }}
         />
         {hintData && !isCorrect && (
