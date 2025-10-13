@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { ActivityChart, CompletionRateChart, MetricsOverview } from './StatsChart';
+import { ActivityChart, CompletionRateChart } from './StatsChart';
 
 export default function StatsOverview() {
   const [stats, setStats] = useState({
@@ -38,13 +38,23 @@ export default function StatsOverview() {
     }
   };
 
+  const getColorClasses = (color) => {
+    const colorMap = {
+      plum: 'from-purple-500 to-pink-500',
+      sky: 'from-sky-500 to-blue-500',
+      emerald: 'from-emerald-500 to-teal-500',
+      amber: 'from-amber-500 to-orange-500',
+    };
+    return colorMap[color] || colorMap.plum;
+  };
+
   const StatCard = ({ title, value, color = 'plum' }) => (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
       <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         {title}
       </div>
       <div
-        className={`mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold bg-gradient-to-r from-${color} to-peach bg-clip-text text-transparent`}
+        className={`mt-1 sm:mt-2 text-2xl sm:text-3xl font-bold bg-gradient-to-r ${getColorClasses(color)} bg-clip-text text-transparent`}
       >
         {value.toLocaleString()}
       </div>
@@ -79,14 +89,12 @@ export default function StatsOverview() {
       // Global stats
       csvData.push(['Global Statistics']);
       csvData.push(['Metric', 'Value']);
-      csvData.push(['Total Views', stats.views]);
       csvData.push(['Games Played', stats.played]);
       csvData.push(['Games Completed', stats.completed]);
       csvData.push(['Completion Rate', `${stats.completionRate}%`]);
       csvData.push(['Unique Players', stats.uniquePlayers]);
       csvData.push(['Average Time', formatTime(stats.averageTime)]);
       csvData.push(['Perfect Games', stats.perfectGames]);
-      csvData.push(['Games Shared', stats.gamesShared]);
       csvData.push([]);
 
       // Daily activity
@@ -177,29 +185,17 @@ export default function StatsOverview() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        <StatCard title="Total Views" value={stats.views} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
         <StatCard title="Games Played" value={stats.played} />
-        <StatCard title="Games Completed" value={stats.completed} />
-        <StatCard title="Completion Rate" value={`${stats.completionRate}%`} />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
-        <StatCard title="Unique Players" value={stats.uniquePlayers} color="sky" />
+        <StatCard title="Games Completed" value={stats.completed} color="emerald" />
+        <StatCard title="Completion Rate" value={`${stats.completionRate}%`} color="sky" />
+        <StatCard title="Unique Players" value={stats.uniquePlayers} color="amber" />
         <StatCard
           title="Avg Time"
           value={stats.averageTime ? formatTime(stats.averageTime) : '0:00'}
           color="emerald"
         />
         <StatCard title="Perfect Games" value={stats.perfectGames} color="amber" />
-        <StatCard title="Games Shared" value={stats.gamesShared} color="rose" />
-      </div>
-
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
-        <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
-          Engagement Metrics
-        </h3>
-        <MetricsOverview stats={stats} />
       </div>
 
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
