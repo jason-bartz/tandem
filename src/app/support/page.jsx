@@ -388,10 +388,40 @@ export default function Support() {
           </div>
           <div>
             <h4 className="font-semibold mb-2">Feedback & Suggestions</h4>
-            <p className="text-sm">
+            <p className="text-sm mb-3">
               We love hearing from our players! Share your feedback, feature requests, bug reports,
               and puzzle suggestions at support@goodvibesgames.com
             </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Join Our Community</h4>
+            <p className="text-sm mb-3">
+              Connect with other Tandem players, share strategies, and stay updated:
+            </p>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Discord</strong>:{' '}
+                <a
+                  href="https://discord.gg/uSxtYQXtHN"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sky-600 dark:text-sky-400 hover:underline"
+                >
+                  discord.gg/uSxtYQXtHN
+                </a>
+              </p>
+              <p>
+                <strong>Reddit</strong>:{' '}
+                <a
+                  href="https://www.reddit.com/r/Tandem_Daily/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sky-600 dark:text-sky-400 hover:underline"
+                >
+                  r/Tandem_Daily
+                </a>
+              </p>
+            </div>
           </div>
         </div>
       ),
