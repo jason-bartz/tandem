@@ -45,31 +45,36 @@ export function useGameState() {
       const locked = lockedLetters[index];
       let processedValue = value;
 
-      // If we have locked letters, preserve them
+      // If we have locked letters, preserve them in their positions
       if (locked) {
-        const lockedPositions = Object.keys(locked)
-          .map(Number)
-          .sort((a, b) => a - b);
-        let result = '';
-        let valueIndex = 0;
+        const maxPos = Math.max(...Object.keys(locked).map(Number));
+        // Build a character array to work with positions
+        const chars = new Array(maxPos + 1).fill(' ');
 
-        // Rebuild the value with locked letters in their positions
-        for (let i = 0; i < value.length || lockedPositions.some((pos) => pos === i); i++) {
-          if (locked[i]) {
-            // This position is locked, use the locked letter
-            result += locked[i];
-          } else if (valueIndex < value.length) {
-            // This position is not locked, use input from value
-            if (value[valueIndex] === locked[i]) {
-              // Skip if trying to type the same locked letter
-              valueIndex++;
-            } else {
-              result += value[valueIndex];
-              valueIndex++;
-            }
+        // First, place all locked letters in their positions
+        Object.keys(locked).forEach((pos) => {
+          chars[parseInt(pos)] = locked[pos];
+        });
+
+        // Then, fill in user input in non-locked positions
+        // Extract only non-locked characters from the input value
+        const userChars = [];
+        for (let i = 0; i < value.length; i++) {
+          if (!locked[i] && value[i] !== ' ') {
+            userChars.push(value[i]);
           }
         }
-        processedValue = result;
+
+        // Place user characters in non-locked positions
+        let userCharIndex = 0;
+        for (let i = 0; i < chars.length && userCharIndex < userChars.length; i++) {
+          if (!locked[i]) {
+            chars[i] = userChars[userCharIndex];
+            userCharIndex++;
+          }
+        }
+
+        processedValue = chars.join('');
       }
 
       if (hint) {
