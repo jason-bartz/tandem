@@ -28,9 +28,9 @@ export default function PrivacyPolicy() {
             this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            <strong>Effective Date</strong>: January 1, 2025
+            <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: January 1, 2025
+            <strong>Last Updated</strong>: October 13, 2025
           </p>
         </div>
       ),
@@ -64,8 +64,11 @@ export default function PrivacyPolicy() {
             <h4 className="font-semibold mb-2">2. User Preferences</h4>
             <p className="mb-2">We store your preferences locally to enhance your experience:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Theme preference (light/dark mode)</li>
-              <li>Sound effects preference (enabled/disabled)</li>
+              <li>Theme preference (light/dark/auto mode)</li>
+              <li>High contrast mode preference</li>
+              <li>Reduced motion preference</li>
+              <li>Keyboard layout preference</li>
+              <li>Hard mode preference (iOS subscribers only)</li>
               <li>Game state for the current puzzle</li>
             </ul>
           </div>
@@ -90,6 +93,41 @@ export default function PrivacyPolicy() {
               <li>Access times and dates</li>
             </ul>
           </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">5. Apple Game Center (iOS Only)</h4>
+            <p className="mb-2">
+              If you use our iOS app and sign in to Game Center, Apple may collect:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Game Center player ID (managed by Apple)</li>
+              <li>Achievement unlock data</li>
+              <li>Leaderboard scores (streak information only)</li>
+              <li>
+                Display name and profile information (controlled by your Game Center settings)
+              </li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Game Center data is managed by Apple. We do not store or have access to your
+              Apple ID or personal Game Center information. All Game Center data is governed by
+              Apple's privacy policy. Game Center authentication is optional and can be managed in
+              your iOS Settings.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">6. iCloud Sync (iOS Only)</h4>
+            <p className="mb-2">If you enable iCloud sync on iOS, Apple may store:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your game statistics and progress</li>
+              <li>Puzzle completion history</li>
+              <li>User preferences and settings</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: iCloud data is encrypted and managed by Apple. We do not have access to your
+              iCloud account or data. iCloud sync is optional and can be toggled in Settings.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -102,7 +140,9 @@ export default function PrivacyPolicy() {
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Save your game progress and statistics</li>
             <li>Maintain your preferences across sessions</li>
-            <li>Provide gameplay features like streak tracking</li>
+            <li>Provide gameplay features like streak tracking and achievements</li>
+            <li>Sync your progress across devices (iOS with iCloud only)</li>
+            <li>Enable Game Center features like leaderboards (iOS only)</li>
             <li>Generate anonymous aggregated statistics</li>
             <li>Improve game difficulty and puzzle quality</li>
             <li>Ensure the Service operates correctly</li>
@@ -182,6 +222,10 @@ export default function PrivacyPolicy() {
             <li>
               <strong>With Your Consent</strong>: When you explicitly choose to share (e.g., sharing
               game results)
+            </li>
+            <li>
+              <strong>Apple Services</strong>: If you use iOS features like Game Center or iCloud
+              sync, data is shared with Apple according to their privacy policy
             </li>
             <li>
               <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game
@@ -330,9 +374,9 @@ export default function PrivacyPolicy() {
             <p>
               <strong>Good Vibes Games</strong>
             </p>
-            <p>Email: jason@goodvibesgames.com</p>
+            <p>Email: support@goodvibesgames.com</p>
             <p>Website: tandemdaily.com</p>
-            <p>For game support: jason@goodvibesgames.com</p>
+            <p>For game support: support@goodvibesgames.com</p>
           </div>
         </div>
       ),
