@@ -102,7 +102,7 @@ export default function ShareButton({ shareText, className = '' }) {
           ${
             highContrast
               ? 'bg-hc-success border-4 border-hc-border hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-emerald-500 to-teal-500 dark:from-emerald-600 dark:to-teal-600'
+              : 'bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-600 dark:to-green-600'
           }
           ${showSuccessBurst && !reduceMotion ? 'share-success' : ''}
           ${className}
