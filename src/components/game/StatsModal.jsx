@@ -4,7 +4,7 @@ import { loadStats } from '@/lib/storage';
 import { getStreakMilestone } from '@/lib/streakMilestones';
 import ShareButton from './ShareButton';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useCounterAnimation, useStaggerAnimation } from '@/hooks/useAnimation';
+import { useCounterAnimation } from '@/hooks/useAnimation';
 
 export default function StatsModal({ isOpen, onClose }) {
   const { highContrast, reduceMotion } = useTheme();
@@ -15,8 +15,6 @@ export default function StatsModal({ isOpen, onClose }) {
     bestStreak: 0,
   });
   const [animationKey, setAnimationKey] = useState(0);
-
-  const { getStaggerStyle } = useStaggerAnimation(5, 80);
 
   // Calculate win rate
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
@@ -79,8 +77,7 @@ Completion: ${winRate}%
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
-            style={!reduceMotion ? getStaggerStyle(0) : {}}
+            }`}
           >
             <div
               className={`text-3xl font-extrabold ${
@@ -104,8 +101,7 @@ Completion: ${winRate}%
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
-            style={!reduceMotion ? getStaggerStyle(1) : {}}
+            }`}
           >
             <div
               className={`text-3xl font-extrabold ${
@@ -129,8 +125,7 @@ Completion: ${winRate}%
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
-            style={!reduceMotion ? getStaggerStyle(2) : {}}
+            }`}
           >
             <div className="text-3xl font-extrabold">
               <span
@@ -157,8 +152,7 @@ Completion: ${winRate}%
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-            } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
-            style={!reduceMotion ? getStaggerStyle(3) : {}}
+            }`}
           >
             <div
               className={`text-3xl font-extrabold ${
@@ -185,8 +179,7 @@ Completion: ${winRate}%
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
-          } ${!reduceMotion ? 'animate-scale-fade-in' : ''}`}
-          style={!reduceMotion ? getStaggerStyle(4) : {}}
+          }`}
         >
           <div
             className={`text-3xl font-extrabold ${
