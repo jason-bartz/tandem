@@ -66,7 +66,7 @@ export default function WelcomeScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
           title="Statistics"
         >
           📊
@@ -76,7 +76,7 @@ export default function WelcomeScreen({
             lightTap();
             setShowArchive(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
           title="Archive"
         >
           📅
@@ -86,7 +86,7 @@ export default function WelcomeScreen({
             lightTap();
             setShowHowToPlay(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
           title="How to Play"
         >
           ❓
@@ -96,7 +96,7 @@ export default function WelcomeScreen({
             lightTap();
             setShowSettings(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 transition-all"
+          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
           title="Settings"
         >
           ⚙️

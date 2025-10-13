@@ -7,11 +7,11 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-fade-in"
+      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-backdrop-enter gpu-accelerated"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-modalSlide shadow-2xl max-h-[80vh] overflow-y-auto"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-modal-enter shadow-2xl max-h-[80vh] overflow-y-auto gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -34,7 +34,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
             return (
               <div
                 key={index}
-                className="flex items-center justify-between bg-gradient-to-r from-sky-50 to-teal-50 dark:from-sky-900/20 dark:to-teal-900/20 rounded-xl px-4 py-4 border border-sky-200 dark:border-sky-800"
+                className={`flex items-center justify-between bg-gradient-to-r from-sky-50 to-teal-50 dark:from-sky-900/20 dark:to-teal-900/20 rounded-xl px-4 py-4 border border-sky-200 dark:border-sky-800 animate-fade-in-up stagger-${index + 1}`}
               >
                 <span className="text-3xl">{item.emoji}</span>
                 <span className="font-bold text-lg text-gray-800 dark:text-gray-100 uppercase tracking-wide">
