@@ -143,7 +143,9 @@ export default function PlayingScreen({
         }
 
         const currentValue = answers[focusedIndex];
-        if (currentValue.length > 0) {
+        const locked = lockedLetters && lockedLetters[focusedIndex];
+
+        if (currentValue && currentValue.length > 0) {
           // Prevent deleting hint letter if present
           if (activeHints && activeHints[focusedIndex]) {
             const hintLetter = activeHints[focusedIndex].firstLetter;
@@ -152,7 +154,22 @@ export default function PlayingScreen({
               return;
             }
           }
-          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+
+          // Handle deletion - find the last non-locked, non-space character and remove it
+          if (locked) {
+            // Work backwards to find the last user-entered character
+            let newValue = currentValue;
+            for (let i = currentValue.length - 1; i >= 0; i--) {
+              if (!locked[i] && currentValue[i] !== ' ') {
+                // Found a user-entered character, remove it
+                newValue = currentValue.substring(0, i) + ' ' + currentValue.substring(i + 1);
+                break;
+              }
+            }
+            onUpdateAnswer(focusedIndex, newValue);
+          } else {
+            onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+          }
         }
       } else if (/^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -162,7 +179,7 @@ export default function PlayingScreen({
           return;
         }
 
-        let currentValue = answers[focusedIndex];
+        let currentValue = answers[focusedIndex] || '';
 
         // If there's a hint and the field is empty, start with the hint letter
         if (activeHints && activeHints[focusedIndex] && !currentValue) {
@@ -175,9 +192,34 @@ export default function PlayingScreen({
             : puzzle.puzzles[focusedIndex].answer.length
           : 15;
 
-        // Don't add if already at max length
-        if (currentValue.length < answerLength) {
-          onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+        const locked = lockedLetters && lockedLetters[focusedIndex];
+
+        if (locked) {
+          // Count how many non-locked, non-space characters the user has entered
+          let userCharCount = 0;
+          for (let i = 0; i < currentValue.length; i++) {
+            if (!locked[i] && currentValue[i] !== ' ') {
+              userCharCount++;
+            }
+          }
+
+          // Count how many positions are available for user input (non-locked positions)
+          let availablePositions = 0;
+          for (let i = 0; i < answerLength; i++) {
+            if (!locked[i]) {
+              availablePositions++;
+            }
+          }
+
+          // Only allow typing if there are still empty positions
+          if (userCharCount < availablePositions) {
+            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+          }
+        } else {
+          // No locked letters, just check against answer length
+          if (currentValue.length < answerLength) {
+            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+          }
         }
       }
     };
