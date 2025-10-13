@@ -11,6 +11,7 @@ export function ThemeProvider({ children }) {
   const [themeMode, setThemeMode] = useState(THEME_MODE.AUTO);
   const [systemTheme, setSystemTheme] = useState(THEME_CONFIG.LIGHT);
   const [highContrast, setHighContrast] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   // Detect system theme preference
@@ -32,7 +33,7 @@ export function ThemeProvider({ children }) {
     return theme;
   }, [themeMode, systemTheme, theme]);
 
-  const applyThemeToDOM = useCallback((themeValue, highContrastValue) => {
+  const applyThemeToDOM = useCallback((themeValue, highContrastValue, reduceMotionValue) => {
     // Apply theme
     document.documentElement.setAttribute('data-theme', themeValue);
 
@@ -50,6 +51,13 @@ export function ThemeProvider({ children }) {
       document.documentElement.classList.remove('high-contrast');
     }
 
+    // Apply reduce motion class
+    if (reduceMotionValue) {
+      document.documentElement.classList.add('reduce-motion');
+    } else {
+      document.documentElement.classList.remove('reduce-motion');
+    }
+
     // Update iOS StatusBar
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.StatusBar) {
       window.Capacitor.Plugins.StatusBar.setStyle({
@@ -64,16 +72,30 @@ export function ThemeProvider({ children }) {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || THEME_CONFIG.LIGHT;
     const savedHighContrast = localStorage.getItem(STORAGE_KEYS.HIGH_CONTRAST) === 'true';
 
+    // Check for saved reduce motion preference, fallback to system preference
+    let savedReduceMotion = localStorage.getItem(STORAGE_KEYS.REDUCE_MOTION);
+    if (savedReduceMotion === null) {
+      // No saved preference, check system preference
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        savedReduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      } else {
+        savedReduceMotion = false;
+      }
+    } else {
+      savedReduceMotion = savedReduceMotion === 'true';
+    }
+
     setThemeMode(savedMode);
     setTheme(savedTheme);
     setHighContrast(savedHighContrast);
+    setReduceMotion(savedReduceMotion);
 
     // Detect system theme
     const sysTheme = detectSystemTheme();
 
     // Apply appropriate theme based on mode
     const themeToApply = savedMode === THEME_MODE.AUTO ? sysTheme : savedTheme;
-    applyThemeToDOM(themeToApply, savedHighContrast);
+    applyThemeToDOM(themeToApply, savedHighContrast, savedReduceMotion);
     setMounted(true);
   }, [detectSystemTheme, applyThemeToDOM]);
 
@@ -88,7 +110,7 @@ export function ThemeProvider({ children }) {
 
         // Only apply if in auto mode
         if (themeMode === THEME_MODE.AUTO) {
-          applyThemeToDOM(newSystemTheme, highContrast);
+          applyThemeToDOM(newSystemTheme, highContrast, reduceMotion);
         }
       };
 
@@ -98,7 +120,7 @@ export function ThemeProvider({ children }) {
         darkModeQuery.removeEventListener('change', handleSystemThemeChange);
       };
     }
-  }, [themeMode, highContrast, applyThemeToDOM]);
+  }, [themeMode, highContrast, reduceMotion, applyThemeToDOM]);
 
   // Listen for app state changes (iOS foreground/background)
   useEffect(() => {
@@ -108,7 +130,7 @@ export function ThemeProvider({ children }) {
           // App became active, recheck system theme if in auto mode
           if (themeMode === THEME_MODE.AUTO) {
             const sysTheme = detectSystemTheme();
-            applyThemeToDOM(sysTheme, highContrast);
+            applyThemeToDOM(sysTheme, highContrast, reduceMotion);
           }
         }
       };
@@ -119,7 +141,7 @@ export function ThemeProvider({ children }) {
         window.Capacitor.Plugins.App.removeAllListeners();
       };
     }
-  }, [themeMode, highContrast, applyThemeToDOM, detectSystemTheme]);
+  }, [themeMode, highContrast, reduceMotion, applyThemeToDOM, detectSystemTheme]);
 
   const toggleTheme = useCallback(() => {
     const effectiveTheme = getEffectiveTheme();
@@ -130,7 +152,7 @@ export function ThemeProvider({ children }) {
     setThemeMode(THEME_MODE.MANUAL);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
     localStorage.setItem(STORAGE_KEYS.THEME_MODE, THEME_MODE.MANUAL);
-    applyThemeToDOM(newTheme, highContrast);
+    applyThemeToDOM(newTheme, highContrast, reduceMotion);
 
     // Sync preferences to iCloud
     cloudKitService
@@ -138,12 +160,13 @@ export function ThemeProvider({ children }) {
         theme: newTheme,
         themeMode: THEME_MODE.MANUAL,
         highContrast,
+        reduceMotion,
         sound: localStorage.getItem(STORAGE_KEYS.SOUND) !== 'false',
       })
       .catch(() => {
         // Failed to sync theme preference to iCloud (non-critical)
       });
-  }, [getEffectiveTheme, highContrast, applyThemeToDOM]);
+  }, [getEffectiveTheme, highContrast, reduceMotion, applyThemeToDOM]);
 
   const setThemeMode_ = useCallback(
     (mode) => {
@@ -153,13 +176,13 @@ export function ThemeProvider({ children }) {
       if (mode === THEME_MODE.AUTO) {
         // Switch to auto mode - use system theme
         const sysTheme = detectSystemTheme();
-        applyThemeToDOM(sysTheme, highContrast);
+        applyThemeToDOM(sysTheme, highContrast, reduceMotion);
       } else {
         // Manual mode - use saved theme
-        applyThemeToDOM(theme, highContrast);
+        applyThemeToDOM(theme, highContrast, reduceMotion);
       }
     },
-    [theme, highContrast, applyThemeToDOM, detectSystemTheme]
+    [theme, highContrast, reduceMotion, applyThemeToDOM, detectSystemTheme]
   );
 
   const toggleHighContrast = useCallback(() => {
@@ -167,7 +190,7 @@ export function ThemeProvider({ children }) {
     setHighContrast(newHighContrast);
     localStorage.setItem(STORAGE_KEYS.HIGH_CONTRAST, newHighContrast.toString());
     const effectiveTheme = getEffectiveTheme();
-    applyThemeToDOM(effectiveTheme, newHighContrast);
+    applyThemeToDOM(effectiveTheme, newHighContrast, reduceMotion);
 
     // Sync preferences to iCloud
     cloudKitService
@@ -175,12 +198,34 @@ export function ThemeProvider({ children }) {
         theme,
         themeMode,
         highContrast: newHighContrast,
+        reduceMotion,
         sound: localStorage.getItem(STORAGE_KEYS.SOUND) !== 'false',
       })
       .catch(() => {
         // Failed to sync high contrast preference to iCloud (non-critical)
       });
-  }, [highContrast, getEffectiveTheme, applyThemeToDOM, theme, themeMode]);
+  }, [highContrast, reduceMotion, getEffectiveTheme, applyThemeToDOM, theme, themeMode]);
+
+  const toggleReduceMotion = useCallback(() => {
+    const newReduceMotion = !reduceMotion;
+    setReduceMotion(newReduceMotion);
+    localStorage.setItem(STORAGE_KEYS.REDUCE_MOTION, newReduceMotion.toString());
+    const effectiveTheme = getEffectiveTheme();
+    applyThemeToDOM(effectiveTheme, highContrast, newReduceMotion);
+
+    // Sync preferences to iCloud
+    cloudKitService
+      .syncPreferences({
+        theme,
+        themeMode,
+        highContrast,
+        reduceMotion: newReduceMotion,
+        sound: localStorage.getItem(STORAGE_KEYS.SOUND) !== 'false',
+      })
+      .catch(() => {
+        // Failed to sync reduce motion preference to iCloud (non-critical)
+      });
+  }, [reduceMotion, highContrast, getEffectiveTheme, applyThemeToDOM, theme, themeMode]);
 
   const effectiveTheme = getEffectiveTheme();
 
@@ -189,8 +234,10 @@ export function ThemeProvider({ children }) {
     themeMode,
     systemTheme,
     highContrast,
+    reduceMotion,
     toggleTheme,
     toggleHighContrast,
+    toggleReduceMotion,
     setThemeMode: setThemeMode_,
     isDark: effectiveTheme === THEME_CONFIG.DARK,
     isAuto: themeMode === THEME_MODE.AUTO,

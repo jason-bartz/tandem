@@ -15,7 +15,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [products, setProducts] = useState({});
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
-  const { theme, highContrast } = useTheme();
+  const { theme, highContrast, reduceMotion } = useTheme();
 
   useEffect(() => {
     if (!isOpen || !Capacitor.isNativePlatform()) {
@@ -81,11 +81,13 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
       // Success! Show confetti and haptic feedback ONLY for actual new purchase
       successHaptic();
-      confetti({
-        particleCount: 100,
-        spread: 70,
-        origin: { y: 0.6 },
-      });
+      if (!reduceMotion) {
+        confetti({
+          particleCount: 100,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      }
 
       // Notify parent and close
       if (onPurchaseComplete) {

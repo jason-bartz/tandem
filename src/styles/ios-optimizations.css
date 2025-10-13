@@ -150,15 +150,26 @@
   }
 }
 
-/* Reduce motion for accessibility */
+/* Reduce motion for accessibility - System preference */
 @media (prefers-reduced-motion: reduce) {
   .ios-transition,
   .ios-accelerated,
-  .ios-touchable:active {
-    animation: none;
-    transition: none;
-    transform: none;
+  .ios-touchable:active,
+  .ios-skeleton,
+  .ios-loading-dot {
+    animation: none !important;
+    transition: none !important;
   }
+}
+
+/* Reduce motion for accessibility - Manual override */
+.reduce-motion .ios-transition,
+.reduce-motion .ios-accelerated,
+.reduce-motion .ios-touchable:active,
+.reduce-motion .ios-skeleton,
+.reduce-motion .ios-loading-dot {
+  animation: none !important;
+  transition: none !important;
 }
 
 /* Dark mode optimizations */

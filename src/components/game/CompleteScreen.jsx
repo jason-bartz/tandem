@@ -46,7 +46,7 @@ export default function CompleteScreen({
   const [showRevealAnswers, setShowRevealAnswers] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const { isMobilePhone } = useDeviceType();
 
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
@@ -88,42 +88,44 @@ export default function CompleteScreen({
         // Sound might fail on some browsers
       }
 
-      // Trigger confetti with sky/teal theme colors
-      const duration = 3000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+      // Trigger confetti with sky/teal theme colors (only if reduce motion is disabled)
+      if (!reduceMotion) {
+        const duration = 3000;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
 
-      function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-
-      const interval = setInterval(function () {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
+        function randomInRange(min, max) {
+          return Math.random() * (max - min) + min;
         }
 
-        const particleCount = 50 * (timeLeft / duration);
+        const interval = setInterval(function () {
+          const timeLeft = animationEnd - Date.now();
 
-        // Sky and teal colored confetti
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
-        });
-      }, 250);
+          if (timeLeft <= 0) {
+            return clearInterval(interval);
+          }
 
-      return () => clearInterval(interval);
+          const particleCount = 50 * (timeLeft / duration);
+
+          // Sky and teal colored confetti
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
+          });
+          confetti({
+            ...defaults,
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors: ['#0EA5E9', '#14B8A6', '#06B6D4', '#22D3EE', '#2DD4BF', '#5EEAD4'],
+          });
+        }, 250);
+
+        return () => clearInterval(interval);
+      }
     }
-  }, [won, celebration]);
+  }, [won, celebration, reduceMotion]);
 
   return (
     <div className="animate-fade-in">
