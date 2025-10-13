@@ -316,17 +316,19 @@ export function useGameWithInitialData(initialPuzzleData) {
           // Build the new answer with only locked letters, preserving positions
           setAnswers((prev) => {
             const newAnswers = [...prev];
-            const positions = Object.keys(correctPositions)
-              .map(Number)
-              .sort((a, b) => a - b);
-            // Build string with spaces to preserve positions
-            // Use space as placeholder for empty positions
+            // Get the full answer length
+            const fullAnswer = puzzleItem.answer.includes(',')
+              ? puzzleItem.answer.split(',')[0].trim()
+              : puzzleItem.answer;
+            const answerLength = fullAnswer.length;
+
+            // Build string with spaces to preserve positions, using full answer length
             let newAnswer = '';
-            for (let i = 0; i <= Math.max(...positions); i++) {
+            for (let i = 0; i < answerLength; i++) {
               if (correctPositions[i]) {
                 newAnswer += correctPositions[i];
               } else {
-                // Use space to maintain position but allow user input
+                // Use empty string (will be trimmed for display)
                 newAnswer += ' ';
               }
             }

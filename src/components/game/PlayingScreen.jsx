@@ -292,7 +292,7 @@ export default function PlayingScreen({
         return;
       }
 
-      let currentValue = answers[focusedIndex];
+      let currentValue = answers[focusedIndex] || '';
 
       // If there's a hint and the field is empty, start with the hint letter
       if (activeHints && activeHints[focusedIndex] && !currentValue) {
@@ -305,19 +305,34 @@ export default function PlayingScreen({
           : puzzle.puzzles[focusedIndex].answer.length
         : 15;
 
-      // Count non-locked positions
       const locked = lockedLetters && lockedLetters[focusedIndex];
-      let actualLength = answerLength;
-      if (locked) {
-        // Calculate how many positions are available for user input
-        const lockedPositions = Object.keys(locked).map(Number);
-        const maxLockedPos = Math.max(...lockedPositions);
-        actualLength = Math.max(answerLength, maxLockedPos + 1);
-      }
 
-      // Don't add if already at max length
-      if (currentValue.length < actualLength) {
-        onUpdateAnswer(focusedIndex, currentValue + key);
+      if (locked) {
+        // Count how many non-locked, non-space characters the user has entered
+        let userCharCount = 0;
+        for (let i = 0; i < currentValue.length; i++) {
+          if (!locked[i] && currentValue[i] !== ' ') {
+            userCharCount++;
+          }
+        }
+
+        // Count how many positions are available for user input (non-locked positions)
+        let availablePositions = 0;
+        for (let i = 0; i < answerLength; i++) {
+          if (!locked[i]) {
+            availablePositions++;
+          }
+        }
+
+        // Only allow typing if there are still empty positions
+        if (userCharCount < availablePositions) {
+          onUpdateAnswer(focusedIndex, currentValue + key);
+        }
+      } else {
+        // No locked letters, just check against answer length
+        if (currentValue.length < answerLength) {
+          onUpdateAnswer(focusedIndex, currentValue + key);
+        }
       }
     }
   };
