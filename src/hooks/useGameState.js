@@ -43,6 +43,20 @@ export function useGameState() {
     (index, value) => {
       const hint = activeHints[index];
       const locked = lockedLetters[index];
+      const currentAnswer = answers[index] || '';
+
+      // Special case: if value is shorter than currentAnswer, it's a deletion
+      // Just pass through the value as-is for now
+      if (value.length < currentAnswer.length) {
+        const sanitized = sanitizeInput(value);
+        setAnswers((prev) => {
+          const newAnswers = [...prev];
+          newAnswers[index] = sanitized;
+          return newAnswers;
+        });
+        return;
+      }
+
       let processedValue = value;
 
       // If we have locked letters, preserve them in their positions
@@ -56,16 +70,17 @@ export function useGameState() {
           chars[parseInt(pos)] = locked[pos];
         });
 
-        // Then, fill in user input in non-locked positions
-        // Extract only non-locked characters from the input value
+        // Extract only user-entered (non-locked, non-space) characters from the input
         const userChars = [];
         for (let i = 0; i < value.length; i++) {
-          if (!locked[i] && value[i] !== ' ') {
-            userChars.push(value[i]);
+          const char = value[i];
+          // Skip if this is a locked position or if it's a space
+          if (!locked[i] && char !== ' ' && char !== locked[i]) {
+            userChars.push(char);
           }
         }
 
-        // Place user characters in non-locked positions
+        // Place user characters in non-locked positions only
         let userCharIndex = 0;
         for (let i = 0; i < chars.length && userCharIndex < userChars.length; i++) {
           if (!locked[i]) {
@@ -103,7 +118,7 @@ export function useGameState() {
         });
       }
     },
-    [checkedWrongAnswers, activeHints, lockedLetters]
+    [checkedWrongAnswers, activeHints, lockedLetters, answers]
   );
 
   return {
