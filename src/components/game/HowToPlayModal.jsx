@@ -53,25 +53,56 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                 : 'bg-green-50 dark:bg-green-900/20'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Smart Hints</h4>
-            <p className="text-sm mb-2">
-              <strong className="text-green-600 dark:text-green-400">
+            <h4
+              className={`font-semibold mb-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              Smart Hints
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
+              <strong
+                className={highContrast ? 'text-yellow-300' : 'text-green-600 dark:text-green-400'}
+              >
                 Green letters = locked in!
               </strong>{' '}
               When you guess incorrectly, any letters in the correct position turn green and stay
               locked. Just fill in the remaining blanks.
             </p>
-            <div className="text-sm space-y-1 mt-2 font-mono bg-white dark:bg-gray-800 rounded p-2">
-              <p>
+            <div
+              className={`text-sm space-y-1 mt-2 font-mono rounded p-2 ${
+                highContrast
+                  ? 'bg-black text-white border-2 border-yellow-300'
+                  : 'bg-white dark:bg-gray-800'
+              }`}
+            >
+              <p className={highContrast ? 'text-white' : ''}>
                 <strong>Example:</strong> Answer is PLAN
               </p>
-              <p className="mt-1">
-                Guess: <span className="text-red-600 dark:text-red-400">PILL</span> → Result:{' '}
-                <span className="text-green-600 dark:text-green-400 font-bold">P</span>_ _ _
+              <p className={`mt-1 ${highContrast ? 'text-white' : ''}`}>
+                Guess:{' '}
+                <span
+                  className={
+                    highContrast ? 'text-red-300 font-bold' : 'text-red-600 dark:text-red-400'
+                  }
+                >
+                  PILL
+                </span>{' '}
+                → Result:{' '}
+                <span
+                  className={
+                    highContrast
+                      ? 'text-yellow-300 font-bold'
+                      : 'text-green-600 dark:text-green-400 font-bold'
+                  }
+                >
+                  P
+                </span>
+                _ _ _
               </p>
-              <p>Next guess: Only type 3 letters for the blanks</p>
+              <p className={highContrast ? 'text-white' : ''}>
+                Next guess: Only type 3 letters for the blanks
+              </p>
             </div>
-            <p className="text-sm mt-3">
+            <p className={`text-sm mt-3 ${highContrast ? 'text-white' : ''}`}>
               <span className="font-semibold">💡 Need help?</span> Use a hint to reveal the next
               letter (fills left to right, one position at a time).
             </p>
@@ -133,16 +164,24 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                 : 'bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20'
             }`}
           >
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2 flex items-center gap-2">
+            <h3
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
+            >
               <span className="text-lg">🔥</span> Hard Mode
-              <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full ${
+                  highContrast
+                    ? 'bg-black text-yellow-300 border border-yellow-300'
+                    : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
+                }`}
+              >
                 Tandem Unlimited
               </span>
             </h3>
-            <p className="text-sm mb-2">
+            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
               For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
             </p>
-            <ul className="text-sm space-y-1 ml-4">
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
               <li>
                 • <strong>2-minute time limit</strong> - Complete the puzzle before time runs out
               </li>
@@ -150,7 +189,9 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                 • <strong>No hints available</strong> - Rely only on your word skills
               </li>
             </ul>
-            <p className="text-xs mt-2 text-gray-600 dark:text-gray-400">
+            <p
+              className={`text-xs mt-2 ${highContrast ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}
+            >
               Enable Hard Mode in Settings when you have an active subscription. Only available on
               iOS.
             </p>
