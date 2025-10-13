@@ -32,61 +32,68 @@ export default function AdminLogin() {
   };
 
   return (
-    <div style={{
-      minHeight: '100vh',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      backgroundImage: "url('/images/light-mode-bg.webp')",
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-      backgroundAttachment: 'fixed',
-      backgroundColor: '#87CEEB',
-      padding: '1rem'
-    }}>
-      <div style={{
-        backgroundColor: 'rgba(255, 255, 255, 0.90)',
-        backdropFilter: 'blur(10px)',
-        padding: '2rem',
-        borderRadius: '1.5rem',
-        boxShadow: '0 20px 40px rgba(0,0,0,0.1)',
-        border: '1px solid rgba(255, 255, 255, 0.5)',
-        width: '100%',
-        maxWidth: '400px'
-      }}>
+    <div
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: '#ffffff',
+        padding: '1rem',
+      }}
+    >
+      <div
+        style={{
+          backgroundColor: '#ffffff',
+          padding: '2rem',
+          borderRadius: '1.5rem',
+          boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+          border: '1px solid #e5e7eb',
+          width: '100%',
+          maxWidth: '400px',
+        }}
+      >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', background: 'linear-gradient(to right, #0EA5E9, #14B8A6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', backgroundClip: 'text' }}>
+          <h1
+            style={{
+              fontSize: '1.875rem',
+              fontWeight: 'bold',
+              background: 'linear-gradient(to right, #0EA5E9, #14B8A6)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             Tandem Admin
           </h1>
-          <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>
-            Sign in to manage puzzles
-          </p>
+          <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>Sign in to manage puzzles</p>
         </div>
 
         {error && (
-          <div style={{
-            padding: '0.75rem',
-            marginBottom: '1rem',
-            backgroundColor: '#fee2e2',
-            color: '#991b1b',
-            borderRadius: '0.5rem',
-            textAlign: 'center'
-          }}>
+          <div
+            style={{
+              padding: '0.75rem',
+              marginBottom: '1rem',
+              backgroundColor: '#fee2e2',
+              color: '#991b1b',
+              borderRadius: '0.5rem',
+              textAlign: 'center',
+            }}
+          >
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '1.5rem' }}>
-            <label 
-              htmlFor="username" 
-              style={{ 
+            <label
+              htmlFor="username"
+              style={{
                 display: 'block',
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 color: '#374151',
-                marginBottom: '0.25rem'
+                marginBottom: '0.25rem',
               }}
             >
               Username
@@ -103,21 +110,21 @@ export default function AdminLogin() {
                 border: '1px solid #d1d5db',
                 borderRadius: '0.5rem',
                 fontSize: '1rem',
-                outline: 'none'
+                outline: 'none',
               }}
               placeholder="Enter username"
             />
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
-            <label 
-              htmlFor="password" 
-              style={{ 
+            <label
+              htmlFor="password"
+              style={{
                 display: 'block',
                 fontSize: '0.875rem',
                 fontWeight: '500',
                 color: '#374151',
-                marginBottom: '0.25rem'
+                marginBottom: '0.25rem',
               }}
             >
               Password
@@ -134,7 +141,7 @@ export default function AdminLogin() {
                 border: '1px solid #d1d5db',
                 borderRadius: '0.5rem',
                 fontSize: '1rem',
-                outline: 'none'
+                outline: 'none',
               }}
               placeholder="Enter password"
             />
@@ -153,7 +160,7 @@ export default function AdminLogin() {
               border: 'none',
               fontSize: '1rem',
               cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.5 : 1
+              opacity: loading ? 0.5 : 1,
             }}
           >
             {loading ? 'Signing in...' : 'Sign In'}
@@ -169,7 +176,7 @@ export default function AdminLogin() {
               background: 'none',
               border: 'none',
               cursor: 'pointer',
-              textDecoration: 'underline'
+              textDecoration: 'underline',
             }}
           >
             ← Back to Game
