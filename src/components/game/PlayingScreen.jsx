@@ -266,19 +266,18 @@ export default function PlayingScreen({
           }
         }
 
-        // Handle deletion with locked letters
+        // Handle deletion - find the last non-locked, non-space character and remove it
         if (locked) {
-          const newValue = currentValue.slice(0, -1);
-          // Rebuild value preserving locked positions
-          let result = '';
-          for (let i = 0; i < newValue.length || locked[i]; i++) {
-            if (locked[i]) {
-              result += locked[i];
-            } else if (i < newValue.length && !locked[i]) {
-              result += newValue[i];
+          // Work backwards to find the last user-entered character
+          let newValue = currentValue;
+          for (let i = currentValue.length - 1; i >= 0; i--) {
+            if (!locked[i] && currentValue[i] !== ' ') {
+              // Found a user-entered character, remove it
+              newValue = currentValue.substring(0, i) + ' ' + currentValue.substring(i + 1);
+              break;
             }
           }
-          onUpdateAnswer(focusedIndex, result);
+          onUpdateAnswer(focusedIndex, newValue);
         } else {
           onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
         }

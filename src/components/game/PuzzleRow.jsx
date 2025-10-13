@@ -61,19 +61,20 @@ export default function PuzzleRow({
     const chars = [];
 
     for (let i = 0; i < answerLength; i++) {
-      if (currentValue && i < currentValue.length) {
-        const char = currentValue[i].toUpperCase();
-        // Check if this position is locked (correct letter in correct position)
-        const isLocked = lockedLetters && lockedLetters[i];
+      // Check if this position is locked (correct letter in correct position)
+      const isLocked = lockedLetters && lockedLetters[i];
 
-        if (isLocked) {
-          // Render locked letter in green with special styling
-          chars.push(
-            <span key={i} className="font-bold text-green-600 dark:text-green-400">
-              {char}
-            </span>
-          );
-        } else if (hintData && i === 0) {
+      if (isLocked) {
+        // Render locked letter in green with special styling
+        chars.push(
+          <span key={i} className="font-bold text-green-600 dark:text-green-400">
+            {isLocked}
+          </span>
+        );
+      } else if (currentValue && i < currentValue.length && currentValue[i] !== ' ') {
+        const char = currentValue[i].toUpperCase();
+
+        if (hintData && i === 0) {
           // First letter hint - yellow
           chars.push(
             <span key={i} className="font-semibold text-amber-600 dark:text-amber-400">

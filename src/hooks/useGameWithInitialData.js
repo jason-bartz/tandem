@@ -313,18 +313,21 @@ export function useGameWithInitialData(initialPuzzleData) {
             return newLockedLetters;
           });
 
-          // Build the new answer with only locked letters
+          // Build the new answer with only locked letters, preserving positions
           setAnswers((prev) => {
             const newAnswers = [...prev];
             const positions = Object.keys(correctPositions)
               .map(Number)
               .sort((a, b) => a - b);
+            // Build string with spaces to preserve positions
+            // Use space as placeholder for empty positions
             let newAnswer = '';
             for (let i = 0; i <= Math.max(...positions); i++) {
               if (correctPositions[i]) {
                 newAnswer += correctPositions[i];
               } else {
-                newAnswer += '';
+                // Use space to maintain position but allow user input
+                newAnswer += ' ';
               }
             }
             newAnswers[index] = newAnswer;
