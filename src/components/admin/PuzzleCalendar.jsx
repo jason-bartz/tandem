@@ -22,7 +22,7 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
       const month = currentMonth.getMonth();
       const startDate = new Date(year, month, 1).toISOString().split('T')[0];
       const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
-      
+
       const result = await adminService.getPuzzlesRange(startDate, endDate);
       if (result.success) {
         setPuzzles(result.puzzles || {});
@@ -41,19 +41,19 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
     const lastDay = new Date(year, month + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
+
     const days = [];
-    
+
     // Add empty cells for days before month starts
     for (let i = 0; i < startingDayOfWeek; i++) {
       days.push(null);
     }
-    
+
     // Add all days of the month
     for (let i = 1; i <= daysInMonth; i++) {
       days.push(i);
     }
-    
+
     return days;
   };
 
@@ -66,8 +66,10 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   const handleDeletePuzzle = async (date) => {
-    if (!confirm('Are you sure you want to delete this puzzle?')) {return;}
-    
+    if (!confirm('Are you sure you want to delete this puzzle?')) {
+      return;
+    }
+
     try {
       const result = await adminService.deletePuzzle(date);
       if (result.success) {
@@ -79,14 +81,19 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   const getPuzzleForDay = (day) => {
-    if (!day) {return null;}
+    if (!day) {
+      return null;
+    }
     const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
-      .toISOString().split('T')[0];
+      .toISOString()
+      .split('T')[0];
     return puzzles[date];
   };
 
   const isToday = (day) => {
-    if (!day) {return false;}
+    if (!day) {
+      return false;
+    }
     const today = new Date();
     return (
       day === today.getDate() &&
@@ -96,24 +103,42 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full w-full">
-      <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-        <div className="flex items-center justify-between">
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow h-full w-full overflow-x-auto">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200 dark:border-gray-700">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div className="relative">
             <button
               onClick={() => setShowMonthPicker(!showMonthPicker)}
-              className="text-lg font-medium text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors flex items-center gap-2"
+              className="text-base sm:text-lg font-medium text-gray-900 dark:text-white hover:text-sky-600 dark:hover:text-sky-400 transition-colors flex items-center gap-2"
             >
               {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
               </svg>
             </button>
-            
+
             {showMonthPicker && (
-              <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50" style={{ minWidth: '280px' }}>
+              <div className="absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 w-72 sm:w-80">
                 <div className="grid grid-cols-3 gap-2 mb-4">
-                  {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                  {[
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'May',
+                    'Jun',
+                    'Jul',
+                    'Aug',
+                    'Sep',
+                    'Oct',
+                    'Nov',
+                    'Dec',
+                  ].map((month, index) => (
                     <button
                       key={month}
                       onClick={() => {
@@ -155,23 +180,23 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
               </div>
             )}
           </div>
-          
-          <div className="flex items-center space-x-2">
+
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <button
               onClick={() => setCurrentMonth(new Date())}
-              className="px-3 py-1 text-sm bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
+              className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300 rounded-lg hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
             >
               Today
             </button>
             <button
               onClick={handlePreviousMonth}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
               ←
             </button>
             <button
               onClick={handleNextMonth}
-              className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+              className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
             >
               →
             </button>
@@ -180,68 +205,90 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
       </div>
 
       {loading ? (
-        <div className="p-8 text-center text-gray-500">Loading puzzles...</div>
+        <div className="p-4 sm:p-8 text-center text-gray-500 text-sm sm:text-base">
+          Loading puzzles...
+        </div>
       ) : (
-        <div className="p-6">
-          <div className="grid grid-cols-7 gap-3 mb-3" style={{ minWidth: '1050px' }}>
-            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(day => (
-              <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 w-36">
+        <div className="p-3 sm:p-6">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
+            {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+              <div
+                key={day}
+                className="text-center text-[10px] sm:text-xs font-medium text-gray-500 dark:text-gray-400"
+              >
                 {day}
               </div>
             ))}
           </div>
-          
-          <div className="grid grid-cols-7 gap-3" style={{ minWidth: '1050px' }}>
+
+          <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">
             {getDaysInMonth().map((day, index) => {
               const puzzle = getPuzzleForDay(day);
-              const dateStr = day ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
-                .toISOString().split('T')[0] : '';
-              const holidays = getHolidaysForMonth(currentMonth.getFullYear(), currentMonth.getMonth());
+              const dateStr = day
+                ? new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+                    .toISOString()
+                    .split('T')[0]
+                : '';
+              const holidays = getHolidaysForMonth(
+                currentMonth.getFullYear(),
+                currentMonth.getMonth()
+              );
               const holiday = day ? holidays[day] : null;
-              
+
               return (
                 <div
                   key={index}
                   className={`
-                    h-32 w-36 p-2 rounded-lg border overflow-hidden
+                    min-h-[80px] sm:min-h-[100px] md:h-32 p-1.5 sm:p-2 rounded border sm:rounded-lg overflow-hidden
                     ${day ? 'cursor-pointer hover:border-plum' : ''}
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}
                     ${holiday && !puzzle ? 'bg-amber-50 dark:bg-amber-900/10' : ''}
                   `}
-                  onClick={() => day && setSelectedPuzzle(puzzle ? { ...puzzle, date: dateStr } : { date: dateStr })}
+                  onClick={() =>
+                    day &&
+                    setSelectedPuzzle(puzzle ? { ...puzzle, date: dateStr } : { date: dateStr })
+                  }
                 >
                   {day && (
                     <>
                       <div className="flex justify-between items-start">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white">
                           {day}
                         </div>
                         {holiday && (
-                          <div className="text-xs">
-                            {holiday === 'Christmas' ? '🎄' :
-                             holiday === 'Halloween' ? '🎃' :
-                             holiday === "Valentine's Day" ? '❤️' :
-                             holiday === 'Easter' ? '🐰' :
-                             holiday === 'Thanksgiving' ? '🦃' :
-                             holiday === 'Independence Day' ? '🎆' :
-                             holiday === "New Year's Day" ? '🎊' :
-                             holiday === "St. Patrick's Day" ? '☘️' :
-                             '🎉'}
+                          <div className="text-[10px] sm:text-xs">
+                            {holiday === 'Christmas'
+                              ? '🎄'
+                              : holiday === 'Halloween'
+                                ? '🎃'
+                                : holiday === "Valentine's Day"
+                                  ? '❤️'
+                                  : holiday === 'Easter'
+                                    ? '🐰'
+                                    : holiday === 'Thanksgiving'
+                                      ? '🦃'
+                                      : holiday === 'Independence Day'
+                                        ? '🎆'
+                                        : holiday === "New Year's Day"
+                                          ? '🎊'
+                                          : holiday === "St. Patrick's Day"
+                                            ? '☘️'
+                                            : '🎉'}
                           </div>
                         )}
                       </div>
                       {holiday && (
-                        <div className="text-xs text-amber-700 dark:text-amber-400 mt-1 font-medium" style={{ fontSize: '10px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                        <div className="text-[8px] sm:text-[10px] text-amber-700 dark:text-amber-400 mt-0.5 sm:mt-1 font-medium overflow-hidden text-ellipsis whitespace-nowrap">
                           {holiday}
                         </div>
                       )}
                       {puzzle && (
-                        <div className="mt-1">
-                          <div className="text-xs text-gray-600 dark:text-gray-400" style={{ fontSize: '11px', lineHeight: '1.3', wordWrap: 'break-word' }}>
+                        <div className="mt-0.5 sm:mt-1">
+                          <div className="text-[9px] sm:text-[11px] text-gray-600 dark:text-gray-400 leading-tight break-words">
                             {puzzle.theme}
                           </div>
-                          <div className="text-sm mt-1">
+                          <div className="text-xs sm:text-sm mt-0.5 sm:mt-1">
                             {puzzle.puzzles[0].emoji}
                           </div>
                         </div>
@@ -256,47 +303,52 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
       )}
 
       {selectedPuzzle && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 max-w-md w-full">
-            <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-4">
-              {selectedPuzzle.theme ? 'Puzzle Details' : 'No Puzzle'} - {formatDate(selectedPuzzle.date, 'short')}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-3 sm:p-4 z-50">
+          <div className="bg-white dark:bg-gray-800 rounded-lg p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
+              {selectedPuzzle.theme ? 'Puzzle Details' : 'No Puzzle'} -{' '}
+              {formatDate(selectedPuzzle.date, 'short')}
             </h3>
-            
+
             {selectedPuzzle.theme ? (
               <>
-                <div className="mb-4">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">Theme:</p>
-                  <p className="font-medium text-gray-900 dark:text-white">{selectedPuzzle.theme}</p>
+                <div className="mb-3 sm:mb-4">
+                  <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Theme:</p>
+                  <p className="text-sm sm:text-base font-medium text-gray-900 dark:text-white">
+                    {selectedPuzzle.theme}
+                  </p>
                 </div>
-                
-                <div className="space-y-2 mb-6">
+
+                <div className="space-y-2 mb-4 sm:mb-6">
                   {selectedPuzzle.puzzles.map((p, i) => (
-                    <div key={i} className="flex items-center space-x-4">
-                      <span className="text-2xl">{p.emoji}</span>
-                      <span className="text-gray-700 dark:text-gray-300">{p.answer}</span>
+                    <div key={i} className="flex items-center space-x-3 sm:space-x-4">
+                      <span className="text-xl sm:text-2xl">{p.emoji}</span>
+                      <span className="text-sm sm:text-base text-gray-700 dark:text-gray-300">
+                        {p.answer}
+                      </span>
                     </div>
                   ))}
                 </div>
-                
-                <div className="flex justify-end space-x-3">
+
+                <div className="flex flex-col sm:flex-row justify-end gap-2 sm:gap-3">
                   <button
                     onClick={() => {
                       onEditPuzzle({ ...selectedPuzzle, date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-sky-600 text-white rounded-lg hover:bg-sky-700"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDeletePuzzle(selectedPuzzle.date)}
-                    className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-red-600 text-white rounded-lg hover:bg-red-700"
                   >
                     Delete
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
+                    className="w-full sm:w-auto px-4 py-2 text-sm sm:text-base bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
                   >
                     Close
                   </button>
@@ -304,22 +356,22 @@ export default function PuzzleCalendar({ onEditPuzzle }) {
               </>
             ) : (
               <>
-                <p className="text-gray-600 dark:text-gray-400 mb-6">
+                <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-4 sm:mb-6">
                   No puzzle scheduled for this date.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   <button
                     onClick={() => {
                       onEditPuzzle({ date: selectedPuzzle.date });
                       setSelectedPuzzle(null);
                     }}
-                    className="flex-1 px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-sky-600 text-white rounded-lg hover:bg-sky-700"
                   >
                     Create Puzzle
                   </button>
                   <button
                     onClick={() => setSelectedPuzzle(null)}
-                    className="flex-1 px-4 py-2 bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
+                    className="flex-1 px-4 py-2 text-sm sm:text-base bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-400 dark:hover:bg-gray-600"
                   >
                     Close
                   </button>

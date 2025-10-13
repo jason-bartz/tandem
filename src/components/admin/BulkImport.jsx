@@ -88,76 +88,90 @@ export default function BulkImport({ onClose, onSuccess }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-3 sm:p-4 z-50">
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+        <div className="p-4 sm:p-6">
+          <div className="flex justify-between items-center mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
               Bulk Import Puzzles
             </h2>
             <button
               onClick={onClose}
-              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 flex-shrink-0"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              <svg
+                className="w-5 h-5 sm:w-6 sm:h-6"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M6 18L18 6M6 6l12 12"
+                />
               </svg>
             </button>
           </div>
 
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                   Start Date
                 </label>
                 <input
                   type="date"
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:text-white"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:text-white"
                 />
                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   Puzzles will be assigned to available dates starting from this date
                 </p>
               </div>
 
-              <div className="flex items-end">
-                <label className="flex items-center space-x-2 cursor-pointer">
+              <div>
+                <label className="flex items-start space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={overwrite}
                     onChange={(e) => setOverwrite(e.target.checked)}
-                    className="rounded border-gray-300 text-sky-600 focus:ring-sky-500"
+                    className="mt-0.5 rounded border-gray-300 text-sky-600 focus:ring-sky-500"
                   />
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Overwrite existing puzzles
-                  </span>
+                  <div>
+                    <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 block">
+                      Overwrite existing puzzles
+                    </span>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {overwrite
+                        ? 'Will replace existing puzzles'
+                        : 'Will skip dates with existing puzzles'}
+                    </p>
+                  </div>
                 </label>
-                <p className="text-xs text-gray-500 dark:text-gray-400 ml-6">
-                  {overwrite ? 'Will replace existing puzzles' : 'Will skip dates with existing puzzles'}
-                </p>
               </div>
             </div>
 
             <div>
               <div className="flex justify-between items-center mb-2">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
                   JSON Data
                 </label>
                 <button
                   type="button"
                   onClick={loadSampleData}
-                  className="text-sm text-sky-600 hover:text-sky-700 transition-colors"
+                  className="text-xs sm:text-sm text-sky-600 hover:text-sky-700 transition-colors"
                 >
-                  Load Sample Data
+                  Load Sample
                 </button>
               </div>
               <textarea
                 value={jsonInput}
                 onChange={(e) => setJsonInput(e.target.value)}
-                placeholder='Paste your JSON array of puzzles here...'
-                className="w-full h-64 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:text-white font-mono text-sm"
+                placeholder="Paste your JSON array of puzzles here..."
+                className="w-full h-48 sm:h-64 px-3 sm:px-4 py-2 text-xs sm:text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-sky-500 focus:border-sky-500 dark:bg-gray-700 dark:text-white font-mono"
                 spellCheck={false}
               />
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -166,32 +180,42 @@ export default function BulkImport({ onClose, onSuccess }) {
             </div>
 
             {message && (
-              <div className={`p-4 rounded-lg ${
-                message.startsWith('✅') 
-                  ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
-                  : message.startsWith('❌')
-                  ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
-                  : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
-              }`}>
+              <div
+                className={`p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
+                  message.startsWith('✅')
+                    ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400'
+                    : message.startsWith('❌')
+                      ? 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400'
+                      : 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400'
+                }`}
+              >
                 {message}
               </div>
             )}
 
             {results && results.summary && (
-              <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-                <h3 className="font-medium text-gray-900 dark:text-white mb-2">Import Summary</h3>
-                <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300">
+              <div className="bg-gray-50 dark:bg-gray-700 p-3 sm:p-4 rounded-lg">
+                <h3 className="text-sm sm:text-base font-medium text-gray-900 dark:text-white mb-2">
+                  Import Summary
+                </h3>
+                <div className="space-y-1 text-xs sm:text-sm text-gray-600 dark:text-gray-300">
                   <p>Total puzzles: {results.summary.total}</p>
                   <p>Successfully imported: {results.summary.successful}</p>
                   {results.summary.failed > 0 && (
-                    <p className="text-red-600 dark:text-red-400">Failed: {results.summary.failed}</p>
+                    <p className="text-red-600 dark:text-red-400">
+                      Failed: {results.summary.failed}
+                    </p>
                   )}
-                  <p>Date range: {results.summary.dateRange.start} to {results.summary.dateRange.end}</p>
+                  <p>
+                    Date range: {results.summary.dateRange.start} to {results.summary.dateRange.end}
+                  </p>
                 </div>
-                
+
                 {results.imported && results.imported.length > 0 && (
                   <div className="mt-3">
-                    <h4 className="font-medium text-gray-900 dark:text-white mb-1">Imported Puzzles:</h4>
+                    <h4 className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white mb-1">
+                      Imported Puzzles:
+                    </h4>
                     <div className="max-h-32 overflow-y-auto">
                       {results.imported.map((item, index) => (
                         <div key={index} className="text-xs text-gray-600 dark:text-gray-400">
@@ -201,10 +225,12 @@ export default function BulkImport({ onClose, onSuccess }) {
                     </div>
                   </div>
                 )}
-                
+
                 {results.errors && results.errors.length > 0 && (
                   <div className="mt-3">
-                    <h4 className="font-medium text-red-600 dark:text-red-400 mb-1">Errors:</h4>
+                    <h4 className="text-xs sm:text-sm font-medium text-red-600 dark:text-red-400 mb-1">
+                      Errors:
+                    </h4>
                     <div className="max-h-32 overflow-y-auto">
                       {results.errors.map((error, index) => (
                         <div key={index} className="text-xs text-red-600 dark:text-red-400">
@@ -217,18 +243,18 @@ export default function BulkImport({ onClose, onSuccess }) {
               </div>
             )}
 
-            <div className="flex justify-end space-x-4">
+            <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={handleImport}
                 disabled={loading || !jsonInput.trim()}
-                className="px-6 py-2 bg-sky-500 hover:bg-sky-600 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-sky-500 hover:bg-sky-600 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? 'Importing...' : 'Import Puzzles'}
               </button>

@@ -9,11 +9,10 @@ export default function AdminLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  
+
   // Special pages that don't need authentication
-  const isPublicPage = pathname === '/admin/login' || 
-                       pathname === '/admin/debug' || 
-                       pathname === '/admin/test';
+  const isPublicPage =
+    pathname === '/admin/login' || pathname === '/admin/debug' || pathname === '/admin/test';
 
   useEffect(() => {
     // Skip auth check for public pages
@@ -21,7 +20,7 @@ export default function AdminLayout({ children }) {
       setLoading(false);
       return;
     }
-    
+
     checkAuth();
   }, [pathname, isPublicPage]);
 
@@ -58,17 +57,7 @@ export default function AdminLayout({ children }) {
   // Show loading spinner while checking auth
   if (loading) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{
-          backgroundImage: "url('/images/light-mode-bg.webp')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-          backgroundColor: '#87CEEB'
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-white">
         <LoadingSpinner />
       </div>
     );
@@ -81,18 +70,8 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div
-      className="min-h-screen"
-      style={{
-        backgroundImage: "url('/images/light-mode-bg.webp')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-        backgroundColor: '#87CEEB'
-      }}
-    >
-      <nav className="bg-white/90 backdrop-blur-sm shadow-lg border-b border-sky-200">
+    <div className="min-h-screen bg-white">
+      <nav className="bg-white shadow-lg border-b border-gray-200">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16">
             <div className="flex items-center">
@@ -122,8 +101,8 @@ export default function AdminLayout({ children }) {
           </div>
         </div>
       </nav>
-      <main className="py-6 px-4 sm:px-6 lg:px-8">
-        <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl p-6 min-h-[600px] w-full max-w-7xl mx-auto">
+      <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
+        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto">
           {children}
         </div>
       </main>
