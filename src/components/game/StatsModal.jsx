@@ -14,26 +14,31 @@ export default function StatsModal({ isOpen, onClose }) {
     currentStreak: 0,
     bestStreak: 0,
   });
+  const [animationKey, setAnimationKey] = useState(0);
 
   const { getStaggerStyle } = useStaggerAnimation(5, 80);
+
+  // Calculate win rate
+  const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
 
   // Animated counter values
   const animatedPlayed = useCounterAnimation(stats.played);
   const animatedWins = useCounterAnimation(stats.wins);
   const animatedCurrentStreak = useCounterAnimation(stats.currentStreak);
   const animatedBestStreak = useCounterAnimation(stats.bestStreak);
+  const animatedWinRate = useCounterAnimation(winRate);
 
   useEffect(() => {
     if (isOpen !== false) {
       loadStats().then(setStats);
+      // Increment animation key to force re-animation
+      setAnimationKey((prev) => prev + 1);
     }
   }, [isOpen]);
 
   if (isOpen === false) {
     return null;
   }
-
-  const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
 
   // Generate shareable stats text
   const shareableStatsText = `My Tandem Stats
@@ -68,7 +73,7 @@ Completion: ${winRate}%
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-2 gap-4 mb-6" key={`stats-grid-${animationKey}`}>
           <div
             className={`p-4 rounded-xl text-center ${
               highContrast
@@ -109,7 +114,7 @@ Completion: ${winRate}%
                   : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
               } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
-              {winRate}%
+              {animatedWinRate}%
             </div>
             <div
               className={`text-xs mt-1 uppercase tracking-wide ${
@@ -175,6 +180,7 @@ Completion: ${winRate}%
         </div>
 
         <div
+          key={`total-wins-${animationKey}`}
           className={`p-4 rounded-xl text-center ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'

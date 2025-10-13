@@ -353,6 +353,16 @@ module.exports = {
           '50%': { transform: 'scale(1.15)' },
           '100%': { transform: 'scale(1)' },
         },
+        scaleFadeIn: {
+          '0%': {
+            opacity: '0',
+            transform: 'scale(0.95)',
+          },
+          '100%': {
+            opacity: '1',
+            transform: 'scale(1)',
+          },
+        },
       },
     },
   },
