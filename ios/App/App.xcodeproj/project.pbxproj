@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C56EB932E8B004100AA549D /* StoreKit.framework */; };
+		2CAC786A2E9C651400D407F0 /* GameKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAC78692E9C651400D407F0 /* GameKit.framework */; };
 		2CC4A9D32E940E150021A996 /* config.xml in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9BF2E940E150021A996 /* config.xml */; };
 		2CC4AA002E940E150021A996 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C52E940E150021A996 /* Main.storyboard */; };
 		2CC4AA0B2E940E150021A996 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 2CC4A9C62E940E150021A996 /* PrivacyInfo.xcprivacy */; };
@@ -28,6 +29,7 @@
 		2B4086BB4D1901ACD82A0C15 /* Pods_Tandem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Tandem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		2C56EB932E8B004100AA549D /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		2C56EB952E8B005E00AA549D /* Tandem.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Tandem.entitlements; sourceTree = "<group>"; };
+		2CAC78692E9C651400D407F0 /* GameKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GameKit.framework; path = System/Library/Frameworks/GameKit.framework; sourceTree = SDKROOT; };
 		2CC4A94B2E940E150021A996 /* CloudKitSyncPlugin.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CloudKitSyncPlugin.m; sourceTree = "<group>"; };
 		2CC4A94C2E940E150021A996 /* CloudKitSyncPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitSyncPlugin.swift; sourceTree = "<group>"; };
 		2CC4A9BC2E940E150021A996 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -59,6 +61,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2CAC786A2E9C651400D407F0 /* GameKit.framework in Frameworks */,
 				2CDC8CB72E8C56EC004A2B26 /* UserNotifications.framework in Frameworks */,
 				2CDC8CB52E8C56E2004A2B26 /* CloudKit.framework in Frameworks */,
 				2C56EB942E8B004100AA549D /* StoreKit.framework in Frameworks */,
@@ -133,6 +136,7 @@
 		734FAD552BD15A2C820DDD35 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2CAC78692E9C651400D407F0 /* GameKit.framework */,
 				2CDC8CB62E8C56EC004A2B26 /* UserNotifications.framework */,
 				2CDC8CB42E8C56E2004A2B26 /* CloudKit.framework */,
 				2C56EB932E8B004100AA549D /* StoreKit.framework */,
@@ -462,7 +466,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.8.2;
 				OTHER_SWIFT_FLAGS = "$(inherited) \"-D\" \"COCOAPODS\" \"-DDEBUG\"";
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -493,7 +497,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.7;
+				MARKETING_VERSION = 1.8.2;
 				PRODUCT_BUNDLE_IDENTIFIER = com.tandemdaily.app;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";

@@ -220,16 +220,38 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
           response = await CapacitorHttp.get({
             url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
-            headers,
+            headers: {
+              ...headers,
+              'Accept': 'application/json',
+            },
+            responseType: 'json',
           });
 
           // Handle 304 Not Modified - use cached data
           if (response.status === 304) {
             useCache = true;
           } else if (response.status >= 400) {
-            throw new Error(response.data?.error || 'Failed to fetch puzzles');
+            // Defensive parsing: handle both string and object responses
+            let errorData;
+            try {
+              errorData = typeof response.data === 'string'
+                ? JSON.parse(response.data)
+                : response.data;
+            } catch (parseError) {
+              console.error('[ArchiveModal] Failed to parse error response:', parseError);
+              errorData = {};
+            }
+            throw new Error(errorData?.error || 'Failed to fetch puzzles');
           } else {
-            data = response.data;
+            // Defensive parsing: CapacitorHttp may return string or object
+            try {
+              data = typeof response.data === 'string'
+                ? JSON.parse(response.data)
+                : response.data;
+            } catch (parseError) {
+              console.error('[ArchiveModal] Failed to parse response data:', parseError);
+              throw new Error('Invalid response format from server');
+            }
           }
         } else {
           // Use regular fetch for web

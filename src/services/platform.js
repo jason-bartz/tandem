@@ -92,11 +92,24 @@ class PlatformService {
         console.log('[PlatformService] Using CapacitorHttp for iOS');
         const response = await CapacitorHttp.get({
           url: `https://www.tandemdaily.com/api/puzzle?${queryParam}`,
+          headers: {
+            'Accept': 'application/json',
+          },
+          responseType: 'json',
         });
         console.log('[PlatformService] CapacitorHttp response:', response);
         console.log('[PlatformService] Response status:', response.status);
         console.log('[PlatformService] Response data:', response.data);
-        data = response.data;
+
+        // Defensive parsing: CapacitorHttp may return string or object
+        try {
+          data = typeof response.data === 'string'
+            ? JSON.parse(response.data)
+            : response.data;
+        } catch (parseError) {
+          console.error('[PlatformService] Failed to parse puzzle response:', parseError);
+          throw new Error('Invalid response format from server');
+        }
       } else {
         // Use regular fetch for web
         console.log('[PlatformService] Using regular fetch for web');
@@ -156,8 +169,15 @@ class PlatformService {
       if (this.isNative && this.isIOS) {
         const response = await CapacitorHttp.get({
           url: `https://www.tandemdaily.com/api/stats`,
+          headers: {
+            'Accept': 'application/json',
+          },
+          responseType: 'json',
         });
-        stats = response.data;
+        // Defensive parsing: CapacitorHttp may return string or object
+        stats = typeof response.data === 'string'
+          ? JSON.parse(response.data)
+          : response.data;
       } else {
         const res = await fetch(url);
         if (!res.ok) {
@@ -216,10 +236,17 @@ class PlatformService {
       if (this.isNative && this.isIOS) {
         const response = await CapacitorHttp.post({
           url: `https://www.tandemdaily.com/api/stats`,
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
+          },
           data: stats,
+          responseType: 'json',
         });
-        return response.data;
+        // Defensive parsing: CapacitorHttp may return string or object
+        return typeof response.data === 'string'
+          ? JSON.parse(response.data)
+          : response.data;
       } else {
         const res = await fetch(url, {
           method: 'POST',

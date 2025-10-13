@@ -22,6 +22,8 @@ PODS:
     - Capacitor
   - CordovaPlugins (5.7.8):
     - CapacitorCordova
+  - OpenforgeCapacitorGameConnect (5.0.2):
+    - Capacitor
 
 DEPENDENCIES:
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
@@ -36,6 +38,7 @@ DEPENDENCIES:
   - "CapacitorSplashScreen (from `../../node_modules/@capacitor/splash-screen`)"
   - "CapacitorStatusBar (from `../../node_modules/@capacitor/status-bar`)"
   - CordovaPlugins (from `../capacitor-cordova-ios-plugins`)
+  - "OpenforgeCapacitorGameConnect (from `../../node_modules/@openforge/capacitor-game-connect`)"
 
 EXTERNAL SOURCES:
   Capacitor:
@@ -62,6 +65,8 @@ EXTERNAL SOURCES:
     :path: "../../node_modules/@capacitor/status-bar"
   CordovaPlugins:
     :path: "../capacitor-cordova-ios-plugins"
+  OpenforgeCapacitorGameConnect:
+    :path: "../../node_modules/@openforge/capacitor-game-connect"
 
 SPEC CHECKSUMS:
   Capacitor: 9686e5711b48a1aa84671ede795d0175848abcba
@@ -76,7 +81,8 @@ SPEC CHECKSUMS:
   CapacitorSplashScreen: 0b962a2bee014151569dc59b089ba0e93daeeaf0
   CapacitorStatusBar: 8e0a8f213504695505dc8c4f808dffbe03aa0e0f
   CordovaPlugins: 7209d077aeefe32e4161878cde3fd3eb7db448b7
+  OpenforgeCapacitorGameConnect: f964863580b3478b8c5c758e3dc1be503e7f6013
 
-PODFILE CHECKSUM: 508a49cb3aa240b6a6550397680661e286fb0ceb
+PODFILE CHECKSUM: 7d98a1c1898e0d4a199cbb6ce6006ea3f8eda9d3
 
 COCOAPODS: 1.16.2
