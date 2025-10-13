@@ -15,7 +15,6 @@ export default function StatsBar({
   const [bounceTimer, setBounceTimer] = useState(false);
   const [bounceMistakes, setBounceMistakes] = useState(false);
   const [bounceSolved, setBounceSolved] = useState(false);
-  const [showMilestoneBurst, setShowMilestoneBurst] = useState(false);
   const prevTime = useRef(time);
   const prevMistakes = useRef(mistakes);
   const prevSolved = useRef(solved);
@@ -37,12 +36,7 @@ export default function StatsBar({
       setBounceTimer(true);
       setTimeout(() => setBounceTimer(false), 200);
 
-      // Check for time milestones (every 10 seconds)
-      const prevSeconds = getSecondsFromTime(prevTime.current);
-      if (Math.floor(currentSeconds / 10) > Math.floor(prevSeconds / 10)) {
-        setShowMilestoneBurst(true);
-        setTimeout(() => setShowMilestoneBurst(false), 500);
-      }
+      // Removed milestone burst animation
     }
     prevTime.current = time;
   }, [time, reduceMotion, currentSeconds]);
@@ -81,7 +75,7 @@ export default function StatsBar({
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
           } font-bold ${isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-dark-text dark:text-gray-200'} ${
             bounceTimer && !reduceMotion ? 'animate-timer-bounce' : ''
-          } ${showMilestoneBurst && !reduceMotion ? 'animate-milestone-burst' : ''}`}
+          }`}
         >
           {isHardMode ? remainingTime : time}
         </div>
