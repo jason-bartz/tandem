@@ -1,0 +1,339 @@
+/**
+ * Global Micro-Animations
+ * Automatic animations for buttons, toggles, and UI elements
+ * All animations respect reduce motion preferences
+ */
+
+/* ===========================================
+   UNIVERSAL BUTTON ANIMATIONS (3.1)
+   =========================================== */
+
+/* Apply to all buttons except when reduce-motion is active */
+button:not(:disabled):not(.no-animation) {
+  transition:
+    transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 200ms ease;
+  will-change: transform;
+}
+
+/* Hover lift effect (desktop only) */
+@media (hover: hover) and (pointer: fine) {
+  button:not(:disabled):not(.no-animation):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* Touch press effect */
+button:not(:disabled):not(.no-animation):active {
+  transform: scale(0.96);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Icon buttons - add rotation on press */
+button[aria-label]:not(:disabled):not(.no-animation):active svg,
+button[aria-label]:not(:disabled):not(.no-animation):active span {
+  transform: rotate(5deg);
+  transition: transform 150ms ease-out;
+}
+
+/* Disabled state pulse */
+button:disabled:not(.no-animation) {
+  animation: disabledPulse 2s ease-in-out infinite;
+  cursor: not-allowed;
+}
+
+/* ===========================================
+   TOGGLE SWITCH ANIMATIONS (3.2)
+   =========================================== */
+
+/* Toggle container */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  transition: background-color 250ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Toggle handle */
+.toggle-handle {
+  transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: transform;
+}
+
+/* Checked state slide */
+.toggle-switch[data-checked='true'] .toggle-handle {
+  transform: translateX(var(--toggle-distance, 20px));
+}
+
+/* Icon crossfade */
+.toggle-icon-off,
+.toggle-icon-on {
+  transition: opacity 200ms ease-in-out;
+}
+
+.toggle-switch[data-checked='false'] .toggle-icon-on,
+.toggle-switch[data-checked='true'] .toggle-icon-off {
+  opacity: 0;
+}
+
+.toggle-switch[data-checked='true'] .toggle-icon-on,
+.toggle-switch[data-checked='false'] .toggle-icon-off {
+  opacity: 1;
+}
+
+/* ===========================================
+   MODAL CLOSE BUTTON ANIMATIONS (3.3)
+   =========================================== */
+
+/* Close button hover rotate */
+.modal-close-btn,
+button[aria-label='Close']:not(.no-animation) {
+  transition:
+    transform 200ms cubic-bezier(0.4, 0, 0.2, 1),
+    background-color 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .modal-close-btn:hover,
+  button[aria-label='Close']:not(.no-animation):hover {
+    transform: rotate(90deg);
+  }
+}
+
+/* Close button press */
+.modal-close-btn:active,
+button[aria-label='Close']:not(.no-animation):active {
+  transform: rotate(90deg) scale(0.9);
+}
+
+/* Background pulse on hover */
+.modal-close-btn::before,
+button[aria-label='Close']:not(.no-animation)::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: inherit;
+  opacity: 0;
+  transition: opacity 300ms ease;
+  pointer-events: none;
+  z-index: -1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .modal-close-btn:hover::before,
+  button[aria-label='Close']:not(.no-animation):hover::before {
+    opacity: 0.1;
+    animation: backgroundPulse 1.5s ease-in-out infinite;
+  }
+}
+
+/* ===========================================
+   SHARE BUTTON ANIMATIONS (5.2)
+   =========================================== */
+
+/* Share button attention pulse */
+.share-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.share-button:not(:disabled):not(.no-animation) {
+  animation: attentionPulse 2s ease-in-out infinite;
+}
+
+/* Hover shine effect */
+.share-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-position: -100% center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .share-button:hover::after {
+    opacity: 1;
+    animation: hoverShine 600ms ease-out;
+  }
+}
+
+/* Success burst after share */
+.share-button.share-success {
+  animation: successBurst 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* ===========================================
+   LOADING ANIMATIONS (4.2)
+   =========================================== */
+
+/* Enhanced skeleton shimmer */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(200, 200, 200, 0.1) 0%,
+    rgba(200, 200, 200, 0.3) 20%,
+    rgba(255, 255, 255, 0.5) 40%,
+    rgba(200, 200, 200, 0.3) 60%,
+    rgba(200, 200, 200, 0.1) 100%
+  );
+  background-size: 1000px 100%;
+  animation: skeletonShimmer 2s ease-in-out infinite;
+}
+
+/* Dark mode skeleton */
+[data-theme='dark'] .skeleton,
+.dark .skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(100, 100, 100, 0.1) 0%,
+    rgba(100, 100, 100, 0.3) 20%,
+    rgba(150, 150, 150, 0.5) 40%,
+    rgba(100, 100, 100, 0.3) 60%,
+    rgba(100, 100, 100, 0.1) 100%
+  );
+  background-size: 1000px 100%;
+}
+
+/* iOS-style spinner */
+.spinner {
+  animation: iosSpinner 1s linear infinite;
+}
+
+/* Progressive loading fade-in */
+.progressive-load {
+  opacity: 0;
+  animation: fadeIn 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.progressive-load:nth-child(1) {
+  animation-delay: 0ms;
+}
+.progressive-load:nth-child(2) {
+  animation-delay: 100ms;
+}
+.progressive-load:nth-child(3) {
+  animation-delay: 200ms;
+}
+.progressive-load:nth-child(4) {
+  animation-delay: 300ms;
+}
+.progressive-load:nth-child(5) {
+  animation-delay: 400ms;
+}
+
+/* ===========================================
+   EMPTY STATE ANIMATIONS (4.3)
+   =========================================== */
+
+/* Gentle float */
+.empty-state-icon {
+  animation: gentleFloat 3s ease-in-out infinite;
+}
+
+/* Content fade-in */
+.empty-state-content {
+  animation: contentFadeIn 400ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ===========================================
+   REDUCE MOTION OVERRIDES
+   =========================================== */
+
+/* System preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  button:not(:disabled):not(.no-animation):hover {
+    transform: none;
+  }
+
+  button:not(:disabled):not(.no-animation):active {
+    transform: none;
+  }
+
+  .toggle-handle {
+    transition-duration: 0ms;
+  }
+
+  .skeleton,
+  .spinner,
+  .empty-state-icon,
+  .share-button {
+    animation: none !important;
+  }
+}
+
+/* Manual reduce motion override */
+.reduce-motion *,
+.reduce-motion *::before,
+.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+}
+
+.reduce-motion button:not(:disabled):not(.no-animation):hover {
+  transform: none;
+}
+
+.reduce-motion button:not(:disabled):not(.no-animation):active {
+  transform: none;
+}
+
+.reduce-motion .toggle-handle {
+  transition-duration: 0ms;
+}
+
+.reduce-motion .skeleton,
+.reduce-motion .spinner,
+.reduce-motion .empty-state-icon,
+.reduce-motion .share-button {
+  animation: none !important;
+}
+
+/* ===========================================
+   UTILITY CLASSES
+   =========================================== */
+
+/* Opt-out of animations for specific elements */
+.no-animation,
+.no-animation * {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* GPU acceleration hint */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Animation performance optimization */
+.will-animate {
+  will-change: transform, opacity;
+}
+
+/* Reset will-change after animation */
+.animate-complete {
+  will-change: auto;
+}

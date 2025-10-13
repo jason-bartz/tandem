@@ -1,4 +1,6 @@
 'use client';
+import { useRef, useEffect, useState } from 'react';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function StatsBar({
   time,
@@ -9,6 +11,15 @@ export default function StatsBar({
   isHardMode = false,
   hardModeTimeLimit = 120,
 }) {
+  const { reduceMotion } = useTheme();
+  const [bounceTimer, setBounceTimer] = useState(false);
+  const [bounceMistakes, setBounceMistakes] = useState(false);
+  const [bounceSolved, setBounceSolved] = useState(false);
+  const [showMilestoneBurst, setShowMilestoneBurst] = useState(false);
+  const prevTime = useRef(time);
+  const prevMistakes = useRef(mistakes);
+  const prevSolved = useRef(solved);
+
   // Parse time string to get seconds for hard mode calculation
   const getSecondsFromTime = (timeStr) => {
     const parts = timeStr.split(':');
@@ -19,6 +30,40 @@ export default function StatsBar({
   const remainingSeconds = Math.max(0, hardModeTimeLimit - currentSeconds);
   const remainingTime = `${Math.floor(remainingSeconds / 60)}:${(remainingSeconds % 60).toString().padStart(2, '0')}`;
   const isTimeCritical = isHardMode && remainingSeconds <= 30;
+
+  // Animate timer changes
+  useEffect(() => {
+    if (time !== prevTime.current && !reduceMotion) {
+      setBounceTimer(true);
+      setTimeout(() => setBounceTimer(false), 200);
+
+      // Check for time milestones (every 10 seconds)
+      const prevSeconds = getSecondsFromTime(prevTime.current);
+      if (Math.floor(currentSeconds / 10) > Math.floor(prevSeconds / 10)) {
+        setShowMilestoneBurst(true);
+        setTimeout(() => setShowMilestoneBurst(false), 500);
+      }
+    }
+    prevTime.current = time;
+  }, [time, reduceMotion, currentSeconds]);
+
+  // Animate mistakes changes
+  useEffect(() => {
+    if (mistakes !== prevMistakes.current && !reduceMotion) {
+      setBounceMistakes(true);
+      setTimeout(() => setBounceMistakes(false), 200);
+    }
+    prevMistakes.current = mistakes;
+  }, [mistakes, reduceMotion]);
+
+  // Animate solved changes
+  useEffect(() => {
+    if (solved !== prevSolved.current && !reduceMotion) {
+      setBounceSolved(true);
+      setTimeout(() => setBounceSolved(false), 200);
+    }
+    prevSolved.current = solved;
+  }, [solved, reduceMotion]);
 
   return (
     <div
@@ -34,7 +79,9 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold ${isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-dark-text dark:text-gray-200'}`}
+          } font-bold ${isHardMode && isTimeCritical ? 'text-red-600 dark:text-red-400 animate-pulse' : 'text-dark-text dark:text-gray-200'} ${
+            bounceTimer && !reduceMotion ? 'animate-timer-bounce' : ''
+          } ${showMilestoneBurst && !reduceMotion ? 'animate-milestone-burst' : ''}`}
         >
           {isHardMode ? remainingTime : time}
         </div>
@@ -50,7 +97,9 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold text-dark-text dark:text-gray-200`}
+          } font-bold text-dark-text dark:text-gray-200 ${
+            bounceMistakes && !reduceMotion ? 'animate-timer-bounce' : ''
+          }`}
         >
           {mistakes}/4
         </div>
@@ -66,7 +115,9 @@ export default function StatsBar({
         <div
           className={`${
             isSmallPhone ? 'text-base' : isMobilePhone ? 'text-lg' : 'text-xl'
-          } font-bold text-dark-text dark:text-gray-200`}
+          } font-bold text-dark-text dark:text-gray-200 ${
+            bounceSolved && !reduceMotion ? 'animate-timer-bounce' : ''
+          }`}
         >
           {solved}/4
         </div>
