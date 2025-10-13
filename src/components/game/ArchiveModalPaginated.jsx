@@ -222,7 +222,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
             headers: {
               ...headers,
-              'Accept': 'application/json',
+              Accept: 'application/json',
             },
             responseType: 'json',
           });
@@ -234,9 +234,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             // Defensive parsing: handle both string and object responses
             let errorData;
             try {
-              errorData = typeof response.data === 'string'
-                ? JSON.parse(response.data)
-                : response.data;
+              errorData =
+                typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
             } catch (parseError) {
               console.error('[ArchiveModal] Failed to parse error response:', parseError);
               errorData = {};
@@ -245,9 +244,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           } else {
             // Defensive parsing: CapacitorHttp may return string or object
             try {
-              data = typeof response.data === 'string'
-                ? JSON.parse(response.data)
-                : response.data;
+              data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
             } catch (parseError) {
               console.error('[ArchiveModal] Failed to parse response data:', parseError);
               throw new Error('Invalid response format from server');
@@ -576,7 +573,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter gpu-accelerated"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -584,7 +581,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col ${
+        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-modal-enter gpu-accelerated ${
           highContrast ? 'bg-hc-background border-4 border-hc-border' : 'bg-white dark:bg-gray-800'
         }`}
       >

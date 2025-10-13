@@ -38,11 +38,11 @@ Completion: ${winRate}%
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-fade-in"
+      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-backdrop-enter gpu-accelerated"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full animate-modalSlide shadow-2xl"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full animate-modal-enter shadow-2xl gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -61,7 +61,7 @@ Completion: ${winRate}%
 
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-1 ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
@@ -85,7 +85,7 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-2 ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
@@ -109,7 +109,7 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-3 ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
@@ -136,7 +136,7 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-4 ${
               highContrast
                 ? 'bg-hc-surface border-2 border-hc-border'
                 : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
@@ -162,7 +162,7 @@ Completion: ${winRate}%
         </div>
 
         <div
-          className={`p-4 rounded-xl text-center ${
+          className={`p-4 rounded-xl text-center animate-scale-fade-in stagger-5 ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'

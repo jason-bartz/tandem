@@ -9,12 +9,12 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter gpu-accelerated"
       onClick={onClose}
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto ${
+        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto animate-modal-enter gpu-accelerated ${
           highContrast ? 'bg-hc-background border-4 border-hc-border' : 'bg-white dark:bg-gray-800'
         }`}
       >

@@ -73,12 +73,48 @@ module.exports = {
         'border-color': '#E5E7EB',
       },
       animation: {
+        // Legacy animations (keep for compatibility)
         'fade-in': 'fadeIn 0.5s ease',
         'slide-up': 'slideUp 0.5s ease',
         pulse: 'pulse 2s infinite',
         'link-snap': 'linkSnap 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)',
         shake: 'shake 0.5s',
         'bounce-in': 'bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+
+        // New premium animations (iOS native feel)
+        'screen-enter': 'screenEnterRight 350ms cubic-bezier(0, 0, 0.58, 1)',
+        'screen-exit': 'screenExitLeft 300ms cubic-bezier(0.42, 0, 1, 1)',
+        'slide-up-enter': 'slideUpFromBottom 350ms cubic-bezier(0, 0, 0.58, 1)',
+        'fade-zoom': 'fadeZoomIn 350ms cubic-bezier(0, 0, 0.58, 1)',
+        'modal-enter': 'modalEnter 300ms cubic-bezier(0.5, 1.2, 0.5, 1)',
+        'modal-exit': 'modalExit 200ms cubic-bezier(0.42, 0, 1, 1)',
+        'backdrop-enter': 'backdropFadeIn 200ms cubic-bezier(0, 0, 0.58, 1)',
+        'button-tap': 'buttonTap 100ms cubic-bezier(0.4, 0, 0.6, 1)',
+        'correct-pulse': 'correctPulse 350ms cubic-bezier(0.5, 1.2, 0.5, 1)',
+        'error-shake': 'errorShake 350ms cubic-bezier(0.4, 0, 0.6, 1)',
+        'letter-reveal': 'letterReveal 300ms cubic-bezier(0.5, 1.2, 0.5, 1)',
+        'gentle-float': 'gentleFloat 2s cubic-bezier(0.42, 0, 0.58, 1) infinite',
+        'fade-in-up': 'fadeInUp 300ms cubic-bezier(0, 0, 0.58, 1)',
+        'scale-fade-in': 'scaleFadeIn 300ms cubic-bezier(0, 0, 0.58, 1)',
+        'success-bounce': 'successBounce 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        'pulse-glow': 'pulseGlow 2s cubic-bezier(0.42, 0, 0.58, 1) infinite',
+      },
+      transitionDuration: {
+        instant: '100ms',
+        fast: '200ms',
+        standard: '300ms',
+        prominent: '350ms',
+        celebration: '500ms',
+        extended: '600ms',
+      },
+      transitionTimingFunction: {
+        'ios-default': 'cubic-bezier(0.25, 0.1, 0.25, 1)',
+        'ios-ease-in': 'cubic-bezier(0.42, 0, 1, 1)',
+        'ios-ease-out': 'cubic-bezier(0, 0, 0.58, 1)',
+        spring: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+        'spring-soft': 'cubic-bezier(0.5, 1.2, 0.5, 1)',
+        'spring-bouncy': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+        sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
       },
       keyframes: {
         fadeIn: {

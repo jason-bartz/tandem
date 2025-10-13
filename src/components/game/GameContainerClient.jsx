@@ -269,63 +269,69 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
       {/* Content container - centered scrollable layout for all devices */}
       <div className="min-h-screen flex items-center justify-center py-6 px-4">
-        <div className="w-full max-w-xl mx-auto animate-fade-in relative z-10 my-auto">
+        <div className="w-full max-w-xl mx-auto relative z-10 my-auto">
           {game.gameState === GAME_STATES.WELCOME && (
-            <WelcomeScreen
-              onStart={game.startGame}
-              theme={theme}
-              toggleTheme={toggleTheme}
-              onSelectPuzzle={handleSelectPuzzle}
-              puzzle={game.puzzle}
-            />
+            <div key="welcome" className="animate-screen-enter">
+              <WelcomeScreen
+                onStart={game.startGame}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                onSelectPuzzle={handleSelectPuzzle}
+                puzzle={game.puzzle}
+              />
+            </div>
           )}
 
           {game.gameState === GAME_STATES.PLAYING && (
-            <PlayingScreen
-              puzzle={game.puzzle}
-              answers={game.answers}
-              correctAnswers={game.correctAnswers}
-              checkedWrongAnswers={game.checkedWrongAnswers}
-              mistakes={game.mistakes}
-              solved={game.solved}
-              time={timer.elapsed}
-              onUpdateAnswer={game.updateAnswer}
-              onCheckAnswers={handleCheckAnswers}
-              onCheckSingleAnswer={game.checkSingleAnswer}
-              theme={theme}
-              toggleTheme={toggleTheme}
-              onSelectPuzzle={handleSelectPuzzle}
-              hintsUsed={game.hintsUsed}
-              onUseHint={game.useHint}
-              hasCheckedAnswers={game.hasCheckedAnswers}
-              onReturnToWelcome={game.returnToWelcome}
-              activeHints={game.activeHints}
-              lockedLetters={game.lockedLetters}
-              isMobilePhone={isMobilePhone}
-              isSmallPhone={isSmallPhone}
-              isHardMode={game.isHardMode}
-              hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
-            />
+            <div key="playing" className="animate-screen-enter">
+              <PlayingScreen
+                puzzle={game.puzzle}
+                answers={game.answers}
+                correctAnswers={game.correctAnswers}
+                checkedWrongAnswers={game.checkedWrongAnswers}
+                mistakes={game.mistakes}
+                solved={game.solved}
+                time={timer.elapsed}
+                onUpdateAnswer={game.updateAnswer}
+                onCheckAnswers={handleCheckAnswers}
+                onCheckSingleAnswer={game.checkSingleAnswer}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                onSelectPuzzle={handleSelectPuzzle}
+                hintsUsed={game.hintsUsed}
+                onUseHint={game.useHint}
+                hasCheckedAnswers={game.hasCheckedAnswers}
+                onReturnToWelcome={game.returnToWelcome}
+                activeHints={game.activeHints}
+                lockedLetters={game.lockedLetters}
+                isMobilePhone={isMobilePhone}
+                isSmallPhone={isSmallPhone}
+                isHardMode={game.isHardMode}
+                hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
+              />
+            </div>
           )}
 
           {game.gameState === GAME_STATES.COMPLETE && (
-            <CompleteScreen
-              won={game.won}
-              time={timer.elapsed}
-              mistakes={game.mistakes}
-              correctAnswers={game.solved}
-              puzzle={game.puzzle}
-              puzzleTheme={game.puzzle?.theme}
-              onPlayAgain={game.resetGame}
-              theme={theme}
-              toggleTheme={toggleTheme}
-              hintsUsed={game.hintsUsed}
-              activeHints={game.hintPositionsUsed}
-              onSelectPuzzle={handleSelectPuzzle}
-              onReturnToWelcome={game.returnToWelcome}
-              isHardMode={game.isHardMode}
-              hardModeTimeUp={game.hardModeTimeUp}
-            />
+            <div key="complete" className="animate-screen-enter">
+              <CompleteScreen
+                won={game.won}
+                time={timer.elapsed}
+                mistakes={game.mistakes}
+                correctAnswers={game.solved}
+                puzzle={game.puzzle}
+                puzzleTheme={game.puzzle?.theme}
+                onPlayAgain={game.resetGame}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                hintsUsed={game.hintsUsed}
+                activeHints={game.hintPositionsUsed}
+                onSelectPuzzle={handleSelectPuzzle}
+                onReturnToWelcome={game.returnToWelcome}
+                isHardMode={game.isHardMode}
+                hardModeTimeUp={game.hardModeTimeUp}
+              />
+            </div>
           )}
         </div>
       </div>

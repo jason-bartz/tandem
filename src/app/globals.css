@@ -189,7 +189,363 @@ body {
   transition: background 0.3s ease;
 }
 
-/* Animations */
+/* ============================================
+   PREMIUM ANIMATIONS - iOS Native Feel
+   Following Apple HIG for timing and easing
+   Optimized for 60fps performance
+   ============================================ */
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Performance Optimization */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ============================================
+   SCREEN TRANSITIONS (Page Navigation)
+   ============================================ */
+
+/* Slide in from right (entering new screen) */
+@keyframes screenEnterRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-screen-enter {
+  animation: screenEnterRight 350ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* Slide out to left (exiting current screen) */
+@keyframes screenExitLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+}
+
+.animate-screen-exit {
+  animation: screenExitLeft 300ms cubic-bezier(0.42, 0, 1, 1);
+}
+
+/* Slide up from bottom (sheet-like entrance) */
+@keyframes slideUpFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUpFromBottom 350ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* Fade with zoom (gentle entrance) */
+@keyframes fadeZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-zoom {
+  animation: fadeZoomIn 350ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* ============================================
+   MODAL ANIMATIONS
+   ============================================ */
+
+/* Modal entrance with spring */
+@keyframes modalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-modal-enter {
+  animation: modalEnter 300ms cubic-bezier(0.5, 1.2, 0.5, 1);
+}
+
+/* Modal exit */
+@keyframes modalExit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+.animate-modal-exit {
+  animation: modalExit 200ms cubic-bezier(0.42, 0, 1, 1);
+}
+
+/* Backdrop fade in */
+@keyframes backdropFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-backdrop-enter {
+  animation: backdropFadeIn 200ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* ============================================
+   MICRO-INTERACTIONS
+   ============================================ */
+
+/* Button tap feedback */
+@keyframes buttonTap {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-button-tap {
+  animation: buttonTap 100ms cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Correct answer pulse */
+@keyframes correctPulse {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(1.02);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+  75% {
+    transform: scale(1.01);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-correct-pulse {
+  animation: correctPulse 350ms cubic-bezier(0.5, 1.2, 0.5, 1);
+}
+
+/* Wrong answer shake */
+@keyframes errorShake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+
+.animate-error-shake {
+  animation: errorShake 350ms cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+/* Letter reveal (hint) */
+@keyframes letterReveal {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-letter-reveal {
+  animation: letterReveal 300ms cubic-bezier(0.5, 1.2, 0.5, 1);
+}
+
+/* Gentle float (emphasis) */
+@keyframes gentleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.animate-gentle-float {
+  animation: gentleFloat 2s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+/* ============================================
+   LIST / STAGGER ANIMATIONS
+   ============================================ */
+
+/* Fade in from bottom */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 300ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* Scale fade in */
+@keyframes scaleFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-scale-fade-in {
+  animation: scaleFadeIn 300ms cubic-bezier(0, 0, 0.58, 1);
+}
+
+/* Stagger delays for list items */
+.stagger-1 {
+  animation-delay: 50ms;
+}
+.stagger-2 {
+  animation-delay: 100ms;
+}
+.stagger-3 {
+  animation-delay: 150ms;
+}
+.stagger-4 {
+  animation-delay: 200ms;
+}
+.stagger-5 {
+  animation-delay: 250ms;
+}
+.stagger-6 {
+  animation-delay: 300ms;
+}
+
+/* ============================================
+   CELEBRATION ANIMATIONS
+   ============================================ */
+
+/* Success bounce */
+@keyframes successBounce {
+  0% {
+    opacity: 0;
+    transform: scale(0.3) translateY(-20px);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.05) translateY(-5px);
+  }
+  70% {
+    transform: scale(0.95) translateY(0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.animate-success-bounce {
+  animation: successBounce 600ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Pulse glow */
+@keyframes pulseGlow {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s cubic-bezier(0.42, 0, 0.58, 1) infinite;
+}
+
+/* ============================================
+   LEGACY ANIMATIONS (Keep for backward compatibility)
+   ============================================ */
+
+/* Original fade in */
 @keyframes fadeIn {
   from {
     opacity: 0;
