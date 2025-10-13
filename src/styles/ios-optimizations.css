@@ -54,7 +54,6 @@
 .ios-touchable:active {
   transform: scale(0.98);
   -webkit-transform: scale(0.98);
-  opacity: 0.9;
 }
 
 /* Pull-to-refresh indicator */
