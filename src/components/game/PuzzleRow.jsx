@@ -145,7 +145,7 @@ export default function PuzzleRow({
           <div
             className={`absolute inset-0 pointer-events-none flex items-center ${
               isSmallPhone ? 'px-2' : isMobilePhone ? 'px-2.5' : 'px-3 sm:px-4'
-            }`}
+            } z-10`}
           >
             <span
               className={`
