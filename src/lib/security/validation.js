@@ -210,9 +210,10 @@ export function sanitizeErrorMessage(error) {
       return error.message; // Rate limit messages are safe to expose
     }
 
-    // AI-specific errors can be exposed (they don't leak sensitive info)
+    // AI-specific errors - preserve full message for debugging
+    // The message includes the underlying error which helps diagnose issues
     if (error.message.includes('AI generation failed')) {
-      return 'AI puzzle generation temporarily unavailable. Please try again.';
+      return error.message; // Includes "AI generation failed after X attempts: [actual error]"
     }
     if (error.message.includes('Failed to parse AI response')) {
       return 'AI generated an invalid response. Please try again.';
