@@ -28,6 +28,7 @@ export const API_ENDPOINTS = {
   PUZZLE: '/api/puzzle',
   ADMIN_AUTH: '/api/admin/auth',
   ADMIN_PUZZLES: '/api/admin/puzzles',
+  ADMIN_GENERATE_PUZZLE: '/api/admin/generate-puzzle',
   STATS: '/api/stats',
 };
 
