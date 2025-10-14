@@ -45,12 +45,14 @@ class AIService {
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
         const prompt = this.buildPrompt({ date, pastPuzzles, excludeThemes });
-        logger.info('Generating puzzle with AI', {
+        const genInfo = {
           date,
           model: this.model,
           attempt: attempt + 1,
           maxAttempts: this.maxRetries + 1,
-        });
+        };
+        console.log('[ai.service] Generating puzzle with AI:', genInfo);
+        logger.info('Generating puzzle with AI', genInfo);
 
         const message = await client.messages.create({
           model: this.model,
@@ -67,23 +69,27 @@ class AIService {
         const responseText = message.content[0].text;
         const duration = Date.now() - startTime;
 
-        logger.info('AI response received', {
+        const responseInfo = {
           length: responseText.length,
           duration,
           attempt: attempt + 1,
-        });
+        };
+        console.log('[ai.service] AI response received:', responseInfo);
+        logger.info('AI response received', responseInfo);
 
         const puzzle = this.parseResponse(responseText);
         this.validatePuzzle(puzzle);
 
         // Track successful generation
         this.generationCount++;
-        logger.info('Puzzle generated successfully', {
+        const successInfo = {
           date,
           theme: puzzle.theme,
           duration,
           totalGenerations: this.generationCount,
-        });
+        };
+        console.log('[ai.service] ✓ Puzzle generated successfully:', successInfo);
+        logger.info('Puzzle generated successfully', successInfo);
 
         return puzzle;
       } catch (error) {
@@ -317,14 +323,34 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
     const enabled = this.enabled && !!apiKey;
 
     if (!enabled) {
-      logger.warn('AI generation check failed', {
+      const diagnostics = {
         hasApiKey: !!apiKey,
         apiKeyLength: apiKey?.length,
+        apiKeyPrefix: apiKey?.substring(0, 10),
         enabledFlag: this.enabled,
+        aiGenerationEnabled: process.env.AI_GENERATION_ENABLED,
+        nodeEnv: process.env.NODE_ENV,
         envKeys: Object.keys(process.env).filter(
           (k) => k.includes('AI') || k.includes('ANTHROPIC')
         ),
-      });
+      };
+
+      console.error('[ai.service] ✗ AI generation check FAILED:', diagnostics);
+
+      // Provide actionable error message
+      if (!apiKey) {
+        console.error('[ai.service] MISSING: ANTHROPIC_API_KEY environment variable not set');
+        console.error(
+          '[ai.service] ACTION: Set ANTHROPIC_API_KEY in .env.local and restart server'
+        );
+      } else if (this.enabled === false) {
+        console.error('[ai.service] DISABLED: AI_GENERATION_ENABLED is set to false');
+        console.error('[ai.service] ACTION: Set AI_GENERATION_ENABLED=true in .env.local');
+      }
+
+      logger.warn('AI generation check failed', diagnostics);
+    } else {
+      console.log('[ai.service] ✓ AI generation is enabled and ready');
     }
 
     return enabled;
