@@ -101,26 +101,50 @@ class AdminService {
 
   async generatePuzzle(date, options = {}) {
     try {
-      const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_GENERATE_PUZZLE), {
-        method: 'POST',
-        headers: this.getAuthHeaders(true),
-        body: JSON.stringify({
-          date,
-          excludeThemes: options.excludeThemes || [],
-          includePastDays: options.includePastDays || 30,
-        }),
+      console.log('[AdminService] generatePuzzle called with:', { date, options });
+
+      const headers = this.getAuthHeaders(true);
+      console.log('[AdminService] Request headers:', {
+        hasAuth: !!headers['Authorization'],
+        hasCSRF: !!headers['x-csrf-token'],
+        contentType: headers['Content-Type']
       });
 
+      const requestBody = {
+        date,
+        excludeThemes: options.excludeThemes || [],
+        includePastDays: options.includePastDays || 30,
+      };
+      console.log('[AdminService] Request body:', requestBody);
+
+      const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_GENERATE_PUZZLE), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('[AdminService] Response status:', response.status, response.statusText);
+
       const data = await response.json();
+      console.log('[AdminService] Response data:', data);
 
       if (!response.ok) {
-        console.error('Generate puzzle failed:', response.status, response.statusText, data);
-        return { success: false, error: data.error || `Server error: ${response.status}` };
+        console.error('[AdminService] Generate puzzle failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+          headers: Object.fromEntries(response.headers.entries())
+        });
+        return { success: false, error: data.error || `Server error: ${response.status}`, status: response.status };
       }
 
       return data;
     } catch (error) {
-      console.error('AdminService.generatePuzzle error:', error);
+      console.error('[AdminService] generatePuzzle error:', {
+        message: error.message,
+        stack: error.stack,
+        error
+      });
       return { success: false, error: error.message };
     }
   }

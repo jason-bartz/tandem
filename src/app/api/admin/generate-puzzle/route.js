@@ -14,20 +14,36 @@ const generatePuzzleSchema = z.object({
 
 export async function POST(request) {
   try {
+    console.log('[generate-puzzle] Request received');
+    console.log('[generate-puzzle] Environment check:', {
+      hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
+      keyLength: process.env.ANTHROPIC_API_KEY?.length,
+      keyPrefix: process.env.ANTHROPIC_API_KEY?.substring(0, 10),
+      aiEnabled: process.env.AI_GENERATION_ENABLED,
+      nodeEnv: process.env.NODE_ENV,
+      allAIKeys: Object.keys(process.env).filter(k => k.includes('AI') || k.includes('ANTHROPIC'))
+    });
+
     // Apply strict rate limiting for AI generation (10 per hour)
     const rateLimitResponse = await withRateLimit(request, 'write', { max: 10 });
     if (rateLimitResponse) {
+      console.log('[generate-puzzle] Rate limit exceeded');
       return rateLimitResponse;
     }
 
     // Require admin authentication
     const authResult = await requireAdmin(request);
     if (authResult.error) {
+      console.log('[generate-puzzle] Authentication failed');
       return authResult.error;
     }
+    console.log('[generate-puzzle] Authentication successful');
 
     // Check if AI generation is enabled
-    if (!aiService.isEnabled()) {
+    const aiEnabled = aiService.isEnabled();
+    console.log('[generate-puzzle] AI service enabled check:', aiEnabled);
+
+    if (!aiEnabled) {
       return NextResponse.json(
         {
           success: false,
