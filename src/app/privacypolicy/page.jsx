@@ -74,13 +74,20 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">3. Optional Server-Side Statistics</h4>
-            <p className="mb-2">If you choose to participate in global statistics:</p>
+            <h4 className="font-semibold mb-2">3. Server-Side Statistics</h4>
+            <p className="mb-2">
+              When you play Tandem, we collect and store gameplay data on our servers:
+            </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Anonymous gameplay data (completions, time, mistakes)</li>
-              <li>Aggregated statistics for leaderboards</li>
-              <li>No personally identifiable information is collected</li>
+              <li>Gameplay scores and completion data</li>
+              <li>Time taken to complete puzzles</li>
+              <li>Number of mistakes and attempts</li>
+              <li>Aggregated statistics for global leaderboards</li>
             </ul>
+            <p className="mt-2 text-xs italic">
+              Note: While we collect gameplay data, we do not collect personally identifiable
+              information such as names, email addresses, or contact information.
+            </p>
           </div>
 
           <div>
@@ -165,9 +172,10 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Server Storage (Optional)</h4>
+            <h4 className="font-semibold mb-2">Server Storage</h4>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>If enabled, anonymous statistics may be stored on Vercel KV (Redis)</li>
+              <li>Gameplay statistics and scores are stored on Vercel KV (Redis)</li>
+              <li>Data is used for leaderboards and global statistics</li>
               <li>No personally identifiable information is stored on our servers</li>
               <li>Server data is encrypted in transit and at rest</li>
             </ul>
@@ -290,10 +298,10 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Opt-Out Options</h4>
+            <h4 className="font-semibold mb-2">Managing Your Data</h4>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Disable statistics sharing in game settings (if available)</li>
-              <li>Play without installing the PWA</li>
+              <li>Local data can be cleared through browser settings</li>
+              <li>Contact us to request deletion of server-side gameplay data</li>
               <li>Use privacy-focused browsers that limit storage</li>
             </ul>
           </div>
@@ -461,7 +469,17 @@ export default function PrivacyPolicy() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  No personal data collection
+                  No personal data collection (names, emails, etc.)
+                </li>
+                <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  Gameplay scores stored on our servers for leaderboards
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -471,17 +489,7 @@ export default function PrivacyPolicy() {
                       clipRule="evenodd"
                     />
                   </svg>
-                  Data stored locally on your device
-                </li>
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  No ads or trackers
+                  No ads or third-party trackers
                 </li>
                 <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
