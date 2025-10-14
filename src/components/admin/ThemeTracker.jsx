@@ -437,7 +437,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                     </td>
                     <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
                       <button
-                        onClick={() => onEditPuzzle && onEditPuzzle(puzzle.date)}
+                        onClick={() => onEditPuzzle && onEditPuzzle(puzzle)}
                         className="px-2 sm:px-3 py-1 bg-sky-500 text-white text-[10px] sm:text-xs rounded hover:bg-sky-600 transition-colors"
                       >
                         Edit

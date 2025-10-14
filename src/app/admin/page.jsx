@@ -11,6 +11,7 @@ export default function AdminDashboard() {
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   useEffect(() => {
     setMounted(true);
@@ -92,6 +93,8 @@ export default function AdminDashboard() {
         {activeTab === 'calendar' && (
           <PuzzleCalendar
             key={refreshKey}
+            currentMonth={currentMonth}
+            onMonthChange={setCurrentMonth}
             onEditPuzzle={(puzzle) => {
               setEditingPuzzle(puzzle);
               setActiveTab('editor');
