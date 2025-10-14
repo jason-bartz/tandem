@@ -1,120 +1,73 @@
 import cron from 'node-cron';
-import { toZonedTime } from 'date-fns-tz';
-import { getPuzzleForDate, setPuzzleForDate } from './db';
+
+/**
+ * Maintenance Scheduler
+ *
+ * Following Wordle best practices:
+ * - Puzzles change at user's LOCAL midnight (client-side)
+ * - No server-side puzzle rotation
+ * - Server only handles maintenance tasks
+ *
+ * This scheduler runs daily maintenance tasks like:
+ * - Stats aggregation
+ * - Database cleanup
+ * - Cache management
+ */
 
 // Track if scheduler is running
 let schedulerRunning = false;
+let maintenanceTask = null;
 
-// Function to get the next puzzle date
-function getNextPuzzleDate() {
-  // Get current time in Eastern Time
-  const etTimeZone = 'America/New_York';
-  const now = new Date();
-  const etNow = toZonedTime(now, etTimeZone);
-  
-  // Get tomorrow's date in ET
-  const tomorrow = new Date(etNow);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-  
-  return tomorrow.toISOString().split('T')[0];
-}
-
-// Function to get current puzzle date based on ET
-export function getCurrentPuzzleDateET() {
-  const etTimeZone = 'America/New_York';
-  const now = new Date();
-  const etNow = toZonedTime(now, etTimeZone);
-  
-  // If it's past midnight ET, use today's date
-  // Otherwise use yesterday's date (puzzle hasn't rotated yet)
-  return etNow.toISOString().split('T')[0];
-}
-
-// Function to rotate to the next puzzle
-async function rotatePuzzle() {
+// Daily maintenance tasks
+async function runDailyMaintenance() {
   try {
-    console.log('[Scheduler] Starting puzzle rotation at', new Date().toISOString());
-    
-    const nextDate = getCurrentPuzzleDateET();
-    const puzzle = await getPuzzleForDate(nextDate);
-    
-    if (puzzle) {
-      console.log(`[Scheduler] Successfully rotated to puzzle for ${nextDate}`);
-      
-      // Log stats for monitoring
-      const { getStats } = await import('./db');
-      const stats = await getStats();
-      console.log('[Scheduler] Current stats:', stats);
-      
-      // Trigger any necessary cache invalidation
-      if (global.puzzleCache) {
-        delete global.puzzleCache.current;
-      }
-      
-      return true;
-    } else {
-      console.error(`[Scheduler] No puzzle found for ${nextDate}`);
-      return false;
+    console.log('[Scheduler] Running daily maintenance at', new Date().toISOString());
+
+    // Clear old caches
+    if (global.puzzleCache) {
+      console.log('[Scheduler] Clearing puzzle cache');
+      global.puzzleCache = {};
     }
+
+    // Log stats for monitoring
+    const { getStats } = await import('./db');
+    const stats = await getStats();
+    console.log('[Scheduler] Current stats:', stats);
+
+    console.log('[Scheduler] Daily maintenance complete');
+    return true;
   } catch (error) {
-    console.error('[Scheduler] Error rotating puzzle:', error);
+    console.error('[Scheduler] Error during daily maintenance:', error);
     return false;
   }
 }
 
-// Initialize the scheduler
+// Initialize the scheduler for maintenance tasks only
 export function initPuzzleScheduler() {
   if (schedulerRunning) {
     console.log('[Scheduler] Already running, skipping initialization');
-    return;
+    return maintenanceTask;
   }
-  
-  // Schedule for 12:01 AM ET every day
-  // Cron pattern: minute hour day month day-of-week
-  // We need to convert ET to server time
-  
-  // For production, we'll use a cron pattern that runs at 12:01 AM ET
-  // This needs to account for the server's timezone
-  const cronPattern = '1 0 * * *'; // This runs at 00:01 server time
-  
-  // For development/testing, you might want to run more frequently
-  // const cronPattern = '*/5 * * * *'; // Every 5 minutes for testing
-  
-  const task = cron.schedule(cronPattern, async () => {
-    console.log('[Scheduler] Cron job triggered at', new Date().toISOString());
-    await rotatePuzzle();
+
+  // Run maintenance at 3 AM ET daily (low-traffic period)
+  const cronPattern = '0 3 * * *';
+
+  maintenanceTask = cron.schedule(cronPattern, async () => {
+    console.log('[Scheduler] Maintenance cron job triggered at', new Date().toISOString());
+    await runDailyMaintenance();
   }, {
     scheduled: true,
-    timezone: "America/New_York" // Run in ET timezone
+    timezone: "America/New_York"
   });
-  
-  schedulerRunning = true;
-  global.schedulerRunning = true; // Track globally for status checks
-  console.log('[Scheduler] Puzzle rotation scheduler initialized');
-  console.log('[Scheduler] Will rotate puzzles daily at 12:01 AM ET');
-  
-  // Also check if we need to rotate immediately on startup
-  checkInitialRotation();
-  
-  return task;
-}
 
-// Check if we need to rotate on startup
-async function checkInitialRotation() {
-  try {
-    const currentDateET = getCurrentPuzzleDateET();
-    const lastRotation = global.lastPuzzleRotation || null;
-    
-    if (!lastRotation || lastRotation !== currentDateET) {
-      console.log(`[Scheduler] Initial rotation check: Last rotation was ${lastRotation}, current date is ${currentDateET}`);
-      await rotatePuzzle();
-      global.lastPuzzleRotation = currentDateET;
-    } else {
-      console.log(`[Scheduler] No initial rotation needed, already on ${currentDateET}`);
-    }
-  } catch (error) {
-    console.error('[Scheduler] Error during initial rotation check:', error);
-  }
+  schedulerRunning = true;
+  global.schedulerRunning = true;
+
+  console.log('[Scheduler] Maintenance scheduler initialized');
+  console.log('[Scheduler] Puzzles change at user\'s LOCAL midnight (client-side)');
+  console.log('[Scheduler] Daily maintenance runs at 3:00 AM ET');
+
+  return maintenanceTask;
 }
 
 // Stop the scheduler (useful for cleanup)
@@ -122,34 +75,30 @@ export function stopPuzzleScheduler() {
   if (!schedulerRunning) {
     return;
   }
-  
-  // Note: node-cron tasks need to be stopped individually
-  // This is a simplified version
+
+  if (maintenanceTask) {
+    maintenanceTask.stop();
+  }
+
   schedulerRunning = false;
-  console.log('[Scheduler] Puzzle rotation scheduler stopped');
+  global.schedulerRunning = false;
+  console.log('[Scheduler] Maintenance scheduler stopped');
 }
 
-// Manual rotation function (for admin use)
-export async function manualRotatePuzzle(targetDate = null) {
+// Manual cache clear function (for admin use)
+export async function manualClearCache() {
   try {
-    const date = targetDate || getCurrentPuzzleDateET();
-    console.log(`[Scheduler] Manual rotation to ${date}`);
-    
-    const puzzle = await getPuzzleForDate(date);
-    if (puzzle) {
-      global.lastPuzzleRotation = date;
-      
-      // Clear any caches
-      if (global.puzzleCache) {
-        delete global.puzzleCache.current;
-      }
-      
-      return { success: true, date, puzzle };
-    } else {
-      return { success: false, error: `No puzzle found for ${date}` };
+    console.log('[Scheduler] Manual cache clear requested');
+
+    // Clear any caches
+    if (global.puzzleCache) {
+      global.puzzleCache = {};
+      console.log('[Scheduler] Puzzle cache cleared');
     }
+
+    return { success: true, message: 'Cache cleared successfully' };
   } catch (error) {
-    console.error('[Scheduler] Manual rotation error:', error);
+    console.error('[Scheduler] Manual cache clear error:', error);
     return { success: false, error: error.message };
   }
 }

@@ -1,27 +1,35 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
-import { manualRotatePuzzle, getCurrentPuzzleDateET } from '@/lib/scheduler';
+import { manualClearCache } from '@/lib/scheduler';
+import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+
+/**
+ * Admin Cache Management Endpoint
+ *
+ * Following Wordle best practices:
+ * - No server-side puzzle rotation
+ * - Puzzles change at user's local midnight
+ * - This endpoint only clears caches
+ */
 
 export async function GET() {
   try {
-    // Check current puzzle date without requiring auth
-    const currentDate = getCurrentPuzzleDateET();
-    const lastRotation = global.lastPuzzleRotation || null;
+    // Return current system status (no rotation info)
     const schedulerStatus = global.schedulerRunning || false;
+    const currentPuzzleNumber = getCurrentPuzzleNumber();
 
     return NextResponse.json({
       success: true,
-      currentPuzzleDate: currentDate,
-      lastRotation: lastRotation,
+      currentPuzzleNumber: currentPuzzleNumber,
       schedulerRunning: schedulerStatus,
       serverTime: new Date().toISOString(),
-      etTime: new Date().toLocaleString('en-US', { timeZone: 'America/New_York' }),
+      message: 'Puzzles change at user\'s local midnight (client-side)',
     });
   } catch (error) {
     console.error('GET /api/admin/rotate-puzzle error:', error);
     return NextResponse.json(
-      { success: false, error: 'Failed to get rotation status' },
+      { success: false, error: 'Failed to get system status' },
       { status: 500 }
     );
   }
@@ -41,24 +49,19 @@ export async function POST(request) {
       return authResult.error;
     }
 
-    const body = await request.json();
-    const targetDate = body.date || null;
-
-    // Perform manual rotation
-    const result = await manualRotatePuzzle(targetDate);
+    // Clear cache only (no rotation)
+    const result = await manualClearCache();
 
     if (result.success) {
       return NextResponse.json({
         success: true,
-        message: `Puzzle rotated to ${result.date}`,
-        date: result.date,
-        puzzleInfo: result.puzzle,
+        message: 'Cache cleared successfully',
       });
     } else {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
     }
   } catch (error) {
     console.error('POST /api/admin/rotate-puzzle error:', error);
-    return NextResponse.json({ success: false, error: 'Failed to rotate puzzle' }, { status: 500 });
+    return NextResponse.json({ success: false, error: 'Failed to clear cache' }, { status: 500 });
   }
 }

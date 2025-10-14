@@ -89,7 +89,9 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
     setMessage('🤖 Generating puzzle with AI... This may take a few seconds.');
 
     try {
+      console.log('[PuzzleEditor] Calling generatePuzzle for date:', selectedDate);
       const result = await adminService.generatePuzzle(selectedDate);
+      console.log('[PuzzleEditor] generatePuzzle result:', result);
 
       if (result.success) {
         setTheme(result.puzzle.theme);
@@ -105,12 +107,22 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         logger.info('AI puzzle generated successfully', result);
       } else {
         const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
+        console.error('[PuzzleEditor] AI generation failed:', {
+          error: result.error,
+          status: result.status,
+          fullResult: result
+        });
         setMessage(
           `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
         );
         logger.error('AI puzzle generation failed', result);
       }
     } catch (error) {
+      console.error('[PuzzleEditor] Generate puzzle error:', {
+        message: error.message,
+        stack: error.stack,
+        error: error
+      });
       setMessage(
         '❌ Error generating puzzle. Check your connection and try again, or create manually.'
       );
