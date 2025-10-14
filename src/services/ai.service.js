@@ -88,22 +88,64 @@ class AIService {
         return puzzle;
       } catch (error) {
         lastError = error;
-        logger.warn('AI generation attempt failed', {
+
+        // Enhanced error logging
+        logger.error('AI generation attempt failed', {
           attempt: attempt + 1,
-          error: error.message,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
           willRetry: attempt < this.maxRetries,
+          fullError: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         });
 
-        // Don't retry on validation errors (puzzle format issues)
-        if (error.message.includes('Invalid') || error.message.includes('must be')) {
+        // Handle Anthropic API specific errors
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
           if (attempt < this.maxRetries) {
-            continue; // Retry with different generation
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            // Add rate limit context to error
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
           }
         }
 
         // Don't retry on authentication errors
-        if (error.message.includes('authentication') || error.message.includes('API key')) {
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
           throw error;
+        }
+
+        // Service overloaded - retry with longer backoff
+        if (error.status === 529) {
+          logger.warn('Service overloaded, will retry with longer delay', { attempt: attempt + 1 });
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+            continue;
+          }
+        }
+
+        // Don't retry on validation errors (puzzle format issues) - but try once more with fresh generation
+        if (error.message.includes('Invalid') || error.message.includes('must be')) {
+          if (attempt < this.maxRetries) {
+            logger.warn('Validation error, retrying with fresh generation', {
+              error: error.message,
+            });
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            continue;
+          }
         }
 
         if (attempt === this.maxRetries) {
@@ -111,7 +153,9 @@ class AIService {
         }
 
         // Brief delay before retry (exponential backoff)
-        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
       }
     }
 
