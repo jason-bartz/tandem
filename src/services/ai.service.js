@@ -30,9 +30,10 @@ class AIService {
    * @param {string} options.date - Target date for the puzzle
    * @param {Array} options.pastPuzzles - Recent puzzles for context (last 30-60 days)
    * @param {Array} options.excludeThemes - Themes to avoid
+   * @param {string} options.themeHint - Optional theme hint from user
    * @returns {Promise<{theme: string, puzzles: Array<{emoji: string, answer: string}>}>}
    */
-  async generatePuzzle({ date, pastPuzzles = [], excludeThemes = [] }) {
+  async generatePuzzle({ date, pastPuzzles = [], excludeThemes = [], themeHint }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -44,12 +45,13 @@ class AIService {
     // Retry logic for production reliability
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildPrompt({ date, pastPuzzles, excludeThemes });
+        const prompt = this.buildPrompt({ date, pastPuzzles, excludeThemes, themeHint });
         const genInfo = {
           date,
           model: this.model,
           attempt: attempt + 1,
           maxAttempts: this.maxRetries + 1,
+          hasThemeHint: !!themeHint,
         };
         console.log('[ai.service] Generating puzzle with AI:', genInfo);
         logger.info('Generating puzzle with AI', genInfo);
@@ -178,7 +180,7 @@ class AIService {
   /**
    * Build the prompt for AI puzzle generation
    */
-  buildPrompt({ date, pastPuzzles, excludeThemes }) {
+  buildPrompt({ date, pastPuzzles, excludeThemes, themeHint }) {
     const recentThemes = pastPuzzles
       .slice(0, 30)
       .map((p) => p.theme)
@@ -190,18 +192,50 @@ class AIService {
         ? `\nRecent/excluded themes to avoid:\n${allExcludedThemes.map((t) => `- ${t}`).join('\n')}`
         : '';
 
-    return `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.
+    const themeInstructions = themeHint
+      ? `USER REQUESTED THEME: "${themeHint}"
+Generate 4 emoji-word pairs that fit this theme. Use the theme exactly as provided, or refine it slightly if needed for clarity. Focus on creating excellent, guessable emoji pairs that match this theme.`
+      : `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.`;
 
+    const themeRequirements = themeHint
+      ? `
+THEME PROVIDED BY USER:
+- Use the theme "${themeHint}" as your guide
+- You may refine the wording slightly for clarity if needed, but stay true to the concept
+- Focus on finding 4 excellent answers that fit this theme perfectly`
+      : `
 THEME REQUIREMENTS:
-- Use patterns like "Forms of ___", "Things That ___", "Types of ___", or similar constructions
-- The theme should connect words that share a common characteristic or relationship
-- Aim for New York Times Connections difficulty: the connection should require some thought but feel satisfying when discovered
-- Good examples:
-  * "Forms of Capital" → VENTURE (🏢💰), LETTER (✉️📝), PUNISHMENT (⚖️💀), CITY (🏛️🇩🇪)
-  * "Things That Charge" → BATTERY (🔋⚡), CAVALRY (🐎⚔️), BULL (🐂🚩), LAWYER (⚖️💵)
-  * "Board Games" → MONOPOLY (🏠👮), LIFE (🚙🎓), CHECKERS (⬛️🟥), SCRABBLE (🔤📝)
-  * "Types of Layers" → CAKE (🎂🍰), CRUST (🌍🔥), ONION (🧅😭), CLOTHING (🧥❄️)
-- Bad example: "Musical Performance Terms" (too specialized/technical)
+- Create a DIVERSE, CREATIVE theme that connects 4 words in an interesting way
+- Vary your approach! Use different theme patterns:
+  * Direct categories: "Board Games", "Pizza Toppings", "Dog Breeds", "Planets"
+  * Descriptive phrases: "Things That Charge", "Things That Can Be Broken", "Words Before 'Stick'"
+  * "Forms/Types of ___": "Forms of Capital", "Types of Layers", "Kinds of Energy"
+  * Word relationships: "Synonyms for Fast", "Words That Follow 'Green'", "Palindromes"
+  * Conceptual links: "Famous Pairs", "Things That Come in Dozens", "Red Things"
+  * Activities/Actions: "Winter Sports", "Kitchen Verbs", "Dance Moves"
+  * Places/Locations: "US State Capitals", "Famous Streets", "Ocean Names"
+  * Pop culture: "Disney Characters", "Superhero Aliases", "Beatles Songs"
+- CRITICAL: Do NOT default to "Forms of" or "Things That" patterns - mix it up!`;
+
+    return `${themeInstructions}
+${themeRequirements}
+
+GOOD EXAMPLES (notice how emoji pairs work TOGETHER to be guessable):
+- "Board Games" → MONOPOLY (🏠💰), LIFE (🚙👶), CHECKERS (⬛️🟥), SCRABBLE (🔤📖)
+- "Things That Charge" → BATTERY (🔋⚡), CAVALRY (🐎⚔️), BULL (🐂🚩), LAWYER (⚖️💵)
+- "Forms of Capital" → VENTURE (🏢💰), LETTER (✉️📝), PUNISHMENT (⚖️💀), CITY (🏛️🇩🇪)
+- "Retro Videogame Franchises" → MARIO (🍄🪠), SONIC (🦔💍), TETRIS (🧱🏗️), PACMAN (👻💊)
+
+BAD EXAMPLES (emojis are not cohesive or guessable):
+- ❌ "Pizza Toppings" → PEPPERONI (🍕🥓) - uses pizza emoji in the answer
+- ❌ "Dog Breeds" → BEAGLE (🐕👂) - just uses generic dog emoji
+
+CRITICAL EMOJI RULES:
+- NEVER use the theme itself as an emoji (e.g., don't use 🍕 for pizza toppings)
+- NEVER use generic category emojis (e.g., don't use 🐕 for different dog breeds)
+- The two emojis must combine to create a specific, guessable clue
+- Each emoji must be unique across the entire puzzle - no repetition
+- Aim for New York Times Connections difficulty: should require thought but feel satisfying when discovered
 
 VOCABULARY REQUIREMENTS (CRITICAL):
 - Use everyday vocabulary at Wordle difficulty level - recognizable but not necessarily easy

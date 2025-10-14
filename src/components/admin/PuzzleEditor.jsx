@@ -90,7 +90,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
 
     try {
       console.log('[PuzzleEditor] Calling generatePuzzle for date:', selectedDate);
-      const result = await adminService.generatePuzzle(selectedDate);
+      const options = theme.trim() ? { themeHint: theme.trim() } : {};
+      const result = await adminService.generatePuzzle(selectedDate, options);
       console.log('[PuzzleEditor] generatePuzzle result:', result);
 
       if (result.success) {
