@@ -142,22 +142,38 @@ class AIService {
 
     return `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.
 
-REQUIREMENTS:
-1. Theme: Must be creative, specific, and fun. Examples: "Things found in a kitchen", "Types of weather", "Ocean creatures"
-2. Each puzzle pair consists of:
-   - Two emojis that hint at a word
-   - An answer (the word being described)
-3. Answers must be:
-   - 2-30 characters long
-   - Common English words (not too obscure)
-   - Appropriate difficulty (not too easy, not impossible)
-   - All uppercase letters
-4. Emojis must:
-   - Be exactly 2 emojis per pair
-   - Clearly relate to the answer
-   - Be recognizable and commonly supported
-5. All 4 pairs must relate to the theme
-6. Ensure variety - don't repeat similar words or emoji combinations
+THEME REQUIREMENTS:
+- Use patterns like "Forms of ___", "Things That ___", "Types of ___", or similar constructions
+- The theme should connect words that share a common characteristic or relationship
+- Aim for themes where the connection isn't immediately obvious but feels satisfying when discovered
+- Examples: "Forms of Capital" (VENTURE, LETTER, PUNISHMENT, CITY), "Things That Charge" (BATTERY, CAVALRY, BULL, LAWYER)
+
+EMOJI PAIR REQUIREMENTS:
+- Use exactly 2 emojis per word
+- The two emojis should work together as a pair to hint at the answer
+- Avoid using the same emoji twice in one pair
+- Emojis should be specific and recognizable (not obscure)
+- Consider using emojis that represent:
+  * Visual characteristics of the word
+  * Phonetic hints (rebus-style)
+  * Contextual associations
+  * Related concepts that combine to suggest the answer
+
+ANSWER REQUIREMENTS:
+- 2-30 characters, uppercase letters only
+- Must be common English words (avoid technical jargon or obscure terms)
+- All 4 answers must fit the theme
+
+DIFFICULTY BALANCE:
+Within each puzzle, include:
+- 1 easier pair: Most players should get this quickly (~70% success rate)
+- 2 medium pairs: Requires some thinking but achievable (~40-60% success rate)
+- 1 harder pair: The challenge answer, less obvious (~20-30% success rate)
+
+VARIETY REQUIREMENTS:
+- Don't repeat words across different meaning contexts (e.g., avoid CAPITAL if theme is "Forms of Capital")
+- Vary emoji categories (don't use all food emojis, all animal emojis, etc.)
+- Ensure each answer feels distinct within its theme
 ${excludedThemesList}
 
 RESPONSE FORMAT (JSON only, no explanation):
