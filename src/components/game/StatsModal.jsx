@@ -66,6 +66,7 @@ Completion: ${winRate}%
                 ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white font-bold'
                 : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
             }`}
+            aria-label="Close"
           >
             ×
           </button>
