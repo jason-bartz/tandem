@@ -15,8 +15,10 @@ const generatePuzzleSchema = z.object({
 
 export async function POST(request) {
   try {
-    console.log('[generate-puzzle] Request received');
-    console.log('[generate-puzzle] Environment check:', {
+    const timestamp = new Date().toISOString();
+    console.log(`[${timestamp}] [generate-puzzle] Request received`);
+
+    const envCheck = {
       hasAnthropicKey: !!process.env.ANTHROPIC_API_KEY,
       keyLength: process.env.ANTHROPIC_API_KEY?.length,
       keyPrefix: process.env.ANTHROPIC_API_KEY?.substring(0, 10),
@@ -25,7 +27,20 @@ export async function POST(request) {
       allAIKeys: Object.keys(process.env).filter(
         (k) => k.includes('AI') || k.includes('ANTHROPIC')
       ),
-    });
+    };
+    console.log(`[${timestamp}] [generate-puzzle] Environment check:`, envCheck);
+
+    // Log critical environment issues immediately
+    if (!process.env.ANTHROPIC_API_KEY) {
+      console.error(
+        `[${timestamp}] [generate-puzzle] CRITICAL: ANTHROPIC_API_KEY not found in environment`
+      );
+    }
+    if (process.env.AI_GENERATION_ENABLED === 'false') {
+      console.error(
+        `[${timestamp}] [generate-puzzle] WARNING: AI_GENERATION_ENABLED is explicitly disabled`
+      );
+    }
 
     // Apply strict rate limiting for AI generation (10 per hour)
     const rateLimitResponse = await withRateLimit(request, 'write', { max: 10 });
@@ -44,9 +59,10 @@ export async function POST(request) {
 
     // Check if AI generation is enabled
     const aiEnabled = aiService.isEnabled();
-    console.log('[generate-puzzle] AI service enabled check:', aiEnabled);
+    console.log(`[${timestamp}] [generate-puzzle] AI service enabled check:`, aiEnabled);
 
     if (!aiEnabled) {
+      console.error(`[${timestamp}] [generate-puzzle] REJECTED: AI service not enabled`);
       return NextResponse.json(
         {
           success: false,
@@ -55,6 +71,8 @@ export async function POST(request) {
         { status: 503 }
       );
     }
+
+    console.log(`[${timestamp}] [generate-puzzle] ✓ All checks passed, proceeding with generation`);
 
     // Parse and validate request body
     const body = await parseAndValidateJson(request, generatePuzzleSchema);
@@ -98,13 +116,14 @@ export async function POST(request) {
     const duration = Date.now() - startTime;
 
     // Log generation for monitoring (production analytics)
-    console.log('AI puzzle generated:', {
+    const genResult = {
       date,
       theme: generatedPuzzle.theme,
       duration,
       pastPuzzlesAnalyzed: pastPuzzles.length,
       admin: authResult.admin?.username,
-    });
+    };
+    console.log(`[${timestamp}] [generate-puzzle] ✓ SUCCESS - AI puzzle generated:`, genResult);
 
     return NextResponse.json({
       success: true,
