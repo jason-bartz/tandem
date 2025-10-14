@@ -122,14 +122,54 @@ export async function POST(request) {
       stack: error.stack,
       name: error.name,
       cause: error.cause,
-      fullError: error,
+      type: error.constructor.name,
+      // Log Anthropic-specific error details if available
+      statusCode: error.status,
+      responseBody: error.error,
+      fullError: JSON.stringify(error, Object.getOwnPropertyNames(error)),
     });
+
+    // Handle Anthropic API specific errors
+    if (error.status === 429 || error.message.includes('rate_limit')) {
+      console.error('[generate-puzzle] Anthropic rate limit exceeded:', error.message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'AI service rate limit reached. Please wait a moment and try again.',
+          retryAfter: error.error?.retry_after || 60,
+        },
+        { status: 429 }
+      );
+    }
+
+    if (
+      error.status === 401 ||
+      error.message.includes('authentication') ||
+      error.message.includes('API key')
+    ) {
+      console.error('[generate-puzzle] Anthropic authentication error:', error.message);
+      return NextResponse.json(
+        { success: false, error: 'AI service authentication failed. Please contact support.' },
+        { status: 503 }
+      );
+    }
+
+    if (error.status === 529 || error.message.includes('overloaded')) {
+      console.error('[generate-puzzle] Anthropic service overloaded:', error.message);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'AI service is temporarily overloaded. Please try again in a moment.',
+        },
+        { status: 503 }
+      );
+    }
 
     const message = sanitizeErrorMessage(error);
 
     // Handle specific error types
     if (error.message.includes('AI generation')) {
-      console.error('[generate-puzzle] AI generation error');
+      console.error('[generate-puzzle] AI generation error:', error.message);
       return NextResponse.json({ success: false, error: message }, { status: 503 });
     }
 
@@ -139,14 +179,14 @@ export async function POST(request) {
     }
 
     if (error.message.includes('rate limit')) {
-      console.error('[generate-puzzle] Rate limit exceeded');
+      console.error('[generate-puzzle] Rate limit exceeded:', error.message);
       return NextResponse.json(
         { success: false, error: 'Rate limit exceeded. Please try again later.' },
         { status: 429 }
       );
     }
 
-    console.error('[generate-puzzle] Unhandled error type');
+    console.error('[generate-puzzle] Unhandled error type:', error.message);
     return NextResponse.json(
       {
         success: false,
