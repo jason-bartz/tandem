@@ -293,11 +293,20 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
         throw new Error(`Puzzle pair ${index + 1} is incomplete`);
       }
 
-      // Count emoji characters (approximate - each emoji is typically 2+ chars)
-      const emojiCount = (p.emoji.match(/[\u{1F300}-\u{1F9FF}]/gu) || []).length;
+      // Count emoji characters using a comprehensive regex that handles:
+      // - Standard emojis (1F300-1F9FF)
+      // - Supplementary emojis (various ranges)
+      // - Variation selectors (FE0F)
+      // - ZWJ sequences
+      // - Keycap sequences
+      const emojiRegex =
+        /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2}|[\u{1F1E6}-\u{1F1FF}]{2})/gu;
+      const emojis = p.emoji.match(emojiRegex) || [];
+      const emojiCount = emojis.length;
+
       if (emojiCount < 2) {
         throw new Error(
-          `Puzzle pair ${index + 1} needs exactly 2 emojis, got ${emojiCount}: ${p.emoji}`
+          `Puzzle pair ${index + 1} needs exactly 2 emojis, got ${emojiCount}: ${p.emoji} (matched: ${emojis.join(', ')})`
         );
       }
 
