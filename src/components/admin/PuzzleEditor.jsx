@@ -58,7 +58,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       });
 
       if (result.success) {
-        setMessage(`✅ Puzzle saved for ${selectedDate}`);
+        setMessage(`✅ Puzzle saved for ${formatDateDisplay(selectedDate)}`);
         if (onClose) {
           setTimeout(() => onClose(), 1500);
         }
