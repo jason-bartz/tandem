@@ -9,7 +9,7 @@ import { z } from 'zod';
 const generatePuzzleSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   excludeThemes: z.array(z.string()).optional().default([]),
-  includePastDays: z.number().min(7).max(90).optional().default(30),
+  includePastDays: z.number().min(7).max(365).optional().default(180),
 });
 
 export async function POST(request) {
@@ -21,7 +21,9 @@ export async function POST(request) {
       keyPrefix: process.env.ANTHROPIC_API_KEY?.substring(0, 10),
       aiEnabled: process.env.AI_GENERATION_ENABLED,
       nodeEnv: process.env.NODE_ENV,
-      allAIKeys: Object.keys(process.env).filter(k => k.includes('AI') || k.includes('ANTHROPIC'))
+      allAIKeys: Object.keys(process.env).filter(
+        (k) => k.includes('AI') || k.includes('ANTHROPIC')
+      ),
     });
 
     // Apply strict rate limiting for AI generation (10 per hour)
