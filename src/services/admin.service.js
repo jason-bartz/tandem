@@ -115,6 +115,7 @@ class AdminService {
         excludeThemes: options.excludeThemes || [],
         includePastDays: options.includePastDays || 180,
         includeFutureDays: options.includeFutureDays || 14,
+        ...(options.themeHint && { themeHint: options.themeHint }),
       };
       console.log('[AdminService] Request body:', requestBody);
 
