@@ -195,8 +195,12 @@ class AIService {
 THEME REQUIREMENTS:
 - Use patterns like "Forms of ___", "Things That ___", "Types of ___", or similar constructions
 - The theme should connect words that share a common characteristic or relationship
-- Aim for themes where the connection isn't immediately obvious but feels satisfying when discovered
-- Good examples: "Forms of Capital" (VENTURE, LETTER, PUNISHMENT, CITY), "Things That Melt" (ICE, BUTTER, CHOCOLATE, CANDLE)
+- Aim for New York Times Connections difficulty: the connection should require some thought but feel satisfying when discovered
+- Good examples:
+  * "Forms of Capital" → VENTURE (🏢💰), LETTER (✉️📝), PUNISHMENT (⚖️💀), CITY (🏛️🇩🇪)
+  * "Things That Charge" → BATTERY (🔋⚡), CAVALRY (🐎⚔️), BULL (🐂🚩), LAWYER (⚖️💵)
+  * "Board Games" → MONOPOLY (🏠👮), LIFE (🚙🎓), CHECKERS (⬛️🟥), SCRABBLE (🔤📝)
+  * "Types of Layers" → CAKE (🎂🍰), CRUST (🌍🔥), ONION (🧅😭), CLOTHING (🧥❄️)
 - Bad example: "Musical Performance Terms" (too specialized/technical)
 
 VOCABULARY REQUIREMENTS (CRITICAL):
@@ -208,6 +212,7 @@ VOCABULARY REQUIREMENTS (CRITICAL):
 
 EMOJI PAIR REQUIREMENTS:
 - Use exactly 2 emojis per word
+- CRITICAL: Each emoji must be unique across the entire puzzle - do NOT reuse any emoji in multiple answers
 - Emoji pairs MUST provide intuitive visual or phonetic clues to the answer
 - Test: Could someone reasonably deduce the answer from the two emojis?
 - Avoid abstract concepts that can't be represented visually
@@ -288,6 +293,9 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
       throw new Error('Must have exactly 4 puzzle pairs');
     }
 
+    // Track all emojis used across the puzzle to prevent repetition
+    const allEmojisUsed = new Set();
+
     puzzle.puzzles.forEach((p, index) => {
       if (!p.emoji || !p.answer) {
         throw new Error(`Puzzle pair ${index + 1} is incomplete`);
@@ -309,6 +317,16 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
           `Puzzle pair ${index + 1} needs exactly 2 emojis, got ${emojiCount}: ${p.emoji} (matched: ${emojis.join(', ')})`
         );
       }
+
+      // Check for emoji repetition across answers
+      emojis.forEach((emoji) => {
+        if (allEmojisUsed.has(emoji)) {
+          throw new Error(
+            `Emoji "${emoji}" is used in multiple answers. Each emoji must be unique across the puzzle.`
+          );
+        }
+        allEmojisUsed.add(emoji);
+      });
 
       if (p.answer.length < 2 || p.answer.length > 30) {
         throw new Error(`Answer "${p.answer}" must be 2-30 characters`);
