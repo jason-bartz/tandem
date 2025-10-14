@@ -107,13 +107,13 @@ class AdminService {
       console.log('[AdminService] Request headers:', {
         hasAuth: !!headers['Authorization'],
         hasCSRF: !!headers['x-csrf-token'],
-        contentType: headers['Content-Type']
+        contentType: headers['Content-Type'],
       });
 
       const requestBody = {
         date,
         excludeThemes: options.excludeThemes || [],
-        includePastDays: options.includePastDays || 30,
+        includePastDays: options.includePastDays || 180,
       };
       console.log('[AdminService] Request body:', requestBody);
 
@@ -133,9 +133,13 @@ class AdminService {
           status: response.status,
           statusText: response.statusText,
           data,
-          headers: Object.fromEntries(response.headers.entries())
+          headers: Object.fromEntries(response.headers.entries()),
         });
-        return { success: false, error: data.error || `Server error: ${response.status}`, status: response.status };
+        return {
+          success: false,
+          error: data.error || `Server error: ${response.status}`,
+          status: response.status,
+        };
       }
 
       return data;
@@ -143,7 +147,7 @@ class AdminService {
       console.error('[AdminService] generatePuzzle error:', {
         message: error.message,
         stack: error.stack,
-        error
+        error,
       });
       return { success: false, error: error.message };
     }
