@@ -4,12 +4,31 @@ import adminService from '@/services/admin.service';
 import { formatDate } from '@/lib/utils';
 import { getHolidaysForMonth } from '@/lib/holidays';
 
-export default function PuzzleCalendar({ onEditPuzzle }) {
-  const [currentMonth, setCurrentMonth] = useState(new Date());
+export default function PuzzleCalendar({
+  onEditPuzzle,
+  currentMonth: propCurrentMonth,
+  onMonthChange,
+}) {
+  const [currentMonth, setCurrentMonthState] = useState(propCurrentMonth || new Date());
   const [puzzles, setPuzzles] = useState({});
   const [loading, setLoading] = useState(false);
   const [selectedPuzzle, setSelectedPuzzle] = useState(null);
   const [showMonthPicker, setShowMonthPicker] = useState(false);
+
+  // Sync with prop if provided
+  useEffect(() => {
+    if (propCurrentMonth) {
+      setCurrentMonthState(propCurrentMonth);
+    }
+  }, [propCurrentMonth]);
+
+  // Update internal state and notify parent
+  const setCurrentMonth = (newMonth) => {
+    setCurrentMonthState(newMonth);
+    if (onMonthChange) {
+      onMonthChange(newMonth);
+    }
+  };
 
   useEffect(() => {
     loadMonthPuzzles();
