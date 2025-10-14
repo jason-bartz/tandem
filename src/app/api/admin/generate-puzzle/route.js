@@ -42,8 +42,8 @@ export async function POST(request) {
       );
     }
 
-    // Apply strict rate limiting for AI generation (10 per hour)
-    const rateLimitResponse = await withRateLimit(request, 'write', { max: 10 });
+    // Apply rate limiting for AI generation (30 per hour)
+    const rateLimitResponse = await withRateLimit(request, 'ai_generation');
     if (rateLimitResponse) {
       console.log('[generate-puzzle] Rate limit exceeded');
       return rateLimitResponse;
