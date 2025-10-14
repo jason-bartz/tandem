@@ -244,7 +244,21 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
    * Check if AI generation is available
    */
   isEnabled() {
-    return this.enabled && !!process.env.ANTHROPIC_API_KEY;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    const enabled = this.enabled && !!apiKey;
+
+    if (!enabled) {
+      logger.warn('AI generation check failed', {
+        hasApiKey: !!apiKey,
+        apiKeyLength: apiKey?.length,
+        enabledFlag: this.enabled,
+        envKeys: Object.keys(process.env).filter(
+          (k) => k.includes('AI') || k.includes('ANTHROPIC')
+        ),
+      });
+    }
+
+    return enabled;
   }
 }
 
