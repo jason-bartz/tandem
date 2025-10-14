@@ -16,7 +16,7 @@ class AdminService {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         console.error('Save puzzle failed:', response.status, response.statusText, data);
         return { success: false, error: data.error || `Server error: ${response.status}` };
@@ -48,13 +48,10 @@ class AdminService {
 
   async deletePuzzle(date) {
     try {
-      const response = await fetch(
-        getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}?date=${date}`),
-        {
-          method: 'DELETE',
-          headers: this.getAuthHeaders(true),
-        }
-      );
+      const response = await fetch(getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}?date=${date}`), {
+        method: 'DELETE',
+        headers: this.getAuthHeaders(true),
+      });
 
       const data = await response.json();
       return data;
@@ -89,7 +86,7 @@ class AdminService {
       });
 
       const data = await response.json();
-      
+
       if (!response.ok) {
         console.error('Bulk import failed:', response.status, response.statusText, data);
         return { success: false, error: data.error || `Server error: ${response.status}` };
@@ -98,6 +95,32 @@ class AdminService {
       return data;
     } catch (error) {
       console.error('AdminService.bulkImportPuzzles error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  async generatePuzzle(date, options = {}) {
+    try {
+      const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_GENERATE_PUZZLE), {
+        method: 'POST',
+        headers: this.getAuthHeaders(true),
+        body: JSON.stringify({
+          date,
+          excludeThemes: options.excludeThemes || [],
+          includePastDays: options.includePastDays || 30,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('Generate puzzle failed:', response.status, response.statusText, data);
+        return { success: false, error: data.error || `Server error: ${response.status}` };
+      }
+
+      return data;
+    } catch (error) {
+      console.error('AdminService.generatePuzzle error:', error);
       return { success: false, error: error.message };
     }
   }

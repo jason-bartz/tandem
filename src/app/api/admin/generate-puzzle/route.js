@@ -1,0 +1,127 @@
+import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth';
+import { getPuzzlesRange } from '@/lib/db';
+import aiService from '@/services/ai.service';
+import { withRateLimit } from '@/lib/security/rateLimiter';
+import { parseAndValidateJson, sanitizeErrorMessage } from '@/lib/security/validation';
+import { z } from 'zod';
+
+const generatePuzzleSchema = z.object({
+  date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  excludeThemes: z.array(z.string()).optional().default([]),
+  includePastDays: z.number().min(7).max(90).optional().default(30),
+});
+
+export async function POST(request) {
+  try {
+    // Apply strict rate limiting for AI generation (10 per hour)
+    const rateLimitResponse = await withRateLimit(request, 'write', { max: 10 });
+    if (rateLimitResponse) {
+      return rateLimitResponse;
+    }
+
+    // Require admin authentication
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      return authResult.error;
+    }
+
+    // Check if AI generation is enabled
+    if (!aiService.isEnabled()) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'AI generation is not enabled. Please configure ANTHROPIC_API_KEY.',
+        },
+        { status: 503 }
+      );
+    }
+
+    // Parse and validate request body
+    const body = await parseAndValidateJson(request, generatePuzzleSchema);
+    const { date, excludeThemes, includePastDays } = body;
+
+    // Get recent puzzles for context (to ensure variety)
+    const startDate = new Date(date);
+    startDate.setDate(startDate.getDate() - includePastDays);
+    const endDate = new Date(date);
+    endDate.setDate(endDate.getDate() - 1); // Don't include the target date
+
+    const startDateStr = startDate.toISOString().split('T')[0];
+    const endDateStr = endDate.toISOString().split('T')[0];
+
+    let pastPuzzlesData = {};
+    try {
+      const response = await getPuzzlesRange(startDateStr, endDateStr);
+      pastPuzzlesData = response || {};
+    } catch (error) {
+      console.warn('Could not fetch past puzzles for context:', error);
+      // Continue without context - not a fatal error
+    }
+
+    // Convert past puzzles to array format for AI service
+    const pastPuzzles = Object.entries(pastPuzzlesData)
+      .map(([puzzleDate, puzzle]) => ({
+        date: puzzleDate,
+        theme: puzzle.theme,
+        puzzles: puzzle.puzzles,
+      }))
+      .sort((a, b) => b.date.localeCompare(a.date)); // Most recent first
+
+    // Generate puzzle using AI
+    const startTime = Date.now();
+    const generatedPuzzle = await aiService.generatePuzzle({
+      date,
+      pastPuzzles,
+      excludeThemes,
+    });
+    const duration = Date.now() - startTime;
+
+    // Log generation for monitoring (production analytics)
+    console.log('AI puzzle generated:', {
+      date,
+      theme: generatedPuzzle.theme,
+      duration,
+      pastPuzzlesAnalyzed: pastPuzzles.length,
+      admin: authResult.admin?.username,
+    });
+
+    return NextResponse.json({
+      success: true,
+      puzzle: generatedPuzzle,
+      context: {
+        pastPuzzlesAnalyzed: pastPuzzles.length,
+        excludedThemes: excludeThemes.length,
+        generationTime: duration,
+      },
+    });
+  } catch (error) {
+    console.error('POST /api/admin/generate-puzzle error:', error);
+
+    const message = sanitizeErrorMessage(error);
+
+    // Handle specific error types
+    if (error.message.includes('AI generation')) {
+      return NextResponse.json({ success: false, error: message }, { status: 503 });
+    }
+
+    if (error.message.includes('Validation error') || error.message.includes('Invalid')) {
+      return NextResponse.json({ success: false, error: message }, { status: 400 });
+    }
+
+    if (error.message.includes('rate limit')) {
+      return NextResponse.json(
+        { success: false, error: 'Rate limit exceeded. Please try again later.' },
+        { status: 429 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: false,
+        error: message || 'Failed to generate puzzle. Please try again.',
+      },
+      { status: 500 }
+    );
+  }
+}

@@ -17,6 +17,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
     ]
   );
   const [loading, setLoading] = useState(false);
+  const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState('');
 
   useEffect(() => {
@@ -83,6 +84,42 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
     );
   };
 
+  const handleGenerateWithAI = async () => {
+    setGenerating(true);
+    setMessage('🤖 Generating puzzle with AI... This may take a few seconds.');
+
+    try {
+      const result = await adminService.generatePuzzle(selectedDate);
+
+      if (result.success) {
+        setTheme(result.puzzle.theme);
+        setPuzzles(result.puzzle.puzzles);
+
+        const timeMsg =
+          result.context.generationTime > 1000
+            ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+            : '';
+        setMessage(
+          `✨ Success! Generated "${result.puzzle.theme}" by analyzing ${result.context.pastPuzzlesAnalyzed} recent puzzles${timeMsg}. You can edit any field before saving.`
+        );
+        logger.info('AI puzzle generated successfully', result);
+      } else {
+        const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
+        setMessage(
+          `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
+        );
+        logger.error('AI puzzle generation failed', result);
+      }
+    } catch (error) {
+      setMessage(
+        '❌ Error generating puzzle. Check your connection and try again, or create manually.'
+      );
+      logger.error('Generate puzzle error', error);
+    } finally {
+      setGenerating(false);
+    }
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-6 h-full w-full overflow-x-auto">
       {initialPuzzle && (
@@ -111,14 +148,49 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
             <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Theme
             </label>
-            <input
-              type="text"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder="e.g., Things found in a kitchen"
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
-              required
-            />
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={theme}
+                onChange={(e) => setTheme(e.target.value)}
+                placeholder="e.g., Things found in a kitchen"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
+                required
+              />
+              <button
+                type="button"
+                onClick={handleGenerateWithAI}
+                disabled={generating || loading}
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                title="Generate puzzle with AI"
+              >
+                {generating ? (
+                  <span className="flex items-center gap-2">
+                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span className="hidden sm:inline">Generating...</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1">
+                    ✨ <span className="hidden sm:inline">AI Generate</span>
+                  </span>
+                )}
+              </button>
+            </div>
           </div>
         </div>
 
@@ -126,9 +198,14 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Puzzle Pairs
           </label>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 sm:mb-4">
-            For multiple acceptable answers, separate with commas (e.g., "DONUT, DOUGHNUT")
-          </p>
+          <div className="mb-3 sm:mb-4 space-y-1">
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              For multiple acceptable answers, separate with commas (e.g., "DONUT, DOUGHNUT")
+            </p>
+            <p className="text-xs text-purple-600 dark:text-purple-400">
+              💡 Tip: Use the AI Generate button above to create a complete puzzle automatically!
+            </p>
+          </div>
           <div className="space-y-3 sm:space-y-4">
             {puzzles.map((puzzle, index) => (
               <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center">
