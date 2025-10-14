@@ -186,6 +186,15 @@ export function useGameWithInitialData(initialPuzzleData) {
       const locked = lockedLetters[index];
       const currentAnswer = answers[index] || '';
 
+      // Get the full answer length from puzzle data
+      const puzzleItem = puzzle?.puzzles?.[index];
+      const fullAnswer = puzzleItem?.answer
+        ? puzzleItem.answer.includes(',')
+          ? puzzleItem.answer.split(',')[0].trim()
+          : puzzleItem.answer
+        : null;
+      const answerLength = fullAnswer ? fullAnswer.length : 15;
+
       // Special case: if value is shorter than currentAnswer, it's a deletion
       // Just pass through the value as-is for now
       if (value.length < currentAnswer.length) {
@@ -202,13 +211,15 @@ export function useGameWithInitialData(initialPuzzleData) {
 
       // If we have locked letters, preserve them in their positions
       if (locked) {
-        const maxPos = Math.max(...Object.keys(locked).map(Number));
-        // Build a character array to work with positions
-        const chars = new Array(maxPos + 1).fill(' ');
+        // Build a character array to the FULL answer length (not just max locked position)
+        const chars = new Array(answerLength).fill(' ');
 
         // First, place all locked letters in their positions
         Object.keys(locked).forEach((pos) => {
-          chars[parseInt(pos)] = locked[pos];
+          const position = parseInt(pos);
+          if (position < answerLength) {
+            chars[position] = locked[pos];
+          }
         });
 
         // Extract only user-entered (non-locked, non-space) characters from the input
@@ -223,7 +234,7 @@ export function useGameWithInitialData(initialPuzzleData) {
 
         // Place user characters in non-locked positions only
         let userCharIndex = 0;
-        for (let i = 0; i < chars.length && userCharIndex < userChars.length; i++) {
+        for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
           if (!locked[i]) {
             chars[i] = userChars[userCharIndex];
             userCharIndex++;
@@ -259,7 +270,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers, activeHints, lockedLetters, answers]
+    [checkedWrongAnswers, activeHints, lockedLetters, answers, puzzle]
   );
 
   const completeGame = useCallback(

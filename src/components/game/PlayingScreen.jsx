@@ -195,25 +195,46 @@ export default function PlayingScreen({
         const locked = lockedLetters && lockedLetters[focusedIndex];
 
         if (locked) {
-          // Count how many non-locked, non-space characters the user has entered
-          let userCharCount = 0;
+          // Build a character array to the full answer length
+          const chars = new Array(answerLength).fill(' ');
+
+          // Place locked letters in their positions
+          Object.keys(locked).forEach((pos) => {
+            const position = parseInt(pos);
+            if (position < answerLength) {
+              chars[position] = locked[pos];
+            }
+          });
+
+          // Place existing user-entered characters in non-locked positions
+          let userCharIndex = 0;
           for (let i = 0; i < currentValue.length; i++) {
-            if (!locked[i] && currentValue[i] !== ' ') {
-              userCharCount++;
+            const char = currentValue[i];
+            if (!locked[i] && char !== ' ' && char !== locked[i]) {
+              // Find next available non-locked position
+              while (userCharIndex < answerLength && locked[userCharIndex]) {
+                userCharIndex++;
+              }
+              if (userCharIndex < answerLength) {
+                chars[userCharIndex] = char;
+                userCharIndex++;
+              }
             }
           }
 
-          // Count how many positions are available for user input (non-locked positions)
-          let availablePositions = 0;
+          // Find first empty non-locked position to insert the new character
+          let insertPos = -1;
           for (let i = 0; i < answerLength; i++) {
-            if (!locked[i]) {
-              availablePositions++;
+            if (!locked[i] && chars[i] === ' ') {
+              insertPos = i;
+              break;
             }
           }
 
-          // Only allow typing if there are still empty positions
-          if (userCharCount < availablePositions) {
-            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+          // Only insert if we found an empty position
+          if (insertPos !== -1) {
+            chars[insertPos] = e.key.toUpperCase();
+            onUpdateAnswer(focusedIndex, chars.join(''));
           }
         } else {
           // No locked letters, just check against answer length
@@ -350,25 +371,46 @@ export default function PlayingScreen({
       const locked = lockedLetters && lockedLetters[focusedIndex];
 
       if (locked) {
-        // Count how many non-locked, non-space characters the user has entered
-        let userCharCount = 0;
+        // Build a character array to the full answer length
+        const chars = new Array(answerLength).fill(' ');
+
+        // Place locked letters in their positions
+        Object.keys(locked).forEach((pos) => {
+          const position = parseInt(pos);
+          if (position < answerLength) {
+            chars[position] = locked[pos];
+          }
+        });
+
+        // Place existing user-entered characters in non-locked positions
+        let userCharIndex = 0;
         for (let i = 0; i < currentValue.length; i++) {
-          if (!locked[i] && currentValue[i] !== ' ') {
-            userCharCount++;
+          const char = currentValue[i];
+          if (!locked[i] && char !== ' ' && char !== locked[i]) {
+            // Find next available non-locked position
+            while (userCharIndex < answerLength && locked[userCharIndex]) {
+              userCharIndex++;
+            }
+            if (userCharIndex < answerLength) {
+              chars[userCharIndex] = char;
+              userCharIndex++;
+            }
           }
         }
 
-        // Count how many positions are available for user input (non-locked positions)
-        let availablePositions = 0;
+        // Find first empty non-locked position to insert the new character
+        let insertPos = -1;
         for (let i = 0; i < answerLength; i++) {
-          if (!locked[i]) {
-            availablePositions++;
+          if (!locked[i] && chars[i] === ' ') {
+            insertPos = i;
+            break;
           }
         }
 
-        // Only allow typing if there are still empty positions
-        if (userCharCount < availablePositions) {
-          onUpdateAnswer(focusedIndex, currentValue + key);
+        // Only insert if we found an empty position
+        if (insertPos !== -1) {
+          chars[insertPos] = key;
+          onUpdateAnswer(focusedIndex, chars.join(''));
         }
       } else {
         // No locked letters, just check against answer length
