@@ -54,18 +54,9 @@ export default function AdminLogin() {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <h1
-            style={{
-              fontSize: '1.875rem',
-              fontWeight: 'bold',
-              background: 'linear-gradient(to right, #0EA5E9, #14B8A6)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
-          >
-            Tandem Admin
-          </h1>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '1rem' }}>
+            <img src="/icons/tandem-admin-logo.png" alt="Tandem Admin" style={{ height: '60px' }} />
+          </div>
           <p style={{ marginTop: '0.5rem', color: '#6b7280' }}>Sign in to manage puzzles</p>
         </div>
 
