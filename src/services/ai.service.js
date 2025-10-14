@@ -146,29 +146,38 @@ THEME REQUIREMENTS:
 - Use patterns like "Forms of ___", "Things That ___", "Types of ___", or similar constructions
 - The theme should connect words that share a common characteristic or relationship
 - Aim for themes where the connection isn't immediately obvious but feels satisfying when discovered
-- Examples: "Forms of Capital" (VENTURE, LETTER, PUNISHMENT, CITY), "Things That Charge" (BATTERY, CAVALRY, BULL, LAWYER)
+- Good examples: "Forms of Capital" (VENTURE, LETTER, PUNISHMENT, CITY), "Things That Melt" (ICE, BUTTER, CHOCOLATE, CANDLE)
+- Bad example: "Musical Performance Terms" (too specialized/technical)
+
+VOCABULARY REQUIREMENTS (CRITICAL):
+- Use everyday vocabulary at Wordle difficulty level - recognizable but not necessarily easy
+- NEVER use technical terms, foreign language words, specialized jargon, or niche vocabulary
+- Explicitly BANNED: musical terms (legato, crescendo, ritornello), scientific jargon, legal terminology, medical terms, academic language
+- Words should be used in mainstream contexts (news, conversations, popular media)
+- Difficulty comes from clever themes and emoji connections, NOT from obscure vocabulary
 
 EMOJI PAIR REQUIREMENTS:
 - Use exactly 2 emojis per word
-- The two emojis should work together as a pair to hint at the answer
+- Emoji pairs MUST provide intuitive visual or phonetic clues to the answer
+- Test: Could someone reasonably deduce the answer from the two emojis?
+- Avoid abstract concepts that can't be represented visually
 - Avoid using the same emoji twice in one pair
-- Emojis should be specific and recognizable (not obscure)
+- BAD example: 🎺📈 for CRESCENDO (too abstract, relies on knowing musical term)
+- BAD example: 🦋👄 for LEGATO (makes no sense, no visual connection)
+- GOOD example: ☀️🔥 for HOT (clear visual connection)
+- GOOD example: 💰💼 for BUSINESS (clear contextual association)
 - Consider using emojis that represent:
-  * Visual characteristics of the word
-  * Phonetic hints (rebus-style)
-  * Contextual associations
-  * Related concepts that combine to suggest the answer
-
-ANSWER REQUIREMENTS:
-- 2-30 characters, uppercase letters only
-- Must be common English words (avoid technical jargon or obscure terms)
-- All 4 answers must fit the theme
+  * Direct visual representation of the word
+  * Phonetic hints (rebus-style) that are clear
+  * Contextual associations that most people would recognize
+  * Related concepts that obviously combine to suggest the answer
 
 DIFFICULTY BALANCE:
 Within each puzzle, include:
 - 1 easier pair: Most players should get this quickly (~70% success rate)
 - 2 medium pairs: Requires some thinking but achievable (~40-60% success rate)
-- 1 harder pair: The challenge answer, less obvious (~20-30% success rate)
+- 1 harder pair: The challenge answer, less obvious connection to theme (~20-30% success rate)
+- Remember: Even the "hard" answer should be a word people know, just harder to connect to the theme
 
 VARIETY REQUIREMENTS:
 - Don't repeat words across different meaning contexts (e.g., avoid CAPITAL if theme is "Forms of Capital")

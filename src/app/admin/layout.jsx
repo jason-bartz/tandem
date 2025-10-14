@@ -24,6 +24,40 @@ export default function AdminLayout({ children }) {
     checkAuth();
   }, [pathname, isPublicPage]);
 
+  // Set admin-specific favicon
+  useEffect(() => {
+    // Find and update all favicon links
+    const faviconLinks = document.querySelectorAll('link[rel*="icon"]');
+    const originalFavicons = new Map();
+
+    faviconLinks.forEach((link) => {
+      // Save original href
+      originalFavicons.set(link, link.href);
+
+      // Update to admin favicon
+      if (link.rel === 'icon' || link.rel === 'shortcut icon') {
+        if (link.sizes === '16x16' || link.getAttribute('sizes') === '16x16') {
+          link.href = '/icons/admin-favicon-16x16.png';
+        } else if (link.sizes === '32x32' || link.getAttribute('sizes') === '32x32') {
+          link.href = '/icons/admin-favicon-32x32.png';
+        } else {
+          // Default icon (no size specified)
+          link.href = '/icons/admin-favicon-32x32.png';
+        }
+      }
+    });
+
+    // Cleanup: restore original favicons when leaving admin
+    return () => {
+      faviconLinks.forEach((link) => {
+        const originalHref = originalFavicons.get(link);
+        if (originalHref) {
+          link.href = originalHref;
+        }
+      });
+    };
+  }, []);
+
   const checkAuth = async () => {
     try {
       const token = localStorage.getItem('adminToken');
@@ -73,13 +107,12 @@ export default function AdminLayout({ children }) {
     <div className="min-h-screen bg-white">
       <nav className="bg-white shadow-lg border-b border-gray-200">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <div className="flex items-center">
-              <h1 className="text-xl font-bold bg-gradient-to-r from-sky-500 to-teal-400 bg-clip-text text-transparent">
-                Tandem Admin
-              </h1>
+          <div className="flex justify-between items-center h-16">
+            <div className="flex-1"></div>
+            <div className="flex items-center justify-center">
+              <img src="/icons/tandem-admin-logo.png" alt="Tandem Admin" className="h-10" />
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex-1 flex items-center justify-end space-x-4">
               <a
                 href="/"
                 target="_blank"

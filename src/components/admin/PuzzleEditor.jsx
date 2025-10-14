@@ -110,7 +110,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         console.error('[PuzzleEditor] AI generation failed:', {
           error: result.error,
           status: result.status,
-          fullResult: result
+          fullResult: result,
         });
         setMessage(
           `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
@@ -121,7 +121,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       console.error('[PuzzleEditor] Generate puzzle error:', {
         message: error.message,
         stack: error.stack,
-        error: error
+        error: error,
       });
       setMessage(
         '❌ Error generating puzzle. Check your connection and try again, or create manually.'
@@ -132,12 +132,24 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
     }
   };
 
+  // Format date as "Day MM/DD/YYYY"
+  const formatDateDisplay = (dateString) => {
+    const date = new Date(dateString + 'T00:00:00');
+    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const dayName = dayNames[date.getDay()];
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const year = date.getFullYear();
+    return `${dayName} ${month}/${day}/${year}`;
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-3 sm:p-6 h-full w-full overflow-x-auto">
       {initialPuzzle && (
         <div className="mb-4 p-3 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-800 rounded-lg">
           <p className="text-xs sm:text-sm text-sky-700 dark:text-sky-300">
-            {initialPuzzle.theme ? 'Editing' : 'Creating'} puzzle for {initialPuzzle.date}
+            {initialPuzzle.theme ? 'Editing' : 'Creating'} puzzle for{' '}
+            {formatDateDisplay(initialPuzzle.date)}
           </p>
         </div>
       )}
@@ -210,14 +222,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Puzzle Pairs
           </label>
-          <div className="mb-3 sm:mb-4 space-y-1">
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              For multiple acceptable answers, separate with commas (e.g., "DONUT, DOUGHNUT")
-            </p>
-            <p className="text-xs text-purple-600 dark:text-purple-400">
-              💡 Tip: Use the AI Generate button above to create a complete puzzle automatically!
-            </p>
-          </div>
           <div className="space-y-3 sm:space-y-4">
             {puzzles.map((puzzle, index) => (
               <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center">
