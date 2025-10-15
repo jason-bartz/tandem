@@ -243,7 +243,7 @@ export default function CompleteScreen({
                 ? 'You conquered Hard Mode! 🔥'
                 : "You solved today's puzzle!"
               : hardModeTimeUp
-                ? "2 minutes wasn't enough this time!"
+                ? "3 minutes wasn't enough this time!"
                 : "You'll get it tomorrow!"}
           </p>
 

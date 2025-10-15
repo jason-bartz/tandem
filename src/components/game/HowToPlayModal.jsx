@@ -183,7 +183,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
               <li>
-                • <strong>2-minute time limit</strong> - Complete the puzzle before time runs out
+                • <strong>3-minute time limit</strong> - Complete the puzzle before time runs out
               </li>
               <li>
                 • <strong>No hints available</strong> - Rely only on your word skills

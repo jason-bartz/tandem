@@ -313,7 +313,7 @@ export default function Settings({ isOpen, onClose }) {
                         </p>
                       </div>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                        2-minute time limit • No hints available
+                        3-minute time limit • No hints available
                       </p>
                     </div>
                     <button
@@ -385,7 +385,7 @@ export default function Settings({ isOpen, onClose }) {
                         </span>
                       </div>
                       <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                        2-minute time limit • No hints available
+                        3-minute time limit • No hints available
                       </p>
                     </div>
                     <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed">

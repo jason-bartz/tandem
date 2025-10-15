@@ -3,7 +3,7 @@ export const GAME_CONFIG = {
   PUZZLE_COUNT: 4,
   MAX_ANSWER_LENGTH: 10,
   START_DATE: process.env.NEXT_PUBLIC_GAME_START_DATE || '2025-08-15',
-  HARD_MODE_TIME_LIMIT: 120, // 2 minutes in seconds
+  HARD_MODE_TIME_LIMIT: 180, // 3 minutes in seconds
 };
 
 export const STORAGE_KEYS = {

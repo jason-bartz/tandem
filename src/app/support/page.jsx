@@ -254,7 +254,7 @@ export default function Support() {
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>
-                  <strong>2-minute time limit</strong> - You must complete the puzzle within 120
+                  <strong>3-minute time limit</strong> - You must complete the puzzle within 180
                   seconds
                 </li>
                 <li>
