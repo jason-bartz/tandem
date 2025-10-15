@@ -19,6 +19,7 @@ export default function Settings({ isOpen, onClose }) {
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showAppBanner, setShowAppBanner] = useState(false);
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
+  const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
   const { playHaptic, lightTap } = useHaptics();
   const {
     theme,
@@ -38,6 +39,7 @@ export default function Settings({ isOpen, onClose }) {
       loadNotificationSettings();
       loadKeyboardLayout();
       loadHardModePreference();
+      loadLeaderboardPreference();
       checkAppBannerVisibility();
     }
   }, [isOpen]);
@@ -83,6 +85,24 @@ export default function Settings({ isOpen, onClose }) {
     }
   };
 
+  const loadLeaderboardPreference = async () => {
+    try {
+      let enabled;
+      if (Capacitor.isNativePlatform()) {
+        const { Preferences } = await import('@capacitor/preferences');
+        const result = await Preferences.get({ key: 'tandem_leaderboards_enabled' });
+        enabled = result.value !== 'false'; // Default to true if not set
+      } else {
+        const saved = localStorage.getItem('tandem_leaderboards_enabled');
+        enabled = saved !== 'false'; // Default to true if not set
+      }
+      setLeaderboardsEnabled(enabled);
+    } catch (error) {
+      console.error('Failed to load leaderboard preference:', error);
+      setLeaderboardsEnabled(true); // Default to true on error
+    }
+  };
+
   const handleKeyboardLayoutChange = (layout) => {
     setKeyboardLayout(layout);
     localStorage.setItem('keyboardLayout', layout);
@@ -91,6 +111,25 @@ export default function Settings({ isOpen, onClose }) {
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('keyboardLayoutChanged', { detail: layout }));
     }
+  };
+
+  const handleLeaderboardToggle = async () => {
+    const newValue = !leaderboardsEnabled;
+    setLeaderboardsEnabled(newValue);
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const { Preferences } = await import('@capacitor/preferences');
+        await Preferences.set({
+          key: 'tandem_leaderboards_enabled',
+          value: newValue.toString(),
+        });
+      } else {
+        localStorage.setItem('tandem_leaderboards_enabled', newValue.toString());
+      }
+    } catch (error) {
+      console.error('Failed to save leaderboard preference:', error);
+    }
+    lightTap();
   };
 
   const handleHardModeToggle = () => {
@@ -526,6 +565,45 @@ export default function Settings({ isOpen, onClose }) {
             <GameCenterButton />
           </div>
         )}
+
+        {/* Leaderboards Section */}
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+            Leaderboards
+          </h3>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                Upload Scores to Leaderboards
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                Share your scores with the global community
+              </p>
+            </div>
+            <button
+              onClick={handleLeaderboardToggle}
+              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                highContrast
+                  ? leaderboardsEnabled
+                    ? 'bg-hc-primary border-2 border-hc-border'
+                    : 'bg-hc-surface border-2 border-hc-border'
+                  : leaderboardsEnabled
+                    ? 'bg-sky-500'
+                    : 'bg-gray-200 dark:bg-gray-600'
+              }`}
+              role="switch"
+              aria-checked={leaderboardsEnabled}
+            >
+              <span
+                className={`${
+                  leaderboardsEnabled ? 'translate-x-6' : 'translate-x-1'
+                } inline-block h-4 w-4 transform rounded-full ${
+                  highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                } transition-transform`}
+              />
+            </button>
+          </div>
+        </div>
 
         {/* Accessibility Section */}
         <div className="mb-6">

@@ -20,6 +20,13 @@ export default function OnboardingFlow({ onComplete }) {
     setCurrentStep(ONBOARDING_STEPS.NOTIFICATIONS);
   };
 
+  const handleDataConsentSkip = async () => {
+    // User chose "Maybe Later" - still complete onboarding but skip notifications
+    await markOnboardingComplete();
+    setCurrentStep(ONBOARDING_STEPS.COMPLETE);
+    onComplete();
+  };
+
   const handleNotificationsContinue = async () => {
     // Mark onboarding as complete
     await markOnboardingComplete();
@@ -52,7 +59,9 @@ export default function OnboardingFlow({ onComplete }) {
   // Render appropriate screen based on current step
   switch (currentStep) {
     case ONBOARDING_STEPS.DATA_CONSENT:
-      return <DataConsentScreen onContinue={handleDataConsentContinue} />;
+      return (
+        <DataConsentScreen onContinue={handleDataConsentContinue} onSkip={handleDataConsentSkip} />
+      );
 
     case ONBOARDING_STEPS.NOTIFICATIONS:
       return (
