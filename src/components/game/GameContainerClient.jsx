@@ -32,24 +32,25 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check if user has seen onboarding
+  // Check if user has seen onboarding (iOS only)
   useEffect(() => {
     async function checkOnboarding() {
       try {
-        let hasSeenOnboarding = false;
-
-        if (Capacitor.isNativePlatform()) {
-          const result = await Preferences.get({ key: STORAGE_KEYS.HAS_SEEN_ONBOARDING });
-          hasSeenOnboarding = result.value === 'true';
-        } else {
-          hasSeenOnboarding = localStorage.getItem(STORAGE_KEYS.HAS_SEEN_ONBOARDING) === 'true';
+        // Only show onboarding on native iOS platform
+        if (!Capacitor.isNativePlatform()) {
+          setShowOnboarding(false);
+          setOnboardingChecked(true);
+          return;
         }
+
+        const result = await Preferences.get({ key: STORAGE_KEYS.HAS_SEEN_ONBOARDING });
+        const hasSeenOnboarding = result.value === 'true';
 
         setShowOnboarding(!hasSeenOnboarding);
         setOnboardingChecked(true);
       } catch (error) {
         console.error('Failed to check onboarding status:', error);
-        // Default to showing onboarding if check fails
+        // Default to showing onboarding if check fails on native platform
         setShowOnboarding(true);
         setOnboardingChecked(true);
       }
