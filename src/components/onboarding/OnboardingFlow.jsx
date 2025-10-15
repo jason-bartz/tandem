@@ -21,10 +21,8 @@ export default function OnboardingFlow({ onComplete }) {
   };
 
   const handleDataConsentSkip = async () => {
-    // User chose "Maybe Later" - still complete onboarding but skip notifications
-    await markOnboardingComplete();
-    setCurrentStep(ONBOARDING_STEPS.COMPLETE);
-    onComplete();
+    // User chose "Maybe Later" - continue to notifications screen
+    setCurrentStep(ONBOARDING_STEPS.NOTIFICATIONS);
   };
 
   const handleNotificationsContinue = async () => {
