@@ -194,15 +194,21 @@ class AIService {
 
     const themeInstructions = themeHint
       ? `USER REQUESTED THEME: "${themeHint}"
-Generate 4 emoji-word pairs that fit this theme. Use the theme exactly as provided, or refine it slightly if needed for clarity. Focus on creating excellent, guessable emoji pairs that match this theme.`
+Generate 4 emoji-word pairs that fit this theme. IMPORTANT: You must refine and polish the theme text to match our standard formatting style before outputting it. Focus on creating excellent, guessable emoji pairs that match this theme.`
       : `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.`;
 
     const themeRequirements = themeHint
       ? `
-THEME PROVIDED BY USER:
-- Use the theme "${themeHint}" as your guide
-- You may refine the wording slightly for clarity if needed, but stay true to the concept
-- Focus on finding 4 excellent answers that fit this theme perfectly`
+THEME PROVIDED BY USER: "${themeHint}"
+CRITICAL THEME REFINEMENT REQUIREMENTS:
+- Use "${themeHint}" as your INSPIRATION and guide
+- You MUST refine and format the theme to match our standard patterns:
+  * Use Title Case for all words (e.g., "Christmas Activities", not "christmas activities")
+  * Add descriptive context if the hint is too simple (e.g., "christmas" → "Christmas Activities" or "Classic Christmas Movies")
+  * Ensure proper grammar and article usage (e.g., "Things That Go Bump in the Night" not "things that go bump in the night")
+  * Match our established theme patterns (see examples below)
+- Stay true to the user's concept but present it professionally
+- Focus on finding 4 excellent answers that fit this refined theme perfectly`
       : `
 THEME REQUIREMENTS:
 - Create a DIVERSE, CREATIVE theme that connects 4 words in an interesting way
