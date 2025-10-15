@@ -567,44 +567,46 @@ export default function Settings({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* Leaderboards Section */}
-        <div className="mb-6">
-          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
-            Leaderboards
-          </h3>
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                Upload Scores to Leaderboards
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Share your scores with the global community
-              </p>
+        {/* Leaderboards Section (iOS only) */}
+        {Capacitor.isNativePlatform() && (
+          <div className="mb-6">
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-3">
+              Leaderboards
+            </h3>
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                  Upload Scores to Leaderboards
+                </p>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Share your scores with the global community
+                </p>
+              </div>
+              <button
+                onClick={handleLeaderboardToggle}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  highContrast
+                    ? leaderboardsEnabled
+                      ? 'bg-hc-primary border-2 border-hc-border'
+                      : 'bg-hc-surface border-2 border-hc-border'
+                    : leaderboardsEnabled
+                      ? 'bg-sky-500'
+                      : 'bg-gray-200 dark:bg-gray-600'
+                }`}
+                role="switch"
+                aria-checked={leaderboardsEnabled}
+              >
+                <span
+                  className={`${
+                    leaderboardsEnabled ? 'translate-x-6' : 'translate-x-1'
+                  } inline-block h-4 w-4 transform rounded-full ${
+                    highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                  } transition-transform`}
+                />
+              </button>
             </div>
-            <button
-              onClick={handleLeaderboardToggle}
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                highContrast
-                  ? leaderboardsEnabled
-                    ? 'bg-hc-primary border-2 border-hc-border'
-                    : 'bg-hc-surface border-2 border-hc-border'
-                  : leaderboardsEnabled
-                    ? 'bg-sky-500'
-                    : 'bg-gray-200 dark:bg-gray-600'
-              }`}
-              role="switch"
-              aria-checked={leaderboardsEnabled}
-            >
-              <span
-                className={`${
-                  leaderboardsEnabled ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full ${
-                  highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                } transition-transform`}
-              />
-            </button>
           </div>
-        </div>
+        )}
 
         {/* Accessibility Section */}
         <div className="mb-6">
