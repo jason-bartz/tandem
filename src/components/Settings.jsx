@@ -9,6 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
 import { useCloudKitSync } from '@/hooks/useCloudKitSync';
 import GameCenterButton from '@/components/GameCenterButton';
+import { STORAGE_KEYS } from '@/lib/constants';
 
 export default function Settings({ isOpen, onClose }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
@@ -90,10 +91,10 @@ export default function Settings({ isOpen, onClose }) {
       let enabled;
       if (Capacitor.isNativePlatform()) {
         const { Preferences } = await import('@capacitor/preferences');
-        const result = await Preferences.get({ key: 'tandem_leaderboards_enabled' });
+        const result = await Preferences.get({ key: STORAGE_KEYS.LEADERBOARDS_ENABLED });
         enabled = result.value !== 'false'; // Default to true if not set
       } else {
-        const saved = localStorage.getItem('tandem_leaderboards_enabled');
+        const saved = localStorage.getItem(STORAGE_KEYS.LEADERBOARDS_ENABLED);
         enabled = saved !== 'false'; // Default to true if not set
       }
       setLeaderboardsEnabled(enabled);
@@ -120,11 +121,11 @@ export default function Settings({ isOpen, onClose }) {
       if (Capacitor.isNativePlatform()) {
         const { Preferences } = await import('@capacitor/preferences');
         await Preferences.set({
-          key: 'tandem_leaderboards_enabled',
+          key: STORAGE_KEYS.LEADERBOARDS_ENABLED,
           value: newValue.toString(),
         });
       } else {
-        localStorage.setItem('tandem_leaderboards_enabled', newValue.toString());
+        localStorage.setItem(STORAGE_KEYS.LEADERBOARDS_ENABLED, newValue.toString());
       }
     } catch (error) {
       console.error('Failed to save leaderboard preference:', error);
