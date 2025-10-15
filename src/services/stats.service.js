@@ -23,6 +23,28 @@ class StatsService {
       return false;
     }
   }
+
+  /**
+   * Check if user has leaderboards enabled
+   * @private
+   */
+  async _hasLeaderboardsEnabled() {
+    try {
+      if (Capacitor.isNativePlatform()) {
+        const result = await Preferences.get({ key: STORAGE_KEYS.LEADERBOARDS_ENABLED });
+        // Default to true if not set (for backwards compatibility)
+        return result.value !== 'false';
+      } else {
+        const value = localStorage.getItem(STORAGE_KEYS.LEADERBOARDS_ENABLED);
+        // Default to true if not set (for backwards compatibility)
+        return value !== 'false';
+      }
+    } catch (error) {
+      console.error('Failed to check leaderboard preference:', error);
+      // Default to true if check fails
+      return true;
+    }
+  }
   async getGlobalStats() {
     try {
       const response = await fetch(API_ENDPOINTS.STATS);
@@ -64,11 +86,12 @@ class StatsService {
         });
       }
 
-      // Update server stats only for daily puzzles and only if user has consented
+      // Update server stats only for daily puzzles and only if user has consented AND has leaderboards enabled
       if (!gameResult.isArchive) {
         const hasConsent = await this._hasUserConsent();
+        const leaderboardsEnabled = await this._hasLeaderboardsEnabled();
 
-        if (hasConsent) {
+        if (hasConsent && leaderboardsEnabled) {
           const response = await fetch(API_ENDPOINTS.PUZZLE, {
             method: 'POST',
             headers: {
@@ -85,9 +108,11 @@ class StatsService {
             console.warn('Failed to update server stats:', response.status);
           }
         } else {
-          // User has not consented - skip upload
+          // User has not consented or has disabled leaderboards - skip upload
           // eslint-disable-next-line no-console
-          console.log('[StatsService] Skipping server stats upload - user has not consented');
+          console.log(
+            '[StatsService] Skipping server stats upload - user has not consented or leaderboards disabled'
+          );
         }
       }
 
