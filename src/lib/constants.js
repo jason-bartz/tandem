@@ -15,6 +15,7 @@ export const STORAGE_KEYS = {
   STATS: 'tandemStats',
   AUTH_TOKEN: 'adminToken',
   HARD_MODE: 'tandemHardMode',
+  HAS_SEEN_ONBOARDING: 'tandem_has_seen_onboarding',
   // Game Center
   GAME_CENTER_AUTHENTICATED: 'tandem_gc_authenticated',
   GAME_CENTER_PLAYER_ID: 'tandem_gc_player_id',

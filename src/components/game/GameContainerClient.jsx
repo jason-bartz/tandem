@@ -1,5 +1,5 @@
 'use client';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -14,7 +14,9 @@ import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
+import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Capacitor } from '@capacitor/core';
+import { Preferences } from '@capacitor/preferences';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
 import subscriptionService from '@/services/subscriptionService';
@@ -27,6 +29,34 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
   const { isMobilePhone, isSmallPhone } = useDeviceType();
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Check if user has seen onboarding
+  useEffect(() => {
+    async function checkOnboarding() {
+      try {
+        let hasSeenOnboarding = false;
+
+        if (Capacitor.isNativePlatform()) {
+          const result = await Preferences.get({ key: STORAGE_KEYS.HAS_SEEN_ONBOARDING });
+          hasSeenOnboarding = result.value === 'true';
+        } else {
+          hasSeenOnboarding = localStorage.getItem(STORAGE_KEYS.HAS_SEEN_ONBOARDING) === 'true';
+        }
+
+        setShowOnboarding(!hasSeenOnboarding);
+        setOnboardingChecked(true);
+      } catch (error) {
+        console.error('Failed to check onboarding status:', error);
+        // Default to showing onboarding if check fails
+        setShowOnboarding(true);
+        setOnboardingChecked(true);
+      }
+    }
+
+    checkOnboarding();
+  }, []);
 
   // Initialize subscription service and Game Center on app bootstrap (iOS only)
   // This runs ONCE when the app starts, ensuring subscription state and Game Center are ready
@@ -211,7 +241,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const backgroundImage =
     theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
 
-  if (game.loading) {
+  // Show loading while checking onboarding status or loading game
+  if (!onboardingChecked || game.loading) {
     return (
       <div
         className="fixed inset-0 w-full h-full flex items-center justify-center"
@@ -223,6 +254,28 @@ export default function GameContainerClient({ initialPuzzleData }) {
         }}
       >
         <LoadingSpinner />
+      </div>
+    );
+  }
+
+  // Show onboarding flow if user hasn't seen it yet
+  if (showOnboarding) {
+    return (
+      <div
+        className="fixed inset-0 w-full h-full"
+        style={{
+          backgroundImage,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        <OnboardingFlow
+          onComplete={() => {
+            setShowOnboarding(false);
+          }}
+        />
       </div>
     );
   }
