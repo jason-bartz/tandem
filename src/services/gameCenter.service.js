@@ -8,9 +8,15 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { LEADERBOARDS } from '@/lib/achievementDefinitions';
-import { getNewlyUnlockedAchievements, getHighestStreakThreshold, getHighestWinsThreshold } from '@/lib/achievementChecker';
+import {
+  getNewlyUnlockedAchievements,
+  getHighestStreakThreshold,
+  getHighestWinsThreshold,
+  getAllQualifyingAchievements,
+} from '@/lib/achievementChecker';
 import logger from '@/lib/logger';
 import { CapacitorGameConnect } from '@openforge/capacitor-game-connect';
+import { loadStats } from '@/lib/storage';
 
 // Use the plugin
 const GameConnect = CapacitorGameConnect;
@@ -65,17 +71,20 @@ class GameCenterService {
         // Cache authentication status
         await Preferences.set({
           key: STORAGE_KEYS.GAME_CENTER_AUTHENTICATED,
-          value: 'true'
+          value: 'true',
         });
         await Preferences.set({
           key: STORAGE_KEYS.GAME_CENTER_PLAYER_ID,
-          value: result.player_id
+          value: result.player_id,
         });
 
         logger.info('[GameCenter] Authenticated successfully:', result.player_name);
 
         // Process any pending offline achievements/scores
         await this.processOfflineQueue();
+
+        // Check for retroactive achievements (for existing users)
+        await this.checkRetroactiveAchievements();
 
         return true;
       }
@@ -215,17 +224,26 @@ class GameCenterService {
       const achievementIds = newAchievements.map((a) => a.id);
       await this.submitAchievements(achievementIds);
 
+      // Track submitted achievements
+      const submittedResult = await Preferences.get({ key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS });
+      const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
+      const updatedSubmittedList = [...new Set([...submittedAchievements, ...achievementIds])];
+      await Preferences.set({
+        key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS,
+        value: JSON.stringify(updatedSubmittedList),
+      });
+
       // Update last submitted values
       const newLastStreak = getHighestStreakThreshold(stats.bestStreak || 0);
       const newLastWins = getHighestWinsThreshold(stats.wins || 0);
 
       await Preferences.set({
         key: STORAGE_KEYS.LAST_SUBMITTED_STREAK,
-        value: newLastStreak.toString()
+        value: newLastStreak.toString(),
       });
       await Preferences.set({
         key: STORAGE_KEYS.LAST_SUBMITTED_WINS,
-        value: newLastWins.toString()
+        value: newLastWins.toString(),
       });
 
       // Notify listeners
@@ -326,6 +344,128 @@ class GameCenterService {
   }
 
   /**
+   * Check and submit retroactive achievements for existing users
+   * This ensures users with existing stats get their earned achievements
+   * @returns {Promise<void>}
+   */
+  async checkRetroactiveAchievements() {
+    if (!this.isAvailable()) {
+      return;
+    }
+
+    try {
+      // Check if we've already done the retroactive check
+      const checkDone = await Preferences.get({
+        key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+      });
+      if (checkDone.value === 'true') {
+        logger.info('[GameCenter] Retroactive achievement check already completed');
+        return;
+      }
+
+      logger.info('[GameCenter] Starting retroactive achievement check for existing user');
+
+      // Load current stats
+      const stats = await loadStats();
+      if (!stats || (stats.wins === 0 && stats.bestStreak === 0)) {
+        logger.info('[GameCenter] No stats to check for retroactive achievements');
+        await Preferences.set({
+          key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+          value: 'true',
+        });
+        return;
+      }
+
+      // Get all achievements that should be unlocked based on current stats
+      const qualifyingAchievements = getAllQualifyingAchievements(stats);
+
+      if (qualifyingAchievements.length === 0) {
+        logger.info('[GameCenter] No retroactive achievements to unlock');
+        await Preferences.set({
+          key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+          value: 'true',
+        });
+        return;
+      }
+
+      // Get list of already submitted achievements
+      const submittedResult = await Preferences.get({ key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS });
+      const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
+
+      // Filter out already submitted achievements
+      const newAchievements = qualifyingAchievements.filter(
+        (achievement) => !submittedAchievements.includes(achievement.id)
+      );
+
+      if (newAchievements.length === 0) {
+        logger.info('[GameCenter] All qualifying achievements already submitted');
+        await Preferences.set({
+          key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+          value: 'true',
+        });
+        return;
+      }
+
+      logger.info(
+        `[GameCenter] Found ${newAchievements.length} retroactive achievements to unlock`
+      );
+
+      // Submit each achievement and track which ones succeed
+      const successfullySubmitted = [];
+      for (const achievement of newAchievements) {
+        const success = await this.submitAchievement(achievement.id);
+        if (success) {
+          successfullySubmitted.push(achievement.id);
+          logger.info(
+            `[GameCenter] Retroactively unlocked: ${achievement.name} (${achievement.emoji})`
+          );
+        }
+      }
+
+      // Update the list of submitted achievements
+      const updatedSubmittedList = [...submittedAchievements, ...successfullySubmitted];
+      await Preferences.set({
+        key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS,
+        value: JSON.stringify(updatedSubmittedList),
+      });
+
+      // Update last submitted values to reflect current state
+      const newLastStreak = getHighestStreakThreshold(stats.bestStreak || 0);
+      const newLastWins = getHighestWinsThreshold(stats.wins || 0);
+
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_STREAK,
+        value: newLastStreak.toString(),
+      });
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_WINS,
+        value: newLastWins.toString(),
+      });
+
+      // Mark retroactive check as complete
+      await Preferences.set({
+        key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+        value: 'true',
+      });
+
+      // Notify listeners about retroactive achievements
+      if (successfullySubmitted.length > 0) {
+        const unlockedAchievements = newAchievements.filter((a) =>
+          successfullySubmitted.includes(a.id)
+        );
+        this._notifyAchievementListeners(unlockedAchievements);
+      }
+
+      logger.info(
+        `[GameCenter] Retroactive achievement check complete. Unlocked ${successfullySubmitted.length} achievements`
+      );
+    } catch (error) {
+      logger.error('[GameCenter] Error during retroactive achievement check:', error);
+      // Don't mark as complete if there was an error - will retry next time
+    }
+  }
+
+  /**
    * Process queued achievements and scores
    * Called after successful authentication
    * @returns {Promise<void>}
@@ -406,6 +546,8 @@ class GameCenterService {
       await Preferences.remove({ key: STORAGE_KEYS.PENDING_LEADERBOARD });
       await Preferences.remove({ key: STORAGE_KEYS.LAST_SUBMITTED_STREAK });
       await Preferences.remove({ key: STORAGE_KEYS.LAST_SUBMITTED_WINS });
+      await Preferences.remove({ key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE });
+      await Preferences.remove({ key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS });
 
       this.isAuthenticated = false;
       this.playerId = null;
