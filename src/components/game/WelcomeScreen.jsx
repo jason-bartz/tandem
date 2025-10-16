@@ -29,6 +29,7 @@ export default function WelcomeScreen({
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
   const { isMobilePhone } = useDeviceType();
+  const isNativeApp = Capacitor.isNativePlatform();
 
   useEffect(() => {
     // Play welcome sound and haptics on iOS after a delay to ensure splash is gone
@@ -55,6 +56,11 @@ export default function WelcomeScreen({
       // Sound might fail on some browsers
     }
     onStart();
+  };
+
+  // Placeholder for premium status check
+  const checkPremiumStatus = () => {
+    // This is handled in the parent component via subscription service
   };
 
   return (
@@ -105,8 +111,8 @@ export default function WelcomeScreen({
 
       {/* Main welcome card */}
       <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
-        {/* Logo - Only show on tablet/desktop (not mobile phones) */}
-        {!isMobilePhone && (
+        {/* Logo - Hide on native mobile app to save space, but show on web version */}
+        {(!isMobilePhone || !isNativeApp) && (
           <div className="w-24 h-24 mx-auto mb-5 relative">
             <Image
               src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
