@@ -161,3 +161,44 @@ export function calculateAchievementProgress(currentValue, threshold) {
   }
   return Math.floor((currentValue / threshold) * 100);
 }
+
+/**
+ * Get all achievements that should be unlocked based on current stats
+ * This is used for retroactive achievement checking (e.g., for existing users)
+ * @param {Object} stats - Player stats object with bestStreak and wins
+ * @returns {Array} Array of all achievements that qualify based on current stats
+ */
+export function getAllQualifyingAchievements(stats) {
+  const { bestStreak = 0, wins = 0 } = stats;
+  const qualifyingAchievements = [];
+
+  // Check all streak achievements
+  const streakAchievements = getStreakAchievements();
+  for (const achievement of streakAchievements) {
+    if (bestStreak >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'streak',
+      });
+    }
+  }
+
+  // Check all wins achievements
+  const winsAchievements = getWinsAchievements();
+  for (const achievement of winsAchievements) {
+    if (wins >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'wins',
+      });
+    }
+  }
+
+  return qualifyingAchievements;
+}
