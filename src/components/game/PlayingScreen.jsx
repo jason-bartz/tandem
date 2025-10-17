@@ -157,16 +157,47 @@ export default function PlayingScreen({
 
           // Handle deletion - find the last non-locked, non-space character and remove it
           if (locked) {
-            // Work backwards to find the last user-entered character
-            let newValue = currentValue;
-            for (let i = currentValue.length - 1; i >= 0; i--) {
+            // Get the answer length to maintain proper positioning
+            const answerLength = puzzle?.puzzles[focusedIndex]?.answer
+              ? puzzle.puzzles[focusedIndex].answer.includes(',')
+                ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
+                : puzzle.puzzles[focusedIndex].answer.length
+              : currentValue.length;
+
+            // Build character array to maintain positions
+            const chars = new Array(answerLength).fill(' ');
+
+            // Place locked letters at their positions
+            Object.keys(locked).forEach((pos) => {
+              const position = parseInt(pos);
+              if (position < answerLength) {
+                chars[position] = locked[pos];
+              }
+            });
+
+            // Find and place remaining user-entered characters (except the last one to delete)
+            const userChars = [];
+            for (let i = 0; i < currentValue.length; i++) {
               if (!locked[i] && currentValue[i] !== ' ') {
-                // Found a user-entered character, remove it
-                newValue = currentValue.substring(0, i) + ' ' + currentValue.substring(i + 1);
-                break;
+                userChars.push(currentValue[i]);
               }
             }
-            onUpdateAnswer(focusedIndex, newValue);
+
+            // Remove the last user character (backspace effect)
+            if (userChars.length > 0) {
+              userChars.pop();
+            }
+
+            // Place remaining user characters in non-locked positions
+            let userCharIndex = 0;
+            for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
+              if (!locked[i]) {
+                chars[i] = userChars[userCharIndex];
+                userCharIndex++;
+              }
+            }
+
+            onUpdateAnswer(focusedIndex, chars.join(''));
           } else {
             onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
           }
@@ -266,6 +297,7 @@ export default function PlayingScreen({
     onCheckSingleAnswer,
     correctAnswer,
     incorrectAnswer,
+    lockedLetters,
   ]);
 
   const handleKeyboardInput = (key) => {
@@ -331,16 +363,47 @@ export default function PlayingScreen({
 
         // Handle deletion - find the last non-locked, non-space character and remove it
         if (locked) {
-          // Work backwards to find the last user-entered character
-          let newValue = currentValue;
-          for (let i = currentValue.length - 1; i >= 0; i--) {
+          // Get the answer length to maintain proper positioning
+          const answerLength = puzzle?.puzzles[focusedIndex]?.answer
+            ? puzzle.puzzles[focusedIndex].answer.includes(',')
+              ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
+              : puzzle.puzzles[focusedIndex].answer.length
+            : currentValue.length;
+
+          // Build character array to maintain positions
+          const chars = new Array(answerLength).fill(' ');
+
+          // Place locked letters at their positions
+          Object.keys(locked).forEach((pos) => {
+            const position = parseInt(pos);
+            if (position < answerLength) {
+              chars[position] = locked[pos];
+            }
+          });
+
+          // Find and place remaining user-entered characters (except the last one to delete)
+          const userChars = [];
+          for (let i = 0; i < currentValue.length; i++) {
             if (!locked[i] && currentValue[i] !== ' ') {
-              // Found a user-entered character, remove it
-              newValue = currentValue.substring(0, i) + ' ' + currentValue.substring(i + 1);
-              break;
+              userChars.push(currentValue[i]);
             }
           }
-          onUpdateAnswer(focusedIndex, newValue);
+
+          // Remove the last user character (backspace effect)
+          if (userChars.length > 0) {
+            userChars.pop();
+          }
+
+          // Place remaining user characters in non-locked positions
+          let userCharIndex = 0;
+          for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
+            if (!locked[i]) {
+              chars[i] = userChars[userCharIndex];
+              userCharIndex++;
+            }
+          }
+
+          onUpdateAnswer(focusedIndex, chars.join(''));
         } else {
           onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
         }
