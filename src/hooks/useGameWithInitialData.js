@@ -1,7 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, checkAnswerWithPlurals, getCorrectPositions } from '@/lib/utils';
+import {
+  sanitizeInput,
+  sanitizeInputPreserveSpaces,
+  checkAnswerWithPlurals,
+  getCorrectPositions,
+} from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -244,7 +249,11 @@ export function useGameWithInitialData(initialPuzzleData) {
         }
       }
 
-      const sanitized = sanitizeInput(processedValue);
+      // Use different sanitization based on whether we have locked letters
+      const sanitized = locked
+        ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
+        : sanitizeInput(processedValue); // Regular sanitization for normal input
+
       setAnswers((prev) => {
         const newAnswers = [...prev];
         newAnswers[index] = sanitized;

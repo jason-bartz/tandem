@@ -188,6 +188,11 @@ export function sanitizeInput(input) {
     .replace(/[^A-Z\s]/g, '');
 }
 
+// Version of sanitizeInput that preserves spaces for position-based input (locked letters)
+export function sanitizeInputPreserveSpaces(input) {
+  return input.toUpperCase().replace(/[^A-Z\s]/g, '');
+}
+
 export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
   const user = userAnswer.trim().toUpperCase();
 
