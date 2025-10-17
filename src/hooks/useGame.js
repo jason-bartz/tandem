@@ -195,6 +195,15 @@ export function useGame() {
 
       // Update stats BEFORE saving the puzzle result to preserve first attempt status
       try {
+        console.log('[useGame] Calling statsService.updateStats with:', {
+          completed: won,
+          mistakes,
+          solved,
+          hintsUsed,
+          isArchive,
+          puzzleDate: puzzleDateToUse,
+          isFirstAttempt,
+        });
         await statsService.updateStats({
           completed: won,
           mistakes,
@@ -204,8 +213,13 @@ export function useGame() {
           puzzleDate: puzzleDateToUse, // Pass the puzzle date for streak tracking
           isFirstAttempt, // Pass the first attempt flag directly
         });
+        console.log('[useGame] statsService.updateStats completed successfully');
       } catch (err) {
-        // Silently fail saving stats
+        console.error('[useGame] statsService.updateStats failed:', err);
+        console.error('[useGame] Error details:', {
+          message: err?.message,
+          stack: err?.stack,
+        });
       }
 
       // Save the final result AFTER updating stats

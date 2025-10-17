@@ -97,6 +97,20 @@ export async function updateGameStats(
 ) {
   const stats = await loadStats();
 
+  console.log('[Storage] updateGameStats called with:', {
+    won,
+    isFirstAttempt,
+    isArchiveGame,
+    puzzleDate,
+    currentStats: {
+      played: stats.played,
+      wins: stats.wins,
+      currentStreak: stats.currentStreak,
+      bestStreak: stats.bestStreak,
+      lastStreakDate: stats.lastStreakDate,
+    },
+  });
+
   // Count games played for first attempts only (both daily and archive)
   if (isFirstAttempt) {
     stats.played++;
@@ -115,18 +129,29 @@ export async function updateGameStats(
       const today = puzzleDate || getTodayDateString();
       const yesterday = getYesterdayDateString(today);
 
+      console.log('[Storage] Streak calculation:', {
+        lastStreakDate,
+        today,
+        yesterday,
+        currentStreakBefore: stats.currentStreak,
+      });
+
       if (!lastStreakDate) {
         // No previous streak, start at 1
         stats.currentStreak = 1;
+        console.log('[Storage] Starting new streak: 1');
       } else if (lastStreakDate === yesterday) {
         // Played and won yesterday, continue streak
         stats.currentStreak++;
+        console.log('[Storage] Continuing streak:', stats.currentStreak);
       } else if (lastStreakDate === today) {
         // Already played today, don't update
         // This handles multiple attempts on the same day
+        console.log('[Storage] Already played today, keeping streak:', stats.currentStreak);
       } else {
         // Missed one or more days, restart streak
         stats.currentStreak = 1;
+        console.log('[Storage] Missed days, restarting streak: 1');
       }
 
       // Update last streak date
@@ -134,16 +159,26 @@ export async function updateGameStats(
 
       // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
+        console.log('[Storage] New best streak!', stats.currentStreak, '>', stats.bestStreak);
         stats.bestStreak = stats.currentStreak;
       }
     }
   } else {
     // Only reset streak for daily puzzle losses on first attempt
     if (isFirstAttempt && !isArchiveGame) {
+      console.log('[Storage] Lost puzzle, resetting streak to 0');
       stats.currentStreak = 0;
       stats.lastStreakDate = puzzleDate || getTodayDateString();
     }
   }
+
+  console.log('[Storage] Final stats after update:', {
+    played: stats.played,
+    wins: stats.wins,
+    currentStreak: stats.currentStreak,
+    bestStreak: stats.bestStreak,
+    lastStreakDate: stats.lastStreakDate,
+  });
 
   await saveStats(stats);
   return stats;
