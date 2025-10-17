@@ -5,7 +5,7 @@
 
 import { useState, useCallback } from 'react';
 import { GAME_STATES } from '@/lib/constants';
-import { sanitizeInput } from '@/lib/utils';
+import { sanitizeInput, sanitizeInputPreserveSpaces } from '@/lib/utils';
 
 export function useGameState() {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -91,7 +91,11 @@ export function useGameState() {
         }
       }
 
-      const sanitized = sanitizeInput(processedValue);
+      // Use different sanitization based on whether we have locked letters
+      const sanitized = locked
+        ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
+        : sanitizeInput(processedValue); // Regular sanitization for normal input
+
       setAnswers((prev) => {
         const newAnswers = [...prev];
         newAnswers[index] = sanitized;
