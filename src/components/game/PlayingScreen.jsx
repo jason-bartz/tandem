@@ -226,10 +226,18 @@ export default function PlayingScreen({
         const locked = lockedLetters && lockedLetters[focusedIndex];
 
         if (locked) {
-          // Build a character array to the full answer length
-          const chars = new Array(answerLength).fill(' ');
+          // Start with current value or empty array of correct length
+          const chars =
+            currentValue.length >= answerLength
+              ? currentValue.split('')
+              : new Array(answerLength).fill(' ');
 
-          // Place locked letters in their positions
+          // Ensure array is correct length
+          while (chars.length < answerLength) {
+            chars.push(' ');
+          }
+
+          // Ensure locked letters are in their positions
           Object.keys(locked).forEach((pos) => {
             const position = parseInt(pos);
             if (position < answerLength) {
@@ -237,26 +245,10 @@ export default function PlayingScreen({
             }
           });
 
-          // Place existing user-entered characters in non-locked positions
-          let userCharIndex = 0;
-          for (let i = 0; i < currentValue.length; i++) {
-            const char = currentValue[i];
-            if (!locked[i] && char !== ' ' && char !== locked[i]) {
-              // Find next available non-locked position
-              while (userCharIndex < answerLength && locked[userCharIndex]) {
-                userCharIndex++;
-              }
-              if (userCharIndex < answerLength) {
-                chars[userCharIndex] = char;
-                userCharIndex++;
-              }
-            }
-          }
-
           // Find first empty non-locked position to insert the new character
           let insertPos = -1;
           for (let i = 0; i < answerLength; i++) {
-            if (!locked[i] && chars[i] === ' ') {
+            if (!locked[i] && (chars[i] === ' ' || chars[i] === '' || !chars[i])) {
               insertPos = i;
               break;
             }
@@ -434,10 +426,18 @@ export default function PlayingScreen({
       const locked = lockedLetters && lockedLetters[focusedIndex];
 
       if (locked) {
-        // Build a character array to the full answer length
-        const chars = new Array(answerLength).fill(' ');
+        // Start with current value or empty array of correct length
+        const chars =
+          currentValue.length >= answerLength
+            ? currentValue.split('')
+            : new Array(answerLength).fill(' ');
 
-        // Place locked letters in their positions
+        // Ensure array is correct length
+        while (chars.length < answerLength) {
+          chars.push(' ');
+        }
+
+        // Ensure locked letters are in their positions
         Object.keys(locked).forEach((pos) => {
           const position = parseInt(pos);
           if (position < answerLength) {
@@ -445,26 +445,10 @@ export default function PlayingScreen({
           }
         });
 
-        // Place existing user-entered characters in non-locked positions
-        let userCharIndex = 0;
-        for (let i = 0; i < currentValue.length; i++) {
-          const char = currentValue[i];
-          if (!locked[i] && char !== ' ' && char !== locked[i]) {
-            // Find next available non-locked position
-            while (userCharIndex < answerLength && locked[userCharIndex]) {
-              userCharIndex++;
-            }
-            if (userCharIndex < answerLength) {
-              chars[userCharIndex] = char;
-              userCharIndex++;
-            }
-          }
-        }
-
         // Find first empty non-locked position to insert the new character
         let insertPos = -1;
         for (let i = 0; i < answerLength; i++) {
-          if (!locked[i] && chars[i] === ' ') {
+          if (!locked[i] && (chars[i] === ' ' || chars[i] === '' || !chars[i])) {
             insertPos = i;
             break;
           }
