@@ -184,7 +184,6 @@ export function useGameWithInitialData(initialPuzzleData) {
     (index, value) => {
       const hint = activeHints[index];
       const locked = lockedLetters[index];
-      const currentAnswer = answers[index] || '';
 
       // Get the full answer length from puzzle data
       const puzzleItem = puzzle?.puzzles?.[index];
@@ -195,53 +194,49 @@ export function useGameWithInitialData(initialPuzzleData) {
         : null;
       const answerLength = fullAnswer ? fullAnswer.length : 15;
 
-      // Special case: if value is shorter than currentAnswer, it's a deletion
-      // Just pass through the value as-is for now
-      if (value.length < currentAnswer.length) {
-        const sanitized = sanitizeInput(value);
-        setAnswers((prev) => {
-          const newAnswers = [...prev];
-          newAnswers[index] = sanitized;
-          return newAnswers;
-        });
-        return;
-      }
-
       let processedValue = value;
 
       // If we have locked letters, preserve them in their positions
       if (locked) {
-        // Build a character array to the FULL answer length (not just max locked position)
-        const chars = new Array(answerLength).fill(' ');
+        // For deletions with locked letters, the value should already be properly formatted
+        // from the backspace handler, so just sanitize and save it
+        if (value.includes(' ') || Object.keys(locked).some((pos) => value[pos] === locked[pos])) {
+          // Value already has locked letters in position, just sanitize
+          processedValue = value;
+        } else {
+          // This is new input, need to place characters around locked letters
+          // Build a character array to the FULL answer length
+          const chars = new Array(answerLength).fill(' ');
 
-        // First, place all locked letters in their positions
-        Object.keys(locked).forEach((pos) => {
-          const position = parseInt(pos);
-          if (position < answerLength) {
-            chars[position] = locked[pos];
-          }
-        });
+          // First, place all locked letters in their positions
+          Object.keys(locked).forEach((pos) => {
+            const position = parseInt(pos);
+            if (position < answerLength) {
+              chars[position] = locked[pos];
+            }
+          });
 
-        // Extract only user-entered (non-locked, non-space) characters from the input
-        const userChars = [];
-        for (let i = 0; i < value.length; i++) {
-          const char = value[i];
-          // Skip if this is a locked position or if it's a space
-          if (!locked[i] && char !== ' ' && char !== locked[i]) {
-            userChars.push(char);
+          // Extract only user-entered (non-locked, non-space) characters from the input
+          const userChars = [];
+          for (let i = 0; i < value.length; i++) {
+            const char = value[i];
+            // Skip if this is a locked position or if it's a space
+            if (!locked[i] && char !== ' ' && char !== locked[i]) {
+              userChars.push(char);
+            }
           }
+
+          // Place user characters in non-locked positions only
+          let userCharIndex = 0;
+          for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
+            if (!locked[i]) {
+              chars[i] = userChars[userCharIndex];
+              userCharIndex++;
+            }
+          }
+
+          processedValue = chars.join('');
         }
-
-        // Place user characters in non-locked positions only
-        let userCharIndex = 0;
-        for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
-          if (!locked[i]) {
-            chars[i] = userChars[userCharIndex];
-            userCharIndex++;
-          }
-        }
-
-        processedValue = chars.join('');
       }
 
       if (hint) {
@@ -270,7 +265,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers, activeHints, lockedLetters, answers, puzzle]
+    [checkedWrongAnswers, activeHints, lockedLetters, puzzle]
   );
 
   const completeGame = useCallback(
