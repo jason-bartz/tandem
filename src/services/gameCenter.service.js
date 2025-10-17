@@ -156,21 +156,39 @@ class GameCenterService {
    * @returns {Promise<boolean>} True if submitted successfully
    */
   async submitScore(leaderboardId, score) {
+    logger.info('[GameCenter] submitScore called with:', { leaderboardId, score });
+
     if (!this.isAvailable()) {
       logger.warn('[GameCenter] Not available, queueing score:', leaderboardId, score);
+      logger.warn('[GameCenter] Auth status:', {
+        isNative: this.isNative,
+        isAuthenticated: this.isAuthenticated,
+        playerId: this.playerId,
+      });
       await this._queueLeaderboardScore(leaderboardId, score);
       return false;
     }
 
     try {
+      logger.info('[GameCenter] Submitting score to Game Center:', {
+        leaderboardID: leaderboardId,
+        totalScoreAmount: score,
+      });
+
       await GameConnect.submitScore({
         leaderboardID: leaderboardId,
         totalScoreAmount: score,
       });
-      logger.info('[GameCenter] Score submitted:', leaderboardId, score);
+
+      logger.info('[GameCenter] Score submitted successfully:', leaderboardId, score);
       return true;
     } catch (error) {
       logger.error('[GameCenter] Failed to submit score:', leaderboardId, score, error);
+      logger.error('[GameCenter] Error details:', {
+        message: error.message,
+        code: error.code,
+        stack: error.stack,
+      });
       // Queue for retry
       await this._queueLeaderboardScore(leaderboardId, score);
       return false;
@@ -197,8 +215,16 @@ class GameCenterService {
    */
   async checkAndSubmitAchievements(stats) {
     if (!stats) {
+      logger.warn('[GameCenter] checkAndSubmitAchievements called with null stats');
       return [];
     }
+
+    logger.info('[GameCenter] Checking achievements with stats:', {
+      currentStreak: stats.currentStreak,
+      bestStreak: stats.bestStreak,
+      wins: stats.wins,
+      played: stats.played,
+    });
 
     try {
       // Get last submitted values
@@ -208,6 +234,11 @@ class GameCenterService {
       const lastStreak = lastStreakResult.value ? parseInt(lastStreakResult.value, 10) : 0;
       const lastWins = lastWinsResult.value ? parseInt(lastWinsResult.value, 10) : 0;
 
+      logger.info('[GameCenter] Last submitted values:', {
+        lastStreak,
+        lastWins,
+      });
+
       // Check for newly unlocked achievements
       const newAchievements = getNewlyUnlockedAchievements(stats, {
         streak: lastStreak,
@@ -215,10 +246,12 @@ class GameCenterService {
       });
 
       if (newAchievements.length === 0) {
+        logger.info('[GameCenter] No new achievements to unlock');
         return [];
       }
 
       logger.info('[GameCenter] Found new achievements to unlock:', newAchievements.length);
+      logger.info('[GameCenter] New achievements:', newAchievements);
 
       // Submit each achievement
       const achievementIds = newAchievements.map((a) => a.id);
@@ -556,6 +589,125 @@ class GameCenterService {
       logger.info('[GameCenter] All data reset');
     } catch (error) {
       logger.error('[GameCenter] Failed to reset data:', error);
+    }
+  }
+
+  /**
+   * Debug function to check Game Center state
+   * @returns {Promise<Object>} Current Game Center state and pending items
+   */
+  async debugGetState() {
+    try {
+      const state = {
+        isNative: this.isNative,
+        isAuthenticated: this.isAuthenticated,
+        playerId: this.playerId,
+        isAvailable: this.isAvailable(),
+      };
+
+      // Get stored values
+      const lastStreakResult = await Preferences.get({ key: STORAGE_KEYS.LAST_SUBMITTED_STREAK });
+      const lastWinsResult = await Preferences.get({ key: STORAGE_KEYS.LAST_SUBMITTED_WINS });
+      const submittedResult = await Preferences.get({ key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS });
+      const pendingAchievementsResult = await Preferences.get({
+        key: STORAGE_KEYS.PENDING_ACHIEVEMENTS,
+      });
+      const pendingLeaderboardResult = await Preferences.get({
+        key: STORAGE_KEYS.PENDING_LEADERBOARD,
+      });
+      const retroactiveCheckResult = await Preferences.get({
+        key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+      });
+
+      state.storedData = {
+        lastSubmittedStreak: lastStreakResult.value
+          ? parseInt(lastStreakResult.value, 10)
+          : 'Not set',
+        lastSubmittedWins: lastWinsResult.value ? parseInt(lastWinsResult.value, 10) : 'Not set',
+        submittedAchievements: submittedResult.value
+          ? JSON.parse(submittedResult.value)
+          : 'Not set',
+        pendingAchievements: pendingAchievementsResult.value
+          ? JSON.parse(pendingAchievementsResult.value)
+          : 'Not set',
+        pendingLeaderboard: pendingLeaderboardResult.value
+          ? JSON.parse(pendingLeaderboardResult.value)
+          : 'Not set',
+        retroactiveCheckDone: retroactiveCheckResult.value === 'true',
+      };
+
+      // Get current stats for comparison
+      const stats = await loadStats();
+      state.currentStats = {
+        played: stats.played,
+        wins: stats.wins,
+        currentStreak: stats.currentStreak,
+        bestStreak: stats.bestStreak,
+        lastStreakDate: stats.lastStreakDate,
+      };
+
+      // Check what achievements should be unlocked
+      state.achievementStatus = {
+        shouldHave3DayStreak: stats.bestStreak >= 3,
+        has3DayStreakSubmitted:
+          state.storedData.submittedAchievements !== 'Not set' &&
+          state.storedData.submittedAchievements.includes('com.tandemdaily.app.first_pedal'),
+        qualifyingAchievements: getAllQualifyingAchievements(stats),
+      };
+
+      logger.info('[GameCenter] Debug state:', state);
+      return state;
+    } catch (error) {
+      logger.error('[GameCenter] Failed to get debug state:', error);
+      return { error: error.message };
+    }
+  }
+
+  /**
+   * Debug function to manually test Game Center submission
+   * @param {number} testStreak - Test streak value to submit
+   * @returns {Promise<Object>} Test results
+   */
+  async debugTestSubmission(testStreak = 1) {
+    try {
+      logger.info('[GameCenter] Starting debug test submission with streak:', testStreak);
+
+      const results = {
+        authStatus: {
+          isNative: this.isNative,
+          isAuthenticated: this.isAuthenticated,
+          playerId: this.playerId,
+          isAvailable: this.isAvailable(),
+        },
+        leaderboardTest: null,
+        achievementTest: null,
+      };
+
+      // Test leaderboard submission
+      logger.info('[GameCenter] Testing leaderboard submission...');
+      const leaderboardSuccess = await this.submitScore(LEADERBOARDS.LONGEST_STREAK.id, testStreak);
+      results.leaderboardTest = {
+        success: leaderboardSuccess,
+        leaderboardId: LEADERBOARDS.LONGEST_STREAK.id,
+        submittedValue: testStreak,
+      };
+
+      // Test achievement submission (if streak is 3+)
+      if (testStreak >= 3) {
+        logger.info('[GameCenter] Testing 3-day streak achievement submission...');
+        const achievementSuccess = await this.submitAchievement('com.tandemdaily.app.first_pedal');
+        results.achievementTest = {
+          success: achievementSuccess,
+          achievementId: 'com.tandemdaily.app.first_pedal',
+          achievementName: 'First Pedal (3-day streak)',
+        };
+      }
+
+      logger.info('[GameCenter] Debug test results:', results);
+      return results;
+    } catch (error) {
+      logger.error('[GameCenter] Debug test failed:', error);
+      return { error: error.message };
     }
   }
 }

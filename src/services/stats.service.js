@@ -119,11 +119,34 @@ class StatsService {
       // Check and submit Game Center achievements (only for non-archive games)
       if (!gameResult.isArchive && Capacitor.isNativePlatform()) {
         try {
-          await gameCenterService.checkAndSubmitAchievements(localStats);
-          await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
+          console.log('[StatsService] Game Center submission - Current stats:', {
+            currentStreak: localStats.currentStreak,
+            bestStreak: localStats.bestStreak,
+            wins: localStats.wins,
+            played: localStats.played,
+            isFirstAttempt: gameResult.isFirstAttempt,
+            completed: gameResult.completed,
+          });
+
+          const achievements = await gameCenterService.checkAndSubmitAchievements(localStats);
+          console.log('[StatsService] Achievements checked, newly unlocked:', achievements.length);
+
+          const leaderboardSuccess = await gameCenterService.submitStreakToLeaderboard(
+            localStats.currentStreak
+          );
+          console.log(
+            '[StatsService] Leaderboard submission:',
+            leaderboardSuccess ? 'SUCCESS' : 'FAILED',
+            'with streak:',
+            localStats.currentStreak
+          );
         } catch (error) {
-          // Fail silently - achievements will be queued for retry
-          console.warn('Game Center update failed (will retry):', error);
+          // Log the error for debugging
+          console.error('[StatsService] Game Center update failed:', error);
+          console.error('[StatsService] Error details:', {
+            message: error.message,
+            stack: error.stack,
+          });
         }
       }
 

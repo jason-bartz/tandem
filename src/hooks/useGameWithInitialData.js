@@ -14,6 +14,7 @@ import {
   hasPlayedPuzzle,
 } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
+import statsService from '@/services/stats.service';
 
 export function useGameWithInitialData(initialPuzzleData) {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -285,8 +286,24 @@ export function useGameWithInitialData(initialPuzzleData) {
       // Check if this is the first attempt for this puzzle (both daily and archive)
       const isFirstAttempt = currentPuzzleDate && !(await hasPlayedPuzzle(currentPuzzleDate));
 
-      // Update stats with proper parameters
-      updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
+      // Update stats through statsService (includes Game Center submission)
+      try {
+        console.log('[useGameWithInitialData] Calling statsService.updateStats');
+        await statsService.updateStats({
+          completed: won,
+          mistakes,
+          solved,
+          hintsUsed,
+          isArchive: isArchiveGame,
+          puzzleDate: currentPuzzleDate,
+          isFirstAttempt,
+        });
+        console.log('[useGameWithInitialData] statsService.updateStats completed');
+      } catch (err) {
+        console.error('[useGameWithInitialData] statsService.updateStats failed:', err);
+        // Fall back to direct storage update if service fails
+        updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
+      }
 
       if (!isArchiveGame) {
         try {
