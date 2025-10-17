@@ -196,44 +196,38 @@ export function useGameWithInitialData(initialPuzzleData) {
 
       let processedValue = value;
 
-      // If we have locked letters, preserve them in their positions
+      // If we have locked letters, check if value is already properly formatted
       if (locked) {
-        // For deletions with locked letters, the value should already be properly formatted
-        // from the backspace handler, so just sanitize and save it
-        if (value.includes(' ') || Object.keys(locked).some((pos) => value[pos] === locked[pos])) {
-          // Value already has locked letters in position, just sanitize
+        // Check if the value already has locked letters in their correct positions
+        const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
+          const position = parseInt(pos);
+          return value[position] === locked[pos];
+        });
+
+        if (hasLockedLettersInPlace) {
+          // Value is already properly formatted with locked letters in position
+          // This comes from our keyboard handlers or backspace handler
           processedValue = value;
         } else {
-          // This is new input, need to place characters around locked letters
+          // Value doesn't have locked letters in correct positions
+          // This shouldn't happen with our current implementation, but handle it as a fallback
           // Build a character array to the FULL answer length
           const chars = new Array(answerLength).fill(' ');
 
-          // First, place all locked letters in their positions
+          // Copy non-space characters from value, but not at locked positions
+          for (let i = 0; i < value.length && i < answerLength; i++) {
+            if (!locked[i] && value[i] !== ' ') {
+              chars[i] = value[i];
+            }
+          }
+
+          // Ensure locked letters are at their positions
           Object.keys(locked).forEach((pos) => {
             const position = parseInt(pos);
             if (position < answerLength) {
               chars[position] = locked[pos];
             }
           });
-
-          // Extract only user-entered (non-locked, non-space) characters from the input
-          const userChars = [];
-          for (let i = 0; i < value.length; i++) {
-            const char = value[i];
-            // Skip if this is a locked position or if it's a space
-            if (!locked[i] && char !== ' ' && char !== locked[i]) {
-              userChars.push(char);
-            }
-          }
-
-          // Place user characters in non-locked positions only
-          let userCharIndex = 0;
-          for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
-            if (!locked[i]) {
-              chars[i] = userChars[userCharIndex];
-              userCharIndex++;
-            }
-          }
 
           processedValue = chars.join('');
         }
