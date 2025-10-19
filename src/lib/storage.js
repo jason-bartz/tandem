@@ -69,11 +69,41 @@ async function checkAndUpdateStreak(stats) {
     const today = getTodayDateString();
     const yesterday = getYesterdayDateString(today);
 
+    // Add protection against race conditions - check if we have a recent streak update
+    // This prevents the streak from being reset if it was just updated
+    if (stats.lastStreakUpdate) {
+      const timeSinceUpdate = Date.now() - stats.lastStreakUpdate;
+      // If streak was updated in the last 5 seconds, don't reset it
+      // This handles the case where loadStats is called immediately after updateGameStats
+      if (timeSinceUpdate < 5000) {
+        console.log('[Storage] Skipping streak check - recently updated', {
+          timeSinceUpdate,
+          currentStreak: stats.currentStreak,
+          lastStreakDate: stats.lastStreakDate,
+        });
+        return;
+      }
+    }
+
     // If last streak date is not yesterday or today, reset streak
     if (stats.lastStreakDate !== yesterday && stats.lastStreakDate !== today) {
+      console.log('[Storage] Resetting streak due to missed days', {
+        lastStreakDate: stats.lastStreakDate,
+        yesterday,
+        today,
+        currentStreak: stats.currentStreak,
+      });
       stats.currentStreak = 0;
+      stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting due to missed days
       // Don't update lastStreakDate here, keep it for history
       await saveStats(stats);
+    } else {
+      console.log('[Storage] Streak is still active', {
+        currentStreak: stats.currentStreak,
+        lastStreakDate: stats.lastStreakDate,
+        today,
+        yesterday,
+      });
     }
   }
 }
@@ -139,23 +169,44 @@ export async function updateGameStats(
       if (!lastStreakDate) {
         // No previous streak, start at 1
         stats.currentStreak = 1;
-        console.log('[Storage] Starting new streak: 1');
+        console.log('[Storage] Starting new streak: 1 (no previous streak date)');
       } else if (lastStreakDate === yesterday) {
         // Played and won yesterday, continue streak
+        const oldStreak = stats.currentStreak;
         stats.currentStreak++;
-        console.log('[Storage] Continuing streak:', stats.currentStreak);
+        console.log('[Storage] Continuing streak:', {
+          oldStreak,
+          newStreak: stats.currentStreak,
+          lastStreakDate,
+          yesterday,
+          today,
+        });
       } else if (lastStreakDate === today) {
         // Already played today, don't update
         // This handles multiple attempts on the same day
-        console.log('[Storage] Already played today, keeping streak:', stats.currentStreak);
+        console.log('[Storage] Already played today, keeping streak:', {
+          currentStreak: stats.currentStreak,
+          lastStreakDate,
+          today,
+        });
       } else {
         // Missed one or more days, restart streak
+        const daysMissed = Math.floor(
+          (new Date(today) - new Date(lastStreakDate)) / (1000 * 60 * 60 * 24)
+        );
+        console.log('[Storage] Missed days, restarting streak:', {
+          oldStreak: stats.currentStreak,
+          newStreak: 1,
+          lastStreakDate,
+          today,
+          daysMissed,
+        });
         stats.currentStreak = 1;
-        console.log('[Storage] Missed days, restarting streak: 1');
       }
 
-      // Update last streak date
+      // Update last streak date and timestamp
       stats.lastStreakDate = today;
+      stats.lastStreakUpdate = Date.now(); // Add timestamp to prevent race conditions
 
       // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
@@ -169,6 +220,7 @@ export async function updateGameStats(
       console.log('[Storage] Lost puzzle, resetting streak to 0');
       stats.currentStreak = 0;
       stats.lastStreakDate = puzzleDate || getTodayDateString();
+      stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting streak
     }
   }
 
