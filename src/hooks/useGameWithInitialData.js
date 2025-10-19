@@ -329,6 +329,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           hintsUsed: hintsUsed,
           hintPositionsUsed: hintPositionsUsed,
           attempted: true,
+          isArchive: isArchiveGame, // Pass the archive flag to properly track puzzle type
         });
       }
     },

@@ -1,6 +1,7 @@
 import { STORAGE_KEYS } from './constants';
 import cloudKitService from '@/services/cloudkit.service';
 import dateService from '@/services/dateService';
+import logger from '@/lib/logger';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 
@@ -44,40 +45,92 @@ function getYesterdayDateString(todayString) {
 
 async function recoverStreakFromHistory(lastPlayedDate) {
   try {
-    console.log('[Storage] Attempting to recover streak from history, last played:', lastPlayedDate);
+    console.log(
+      '[Storage] Attempting to recover streak from history, last played:',
+      lastPlayedDate
+    );
 
-    // Get the game history
-    const history = await getGameHistory();
-    if (!history || Object.keys(history).length === 0) {
-      console.log('[Storage] No game history available for recovery');
+    // Get all storage keys to check for daily puzzle completions
+    const isNative = Capacitor.isNativePlatform();
+    let keys = [];
+
+    if (isNative) {
+      const result = await Preferences.keys();
+      keys = result.keys;
+    } else {
+      keys = Object.keys(localStorage);
+    }
+
+    // Build a map of dates to daily puzzle completions
+    const dailyCompletions = {};
+
+    for (const key of keys) {
+      // Only look at puzzle result keys (not progress keys)
+      if (
+        key.startsWith('tandem_') &&
+        !key.includes('progress') &&
+        !key.includes('_gc_') &&
+        !key.includes('_pending_') &&
+        !key.includes('_last_') &&
+        !key.includes('_product_') &&
+        !key.includes('_subscription_') &&
+        key !== 'tandem_stats' &&
+        !key.includes('_puzzle_')
+      ) {
+        const parts = key.split('_');
+        if (parts.length === 4 && parts[0] === 'tandem') {
+          const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
+          const data = await getStorageItem(key);
+
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              // CRITICAL: Only count if it's marked as daily puzzle OR if it's an old entry without metadata
+              // For backwards compatibility, if isDaily/isArchive fields don't exist, check if the date matches the puzzle date
+              const isDaily =
+                parsed.isDaily === true ||
+                (parsed.isDaily === undefined && parsed.isArchive !== true);
+
+              if (parsed.won && isDaily) {
+                dailyCompletions[date] = true;
+                console.log('[Storage] Found daily puzzle completion on', date);
+              }
+            } catch (error) {
+              console.error(`[Storage] Failed to parse result for ${key}:`, error.message);
+            }
+          }
+        }
+      }
+    }
+
+    if (Object.keys(dailyCompletions).length === 0) {
+      console.log('[Storage] No daily puzzle completions found for recovery');
       return 0;
     }
 
     // Sort dates in reverse order (most recent first)
-    const dates = Object.keys(history).sort().reverse();
-    console.log('[Storage] Found game history for dates:', dates.slice(0, 10)); // Log first 10 dates
+    const dates = Object.keys(dailyCompletions).sort().reverse();
+    console.log('[Storage] Found daily puzzle completions for dates:', dates.slice(0, 10));
 
     // Calculate streak by walking backwards from the most recent date
     let streak = 0;
     let expectedDate = lastPlayedDate;
 
-    for (let i = 0; i < dates.length; i++) {
-      const date = dates[i];
-
+    for (const date of dates) {
       // Check if this date matches our expected date
-      if (date === expectedDate && history[date].completed) {
+      if (date === expectedDate && dailyCompletions[date]) {
         streak++;
         // Calculate the previous day
         expectedDate = getYesterdayDateString(expectedDate);
-        console.log('[Storage] Found completed puzzle on', date, '- streak is now', streak);
+        console.log('[Storage] Found daily puzzle completion on', date, '- streak is now', streak);
       } else if (date < expectedDate) {
         // We've gone past where the streak should be
-        console.log('[Storage] Gap found or incomplete puzzle - stopping at streak:', streak);
+        console.log('[Storage] Gap found or no daily puzzle - stopping at streak:', streak);
         break;
       }
     }
 
-    console.log('[Storage] Recovered streak from history:', streak);
+    console.log('[Storage] Recovered streak from daily puzzles only:', streak);
     return streak;
   } catch (error) {
     console.error('[Storage] Error recovering streak from history:', error);
@@ -109,16 +162,18 @@ export async function loadStats() {
   // Check for multiple corruption patterns
   const corruptionDetected =
     // Pattern 1: Streak is 0 but was played today/yesterday
-    (parsedStats.currentStreak === 0 && parsedStats.lastStreakDate &&
-     (parsedStats.lastStreakDate === today || parsedStats.lastStreakDate === yesterday)) ||
+    (parsedStats.currentStreak === 0 &&
+      parsedStats.lastStreakDate &&
+      (parsedStats.lastStreakDate === today || parsedStats.lastStreakDate === yesterday)) ||
     // Pattern 2: Last streak date is in the future
     (parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate));
 
   if (corruptionDetected) {
     console.log('[Storage] CORRUPTION DETECTED:', {
-      pattern: parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)
-        ? 'future-date'
-        : 'zero-streak-recent-play',
+      pattern:
+        parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)
+          ? 'future-date'
+          : 'zero-streak-recent-play',
       currentStreak: parsedStats.currentStreak,
       lastStreakDate: parsedStats.lastStreakDate,
       today,
@@ -416,15 +471,23 @@ export async function savePuzzleResult(date, result) {
   if (typeof window !== 'undefined') {
     const dateObj = new Date(date + 'T00:00:00');
     const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
-    const resultWithTimestamp = {
+
+    // Get current puzzle info to determine if this is the daily puzzle
+    const todayDate = getTodayDateString();
+    const isDaily = date === todayDate && !result.isArchive;
+
+    const resultWithMetadata = {
       ...result,
       timestamp: new Date().toISOString(),
+      isDaily: isDaily, // Track if this was the daily puzzle
+      isArchive: result.isArchive || false, // Explicitly track archive status
+      puzzleDate: date, // Store the puzzle date
     };
 
-    await setStorageItem(key, JSON.stringify(resultWithTimestamp));
+    await setStorageItem(key, JSON.stringify(resultWithMetadata));
 
     // Sync to iCloud in background (don't await)
-    cloudKitService.syncPuzzleResult(date, resultWithTimestamp).catch(() => {
+    cloudKitService.syncPuzzleResult(date, resultWithMetadata).catch(() => {
       // CloudKit puzzle result sync failed (non-critical)
     });
   }
@@ -534,6 +597,8 @@ export async function getGameHistory() {
               mistakes: parsed.mistakes,
               theme: parsed.theme, // Include the saved theme
               status: parsed.won ? 'completed' : 'failed',
+              isDaily: parsed.isDaily || false, // Track if it was a daily puzzle
+              isArchive: parsed.isArchive || false, // Track if it was an archive puzzle
             };
           } catch (error) {
             // Skip corrupted or non-JSON data for this key
