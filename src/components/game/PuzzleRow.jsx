@@ -14,7 +14,7 @@ export default function PuzzleRow({
   onFocus,
   isFocused,
   readonly: _readonly = false,
-  hintData,
+  hasHint = false,  // Whether this answer has a hint shown
   lockedLetters,
   answerLength = 0,
   isSmallPhone = false,
@@ -57,7 +57,7 @@ export default function PuzzleRow({
   const getVisualDisplay = () => {
     if (answerLength === 0) return '';
 
-    const currentValue = hintData && !value ? hintData.firstLetter : value;
+    const currentValue = value;
     const chars = [];
 
     for (let i = 0; i < answerLength; i++) {
@@ -73,17 +73,7 @@ export default function PuzzleRow({
         );
       } else if (currentValue && i < currentValue.length && currentValue[i] !== ' ') {
         const char = currentValue[i].toUpperCase();
-
-        if (hintData && i === 0) {
-          // First letter hint - yellow
-          chars.push(
-            <span key={i} className="font-semibold text-amber-600 dark:text-amber-400">
-              {char}
-            </span>
-          );
-        } else {
-          chars.push(<span key={i}>{char}</span>);
-        }
+        chars.push(<span key={i}>{char}</span>);
       } else {
         chars.push(<span key={i}>_</span>);
       }
@@ -169,14 +159,14 @@ export default function PuzzleRow({
         {/* Hidden input for focus management */}
         <input
           type="text"
-          value={hintData && !value ? hintData.firstLetter : value}
+          value={value}
           onChange={() => {}}
           onClick={handleClick}
           onFocus={handleClick}
           maxLength={answerLength || 15}
           disabled={isCorrect}
           readOnly={true}
-          aria-label={`Answer ${index + 1}`}
+          aria-label={`Answer ${index + 1}${hasHint ? ' (hint available)' : ''}`}
           className={`
             w-full ${isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-4'} rounded-xl ${
               isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm sm:text-base'
@@ -195,7 +185,7 @@ export default function PuzzleRow({
                     : `bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 ${
                         !reduceMotion ? 'animate-enhanced-shake' : ''
                       }`
-                  : hintData
+                  : hasHint
                     ? highContrast
                       ? 'bg-hc-background border-hc-warning text-hc-text'
                       : 'bg-yellow-50 dark:bg-yellow-900/20 text-dark-text dark:text-gray-200 border-yellow-400 dark:border-yellow-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
@@ -220,12 +210,12 @@ export default function PuzzleRow({
               : {}),
           }}
         />
-        {hintData && !isCorrect && (
+        {hasHint && !isCorrect && (
           <span
             className={`absolute ${
               isSmallPhone ? 'right-2 text-base' : 'right-3 text-xl'
-            } top-1/2 -translate-y-1/2 z-10`}
-            aria-label="Hint active"
+            } top-1/2 -translate-y-1/2 z-10 pointer-events-none`}
+            aria-label="Hint shown for this answer"
           >
             💡
           </span>

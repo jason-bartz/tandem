@@ -31,7 +31,7 @@ class AIService {
    * @param {Array} options.pastPuzzles - Recent puzzles for context (last 30-60 days)
    * @param {Array} options.excludeThemes - Themes to avoid
    * @param {string} options.themeHint - Optional theme hint from user
-   * @returns {Promise<{theme: string, puzzles: Array<{emoji: string, answer: string}>}>}
+   * @returns {Promise<{theme: string, puzzles: Array<{emoji: string, answer: string, hint: string}>}>}
    */
   async generatePuzzle({ date, pastPuzzles = [], excludeThemes = [], themeHint }) {
     const client = this.getClient();
@@ -280,14 +280,26 @@ VARIETY REQUIREMENTS:
 - Ensure each answer feels distinct within its theme
 ${excludedThemesList}
 
+HINT REQUIREMENTS:
+Each puzzle MUST include a concise hint (3-8 words ideal, max 60 characters):
+- Hints should be crossword-style clues that guide without giving away the answer
+- Don't use the answer word in the hint
+- Make hints progressively harder (easy hint for easy answer, harder hint for harder answer)
+- Hints should be clever and engaging, like NYT crossword clues
+- Examples of good hints:
+  * STOVE → "Kitchen cooking surface"
+  * FRIDGE → "Cold food storage"
+  * TOASTER → "Bread browning device"
+  * COFFEE → "Morning brew machine"
+
 RESPONSE FORMAT (JSON only, no explanation):
 {
   "theme": "Your creative theme here",
   "puzzles": [
-    {"emoji": "🍳🔥", "answer": "STOVE"},
-    {"emoji": "❄️📦", "answer": "FRIDGE"},
-    {"emoji": "🍞🔥", "answer": "TOASTER"},
-    {"emoji": "☕⚡", "answer": "COFFEE"}
+    {"emoji": "🍳🔥", "answer": "STOVE", "hint": "Kitchen cooking surface"},
+    {"emoji": "❄️📦", "answer": "FRIDGE", "hint": "Cold food storage"},
+    {"emoji": "🍞🔥", "answer": "TOASTER", "hint": "Bread browning device"},
+    {"emoji": "☕⚡", "answer": "COFFEE", "hint": "Morning brew machine"}
   ]
 }
 
@@ -313,6 +325,7 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
         puzzles: (puzzle.puzzles || []).map((p) => ({
           emoji: p.emoji?.trim() || '',
           answer: p.answer?.trim().toUpperCase() || '',
+          hint: p.hint?.trim() || '', // Include hint in parsed puzzle
         })),
       };
     } catch (error) {
@@ -339,6 +352,17 @@ Generate a puzzle for ${date}. Be creative and ensure variety!`;
     puzzle.puzzles.forEach((p, index) => {
       if (!p.emoji || !p.answer) {
         throw new Error(`Puzzle pair ${index + 1} is incomplete`);
+      }
+
+      // Validate hint if present (not required for backward compatibility)
+      if (p.hint) {
+        if (p.hint.length > 60) {
+          throw new Error(`Hint ${index + 1} is too long (max 60 characters)`);
+        }
+        // Check if hint contains the answer
+        if (p.hint.toLowerCase().includes(p.answer.toLowerCase())) {
+          throw new Error(`Hint ${index + 1} contains the answer`);
+        }
       }
 
       // Count emoji characters using a comprehensive regex that handles:

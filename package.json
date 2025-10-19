@@ -18,6 +18,7 @@
     "prepare": "husky",
     "hash-password": "node scripts/hash-password.js",
     "seed": "node scripts/seed-puzzles.js",
+    "migrate:hints": "node scripts/migrate-hints.js",
     "cap:add": "cap add ios",
     "cap:sync": "cap sync",
     "cap:open": "cap open ios",

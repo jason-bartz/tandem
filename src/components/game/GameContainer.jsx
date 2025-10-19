@@ -135,10 +135,13 @@ export default function GameContainer() {
               currentState={currentState}
               onSelectPuzzle={handleSelectPuzzle}
               hintsUsed={game.hintsUsed}
+              hintedAnswers={game.hintedAnswers}
+              unlockedHints={game.unlockedHints}
+              activeHintIndex={game.activeHintIndex}
               onUseHint={game.useHint}
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.resetGame}
-              activeHints={game.activeHints}
+              lockedLetters={game.lockedLetters}
             />
           )}
 

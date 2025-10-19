@@ -567,9 +567,15 @@ export async function savePuzzleProgress(date, progress) {
     const existing = await getStorageItem(key);
     const existingData = existing ? JSON.parse(existing) : {};
 
+    // Enhanced progress data with hint system
     const progressWithTimestamp = {
       ...existingData,
       ...progress,
+      // Ensure hint data is preserved
+      hintsUsed: progress.hintsUsed ?? existingData.hintsUsed ?? 0,
+      hintedAnswers: progress.hintedAnswers ?? existingData.hintedAnswers ?? [],
+      unlockedHints: progress.unlockedHints ?? existingData.unlockedHints ?? 1,
+      activeHintIndex: progress.activeHintIndex ?? existingData.activeHintIndex ?? null,
       lastUpdated: new Date().toISOString(),
     };
 

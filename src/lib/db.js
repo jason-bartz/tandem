@@ -59,72 +59,83 @@ function getDailyPuzzleFromTemplates(date) {
 
 export async function getPuzzleForDate(date) {
   try {
+    let puzzle = null;
+
     // First, check database (edited puzzles take priority)
     const redis = await getRedisClient();
 
     if (redis) {
-      const puzzle = await redis.get(`puzzle:${date}`);
-      if (puzzle) {
+      const puzzleData = await redis.get(`puzzle:${date}`);
+      if (puzzleData) {
         console.log(`Loaded puzzle from database: ${date}`);
-        return JSON.parse(puzzle);
+        puzzle = JSON.parse(puzzleData);
       }
     } else {
       if (inMemoryDB.puzzles[date]) {
-        return inMemoryDB.puzzles[date];
+        puzzle = inMemoryDB.puzzles[date];
       }
     }
 
     // Then try to load from all-puzzles.json
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const allPuzzlesFile = path.join(process.cwd(), 'public', 'puzzles', 'all-puzzles.json');
-      if (fs.existsSync(allPuzzlesFile)) {
-        const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
-        if (data.puzzles && Array.isArray(data.puzzles)) {
-          const puzzle = data.puzzles.find((p) => p.date === date);
-          if (puzzle) {
-            console.log(`Loaded puzzle from all-puzzles.json: ${date}`);
-            return {
-              theme: puzzle.theme,
-              puzzles: puzzle.puzzles,
-            };
+    if (!puzzle) {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const allPuzzlesFile = path.join(process.cwd(), 'public', 'puzzles', 'all-puzzles.json');
+        if (fs.existsSync(allPuzzlesFile)) {
+          const data = JSON.parse(fs.readFileSync(allPuzzlesFile, 'utf8'));
+          if (data.puzzles && Array.isArray(data.puzzles)) {
+            const foundPuzzle = data.puzzles.find((p) => p.date === date);
+            if (foundPuzzle) {
+              console.log(`Loaded puzzle from all-puzzles.json: ${date}`);
+              puzzle = {
+                theme: foundPuzzle.theme,
+                puzzles: foundPuzzle.puzzles,
+              };
+            }
           }
         }
+      } catch (fileError) {
+        // File doesn't exist or couldn't be read, continue to other methods
       }
-    } catch (fileError) {
-      // File doesn't exist or couldn't be read, continue to other methods
     }
 
     // Then try individual JSON file
-    try {
-      const fs = require('fs');
-      const path = require('path');
-      const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${date}.json`);
-      if (fs.existsSync(puzzleFile)) {
-        const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
-        console.log(`Loaded puzzle from file: ${date}`);
-        return puzzleData;
+    if (!puzzle) {
+      try {
+        const fs = require('fs');
+        const path = require('path');
+        const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${date}.json`);
+        if (fs.existsSync(puzzleFile)) {
+          const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
+          console.log(`Loaded puzzle from file: ${date}`);
+          puzzle = puzzleData;
+        }
+      } catch (fileError) {
+        // File doesn't exist or couldn't be read, continue to other methods
       }
-    } catch (fileError) {
-      // File doesn't exist or couldn't be read, continue to other methods
     }
 
     // Finally, fall back to template puzzles
-    const templatePuzzle = getDailyPuzzleFromTemplates(date);
-    return {
-      ...templatePuzzle,
-      date,
-      puzzleNumber: getPuzzleNumberForDate(date),
-    };
+    if (!puzzle) {
+      const templatePuzzle = getDailyPuzzleFromTemplates(date);
+      puzzle = {
+        ...templatePuzzle,
+        date,
+        puzzleNumber: getPuzzleNumberForDate(date),
+      };
+    }
+
+    // Ensure hint structure exists for all puzzles
+    return ensureHintStructure(puzzle);
   } catch (error) {
     console.error('Error getting puzzle:', error);
     const fallback = getDailyPuzzleFromTemplates(date);
-    return {
+    return ensureHintStructure({
       ...fallback,
       date,
       puzzleNumber: getPuzzleNumberForDate(date),
-    };
+    });
   }
 }
 
@@ -170,14 +181,69 @@ export async function getPuzzle(identifier) {
   }
 }
 
+/**
+ * Validates hint quality and appropriateness
+ * @param {string} hint - The hint text
+ * @param {string} answer - The answer the hint is for
+ * @returns {boolean} Whether the hint is valid
+ */
+export function validateHint(hint, answer) {
+  if (!hint || typeof hint !== 'string') return false;
+
+  // Check length (should fit on one line on mobile)
+  if (hint.length > 60) return false;
+  if (hint.length < 3) return false;
+
+  // Hint shouldn't contain the answer
+  const normalizedHint = hint.toLowerCase();
+  const normalizedAnswer = answer.toLowerCase();
+  if (normalizedHint.includes(normalizedAnswer)) return false;
+
+  // Hint should be different from answer
+  if (normalizedHint === normalizedAnswer) return false;
+
+  return true;
+}
+
+/**
+ * Ensures puzzle has valid hint structure
+ * @param {Object} puzzle - The puzzle object
+ * @returns {Object} Puzzle with validated hints
+ */
+export function ensureHintStructure(puzzle) {
+  if (!puzzle || !puzzle.puzzles) return puzzle;
+
+  return {
+    ...puzzle,
+    puzzles: puzzle.puzzles.map(p => ({
+      emoji: p.emoji,
+      answer: p.answer,
+      hint: p.hint || '' // Ensure hint field exists, even if empty
+    }))
+  };
+}
+
 export async function setPuzzleForDate(date, puzzle) {
   try {
+    // Ensure puzzle structure includes hints if provided
+    const puzzleWithHints = {
+      ...puzzle,
+      puzzles: puzzle.puzzles.map((p, index) => ({
+        ...p,
+        // Preserve existing hint if present, or set to empty string
+        hint: p.hint || puzzle.hints?.[index] || ''
+      }))
+    };
+
+    // Remove the separate hints array if it exists (migrated into puzzle objects)
+    delete puzzleWithHints.hints;
+
     const redis = await getRedisClient();
 
     if (redis) {
-      await redis.set(`puzzle:${date}`, JSON.stringify(puzzle), { EX: 60 * 60 * 24 * 365 });
+      await redis.set(`puzzle:${date}`, JSON.stringify(puzzleWithHints), { EX: 60 * 60 * 24 * 365 });
     } else {
-      inMemoryDB.puzzles[date] = puzzle;
+      inMemoryDB.puzzles[date] = puzzleWithHints;
     }
 
     return true;

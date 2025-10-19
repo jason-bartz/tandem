@@ -15,9 +15,11 @@ export function useGameState() {
   const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
   const [mistakes, setMistakes] = useState(0);
   const [solved, setSolved] = useState(0);
-  const [hintsUsed, setHintsUsed] = useState(0);
+  const [hintsUsed, setHintsUsed] = useState(0); // Now 0-2 instead of just 0-1
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
-  const [activeHints, setActiveHints] = useState([null, null, null, null]);
+  const [hintedAnswers, setHintedAnswers] = useState([]); // Track which answers have hints shown
+  const [unlockedHints, setUnlockedHints] = useState(1); // Start with 1 hint, can unlock up to 2
+  const [activeHintIndex, setActiveHintIndex] = useState(null); // Which answer is showing a hint
   const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
   const [isArchiveGame, setIsArchiveGame] = useState(false);
   const [currentPuzzleDate, setCurrentPuzzleDate] = useState(null);
@@ -33,7 +35,9 @@ export function useGameState() {
     setSolved(0);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
-    setActiveHints([null, null, null, null]);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
     setLockedLetters([null, null, null, null]);
     setHardModeTimeUp(false);
     // Note: We don't reset isHardMode here as it's a preference
@@ -41,7 +45,6 @@ export function useGameState() {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      const hint = activeHints[index];
       const locked = lockedLetters[index];
 
       let processedValue = value;
@@ -110,7 +113,7 @@ export function useGameState() {
         });
       }
     },
-    [checkedWrongAnswers, activeHints, lockedLetters]
+    [checkedWrongAnswers, lockedLetters]
   );
 
   return {
@@ -133,8 +136,12 @@ export function useGameState() {
     setHintsUsed,
     hasCheckedAnswers,
     setHasCheckedAnswers,
-    activeHints,
-    setActiveHints,
+    hintedAnswers,
+    setHintedAnswers,
+    unlockedHints,
+    setUnlockedHints,
+    activeHintIndex,
+    setActiveHintIndex,
     lockedLetters,
     setLockedLetters,
     isArchiveGame,

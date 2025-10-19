@@ -89,6 +89,8 @@ export async function POST(request) {
       completed: z.boolean(),
       time: z.number().min(0),
       mistakes: z.number().min(0).max(4),
+      hintsUsed: z.number().min(0).max(2).optional(), // Updated to support 0-2 hints
+      hintedAnswers: z.array(z.number()).optional(), // Track which answers got hints
     });
 
     const validatedData = completionSchema.parse(body);

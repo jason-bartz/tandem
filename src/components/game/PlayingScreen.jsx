@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
+import HintDisplay from './HintDisplay';
 import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
@@ -30,10 +31,12 @@ export default function PlayingScreen({
   _currentState,
   onSelectPuzzle,
   hintsUsed,
+  hintedAnswers,
+  unlockedHints,
+  activeHintIndex,
   onUseHint,
   _hasCheckedAnswers,
   onReturnToWelcome,
-  activeHints,
   lockedLetters,
   isMobilePhone = false,
   isSmallPhone = false,
@@ -277,7 +280,6 @@ export default function PlayingScreen({
     focusedIndex,
     answers,
     correctAnswers,
-    activeHints,
     showRules,
     showHowToPlay,
     showStats,
@@ -469,26 +471,32 @@ export default function PlayingScreen({
   };
 
   const handleUseHint = () => {
-    // Find all unsolved puzzles and randomly select one for the hint
-    const unsolvedIndices = [];
-    for (let i = 0; i < 4; i++) {
-      if (!correctAnswers[i]) {
-        unsolvedIndices.push(i);
+    // Use hint for the currently focused answer
+    if (focusedIndex !== null && !correctAnswers[focusedIndex]) {
+      const success = onUseHint(focusedIndex);
+      if (success) {
+        try {
+          playHintSound();
+          hintUsed(); // Haptic feedback for hint usage
+        } catch (e) {
+          // Sound might fail on some browsers
+        }
       }
-    }
-
-    if (unsolvedIndices.length > 0) {
-      // Randomly select one of the unsolved puzzles
-      const randomIndex = Math.floor(Math.random() * unsolvedIndices.length);
-      const hintIndex = unsolvedIndices[randomIndex];
-
-      try {
-        playHintSound();
-        hintUsed(); // Haptic feedback for hint usage
-      } catch (e) {
-        // Sound might fail on some browsers
+    } else {
+      // If no answer is focused, use hint for first unsolved
+      const firstUnsolved = correctAnswers.findIndex(correct => !correct);
+      if (firstUnsolved !== -1) {
+        const success = onUseHint(firstUnsolved);
+        if (success) {
+          try {
+            playHintSound();
+            hintUsed(); // Haptic feedback for hint usage
+          } catch (e) {
+            // Sound might fail on some browsers
+          }
+          setFocusedIndex(firstUnsolved);
+        }
       }
-      onUseHint(hintIndex);
     }
   };
 
@@ -599,34 +607,43 @@ export default function PlayingScreen({
               {puzzle &&
                 puzzle.puzzles &&
                 puzzle.puzzles.map((p, index) => (
-                  <PuzzleRow
-                    key={index}
-                    emoji={p.emoji || '❓❓'}
-                    value={answers[index]}
-                    onChange={(value) => onUpdateAnswer(index, value)}
-                    isCorrect={correctAnswers[index]}
-                    isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
-                    index={index}
-                    onFocus={() => setFocusedIndex(index)}
-                    isFocused={focusedIndex === index}
-                    readonly={true}
-                    hintData={activeHints && activeHints[index]}
-                    lockedLetters={lockedLetters && lockedLetters[index]}
-                    answerLength={
-                      p.answer
-                        ? p.answer.includes(',')
-                          ? p.answer.split(',')[0].trim().length
-                          : p.answer.length
-                        : 0
-                    }
-                    isSmallPhone={isSmallPhone}
-                    isMobilePhone={isMobilePhone}
-                  />
+                  <div key={index} className="relative">
+                    <PuzzleRow
+                      emoji={p.emoji || '❓❓'}
+                      value={answers[index]}
+                      onChange={(value) => onUpdateAnswer(index, value)}
+                      isCorrect={correctAnswers[index]}
+                      isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
+                      index={index}
+                      onFocus={() => setFocusedIndex(index)}
+                      isFocused={focusedIndex === index}
+                      readonly={true}
+                      hasHint={hintedAnswers.includes(index)}
+                      lockedLetters={lockedLetters && lockedLetters[index]}
+                      answerLength={
+                        p.answer
+                          ? p.answer.includes(',')
+                            ? p.answer.split(',')[0].trim().length
+                            : p.answer.length
+                          : 0
+                      }
+                      isSmallPhone={isSmallPhone}
+                      isMobilePhone={isMobilePhone}
+                    />
+                    {/* Show hint below this answer if it's the active hint */}
+                    <HintDisplay
+                      hint={p.hint}
+                      isVisible={activeHintIndex === index && !correctAnswers[index]}
+                      answerIndex={index}
+                      isSmallPhone={isSmallPhone}
+                      isMobilePhone={isMobilePhone}
+                    />
+                  </div>
                 ))}
             </div>
 
             {/* Hint button - positioned before keyboard (not shown in hard mode) */}
-            {!isHardMode && hintsUsed === 0 && solved < 4 && (
+            {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
               <div className="mb-3">
                 <button
                   onClick={() => {
@@ -638,10 +655,20 @@ export default function PlayingScreen({
                       ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
                       : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
                   }`}
+                  disabled={focusedIndex === null || correctAnswers[focusedIndex]}
+                  aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
                 >
                   <span className="text-lg sm:text-xl">💡</span>
-                  Use Hint (1 available)
+                  {unlockedHints > 1
+                    ? `Use Hint (${unlockedHints - hintsUsed} of ${unlockedHints})`
+                    : `Use Hint (${unlockedHints - hintsUsed} available)`
+                  }
                 </button>
+                {unlockedHints === 1 && solved >= 1 && (
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
+                    Get 1 more correct answer to unlock another hint!
+                  </p>
+                )}
               </div>
             )}
 
