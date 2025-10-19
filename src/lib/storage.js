@@ -57,7 +57,15 @@ export async function loadStats() {
     ? JSON.parse(stats)
     : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
 
+  // Add migration for existing users - ensure lastStreakUpdate exists
+  if (parsedStats.currentStreak > 0 && !parsedStats.lastStreakUpdate) {
+    console.log('[Storage] Migrating stats - adding lastStreakUpdate for existing user');
+    parsedStats.lastStreakUpdate = Date.now();
+    await saveStats(parsedStats);
+  }
+
   // Check if streak should be reset due to missed days
+  // This modifies parsedStats in place, so we return parsedStats after this call
   await checkAndUpdateStreak(parsedStats);
 
   return parsedStats;
@@ -68,6 +76,24 @@ async function checkAndUpdateStreak(stats) {
   if (stats.currentStreak > 0 && stats.lastStreakDate) {
     const today = getTodayDateString();
     const yesterday = getYesterdayDateString(today);
+
+    console.log('[Storage] checkAndUpdateStreak called', {
+      currentStreak: stats.currentStreak,
+      lastStreakDate: stats.lastStreakDate,
+      today,
+      yesterday,
+      hasLastStreakUpdate: !!stats.lastStreakUpdate,
+      lastStreakUpdate: stats.lastStreakUpdate,
+    });
+
+    // CRITICAL FIX: If lastStreakDate is today, they just played today - don't reset!
+    if (stats.lastStreakDate === today) {
+      console.log('[Storage] Last streak date is today - keeping current streak', {
+        currentStreak: stats.currentStreak,
+        lastStreakDate: stats.lastStreakDate,
+      });
+      return; // Don't reset streak if they played today
+    }
 
     // Add protection against race conditions - check if we have a recent streak update
     // This prevents the streak from being reset if it was just updated
@@ -85,26 +111,32 @@ async function checkAndUpdateStreak(stats) {
       }
     }
 
-    // If last streak date is not yesterday or today, reset streak
-    if (stats.lastStreakDate !== yesterday && stats.lastStreakDate !== today) {
-      console.log('[Storage] Resetting streak due to missed days', {
-        lastStreakDate: stats.lastStreakDate,
-        yesterday,
-        today,
-        currentStreak: stats.currentStreak,
-      });
-      stats.currentStreak = 0;
-      stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting due to missed days
-      // Don't update lastStreakDate here, keep it for history
-      await saveStats(stats);
-    } else {
-      console.log('[Storage] Streak is still active', {
+    // If last streak date is yesterday, the streak continues (they can play today)
+    if (stats.lastStreakDate === yesterday) {
+      console.log('[Storage] Streak continues - last played yesterday', {
         currentStreak: stats.currentStreak,
         lastStreakDate: stats.lastStreakDate,
-        today,
         yesterday,
       });
+      return; // Streak is still valid
     }
+
+    // If we get here, last streak date is neither today nor yesterday - reset streak
+    console.log('[Storage] Resetting streak due to missed days', {
+      lastStreakDate: stats.lastStreakDate,
+      yesterday,
+      today,
+      currentStreak: stats.currentStreak,
+    });
+    stats.currentStreak = 0;
+    stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting due to missed days
+    // Don't update lastStreakDate here, keep it for history
+    await saveStats(stats);
+  } else if (!stats.lastStreakDate && stats.currentStreak > 0) {
+    // Edge case: has a streak but no date (shouldn't happen but handle gracefully)
+    console.log('[Storage] Warning: Streak without date, preserving streak', {
+      currentStreak: stats.currentStreak,
+    });
   }
 }
 
