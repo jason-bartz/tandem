@@ -55,12 +55,45 @@ public class CloudKitSyncPlugin: CAPPlugin {
 
     private let deviceId = UIDevice.current.identifierForVendor?.uuidString ?? UUID().uuidString
 
+    // For syncing across devices, we need a user-specific identifier
+    // This will be fetched from CloudKit account
+    private var userRecordID: CKRecord.ID?
+    private var cachedUserID: String?
+
     // Record type names
     private enum RecordType: String {
         case userStats = "UserStats"
         case puzzleResult = "PuzzleResult"
         case puzzleProgress = "PuzzleProgress"
         case userPreferences = "UserPreferences"
+    }
+
+    // MARK: - User ID Management
+
+    private func getUserID(completion: @escaping (String) -> Void) {
+        // Return cached ID if available
+        if let cached = cachedUserID {
+            completion(cached)
+            return
+        }
+
+        // Fetch user record ID from CloudKit
+        container.fetchUserRecordID { recordID, error in
+            if let recordID = recordID {
+                // Store the user record ID
+                self.userRecordID = recordID
+                // Create a stable user ID from the record name
+                let userID = recordID.recordName.replacingOccurrences(of: "_", with: "")
+                self.cachedUserID = userID
+                completion(userID)
+            } else {
+                // Fallback to device ID if CloudKit not available
+                print("CloudKit user record fetch failed, using device ID as fallback")
+                let fallbackID = self.deviceId
+                self.cachedUserID = fallbackID
+                completion(fallbackID)
+            }
+        }
     }
 
     // MARK: - Account Status
@@ -105,62 +138,158 @@ public class CloudKitSyncPlugin: CAPPlugin {
             return
         }
 
-        let recordID = CKRecord.ID(recordName: "userStats_\(deviceId)")
-        let record = CKRecord(recordType: RecordType.userStats.rawValue, recordID: recordID)
+        // Use a single record for all devices of the same user
+        // The record name is just "userStats" - CloudKit handles user scoping automatically
+        let recordID = CKRecord.ID(recordName: "userStats_primary")
 
-        record["played"] = Int64((stats["played"] as? Int) ?? 0)
-        record["wins"] = Int64((stats["wins"] as? Int) ?? 0)
-        record["currentStreak"] = Int64((stats["currentStreak"] as? Int) ?? 0)
-        record["bestStreak"] = Int64((stats["bestStreak"] as? Int) ?? 0)
-        record["lastStreakDate"] = stats["lastStreakDate"] as? String
-        record["deviceId"] = deviceId
-        record["modifiedAt"] = Date()
+        // First, try to fetch existing record to merge stats properly
+        privateDatabase.fetch(withRecordID: recordID) { existingRecord, fetchError in
+            let record: CKRecord
 
-        privateDatabase.save(record) { savedRecord, error in
-            if let error = error {
-                call.reject("Failed to sync stats", nil, error)
-                return
+            if let existingRecord = existingRecord {
+                // Update existing record
+                record = existingRecord
+            } else {
+                // Create new record
+                record = CKRecord(recordType: RecordType.userStats.rawValue, recordID: recordID)
             }
 
-            call.resolve([
-                "success": true,
-                "recordName": savedRecord?.recordID.recordName ?? ""
-            ])
+            // Get existing values for proper merging
+            let existingPlayed = (record["played"] as? Int64) ?? 0
+            let existingWins = (record["wins"] as? Int64) ?? 0
+            let existingBestStreak = (record["bestStreak"] as? Int64) ?? 0
+            let existingCurrentStreak = (record["currentStreak"] as? Int64) ?? 0
+            let existingLastStreakDate = record["lastStreakDate"] as? String
+            let existingModifiedAt = record["modifiedAt"] as? Date ?? Date.distantPast
+
+            let newPlayed = Int64((stats["played"] as? Int) ?? 0)
+            let newWins = Int64((stats["wins"] as? Int) ?? 0)
+            let newCurrentStreak = Int64((stats["currentStreak"] as? Int) ?? 0)
+            let newBestStreak = Int64((stats["bestStreak"] as? Int) ?? 0)
+            let newLastStreakDate = stats["lastStreakDate"] as? String
+
+            // Merge logic: take the maximum values (most advanced progress)
+            record["played"] = max(existingPlayed, newPlayed)
+            record["wins"] = max(existingWins, newWins)
+            record["bestStreak"] = max(existingBestStreak, newBestStreak)
+
+            // For current streak, use the one with the most recent date
+            if let existingDate = existingLastStreakDate, let newDate = newLastStreakDate {
+                if newDate >= existingDate {
+                    record["currentStreak"] = newCurrentStreak
+                    record["lastStreakDate"] = newDate
+                } else {
+                    record["currentStreak"] = existingCurrentStreak
+                    record["lastStreakDate"] = existingDate
+                }
+            } else if newLastStreakDate != nil {
+                record["currentStreak"] = newCurrentStreak
+                record["lastStreakDate"] = newLastStreakDate
+            } else {
+                record["currentStreak"] = existingCurrentStreak
+                record["lastStreakDate"] = existingLastStreakDate
+            }
+
+            record["lastSyncedDeviceId"] = self.deviceId
+            record["modifiedAt"] = Date()
+
+            self.privateDatabase.save(record) { savedRecord, error in
+                if let error = error {
+                    call.reject("Failed to sync stats", nil, error)
+                    return
+                }
+
+                // Return the merged stats back to the app
+                if let savedRecord = savedRecord {
+                    call.resolve([
+                        "success": true,
+                        "recordName": savedRecord.recordID.recordName,
+                        "mergedStats": [
+                            "played": Int(savedRecord["played"] as? Int64 ?? 0),
+                            "wins": Int(savedRecord["wins"] as? Int64 ?? 0),
+                            "currentStreak": Int(savedRecord["currentStreak"] as? Int64 ?? 0),
+                            "bestStreak": Int(savedRecord["bestStreak"] as? Int64 ?? 0),
+                            "lastStreakDate": savedRecord["lastStreakDate"] as? String
+                        ]
+                    ])
+                } else {
+                    call.resolve(["success": true])
+                }
+            }
         }
     }
 
     @objc func fetchStats(_ call: CAPPluginCall) {
-        // Query for all records where deviceId exists (all records should have this)
-        // This uses a queryable field instead of TRUEPREDICATE
+        // First, try to fetch the single primary user stats record
+        let recordID = CKRecord.ID(recordName: "userStats_primary")
+
+        privateDatabase.fetch(withRecordID: recordID) { record, error in
+            if let error = error {
+                let ckError = error as NSError
+
+                // Check if it's a "record not found" error
+                if ckError.code == 11 { // CKError.unknownItem.rawValue
+                    print("CloudKit fetchStats: No primary record found, checking for legacy device records...")
+
+                    // Try to fetch legacy device-specific records and migrate them
+                    self.fetchAndMigrateLegacyStats(call)
+                    return
+                }
+
+                print("CloudKit fetchStats error: \(error.localizedDescription)")
+                print("CloudKit error code: \(ckError.code), domain: \(ckError.domain)")
+                call.reject("Failed to fetch stats: \(error.localizedDescription)")
+                return
+            }
+
+            guard let record = record else {
+                print("CloudKit fetchStats: No record found")
+                // Try migration as fallback
+                self.fetchAndMigrateLegacyStats(call)
+                return
+            }
+
+            print("CloudKit fetchStats: Found user stats record")
+
+            // Extract stats from the record
+            let stats: [String: Any] = [
+                "played": Int(record["played"] as? Int64 ?? 0),
+                "wins": Int(record["wins"] as? Int64 ?? 0),
+                "currentStreak": Int(record["currentStreak"] as? Int64 ?? 0),
+                "bestStreak": Int(record["bestStreak"] as? Int64 ?? 0),
+                "lastStreakDate": record["lastStreakDate"] as? String,
+                "lastSyncedDeviceId": record["lastSyncedDeviceId"] as? String,
+                "modifiedAt": (record["modifiedAt"] as? Date)?.timeIntervalSince1970
+            ]
+
+            call.resolve(["stats": stats])
+        }
+    }
+
+    // MARK: - Legacy Stats Migration
+
+    private func fetchAndMigrateLegacyStats(_ call: CAPPluginCall) {
+        // Query for all legacy device-specific records (looking for any userStats records with deviceId)
         let predicate = NSPredicate(format: "deviceId != %@", "")
         let query = CKQuery(recordType: RecordType.userStats.rawValue, predicate: predicate)
 
         privateDatabase.perform(query, inZoneWith: nil) { records, error in
             if let error = error {
-                let ckError = error as NSError
-                print("CloudKit fetchStats error: \(error.localizedDescription)")
-                print("CloudKit error code: \(ckError.code), domain: \(ckError.domain)")
-                print("CloudKit error userInfo: \(ckError.userInfo)")
-                call.reject("Failed to fetch stats: \(error.localizedDescription)")
+                print("CloudKit migration query error: \(error.localizedDescription)")
+                // If query fails, try fetching this device's specific record
+                self.fetchDeviceSpecificRecord(call)
                 return
             }
 
             guard let records = records, !records.isEmpty else {
-                print("CloudKit fetchStats: No records found")
+                print("CloudKit: No legacy records found")
                 call.resolve(["stats": nil])
                 return
             }
 
-            print("CloudKit fetchStats: Found \(records.count) record(s)")
+            print("CloudKit: Found \(records.count) legacy device record(s), migrating...")
 
-            // Sort records by modifiedAt client-side
-            let sortedRecords = records.sorted { record1, record2 in
-                let date1 = record1["modifiedAt"] as? Date ?? Date.distantPast
-                let date2 = record2["modifiedAt"] as? Date ?? Date.distantPast
-                return date1 > date2
-            }
-
-            // Merge stats from all devices
+            // Merge all device records
             var mergedStats: [String: Any] = [
                 "played": 0,
                 "wins": 0,
@@ -170,47 +299,98 @@ public class CloudKitSyncPlugin: CAPPlugin {
             ]
 
             var latestDate: Date?
+            var mostRecentStreak: (current: Int, date: String?)?
 
-            for record in sortedRecords {
-                // Handle both Int and Int64 types from CloudKit
-                let played: Int = {
-                    if let val = record["played"] as? Int64 { return Int(val) }
-                    if let val = record["played"] as? Int { return val }
-                    return 0
-                }()
-                let wins: Int = {
-                    if let val = record["wins"] as? Int64 { return Int(val) }
-                    if let val = record["wins"] as? Int { return val }
-                    return 0
-                }()
-                let currentStreak: Int = {
-                    if let val = record["currentStreak"] as? Int64 { return Int(val) }
-                    if let val = record["currentStreak"] as? Int { return val }
-                    return 0
-                }()
-                let bestStreak: Int = {
-                    if let val = record["bestStreak"] as? Int64 { return Int(val) }
-                    if let val = record["bestStreak"] as? Int { return val }
-                    return 0
-                }()
+            for record in records {
+                let played = Int(record["played"] as? Int64 ?? 0)
+                let wins = Int(record["wins"] as? Int64 ?? 0)
+                let currentStreak = Int(record["currentStreak"] as? Int64 ?? 0)
+                let bestStreak = Int(record["bestStreak"] as? Int64 ?? 0)
+                let lastStreakDate = record["lastStreakDate"] as? String
                 let modifiedAt = record["modifiedAt"] as? Date
 
-                // Sum plays and wins across devices
-                mergedStats["played"] = (mergedStats["played"] as! Int) + played
-                mergedStats["wins"] = (mergedStats["wins"] as! Int) + wins
-
-                // Take max streaks
+                // Take maximum values for cumulative stats
+                mergedStats["played"] = max(mergedStats["played"] as! Int, played)
+                mergedStats["wins"] = max(mergedStats["wins"] as! Int, wins)
                 mergedStats["bestStreak"] = max(mergedStats["bestStreak"] as! Int, bestStreak)
 
-                // Take most recent current streak
-                if latestDate == nil || (modifiedAt != nil && modifiedAt! > latestDate!) {
-                    latestDate = modifiedAt
-                    mergedStats["currentStreak"] = currentStreak
-                    mergedStats["lastStreakDate"] = record["lastStreakDate"] as? String
+                // For current streak, use the most recent one
+                if let modDate = modifiedAt {
+                    if latestDate == nil || modDate > latestDate! {
+                        latestDate = modDate
+                        mostRecentStreak = (currentStreak, lastStreakDate)
+                    }
                 }
             }
 
-            call.resolve(["stats": mergedStats])
+            // Apply the most recent streak
+            if let streak = mostRecentStreak {
+                mergedStats["currentStreak"] = streak.current
+                mergedStats["lastStreakDate"] = streak.date
+            }
+
+            print("CloudKit: Migration complete, merged stats: \(mergedStats)")
+
+            // Save the merged stats to the new primary record
+            self.saveMigratedStats(mergedStats, call: call)
+        }
+    }
+
+    private func fetchDeviceSpecificRecord(_ call: CAPPluginCall) {
+        // Last resort: try to fetch this specific device's old record
+        let legacyRecordID = CKRecord.ID(recordName: "userStats_\(deviceId)")
+
+        privateDatabase.fetch(withRecordID: legacyRecordID) { record, error in
+            if let error = error {
+                print("CloudKit: No device-specific record found: \(error.localizedDescription)")
+                call.resolve(["stats": nil])
+                return
+            }
+
+            guard let record = record else {
+                call.resolve(["stats": nil])
+                return
+            }
+
+            print("CloudKit: Found device-specific record, migrating...")
+
+            let stats: [String: Any] = [
+                "played": Int(record["played"] as? Int64 ?? 0),
+                "wins": Int(record["wins"] as? Int64 ?? 0),
+                "currentStreak": Int(record["currentStreak"] as? Int64 ?? 0),
+                "bestStreak": Int(record["bestStreak"] as? Int64 ?? 0),
+                "lastStreakDate": record["lastStreakDate"] as? String
+            ]
+
+            // Save to new primary record
+            self.saveMigratedStats(stats, call: call)
+        }
+    }
+
+    private func saveMigratedStats(_ stats: [String: Any], call: CAPPluginCall) {
+        // Create the new unified record
+        let recordID = CKRecord.ID(recordName: "userStats_primary")
+        let record = CKRecord(recordType: RecordType.userStats.rawValue, recordID: recordID)
+
+        record["played"] = Int64(stats["played"] as? Int ?? 0)
+        record["wins"] = Int64(stats["wins"] as? Int ?? 0)
+        record["currentStreak"] = Int64(stats["currentStreak"] as? Int ?? 0)
+        record["bestStreak"] = Int64(stats["bestStreak"] as? Int ?? 0)
+        record["lastStreakDate"] = stats["lastStreakDate"] as? String
+        record["lastSyncedDeviceId"] = deviceId
+        record["modifiedAt"] = Date()
+        record["migratedAt"] = Date() // Track that this was migrated
+
+        privateDatabase.save(record) { savedRecord, error in
+            if let error = error {
+                print("CloudKit: Migration save failed: \(error.localizedDescription)")
+                // Still return the stats we found
+                call.resolve(["stats": stats])
+                return
+            }
+
+            print("CloudKit: Migration successful, stats saved to primary record")
+            call.resolve(["stats": stats])
         }
     }
 
@@ -223,31 +403,35 @@ public class CloudKitSyncPlugin: CAPPlugin {
             return
         }
 
-        let recordID = CKRecord.ID(recordName: "puzzleResult_\(date)_\(deviceId)")
-        let record = CKRecord(recordType: RecordType.puzzleResult.rawValue, recordID: recordID)
+        // Use user ID instead of device ID for cross-device sync
+        getUserID { userID in
+            let recordID = CKRecord.ID(recordName: "puzzleResult_\(date)_\(userID)")
+            let record = CKRecord(recordType: RecordType.puzzleResult.rawValue, recordID: recordID)
 
-        record["date"] = date
-        // Store won as Int64 for CloudKit
-        record["won"] = Int64((result["won"] as? Bool ?? false) ? 1 : 0)
-        record["mistakes"] = Int64((result["mistakes"] as? Int) ?? 0)
-        record["solved"] = Int64((result["solved"] as? Int) ?? 0)
-        record["hintsUsed"] = Int64((result["hintsUsed"] as? Int) ?? 0)
-        // Store theme as Int64 if it's a number, otherwise as String
-        if let themeString = result["theme"] as? String, let themeInt = Int64(themeString) {
-            record["theme"] = themeInt
-        } else {
-            record["theme"] = result["theme"] as? String
-        }
-        record["timestamp"] = result["timestamp"] as? String
-        record["deviceId"] = deviceId
-
-        privateDatabase.save(record) { savedRecord, error in
-            if let error = error {
-                call.reject("Failed to sync puzzle result", nil, error)
-                return
+            record["date"] = date
+            // Store won as Int64 for CloudKit
+            record["won"] = Int64((result["won"] as? Bool ?? false) ? 1 : 0)
+            record["mistakes"] = Int64((result["mistakes"] as? Int) ?? 0)
+            record["solved"] = Int64((result["solved"] as? Int) ?? 0)
+            record["hintsUsed"] = Int64((result["hintsUsed"] as? Int) ?? 0)
+            // Store theme as Int64 if it's a number, otherwise as String
+            if let themeString = result["theme"] as? String, let themeInt = Int64(themeString) {
+                record["theme"] = themeInt
+            } else {
+                record["theme"] = result["theme"] as? String
             }
+            record["timestamp"] = result["timestamp"] as? String
+            record["deviceId"] = self.deviceId  // Still store device ID for tracking
+            // userID is already part of the record name, no need to store separately
 
-            call.resolve(["success": true])
+            self.privateDatabase.save(record) { savedRecord, error in
+                if let error = error {
+                    call.reject("Failed to sync puzzle result", nil, error)
+                    return
+                }
+
+                call.resolve(["success": true])
+            }
         }
     }
 
@@ -344,25 +528,29 @@ public class CloudKitSyncPlugin: CAPPlugin {
             return
         }
 
-        let recordID = CKRecord.ID(recordName: "puzzleProgress_\(date)_\(deviceId)")
-        let record = CKRecord(recordType: RecordType.puzzleProgress.rawValue, recordID: recordID)
+        // Use user ID instead of device ID for cross-device sync
+        getUserID { userID in
+            let recordID = CKRecord.ID(recordName: "puzzleProgress_\(date)_\(userID)")
+            let record = CKRecord(recordType: RecordType.puzzleProgress.rawValue, recordID: recordID)
 
-        record["date"] = date
-        // Store started as Int64 for CloudKit (1 for true, 0 for false)
-        record["started"] = Int64((progress["started"] as? Bool ?? false) ? 1 : 0)
-        record["solved"] = Int64((progress["solved"] as? Int) ?? 0)
-        record["mistakes"] = Int64((progress["mistakes"] as? Int) ?? 0)
-        record["hintsUsed"] = Int64((progress["hintsUsed"] as? Int) ?? 0)
-        record["lastUpdated"] = progress["lastUpdated"] as? String ?? ISO8601DateFormatter().string(from: Date())
-        record["deviceId"] = deviceId
+            record["date"] = date
+            // Store started as Int64 for CloudKit (1 for true, 0 for false)
+            record["started"] = Int64((progress["started"] as? Bool ?? false) ? 1 : 0)
+            record["solved"] = Int64((progress["solved"] as? Int) ?? 0)
+            record["mistakes"] = Int64((progress["mistakes"] as? Int) ?? 0)
+            record["hintsUsed"] = Int64((progress["hintsUsed"] as? Int) ?? 0)
+            record["lastUpdated"] = progress["lastUpdated"] as? String ?? ISO8601DateFormatter().string(from: Date())
+            record["deviceId"] = self.deviceId  // Still store device ID for tracking
+            // userID is already part of the record name, no need to store separately
 
-        privateDatabase.save(record) { savedRecord, error in
-            if let error = error {
-                call.reject("Failed to sync puzzle progress", nil, error)
-                return
+            self.privateDatabase.save(record) { savedRecord, error in
+                if let error = error {
+                    call.reject("Failed to sync puzzle progress", nil, error)
+                    return
+                }
+
+                call.resolve(["success": true])
             }
-
-            call.resolve(["success": true])
         }
     }
 

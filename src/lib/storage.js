@@ -155,6 +155,59 @@ export async function loadStats() {
     bestStreak: parsedStats.bestStreak,
   });
 
+  // Auto-sync with CloudKit on load if available
+  if (cloudKitService.isSyncAvailable()) {
+    try {
+      console.log('[Storage] Auto-syncing with CloudKit...');
+      const cloudStats = await cloudKitService.fetchStats();
+
+      if (cloudStats) {
+        console.log('[Storage] CloudKit stats fetched:', cloudStats);
+
+        // Merge CloudKit stats with local stats
+        // Take the maximum values to ensure we don't lose progress
+        const mergedStats = {
+          played: Math.max(parsedStats.played || 0, cloudStats.played || 0),
+          wins: Math.max(parsedStats.wins || 0, cloudStats.wins || 0),
+          bestStreak: Math.max(parsedStats.bestStreak || 0, cloudStats.bestStreak || 0),
+          currentStreak: 0, // Will be determined below
+          lastStreakDate: null // Will be determined below
+        };
+
+        // For current streak, use the one with the most recent date
+        const localDate = parsedStats.lastStreakDate;
+        const cloudDate = cloudStats.lastStreakDate;
+
+        if (localDate && cloudDate) {
+          if (cloudDate >= localDate) {
+            mergedStats.currentStreak = cloudStats.currentStreak || 0;
+            mergedStats.lastStreakDate = cloudDate;
+          } else {
+            mergedStats.currentStreak = parsedStats.currentStreak || 0;
+            mergedStats.lastStreakDate = localDate;
+          }
+        } else if (cloudDate) {
+          mergedStats.currentStreak = cloudStats.currentStreak || 0;
+          mergedStats.lastStreakDate = cloudDate;
+        } else if (localDate) {
+          mergedStats.currentStreak = parsedStats.currentStreak || 0;
+          mergedStats.lastStreakDate = localDate;
+        }
+
+        // Save the merged stats locally (skip cloud sync since we just fetched from cloud)
+        await saveStats(mergedStats, true);
+
+        console.log('[Storage] Stats merged and saved:', mergedStats);
+
+        // Update parsedStats to return the merged version
+        Object.assign(parsedStats, mergedStats);
+      }
+    } catch (error) {
+      console.error('[Storage] Failed to auto-sync with CloudKit:', error);
+      // Continue with local stats if sync fails
+    }
+  }
+
   // CRITICAL: Detect and fix corrupted streak data
   const today = getTodayDateString();
   const yesterday = getYesterdayDateString(today);
@@ -199,7 +252,7 @@ export async function loadStats() {
         parsedStats.bestStreak = recoveredStreak;
       }
 
-      await saveStats(parsedStats);
+      await saveStats(parsedStats, true); // Skip cloud sync during recovery
     }
   }
 
@@ -207,7 +260,7 @@ export async function loadStats() {
   if (parsedStats.currentStreak > 0 && !parsedStats.lastStreakUpdate) {
     console.log('[Storage] Migrating stats - adding lastStreakUpdate for existing user');
     parsedStats.lastStreakUpdate = Date.now();
-    await saveStats(parsedStats);
+    await saveStats(parsedStats, true); // Skip cloud sync during migration
   }
 
   // Check if streak should be reset due to missed days
@@ -277,7 +330,7 @@ async function checkAndUpdateStreak(stats) {
     stats.currentStreak = 0;
     stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting due to missed days
     // Don't update lastStreakDate here, keep it for history
-    await saveStats(stats);
+    await saveStats(stats, true); // Skip cloud sync during streak reset check
   } else if (!stats.lastStreakDate && stats.currentStreak > 0) {
     // Edge case: has a streak but no date (shouldn't happen but handle gracefully)
     console.log('[Storage] Warning: Streak without date, preserving streak', {
@@ -286,15 +339,32 @@ async function checkAndUpdateStreak(stats) {
   }
 }
 
-export async function saveStats(stats) {
+export async function saveStats(stats, skipCloudSync = false) {
   if (typeof window !== 'undefined') {
     await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
 
-    // Sync to iCloud in background (don't await)
-    cloudKitService.syncStats(stats).catch(() => {
-      // CloudKit stats sync failed (non-critical)
-    });
+    // Sync to iCloud and update local stats with merged result
+    if (!skipCloudSync && cloudKitService.isSyncAvailable()) {
+      try {
+        const syncResult = await cloudKitService.syncStats(stats);
+
+        if (syncResult.success && syncResult.mergedStats) {
+          // CloudKit returned merged stats, update local storage with them
+          console.log('[Storage] Received merged stats from CloudKit:', syncResult.mergedStats);
+
+          // Save the merged stats locally (with skipCloudSync to avoid infinite loop)
+          await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(syncResult.mergedStats));
+
+          return syncResult.mergedStats;
+        }
+      } catch (error) {
+        console.error('[Storage] CloudKit sync failed:', error);
+        // Non-critical error, continue with local stats
+      }
+    }
   }
+
+  return stats;
 }
 
 export async function updateGameStats(
@@ -738,6 +808,9 @@ export async function restoreFromiCloud() {
       };
 
       await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(mergedStats));
+
+      // Important: Don't sync back to CloudKit during restore
+      // We're pulling FROM CloudKit, not pushing TO it
       restored++;
     }
 
