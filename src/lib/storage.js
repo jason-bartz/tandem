@@ -1,5 +1,6 @@
 import { STORAGE_KEYS } from './constants';
 import cloudKitService from '@/services/cloudkit.service';
+import dateService from '@/services/dateService';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 
@@ -34,17 +35,54 @@ async function setStorageItem(key, value) {
 }
 
 function getTodayDateString() {
-  const { toZonedTime } = require('date-fns-tz');
-  const etTimeZone = 'America/New_York';
-  const now = new Date();
-  const etToday = toZonedTime(now, etTimeZone);
-  return `${etToday.getFullYear()}-${String(etToday.getMonth() + 1).padStart(2, '0')}-${String(etToday.getDate()).padStart(2, '0')}`;
+  return dateService.getCurrentDateString();
 }
 
 function getYesterdayDateString(todayString) {
-  const date = new Date(todayString + 'T00:00:00');
-  date.setDate(date.getDate() - 1);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  return dateService.getYesterdayDateString(todayString);
+}
+
+async function recoverStreakFromHistory(lastPlayedDate) {
+  try {
+    console.log('[Storage] Attempting to recover streak from history, last played:', lastPlayedDate);
+
+    // Get the game history
+    const history = await getGameHistory();
+    if (!history || Object.keys(history).length === 0) {
+      console.log('[Storage] No game history available for recovery');
+      return 0;
+    }
+
+    // Sort dates in reverse order (most recent first)
+    const dates = Object.keys(history).sort().reverse();
+    console.log('[Storage] Found game history for dates:', dates.slice(0, 10)); // Log first 10 dates
+
+    // Calculate streak by walking backwards from the most recent date
+    let streak = 0;
+    let expectedDate = lastPlayedDate;
+
+    for (let i = 0; i < dates.length; i++) {
+      const date = dates[i];
+
+      // Check if this date matches our expected date
+      if (date === expectedDate && history[date].completed) {
+        streak++;
+        // Calculate the previous day
+        expectedDate = getYesterdayDateString(expectedDate);
+        console.log('[Storage] Found completed puzzle on', date, '- streak is now', streak);
+      } else if (date < expectedDate) {
+        // We've gone past where the streak should be
+        console.log('[Storage] Gap found or incomplete puzzle - stopping at streak:', streak);
+        break;
+      }
+    }
+
+    console.log('[Storage] Recovered streak from history:', streak);
+    return streak;
+  } catch (error) {
+    console.error('[Storage] Error recovering streak from history:', error);
+    return 0;
+  }
 }
 
 export async function loadStats() {
@@ -56,6 +94,59 @@ export async function loadStats() {
   const parsedStats = stats
     ? JSON.parse(stats)
     : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+
+  // Log initial state for debugging
+  console.log('[Storage] Loading stats:', {
+    currentStreak: parsedStats.currentStreak,
+    lastStreakDate: parsedStats.lastStreakDate,
+    bestStreak: parsedStats.bestStreak,
+  });
+
+  // CRITICAL: Detect and fix corrupted streak data
+  const today = getTodayDateString();
+  const yesterday = getYesterdayDateString(today);
+
+  // Check for multiple corruption patterns
+  const corruptionDetected =
+    // Pattern 1: Streak is 0 but was played today/yesterday
+    (parsedStats.currentStreak === 0 && parsedStats.lastStreakDate &&
+     (parsedStats.lastStreakDate === today || parsedStats.lastStreakDate === yesterday)) ||
+    // Pattern 2: Last streak date is in the future
+    (parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate));
+
+  if (corruptionDetected) {
+    console.log('[Storage] CORRUPTION DETECTED:', {
+      pattern: parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)
+        ? 'future-date'
+        : 'zero-streak-recent-play',
+      currentStreak: parsedStats.currentStreak,
+      lastStreakDate: parsedStats.lastStreakDate,
+      today,
+      yesterday,
+    });
+
+    // If date is in future, correct it to today
+    if (parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)) {
+      console.log('[Storage] Correcting future date to today');
+      parsedStats.lastStreakDate = today;
+    }
+
+    // Attempt to recover streak from game history
+    const recoveredStreak = await recoverStreakFromHistory(parsedStats.lastStreakDate || today);
+    if (recoveredStreak > 0) {
+      console.log('[Storage] Streak recovered:', recoveredStreak);
+      parsedStats.currentStreak = recoveredStreak;
+      parsedStats.lastStreakUpdate = Date.now();
+      parsedStats._recoveredAt = new Date().toISOString(); // Audit trail
+
+      // Update best streak if needed
+      if (recoveredStreak > parsedStats.bestStreak) {
+        parsedStats.bestStreak = recoveredStreak;
+      }
+
+      await saveStats(parsedStats);
+    }
+  }
 
   // Add migration for existing users - ensure lastStreakUpdate exists
   if (parsedStats.currentStreak > 0 && !parsedStats.lastStreakUpdate) {
@@ -186,9 +277,23 @@ export async function updateGameStats(
 
     // Streak logic - only for daily puzzle first attempts
     if (isFirstAttempt && !isArchiveGame) {
+      // Validate and sanitize the puzzle date
+      let today = puzzleDate || getTodayDateString();
+
+      // CRITICAL: Validate the date to prevent corruption
+      if (puzzleDate && !dateService.isValidDateString(puzzleDate)) {
+        console.warn('[Storage] Invalid puzzle date provided:', puzzleDate, '- using today');
+        today = getTodayDateString();
+      }
+
+      // CRITICAL: Prevent future dates from being saved
+      if (dateService.isDateInFuture(today)) {
+        console.warn('[Storage] Future date detected:', today, '- correcting to actual today');
+        today = getTodayDateString();
+      }
+
       // Check if we played yesterday (for consecutive days)
       const lastStreakDate = stats.lastStreakDate;
-      const today = puzzleDate || getTodayDateString();
       const yesterday = getYesterdayDateString(today);
 
       console.log('[Storage] Streak calculation:', {
