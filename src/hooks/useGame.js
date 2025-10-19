@@ -231,6 +231,7 @@ export function useGame() {
           hintsUsed,
           theme: puzzle?.theme, // Save the theme with the result
           time: null, // Could add time tracking if needed
+          isArchive: isArchive, // Pass the archive flag to properly track puzzle type
         });
       }
 
