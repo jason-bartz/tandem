@@ -19,13 +19,11 @@ const NOTIFICATION_IDS = {
   COMEBACK: 5,
 };
 
-// Helper function to get today's date string in ET
+// Helper function to get today's date string in user's local timezone
+// Uses Wordle-style local timezone approach for consistent experience
 function getTodayDateString() {
-  const { toZonedTime } = require('date-fns-tz');
-  const etTimeZone = 'America/New_York';
-  const now = new Date();
-  const etToday = toZonedTime(now, etTimeZone);
-  return `${etToday.getFullYear()}-${String(etToday.getMonth() + 1).padStart(2, '0')}-${String(etToday.getDate()).padStart(2, '0')}`;
+  const localDateService = require('@/services/localDateService');
+  return localDateService.getCurrentDateString();
 }
 
 const PREFS_KEYS = {

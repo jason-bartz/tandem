@@ -1,6 +1,6 @@
 import { STORAGE_KEYS } from './constants';
 import cloudKitService from '@/services/cloudkit.service';
-import dateService from '@/services/dateService';
+import localDateService from '@/services/localDateService';
 import logger from '@/lib/logger';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
@@ -36,11 +36,11 @@ async function setStorageItem(key, value) {
 }
 
 function getTodayDateString() {
-  return dateService.getCurrentDateString();
+  return localDateService.getCurrentDateString();
 }
 
 function getYesterdayDateString(todayString) {
-  return dateService.getYesterdayDateString(todayString);
+  return localDateService.getYesterdayDateString(todayString);
 }
 
 async function recoverStreakFromHistory(lastPlayedDate) {
@@ -166,12 +166,12 @@ export async function loadStats() {
       parsedStats.lastStreakDate &&
       (parsedStats.lastStreakDate === today || parsedStats.lastStreakDate === yesterday)) ||
     // Pattern 2: Last streak date is in the future
-    (parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate));
+    (parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate));
 
   if (corruptionDetected) {
     console.log('[Storage] CORRUPTION DETECTED:', {
       pattern:
-        parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)
+        parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate)
           ? 'future-date'
           : 'zero-streak-recent-play',
       currentStreak: parsedStats.currentStreak,
@@ -181,7 +181,7 @@ export async function loadStats() {
     });
 
     // If date is in future, correct it to today
-    if (parsedStats.lastStreakDate && dateService.isDateInFuture(parsedStats.lastStreakDate)) {
+    if (parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate)) {
       console.log('[Storage] Correcting future date to today');
       parsedStats.lastStreakDate = today;
     }
@@ -336,13 +336,13 @@ export async function updateGameStats(
       let today = puzzleDate || getTodayDateString();
 
       // CRITICAL: Validate the date to prevent corruption
-      if (puzzleDate && !dateService.isValidDateString(puzzleDate)) {
+      if (puzzleDate && !localDateService.isValidDateString(puzzleDate)) {
         console.warn('[Storage] Invalid puzzle date provided:', puzzleDate, '- using today');
         today = getTodayDateString();
       }
 
       // CRITICAL: Prevent future dates from being saved
-      if (dateService.isDateInFuture(today)) {
+      if (localDateService.isDateInFuture(today)) {
         console.warn('[Storage] Future date detected:', today, '- correcting to actual today');
         today = getTodayDateString();
       }
@@ -429,12 +429,9 @@ export async function updateGameStats(
 }
 
 export function getTodayKey() {
-  // Use Eastern Time for consistency with puzzle rotation
-  const { toZonedTime } = require('date-fns-tz');
-  const etTimeZone = 'America/New_York';
-  const now = new Date();
-  const etToday = toZonedTime(now, etTimeZone);
-  return `tandem_${etToday.getFullYear()}_${etToday.getMonth() + 1}_${etToday.getDate()}`;
+  // Use player's local timezone for Wordle-style puzzle rotation
+  // Each player gets a new puzzle at their local midnight
+  return localDateService.getTodayStorageKey();
 }
 
 export async function hasPlayedToday() {
