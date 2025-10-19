@@ -9,7 +9,7 @@ import {
   formatMessage,
   WEEKLY_SUMMARY,
 } from '@/lib/notificationMessages';
-import { loadStats, hasPlayedToday } from '@/lib/storage';
+import { loadStats, hasPlayedToday, getWeeklyPuzzleStats } from '@/lib/storage';
 
 const NOTIFICATION_IDS = {
   DAILY_REMINDER: 1,
@@ -330,33 +330,71 @@ class NotificationService {
     });
   }
 
-  async scheduleWeeklySummary() {
+  async sendWeeklySummaryNow() {
     if (!this.isNative) return;
 
-    // Cancel existing weekly summary
-    await this.cancelNotification(NOTIFICATION_IDS.WEEKLY_SUMMARY);
+    // Get current weekly stats
+    const weeklyStats = await getWeeklyPuzzleStats();
 
-    // Schedule for Sunday at 11 AM
-    const scheduleDate = new Date();
-    const dayOfWeek = scheduleDate.getDay();
-    const daysUntilSunday = (7 - dayOfWeek) % 7 || 7;
-    scheduleDate.setDate(scheduleDate.getDate() + daysUntilSunday);
-    scheduleDate.setHours(11, 0, 0, 0);
-
-    // Get weekly stats (simplified for now)
+    // Get random message and format with actual data
     const message = getRandomMessage(WEEKLY_SUMMARY);
     const formattedMessage = formatMessage(message, {
-      played: '?', // Will be calculated when notification fires
-      time: '?',
-      avgTime: '?',
+      played: weeklyStats.puzzlesCompleted,
     });
 
+    // Send notification immediately
     await LocalNotifications.schedule({
       notifications: [
         {
           id: NOTIFICATION_IDS.WEEKLY_SUMMARY,
           title: formattedMessage.title,
           body: formattedMessage.body,
+          schedule: {
+            at: new Date(Date.now() + 1000), // 1 second from now
+          },
+          sound: 'default',
+          actionTypeId: 'PLAY_GAME',
+          extra: {
+            type: 'weekly_summary',
+            puzzlesCompleted: weeklyStats.puzzlesCompleted,
+          },
+        },
+      ],
+    });
+  }
+
+  async scheduleWeeklySummary() {
+    if (!this.isNative) return;
+
+    // Cancel existing weekly summary
+    await this.cancelNotification(NOTIFICATION_IDS.WEEKLY_SUMMARY);
+
+    // Check if today is Sunday and it's around 11 AM
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const hours = now.getHours();
+
+    // If it's Sunday and between 10:30 AM and 11:30 AM, send immediately
+    if (dayOfWeek === 0 && hours >= 10 && hours <= 11) {
+      await this.sendWeeklySummaryNow();
+      return;
+    }
+
+    // Schedule for next Sunday at 11 AM
+    const scheduleDate = new Date();
+    const daysUntilSunday = dayOfWeek === 0 ? 7 : 7 - dayOfWeek;
+    scheduleDate.setDate(scheduleDate.getDate() + daysUntilSunday);
+    scheduleDate.setHours(11, 0, 0, 0);
+
+    // We'll use a placeholder notification that will trigger the actual calculation
+    // Note: This is a limitation of the current system - we can't calculate future stats
+    // The app would need to be running on Sunday to send accurate stats
+    await LocalNotifications.schedule({
+      notifications: [
+        {
+          id: NOTIFICATION_IDS.WEEKLY_SUMMARY,
+          title: 'Weekly Check-In',
+          body: 'Check your Tandem stats for this week! 🎯',
           schedule: {
             at: scheduleDate,
             repeats: true,
@@ -365,7 +403,7 @@ class NotificationService {
           sound: 'default',
           actionTypeId: 'PLAY_GAME',
           extra: {
-            type: 'weekly_summary',
+            type: 'weekly_summary_trigger',
           },
         },
       ],
@@ -511,6 +549,20 @@ class NotificationService {
     if (lastCheck !== today) {
       await this.rescheduleAllNotifications();
       await this.setNotificationPreference('last_notification_check', today);
+    }
+
+    // Check if it's Sunday and we should send weekly summary
+    const now = new Date();
+    const dayOfWeek = now.getDay();
+    const hours = now.getHours();
+
+    // Check if we've already sent weekly summary today
+    const lastWeeklySummary = await this.getNotificationPreference('last_weekly_summary_date');
+
+    if (dayOfWeek === 0 && hours >= 10 && lastWeeklySummary !== today) {
+      // Send weekly summary with actual stats
+      await this.sendWeeklySummaryNow();
+      await this.setNotificationPreference('last_weekly_summary_date', today);
     }
   }
 

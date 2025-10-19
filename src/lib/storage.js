@@ -543,6 +543,73 @@ export async function getStoredStats() {
   };
 }
 
+export async function getWeeklyPuzzleStats() {
+  if (typeof window === 'undefined') {
+    return { puzzlesCompleted: 0, bestTime: null, averageTime: null };
+  }
+
+  const today = getTodayDateString();
+  const todayDate = new Date(today + 'T00:00:00');
+  const dayOfWeek = todayDate.getDay();
+
+  // Calculate start of week (Sunday)
+  const startOfWeek = new Date(todayDate);
+  startOfWeek.setDate(todayDate.getDate() - dayOfWeek);
+
+  let puzzlesCompleted = 0;
+  let totalTime = 0;
+  let bestTime = null;
+  const times = [];
+
+  // Check each day of the current week
+  for (let i = 0; i <= dayOfWeek; i++) {
+    const checkDate = new Date(startOfWeek);
+    checkDate.setDate(startOfWeek.getDate() + i);
+
+    // Format date as YYYY-MM-DD
+    const year = checkDate.getFullYear();
+    const month = String(checkDate.getMonth() + 1).padStart(2, '0');
+    const day = String(checkDate.getDate()).padStart(2, '0');
+    const dateString = `${year}-${month}-${day}`;
+
+    const dateObj = new Date(dateString + 'T00:00:00');
+    const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+
+    const result = await getStorageItem(key);
+    if (result) {
+      try {
+        const parsed = JSON.parse(result);
+        // Only count daily puzzles (not archive puzzles)
+        const isDaily =
+          parsed.isDaily === true || (parsed.isDaily === undefined && parsed.isArchive !== true);
+
+        if (parsed.won && isDaily) {
+          puzzlesCompleted++;
+
+          if (parsed.time) {
+            times.push(parsed.time);
+            totalTime += parsed.time;
+
+            if (!bestTime || parsed.time < bestTime) {
+              bestTime = parsed.time;
+            }
+          }
+        }
+      } catch (error) {
+        console.error(`Failed to parse result for ${key}:`, error);
+      }
+    }
+  }
+
+  const averageTime = times.length > 0 ? Math.round(totalTime / times.length) : null;
+
+  return {
+    puzzlesCompleted,
+    bestTime,
+    averageTime,
+  };
+}
+
 export async function getGameHistory() {
   if (typeof window === 'undefined') {
     return {};

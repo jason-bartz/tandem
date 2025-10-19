@@ -3,84 +3,112 @@
 export const DAILY_REMINDER = {
   standard: [
     {
-      title: "Today's Tandem is Ready",
-      body: 'Four emoji pairs await you',
+      title: 'Coffee and Tandem? ☕',
+      body: 'Your daily puzzle pairs perfectly with morning brew',
     },
     {
-      title: 'New Puzzle Available',
-      body: "Take a moment to solve today's Tandem",
+      title: 'Brain Food 🧠',
+      body: 'Four fresh emoji pairs served daily',
     },
     {
-      title: 'Your Daily Tandem',
-      body: 'A fresh puzzle just for you',
+      title: 'Knock Knock 👋',
+      body: "It's me, your daily Tandem puzzle!",
     },
     {
-      title: 'Tandem Time',
-      body: "Today's emoji challenge is here",
+      title: 'Plot Twist! 🎬',
+      body: "Today's puzzle just dropped",
     },
     {
-      title: 'Ready When You Are',
-      body: "Today's puzzle is waiting",
+      title: 'Pssst... 🤫',
+      body: 'New emoji mysteries to solve',
     },
     {
-      title: 'Hello There',
-      body: 'Your daily dose of emoji fun is ready',
+      title: 'Rise and Shine ☀️',
+      body: 'Your brain workout is ready',
     },
     {
-      title: 'Good Morning',
-      body: "Start your day with today's Tandem",
+      title: 'Detective Mode: ON 🔍',
+      body: 'Four emoji cases need solving',
     },
     {
-      title: 'Daily Puzzle Drop',
-      body: 'Four new emoji pairs to discover',
+      title: 'Fresh Out the Oven 🍪',
+      body: "Today's puzzle is warm and ready",
+    },
+    {
+      title: "Puzzle O'Clock 🕐",
+      body: 'Time for your daily Tandem fix',
+    },
+    {
+      title: 'Mission Available 🎯',
+      body: 'Your emoji challenge awaits, agent',
+    },
+    {
+      title: 'Hey You! 👀',
+      body: 'Yeah you. New puzzle alert',
+    },
+    {
+      title: 'Breaking News 📰',
+      body: 'Local puzzle needs solving immediately',
     },
   ],
   withStreak: [
     {
-      title: 'Keep the Momentum',
-      body: 'Day {streak} awaits',
+      title: 'Day {streak} Loading... 📈',
+      body: 'Your streak is looking legendary',
     },
     {
-      title: 'Your {streak}-Day Journey',
-      body: "Today's puzzle is ready",
+      title: '{streak} Days of Awesome 🔥',
+      body: 'Keep that fire burning!',
     },
     {
-      title: 'Day {streak}',
-      body: 'Continue your Tandem streak',
+      title: 'Streak Level: {streak} 💪',
+      body: "You're on a roll!",
     },
     {
-      title: 'Nice Streak',
-      body: '{streak} days and counting',
+      title: 'Chapter {streak} 📖',
+      body: 'Your puzzle story continues',
     },
     {
-      title: 'Building Something Special',
-      body: 'Day {streak} of your journey',
+      title: '{streak} in a Row! 🎯',
+      body: "Someone's unstoppable",
     },
     {
-      title: 'Consistency Looks Good',
-      body: '{streak} days strong',
+      title: 'Day {streak} Vibes ✨',
+      body: 'Looking good, puzzle champion',
+    },
+    {
+      title: 'Achievement Unlocking... 🏆',
+      body: 'Day {streak} of greatness',
+    },
+    {
+      title: '{streak} Days Strong 💯',
+      body: "You're basically a puzzle superhero now",
     },
   ],
   weekend: [
     {
-      title: 'Weekend Vibes',
-      body: "Relax with today's Tandem",
+      title: 'Weekend Vibes 🌴',
+      body: 'Puzzle + Pajamas = Perfect Saturday',
     },
     {
-      title: 'Saturday Puzzle Time',
-      body: "Take it easy with today's challenge",
+      title: 'Lazy Mode: Activated 🛋️',
+      body: 'Your cozy puzzle is ready',
     },
     {
-      title: 'Sunday Funday',
-      body: 'Your weekend Tandem awaits',
+      title: 'Sunday Funday! 🌞',
+      body: 'Brunch and Tandem, anyone?',
     },
     {
-      title: 'Lazy Day Puzzle',
-      body: 'Perfect for a relaxed moment',
+      title: 'Weekend Special 🎊',
+      body: 'No rush, just puzzle bliss',
     },
     {
-      title: 'Weekend Mode',
-      body: "Today's Tandem is here",
+      title: 'Sleep In, Puzzle On 😴',
+      body: 'Your weekend brain treat awaits',
+    },
+    {
+      title: 'Chill Mode 🧘',
+      body: 'Four relaxing emoji pairs for you',
     },
   ],
 };
@@ -88,54 +116,70 @@ export const DAILY_REMINDER = {
 export const STREAK_SAVER = {
   gentle: [
     {
-      title: 'Hey There',
-      body: 'Your {streak}-day streak needs some love',
+      title: 'Streak Check! 🔥',
+      body: "{streak} days going strong - don't break the chain!",
     },
     {
-      title: 'Quick Reminder',
-      body: "Today's puzzle keeps your {streak}-day streak alive",
+      title: 'Hey Superstar ⭐',
+      body: 'Your {streak}-day streak is waiting for you',
     },
     {
-      title: 'Before You Forget',
-      body: 'Maintain your {streak}-day journey',
+      title: 'Quick Save? 💾',
+      body: 'Protect that beautiful {streak}-day streak',
     },
     {
-      title: 'Just a Heads Up',
-      body: 'Your {streak}-day streak is on the line',
+      title: 'Friendly Ghost Here 👻',
+      body: 'Boo! Your {streak}-day streak needs you',
     },
     {
-      title: 'Evening Check-In',
-      body: "Don't let {streak} days slip away",
+      title: 'Just Checking In 👋',
+      body: '{streak} days is too good to lose!',
     },
     {
-      title: 'Gentle Nudge',
-      body: 'Your {streak}-day streak awaits',
+      title: 'Streak Guardian Alert 🛡️',
+      body: 'Defending your {streak}-day legacy',
     },
     {
-      title: 'Still Time',
-      body: 'Keep your {streak}-day streak going',
+      title: 'Still Awake? 🌙',
+      body: 'Perfect time to save that {streak}-day streak',
     },
     {
-      title: 'No Pressure',
-      body: 'But your {streak}-day streak would miss you',
+      title: 'No Drama, But... 🎭',
+      body: 'Your {streak}-day streak is getting lonely',
+    },
+    {
+      title: 'Fortune Cookie Says 🥠',
+      body: 'A {streak}-day streak saved is a streak earned',
+    },
+    {
+      title: 'Plot Armor Needed 🦸',
+      body: 'Save your {streak}-day hero streak!',
     },
   ],
   urgent: [
     {
-      title: 'Last Chance',
-      body: 'Save your {streak}-day streak before midnight',
+      title: 'RED ALERT! 🚨',
+      body: '{streak} days at risk! {hours} hours to save it',
     },
     {
-      title: "Clock's Ticking",
-      body: '{hours} hours left for day {streak}',
+      title: "Clock's Ticking ⏰",
+      body: 'Only {hours} hours left to save day {streak}!',
     },
     {
-      title: 'Almost Midnight',
-      body: 'Your {streak}-day streak needs you',
+      title: 'Midnight Approaches 🕰️',
+      body: 'Quick! Your {streak}-day streak expires soon',
     },
     {
-      title: 'Final Call',
-      body: 'Day {streak} is slipping away',
+      title: 'SOS! 🆘',
+      body: 'Day {streak} needs rescuing ASAP',
+    },
+    {
+      title: 'Final Boss Battle ⚔️',
+      body: 'Defeat midnight, save your {streak}-day streak!',
+    },
+    {
+      title: 'Mission Critical 🎯',
+      body: '{hours}h left - Operation Save Streak {streak}',
     },
   ],
 };
@@ -143,119 +187,155 @@ export const STREAK_SAVER = {
 export const MILESTONES = {
   week: [
     {
-      title: 'One Week Wonder',
-      body: '7 days of Tandem completed',
+      title: 'WEEK COMPLETE! 🎉',
+      body: "7 days straight - you're officially amazing!",
     },
     {
-      title: 'Week Complete',
-      body: "You've been consistent for 7 days",
+      title: 'Level 7 Unlocked! 🎮',
+      body: 'One whole week of puzzle greatness',
     },
     {
-      title: '7-Day Achievement',
-      body: 'A full week of puzzles done',
+      title: 'Seven Day Superstar! ⭐',
+      body: 'You just crushed a whole week!',
+    },
+    {
+      title: 'Achievement Unlocked! 🏅',
+      body: '7-day streak - feeling unstoppable yet?',
     },
   ],
   twoWeeks: [
     {
-      title: 'Two Weeks Strong',
-      body: '14 days and going',
+      title: 'FORTNIGHT CHAMPION! 👑',
+      body: '14 days of pure awesome',
     },
     {
-      title: 'Fortnight Complete',
-      body: 'Two weeks of daily Tandem',
+      title: 'Two Week Warrior! ⚡',
+      body: "You're officially in the zone",
     },
     {
-      title: '14 Days',
-      body: "You're building a great habit",
+      title: 'Double Digits! 🎊',
+      body: '14 days and absolutely crushing it',
+    },
+    {
+      title: 'Legendary Status! 🌟',
+      body: 'Two weeks of puzzle domination',
     },
   ],
   month: [
     {
-      title: 'One Month Milestone',
-      body: '30 days of dedication',
+      title: 'MONTH CONQUERED! 🏆',
+      body: "30 days! You're a puzzle phenomenon!",
     },
     {
-      title: 'Monthly Master',
-      body: 'A full month of Tandem',
+      title: 'Monthly Master! 🎯',
+      body: 'An entire month - simply incredible',
     },
     {
-      title: '30 Day Journey',
-      body: "You've come so far",
+      title: '30 Day Legend! 🔥',
+      body: "You've officially reached greatness",
+    },
+    {
+      title: 'Hall of Fame! 🌟',
+      body: '30 days of dedication - WOW!',
     },
   ],
   fiftyDays: [
     {
-      title: 'Half Century',
-      body: '50 days is impressive',
+      title: 'HALF CENTURY! 🎊',
+      body: "50 days! You're basically superhuman",
     },
     {
-      title: '50 Day Club',
-      body: 'Welcome to exclusive territory',
+      title: 'Elite Status Achieved! 💎',
+      body: 'Welcome to the 50-day club!',
     },
     {
-      title: 'Incredible Consistency',
-      body: '50 days of Tandem',
+      title: 'Fifty & Fabulous! ✨',
+      body: 'This streak is absolutely legendary',
+    },
+    {
+      title: 'Golden Milestone! 🏅',
+      body: '50 days of pure excellence',
     },
   ],
   hundredDays: [
     {
-      title: 'Century Mark',
-      body: '100 days is legendary',
+      title: 'CENTURY COMPLETE! 💯',
+      body: '100 DAYS! You absolute legend!',
     },
     {
-      title: 'Triple Digits',
-      body: "You're a Tandem legend",
+      title: 'Triple Digit Titan! 👑',
+      body: 'Welcome to puzzle immortality',
     },
     {
-      title: '100 Day Champion',
-      body: 'An incredible achievement',
+      title: '100 Day Hero! 🦸',
+      body: 'This achievement is beyond epic',
+    },
+    {
+      title: 'LEGENDARY STATUS! 🌟',
+      body: "100 days - you've made history!",
     },
   ],
 };
 
 export const WEEKLY_SUMMARY = [
   {
+    title: 'Weekly Check-In',
+    body: 'You completed {played} puzzles this week. Great work! 🎉',
+  },
+  {
     title: 'Your Week in Tandem',
-    body: 'Played {played}/7 days • Best time: {time}',
+    body: '{played} puzzles solved this week. Keep it up! 🌟',
   },
   {
     title: 'Weekly Recap',
-    body: 'You solved {played} puzzles this week',
+    body: 'Amazing! You completed {played} puzzles this week 🎯',
   },
   {
     title: 'Sunday Summary',
-    body: '{played} puzzles completed • Avg time: {avgTime}',
+    body: '{played} puzzles conquered this week. Fantastic job! 🏆',
   },
   {
     title: 'Week Complete',
-    body: 'Nice work on {played} puzzles',
+    body: 'Nice work! You finished {played} puzzles this week 💪',
   },
   {
-    title: 'Weekly Check-In',
-    body: 'You played {played} times this week',
+    title: 'Weekly Achievement',
+    body: 'You solved {played} puzzles this week. Awesome progress! ✨',
   },
 ];
 
 export const COMEBACK = [
   {
-    title: 'Welcome Back',
-    body: "We missed you! Today's puzzle awaits",
+    title: "Look Who's Back! 🎉",
+    body: 'We saved your favorite emoji pairs',
   },
   {
-    title: 'Hey Again',
-    body: 'Ready for a fresh start?',
+    title: 'The Return! 🦸',
+    body: 'Your puzzle powers have been recharged',
   },
   {
-    title: 'New Day, New Puzzle',
-    body: "Jump back in whenever you're ready",
+    title: 'Missed You! 🤗',
+    body: 'Ready to jump back into the fun?',
   },
   {
-    title: 'No Worries',
-    body: "Today's a perfect day to play",
+    title: 'Hey Stranger! 👋',
+    body: 'Perfect timing - fresh puzzle just dropped',
   },
   {
-    title: 'Fresh Start',
-    body: 'Every puzzle is a new beginning',
+    title: 'Welcome Home! 🏠',
+    body: 'Your daily brain workout missed you',
+  },
+  {
+    title: 'Plot Twist! 🎬',
+    body: 'The hero returns for another puzzle',
+  },
+  {
+    title: 'No Judgment Zone 🌈',
+    body: "Just happy you're here - let's play!",
+  },
+  {
+    title: 'Fresh Start Vibes ✨',
+    body: 'New day, new puzzle, new possibilities',
   },
 ];
 
