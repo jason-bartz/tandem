@@ -16,7 +16,9 @@ export function useGameLogic(
   mistakes,
   solved,
   hintsUsed,
-  activeHints,
+  hintedAnswers,
+  unlockedHints,
+  activeHintIndex,
   currentPuzzleDate,
   setters
 ) {
@@ -26,8 +28,9 @@ export function useGameLogic(
     setMistakes,
     setSolved,
     setHintsUsed,
-    setActiveHints,
-    setAnswers,
+    setHintedAnswers,
+    setUnlockedHints,
+    setActiveHintIndex,
     setHasCheckedAnswers,
   } = setters;
 
@@ -59,14 +62,19 @@ export function useGameLogic(
           setCheckedWrongAnswers(newCheckedWrongAnswers);
         }
 
-        if (activeHints[index]) {
-          const newActiveHints = [...activeHints];
-          newActiveHints[index] = null;
-          setActiveHints(newActiveHints);
+        // Clear active hint if this answer is showing a hint
+        if (activeHintIndex === index) {
+          setActiveHintIndex(null);
         }
 
         const newSolved = solved + 1;
         setSolved(newSolved);
+
+        // Check if we should unlock second hint (after 2 correct answers)
+        if (newSolved >= 2 && unlockedHints === 1) {
+          setUnlockedHints(2);
+          console.log('[checkSingleAnswer] Unlocked second hint!');
+        }
 
         if (currentPuzzleDate) {
           savePuzzleProgress(currentPuzzleDate, {
@@ -196,65 +204,82 @@ export function useGameLogic(
 
   const useHint = useCallback(
     (targetIndex) => {
-      if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
-        return;
+      // Check if we can use a hint
+      if (!puzzle || !puzzle.puzzles || hintsUsed >= unlockedHints) {
+        console.log('[useHint] Cannot use hint:', {
+          hasPuzzle: !!puzzle,
+          hintsUsed,
+          unlockedHints
+        });
+        return false;
       }
 
+      // Use the provided index or find the first unanswered
       let hintIndex = targetIndex;
 
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        const unansweredIndices = [];
-        for (let i = 0; i < puzzle.puzzles.length; i++) {
-          if (!correctAnswers[i]) {
-            unansweredIndices.push(i);
-          }
+        // Find first unanswered puzzle
+        hintIndex = correctAnswers.findIndex(correct => !correct);
+        if (hintIndex === -1) {
+          console.log('[useHint] All puzzles already solved');
+          return false;
         }
-
-        if (unansweredIndices.length === 0) {
-          return;
-        }
-
-        hintIndex = unansweredIndices[Math.floor(Math.random() * unansweredIndices.length)];
       }
 
-      const fullAnswer = puzzle.puzzles[hintIndex].answer;
-      const firstAnswer = fullAnswer.includes(',') ? fullAnswer.split(',')[0].trim() : fullAnswer;
+      // Check if this answer already has a hint
+      if (hintedAnswers.includes(hintIndex)) {
+        console.log('[useHint] Answer already has hint:', hintIndex);
+        return false;
+      }
 
-      // Generate a random position for the second letter (not the first position)
-      const secondLetterPosition = Math.floor(Math.random() * (firstAnswer.length - 1)) + 1;
-      const secondLetter = firstAnswer.charAt(secondLetterPosition).toUpperCase();
+      // Check if puzzle has hint data
+      const puzzleHint = puzzle.puzzles[hintIndex].hint;
+      if (!puzzleHint) {
+        console.log('[useHint] No hint available for puzzle:', hintIndex);
+        // Fallback: Could generate a generic hint or show "No hint available"
+        return false;
+      }
 
-      const hintData = {
-        firstLetter: firstAnswer.charAt(0).toUpperCase(),
-        secondLetter: secondLetter,
-        secondLetterPosition: secondLetterPosition,
-        length: firstAnswer.length,
-        fullAnswer: firstAnswer.toUpperCase(),
-      };
+      // Add this answer to the hinted list
+      setHintedAnswers(prev => [...prev, hintIndex]);
 
-      const newActiveHints = [...activeHints];
-      newActiveHints[hintIndex] = hintData;
-      setActiveHints(newActiveHints);
+      // Set the active hint index to show the hint
+      setActiveHintIndex(hintIndex);
 
-      setAnswers((prev) => {
-        const newAnswers = [...prev];
-        // Start with just the first letter, user needs to add the second letter
-        newAnswers[hintIndex] = hintData.firstLetter;
-        return newAnswers;
-      });
+      // Increment hints used
+      setHintsUsed(prev => prev + 1);
 
-      setHintsUsed(1);
+      // Check if we should unlock another hint (after 2 correct answers)
+      if (solved >= 2 && unlockedHints === 1) {
+        setUnlockedHints(2);
+        console.log('[useHint] Unlocked second hint!');
+      }
 
+      // Save progress
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,
           solved,
           mistakes,
-          hintsUsed: 1,
+          hintsUsed: hintsUsed + 1,
+          hintedAnswers: [...hintedAnswers, hintIndex],
+          unlockedHints,
+          activeHintIndex: hintIndex,
         });
       }
+
+      return true;
     },
-    [puzzle, correctAnswers, hintsUsed, activeHints, currentPuzzleDate, solved, mistakes]
+    [
+      puzzle,
+      correctAnswers,
+      hintsUsed,
+      unlockedHints,
+      hintedAnswers,
+      currentPuzzleDate,
+      solved,
+      mistakes
+    ]
   );
 
   return {

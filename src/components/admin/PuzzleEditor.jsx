@@ -10,10 +10,10 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const [theme, setTheme] = useState(initialPuzzle?.theme || '');
   const [puzzles, setPuzzles] = useState(
     initialPuzzle?.puzzles || [
-      { emoji: '', answer: '' },
-      { emoji: '', answer: '' },
-      { emoji: '', answer: '' },
-      { emoji: '', answer: '' },
+      { emoji: '', answer: '', hint: '' },
+      { emoji: '', answer: '', hint: '' },
+      { emoji: '', answer: '', hint: '' },
+      { emoji: '', answer: '', hint: '' },
     ]
   );
   const [loading, setLoading] = useState(false);
@@ -26,10 +26,10 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       setTheme(initialPuzzle.theme || '');
       setPuzzles(
         initialPuzzle.puzzles || [
-          { emoji: '', answer: '' },
-          { emoji: '', answer: '' },
-          { emoji: '', answer: '' },
-          { emoji: '', answer: '' },
+          { emoji: '', answer: '', hint: '' },
+          { emoji: '', answer: '', hint: '' },
+          { emoji: '', answer: '', hint: '' },
+          { emoji: '', answer: '', hint: '' },
         ]
       );
       // Clear the message when switching puzzles
@@ -39,7 +39,14 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
 
   const handlePuzzleChange = (index, field, value) => {
     const newPuzzles = [...puzzles];
-    newPuzzles[index][field] = field === 'answer' ? value.toUpperCase() : value;
+    if (field === 'answer') {
+      newPuzzles[index][field] = value.toUpperCase();
+    } else if (field === 'hint') {
+      // Limit hint length to 60 characters
+      newPuzzles[index][field] = value.slice(0, 60);
+    } else {
+      newPuzzles[index][field] = value;
+    }
     setPuzzles(newPuzzles);
   };
 
@@ -54,6 +61,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         puzzles: puzzles.map((p) => ({
           emoji: p.emoji.trim(),
           answer: p.answer.trim().toUpperCase(),
+          hint: p.hint?.trim() || '', // Include hint in save
         })),
       });
 
@@ -223,29 +231,49 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Puzzle Pairs
           </label>
-          <div className="space-y-3 sm:space-y-4">
+          <div className="space-y-4 sm:space-y-5">
             {puzzles.map((puzzle, index) => (
-              <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center">
-                <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 sm:w-8">
-                  #{index + 1}
-                </span>
-                <input
-                  type="text"
-                  value={puzzle.emoji}
-                  onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
-                  placeholder="Emoji pair (e.g., 🍳🔥)"
-                  className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
-                  required
-                />
-                <input
-                  type="text"
-                  value={puzzle.answer}
-                  onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
-                  placeholder="ANSWER (E.G., STOVE)"
-                  maxLength={30}
-                  className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white uppercase"
-                  required
-                />
+              <div key={index} className="p-3 sm:p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <div className="flex items-center gap-2 mb-3">
+                  <span className="text-xs sm:text-sm font-medium text-gray-600 dark:text-gray-400">
+                    Puzzle #{index + 1}
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
+                    <input
+                      type="text"
+                      value={puzzle.emoji}
+                      onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
+                      placeholder="Emoji pair (e.g., 🍳🔥)"
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white"
+                      required
+                    />
+                    <input
+                      type="text"
+                      value={puzzle.answer}
+                      onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
+                      placeholder="ANSWER (E.G., STOVE)"
+                      maxLength={30}
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-plum focus:border-plum dark:bg-gray-700 dark:text-white uppercase"
+                      required
+                    />
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={puzzle.hint}
+                      onChange={(e) => handlePuzzleChange(index, 'hint', e.target.value)}
+                      placeholder="💡 Hint (e.g., 'Kitchen cooking surface')"
+                      maxLength={60}
+                      className="w-full px-3 sm:px-4 py-2 pl-10 text-sm sm:text-base border border-yellow-300 dark:border-yellow-600 rounded-lg focus:ring-yellow-400 focus:border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                    />
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg">💡</span>
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
+                      {puzzle.hint?.length || 0}/60
+                    </span>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -279,10 +307,10 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
               onClick={() => {
                 setTheme('');
                 setPuzzles([
-                  { emoji: '', answer: '' },
-                  { emoji: '', answer: '' },
-                  { emoji: '', answer: '' },
-                  { emoji: '', answer: '' },
+                  { emoji: '', answer: '', hint: '' },
+                  { emoji: '', answer: '', hint: '' },
+                  { emoji: '', answer: '', hint: '' },
+                  { emoji: '', answer: '', hint: '' },
                 ]);
                 setMessage('');
               }}
