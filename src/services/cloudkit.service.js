@@ -107,6 +107,16 @@ class CloudKitService {
 
       logger.info('Stats synced to iCloud:', result);
       this.lastSyncTime = new Date();
+
+      // Return the merged stats from CloudKit if available
+      if (result && result.mergedStats) {
+        return {
+          success: true,
+          result,
+          mergedStats: result.mergedStats
+        };
+      }
+
       return { success: true, result };
     } catch (error) {
       logger.error('Failed to sync stats:', error);

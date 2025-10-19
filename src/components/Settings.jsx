@@ -7,7 +7,7 @@ import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import notificationService from '@/services/notificationService';
-import { useCloudKitSync } from '@/hooks/useCloudKitSync';
+import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import GameCenterButton from '@/components/GameCenterButton';
 import { STORAGE_KEYS } from '@/lib/constants';
 
@@ -32,7 +32,7 @@ export default function Settings({ isOpen, onClose }) {
     setThemeMode,
     isAuto,
   } = useTheme();
-  const { syncStatus, toggleSync } = useCloudKitSync();
+  const { syncStatus, toggleSync } = useUnifiedSync();
 
   useEffect(() => {
     if (isOpen) {
@@ -453,17 +453,26 @@ export default function Settings({ isOpen, onClose }) {
                     </button>
                   </div>
 
-                  {/* Last Sync Time */}
+                  {/* Last Sync Time & Provider */}
                   {syncStatus.enabled && syncStatus.lastSync && (
-                    <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fillRule="evenodd"
-                          d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                          clipRule="evenodd"
-                        />
-                      </svg>
-                      Last synced: {new Date(syncStatus.lastSync).toLocaleString()}
+                    <div className="text-xs text-gray-500 dark:text-gray-400">
+                      <div className="flex items-center gap-1 mb-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                          <path
+                            fillRule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        Last synced: {new Date(syncStatus.lastSync).toLocaleString()}
+                      </div>
+                      {syncStatus.provider && (
+                        <div className="ml-4 opacity-75">
+                          Using: {syncStatus.provider === 'gameCenter' ? '🎮 Game Center' :
+                                 syncStatus.provider === 'cloudKit' ? '☁️ iCloud' :
+                                 '📱 Local Storage'}
+                        </div>
+                      )}
                     </div>
                   )}
 
