@@ -340,9 +340,11 @@ export default function GameContainerClient({ initialPuzzleData }) {
                 hintedAnswers={game.hintedAnswers}
                 unlockedHints={game.unlockedHints}
                 activeHintIndex={game.activeHintIndex}
+                lockedLetters={game.lockedLetters}
                 onUseHint={game.useHint}
                 hasCheckedAnswers={game.hasCheckedAnswers}
                 onReturnToWelcome={game.returnToWelcome}
+                game={game}
                 isMobilePhone={isMobilePhone}
                 isSmallPhone={isSmallPhone}
                 isHardMode={game.isHardMode}
