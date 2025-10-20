@@ -266,9 +266,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       onChange={(e) => handlePuzzleChange(index, 'hint', e.target.value)}
                       placeholder="💡 Hint (e.g., 'Kitchen cooking surface')"
                       maxLength={60}
-                      className="w-full px-3 sm:px-4 py-2 pl-10 text-sm sm:text-base border border-yellow-300 dark:border-yellow-600 rounded-lg focus:ring-yellow-400 focus:border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-yellow-300 dark:border-yellow-600 rounded-lg focus:ring-yellow-400 focus:border-yellow-400 bg-yellow-50 dark:bg-yellow-900/20 dark:text-white placeholder:text-gray-500 dark:placeholder:text-gray-400"
                     />
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg">💡</span>
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 dark:text-gray-400">
                       {puzzle.hint?.length || 0}/60
                     </span>

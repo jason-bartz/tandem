@@ -127,7 +127,6 @@ export function useGameLogic(
       solved,
       currentPuzzleDate,
       hintsUsed,
-      activeHints,
     ]
   );
 
@@ -209,45 +208,48 @@ export function useGameLogic(
         console.log('[useHint] Cannot use hint:', {
           hasPuzzle: !!puzzle,
           hintsUsed,
-          unlockedHints
+          unlockedHints,
         });
         return false;
       }
 
-      // Use the provided index or find the first unanswered
+      // Use the provided targetIndex if valid, otherwise find first unanswered
       let hintIndex = targetIndex;
 
+      // Only fallback to first unanswered if targetIndex is not provided or already correct
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        // Find first unanswered puzzle
-        hintIndex = correctAnswers.findIndex(correct => !correct);
+        // Find first unanswered puzzle as fallback
+        hintIndex = correctAnswers.findIndex((correct) => !correct);
         if (hintIndex === -1) {
           console.log('[useHint] All puzzles already solved');
           return false;
         }
       }
 
-      // Check if this answer already has a hint
+      // Check if this answer already has a hint shown
       if (hintedAnswers.includes(hintIndex)) {
-        console.log('[useHint] Answer already has hint:', hintIndex);
-        return false;
+        console.log('[useHint] Answer already has hint shown:', hintIndex);
+        // Allow showing hint again even if already used - just don't consume another hint
+        // Just update the active hint index to show it again
+        setActiveHintIndex(hintIndex);
+        return true;
       }
 
       // Check if puzzle has hint data
       const puzzleHint = puzzle.puzzles[hintIndex].hint;
       if (!puzzleHint) {
         console.log('[useHint] No hint available for puzzle:', hintIndex);
-        // Fallback: Could generate a generic hint or show "No hint available"
         return false;
       }
 
       // Add this answer to the hinted list
-      setHintedAnswers(prev => [...prev, hintIndex]);
+      setHintedAnswers((prev) => [...prev, hintIndex]);
 
       // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
 
       // Increment hints used
-      setHintsUsed(prev => prev + 1);
+      setHintsUsed((prev) => prev + 1);
 
       // Check if we should unlock another hint (after 2 correct answers)
       if (solved >= 2 && unlockedHints === 1) {
@@ -278,7 +280,7 @@ export function useGameLogic(
       hintedAnswers,
       currentPuzzleDate,
       solved,
-      mistakes
+      mistakes,
     ]
   );
 

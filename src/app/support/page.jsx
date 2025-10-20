@@ -65,8 +65,9 @@ export default function Support() {
                 <strong>Statistics</strong>: Track your performance over time
               </li>
               <li>
-                <strong>Hint System</strong>: One hint per game reveals the first letter or next
-                available character of a random unsolved answer
+                <strong>Hint System</strong>: Progressive hint unlocking - start with 1 hint, unlock
+                a 2nd after solving 2 puzzles. Select an answer and tap the hint button to reveal
+                contextual text below that specific answer
               </li>
               <li>
                 <strong>Dark Mode</strong>: Easy on the eyes for night play
@@ -161,9 +162,9 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get one hint per game. It reveals the first letter or next available
-                  character of a random unsolved answer. Character counts are always visible for
-                  each puzzle.
+                  A: You start with 1 hint. Select an answer field and tap the hint button to reveal
+                  helpful contextual text below that specific answer. After solving 2 puzzles, you
+                  unlock a 2nd hint. Character counts are always visible for each puzzle.
                 </p>
               </div>
               <div>

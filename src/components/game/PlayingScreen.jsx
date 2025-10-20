@@ -149,15 +149,6 @@ export default function PlayingScreen({
         const locked = lockedLetters && lockedLetters[focusedIndex];
 
         if (currentValue && currentValue.length > 0) {
-          // Prevent deleting hint letter if present
-          if (activeHints && activeHints[focusedIndex]) {
-            const hintLetter = activeHints[focusedIndex].firstLetter;
-            if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
-              onUpdateAnswer(focusedIndex, hintLetter);
-              return;
-            }
-          }
-
           // Handle deletion - find the last non-locked, non-space character and remove it
           if (locked) {
             // Get the answer length to maintain proper positioning
@@ -213,12 +204,7 @@ export default function PlayingScreen({
           return;
         }
 
-        let currentValue = answers[focusedIndex] || '';
-
-        // If there's a hint and the field is empty, start with the hint letter
-        if (activeHints && activeHints[focusedIndex] && !currentValue) {
-          currentValue = activeHints[focusedIndex].firstLetter;
-        }
+        const currentValue = answers[focusedIndex] || '';
 
         const answerLength = puzzle?.puzzles[focusedIndex]?.answer
           ? puzzle.puzzles[focusedIndex].answer.includes(',')
@@ -346,15 +332,6 @@ export default function PlayingScreen({
       const locked = lockedLetters && lockedLetters[focusedIndex];
 
       if (currentValue.length > 0) {
-        // Prevent deleting hint letter if present
-        if (activeHints && activeHints[focusedIndex]) {
-          const hintLetter = activeHints[focusedIndex].firstLetter;
-          if (currentValue.toUpperCase() === hintLetter || currentValue.length <= 1) {
-            onUpdateAnswer(focusedIndex, hintLetter);
-            return;
-          }
-        }
-
         // Handle deletion - find the last non-locked, non-space character and remove it
         if (locked) {
           // Get the answer length to maintain proper positioning
@@ -412,12 +389,7 @@ export default function PlayingScreen({
         return;
       }
 
-      let currentValue = answers[focusedIndex] || '';
-
-      // If there's a hint and the field is empty, start with the hint letter
-      if (activeHints && activeHints[focusedIndex] && !currentValue) {
-        currentValue = activeHints[focusedIndex].firstLetter;
-      }
+      const currentValue = answers[focusedIndex] || '';
 
       const answerLength = puzzle?.puzzles[focusedIndex]?.answer
         ? puzzle.puzzles[focusedIndex].answer.includes(',')
@@ -484,7 +456,7 @@ export default function PlayingScreen({
       }
     } else {
       // If no answer is focused, use hint for first unsolved
-      const firstUnsolved = correctAnswers.findIndex(correct => !correct);
+      const firstUnsolved = correctAnswers.findIndex((correct) => !correct);
       if (firstUnsolved !== -1) {
         const success = onUseHint(firstUnsolved);
         if (success) {
@@ -661,8 +633,7 @@ export default function PlayingScreen({
                   <span className="text-lg sm:text-xl">💡</span>
                   {unlockedHints > 1
                     ? `Use Hint (${unlockedHints - hintsUsed} of ${unlockedHints})`
-                    : `Use Hint (${unlockedHints - hintsUsed} available)`
-                  }
+                    : `Use Hint (${unlockedHints - hintsUsed} available)`}
                 </button>
                 {unlockedHints === 1 && solved >= 1 && (
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">

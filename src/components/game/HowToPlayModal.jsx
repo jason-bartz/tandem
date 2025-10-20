@@ -103,8 +103,9 @@ export default function HowToPlayModal({ isOpen, onClose }) {
               </p>
             </div>
             <p className={`text-sm mt-3 ${highContrast ? 'text-white' : ''}`}>
-              <span className="font-semibold">💡 Need help?</span> Use a hint to reveal the next
-              letter (fills left to right, one position at a time).
+              <span className="font-semibold">💡 Need help?</span> Select an answer field and tap
+              the hint button to reveal helpful context below that specific answer. You start with 1
+              hint and unlock a 2nd hint after solving 2 puzzles.
             </p>
           </div>
 

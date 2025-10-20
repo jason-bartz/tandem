@@ -83,17 +83,6 @@ export function useGameState() {
         }
       }
 
-      if (hint) {
-        const hintLetter = hint.firstLetter;
-        if (processedValue.length === 0) {
-          processedValue = hintLetter;
-        } else if (!processedValue.toUpperCase().startsWith(hintLetter)) {
-          processedValue = hintLetter + processedValue;
-        } else if (processedValue.toUpperCase() === hintLetter) {
-          processedValue = hintLetter;
-        }
-      }
-
       // Use different sanitization based on whether we have locked letters
       const sanitized = locked
         ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
