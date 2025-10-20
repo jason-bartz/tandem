@@ -37,7 +37,6 @@ export default function PlayingScreen({
   onUseHint,
   _hasCheckedAnswers,
   onReturnToWelcome,
-  lockedLetters,
   isMobilePhone = false,
   isSmallPhone = false,
   isHardMode = false,
@@ -146,55 +145,8 @@ export default function PlayingScreen({
         }
 
         const currentValue = answers[focusedIndex];
-        const locked = lockedLetters && lockedLetters[focusedIndex];
-
         if (currentValue && currentValue.length > 0) {
-          // Handle deletion - find the last non-locked, non-space character and remove it
-          if (locked) {
-            // Get the answer length to maintain proper positioning
-            const answerLength = puzzle?.puzzles[focusedIndex]?.answer
-              ? puzzle.puzzles[focusedIndex].answer.includes(',')
-                ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
-                : puzzle.puzzles[focusedIndex].answer.length
-              : currentValue.length;
-
-            // Build character array to maintain positions
-            const chars = new Array(answerLength).fill(' ');
-
-            // Place locked letters at their positions
-            Object.keys(locked).forEach((pos) => {
-              const position = parseInt(pos);
-              if (position < answerLength) {
-                chars[position] = locked[pos];
-              }
-            });
-
-            // Find and place remaining user-entered characters (except the last one to delete)
-            const userChars = [];
-            for (let i = 0; i < currentValue.length; i++) {
-              if (!locked[i] && currentValue[i] !== ' ') {
-                userChars.push(currentValue[i]);
-              }
-            }
-
-            // Remove the last user character (backspace effect)
-            if (userChars.length > 0) {
-              userChars.pop();
-            }
-
-            // Place remaining user characters in non-locked positions
-            let userCharIndex = 0;
-            for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
-              if (!locked[i]) {
-                chars[i] = userChars[userCharIndex];
-                userCharIndex++;
-              }
-            }
-
-            onUpdateAnswer(focusedIndex, chars.join(''));
-          } else {
-            onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
-          }
+          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
         }
       } else if (/^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -212,47 +164,9 @@ export default function PlayingScreen({
             : puzzle.puzzles[focusedIndex].answer.length
           : 15;
 
-        const locked = lockedLetters && lockedLetters[focusedIndex];
-
-        if (locked) {
-          // Start with current value or empty array of correct length
-          const chars =
-            currentValue.length >= answerLength
-              ? currentValue.split('')
-              : new Array(answerLength).fill(' ');
-
-          // Ensure array is correct length
-          while (chars.length < answerLength) {
-            chars.push(' ');
-          }
-
-          // Ensure locked letters are in their positions
-          Object.keys(locked).forEach((pos) => {
-            const position = parseInt(pos);
-            if (position < answerLength) {
-              chars[position] = locked[pos];
-            }
-          });
-
-          // Find first empty non-locked position to insert the new character
-          let insertPos = -1;
-          for (let i = 0; i < answerLength; i++) {
-            if (!locked[i] && (chars[i] === ' ' || chars[i] === '' || !chars[i])) {
-              insertPos = i;
-              break;
-            }
-          }
-
-          // Only insert if we found an empty position
-          if (insertPos !== -1) {
-            chars[insertPos] = e.key.toUpperCase();
-            onUpdateAnswer(focusedIndex, chars.join(''));
-          }
-        } else {
-          // No locked letters, just check against answer length
-          if (currentValue.length < answerLength) {
-            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
-          }
+        // Just check against answer length
+        if (currentValue.length < answerLength) {
+          onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
         }
       }
     };
@@ -277,7 +191,6 @@ export default function PlayingScreen({
     onCheckSingleAnswer,
     correctAnswer,
     incorrectAnswer,
-    lockedLetters,
   ]);
 
   const handleKeyboardInput = (key) => {
@@ -329,55 +242,8 @@ export default function PlayingScreen({
       }
 
       const currentValue = answers[focusedIndex];
-      const locked = lockedLetters && lockedLetters[focusedIndex];
-
       if (currentValue.length > 0) {
-        // Handle deletion - find the last non-locked, non-space character and remove it
-        if (locked) {
-          // Get the answer length to maintain proper positioning
-          const answerLength = puzzle?.puzzles[focusedIndex]?.answer
-            ? puzzle.puzzles[focusedIndex].answer.includes(',')
-              ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
-              : puzzle.puzzles[focusedIndex].answer.length
-            : currentValue.length;
-
-          // Build character array to maintain positions
-          const chars = new Array(answerLength).fill(' ');
-
-          // Place locked letters at their positions
-          Object.keys(locked).forEach((pos) => {
-            const position = parseInt(pos);
-            if (position < answerLength) {
-              chars[position] = locked[pos];
-            }
-          });
-
-          // Find and place remaining user-entered characters (except the last one to delete)
-          const userChars = [];
-          for (let i = 0; i < currentValue.length; i++) {
-            if (!locked[i] && currentValue[i] !== ' ') {
-              userChars.push(currentValue[i]);
-            }
-          }
-
-          // Remove the last user character (backspace effect)
-          if (userChars.length > 0) {
-            userChars.pop();
-          }
-
-          // Place remaining user characters in non-locked positions
-          let userCharIndex = 0;
-          for (let i = 0; i < answerLength && userCharIndex < userChars.length; i++) {
-            if (!locked[i]) {
-              chars[i] = userChars[userCharIndex];
-              userCharIndex++;
-            }
-          }
-
-          onUpdateAnswer(focusedIndex, chars.join(''));
-        } else {
-          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
-        }
+        onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
       }
       return;
     }
@@ -397,47 +263,9 @@ export default function PlayingScreen({
           : puzzle.puzzles[focusedIndex].answer.length
         : 15;
 
-      const locked = lockedLetters && lockedLetters[focusedIndex];
-
-      if (locked) {
-        // Start with current value or empty array of correct length
-        const chars =
-          currentValue.length >= answerLength
-            ? currentValue.split('')
-            : new Array(answerLength).fill(' ');
-
-        // Ensure array is correct length
-        while (chars.length < answerLength) {
-          chars.push(' ');
-        }
-
-        // Ensure locked letters are in their positions
-        Object.keys(locked).forEach((pos) => {
-          const position = parseInt(pos);
-          if (position < answerLength) {
-            chars[position] = locked[pos];
-          }
-        });
-
-        // Find first empty non-locked position to insert the new character
-        let insertPos = -1;
-        for (let i = 0; i < answerLength; i++) {
-          if (!locked[i] && (chars[i] === ' ' || chars[i] === '' || !chars[i])) {
-            insertPos = i;
-            break;
-          }
-        }
-
-        // Only insert if we found an empty position
-        if (insertPos !== -1) {
-          chars[insertPos] = key;
-          onUpdateAnswer(focusedIndex, chars.join(''));
-        }
-      } else {
-        // No locked letters, just check against answer length
-        if (currentValue.length < answerLength) {
-          onUpdateAnswer(focusedIndex, currentValue + key);
-        }
+      // Just check against answer length
+      if (currentValue.length < answerLength) {
+        onUpdateAnswer(focusedIndex, currentValue + key);
       }
     }
   };
@@ -591,7 +419,6 @@ export default function PlayingScreen({
                       isFocused={focusedIndex === index}
                       readonly={true}
                       hasHint={hintedAnswers.includes(index)}
-                      lockedLetters={lockedLetters && lockedLetters[index]}
                       answerLength={
                         p.answer
                           ? p.answer.includes(',')

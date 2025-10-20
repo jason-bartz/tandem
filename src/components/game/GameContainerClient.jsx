@@ -336,51 +336,36 @@ export default function GameContainerClient({ initialPuzzleData }) {
             </div>
           )}
 
-          {game.gameState === GAME_STATES.PLAYING &&
-            (() => {
-              // Derive hintedAnswers and activeHintIndex from activeHints array
-              const hintedAnswers = game.activeHints
-                ? game.activeHints
-                    .map((hint, index) => (hint ? index : null))
-                    .filter((i) => i !== null)
-                : [];
-              const activeHintIndex = game.activeHints
-                ? game.activeHints.findIndex((hint) => hint !== null)
-                : null;
-              const unlockedHints = game.solved >= 2 ? 2 : 1;
-
-              return (
-                <div key="playing" className="animate-screen-enter">
-                  <PlayingScreen
-                    puzzle={game.puzzle}
-                    answers={game.answers}
-                    correctAnswers={game.correctAnswers}
-                    checkedWrongAnswers={game.checkedWrongAnswers}
-                    mistakes={game.mistakes}
-                    solved={game.solved}
-                    time={timer.elapsed}
-                    onUpdateAnswer={game.updateAnswer}
-                    onCheckAnswers={handleCheckAnswers}
-                    onCheckSingleAnswer={game.checkSingleAnswer}
-                    theme={theme}
-                    toggleTheme={toggleTheme}
-                    onSelectPuzzle={handleSelectPuzzle}
-                    hintsUsed={game.hintsUsed}
-                    hintedAnswers={hintedAnswers}
-                    unlockedHints={unlockedHints}
-                    activeHintIndex={activeHintIndex}
-                    onUseHint={game.useHint}
-                    hasCheckedAnswers={game.hasCheckedAnswers}
-                    onReturnToWelcome={game.returnToWelcome}
-                    lockedLetters={game.lockedLetters}
-                    isMobilePhone={isMobilePhone}
-                    isSmallPhone={isSmallPhone}
-                    isHardMode={game.isHardMode}
-                    hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
-                  />
-                </div>
-              );
-            })()}
+          {game.gameState === GAME_STATES.PLAYING && (
+            <div key="playing" className="animate-screen-enter">
+              <PlayingScreen
+                puzzle={game.puzzle}
+                answers={game.answers}
+                correctAnswers={game.correctAnswers}
+                checkedWrongAnswers={game.checkedWrongAnswers}
+                mistakes={game.mistakes}
+                solved={game.solved}
+                time={timer.elapsed}
+                onUpdateAnswer={game.updateAnswer}
+                onCheckAnswers={handleCheckAnswers}
+                onCheckSingleAnswer={game.checkSingleAnswer}
+                theme={theme}
+                toggleTheme={toggleTheme}
+                onSelectPuzzle={handleSelectPuzzle}
+                hintsUsed={game.hintsUsed}
+                hintedAnswers={game.hintedAnswers}
+                unlockedHints={game.unlockedHints}
+                activeHintIndex={game.activeHintIndex}
+                onUseHint={game.useHint}
+                hasCheckedAnswers={game.hasCheckedAnswers}
+                onReturnToWelcome={game.returnToWelcome}
+                isMobilePhone={isMobilePhone}
+                isSmallPhone={isSmallPhone}
+                isHardMode={game.isHardMode}
+                hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
+              />
+            </div>
+          )}
 
           {game.gameState === GAME_STATES.COMPLETE && (
             <div key="complete" className="animate-screen-enter">
@@ -395,7 +380,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
                 theme={theme}
                 toggleTheme={toggleTheme}
                 hintsUsed={game.hintsUsed}
-                activeHints={game.hintPositionsUsed}
                 onSelectPuzzle={handleSelectPuzzle}
                 onReturnToWelcome={game.returnToWelcome}
                 isHardMode={game.isHardMode}
