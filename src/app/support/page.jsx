@@ -96,8 +96,8 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">What are Difficulty Ratings?</h4>
             <p className="text-sm mb-3">
-              Each puzzle has a difficulty rating to help you know what to expect. Ratings appear
-              after you complete a puzzle and are included in your share text.
+              Each puzzle has a difficulty rating that appears after you complete a puzzle. Ratings
+              are included in your share text and help you reflect on the challenge.
             </p>
           </div>
           <div>

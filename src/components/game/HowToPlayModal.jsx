@@ -155,8 +155,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
               Difficulty Ratings ⭐
             </h3>
             <p className="text-sm mb-3">
-              Each puzzle has a difficulty rating to help you know what to expect. Ratings appear
-              after you complete a puzzle.
+              Each puzzle has a difficulty rating that appears after you complete a puzzle. These
+              ratings help you reflect on the challenge and track your progress.
             </p>
             <div className="space-y-2 text-sm">
               <div className="flex items-start gap-2">
