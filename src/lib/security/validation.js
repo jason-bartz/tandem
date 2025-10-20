@@ -142,6 +142,19 @@ export const puzzleSchema = z.object({
     .max(MAX_THEME_LENGTH, `Theme must be at most ${MAX_THEME_LENGTH} characters`)
     .transform((val) => sanitizeString(val, MAX_THEME_LENGTH)),
   puzzles: z.array(puzzleItemSchema).length(4, 'Puzzle must have exactly 4 items'),
+  difficultyRating: z
+    .enum(['Easy', 'Medium-Easy', 'Medium', 'Medium-Hard', 'Hard'])
+    .optional()
+    .nullable(),
+  difficultyFactors: z
+    .object({
+      themeComplexity: z.number().min(1).max(5),
+      vocabularyLevel: z.number().min(1).max(5),
+      emojiClarity: z.number().min(1).max(5),
+      hintDirectness: z.number().min(1).max(5).optional(),
+    })
+    .optional()
+    .nullable(),
 });
 
 // Full puzzle with date schema

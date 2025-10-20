@@ -315,30 +315,27 @@ export default function PuzzleCalendar({
                           <div className="text-[9px] sm:text-[11px] text-gray-600 dark:text-gray-400 leading-tight break-words">
                             {puzzle.theme}
                           </div>
-                          {puzzle.difficultyRating && (
-                            <div className="text-[8px] sm:text-[9px] text-purple-600 dark:text-purple-400 mt-0.5 font-medium">
-                              {puzzle.difficultyRating}
-                            </div>
-                          )}
                           <div className="text-xs sm:text-sm mt-0.5 sm:mt-1">
                             {puzzle.puzzles[0].emoji}
                           </div>
                         </div>
                       )}
-                      {puzzle && hasAllHints(puzzle) && (
-                        <div
-                          className="absolute bottom-1 left-1 text-[10px] sm:text-xs"
-                          title="All hints filled"
-                        >
-                          💡
-                        </div>
-                      )}
-                      {puzzle && puzzle.difficultyRating && (
-                        <div
-                          className="absolute bottom-1 right-1 text-[8px] sm:text-[9px] px-1 py-0.5 rounded bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300 font-medium"
-                          title={`Difficulty: ${puzzle.difficultyRating}`}
-                        >
-                          {puzzle.difficultyRating.charAt(0)}
+                      {/* Bottom indicator row - lightbulb and difficulty rating */}
+                      {puzzle && (hasAllHints(puzzle) || puzzle.difficultyRating) && (
+                        <div className="absolute bottom-1 left-1 right-1 flex items-center gap-1">
+                          {hasAllHints(puzzle) && (
+                            <span className="text-[10px] sm:text-xs" title="All hints filled">
+                              💡
+                            </span>
+                          )}
+                          {puzzle.difficultyRating && (
+                            <span
+                              className="text-[8px] sm:text-[9px] text-purple-600 dark:text-purple-400 font-medium"
+                              title={`Difficulty: ${puzzle.difficultyRating}`}
+                            >
+                              {puzzle.difficultyRating}
+                            </span>
+                          )}
                         </div>
                       )}
                     </>
