@@ -94,30 +94,80 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
 
   const handleGenerateWithAI = async () => {
     setGenerating(true);
-    setMessage('🤖 Generating puzzle with AI... This may take a few seconds.');
+
+    // Check if we should generate hints only (theme + all emoji/answer pairs filled, but hints missing)
+    const hasTheme = theme.trim().length > 0;
+    const allPairsComplete = puzzles.every(
+      (p) => p.emoji.trim().length >= 1 && p.answer.trim().length >= 2
+    );
+    const someHintsMissing = puzzles.some((p) => !p.hint || p.hint.trim().length === 0);
+    const hintsOnlyMode = hasTheme && allPairsComplete && someHintsMissing;
+
+    setMessage(
+      hintsOnlyMode
+        ? '🤖 Generating hints for your puzzle... This may take a few seconds.'
+        : '🤖 Generating puzzle with AI... This may take a few seconds.'
+    );
 
     try {
-      const options = theme.trim() ? { themeHint: theme.trim() } : {};
-      const result = await adminService.generatePuzzle(selectedDate, options);
+      if (hintsOnlyMode) {
+        // Generate hints only - pass existing puzzle data
+        const options = {
+          theme: theme.trim(),
+          puzzles: puzzles.map((p) => ({
+            emoji: p.emoji.trim(),
+            answer: p.answer.trim().toUpperCase(),
+          })),
+        };
+        const result = await adminService.generateHints(selectedDate, options);
 
-      if (result.success) {
-        setTheme(result.puzzle.theme);
-        setPuzzles(result.puzzle.puzzles);
+        if (result.success) {
+          // Only update the hints, keep everything else
+          const updatedPuzzles = puzzles.map((p, index) => ({
+            ...p,
+            hint: result.hints[index] || p.hint,
+          }));
+          setPuzzles(updatedPuzzles);
 
-        const timeMsg =
-          result.context.generationTime > 1000
-            ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
-            : '';
-        setMessage(
-          `✨ Success! Generated "${result.puzzle.theme}" by analyzing ${result.context.pastPuzzlesAnalyzed} recent puzzles${timeMsg}. You can edit any field before saving.`
-        );
-        logger.info('AI puzzle generated successfully', result);
+          const timeMsg =
+            result.context?.generationTime > 1000
+              ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+              : '';
+          setMessage(
+            `✨ Success! Generated hints for "${theme}"${timeMsg}. You can edit any hint before saving.`
+          );
+          logger.info('AI hints generated successfully', result);
+        } else {
+          const errorMsg = result.error || 'Failed to generate hints. Please try again.';
+          setMessage(
+            `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
+          );
+          logger.error('AI hints generation failed', result);
+        }
       } else {
-        const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
-        setMessage(
-          `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
-        );
-        logger.error('AI puzzle generation failed', result);
+        // Generate full puzzle
+        const options = theme.trim() ? { themeHint: theme.trim() } : {};
+        const result = await adminService.generatePuzzle(selectedDate, options);
+
+        if (result.success) {
+          setTheme(result.puzzle.theme);
+          setPuzzles(result.puzzle.puzzles);
+
+          const timeMsg =
+            result.context.generationTime > 1000
+              ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+              : '';
+          setMessage(
+            `✨ Success! Generated "${result.puzzle.theme}" by analyzing ${result.context.pastPuzzlesAnalyzed} recent puzzles${timeMsg}. You can edit any field before saving.`
+          );
+          logger.info('AI puzzle generated successfully', result);
+        } else {
+          const errorMsg = result.error || 'Failed to generate puzzle. Please try again.';
+          setMessage(
+            `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
+          );
+          logger.error('AI puzzle generation failed', result);
+        }
       }
     } catch (error) {
       setMessage(
