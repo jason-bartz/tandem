@@ -5,14 +5,14 @@ import {
   authCredentialsSchema,
   parseAndValidateJson,
   sanitizeErrorMessage,
-  validateEnvironmentVariables
+  validateEnvironmentVariables,
 } from '@/lib/security/validation';
 import {
   getClientIdentifier,
   isLockedOut,
   recordFailedAttempt,
   clearFailedAttempts,
-  withRateLimit
+  withRateLimit,
 } from '@/lib/security/rateLimiter';
 import { generateCSRFToken } from '@/lib/security/csrf';
 import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
@@ -22,40 +22,38 @@ export async function POST(request) {
   try {
     // Validate environment variables
     validateEnvironmentVariables();
-    
+
     // Check rate limiting for auth endpoint
     const rateLimitResponse = await withRateLimit(request, 'auth');
     if (rateLimitResponse) {
       return rateLimitResponse;
     }
-    
+
     // Get client identifier for rate limiting
     const clientId = getClientIdentifier(request);
-    
+
     // Check if client is locked out
     const lockoutStatus = await isLockedOut(clientId);
     if (lockoutStatus.locked) {
       return NextResponse.json(
-        { 
-          success: false, 
+        {
+          success: false,
           error: lockoutStatus.message,
           lockedUntil: lockoutStatus.until,
-          permanent: lockoutStatus.permanent || false
+          permanent: lockoutStatus.permanent || false,
         },
         { status: 429 }
       );
     }
-    
+
     // Parse and validate request body
     const { username, password } = await parseAndValidateJson(request, authCredentialsSchema);
-    
+
     // Check credentials
     const isValidUsername = username === process.env.ADMIN_USERNAME;
-    const isValidPassword = isValidUsername && await bcrypt.compare(
-      password,
-      process.env.ADMIN_PASSWORD_HASH
-    );
-    
+    const isValidPassword =
+      isValidUsername && (await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH));
+
     if (!isValidUsername || !isValidPassword) {
       // Record failed attempt
       const attemptResult = await recordFailedAttempt(clientId);
@@ -72,12 +70,12 @@ export async function POST(request) {
           success: false,
           error: attemptResult.message || 'Invalid credentials',
           remainingAttempts: attemptResult.remainingAttempts,
-          locked: attemptResult.locked || false
+          locked: attemptResult.locked || false,
         },
         { status: 401 }
       );
     }
-    
+
     // Clear failed attempts on successful login
     await clearFailedAttempts(clientId);
 
@@ -109,10 +107,7 @@ export async function POST(request) {
     const message = sanitizeErrorMessage(error);
 
     if (error.message.includes('Validation error')) {
-      return NextResponse.json(
-        { success: false, error: message },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: message }, { status: 400 });
     }
 
     if (error.message.includes('environment variables')) {
@@ -122,29 +117,23 @@ export async function POST(request) {
       );
     }
 
-    return NextResponse.json(
-      { success: false, error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }
 
 export async function GET(request) {
   try {
     const authHeader = request.headers.get('authorization');
-    
+
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json(
-        { success: false, error: 'No token provided' },
-        { status: 401 }
-      );
+      return NextResponse.json({ success: false, error: 'No token provided' }, { status: 401 });
     }
-    
+
     const token = authHeader.replace('Bearer ', '');
-    
+
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      
+
       // Generate new CSRF token on token validation
       const csrfToken = await generateCSRFToken();
 

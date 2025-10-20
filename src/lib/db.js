@@ -213,11 +213,11 @@ export function ensureHintStructure(puzzle) {
 
   return {
     ...puzzle,
-    puzzles: puzzle.puzzles.map(p => ({
+    puzzles: puzzle.puzzles.map((p) => ({
       emoji: p.emoji,
       answer: p.answer,
-      hint: p.hint || '' // Ensure hint field exists, even if empty
-    }))
+      hint: p.hint || '', // Ensure hint field exists, even if empty
+    })),
   };
 }
 
@@ -229,8 +229,8 @@ export async function setPuzzleForDate(date, puzzle) {
       puzzles: puzzle.puzzles.map((p, index) => ({
         ...p,
         // Preserve existing hint if present, or set to empty string
-        hint: p.hint || puzzle.hints?.[index] || ''
-      }))
+        hint: p.hint || puzzle.hints?.[index] || '',
+      })),
     };
 
     // Remove the separate hints array if it exists (migrated into puzzle objects)
@@ -239,7 +239,9 @@ export async function setPuzzleForDate(date, puzzle) {
     const redis = await getRedisClient();
 
     if (redis) {
-      await redis.set(`puzzle:${date}`, JSON.stringify(puzzleWithHints), { EX: 60 * 60 * 24 * 365 });
+      await redis.set(`puzzle:${date}`, JSON.stringify(puzzleWithHints), {
+        EX: 60 * 60 * 24 * 365,
+      });
     } else {
       inMemoryDB.puzzles[date] = puzzleWithHints;
     }

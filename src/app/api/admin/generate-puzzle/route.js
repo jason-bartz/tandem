@@ -35,7 +35,10 @@ export async function POST(request) {
     // Check if AI generation is enabled
     const aiEnabled = aiService.isEnabled();
     if (!aiEnabled) {
-      logger.error('AI generation service not enabled', new Error('ANTHROPIC_API_KEY not configured'));
+      logger.error(
+        'AI generation service not enabled',
+        new Error('ANTHROPIC_API_KEY not configured')
+      );
       return NextResponse.json(
         {
           success: false,

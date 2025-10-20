@@ -46,7 +46,6 @@ export default function BulkImport({ onClose, onSuccess }) {
         return;
       }
 
-
       if (!Array.isArray(puzzles)) {
         setMessage('❌ Input must be an array of puzzle objects');
         setLoading(false);

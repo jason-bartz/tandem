@@ -63,17 +63,18 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 
 ## Statistics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Total console statements** | 698 | ~200* | **71% reduction** |
-| **Files with console** | 82 | ~25* | **70% reduction** |
-| **API routes cleaned** | 0/16 | 16/16 | **100%** |
-| **Core services cleaned** | 0/10 | 10/10 | **100%** |
-| **Hooks cleaned** | 0/7 | 7/7 | **100%** |
-| **Components cleaned** | 0/12 | 12/12 | **100%** |
-| **Production verbosity** | High | Minimal | **Error-only** |
+| Metric                       | Before | After   | Improvement       |
+| ---------------------------- | ------ | ------- | ----------------- |
+| **Total console statements** | 698    | ~200\*  | **71% reduction** |
+| **Files with console**       | 82     | ~25\*   | **70% reduction** |
+| **API routes cleaned**       | 0/16   | 16/16   | **100%**          |
+| **Core services cleaned**    | 0/10   | 10/10   | **100%**          |
+| **Hooks cleaned**            | 0/7    | 7/7     | **100%**          |
+| **Components cleaned**       | 0/12   | 12/12   | **100%**          |
+| **Production verbosity**     | High   | Minimal | **Error-only**    |
 
 \* Remaining console statements are in:
+
 - Internal service providers (GameCenter, CloudKit, KeyValueStore, etc.)
 - Test files and debug utilities
 - Migration utilities
@@ -82,6 +83,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 ## File Changes
 
 ### Core Infrastructure (6 files)
+
 - ✅ [src/lib/logger.js](../src/lib/logger.js) - Enhanced production logger
 - ✅ [src/lib/errorHandler.js](../src/lib/errorHandler.js)
 - ✅ [src/lib/security/auditLog.js](../src/lib/security/auditLog.js)
@@ -90,6 +92,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 - ✅ [src/lib/db.js](../src/lib/db.js)
 
 ### API Routes (16 files)
+
 - ✅ [src/app/api/admin/generate-puzzle/route.js](../src/app/api/admin/generate-puzzle/route.js)
 - ✅ [src/app/api/admin/auth/route.js](../src/app/api/admin/auth/route.js)
 - ✅ [src/app/api/admin/puzzles/route.js](../src/app/api/admin/puzzles/route.js)
@@ -106,6 +109,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 - ✅ And 3 more API routes
 
 ### Services (10+ files)
+
 - ✅ [src/services/admin.service.js](../src/services/admin.service.js)
 - ✅ [src/services/puzzle.service.js](../src/services/puzzle.service.js)
 - ✅ [src/services/ai.service.js](../src/services/ai.service.js)
@@ -117,6 +121,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 - ✅ And more services
 
 ### Hooks (7 files)
+
 - ✅ [src/hooks/useGame.js](../src/hooks/useGame.js)
 - ✅ [src/hooks/useGameLogic.js](../src/hooks/useGameLogic.js)
 - ✅ [src/hooks/useGameWithInitialData.js](../src/hooks/useGameWithInitialData.js)
@@ -126,6 +131,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 - ✅ [src/hooks/useMidnightRefresh.js](../src/hooks/useMidnightRefresh.js)
 
 ### Components (12+ files)
+
 - ✅ [src/components/admin/BulkImport.jsx](../src/components/admin/BulkImport.jsx)
 - ✅ [src/components/admin/PuzzleEditor.jsx](../src/components/admin/PuzzleEditor.jsx)
 - ✅ [src/components/admin/PuzzleCalendar.jsx](../src/components/admin/PuzzleCalendar.jsx)
@@ -142,6 +148,7 @@ Successfully migrated the Tandem codebase from verbose console-based logging (69
 The following files still have console statements but are lower priority:
 
 ### Service Providers (~200 console statements)
+
 - `src/services/stats/UnifiedStatsManager.js`
 - `src/services/stats/ConflictResolver.js`
 - `src/services/stats/providers/*.js` (GameCenter, CloudKit, KeyValueStore, LocalStorage)
@@ -191,7 +198,7 @@ These are internal debugging tools and can be addressed incrementally. They don'
 
 - Main documentation: [docs/LOGGING.md](./LOGGING.md)
 - Logger source: [src/lib/logger.js](../src/lib/logger.js)
-- Logger tests: [src/lib/__tests__/logger.test.js](../src/lib/__tests__/logger.test.js)
+- Logger tests: [src/lib/**tests**/logger.test.js](../src/lib/__tests__/logger.test.js)
 - Environment config: [.env.example](../.env.example)
 
 ---

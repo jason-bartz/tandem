@@ -64,8 +64,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
     if (Capacitor.isNativePlatform()) {
       subscriptionService
         .initialize()
-        .then(() => {
-        })
+        .then(() => {})
         .catch((_error) => {
           // App continues to work even if subscription init fails
         });
@@ -167,8 +166,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Initialize notifications on app launch (iOS only)
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
-      notificationService.onAppLaunch().catch((_err) => {
-      });
+      notificationService.onAppLaunch().catch((_err) => {});
     }
   }, []);
 

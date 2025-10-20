@@ -47,12 +47,16 @@ export function initPuzzleScheduler() {
   // Run maintenance at 3 AM ET daily (low-traffic period)
   const cronPattern = '0 3 * * *';
 
-  maintenanceTask = cron.schedule(cronPattern, async () => {
-    await runDailyMaintenance();
-  }, {
-    scheduled: true,
-    timezone: "America/New_York"
-  });
+  maintenanceTask = cron.schedule(
+    cronPattern,
+    async () => {
+      await runDailyMaintenance();
+    },
+    {
+      scheduled: true,
+      timezone: 'America/New_York',
+    }
+  );
 
   schedulerRunning = true;
   global.schedulerRunning = true;

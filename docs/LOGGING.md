@@ -7,6 +7,7 @@ The Tandem app now uses a **production-ready, centralized logging system** that 
 ## Key Changes
 
 ### Before (Verbose)
+
 ```javascript
 // 698 console statements across 82 files
 console.log('[generate-puzzle] Request received');
@@ -15,6 +16,7 @@ console.error('[generate-puzzle] ERROR DETAILS:', { message, stack, ... });
 ```
 
 ### After (Production-Ready)
+
 ```javascript
 // ~70 meaningful error logs only
 import logger from '@/lib/logger';
@@ -26,6 +28,7 @@ logger.debug('AI puzzle generated successfully', { date, theme });
 ## Logger API
 
 ### Import
+
 ```javascript
 import logger from '@/lib/logger';
 ```
@@ -33,6 +36,7 @@ import logger from '@/lib/logger';
 ### Methods
 
 #### `logger.error(message, error, ...metadata)`
+
 **Production**: Always logged (ERROR level)
 **Development**: Logged with full stack trace
 **Usage**: Critical errors that require attention
@@ -46,6 +50,7 @@ try {
 ```
 
 #### `logger.warn(message, ...metadata)`
+
 **Production**: Logged (WARN level)
 **Development**: Logged with metadata
 **Usage**: Non-critical issues, deprecated features
@@ -55,6 +60,7 @@ logger.warn('Rate limit exceeded', { clientId, attempts });
 ```
 
 #### `logger.info(message, ...metadata)`
+
 **Production**: **Suppressed** (unless `NEXT_PUBLIC_ENABLE_DEBUG_LOGS=true`)
 **Development**: Logged
 **Usage**: Informational messages
@@ -64,6 +70,7 @@ logger.info('User logged in', { username });
 ```
 
 #### `logger.debug(message, ...metadata)`
+
 **Production**: **Suppressed** (unless `NEXT_PUBLIC_ENABLE_DEBUG_LOGS=true`)
 **Development**: Logged
 **Usage**: Debug information
@@ -75,6 +82,7 @@ logger.debug('Processing request', { requestId, params });
 ### Helper Methods
 
 #### Performance Timing
+
 ```javascript
 const startTime = logger.time('operation-name');
 // ... do work ...
@@ -84,13 +92,15 @@ const duration = logger.timeEnd('operation-name', startTime);
 ```
 
 #### Request Correlation
+
 ```javascript
-logger.setRequestId('req-123');  // Set correlation ID
-logger.error('API failed', error);  // Includes requestId
-logger.clearRequestId();  // Clear after request
+logger.setRequestId('req-123'); // Set correlation ID
+logger.error('API failed', error); // Includes requestId
+logger.clearRequestId(); // Clear after request
 ```
 
 #### Sampled Logging (for high-frequency events)
+
 ```javascript
 // Only log 10% of events (controlled by LOG_SAMPLING_RATE env var)
 logger.sample('debug', 'High-frequency event', { data });
@@ -113,11 +123,11 @@ LOG_SAMPLING_RATE=1.0  # 1.0 = all logs, 0.1 = 10% of logs
 
 ### Log Levels by Environment
 
-| Environment | Default Level | Debug Logs | Info Logs | Warn Logs | Error Logs |
-|------------|---------------|------------|-----------|-----------|------------|
-| **Production** | ERROR | ❌ | ❌ | ✅ | ✅ |
-| **Development** | DEBUG | ✅ | ✅ | ✅ | ✅ |
-| **Test** | NONE | ❌ | ❌ | ❌ | ❌ |
+| Environment     | Default Level | Debug Logs | Info Logs | Warn Logs | Error Logs |
+| --------------- | ------------- | ---------- | --------- | --------- | ---------- |
+| **Production**  | ERROR         | ❌         | ❌        | ✅        | ✅         |
+| **Development** | DEBUG         | ✅         | ✅        | ✅        | ✅         |
+| **Test**        | NONE          | ❌         | ❌        | ❌        | ❌         |
 
 ## Security Features
 
@@ -127,14 +137,15 @@ The logger automatically redacts sensitive data:
 
 ```javascript
 logger.error('Auth failed', error, {
-  password: 'secret123',  // → password: '***REDACTED***'
-  apiKey: 'sk-ant-abc123',  // → apiKey: '***REDACTED***'
-  token: 'Bearer xyz',  // → token: 'Bearer ***REDACTED***'
-  email: 'user@example.com'  // → email: '***REDACTED***'
+  password: 'secret123', // → password: '***REDACTED***'
+  apiKey: 'sk-ant-abc123', // → apiKey: '***REDACTED***'
+  token: 'Bearer xyz', // → token: 'Bearer ***REDACTED***'
+  email: 'user@example.com', // → email: '***REDACTED***'
 });
 ```
 
 **Patterns automatically redacted:**
+
 - Passwords
 - API keys (including Anthropic `sk-ant-*` keys)
 - Tokens (JWT, Bearer, etc.)
@@ -144,11 +155,19 @@ logger.error('Auth failed', error, {
 ### Structured Logging
 
 **Production**: Logs are output as JSON for easy parsing
+
 ```json
-{"timestamp":"2025-01-19T12:00:00.000Z","level":"ERROR","message":"API failed","platform":"Web","error":{"message":"Network error","stack":"Error: Network error"}}
+{
+  "timestamp": "2025-01-19T12:00:00.000Z",
+  "level": "ERROR",
+  "message": "API failed",
+  "platform": "Web",
+  "error": { "message": "Network error", "stack": "Error: Network error" }
+}
 ```
 
 **Development**: Logs are human-readable
+
 ```
 [2025-01-19T12:00:00.000Z] [ERROR] API failed Error: Network error
     at fetch (...)
@@ -170,9 +189,9 @@ logger.warn('Cache miss for user data', { userId });
 logger.error('Payment processing failed', error, { orderId, amount });
 
 // Use appropriate levels
-logger.error('Critical: Payment failed', error);  // User-impacting
-logger.warn('Deprecated API usage', { endpoint });  // Non-critical
-logger.debug('Cache hit', { key });  // Development only
+logger.error('Critical: Payment failed', error); // User-impacting
+logger.warn('Deprecated API usage', { endpoint }); // Non-critical
+logger.debug('Cache hit', { key }); // Development only
 ```
 
 ### ❌ DON'T
@@ -208,12 +227,12 @@ for (let item of largeArray) {
 
 ### Statistics
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| **Console statements** | 698 | ~70 | **90% reduction** |
-| **Files with console** | 82 | ~15 | **82% reduction** |
-| **Verbose debug logs** | 400+ | 0 | **100% removed** |
-| **Production logs** | All | Errors only | **Quiet by default** |
+| Metric                 | Before | After       | Improvement          |
+| ---------------------- | ------ | ----------- | -------------------- |
+| **Console statements** | 698    | ~70         | **90% reduction**    |
+| **Files with console** | 82     | ~15         | **82% reduction**    |
+| **Verbose debug logs** | 400+   | 0           | **100% removed**     |
+| **Production logs**    | All    | Errors only | **Quiet by default** |
 
 ## Troubleshooting
 
@@ -248,6 +267,7 @@ const logs = await getAuditLogs('admin', 100);
 ## Future Enhancements
 
 Possible integrations:
+
 - **Sentry**: Error tracking and performance monitoring
 - **Datadog**: APM and log aggregation
 - **LogRocket**: Session replay with logs
@@ -258,7 +278,8 @@ The current logger is designed to integrate seamlessly with these services.
 ## Support
 
 For questions or issues with the logging system:
-1. Check [src/lib/__tests__/logger.test.js](src/lib/__tests__/logger.test.js) for usage examples
+
+1. Check [src/lib/**tests**/logger.test.js](src/lib/__tests__/logger.test.js) for usage examples
 2. Review [src/lib/logger.js](src/lib/logger.js) source code
 3. Check environment variables in `.env.example`
 

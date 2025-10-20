@@ -9,7 +9,7 @@ import {
   Title,
   Tooltip,
   Legend,
-  Filler
+  Filler,
 } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 
@@ -35,14 +35,14 @@ export function ActivityChart({ data }) {
         position: 'bottom',
         labels: {
           usePointStyle: true,
-          padding: 15
-        }
+          padding: 15,
+        },
       },
       tooltip: {
         mode: 'index',
         intersect: false,
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             let label = context.dataset.label || '';
             if (label) {
               label += ': ';
@@ -52,59 +52,59 @@ export function ActivityChart({ data }) {
               label += '%';
             }
             return label;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       x: {
         grid: {
-          display: false
-        }
+          display: false,
+        },
       },
       y: {
         beginAtZero: true,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
-        }
-      }
-    }
+          color: 'rgba(0, 0, 0, 0.05)',
+        },
+      },
+    },
   };
 
   const chartData = {
-    labels: data.map(d =>
+    labels: data.map((d) =>
       new Date(d.date).toLocaleDateString('en-US', {
         weekday: 'short',
         month: 'short',
-        day: 'numeric'
+        day: 'numeric',
       })
     ),
     datasets: [
       {
         label: 'Total Plays',
-        data: data.map(d => d.plays),
+        data: data.map((d) => d.plays),
         borderColor: 'rgb(56, 189, 248)',
         backgroundColor: 'rgba(56, 189, 248, 0.1)',
         tension: 0.3,
-        fill: true
+        fill: true,
       },
       {
         label: 'Completions',
-        data: data.map(d => d.completions),
+        data: data.map((d) => d.completions),
         borderColor: 'rgb(52, 211, 153)',
         backgroundColor: 'rgba(52, 211, 153, 0.1)',
         tension: 0.3,
-        fill: true
+        fill: true,
       },
       {
         label: 'Unique Players',
-        data: data.map(d => d.uniquePlayers),
+        data: data.map((d) => d.uniquePlayers),
         borderColor: 'rgb(251, 146, 60)',
         backgroundColor: 'rgba(251, 146, 60, 0.1)',
         tension: 0.3,
-        fill: true
-      }
-    ]
+        fill: true,
+      },
+    ],
   };
 
   return (
@@ -121,61 +121,69 @@ export function CompletionRateChart({ data }) {
     indexAxis: 'y',
     plugins: {
       legend: {
-        display: false
+        display: false,
       },
       tooltip: {
         callbacks: {
-          label: function(context) {
+          label: function (context) {
             return `${context.parsed.x}% completion (${context.raw.completed}/${context.raw.played} games)`;
-          }
-        }
-      }
+          },
+        },
+      },
     },
     scales: {
       x: {
         beginAtZero: true,
         max: 100,
         grid: {
-          color: 'rgba(0, 0, 0, 0.05)'
+          color: 'rgba(0, 0, 0, 0.05)',
         },
         ticks: {
-          callback: function(value) {
+          callback: function (value) {
             return value + '%';
-          }
-        }
+          },
+        },
       },
       y: {
         grid: {
-          display: false
-        }
-      }
-    }
+          display: false,
+        },
+      },
+    },
   };
 
   const chartData = {
-    labels: data.map(d => d.theme.substring(0, 30) + (d.theme.length > 30 ? '...' : '')),
+    labels: data.map((d) => d.theme.substring(0, 30) + (d.theme.length > 30 ? '...' : '')),
     datasets: [
       {
         label: 'Completion Rate',
-        data: data.map(d => ({
+        data: data.map((d) => ({
           x: d.completionRate,
           y: d.theme,
           played: d.played,
-          completed: d.completed
+          completed: d.completed,
         })),
-        backgroundColor: data.map(d => {
-          if (d.completionRate >= 80) {return 'rgba(52, 211, 153, 0.8)';}
-          if (d.completionRate >= 60) {return 'rgba(56, 189, 248, 0.8)';}
+        backgroundColor: data.map((d) => {
+          if (d.completionRate >= 80) {
+            return 'rgba(52, 211, 153, 0.8)';
+          }
+          if (d.completionRate >= 60) {
+            return 'rgba(56, 189, 248, 0.8)';
+          }
           return 'rgba(251, 191, 36, 0.8)';
         }),
-        borderColor: data.map(d => {
-          if (d.completionRate >= 80) {return 'rgb(52, 211, 153)';}
-          if (d.completionRate >= 60) {return 'rgb(56, 189, 248)';}
+        borderColor: data.map((d) => {
+          if (d.completionRate >= 80) {
+            return 'rgb(52, 211, 153)';
+          }
+          if (d.completionRate >= 60) {
+            return 'rgb(56, 189, 248)';
+          }
           return 'rgb(251, 191, 36)';
         }),
-        borderWidth: 1
-      }
-    ]
+        borderWidth: 1,
+      },
+    ],
   };
 
   return (
@@ -192,29 +200,32 @@ export function MetricsOverview({ stats }) {
       value: stats.played > 0 ? Math.round((stats.uniquePlayers / stats.views) * 100) : 0,
       suffix: '%',
       color: 'blue',
-      description: 'Unique players / Total views'
+      description: 'Unique players / Total views',
     },
     {
       label: 'Return Rate',
-      value: stats.uniquePlayers > 0 ? Math.round(((stats.played - stats.uniquePlayers) / stats.uniquePlayers) * 100) : 0,
+      value:
+        stats.uniquePlayers > 0
+          ? Math.round(((stats.played - stats.uniquePlayers) / stats.uniquePlayers) * 100)
+          : 0,
       suffix: '%',
       color: 'purple',
-      description: 'Returning players'
+      description: 'Returning players',
     },
     {
       label: 'Perfect Game Rate',
       value: stats.completed > 0 ? Math.round((stats.perfectGames / stats.completed) * 100) : 0,
       suffix: '%',
       color: 'green',
-      description: '0 mistakes completions'
+      description: '0 mistakes completions',
     },
     {
       label: 'Share Rate',
       value: stats.completed > 0 ? Math.round((stats.gamesShared / stats.completed) * 100) : 0,
       suffix: '%',
       color: 'pink',
-      description: 'Completed games shared'
-    }
+      description: 'Completed games shared',
+    },
   ];
 
   return (
@@ -225,13 +236,14 @@ export function MetricsOverview({ stats }) {
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
               {metric.label}
             </span>
-            <span className={`text-2xl font-bold text-${metric.color}-600 dark:text-${metric.color}-400`}>
-              {metric.value}{metric.suffix}
+            <span
+              className={`text-2xl font-bold text-${metric.color}-600 dark:text-${metric.color}-400`}
+            >
+              {metric.value}
+              {metric.suffix}
             </span>
           </div>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            {metric.description}
-          </div>
+          <div className="text-xs text-gray-500 dark:text-gray-400">{metric.description}</div>
           <div className="mt-2 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
             <div
               className={`h-full bg-gradient-to-r from-${metric.color}-400 to-${metric.color}-600 transition-all duration-500`}
