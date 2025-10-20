@@ -25,7 +25,6 @@ export function useGame() {
   const [hintedAnswers, setHintedAnswers] = useState([]);
   const [unlockedHints, setUnlockedHints] = useState(1);
   const [activeHintIndex, setActiveHintIndex] = useState(null);
-  const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
 
   // Simple load puzzle on mount
   useEffect(() => {
@@ -139,32 +138,15 @@ export function useGame() {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      // Check if there's an active hint for this index
-      const hint = activeHints[index];
-      let processedValue = value;
+      // Simple sanitization - no hint or locked letter logic needed
+      const sanitized = sanitizeInput(value);
 
-      if (hint) {
-        // If there's a hint, ensure the first letter is preserved
-        const hintLetter = hint.firstLetter;
-
-        if (value.length === 0) {
-          // If user tries to clear the field, keep the hint letter
-          processedValue = hintLetter;
-        } else if (!value.toUpperCase().startsWith(hintLetter)) {
-          // If the value doesn't start with the hint letter, add it
-          processedValue = hintLetter + value;
-        } else if (value.toUpperCase() === hintLetter) {
-          // If only the hint letter is present, keep it
-          processedValue = hintLetter;
-        }
-      }
-
-      const sanitized = sanitizeInput(processedValue);
       setAnswers((prev) => {
         const newAnswers = [...prev];
         newAnswers[index] = sanitized;
         return newAnswers;
       });
+
       // Clear the wrong status when user starts typing again
       if (checkedWrongAnswers[index]) {
         setCheckedWrongAnswers((prev) => {
@@ -174,7 +156,7 @@ export function useGame() {
         });
       }
     },
-    [checkedWrongAnswers, activeHints]
+    [checkedWrongAnswers]
   );
 
   const completeGame = useCallback(
@@ -456,7 +438,7 @@ export function useGame() {
         console.log('[useHint] Cannot use hint:', {
           hasPuzzle: !!puzzle,
           hintsUsed,
-          unlockedHints
+          unlockedHints,
         });
         return false;
       }
@@ -466,7 +448,7 @@ export function useGame() {
 
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
         // Find first unanswered puzzle
-        hintIndex = correctAnswers.findIndex(correct => !correct);
+        hintIndex = correctAnswers.findIndex((correct) => !correct);
         if (hintIndex === -1) {
           console.log('[useHint] All puzzles already solved');
           return false;
@@ -488,13 +470,13 @@ export function useGame() {
       }
 
       // Add this answer to the hinted list
-      setHintedAnswers(prev => [...prev, hintIndex]);
+      setHintedAnswers((prev) => [...prev, hintIndex]);
 
       // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
 
       // Increment hints used
-      setHintsUsed(prev => prev + 1);
+      setHintsUsed((prev) => prev + 1);
 
       // Check if we should unlock another hint (after 2 correct answers)
       if (solved >= 2 && unlockedHints === 1) {
@@ -517,7 +499,16 @@ export function useGame() {
 
       return true;
     },
-    [puzzle, correctAnswers, hintsUsed, unlockedHints, hintedAnswers, currentPuzzleDate, solved, mistakes]
+    [
+      puzzle,
+      correctAnswers,
+      hintsUsed,
+      unlockedHints,
+      hintedAnswers,
+      currentPuzzleDate,
+      solved,
+      mistakes,
+    ]
   );
 
   return {
@@ -536,7 +527,6 @@ export function useGame() {
     unlockedHints,
     activeHintIndex,
     hasCheckedAnswers,
-    lockedLetters,
     startGame,
     updateAnswer,
     checkAnswers,

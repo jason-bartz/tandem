@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, sanitizeInputPreserveSpaces, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -184,72 +184,8 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      const hint = activeHints[index];
-      const locked = lockedLetters[index];
-
-      // Get the full answer length from puzzle data
-      const puzzleItem = puzzle?.puzzles?.[index];
-      const fullAnswer = puzzleItem?.answer
-        ? puzzleItem.answer.includes(',')
-          ? puzzleItem.answer.split(',')[0].trim()
-          : puzzleItem.answer
-        : null;
-      const answerLength = fullAnswer ? fullAnswer.length : 15;
-
-      let processedValue = value;
-
-      // If we have locked letters, check if value is already properly formatted
-      if (locked) {
-        // Check if the value already has locked letters in their correct positions
-        const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
-          const position = parseInt(pos);
-          return value[position] === locked[pos];
-        });
-
-        if (hasLockedLettersInPlace) {
-          // Value is already properly formatted with locked letters in position
-          // This comes from our keyboard handlers or backspace handler
-          processedValue = value;
-        } else {
-          // Value doesn't have locked letters in correct positions
-          // This shouldn't happen with our current implementation, but handle it as a fallback
-          // Build a character array to the FULL answer length
-          const chars = new Array(answerLength).fill(' ');
-
-          // Copy non-space characters from value, but not at locked positions
-          for (let i = 0; i < value.length && i < answerLength; i++) {
-            if (!locked[i] && value[i] !== ' ') {
-              chars[i] = value[i];
-            }
-          }
-
-          // Ensure locked letters are at their positions
-          Object.keys(locked).forEach((pos) => {
-            const position = parseInt(pos);
-            if (position < answerLength) {
-              chars[position] = locked[pos];
-            }
-          });
-
-          processedValue = chars.join('');
-        }
-      }
-
-      if (hint) {
-        const hintLetter = hint.firstLetter;
-        if (processedValue.length === 0) {
-          processedValue = hintLetter;
-        } else if (!processedValue.toUpperCase().startsWith(hintLetter)) {
-          processedValue = hintLetter + processedValue;
-        } else if (processedValue.toUpperCase() === hintLetter) {
-          processedValue = hintLetter;
-        }
-      }
-
-      // Use different sanitization based on whether we have locked letters
-      const sanitized = locked
-        ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
-        : sanitizeInput(processedValue); // Regular sanitization for normal input
+      // Simple sanitization - no hint or locked letter logic needed
+      const sanitized = sanitizeInput(value);
 
       setAnswers((prev) => {
         const newAnswers = [...prev];
@@ -265,7 +201,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers, activeHints, lockedLetters, puzzle]
+    [checkedWrongAnswers]
   );
 
   const completeGame = useCallback(

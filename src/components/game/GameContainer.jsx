@@ -141,7 +141,6 @@ export default function GameContainer() {
               onUseHint={game.useHint}
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.resetGame}
-              lockedLetters={game.lockedLetters}
             />
           )}
 
@@ -159,7 +158,6 @@ export default function GameContainer() {
               isAuto={isAuto}
               currentState={currentState}
               hintsUsed={game.hintsUsed || 0}
-              activeHints={game.activeHints}
               onSelectPuzzle={handleSelectPuzzle}
               onReturnToWelcome={game.resetGame}
             />
