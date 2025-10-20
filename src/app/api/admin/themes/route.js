@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getPuzzlesRange } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+import logger from '@/lib/logger';
 
 export async function GET(request) {
   try {
@@ -76,7 +77,7 @@ export async function GET(request) {
       dateRange: { start, end },
     });
   } catch (error) {
-    console.error('GET /api/admin/themes error:', error);
+    logger.error('GET /api/admin/themes error', error);
 
     return NextResponse.json(
       { success: false, error: 'Failed to fetch theme data' },

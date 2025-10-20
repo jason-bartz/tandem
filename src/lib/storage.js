@@ -45,10 +45,6 @@ function getYesterdayDateString(todayString) {
 
 async function recoverStreakFromHistory(lastPlayedDate) {
   try {
-    console.log(
-      '[Storage] Attempting to recover streak from history, last played:',
-      lastPlayedDate
-    );
 
     // Get all storage keys to check for daily puzzle completions
     const isNative = Capacitor.isNativePlatform();
@@ -93,10 +89,9 @@ async function recoverStreakFromHistory(lastPlayedDate) {
 
               if (parsed.won && isDaily) {
                 dailyCompletions[date] = true;
-                console.log('[Storage] Found daily puzzle completion on', date);
               }
             } catch (error) {
-              console.error(`[Storage] Failed to parse result for ${key}:`, error.message);
+              logger.error(`Failed to parse result for ${key}`, error);
             }
           }
         }
@@ -104,13 +99,11 @@ async function recoverStreakFromHistory(lastPlayedDate) {
     }
 
     if (Object.keys(dailyCompletions).length === 0) {
-      console.log('[Storage] No daily puzzle completions found for recovery');
       return 0;
     }
 
     // Sort dates in reverse order (most recent first)
     const dates = Object.keys(dailyCompletions).sort().reverse();
-    console.log('[Storage] Found daily puzzle completions for dates:', dates.slice(0, 10));
 
     // Calculate streak by walking backwards from the most recent date
     let streak = 0;
@@ -122,18 +115,15 @@ async function recoverStreakFromHistory(lastPlayedDate) {
         streak++;
         // Calculate the previous day
         expectedDate = getYesterdayDateString(expectedDate);
-        console.log('[Storage] Found daily puzzle completion on', date, '- streak is now', streak);
       } else if (date < expectedDate) {
         // We've gone past where the streak should be
-        console.log('[Storage] Gap found or no daily puzzle - stopping at streak:', streak);
         break;
       }
     }
 
-    console.log('[Storage] Recovered streak from daily puzzles only:', streak);
     return streak;
   } catch (error) {
-    console.error('[Storage] Error recovering streak from history:', error);
+    logger.error('Error recovering streak from history', error);
     return 0;
   }
 }
@@ -148,21 +138,12 @@ export async function loadStats() {
     ? JSON.parse(stats)
     : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
 
-  // Log initial state for debugging
-  console.log('[Storage] Loading stats:', {
-    currentStreak: parsedStats.currentStreak,
-    lastStreakDate: parsedStats.lastStreakDate,
-    bestStreak: parsedStats.bestStreak,
-  });
-
   // Auto-sync with CloudKit on load if available
   if (cloudKitService.isSyncAvailable()) {
     try {
-      console.log('[Storage] Auto-syncing with CloudKit...');
       const cloudStats = await cloudKitService.fetchStats();
 
       if (cloudStats) {
-        console.log('[Storage] CloudKit stats fetched:', cloudStats);
 
         // Merge CloudKit stats with local stats
         // Take the maximum values to ensure we don't lose progress
@@ -197,13 +178,11 @@ export async function loadStats() {
         // Save the merged stats locally (skip cloud sync since we just fetched from cloud)
         await saveStats(mergedStats, true);
 
-        console.log('[Storage] Stats merged and saved:', mergedStats);
-
         // Update parsedStats to return the merged version
         Object.assign(parsedStats, mergedStats);
       }
     } catch (error) {
-      console.error('[Storage] Failed to auto-sync with CloudKit:', error);
+      logger.error('Failed to auto-sync with CloudKit', error);
       // Continue with local stats if sync fails
     }
   }
@@ -222,27 +201,14 @@ export async function loadStats() {
     (parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate));
 
   if (corruptionDetected) {
-    console.log('[Storage] CORRUPTION DETECTED:', {
-      pattern:
-        parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate)
-          ? 'future-date'
-          : 'zero-streak-recent-play',
-      currentStreak: parsedStats.currentStreak,
-      lastStreakDate: parsedStats.lastStreakDate,
-      today,
-      yesterday,
-    });
-
     // If date is in future, correct it to today
     if (parsedStats.lastStreakDate && localDateService.isDateInFuture(parsedStats.lastStreakDate)) {
-      console.log('[Storage] Correcting future date to today');
       parsedStats.lastStreakDate = today;
     }
 
     // Attempt to recover streak from game history
     const recoveredStreak = await recoverStreakFromHistory(parsedStats.lastStreakDate || today);
     if (recoveredStreak > 0) {
-      console.log('[Storage] Streak recovered:', recoveredStreak);
       parsedStats.currentStreak = recoveredStreak;
       parsedStats.lastStreakUpdate = Date.now();
       parsedStats._recoveredAt = new Date().toISOString(); // Audit trail
@@ -258,7 +224,6 @@ export async function loadStats() {
 
   // Add migration for existing users - ensure lastStreakUpdate exists
   if (parsedStats.currentStreak > 0 && !parsedStats.lastStreakUpdate) {
-    console.log('[Storage] Migrating stats - adding lastStreakUpdate for existing user');
     parsedStats.lastStreakUpdate = Date.now();
     await saveStats(parsedStats, true); // Skip cloud sync during migration
   }
@@ -276,21 +241,8 @@ async function checkAndUpdateStreak(stats) {
     const today = getTodayDateString();
     const yesterday = getYesterdayDateString(today);
 
-    console.log('[Storage] checkAndUpdateStreak called', {
-      currentStreak: stats.currentStreak,
-      lastStreakDate: stats.lastStreakDate,
-      today,
-      yesterday,
-      hasLastStreakUpdate: !!stats.lastStreakUpdate,
-      lastStreakUpdate: stats.lastStreakUpdate,
-    });
-
     // CRITICAL FIX: If lastStreakDate is today, they just played today - don't reset!
     if (stats.lastStreakDate === today) {
-      console.log('[Storage] Last streak date is today - keeping current streak', {
-        currentStreak: stats.currentStreak,
-        lastStreakDate: stats.lastStreakDate,
-      });
       return; // Don't reset streak if they played today
     }
 
@@ -301,41 +253,20 @@ async function checkAndUpdateStreak(stats) {
       // If streak was updated in the last 5 seconds, don't reset it
       // This handles the case where loadStats is called immediately after updateGameStats
       if (timeSinceUpdate < 5000) {
-        console.log('[Storage] Skipping streak check - recently updated', {
-          timeSinceUpdate,
-          currentStreak: stats.currentStreak,
-          lastStreakDate: stats.lastStreakDate,
-        });
         return;
       }
     }
 
     // If last streak date is yesterday, the streak continues (they can play today)
     if (stats.lastStreakDate === yesterday) {
-      console.log('[Storage] Streak continues - last played yesterday', {
-        currentStreak: stats.currentStreak,
-        lastStreakDate: stats.lastStreakDate,
-        yesterday,
-      });
       return; // Streak is still valid
     }
 
     // If we get here, last streak date is neither today nor yesterday - reset streak
-    console.log('[Storage] Resetting streak due to missed days', {
-      lastStreakDate: stats.lastStreakDate,
-      yesterday,
-      today,
-      currentStreak: stats.currentStreak,
-    });
     stats.currentStreak = 0;
     stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting due to missed days
     // Don't update lastStreakDate here, keep it for history
     await saveStats(stats, true); // Skip cloud sync during streak reset check
-  } else if (!stats.lastStreakDate && stats.currentStreak > 0) {
-    // Edge case: has a streak but no date (shouldn't happen but handle gracefully)
-    console.log('[Storage] Warning: Streak without date, preserving streak', {
-      currentStreak: stats.currentStreak,
-    });
   }
 }
 
@@ -350,15 +281,13 @@ export async function saveStats(stats, skipCloudSync = false) {
 
         if (syncResult.success && syncResult.mergedStats) {
           // CloudKit returned merged stats, update local storage with them
-          console.log('[Storage] Received merged stats from CloudKit:', syncResult.mergedStats);
-
           // Save the merged stats locally (with skipCloudSync to avoid infinite loop)
           await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(syncResult.mergedStats));
 
           return syncResult.mergedStats;
         }
       } catch (error) {
-        console.error('[Storage] CloudKit sync failed:', error);
+        logger.error('CloudKit sync failed', error);
         // Non-critical error, continue with local stats
       }
     }
@@ -374,20 +303,6 @@ export async function updateGameStats(
   puzzleDate = null
 ) {
   const stats = await loadStats();
-
-  console.log('[Storage] updateGameStats called with:', {
-    won,
-    isFirstAttempt,
-    isArchiveGame,
-    puzzleDate,
-    currentStats: {
-      played: stats.played,
-      wins: stats.wins,
-      currentStreak: stats.currentStreak,
-      bestStreak: stats.bestStreak,
-      lastStreakDate: stats.lastStreakDate,
-    },
-  });
 
   // Count games played for first attempts only (both daily and archive)
   if (isFirstAttempt) {
@@ -407,13 +322,11 @@ export async function updateGameStats(
 
       // CRITICAL: Validate the date to prevent corruption
       if (puzzleDate && !localDateService.isValidDateString(puzzleDate)) {
-        console.warn('[Storage] Invalid puzzle date provided:', puzzleDate, '- using today');
         today = getTodayDateString();
       }
 
       // CRITICAL: Prevent future dates from being saved
       if (localDateService.isDateInFuture(today)) {
-        console.warn('[Storage] Future date detected:', today, '- correcting to actual today');
         today = getTodayDateString();
       }
 
@@ -421,48 +334,17 @@ export async function updateGameStats(
       const lastStreakDate = stats.lastStreakDate;
       const yesterday = getYesterdayDateString(today);
 
-      console.log('[Storage] Streak calculation:', {
-        lastStreakDate,
-        today,
-        yesterday,
-        currentStreakBefore: stats.currentStreak,
-      });
-
       if (!lastStreakDate) {
         // No previous streak, start at 1
         stats.currentStreak = 1;
-        console.log('[Storage] Starting new streak: 1 (no previous streak date)');
       } else if (lastStreakDate === yesterday) {
         // Played and won yesterday, continue streak
-        const oldStreak = stats.currentStreak;
         stats.currentStreak++;
-        console.log('[Storage] Continuing streak:', {
-          oldStreak,
-          newStreak: stats.currentStreak,
-          lastStreakDate,
-          yesterday,
-          today,
-        });
       } else if (lastStreakDate === today) {
         // Already played today, don't update
         // This handles multiple attempts on the same day
-        console.log('[Storage] Already played today, keeping streak:', {
-          currentStreak: stats.currentStreak,
-          lastStreakDate,
-          today,
-        });
       } else {
         // Missed one or more days, restart streak
-        const daysMissed = Math.floor(
-          (new Date(today) - new Date(lastStreakDate)) / (1000 * 60 * 60 * 24)
-        );
-        console.log('[Storage] Missed days, restarting streak:', {
-          oldStreak: stats.currentStreak,
-          newStreak: 1,
-          lastStreakDate,
-          today,
-          daysMissed,
-        });
         stats.currentStreak = 1;
       }
 
@@ -472,27 +354,17 @@ export async function updateGameStats(
 
       // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
-        console.log('[Storage] New best streak!', stats.currentStreak, '>', stats.bestStreak);
         stats.bestStreak = stats.currentStreak;
       }
     }
   } else {
     // Only reset streak for daily puzzle losses on first attempt
     if (isFirstAttempt && !isArchiveGame) {
-      console.log('[Storage] Lost puzzle, resetting streak to 0');
       stats.currentStreak = 0;
       stats.lastStreakDate = puzzleDate || getTodayDateString();
       stats.lastStreakUpdate = Date.now(); // Add timestamp when resetting streak
     }
   }
-
-  console.log('[Storage] Final stats after update:', {
-    played: stats.played,
-    wins: stats.wins,
-    currentStreak: stats.currentStreak,
-    bestStreak: stats.bestStreak,
-    lastStreakDate: stats.lastStreakDate,
-  });
 
   await saveStats(stats);
   return stats;
@@ -672,7 +544,7 @@ export async function getWeeklyPuzzleStats() {
           }
         }
       } catch (error) {
-        console.error(`Failed to parse result for ${key}:`, error);
+        logger.error(`Failed to parse result for ${key}`, error);
       }
     }
   }
@@ -742,7 +614,7 @@ export async function getGameHistory() {
             };
           } catch (error) {
             // Skip corrupted or non-JSON data for this key
-            console.error(`[Storage] Failed to parse game result for ${key}:`, error.message);
+            logger.error(`Failed to parse game result for ${key}`, error);
             continue;
           }
         }
@@ -768,7 +640,7 @@ export async function getGameHistory() {
             }
           } catch (error) {
             // Skip corrupted or non-JSON data for this key
-            console.error(`[Storage] Failed to parse game progress for ${key}:`, error.message);
+            logger.error(`Failed to parse game progress for ${key}`, error);
             continue;
           }
         }

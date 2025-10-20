@@ -1,25 +1,16 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import platformService from './platform';
+import logger from '@/lib/logger';
 
 class PuzzleService {
   async getPuzzle(identifier = null) {
-    console.log(
-      '[PuzzleService] getPuzzle called with identifier:',
-      identifier,
-      'type:',
-      typeof identifier
-    );
     try {
       // identifier can be a puzzle number, date string, or null for today
       // Platform service handles all three cases
-      console.log('[PuzzleService] Calling platformService.fetchPuzzle');
       const data = await platformService.fetchPuzzle(identifier);
-      console.log('[PuzzleService] Data received from platformService:', data);
       return data;
     } catch (error) {
-      console.error('[PuzzleService] getPuzzle error:', error);
-      console.error('[PuzzleService] Error message:', error.message);
-      console.error('[PuzzleService] Error stack:', error.stack);
+      logger.error('PuzzleService.getPuzzle failed', error, { identifier });
       throw error;
     }
   }
@@ -40,7 +31,7 @@ class PuzzleService {
 
       return await response.json();
     } catch (error) {
-      console.error('PuzzleService.submitCompletion error:', error);
+      logger.error('PuzzleService.submitCompletion failed', error);
       throw error;
     }
   }
@@ -61,7 +52,7 @@ class PuzzleService {
 
       return await response.json();
     } catch (error) {
-      console.error('PuzzleService.getHint error:', error);
+      logger.error('PuzzleService.getHint failed', error);
       throw error;
     }
   }
@@ -86,7 +77,7 @@ class PuzzleService {
 
       return await response.json();
     } catch (error) {
-      console.error('PuzzleService.validateAnswer error:', error);
+      logger.error('PuzzleService.validateAnswer failed', error);
       throw error;
     }
   }
@@ -101,7 +92,7 @@ class PuzzleService {
 
       return await response.json();
     } catch (error) {
-      console.error('PuzzleService.getUpcomingPuzzles error:', error);
+      logger.error('PuzzleService.getUpcomingPuzzles failed', error);
       throw error;
     }
   }

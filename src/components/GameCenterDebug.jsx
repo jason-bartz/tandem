@@ -24,7 +24,7 @@ export default function GameCenterDebug() {
       const state = await gameCenterService.debugGetState();
       setDebugState(state);
     } catch (error) {
-      console.error('Failed to get debug state:', error);
+      setDebugState({ error: error.message });
     }
     setLoading(false);
   };
@@ -35,7 +35,7 @@ export default function GameCenterDebug() {
       const result = await gameCenterService.debugTestSubmission(streak);
       setTestResult(result);
     } catch (error) {
-      console.error('Test submission failed:', error);
+      setTestResult({ error: error.message });
     }
     setLoading(false);
   };
@@ -43,7 +43,6 @@ export default function GameCenterDebug() {
   const checkLocalStats = async () => {
     try {
       const stats = await loadStats();
-      console.log('Local Stats:', stats);
       alert(
         `Local Stats:
         Played: ${stats.played}
@@ -53,7 +52,7 @@ export default function GameCenterDebug() {
         Last Streak Date: ${stats.lastStreakDate || 'Not set'}`
       );
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      alert('Failed to load stats: ' + error.message);
     }
   };
 

@@ -5,6 +5,7 @@ import {
   getDailyActivity,
   getPuzzleStats
 } from '@/lib/db';
+import logger from '@/lib/logger';
 
 export async function GET(request) {
   try {
@@ -75,8 +76,7 @@ export async function GET(request) {
       dailyActivity
     });
   } catch (error) {
-    console.error('GET /api/stats error:', error);
-
+    logger.error('Failed to fetch stats', error);
     return NextResponse.json(
       { success: false, error: 'Failed to fetch stats' },
       { status: 500 }

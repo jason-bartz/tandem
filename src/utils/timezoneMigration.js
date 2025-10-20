@@ -9,6 +9,7 @@
 
 import localDateService from '@/services/localDateService';
 import { getStorageItem, setStorageItem } from '@/lib/storage';
+import logger from '@/lib/logger';
 
 const MIGRATION_KEY = 'timezone_migration_v1_completed';
 const MIGRATION_LOG_KEY = 'timezone_migration_log';
@@ -42,12 +43,6 @@ export async function performTimezoneMigration() {
     migrationResults.needed = true;
     migrationResults.userTimezone = userTimezone;
 
-    // Log migration start
-    console.log('[TimezoneMigration] Starting migration to local timezone', {
-      userTimezone,
-      currentDate: localDateService.getCurrentDateString(),
-    });
-
     // Detect if user is in ET timezone (no migration needed for data)
     const isET =
       userTimezone.includes('America/New_York') ||
@@ -77,9 +72,8 @@ export async function performTimezoneMigration() {
     await setStorageItem(MIGRATION_LOG_KEY, JSON.stringify(migrationResults));
 
     migrationResults.completed = true;
-    console.log('[TimezoneMigration] Migration completed successfully', migrationResults);
   } catch (error) {
-    console.error('[TimezoneMigration] Migration failed:', error);
+    logger.error('TimezoneMigration failed', error);
     migrationResults.errors.push({
       type: 'migration_error',
       message: error.message,
@@ -133,10 +127,6 @@ async function migrateStreakData(results) {
 
       if (!isValidDate) {
         const today = localDateService.getCurrentDateString();
-        console.log('[TimezoneMigration] Fixing invalid lastStreakDate:', {
-          old: stats.lastStreakDate,
-          new: today,
-        });
 
         stats.lastStreakDate = today;
         await setStorageItem(statsKey, JSON.stringify(stats));
@@ -174,7 +164,7 @@ export async function getMigrationStatus() {
       currentDate: localDateService.getCurrentDateString(),
     };
   } catch (error) {
-    console.error('[TimezoneMigration] Error getting migration status:', error);
+    logger.error('Error getting migration status', error);
     return {
       migrated: false,
       error: error.message,
@@ -194,10 +184,9 @@ export async function resetMigration(clearData = false) {
       await setStorageItem(MIGRATION_LOG_KEY, '');
     }
 
-    console.log('[TimezoneMigration] Migration reset');
     return { success: true };
   } catch (error) {
-    console.error('[TimezoneMigration] Error resetting migration:', error);
+    logger.error('Error resetting migration', error);
     return { success: false, error: error.message };
   }
 }
@@ -225,11 +214,6 @@ export async function detectTimezoneChange() {
     const changed = lastTimezone !== currentTimezone;
 
     if (changed) {
-      console.log('[TimezoneMigration] Timezone change detected:', {
-        from: lastTimezone,
-        to: currentTimezone,
-      });
-
       // Update stored timezone
       await setStorageItem(lastTimezoneKey, currentTimezone);
 
@@ -243,7 +227,7 @@ export async function detectTimezoneChange() {
       currentTimezone,
     };
   } catch (error) {
-    console.error('[TimezoneMigration] Error detecting timezone change:', error);
+    logger.error('Error detecting timezone change', error);
     return {
       error: error.message,
     };
@@ -255,7 +239,7 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   // Run migration after a short delay to ensure app is initialized
   setTimeout(() => {
     performTimezoneMigration().catch((error) => {
-      console.error('[TimezoneMigration] Auto-migration failed:', error);
+      logger.error('Auto-migration failed', error);
     });
   }, 1000);
 }
@@ -268,5 +252,4 @@ if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
     reset: resetMigration,
     detectChange: detectTimezoneChange,
   };
-  console.log('🔄 Timezone migration tools available: window.timezoneMigration');
 }

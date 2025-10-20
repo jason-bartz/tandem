@@ -5,6 +5,7 @@ import { isValidPuzzle } from '@/lib/utils';
 import { z } from 'zod';
 import { puzzleSchema, sanitizeErrorMessage, escapeHtml } from '@/lib/security/validation';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+import logger from '@/lib/logger';
 
 function getNextAvailableDates(startDate, count, existingPuzzles) {
   const availableDates = [];
@@ -37,29 +38,8 @@ export async function POST(request) {
     }
     const { admin } = authResult;
 
-    // Get the raw body to debug
     const rawBody = await request.text();
-    console.log('Raw request body:', rawBody);
     const bodyData = JSON.parse(rawBody);
-    console.log('Parsed body data:', bodyData);
-    console.log('Body data type:', typeof bodyData);
-    console.log('Is array?', Array.isArray(bodyData));
-    console.log('Has puzzles field?', 'puzzles' in bodyData);
-    console.log('Puzzles field type:', typeof bodyData.puzzles, Array.isArray(bodyData.puzzles));
-
-    // Log each puzzle to see the structure
-    if (bodyData.puzzles && Array.isArray(bodyData.puzzles)) {
-      bodyData.puzzles.forEach((puzzle, index) => {
-        console.log(`Puzzle ${index}:`, puzzle);
-        if (puzzle.puzzles) {
-          puzzle.puzzles.forEach((p, i) => {
-            console.log(
-              `  Item ${i}: emoji="${p.emoji}", answer="${p.answer}", answer type=${typeof p.answer}`
-            );
-          });
-        }
-      });
-    }
 
     // Enhanced bulk import schema with date validation
     const enhancedBulkImportSchema = z.object({
@@ -76,9 +56,8 @@ export async function POST(request) {
     try {
       validatedData = enhancedBulkImportSchema.parse(bodyData);
     } catch (validationError) {
-      console.error('Validation error:', validationError);
+      logger.error('Validation error', validationError);
       if (validationError instanceof z.ZodError) {
-        console.error('Zod errors:', validationError.errors);
         return NextResponse.json(
           {
             success: false,
@@ -150,7 +129,7 @@ export async function POST(request) {
           success: true,
         });
       } catch (error) {
-        console.error(`Failed to save puzzle for ${date}:`, error);
+        logger.error(`Failed to save puzzle for ${date}`, error);
         errors.push({
           date,
           theme: puzzle.theme,
@@ -175,7 +154,7 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    console.error('POST /api/admin/bulk-import error:', error);
+    logger.error('POST /api/admin/bulk-import error', error);
 
     const message = sanitizeErrorMessage(error);
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPuzzleForDate } from '@/lib/db';
 import { z } from 'zod';
+import logger from '@/lib/logger';
 
 export async function POST(request) {
   try {
@@ -29,7 +30,7 @@ export async function POST(request) {
           puzzleNumber: puzzle?.puzzleNumber || null
         };
       } catch (error) {
-        console.error(`Error fetching puzzle for ${date}:`, error);
+        logger.error(`Error fetching puzzle for ${date}`, error);
         return {
           date,
           puzzle: null,
@@ -49,8 +50,8 @@ export async function POST(request) {
       }, {})
     });
   } catch (error) {
-    console.error('POST /api/puzzles/batch error:', error);
-    
+    logger.error('POST /api/puzzles/batch error', error);
+
     if (error instanceof z.ZodError) {
       return NextResponse.json(
         { success: false, error: 'Invalid request format', details: error.errors },

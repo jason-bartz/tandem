@@ -1,8 +1,10 @@
 import { kv } from '@vercel/kv';
+import logger from '@/lib/logger';
 
 const AUDIT_LOG_PREFIX = 'audit:';
 const FAILED_LOGIN_PREFIX = 'failed_login:';
 const LOG_RETENTION_DAYS = 90;
+const SILENT_MODE = process.env.NODE_ENV === 'production'; // Silent in production, verbose in development
 
 /**
  * Log a failed login attempt
@@ -25,18 +27,20 @@ export async function logFailedLogin(clientId, username, reason) {
       ex: LOG_RETENTION_DAYS * 24 * 60 * 60, // Convert days to seconds
     });
 
-    // Also log to console for immediate visibility
-    console.warn('[SECURITY] Failed login attempt:', {
-      clientId,
-      username: logEntry.username,
-      reason,
-      timestamp,
-    });
+    // Log to console only in development (audit trail is in KV)
+    if (!SILENT_MODE) {
+      logger.warn('Failed login attempt', {
+        clientId,
+        username: logEntry.username,
+        reason,
+        timestamp,
+      });
+    }
 
     return true;
   } catch (error) {
     // Don't let logging failures break the auth flow
-    console.error('[AUDIT] Failed to log failed login:', error);
+    logger.error('Failed to log failed login', error);
     return false;
   }
 }
@@ -60,15 +64,18 @@ export async function logSuccessfulLogin(clientId, username) {
       ex: LOG_RETENTION_DAYS * 24 * 60 * 60,
     });
 
-    console.info('[SECURITY] Successful login:', {
-      clientId,
-      username,
-      timestamp,
-    });
+    // Log to console only in development (audit trail is in KV)
+    if (!SILENT_MODE) {
+      logger.info('Successful login', {
+        clientId,
+        username,
+        timestamp,
+      });
+    }
 
     return true;
   } catch (error) {
-    console.error('[AUDIT] Failed to log successful login:', error);
+    logger.error('Failed to log successful login', error);
     return false;
   }
 }
@@ -92,15 +99,18 @@ export async function logAdminAction(username, action, details = {}) {
       ex: LOG_RETENTION_DAYS * 24 * 60 * 60,
     });
 
-    console.info('[ADMIN] Action logged:', {
-      username,
-      action,
-      timestamp,
-    });
+    // Log to console only in development (audit trail is in KV)
+    if (!SILENT_MODE) {
+      logger.info('Admin action logged', {
+        username,
+        action,
+        timestamp,
+      });
+    }
 
     return true;
   } catch (error) {
-    console.error('[AUDIT] Failed to log admin action:', error);
+    logger.error('Failed to log admin action', error);
     return false;
   }
 }
@@ -131,7 +141,7 @@ export async function getFailedLoginAttempts(clientId, hours = 24) {
       new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
   } catch (error) {
-    console.error('[AUDIT] Failed to retrieve failed login attempts:', error);
+    logger.error('Failed to retrieve failed login attempts', error);
     return [];
   }
 }
@@ -168,7 +178,7 @@ export async function getAuditLogs(type = 'all', limit = 100) {
 
     return logs;
   } catch (error) {
-    console.error('[AUDIT] Failed to retrieve audit logs:', error);
+    logger.error('Failed to retrieve audit logs', error);
     return [];
   }
 }

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import logger from '@/lib/logger';
 
 // Constants for validation
 const MAX_STRING_LENGTH = 1000;
@@ -203,7 +204,7 @@ export function sanitizeErrorMessage(error) {
   // Don't expose internal error details in production
   if (process.env.NODE_ENV === 'production') {
     // Log the actual error server-side
-    console.error('Sanitized error:', error);
+    logger.error('Sanitized error', error);
 
     // Return generic messages based on error type
     if (error.message.includes('Validation error')) {
@@ -258,7 +259,7 @@ export function validateEnvironmentVariables() {
     }
 
     if (process.env.ADMIN_USERNAME === 'admin') {
-      console.warn('Warning: Using default admin username in production is not recommended');
+      logger.warn('Using default admin username in production is not recommended');
     }
   }
 }

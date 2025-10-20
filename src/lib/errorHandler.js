@@ -229,19 +229,6 @@ class ErrorHandler {
     return this.handleError(error, 'NETWORK_ERROR', metadata);
   }
 
-  /**
-   * Clear error logs
-   */
-  clearErrorLogs() {
-    logger.clearErrorLogs();
-  }
-
-  /**
-   * Get error logs
-   */
-  getErrorLogs() {
-    return logger.getErrorLogs();
-  }
 }
 
 // Create singleton instance

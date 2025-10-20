@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 // API version information
 const VERSION_INFO = {
@@ -28,7 +29,7 @@ export async function GET() {
       }
     });
   } catch (error) {
-    console.error('Version check error:', error);
+    logger.error('Version check failed', error);
     return NextResponse.json(
       { error: 'Failed to get version info' },
       { status: 500 }

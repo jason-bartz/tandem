@@ -16,6 +16,7 @@ import {
 } from '@/lib/security/rateLimiter';
 import { generateCSRFToken } from '@/lib/security/csrf';
 import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
+import logger from '@/lib/logger';
 
 export async function POST(request) {
   try {
@@ -103,24 +104,24 @@ export async function POST(request) {
       user: { username, role: 'admin' },
     });
   } catch (error) {
-    console.error('POST /api/admin/auth error:', error);
-    
+    logger.error('Admin authentication failed', error);
+
     const message = sanitizeErrorMessage(error);
-    
+
     if (error.message.includes('Validation error')) {
       return NextResponse.json(
         { success: false, error: message },
         { status: 400 }
       );
     }
-    
+
     if (error.message.includes('environment variables')) {
       return NextResponse.json(
         { success: false, error: 'Server configuration error' },
         { status: 500 }
       );
     }
-    
+
     return NextResponse.json(
       { success: false, error: message },
       { status: 500 }
@@ -163,8 +164,7 @@ export async function GET(request) {
       );
     }
   } catch (error) {
-    console.error('GET /api/admin/auth error:', error);
-    
+    logger.error('Token verification failed', error);
     return NextResponse.json(
       { success: false, error: 'Token verification failed' },
       { status: 500 }

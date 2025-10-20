@@ -4,18 +4,15 @@
  */
 
 import { loadStats, saveStats, getGameHistory } from './storage';
+import logger from '@/lib/logger';
 
 export async function recoverStreak() {
   try {
-    console.log('[StreakFix] Starting streak recovery process...');
-
     // Load current stats
     const currentStats = await loadStats();
-    console.log('[StreakFix] Current stats:', currentStats);
 
     // If streak is already set, don't override
     if (currentStats.currentStreak > 0) {
-      console.log('[StreakFix] Streak is already active, no recovery needed');
       return currentStats;
     }
 
@@ -24,7 +21,6 @@ export async function recoverStreak() {
     const dates = Object.keys(history).sort().reverse(); // Most recent first
 
     if (dates.length === 0) {
-      console.log('[StreakFix] No game history found');
       return currentStats;
     }
 
@@ -47,10 +43,7 @@ export async function recoverStreak() {
       }
     }
 
-    console.log('[StreakFix] Calculated streak from history:', calculatedStreak);
-
     if (calculatedStreak > 0 && calculatedStreak !== currentStats.currentStreak) {
-      console.log('[StreakFix] Recovering streak:', calculatedStreak);
       currentStats.currentStreak = calculatedStreak;
       currentStats.lastStreakUpdate = Date.now();
 
@@ -60,12 +53,11 @@ export async function recoverStreak() {
       }
 
       await saveStats(currentStats);
-      console.log('[StreakFix] Streak recovered successfully');
     }
 
     return currentStats;
   } catch (error) {
-    console.error('[StreakFix] Error recovering streak:', error);
+    logger.error('Error recovering streak', error);
     throw error;
   }
 }
@@ -93,10 +85,9 @@ export async function debugStreakStatus() {
         })),
     };
 
-    console.log('[StreakDebug] Current streak status:', debugInfo);
     return debugInfo;
   } catch (error) {
-    console.error('[StreakDebug] Error getting debug info:', error);
+    logger.error('Error getting debug info', error);
     throw error;
   }
 }
