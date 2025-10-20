@@ -109,6 +109,14 @@ export default function PuzzleCalendar({
     return puzzles[date];
   };
 
+  const hasAllHints = (puzzle) => {
+    if (!puzzle || !puzzle.puzzles || puzzle.puzzles.length === 0) {
+      return false;
+    }
+    // Check if all puzzles have non-empty hints
+    return puzzle.puzzles.every((p) => p.hint && p.hint.trim().length > 0);
+  };
+
   const isToday = (day) => {
     if (!day) {
       return false;
@@ -258,7 +266,7 @@ export default function PuzzleCalendar({
                 <div
                   key={index}
                   className={`
-                    min-h-[80px] sm:min-h-[100px] md:h-32 p-1.5 sm:p-2 rounded border sm:rounded-lg overflow-hidden
+                    relative min-h-[80px] sm:min-h-[100px] md:h-32 p-1.5 sm:p-2 rounded border sm:rounded-lg overflow-hidden
                     ${day ? 'cursor-pointer hover:border-plum' : ''}
                     ${isToday(day) ? 'border-plum bg-plum/5' : 'border-gray-200 dark:border-gray-700'}
                     ${puzzle ? 'bg-green-50 dark:bg-green-900/20' : ''}
@@ -303,13 +311,21 @@ export default function PuzzleCalendar({
                         </div>
                       )}
                       {puzzle && (
-                        <div className="mt-0.5 sm:mt-1">
+                        <div className="mt-0.5 sm:mt-1 flex-1">
                           <div className="text-[9px] sm:text-[11px] text-gray-600 dark:text-gray-400 leading-tight break-words">
                             {puzzle.theme}
                           </div>
                           <div className="text-xs sm:text-sm mt-0.5 sm:mt-1">
                             {puzzle.puzzles[0].emoji}
                           </div>
+                        </div>
+                      )}
+                      {puzzle && hasAllHints(puzzle) && (
+                        <div
+                          className="absolute bottom-1 left-1 text-[10px] sm:text-xs"
+                          title="All hints filled"
+                        >
+                          💡
                         </div>
                       )}
                     </>
