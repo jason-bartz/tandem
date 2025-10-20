@@ -158,6 +158,7 @@ export default function GameContainer() {
               isAuto={isAuto}
               currentState={currentState}
               hintsUsed={game.hintsUsed || 0}
+              hintedAnswers={game.hintedAnswers || []}
               onSelectPuzzle={handleSelectPuzzle}
               onReturnToWelcome={game.resetGame}
             />

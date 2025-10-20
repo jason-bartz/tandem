@@ -32,7 +32,7 @@ export default function CompleteScreen({
   _isAuto,
   _currentState,
   hintsUsed,
-  activeHints = [],
+  hintedAnswers = [],
   onSelectPuzzle,
   onReturnToWelcome,
   isHardMode = false,
@@ -53,15 +53,9 @@ export default function CompleteScreen({
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
 
   // Generate share text - map hint positions correctly
-  // activeHints is now a boolean array indicating which positions had hints
-  const hintPositions = [];
-  if (activeHints && activeHints.length > 0) {
-    activeHints.forEach((hadHint, index) => {
-      if (hadHint) {
-        hintPositions.push(index);
-      }
-    });
-  }
+  // hintedAnswers is an array of puzzle indices that received hints (e.g., [0, 2])
+  // We pass this directly to generateShareText which expects an array of indices
+  const hintPositions = hintedAnswers || [];
 
   const shareText = generateShareText(
     puzzleDate,

@@ -85,7 +85,10 @@ export function useGame() {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
-        setActiveHints([null, null, null, null]);
+        setHintsUsed(0);
+        setHintedAnswers([]);
+        setUnlockedHints(1);
+        setActiveHintIndex(null);
         return true;
       } else if (response) {
         setPuzzle({ ...response, date: response.date || puzzleDate }); // Add date to puzzle
@@ -95,7 +98,10 @@ export function useGame() {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
-        setActiveHints([null, null, null, null]);
+        setHintsUsed(0);
+        setHintedAnswers([]);
+        setUnlockedHints(1);
+        setActiveHintIndex(null);
         return true;
       } else {
         setError('No puzzle available');
@@ -123,7 +129,9 @@ export function useGame() {
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
-    setActiveHints([null, null, null, null]);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
 
     // Save initial progress to mark as attempted
     if (currentPuzzleDate) {
@@ -428,7 +436,6 @@ export function useGame() {
     setHintedAnswers([]);
     setUnlockedHints(1);
     setActiveHintIndex(null);
-    setLockedLetters([null, null, null, null]);
   }, []);
 
   const useHint = useCallback(
