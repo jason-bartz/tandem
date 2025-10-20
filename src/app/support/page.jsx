@@ -89,6 +89,63 @@ export default function Support() {
       ),
     },
     {
+      id: 'difficulty-ratings',
+      title: 'Understanding Difficulty Ratings',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">What are Difficulty Ratings?</h4>
+            <p className="text-sm mb-3">
+              Each puzzle has a difficulty rating to help you know what to expect. Ratings appear
+              after you complete a puzzle and are included in your share text.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Difficulty Scale</h4>
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+                <p className="font-semibold mb-1">⭐ Easy</p>
+                <p>
+                  Straightforward connections with common vocabulary and clear emojis. Most players
+                  solve these quickly.
+                </p>
+              </div>
+              <div className="p-3 bg-lime-50 dark:bg-lime-900/20 rounded-lg">
+                <p className="font-semibold mb-1">⭐ Medium-Easy</p>
+                <p>Some thinking required, but vocabulary and connections are mostly familiar.</p>
+              </div>
+              <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+                <p className="font-semibold mb-1">⭐ Medium</p>
+                <p>
+                  Balanced challenge requiring creative thinking. Connections may not be immediately
+                  obvious.
+                </p>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+                <p className="font-semibold mb-1">⭐ Medium-Hard</p>
+                <p>Clever connections with wordplay. Requires lateral thinking and persistence.</p>
+              </div>
+              <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+                <p className="font-semibold mb-1">⭐ Hard</p>
+                <p>
+                  Abstract themes, challenging vocabulary, or obscure connections. These puzzles
+                  test your creativity and knowledge.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How Ratings are Determined</h4>
+            <p className="text-sm">
+              Difficulty ratings are assessed based on multiple factors including theme complexity,
+              vocabulary level, emoji clarity, and hint directness. Ratings help you track your
+              progress and challenge yourself with puzzles that match your skill level.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: 'platforms',
       title: 'Available Platforms',
       content: (

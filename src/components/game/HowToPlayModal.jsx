@@ -151,6 +151,38 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           </div>
 
           <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              Difficulty Ratings ⭐
+            </h3>
+            <p className="text-sm mb-3">
+              Each puzzle has a difficulty rating to help you know what to expect. Ratings appear
+              after you complete a puzzle.
+            </p>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[100px]">Easy:</span>
+                <span>Straightforward connections, common vocabulary, clear emojis</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[100px]">Medium-Easy:</span>
+                <span>Some thinking required, mostly familiar words</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[100px]">Medium:</span>
+                <span>Balanced challenge, requires creative thinking</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[100px]">Medium-Hard:</span>
+                <span>Clever connections, wordplay involved</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[100px]">Hard:</span>
+                <span>Abstract themes, challenging vocabulary, obscure connections</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
             <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Streaks 🔥</h3>
             <p className="text-sm">
               Complete the daily puzzle on your first try and play consecutive days to build your

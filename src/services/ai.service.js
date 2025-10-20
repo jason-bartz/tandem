@@ -623,6 +623,232 @@ Generate creative, clever hints for each answer above.`;
   }
 
   /**
+   * Assess the difficulty of a puzzle
+   * @param {Object} puzzle - The puzzle to assess {theme, puzzles: [{emoji, answer, hint}]}
+   * @returns {Promise<{rating: string, factors: Object}>}
+   */
+  async assessDifficulty({ theme, puzzles }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // Retry logic for production reliability
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildDifficultyPrompt({ theme, puzzles });
+        const assessInfo = {
+          theme,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+        console.log('[ai.service] Assessing puzzle difficulty with AI:', assessInfo);
+        logger.info('Assessing puzzle difficulty with AI', assessInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 512,
+          temperature: 0.3, // Lower temperature for consistent analysis
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        const responseInfo = {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        };
+        console.log('[ai.service] AI difficulty assessment received:', responseInfo);
+        logger.info('AI difficulty assessment received', responseInfo);
+
+        const assessment = this.parseDifficultyResponse(responseText);
+
+        // Track successful assessment
+        const successInfo = {
+          theme,
+          rating: assessment.rating,
+          duration,
+        };
+        console.log('[ai.service] ✓ Difficulty assessed successfully:', successInfo);
+        logger.info('Difficulty assessed successfully', successInfo);
+
+        return assessment;
+      } catch (error) {
+        lastError = error;
+
+        // Enhanced error logging
+        logger.error('AI difficulty assessment attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        // Handle rate limiting
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        // Don't retry on authentication errors
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        // Brief delay before retry
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    // All retries failed
+    logger.error('AI difficulty assessment failed after all retries', {
+      attempts: this.maxRetries + 1,
+      error: lastError,
+    });
+    throw new Error(
+      `AI difficulty assessment failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build the prompt for AI difficulty assessment
+   */
+  buildDifficultyPrompt({ theme, puzzles }) {
+    const puzzlesList = puzzles
+      .map((p, i) => `${i + 1}. ${p.emoji} → ${p.answer}${p.hint ? ` (hint: "${p.hint}")` : ''}`)
+      .join('\n');
+
+    return `You are analyzing the difficulty of a word puzzle game.
+
+PUZZLE TO ASSESS:
+
+THEME: "${theme}"
+
+PUZZLES:
+${puzzlesList}
+
+DIFFICULTY ASSESSMENT CRITERIA:
+
+1. **Theme Complexity** (1-5 scale):
+   - 1: Direct, concrete categories (e.g., "Kitchen Appliances", "Dog Breeds")
+   - 2: Slightly abstract but clear (e.g., "Things That Charge", "Red Things")
+   - 3: Requires lateral thinking (e.g., "Words Before 'Stick'", "Forms of Capital")
+   - 4: Abstract connections (e.g., "Things That Can Be Broken", "Famous Pairs")
+   - 5: Highly conceptual or obscure (e.g., "Palindromes", "Homophones of Greek Letters")
+
+2. **Vocabulary Level** (1-5 scale):
+   - 1: Common everyday words everyone knows (e.g., SUN, CAR, HOUSE)
+   - 2: Familiar words used regularly (e.g., PEPPER, COFFEE, DESERT)
+   - 3: Standard vocabulary, some thought required (e.g., MONOPOLY, CAVALRY, VENTURE)
+   - 4: Less common but recognizable words (e.g., LEGATO, FORTNIGHT, ARCHIPELAGO)
+   - 5: Specialized or uncommon vocabulary (e.g., RITORNELLO, PENULTIMATE, ESCUTCHEON)
+
+3. **Emoji Clarity** (1-5 scale):
+   - 1: Emojis directly represent the answer (e.g., ☀️🔥 = SUN)
+   - 2: Visual representation with one step (e.g., 🏠💰 = MONOPOLY)
+   - 3: Requires combining concepts (e.g., 🔋⚡ = BATTERY, ⚖️💀 = CAPITAL)
+   - 4: Abstract or indirect representation (e.g., 🏛️🇩🇪 = CAPITAL as in city)
+   - 5: Very abstract or multiple logical leaps needed
+
+4. **Hint Directness** (1-5 scale, if hints provided):
+   - 1: Explicit definition (e.g., "60 minutes" for HOUR)
+   - 2: Clear contextual clue (e.g., "Kitchen cooking surface" for STOVE)
+   - 3: Requires interpretation (e.g., "Cool place for leftovers" for FRIDGE)
+   - 4: Wordplay or cultural reference (e.g., "FINISH HIM!" for FIGHTING)
+   - 5: Very indirect or cryptic crossword-style clue
+
+OVERALL DIFFICULTY SCALE:
+- **Easy**: Most players will solve quickly, clear connections (avg 1.5-2.5 across factors)
+- **Medium-Easy**: Some thinking required, accessible vocabulary (avg 2.5-3.0)
+- **Medium**: Balanced challenge, creative thinking needed (avg 3.0-3.5)
+- **Medium-Hard**: Clever connections, less obvious (avg 3.5-4.0)
+- **Hard**: Challenging vocabulary or abstract themes (avg 4.0-5.0)
+
+RESPONSE FORMAT (JSON only, no explanation):
+{
+  "rating": "Easy|Medium-Easy|Medium|Medium-Hard|Hard",
+  "factors": {
+    "themeComplexity": number (1-5),
+    "vocabularyLevel": number (1-5),
+    "emojiClarity": number (1-5),
+    "hintDirectness": number (1-5, or null if no hints)
+  },
+  "reasoning": "Brief 1-2 sentence explanation of the rating"
+}
+
+Analyze the puzzle above and provide your assessment.`;
+  }
+
+  /**
+   * Parse AI difficulty assessment response
+   */
+  parseDifficultyResponse(responseText) {
+    try {
+      // Try to extract JSON from the response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const assessment = JSON.parse(jsonMatch[0]);
+
+      // Validate response
+      const validRatings = ['Easy', 'Medium-Easy', 'Medium', 'Medium-Hard', 'Hard'];
+      if (!validRatings.includes(assessment.rating)) {
+        throw new Error(`Invalid rating: ${assessment.rating}`);
+      }
+
+      if (!assessment.factors || typeof assessment.factors !== 'object') {
+        throw new Error('Missing or invalid factors');
+      }
+
+      return {
+        rating: assessment.rating,
+        factors: assessment.factors,
+        reasoning: assessment.reasoning || '',
+      };
+    } catch (error) {
+      logger.error('Failed to parse AI difficulty assessment response', { error, responseText });
+      throw new Error('Failed to parse AI difficulty assessment. Please try again.');
+    }
+  }
+
+  /**
    * Check if AI generation is available
    */
   isEnabled() {

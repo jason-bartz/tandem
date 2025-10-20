@@ -161,6 +161,7 @@ export default function GameContainer() {
               hintedAnswers={game.hintedAnswers || []}
               onSelectPuzzle={handleSelectPuzzle}
               onReturnToWelcome={game.resetGame}
+              difficultyRating={game.puzzle?.difficultyRating}
             />
           )}
         </div>
