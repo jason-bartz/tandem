@@ -176,9 +176,19 @@ export function isValidPuzzle(puzzle) {
     return false;
   }
 
-  return puzzle.puzzles.every(
-    (p) => p.emoji && typeof p.emoji === 'string' && p.answer && typeof p.answer === 'string'
-  );
+  return puzzle.puzzles.every((p) => {
+    // Required fields
+    if (!p.emoji || typeof p.emoji !== 'string') return false;
+    if (!p.answer || typeof p.answer !== 'string') return false;
+
+    // Optional hint field - if present, must be string and <= 60 chars
+    if (p.hint !== undefined) {
+      if (typeof p.hint !== 'string') return false;
+      if (p.hint.length > 60) return false;
+    }
+
+    return true;
+  });
 }
 
 export function sanitizeInput(input) {
