@@ -23,6 +23,7 @@ export function useGameLogic(
   setters
 ) {
   const {
+    setAnswers,
     setCorrectAnswers,
     setCheckedWrongAnswers,
     setMistakes,
@@ -110,19 +111,44 @@ export function useGameLogic(
         const userAnswerLower = userAnswer.toLowerCase();
         const lockedPositions = {};
 
-        // Compare character by character
+        // Compare character by character to find letters in correct positions
         for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
           if (userAnswerLower[i] === correctAnswer[i]) {
             lockedPositions[i] = userAnswerLower[i];
           }
         }
 
-        // Update locked letters if we found any matches
+        // Build new answer with only locked letters (spaces for unlocked positions)
+        // and update the answers state
         if (Object.keys(lockedPositions).length > 0) {
+          let newAnswer = '';
+          for (let i = 0; i < correctAnswer.length; i++) {
+            if (lockedPositions[i]) {
+              newAnswer += lockedPositions[i];
+            } else {
+              newAnswer += ' ';
+            }
+          }
+
+          // Update locked letters state
           setLockedLetters((prev) => {
             const newLocked = [...prev];
             newLocked[index] = lockedPositions;
             return newLocked;
+          });
+
+          // Update answer to show only locked letters
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            newAnswers[index] = newAnswer;
+            return newAnswers;
+          });
+        } else {
+          // No matching letters, clear the input
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            newAnswers[index] = '';
+            return newAnswers;
           });
         }
 
@@ -176,8 +202,8 @@ export function useGameLogic(
       let newSolved = 0;
       const newCorrectAnswers = [...correctAnswers];
       const newCheckedWrongAnswers = [...checkedWrongAnswers];
-
       const newLockedLetters = [...Array(4)].map(() => null);
+      const newAnswers = [...answers];
 
       puzzle.puzzles.forEach((p, i) => {
         if (correctAnswers[i]) {
@@ -206,9 +232,21 @@ export function useGameLogic(
               }
             }
 
-            // Store locked letters if we found any matches
+            // Build new answer with only locked letters
             if (Object.keys(lockedPositions).length > 0) {
+              let lockedAnswer = '';
+              for (let j = 0; j < correctAnswer.length; j++) {
+                if (lockedPositions[j]) {
+                  lockedAnswer += lockedPositions[j];
+                } else {
+                  lockedAnswer += ' ';
+                }
+              }
               newLockedLetters[i] = lockedPositions;
+              newAnswers[i] = lockedAnswer;
+            } else {
+              // No matching letters, clear the input
+              newAnswers[i] = '';
             }
 
             if (!checkedWrongAnswers[i]) {
@@ -219,7 +257,8 @@ export function useGameLogic(
         }
       });
 
-      // Update locked letters state
+      // Update answers and locked letters state
+      setAnswers(newAnswers);
       setLockedLetters(newLockedLetters);
 
       setCorrectAnswers(newCorrectAnswers);

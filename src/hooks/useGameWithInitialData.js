@@ -376,22 +376,40 @@ export function useGameWithInitialData(initialPuzzleData) {
         const userAnswerLower = userAnswer.toLowerCase();
         const lockedPositions = {};
 
-        // Compare character by character
+        // Compare character by character to find letters in correct positions
         for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
           if (userAnswerLower[i] === correctAnswer[i]) {
             lockedPositions[i] = userAnswerLower[i];
           }
         }
 
-        // Update locked letters if we found any matches
+        // Build new answer with only locked letters (spaces for unlocked positions)
+        let newAnswer = '';
         if (Object.keys(lockedPositions).length > 0) {
+          // Create answer with locked letters in their positions and spaces elsewhere
+          for (let i = 0; i < correctAnswer.length; i++) {
+            if (lockedPositions[i]) {
+              newAnswer += lockedPositions[i];
+            } else {
+              newAnswer += ' ';
+            }
+          }
+
+          // Update locked letters state
           setLockedLetters((prev) => {
             const newLocked = [...prev];
             newLocked[index] = lockedPositions;
             return newLocked;
           });
+
+          // Update answer to show only locked letters
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            newAnswers[index] = newAnswer;
+            return newAnswers;
+          });
         } else {
-          // No matching letters, clear the input
+          // No matching letters, clear the input completely
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[index] = '';
@@ -446,6 +464,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     const newCorrectAnswers = [...correctAnswers];
     const newCheckedWrong = [...checkedWrongAnswers];
     const newLockedLetters = [...lockedLetters];
+    const newAnswers = [...answers];
 
     setHasCheckedAnswers(true);
 
@@ -475,14 +494,27 @@ export function useGameWithInitialData(initialPuzzleData) {
             }
           }
 
-          // Store locked letters if we found any matches
+          // Build new answer with only locked letters
           if (Object.keys(lockedPositions).length > 0) {
+            let lockedAnswer = '';
+            for (let i = 0; i < correctAnswer.length; i++) {
+              if (lockedPositions[i]) {
+                lockedAnswer += lockedPositions[i];
+              } else {
+                lockedAnswer += ' ';
+              }
+            }
             newLockedLetters[index] = lockedPositions;
+            newAnswers[index] = lockedAnswer;
+          } else {
+            // No matching letters, clear the input
+            newAnswers[index] = '';
           }
         }
       }
     });
 
+    setAnswers(newAnswers);
     setLockedLetters(newLockedLetters);
     setCorrectAnswers(newCorrectAnswers);
     setCheckedWrongAnswers(newCheckedWrong);
