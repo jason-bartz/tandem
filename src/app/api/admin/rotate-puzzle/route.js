@@ -25,7 +25,7 @@ export async function GET() {
       currentPuzzleNumber: currentPuzzleNumber,
       schedulerRunning: schedulerStatus,
       serverTime: new Date().toISOString(),
-      message: 'Puzzles change at user\'s local midnight (client-side)',
+      message: "Puzzles change at user's local midnight (client-side)",
     });
   } catch (error) {
     logger.error('GET /api/admin/rotate-puzzle error', error);

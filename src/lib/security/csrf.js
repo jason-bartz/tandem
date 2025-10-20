@@ -90,7 +90,7 @@ export async function requireCSRF(request) {
     return new Response(
       JSON.stringify({
         error: 'CSRF validation failed',
-        message: 'Invalid or missing CSRF token'
+        message: 'Invalid or missing CSRF token',
       }),
       {
         status: 403,

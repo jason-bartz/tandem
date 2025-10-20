@@ -1,10 +1,5 @@
 import { NextResponse } from 'next/server';
-import {
-  getStats,
-  getPopularPuzzles,
-  getDailyActivity,
-  getPuzzleStats
-} from '@/lib/db';
+import { getStats, getPopularPuzzles, getDailyActivity, getPuzzleStats } from '@/lib/db';
 import logger from '@/lib/logger';
 
 export async function GET(request) {
@@ -27,8 +22,8 @@ export async function GET(request) {
           averageMistakes: 0,
           perfectGames: 0,
           hintsUsed: 0,
-          shared: 0
-        }
+          shared: 0,
+        },
       });
     }
 
@@ -37,7 +32,7 @@ export async function GET(request) {
       const popular = await getPopularPuzzles();
       return NextResponse.json({
         success: true,
-        puzzles: popular
+        puzzles: popular,
       });
     }
 
@@ -46,7 +41,7 @@ export async function GET(request) {
       const activity = await getDailyActivity(days);
       return NextResponse.json({
         success: true,
-        activity
+        activity,
       });
     }
 
@@ -61,25 +56,18 @@ export async function GET(request) {
         played: stats.played || 0,
         completed: stats.completed || 0,
         views: stats.views || 0,
-        completionRate: stats.played > 0
-          ? Math.round((stats.completed / stats.played) * 100)
-          : 0,
+        completionRate: stats.played > 0 ? Math.round((stats.completed / stats.played) * 100) : 0,
         uniquePlayers: stats.uniquePlayers || 0,
-        averageTime: stats.played > 0
-          ? Math.round((stats.totalTime || 0) / stats.played)
-          : 0,
+        averageTime: stats.played > 0 ? Math.round((stats.totalTime || 0) / stats.played) : 0,
         perfectGames: stats.perfectGames || 0,
         hintsUsed: stats.hintsUsed || 0,
-        gamesShared: stats.gamesShared || 0
+        gamesShared: stats.gamesShared || 0,
       },
       popularPuzzles,
-      dailyActivity
+      dailyActivity,
     });
   } catch (error) {
     logger.error('Failed to fetch stats', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch stats' },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: 'Failed to fetch stats' }, { status: 500 });
   }
 }

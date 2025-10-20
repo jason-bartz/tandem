@@ -19,7 +19,11 @@ class AdminService {
       const data = await response.json();
 
       if (!response.ok) {
-        logger.error('Save puzzle failed', { status: response.status, statusText: response.statusText, data });
+        logger.error('Save puzzle failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
         return { success: false, error: data.error || `Server error: ${response.status}` };
       }
 
@@ -89,7 +93,11 @@ class AdminService {
       const data = await response.json();
 
       if (!response.ok) {
-        logger.error('Bulk import failed', { status: response.status, statusText: response.statusText, data });
+        logger.error('Bulk import failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
         return { success: false, error: data.error || `Server error: ${response.status}` };
       }
 
@@ -123,7 +131,7 @@ class AdminService {
         logger.error('Generate puzzle failed', {
           status: response.status,
           statusText: response.statusText,
-          error: data.error
+          error: data.error,
         });
         return {
           success: false,

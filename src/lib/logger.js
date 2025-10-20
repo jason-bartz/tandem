@@ -16,7 +16,7 @@ const LogLevel = {
   INFO: 1,
   WARN: 2,
   ERROR: 3,
-  NONE: 4
+  NONE: 4,
 };
 
 // Patterns to sanitize from logs
@@ -95,7 +95,7 @@ class Logger {
     const stringified = typeof data === 'string' ? data : JSON.stringify(data);
     let sanitized = stringified;
 
-    SENSITIVE_PATTERNS.forEach(pattern => {
+    SENSITIVE_PATTERNS.forEach((pattern) => {
       sanitized = sanitized.replace(pattern, (match, group1) => {
         return match.replace(group1, '***REDACTED***');
       });
@@ -117,7 +117,7 @@ class Logger {
    */
   formatMessage(level, message, ...args) {
     const timestamp = new Date().toISOString();
-    const levelName = Object.keys(LogLevel).find(key => LogLevel[key] === level);
+    const levelName = Object.keys(LogLevel).find((key) => LogLevel[key] === level);
 
     const formatted = {
       timestamp,
@@ -167,7 +167,11 @@ class Logger {
     if (this.shouldLog(LogLevel.DEBUG)) {
       const formatted = this.formatMessage(LogLevel.DEBUG, message, ...args);
       if (this.isDevelopment) {
-        console.debug(this.formatForConsole(formatted), formatted.message, ...(formatted.data || []));
+        console.debug(
+          this.formatForConsole(formatted),
+          formatted.message,
+          ...(formatted.data || [])
+        );
       }
     }
   }
@@ -181,7 +185,11 @@ class Logger {
     if (this.shouldLog(LogLevel.INFO)) {
       const formatted = this.formatMessage(LogLevel.INFO, message, ...args);
       if (this.isDevelopment) {
-        console.info(this.formatForConsole(formatted), formatted.message, ...(formatted.data || []));
+        console.info(
+          this.formatForConsole(formatted),
+          formatted.message,
+          ...(formatted.data || [])
+        );
       }
     }
   }
@@ -192,7 +200,11 @@ class Logger {
 
       // Always output warnings (but sanitized)
       if (this.isDevelopment) {
-        console.warn(this.formatForConsole(formatted), formatted.message, ...(formatted.data || []));
+        console.warn(
+          this.formatForConsole(formatted),
+          formatted.message,
+          ...(formatted.data || [])
+        );
       } else {
         // Production: structured JSON to stderr
         console.error(this.formatForConsole(formatted));
@@ -209,13 +221,18 @@ class Logger {
           message: error.message,
           stack: this.isDevelopment ? error.stack : error.stack?.split('\n')[0], // Only first line in prod
           name: error.name,
-          code: error.code
+          code: error.code,
         };
       }
 
       // Always output errors
       if (this.isDevelopment) {
-        console.error(this.formatForConsole(formatted), formatted.message, error, ...(formatted.data || []));
+        console.error(
+          this.formatForConsole(formatted),
+          formatted.message,
+          error,
+          ...(formatted.data || [])
+        );
       } else {
         // Production: structured JSON to stderr
         console.error(this.formatForConsole(formatted));

@@ -127,7 +127,7 @@ export async function getFailedLoginAttempts(clientId, hours = 24) {
       return [];
     }
 
-    const cutoffTime = Date.now() - (hours * 60 * 60 * 1000);
+    const cutoffTime = Date.now() - hours * 60 * 60 * 1000;
     const attempts = [];
 
     for (const key of keys) {
@@ -137,8 +137,8 @@ export async function getFailedLoginAttempts(clientId, hours = 24) {
       }
     }
 
-    return attempts.sort((a, b) =>
-      new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+    return attempts.sort(
+      (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
     );
   } catch (error) {
     logger.error('Failed to retrieve failed login attempts', error);

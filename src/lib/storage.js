@@ -45,7 +45,6 @@ function getYesterdayDateString(todayString) {
 
 async function recoverStreakFromHistory(lastPlayedDate) {
   try {
-
     // Get all storage keys to check for daily puzzle completions
     const isNative = Capacitor.isNativePlatform();
     let keys = [];
@@ -144,7 +143,6 @@ export async function loadStats() {
       const cloudStats = await cloudKitService.fetchStats();
 
       if (cloudStats) {
-
         // Merge CloudKit stats with local stats
         // Take the maximum values to ensure we don't lose progress
         const mergedStats = {
@@ -152,7 +150,7 @@ export async function loadStats() {
           wins: Math.max(parsedStats.wins || 0, cloudStats.wins || 0),
           bestStreak: Math.max(parsedStats.bestStreak || 0, cloudStats.bestStreak || 0),
           currentStreak: 0, // Will be determined below
-          lastStreakDate: null // Will be determined below
+          lastStreakDate: null, // Will be determined below
         };
 
         // For current streak, use the one with the most recent date

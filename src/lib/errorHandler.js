@@ -15,7 +15,9 @@ class ErrorHandler {
    * Initialize global error handlers
    */
   initialize() {
-    if (this.isInitialized || typeof window === 'undefined') {return;}
+    if (this.isInitialized || typeof window === 'undefined') {
+      return;
+    }
 
     // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
@@ -54,11 +56,11 @@ class ErrorHandler {
       severity,
       timestamp: new Date().toISOString(),
       userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown',
-      url: typeof window !== 'undefined' ? window.location.href : 'Unknown'
+      url: typeof window !== 'undefined' ? window.location.href : 'Unknown',
     };
 
     // Call registered callbacks
-    this.errorCallbacks.forEach(callback => {
+    this.errorCallbacks.forEach((callback) => {
       try {
         callback(errorReport);
       } catch (callbackError) {
@@ -81,7 +83,7 @@ class ErrorHandler {
         name: error.name,
         message: error.message,
         stack: error.stack,
-        code: error.code
+        code: error.code,
       };
     }
 
@@ -89,14 +91,14 @@ class ErrorHandler {
       return {
         name: 'Error',
         message: error,
-        stack: new Error().stack
+        stack: new Error().stack,
       };
     }
 
     return {
       name: 'UnknownError',
       message: JSON.stringify(error),
-      stack: new Error().stack
+      stack: new Error().stack,
     };
   }
 
@@ -123,10 +125,7 @@ class ErrorHandler {
     }
 
     // Medium severity
-    if (
-      context === 'VALIDATION_ERROR' ||
-      context === 'USER_INPUT_ERROR'
-    ) {
+    if (context === 'VALIDATION_ERROR' || context === 'USER_INPUT_ERROR') {
       return 'MEDIUM';
     }
 
@@ -161,12 +160,14 @@ class ErrorHandler {
    */
   notifyUser(message, type = 'error') {
     // Check if we're in a browser environment
-    if (typeof window === 'undefined') {return;}
+    if (typeof window === 'undefined') {
+      return;
+    }
 
     // Could integrate with a toast notification system
     // For now, we'll dispatch a custom event
     const event = new CustomEvent('app-error', {
-      detail: { message, type }
+      detail: { message, type },
     });
     window.dispatchEvent(event);
   }
@@ -184,7 +185,7 @@ class ErrorHandler {
    * Remove error callback
    */
   offError(callback) {
-    this.errorCallbacks = this.errorCallbacks.filter(cb => cb !== callback);
+    this.errorCallbacks = this.errorCallbacks.filter((cb) => cb !== callback);
   }
 
   /**
@@ -195,7 +196,7 @@ class ErrorHandler {
       endpoint,
       method,
       status: error.status || 'Unknown',
-      statusText: error.statusText || 'Unknown'
+      statusText: error.statusText || 'Unknown',
     };
 
     return this.handleError(error, 'API_ERROR', metadata);
@@ -207,14 +208,10 @@ class ErrorHandler {
   handleValidationError(errors, form) {
     const metadata = {
       form,
-      errors: Array.isArray(errors) ? errors : [errors]
+      errors: Array.isArray(errors) ? errors : [errors],
     };
 
-    return this.handleError(
-      new Error('Validation failed'),
-      'VALIDATION_ERROR',
-      metadata
-    );
+    return this.handleError(new Error('Validation failed'), 'VALIDATION_ERROR', metadata);
   }
 
   /**
@@ -223,12 +220,11 @@ class ErrorHandler {
   handleNetworkError(error, url) {
     const metadata = {
       url,
-      online: navigator.onLine
+      online: navigator.onLine,
     };
 
     return this.handleError(error, 'NETWORK_ERROR', metadata);
   }
-
 }
 
 // Create singleton instance
