@@ -54,10 +54,10 @@ Completion: ${winRate}%
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md w-full animate-modal-enter shadow-2xl gpu-accelerated"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto animate-modal-enter shadow-2xl gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex justify-between items-center mb-6">
+        <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-200">Statistics</h2>
           <button
             onClick={onClose}
@@ -72,7 +72,7 @@ Completion: ${winRate}%
           </button>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-6" key={`stats-grid-${animationKey}`}>
+        <div className="grid grid-cols-2 gap-4 mb-4" key={`stats-grid-${animationKey}`}>
           <div
             className={`p-4 rounded-xl text-center ${
               highContrast
@@ -176,7 +176,7 @@ Completion: ${winRate}%
 
         <div
           key={`total-wins-${animationKey}`}
-          className={`p-4 rounded-xl text-center ${
+          className={`p-4 rounded-xl text-center mb-4 ${
             highContrast
               ? 'bg-hc-surface border-2 border-hc-border'
               : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
@@ -200,7 +200,7 @@ Completion: ${winRate}%
           </div>
         </div>
 
-        <div className="mt-6">
+        <div>
           <ShareButton shareText={shareableStatsText} className="w-full" />
         </div>
       </div>
