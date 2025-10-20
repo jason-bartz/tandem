@@ -37,6 +37,7 @@ export default function CompleteScreen({
   onReturnToWelcome,
   isHardMode = false,
   hardModeTimeUp = false,
+  difficultyRating = null,
 }) {
   const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
@@ -75,7 +76,8 @@ export default function CompleteScreen({
     hintPositions,
     won ? 4 : correctAnswers || 0,
     isHardMode,
-    hardModeTimeUp
+    hardModeTimeUp,
+    difficultyRating
   );
 
   useEffect(() => {
@@ -274,6 +276,11 @@ export default function CompleteScreen({
               >
                 {puzzleTheme}
               </p>
+              {difficultyRating && (
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
+                  Difficulty: {difficultyRating}
+                </p>
+              )}
             </div>
           )}
 

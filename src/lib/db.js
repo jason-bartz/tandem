@@ -223,27 +223,30 @@ export function ensureHintStructure(puzzle) {
 
 export async function setPuzzleForDate(date, puzzle) {
   try {
-    // Ensure puzzle structure includes hints if provided
-    const puzzleWithHints = {
+    // Ensure puzzle structure includes hints and difficulty if provided
+    const puzzleWithMetadata = {
       ...puzzle,
       puzzles: puzzle.puzzles.map((p, index) => ({
         ...p,
         // Preserve existing hint if present, or set to empty string
         hint: p.hint || puzzle.hints?.[index] || '',
       })),
+      // Preserve difficulty rating and factors if provided
+      difficultyRating: puzzle.difficultyRating || null,
+      difficultyFactors: puzzle.difficultyFactors || null,
     };
 
     // Remove the separate hints array if it exists (migrated into puzzle objects)
-    delete puzzleWithHints.hints;
+    delete puzzleWithMetadata.hints;
 
     const redis = await getRedisClient();
 
     if (redis) {
-      await redis.set(`puzzle:${date}`, JSON.stringify(puzzleWithHints), {
+      await redis.set(`puzzle:${date}`, JSON.stringify(puzzleWithMetadata), {
         EX: 60 * 60 * 24 * 365,
       });
     } else {
-      inMemoryDB.puzzles[date] = puzzleWithHints;
+      inMemoryDB.puzzles[date] = puzzleWithMetadata;
     }
 
     return true;

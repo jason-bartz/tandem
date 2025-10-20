@@ -84,7 +84,8 @@ export function generateShareText(
   hintPositions = [],
   solved = 0,
   isHardMode = false,
-  hardModeTimeUp = false
+  hardModeTimeUp = false,
+  difficultyRating = null
 ) {
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
@@ -107,6 +108,11 @@ export function generateShareText(
     shareText += `✨ Theme Discovered!\n`;
   } else {
     shareText += `❓ Theme Hidden\n`;
+  }
+
+  // Add difficulty rating if available
+  if (difficultyRating) {
+    shareText += `⭐ Difficulty: ${difficultyRating}\n`;
   }
 
   shareText += `━━━━━━━━━━━━\n`;

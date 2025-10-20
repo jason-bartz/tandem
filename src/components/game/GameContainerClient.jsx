@@ -370,6 +370,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
                 onReturnToWelcome={game.returnToWelcome}
                 isHardMode={game.isHardMode}
                 hardModeTimeUp={game.hardModeTimeUp}
+                difficultyRating={game.puzzle?.difficultyRating}
               />
             </div>
           )}

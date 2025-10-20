@@ -183,6 +183,42 @@ class AdminService {
       return { success: false, error: error.message };
     }
   }
+
+  async assessDifficulty(puzzle) {
+    try {
+      const requestBody = {
+        theme: puzzle.theme,
+        puzzles: puzzle.puzzles,
+      };
+
+      const headers = this.getAuthHeaders(true);
+      const response = await fetch(getApiUrl('/api/admin/assess-difficulty'), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Assess difficulty failed', {
+          status: response.status,
+          statusText: response.statusText,
+          error: data.error,
+        });
+        return {
+          success: false,
+          error: data.error || `Server error: ${response.status}`,
+          status: response.status,
+        };
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.assessDifficulty error', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 export default new AdminService();

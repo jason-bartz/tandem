@@ -19,6 +19,11 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const [loading, setLoading] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [message, setMessage] = useState('');
+  const [assessingDifficulty, setAssessingDifficulty] = useState(false);
+  const [difficultyRating, setDifficultyRating] = useState(initialPuzzle?.difficultyRating || '');
+  const [difficultyFactors, setDifficultyFactors] = useState(
+    initialPuzzle?.difficultyFactors || null
+  );
 
   useEffect(() => {
     if (initialPuzzle) {
@@ -32,6 +37,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           { emoji: '', answer: '', hint: '' },
         ]
       );
+      setDifficultyRating(initialPuzzle.difficultyRating || '');
+      setDifficultyFactors(initialPuzzle.difficultyFactors || null);
       // Clear the message when switching puzzles
       setMessage('');
     }
@@ -63,6 +70,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           answer: p.answer.trim().toUpperCase(),
           hint: p.hint?.trim() || '', // Include hint in save
         })),
+        difficultyRating: difficultyRating || null,
+        difficultyFactors: difficultyFactors || null,
       });
 
       if (result.success) {
@@ -79,6 +88,50 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       logger.error('Save puzzle error', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAssessDifficulty = async () => {
+    if (!validateForm()) {
+      setMessage('⚠️ Please complete the theme and all puzzle pairs before assessing difficulty.');
+      return;
+    }
+
+    setAssessingDifficulty(true);
+    setMessage('🤖 Assessing puzzle difficulty... This may take a few seconds.');
+
+    try {
+      const result = await adminService.assessDifficulty({
+        theme: theme.trim(),
+        puzzles: puzzles.map((p) => ({
+          emoji: p.emoji.trim(),
+          answer: p.answer.trim().toUpperCase(),
+          hint: p.hint?.trim() || '',
+        })),
+      });
+
+      if (result.success) {
+        setDifficultyRating(result.assessment.rating);
+        setDifficultyFactors(result.assessment.factors);
+        const timeMsg = result.context?.generationTime
+          ? ` (${(result.context.generationTime / 1000).toFixed(1)}s)`
+          : '';
+        setMessage(
+          `✨ Difficulty assessed: ${result.assessment.rating}${timeMsg}. ${result.assessment.reasoning || ''} You can override this before saving.`
+        );
+        logger.info('Difficulty assessed successfully', result);
+      } else {
+        const errorMsg = result.error || 'Failed to assess difficulty. Please try again.';
+        setMessage(
+          `❌ ${errorMsg}${errorMsg.includes('rate limit') ? ' Wait a bit and try again.' : ''}`
+        );
+        logger.error('Difficulty assessment failed', result);
+      }
+    } catch (error) {
+      setMessage('❌ Error assessing difficulty. Check your connection and try again.');
+      logger.error('Assess difficulty error', error);
+    } finally {
+      setAssessingDifficulty(false);
     }
   };
 
@@ -316,6 +369,90 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           </div>
         </div>
 
+        <div>
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            Difficulty Assessment
+          </label>
+          <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 space-y-3">
+            <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                  Rating
+                </label>
+                <select
+                  value={difficultyRating}
+                  onChange={(e) => setDifficultyRating(e.target.value)}
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-purple-500 focus:border-purple-500 dark:bg-gray-700 dark:text-white"
+                >
+                  <option value="">Not assessed</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium-Easy">Medium-Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Medium-Hard">Medium-Hard</option>
+                  <option value="Hard">Hard</option>
+                </select>
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={handleAssessDifficulty}
+                  disabled={assessingDifficulty || generating || loading}
+                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-lg hover:shadow-lg transform hover:-translate-y-0.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  title="Assess difficulty using AI"
+                >
+                  {assessingDifficulty ? (
+                    <span className="flex items-center gap-2">
+                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      <span className="hidden sm:inline">Assessing...</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1">
+                      🎯 <span className="hidden sm:inline">Assess Difficulty</span>
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+            {difficultyFactors && (
+              <div className="text-xs text-gray-600 dark:text-gray-400 grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div>
+                  <span className="font-medium">Theme:</span> {difficultyFactors.themeComplexity}/5
+                </div>
+                <div>
+                  <span className="font-medium">Vocab:</span> {difficultyFactors.vocabularyLevel}/5
+                </div>
+                <div>
+                  <span className="font-medium">Emojis:</span> {difficultyFactors.emojiClarity}/5
+                </div>
+                {difficultyFactors.hintDirectness && (
+                  <div>
+                    <span className="font-medium">Hints:</span> {difficultyFactors.hintDirectness}/5
+                  </div>
+                )}
+              </div>
+            )}
+            <p className="text-xs text-gray-600 dark:text-gray-400">
+              AI will assess difficulty based on theme complexity, vocabulary level, emoji clarity,
+              and hint directness. You can override the rating manually before saving.
+            </p>
+          </div>
+        </div>
+
         {message && (
           <div
             className={`p-3 sm:p-4 rounded-lg text-sm sm:text-base ${
@@ -349,6 +486,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                   { emoji: '', answer: '', hint: '' },
                   { emoji: '', answer: '', hint: '' },
                 ]);
+                setDifficultyRating('');
+                setDifficultyFactors(null);
                 setMessage('');
               }}
               className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
