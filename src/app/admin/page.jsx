@@ -106,8 +106,8 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'themes' && (
           <ThemeTracker
-            onEditPuzzle={(date) => {
-              setEditingPuzzle({ date, theme: '', puzzles: [] });
+            onEditPuzzle={(puzzle) => {
+              setEditingPuzzle(puzzle);
               setActiveTab('editor');
             }}
           />
