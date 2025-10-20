@@ -105,7 +105,7 @@ export function generateShareText(
 
   // Add status instead of theme
   if (solved === 4) {
-    shareText += `✨ Theme Discovered!\n`;
+    shareText += `🔍 Theme Discovered!\n`;
   } else {
     shareText += `❓ Theme Hidden\n`;
   }
