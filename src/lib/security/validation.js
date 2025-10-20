@@ -132,7 +132,7 @@ export const puzzleItemSchema = z.object({
     .max(60, 'Hint must be at most 60 characters')
     .optional()
     .default('')
-    .transform((val) => escapeHtml(sanitizeString(val || '', 60))),
+    .transform((val) => sanitizeString(val || '', 60)),
 });
 
 export const puzzleSchema = z.object({
@@ -140,7 +140,7 @@ export const puzzleSchema = z.object({
     .string()
     .min(3, 'Theme must be at least 3 characters')
     .max(MAX_THEME_LENGTH, `Theme must be at most ${MAX_THEME_LENGTH} characters`)
-    .transform((val) => escapeHtml(sanitizeString(val, MAX_THEME_LENGTH))),
+    .transform((val) => sanitizeString(val, MAX_THEME_LENGTH)),
   puzzles: z.array(puzzleItemSchema).length(4, 'Puzzle must have exactly 4 items'),
 });
 
