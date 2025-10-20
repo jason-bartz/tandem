@@ -146,6 +146,43 @@ class AdminService {
       return { success: false, error: error.message };
     }
   }
+
+  async generateHints(date, options = {}) {
+    try {
+      const requestBody = {
+        date,
+        theme: options.theme,
+        puzzles: options.puzzles,
+      };
+
+      const headers = this.getAuthHeaders(true);
+      const response = await fetch(getApiUrl('/api/admin/generate-hints'), {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Generate hints failed', {
+          status: response.status,
+          statusText: response.statusText,
+          error: data.error,
+        });
+        return {
+          success: false,
+          error: data.error || `Server error: ${response.status}`,
+          status: response.status,
+        };
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.generateHints error', error);
+      return { success: false, error: error.message };
+    }
+  }
 }
 
 export default new AdminService();

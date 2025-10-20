@@ -178,6 +178,142 @@ class AIService {
   }
 
   /**
+   * Generate hints for existing puzzle answers
+   * @param {Object} options - Generation options
+   * @param {string} options.theme - The puzzle theme
+   * @param {Array} options.puzzles - Array of {emoji, answer} pairs
+   * @returns {Promise<Array<string>>} - Array of hints
+   */
+  async generateHints({ theme, puzzles }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // Retry logic for production reliability
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildHintsPrompt({ theme, puzzles });
+        const genInfo = {
+          theme,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+        console.log('[ai.service] Generating hints with AI:', genInfo);
+        logger.info('Generating hints with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 512,
+          temperature: 1.0, // Higher temperature for creative variety
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        const responseInfo = {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        };
+        console.log('[ai.service] AI hints response received:', responseInfo);
+        logger.info('AI hints response received', responseInfo);
+
+        const hints = this.parseHintsResponse(responseText, puzzles.length);
+
+        // Track successful generation
+        this.generationCount++;
+        const successInfo = {
+          theme,
+          hintsCount: hints.length,
+          duration,
+          totalGenerations: this.generationCount,
+        };
+        console.log('[ai.service] ✓ Hints generated successfully:', successInfo);
+        logger.info('Hints generated successfully', successInfo);
+
+        return hints;
+      } catch (error) {
+        lastError = error;
+
+        // Enhanced error logging
+        logger.error('AI hints generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        // Handle Anthropic API specific errors (same as generatePuzzle)
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        // Don't retry on authentication errors
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
+          throw error;
+        }
+
+        // Service overloaded - retry with longer backoff
+        if (error.status === 529) {
+          logger.warn('Service overloaded, will retry with longer delay', { attempt: attempt + 1 });
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+            continue;
+          }
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        // Brief delay before retry (exponential backoff)
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    // All retries failed
+    logger.error('AI hints generation failed after all retries', {
+      attempts: this.maxRetries + 1,
+      error: lastError,
+    });
+    throw new Error(
+      `AI hints generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
    * Build the prompt for AI puzzle generation
    */
   buildPrompt({ date, pastPuzzles, excludeThemes, themeHint }) {
@@ -281,16 +417,21 @@ VARIETY REQUIREMENTS:
 ${excludedThemesList}
 
 HINT REQUIREMENTS:
-Each puzzle MUST include a concise hint (3-8 words ideal, max 60 characters):
-- Hints should be crossword-style clues that guide without giving away the answer
+Each puzzle MUST include a concise, crossword-style hint (3-8 words ideal, max 60 characters):
+- CRITICAL: Hints should focus on the ANSWER WORD ITSELF, not its relationship to the theme
+- Only reference the theme if it's essential to understanding what the answer IS (e.g., "Board game" context for MONOPOLY)
+- Avoid revealing the theme connection - if the word stands alone, hint at the word, not the theme pattern
 - Don't use the answer word in the hint
 - Make hints progressively harder (easy hint for easy answer, harder hint for harder answer)
-- Hints should be clever and engaging, like NYT crossword clues
-- Examples of good hints:
-  * STOVE → "Kitchen cooking surface"
-  * FRIDGE → "Cold food storage"
-  * TOASTER → "Bread browning device"
-  * COFFEE → "Morning brew machine"
+- Embrace NYT crossword style: wordplay, puns, cultural references, and clever indirect clues
+- Add personality and character where appropriate
+- Examples of excellent hints:
+  * HOUR → "60 minutes" (simple, direct, doesn't reference "rush hour")
+  * FIGHTING → "FINISH HIM!" (pop culture reference with character)
+  * MONOPOLY → "Park Place and Boardwalk locale" (clever, indirect)
+  * STOVE → "Where things get heated in the kitchen" (wordplay)
+  * FRIDGE → "Cool place for leftovers" (pun on "cool")
+  * TOASTER → "Pop-up breakfast helper" (playful description)
 
 RESPONSE FORMAT (JSON only, no explanation):
 {
@@ -304,6 +445,81 @@ RESPONSE FORMAT (JSON only, no explanation):
 }
 
 Generate a puzzle for ${date}. Be creative and ensure variety!`;
+  }
+
+  /**
+   * Build the prompt for AI hints generation
+   */
+  buildHintsPrompt({ theme, puzzles }) {
+    const puzzlesList = puzzles.map((p, i) => `${i + 1}. ${p.emoji} → ${p.answer}`).join('\n');
+
+    return `You are generating crossword-style hints for an emoji puzzle game.
+
+THEME: "${theme}"
+
+PUZZLE ANSWERS:
+${puzzlesList}
+
+HINT REQUIREMENTS:
+Each hint MUST be concise, crossword-style (3-8 words ideal, max 60 characters):
+- CRITICAL: Hints should focus on the ANSWER WORD ITSELF, not its relationship to the theme
+- Only reference the theme if it's essential to understanding what the answer IS (e.g., "Board game" context for MONOPOLY)
+- Avoid revealing the theme connection - if the word stands alone, hint at the word, not the theme pattern
+- Don't use the answer word in the hint
+- Make hints progressively harder (easy hint for easy answer, harder hint for harder answer)
+- Embrace NYT crossword style: wordplay, puns, cultural references, and clever indirect clues
+- Add personality and character where appropriate
+
+EXAMPLES OF EXCELLENT HINTS:
+- HOUR → "60 minutes" (simple, direct, doesn't reference "rush hour")
+- FIGHTING → "FINISH HIM!" (pop culture reference with character)
+- MONOPOLY → "Park Place and Boardwalk locale" (clever, indirect)
+- STOVE → "Where things get heated in the kitchen" (wordplay)
+- FRIDGE → "Cool place for leftovers" (pun on "cool")
+- TOASTER → "Pop-up breakfast helper" (playful description)
+
+RESPONSE FORMAT (JSON array only, no explanation):
+["hint for puzzle 1", "hint for puzzle 2", "hint for puzzle 3", "hint for puzzle 4"]
+
+Generate creative, clever hints for each answer above.`;
+  }
+
+  /**
+   * Parse AI hints response into array format
+   */
+  parseHintsResponse(responseText, expectedCount) {
+    try {
+      // Try to extract JSON array from the response
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        throw new Error('No JSON array found in response');
+      }
+
+      const hints = JSON.parse(jsonMatch[0]);
+
+      if (!Array.isArray(hints)) {
+        throw new Error('Response is not an array');
+      }
+
+      if (hints.length !== expectedCount) {
+        throw new Error(`Expected ${expectedCount} hints, got ${hints.length}`);
+      }
+
+      // Validate each hint
+      hints.forEach((hint, index) => {
+        if (typeof hint !== 'string' || hint.trim().length === 0) {
+          throw new Error(`Hint ${index + 1} is empty or invalid`);
+        }
+        if (hint.length > 60) {
+          throw new Error(`Hint ${index + 1} is too long (max 60 characters): "${hint}"`);
+        }
+      });
+
+      return hints.map((h) => h.trim());
+    } catch (error) {
+      logger.error('Failed to parse AI hints response', { error, responseText });
+      throw new Error('Failed to parse AI hints response. Please try again.');
+    }
   }
 
   /**
