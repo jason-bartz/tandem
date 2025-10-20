@@ -53,28 +53,14 @@ export async function validateCSRFToken(request) {
   const cookieStore = await cookies();
   const cookieToken = cookieStore.get(CSRF_COOKIE_NAME)?.value;
 
-  console.log('[CSRF] Validating token:', {
-    hasCookieToken: !!cookieToken,
-    cookieTokenPrefix: cookieToken?.substring(0, 10),
-    method: request.method,
-    url: request.url
-  });
-
   if (!cookieToken) {
-    console.error('[CSRF] No cookie token found');
     return false;
   }
 
   // Check for CSRF token in headers
   const headerToken = request.headers.get(CSRF_HEADER_NAME);
-  console.log('[CSRF] Header token check:', {
-    hasHeaderToken: !!headerToken,
-    headerTokenPrefix: headerToken?.substring(0, 10),
-    tokensMatch: headerToken === cookieToken
-  });
 
   if (headerToken && headerToken === cookieToken) {
-    console.log('[CSRF] Token validation successful');
     return true;
   }
 
@@ -84,7 +70,6 @@ export async function validateCSRFToken(request) {
     if (contentType?.includes('application/json')) {
       const body = await request.clone().json();
       if (body.csrfToken === cookieToken) {
-        console.log('[CSRF] Token validation successful (body)');
         return true;
       }
     }
@@ -92,7 +77,6 @@ export async function validateCSRFToken(request) {
     // Body parsing failed, continue to return false
   }
 
-  console.error('[CSRF] Token validation failed');
   return false;
 }
 

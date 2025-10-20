@@ -3,6 +3,7 @@ import { requireAdmin } from '@/lib/auth';
 import { manualClearCache } from '@/lib/scheduler';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+import logger from '@/lib/logger';
 
 /**
  * Admin Cache Management Endpoint
@@ -27,7 +28,7 @@ export async function GET() {
       message: 'Puzzles change at user\'s local midnight (client-side)',
     });
   } catch (error) {
-    console.error('GET /api/admin/rotate-puzzle error:', error);
+    logger.error('GET /api/admin/rotate-puzzle error', error);
     return NextResponse.json(
       { success: false, error: 'Failed to get system status' },
       { status: 500 }
@@ -61,7 +62,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: result.error }, { status: 400 });
     }
   } catch (error) {
-    console.error('POST /api/admin/rotate-puzzle error:', error);
+    logger.error('POST /api/admin/rotate-puzzle error', error);
     return NextResponse.json({ success: false, error: 'Failed to clear cache' }, { status: 500 });
   }
 }

@@ -1,4 +1,5 @@
 import { kv } from '@vercel/kv';
+import logger from '@/lib/logger';
 
 // Rate limiter configuration
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes in milliseconds
@@ -77,7 +78,7 @@ export async function isLockedOut(identifier) {
     await kv.del(lockoutKey);
     return { locked: false };
   } catch (error) {
-    console.error('Error checking lockout status:', error);
+    logger.error('Error checking lockout status', error);
     // Fail open to avoid blocking legitimate users due to Redis issues
     return { locked: false };
   }
@@ -157,7 +158,7 @@ export async function recordFailedAttempt(identifier) {
       message: `Invalid credentials. ${MAX_ATTEMPTS - attempts} attempts remaining.`,
     };
   } catch (error) {
-    console.error('Error recording failed attempt:', error);
+    logger.error('Error recording failed attempt', error);
     // Fail open
     return { locked: false };
   }
@@ -171,7 +172,7 @@ export async function clearFailedAttempts(identifier) {
     const rateLimitKey = getAuthRateLimitKey(identifier);
     await kv.del(rateLimitKey);
   } catch (error) {
-    console.error('Error clearing failed attempts:', error);
+    logger.error('Error clearing failed attempts', error);
   }
 }
 
@@ -213,7 +214,7 @@ export async function checkApiRateLimit(identifier, endpoint = 'general') {
       resetIn: windowSeconds,
     };
   } catch (error) {
-    console.error('Error checking API rate limit:', error);
+    logger.error('Error checking API rate limit', error);
     // Fail open
     return { allowed: true };
   }

@@ -15,10 +15,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     setMounted(true);
-    console.log('AdminDashboard mounted');
   }, []);
-
-  console.log('AdminDashboard rendering, showBulkImport:', showBulkImport, 'mounted:', mounted);
 
   return (
     <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
@@ -29,10 +26,7 @@ export default function AdminDashboard() {
           </h2>
           {mounted && (
             <button
-              onClick={() => {
-                console.log('Bulk Import button clicked!');
-                setShowBulkImport(true);
-              }}
+              onClick={() => setShowBulkImport(true)}
               className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
               style={{ backgroundColor: '#0ea5e9' }}
             >

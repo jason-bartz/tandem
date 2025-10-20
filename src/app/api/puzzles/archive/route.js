@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPuzzle } from '@/lib/db';
 import { getCurrentPuzzleNumber, getDateForPuzzleNumber } from '@/lib/puzzleNumber';
+import logger from '@/lib/logger';
 
 /**
  * Archive API - Returns puzzles by number range
@@ -70,7 +71,7 @@ export async function GET(request) {
           // Don't send full puzzle data to reduce payload
         };
       } catch (error) {
-        console.error(`Error fetching puzzle ${num}:`, error);
+        logger.error(`Error fetching puzzle ${num}`, error);
         return {
           number: num,
           date: null,
@@ -127,7 +128,7 @@ export async function GET(request) {
 
     return response;
   } catch (error) {
-    console.error('Archive API error:', error);
+    logger.error('Archive API error', error);
 
     return NextResponse.json(
       { success: false, error: 'Failed to fetch archive puzzles' },

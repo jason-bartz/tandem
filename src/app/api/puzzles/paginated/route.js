@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getPuzzleForDate } from '@/lib/db';
 import { z } from 'zod';
+import logger from '@/lib/logger';
 
 /**
  * Paginated puzzle API endpoint
@@ -96,7 +97,7 @@ export async function GET(request) {
           hasData: !!puzzle,
         };
       } catch (error) {
-        console.error(`Error fetching puzzle for ${date}:`, error);
+        logger.error(`Error fetching puzzle for ${date}`, error);
         return {
           date,
           theme: null,
@@ -148,7 +149,7 @@ export async function GET(request) {
 
     return response;
   } catch (error) {
-    console.error('GET /api/puzzles/paginated error:', error);
+    logger.error('GET /api/puzzles/paginated error', error);
 
     return NextResponse.json({ success: false, error: 'Failed to fetch puzzles' }, { status: 500 });
   }
@@ -188,7 +189,7 @@ export async function POST(request) {
       date,
     });
   } catch (error) {
-    console.error('POST /api/puzzles/paginated error:', error);
+    logger.error('POST /api/puzzles/paginated error', error);
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(

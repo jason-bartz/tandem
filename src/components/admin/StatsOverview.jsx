@@ -32,7 +32,7 @@ export default function StatsOverview() {
         setDailyActivity(data.dailyActivity || []);
       }
     } catch (error) {
-      console.error('Failed to load stats:', error);
+      // Failed to load stats
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,6 @@ export default function StatsOverview() {
       link.click();
       document.body.removeChild(link);
     } catch (error) {
-      console.error('Export failed:', error);
       alert('Failed to export statistics');
     } finally {
       setExporting(false);

@@ -46,8 +46,6 @@ export default function BulkImport({ onClose, onSuccess }) {
         return;
       }
 
-      console.log('Parsed puzzles:', puzzles);
-      console.log('Is array?', Array.isArray(puzzles));
 
       if (!Array.isArray(puzzles)) {
         setMessage('❌ Input must be an array of puzzle objects');
@@ -55,9 +53,7 @@ export default function BulkImport({ onClose, onSuccess }) {
         return;
       }
 
-      console.log('Sending to API:', { puzzles, startDate, overwrite });
       const result = await adminService.bulkImportPuzzles(puzzles, startDate, overwrite);
-      console.log('API response:', result);
 
       if (result.success) {
         setMessage(`✅ Successfully imported ${result.summary.successful} puzzles!`);
@@ -71,12 +67,10 @@ export default function BulkImport({ onClose, onSuccess }) {
       } else {
         setMessage(`❌ Import failed: ${result.error || 'Unknown error'}`);
         if (result.details) {
-          console.error('Import error details:', result.details);
         }
       }
     } catch (error) {
       setMessage('❌ Error during import: ' + error.message);
-      console.error('Import error:', error);
     } finally {
       setLoading(false);
     }

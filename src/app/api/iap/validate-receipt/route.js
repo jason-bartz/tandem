@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 // Apple's receipt validation endpoints
 const PRODUCTION_URL = 'https://buy.itunes.apple.com/verifyReceipt';
@@ -21,7 +22,6 @@ export async function POST(request) {
 
     // If we get status 21007, it's a sandbox receipt, retry with sandbox URL
     if (validationResponse.status === 21007) {
-      console.log('Sandbox receipt detected, retrying with sandbox URL');
       validationResponse = await validateReceipt(receiptData, SANDBOX_URL);
     }
 
@@ -46,7 +46,7 @@ export async function POST(request) {
       subscriptionInfo,
     });
   } catch (error) {
-    console.error('Receipt validation error:', error);
+    logger.error('Receipt validation error', error);
     return NextResponse.json(
       { error: 'Internal server error during receipt validation' },
       { status: 500 }

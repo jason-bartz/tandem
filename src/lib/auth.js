@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 import { validateCSRFToken } from '@/lib/security/csrf';
+import logger from '@/lib/logger';
 
 export function verifyAdminToken(token) {
   try {
@@ -10,7 +11,7 @@ export function verifyAdminToken(token) {
     }
     return null;
   } catch (error) {
-    console.error('Token verification error:', error);
+    logger.error('Token verification error', error);
     return null;
   }
 }

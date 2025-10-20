@@ -1,6 +1,7 @@
 import { PUZZLE_TEMPLATES } from './constants';
 import { createClient } from 'redis';
 import { getPuzzleNumberForDate, getDateForPuzzleNumber } from './puzzleNumber';
+import logger from '@/lib/logger';
 
 let redisClient = null;
 
@@ -67,7 +68,6 @@ export async function getPuzzleForDate(date) {
     if (redis) {
       const puzzleData = await redis.get(`puzzle:${date}`);
       if (puzzleData) {
-        console.log(`Loaded puzzle from database: ${date}`);
         puzzle = JSON.parse(puzzleData);
       }
     } else {
@@ -87,7 +87,6 @@ export async function getPuzzleForDate(date) {
           if (data.puzzles && Array.isArray(data.puzzles)) {
             const foundPuzzle = data.puzzles.find((p) => p.date === date);
             if (foundPuzzle) {
-              console.log(`Loaded puzzle from all-puzzles.json: ${date}`);
               puzzle = {
                 theme: foundPuzzle.theme,
                 puzzles: foundPuzzle.puzzles,
@@ -108,7 +107,6 @@ export async function getPuzzleForDate(date) {
         const puzzleFile = path.join(process.cwd(), 'public', 'puzzles', `${date}.json`);
         if (fs.existsSync(puzzleFile)) {
           const puzzleData = JSON.parse(fs.readFileSync(puzzleFile, 'utf8'));
-          console.log(`Loaded puzzle from file: ${date}`);
           puzzle = puzzleData;
         }
       } catch (fileError) {
@@ -129,7 +127,7 @@ export async function getPuzzleForDate(date) {
     // Ensure hint structure exists for all puzzles
     return ensureHintStructure(puzzle);
   } catch (error) {
-    console.error('Error getting puzzle:', error);
+    logger.error('Error getting puzzle', error);
     const fallback = getDailyPuzzleFromTemplates(date);
     return ensureHintStructure({
       ...fallback,
@@ -176,7 +174,7 @@ export async function getPuzzle(identifier) {
 
     return puzzle;
   } catch (error) {
-    console.error('Error getting puzzle:', error);
+    logger.error('Error getting puzzle', error);
     throw error;
   }
 }
@@ -248,7 +246,7 @@ export async function setPuzzleForDate(date, puzzle) {
 
     return true;
   } catch (error) {
-    console.error('Error setting puzzle:', error);
+    logger.error('Error setting puzzle', error);
     throw error;
   }
 }
@@ -265,7 +263,7 @@ export async function deletePuzzleForDate(date) {
 
     return true;
   } catch (error) {
-    console.error('Error deleting puzzle:', error);
+    logger.error('Error deleting puzzle', error);
     throw error;
   }
 }
@@ -291,7 +289,7 @@ export async function getPuzzlesRange(startDate, endDate) {
       }
     }
   } catch (error) {
-    console.error('Error loading all-puzzles.json:', error);
+    logger.error('Error loading all-puzzles.json', error);
   }
 
   try {
@@ -340,7 +338,7 @@ export async function getPuzzlesRange(startDate, endDate) {
       }
     }
   } catch (error) {
-    console.error('Error getting puzzles range:', error);
+    logger.error('Error getting puzzles range', error);
   }
 
   return puzzles;
@@ -360,7 +358,7 @@ export async function incrementStats(stat) {
 
     return true;
   } catch (error) {
-    console.error('Error incrementing stats:', error);
+    logger.error('Error incrementing stats', error);
     return false;
   }
 }
@@ -392,7 +390,7 @@ export async function getStats() {
       };
     }
   } catch (error) {
-    console.error('Error getting stats:', error);
+    logger.error('Error getting stats', error);
     return {
       views: 0,
       played: 0,
@@ -480,7 +478,7 @@ export async function updatePuzzleStats(date, stats) {
 
     return true;
   } catch (error) {
-    console.error('Error updating puzzle stats:', error);
+    logger.error('Error updating puzzle stats', error);
     return false;
   }
 }
@@ -530,7 +528,7 @@ export async function getPuzzleStats(date) {
       };
     }
   } catch (error) {
-    console.error('Error getting puzzle stats:', error);
+    logger.error('Error getting puzzle stats', error);
     return null;
   }
 }
@@ -566,7 +564,7 @@ export async function getPopularPuzzles(limit = 5) {
     allStats.sort((a, b) => b.completionRate - a.completionRate);
     return allStats.slice(0, limit);
   } catch (error) {
-    console.error('Error getting popular puzzles:', error);
+    logger.error('Error getting popular puzzles', error);
     return [];
   }
 }
@@ -604,7 +602,7 @@ export async function getDailyActivity(days = 7) {
 
     return activity;
   } catch (error) {
-    console.error('Error getting daily activity:', error);
+    logger.error('Error getting daily activity', error);
     return [];
   }
 }
@@ -651,7 +649,7 @@ export async function trackUniquePlayer(sessionId) {
 
     return true;
   } catch (error) {
-    console.error('Error tracking unique player:', error);
+    logger.error('Error tracking unique player', error);
     return false;
   }
 }
@@ -681,7 +679,7 @@ export async function updateDailyStats(stat) {
 
     return true;
   } catch (error) {
-    console.error('Error updating daily stats:', error);
+    logger.error('Error updating daily stats', error);
     return false;
   }
 }

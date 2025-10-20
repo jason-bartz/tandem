@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 import { createClient } from 'redis';
+import logger from '@/lib/logger';
 
 /**
  * Admin endpoint to clear puzzles stored for future dates
@@ -98,7 +99,7 @@ export async function POST(request) {
       }
     }
   } catch (error) {
-    console.error('POST /api/admin/clear-future-puzzles error:', error);
+    logger.error('POST /api/admin/clear-future-puzzles error', error);
     return NextResponse.json(
       {
         success: false,
@@ -183,7 +184,7 @@ export async function GET(request) {
       }
     }
   } catch (error) {
-    console.error('GET /api/admin/clear-future-puzzles error:', error);
+    logger.error('GET /api/admin/clear-future-puzzles error', error);
     return NextResponse.json(
       {
         success: false,

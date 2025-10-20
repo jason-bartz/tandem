@@ -228,7 +228,7 @@ export function trackPerformance() {
           });
           clsObserver.observe({ type: 'layout-shift', buffered: true });
         } catch (e) {
-          console.error('Error tracking web vitals:', e);
+          // Error tracking web vitals
         }
       }
     }, 0);
@@ -237,10 +237,6 @@ export function trackPerformance() {
 
 // Custom event logging (for debugging or custom analytics)
 function logEvent(eventName, data) {
-  if (process.env.NODE_ENV === 'development') {
-    console.log(`[Analytics] ${eventName}:`, data);
-  }
-  
   // Store events in session storage for debugging
   try {
     const events = JSON.parse(sessionStorage.getItem('analytics_events') || '[]');

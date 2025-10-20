@@ -49,7 +49,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
         setShowOnboarding(!hasSeenOnboarding);
         setOnboardingChecked(true);
       } catch (error) {
-        console.error('Failed to check onboarding status:', error);
         // Default to showing onboarding if check fails on native platform
         setShowOnboarding(true);
         setOnboardingChecked(true);
@@ -62,36 +61,24 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Initialize subscription service and Game Center on app bootstrap (iOS only)
   // This runs ONCE when the app starts, ensuring subscription state and Game Center are ready
   useEffect(() => {
-    console.log(
-      '[GameContainerClient] Bootstrap useEffect - isNative:',
-      Capacitor.isNativePlatform()
-    );
     if (Capacitor.isNativePlatform()) {
-      console.log('[GameContainerClient] Starting subscription service initialization');
       subscriptionService
         .initialize()
         .then(() => {
-          console.log('[GameContainerClient] Subscription service initialized successfully');
-          console.log('[GameContainerClient] Final state:', subscriptionService.getInitState());
         })
-        .catch((error) => {
-          console.error('[GameContainerClient] Subscription service initialization failed:', error);
+        .catch((_error) => {
           // App continues to work even if subscription init fails
         });
 
       // Initialize Game Center (silent, non-blocking)
-      console.log('[GameContainerClient] Starting Game Center initialization');
       gameCenterService
         .initialize()
         .then((success) => {
           if (success) {
-            console.log('[GameContainerClient] Game Center authenticated successfully');
           } else {
-            console.log('[GameContainerClient] Game Center not available or authentication failed');
           }
         })
-        .catch((error) => {
-          console.error('[GameContainerClient] Game Center initialization failed:', error);
+        .catch((_error) => {
           // App continues to work even if Game Center init fails
         });
     }
@@ -180,8 +167,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Initialize notifications on app launch (iOS only)
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
-      notificationService.onAppLaunch().catch((err) => {
-        console.error('Failed to initialize notifications:', err);
+      notificationService.onAppLaunch().catch((_err) => {
       });
     }
   }, []);

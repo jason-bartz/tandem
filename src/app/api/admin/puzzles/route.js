@@ -11,6 +11,7 @@ import {
   escapeHtml,
 } from '@/lib/security/validation';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+import logger from '@/lib/logger';
 
 export async function GET(request) {
   try {
@@ -39,7 +40,7 @@ export async function GET(request) {
       count: Object.keys(puzzles).length,
     });
   } catch (error) {
-    console.error('GET /api/admin/puzzles error:', error);
+    logger.error('GET /api/admin/puzzles error', error);
 
     const message = sanitizeErrorMessage(error);
 
@@ -87,7 +88,7 @@ export async function POST(request) {
       date,
     });
   } catch (error) {
-    console.error('POST /api/admin/puzzles error:', error);
+    logger.error('POST /api/admin/puzzles error', error);
 
     const message = sanitizeErrorMessage(error);
 
@@ -134,7 +135,7 @@ export async function DELETE(request) {
       message: `Puzzle deleted for ${validatedDate}`,
     });
   } catch (error) {
-    console.error('DELETE /api/admin/puzzles error:', error);
+    logger.error('DELETE /api/admin/puzzles error', error);
 
     const message = sanitizeErrorMessage(error);
 
