@@ -1,13 +1,23 @@
 import { NextResponse } from 'next/server';
+import { requireAdmin } from '@/lib/auth';
 import aiService from '@/services/ai.service';
+import { withRateLimit } from '@/lib/security/rateLimiter';
 import logger from '@/lib/logger';
 
 export async function POST(request) {
   try {
-    // Verify authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || authHeader !== `Bearer ${process.env.ADMIN_SECRET}`) {
-      return NextResponse.json({ success: false, error: 'Unauthorized' }, { status: 401 });
+    // Apply rate limiting for AI operations (30 per hour)
+    const rateLimitResponse = await withRateLimit(request, 'ai_generation');
+    if (rateLimitResponse) {
+      logger.warn('AI assessment rate limit exceeded');
+      return rateLimitResponse;
+    }
+
+    // Require admin authentication
+    const authResult = await requireAdmin(request);
+    if (authResult.error) {
+      logger.warn('AI assessment authentication failed');
+      return authResult.error;
     }
 
     const body = await request.json();
@@ -48,6 +58,7 @@ export async function POST(request) {
     logger.info('Difficulty assessment successful', {
       theme,
       rating: assessment.rating,
+      admin: authResult.admin?.username,
     });
 
     return NextResponse.json({

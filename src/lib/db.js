@@ -204,6 +204,29 @@ export function validateHint(hint, answer) {
 }
 
 /**
+ * Decodes HTML entities that may have been incorrectly encoded
+ * @param {string} text - Text to decode
+ * @returns {string} Decoded text
+ */
+function decodeHtmlEntities(text) {
+  if (typeof text !== 'string') return text;
+
+  const entities = {
+    '&amp;': '&',
+    '&lt;': '<',
+    '&gt;': '>',
+    '&quot;': '"',
+    '&#x27;': "'",
+    '&#x2F;': '/',
+  };
+
+  return text.replace(
+    /&amp;|&lt;|&gt;|&quot;|&#x27;|&#x2F;/g,
+    (entity) => entities[entity] || entity
+  );
+}
+
+/**
  * Ensures puzzle has valid hint structure
  * @param {Object} puzzle - The puzzle object
  * @returns {Object} Puzzle with validated hints
@@ -213,11 +236,17 @@ export function ensureHintStructure(puzzle) {
 
   return {
     ...puzzle,
+    // Decode theme if it contains HTML entities
+    theme: decodeHtmlEntities(puzzle.theme),
     puzzles: puzzle.puzzles.map((p) => ({
       emoji: p.emoji,
       answer: p.answer,
-      hint: p.hint || '', // Ensure hint field exists, even if empty
+      // Ensure hint field exists and decode any HTML entities
+      hint: decodeHtmlEntities(p.hint || ''),
     })),
+    // Preserve difficulty metadata if present
+    difficultyRating: puzzle.difficultyRating,
+    difficultyFactors: puzzle.difficultyFactors,
   };
 }
 
