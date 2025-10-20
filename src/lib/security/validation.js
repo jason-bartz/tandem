@@ -126,6 +126,12 @@ export const puzzleItemSchema = z.object({
     .max(MAX_ANSWER_LENGTH, `Answer must be at most ${MAX_ANSWER_LENGTH} characters`)
     .regex(PATTERNS.alphaOnly, 'Answer can only contain uppercase letters, spaces, and commas')
     .transform((val) => sanitizeString(val, MAX_ANSWER_LENGTH).toUpperCase()),
+  hint: z
+    .string()
+    .max(60, 'Hint must be at most 60 characters')
+    .optional()
+    .default('')
+    .transform((val) => escapeHtml(sanitizeString(val || '', 60))),
 });
 
 export const puzzleSchema = z.object({
