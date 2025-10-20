@@ -15,6 +15,7 @@ import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import platformService from '@/services/platform';
+import { motion } from 'framer-motion';
 
 export default function PlayingScreen({
   puzzle,
@@ -53,10 +54,34 @@ export default function PlayingScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
+  const [showSecondHintCelebration, setShowSecondHintCelebration] = useState(false);
+  const [previousUnlockedHints, setPreviousUnlockedHints] = useState(unlockedHints);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
+
+  // Detect when second hint is unlocked and trigger celebration
+  useEffect(() => {
+    // Check if we just unlocked the second hint (transition from 1 to 2)
+    if (previousUnlockedHints === 1 && unlockedHints === 2 && hintsUsed < 2) {
+      // Trigger celebration animation
+      setShowSecondHintCelebration(true);
+
+      // Play haptic feedback for celebration
+      correctAnswer(); // Use success haptic for celebration
+
+      // Reset celebration after 2.5 seconds (align with toast duration)
+      const timer = setTimeout(() => {
+        setShowSecondHintCelebration(false);
+      }, 2500);
+
+      return () => clearTimeout(timer);
+    }
+
+    // Update previous value
+    setPreviousUnlockedHints(unlockedHints);
+  }, [unlockedHints, previousUnlockedHints, hintsUsed, correctAnswer]);
 
   // Load keyboard layout and listen for changes
   useEffect(() => {
@@ -472,22 +497,84 @@ export default function PlayingScreen({
             {/* Hint button - positioned before keyboard (not shown in hard mode) */}
             {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
               <div className="mb-3">
-                <button
+                <motion.button
                   onClick={() => {
                     lightTap();
                     handleUseHint();
                   }}
-                  className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-xl font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button ${
+                  className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-xl font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button relative overflow-hidden ${
                     highContrast
                       ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
                       : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
                   }`}
                   disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                   aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
+                  // Celebratory animation when second hint appears
+                  animate={
+                    showSecondHintCelebration && !reduceMotion
+                      ? {
+                          scale: [1, 1.05, 0.98, 1.02, 1],
+                          rotate: [0, -2, 2, -1, 0],
+                        }
+                      : {}
+                  }
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.34, 1.56, 0.64, 1], // iOS spring curve
+                  }}
                 >
-                  <span className="text-lg sm:text-xl">💡</span>
-                  Use Hint
-                </button>
+                  {/* Sparkle effect overlay during celebration */}
+                  {showSecondHintCelebration && (
+                    <motion.div
+                      className="absolute inset-0 pointer-events-none flex items-center justify-center"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: [0, 1, 0] }}
+                      transition={{ duration: 0.6, times: [0, 0.5, 1] }}
+                    >
+                      <span className="text-3xl">✨</span>
+                    </motion.div>
+                  )}
+
+                  {/* Lightbulb icon with celebration pulse */}
+                  <motion.span
+                    className="text-lg sm:text-xl"
+                    animate={
+                      showSecondHintCelebration && !reduceMotion
+                        ? {
+                            scale: [1, 1.3, 1],
+                            rotate: [0, 15, -15, 0],
+                          }
+                        : {}
+                    }
+                    transition={{ duration: 0.5 }}
+                  >
+                    💡
+                  </motion.span>
+
+                  {/* Button text - changes during celebration */}
+                  <motion.span
+                    key={showSecondHintCelebration ? 'celebration' : 'normal'}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    {showSecondHintCelebration ? "You've earned a second hint!" : 'Use Hint'}
+                  </motion.span>
+
+                  {/* Extra sparkle for celebration */}
+                  {showSecondHintCelebration && (
+                    <motion.span
+                      className="text-lg sm:text-xl"
+                      initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      exit={{ opacity: 0, scale: 0, rotate: 180 }}
+                      transition={{ duration: 0.5, ease: 'backOut' }}
+                    >
+                      🎉
+                    </motion.span>
+                  )}
+                </motion.button>
                 {unlockedHints === 1 && solved >= 1 && (
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
                     Get 1 more correct answer to unlock another hint!
