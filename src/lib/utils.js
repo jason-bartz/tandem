@@ -87,6 +87,20 @@ export function generateShareText(
   hardModeTimeUp = false,
   difficultyRating = null
 ) {
+  // Debug logging
+  console.log('[generateShareText] Called with:', {
+    puzzleDate,
+    timeInSeconds,
+    mistakes,
+    hintsUsed: _hintsUsed,
+    hintPositions,
+    hintPositionsType: Array.isArray(hintPositions) ? 'array' : typeof hintPositions,
+    hintPositionsLength: hintPositions?.length,
+    solved,
+    isHardMode,
+    hardModeTimeUp,
+  });
+
   // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
   const formattedDate = formatDateShort(puzzleDate);
@@ -129,19 +143,32 @@ export function generateShareText(
   // Show solved puzzles with 🔷 or 💡 (if hint was used), unsolved with ⬜
   // In hard mode, use different emoji
   const puzzleEmojis = [];
+  console.log('[generateShareText] Building emoji grid, checking hintPositions:', hintPositions);
+
   for (let i = 0; i < 4; i++) {
     if (i < solved) {
-      if (hintPositions.includes(i)) {
+      const hasHint = hintPositions.includes(i);
+      console.log(
+        `[generateShareText] Puzzle ${i}: solved=${i < solved}, hasHint=${hasHint}, hintPositions.includes(${i})=${hasHint}`
+      );
+
+      if (hasHint) {
         puzzleEmojis.push('💡');
+        console.log(`[generateShareText] Puzzle ${i}: Adding 💡 (hint used)`);
       } else if (isHardMode && solved === 4) {
         puzzleEmojis.push('🔥'); // Fire emoji for hard mode completion
+        console.log(`[generateShareText] Puzzle ${i}: Adding 🔥 (hard mode)`);
       } else {
         puzzleEmojis.push('🔷');
+        console.log(`[generateShareText] Puzzle ${i}: Adding 🔷 (no hint)`);
       }
     } else {
       puzzleEmojis.push('⬜');
+      console.log(`[generateShareText] Puzzle ${i}: Adding ⬜ (unsolved)`);
     }
   }
+
+  console.log('[generateShareText] Final emoji array:', puzzleEmojis);
   shareText += puzzleEmojis.join(' ');
 
   shareText += '\n\n#TandemPuzzle';

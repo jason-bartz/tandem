@@ -59,12 +59,23 @@ export default function CompleteScreen({
   const hintPositions = hintedAnswers || [];
 
   // Debug logging
-  console.log('[CompleteScreen] Share text generation:', {
+  console.log('[CompleteScreen] Props received:', {
     hintsUsed,
     hintedAnswers,
-    hintPositions,
     won,
     correctAnswers,
+    isHardMode,
+  });
+
+  console.log('[CompleteScreen] Share text generation:', {
+    puzzleDate,
+    time,
+    mistakes,
+    hintsUsed,
+    hintPositions,
+    solved: won ? 4 : correctAnswers || 0,
+    isHardMode,
+    hardModeTimeUp,
   });
 
   const shareText = generateShareText(
@@ -79,6 +90,8 @@ export default function CompleteScreen({
     hardModeTimeUp,
     difficultyRating
   );
+
+  console.log('[CompleteScreen] Generated share text:', shareText);
 
   useEffect(() => {
     if (won) {

@@ -144,26 +144,35 @@ export default function GameContainer() {
             />
           )}
 
-          {game.gameState === GAME_STATES.COMPLETE && (
-            <CompleteScreen
-              won={game.solved === 4}
-              time={timer.elapsed}
-              mistakes={game.mistakes}
-              correctAnswers={game.correctAnswers}
-              puzzle={game.puzzle}
-              puzzleTheme={game.puzzle?.theme}
-              onPlayAgain={game.resetGame}
-              theme={theme}
-              toggleTheme={toggleTheme}
-              isAuto={isAuto}
-              currentState={currentState}
-              hintsUsed={game.hintsUsed || 0}
-              hintedAnswers={game.hintedAnswers || []}
-              onSelectPuzzle={handleSelectPuzzle}
-              onReturnToWelcome={game.resetGame}
-              difficultyRating={game.puzzle?.difficultyRating}
-            />
-          )}
+          {game.gameState === GAME_STATES.COMPLETE &&
+            (() => {
+              console.log('[GameContainer] Rendering CompleteScreen with:', {
+                won: game.solved === 4,
+                hintsUsed: game.hintsUsed,
+                hintedAnswers: game.hintedAnswers,
+                solved: game.solved,
+              });
+              return (
+                <CompleteScreen
+                  won={game.solved === 4}
+                  time={timer.elapsed}
+                  mistakes={game.mistakes}
+                  correctAnswers={game.correctAnswers}
+                  puzzle={game.puzzle}
+                  puzzleTheme={game.puzzle?.theme}
+                  onPlayAgain={game.resetGame}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  isAuto={isAuto}
+                  currentState={currentState}
+                  hintsUsed={game.hintsUsed || 0}
+                  hintedAnswers={game.hintedAnswers || []}
+                  onSelectPuzzle={handleSelectPuzzle}
+                  onReturnToWelcome={game.resetGame}
+                  difficultyRating={game.puzzle?.difficultyRating}
+                />
+              );
+            })()}
         </div>
       </div>
 
