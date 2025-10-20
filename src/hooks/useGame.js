@@ -217,11 +217,18 @@ export function useGame() {
 
       // Save the final result AFTER updating stats
       if (puzzleDateToUse) {
+        console.log('[useGame] Saving puzzle result with hintedAnswers:', {
+          won,
+          hintsUsed,
+          hintedAnswers,
+          puzzleDate: puzzleDateToUse,
+        });
         savePuzzleResult(puzzleDateToUse, {
           won,
           mistakes,
           solved,
           hintsUsed,
+          hintedAnswers, // Save which puzzles had hints used
           theme: puzzle?.theme, // Save the theme with the result
           time: null, // Could add time tracking if needed
           isArchive: isArchive, // Pass the archive flag to properly track puzzle type
@@ -238,7 +245,7 @@ export function useGame() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [mistakes, solved, hintsUsed, isArchiveGame, currentPuzzleDate, puzzle]
+    [mistakes, solved, hintsUsed, hintedAnswers, isArchiveGame, currentPuzzleDate, puzzle]
   );
 
   const checkSingleAnswer = useCallback(
