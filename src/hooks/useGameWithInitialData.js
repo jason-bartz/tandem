@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, sanitizeInputPreserveSpaces, checkAnswerWithPlurals } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -37,6 +37,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [hintedAnswers, setHintedAnswers] = useState([]);
   const [unlockedHints, setUnlockedHints] = useState(1);
   const [activeHintIndex, setActiveHintIndex] = useState(null);
+  const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
   const [isHardMode, setIsHardMode] = useState(false);
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
 
@@ -120,6 +121,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setHintedAnswers([]);
         setUnlockedHints(1);
         setActiveHintIndex(null);
+        setLockedLetters([null, null, null, null]);
         console.log('[useGameWithInitialData] Puzzle loaded successfully');
         return true;
       } else if (response) {
@@ -139,6 +141,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         setHintedAnswers([]);
         setUnlockedHints(1);
         setActiveHintIndex(null);
+        setLockedLetters([null, null, null, null]);
         return true;
       } else {
         console.error('[useGameWithInitialData] No response or empty response');
@@ -173,6 +176,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHintedAnswers([]);
     setUnlockedHints(1);
     setActiveHintIndex(null);
+    setLockedLetters([null, null, null, null]);
 
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
@@ -186,8 +190,46 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      // Simple sanitization - no hint or locked letter logic needed
-      const sanitized = sanitizeInput(value);
+      const locked = lockedLetters[index];
+
+      let processedValue = value;
+
+      // If we have locked letters, check if value is already properly formatted
+      if (locked) {
+        // Check if the value already has locked letters in their correct positions
+        const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
+          const position = parseInt(pos);
+          return value[position] === locked[pos];
+        });
+
+        if (hasLockedLettersInPlace) {
+          // Value is already properly formatted with locked letters in position
+          processedValue = value;
+        } else {
+          // Value doesn't have locked letters in correct positions
+          // Ensure locked letters are placed correctly
+          const chars = value.split('');
+
+          // Ensure the array is long enough
+          const maxLockedPos = Math.max(...Object.keys(locked).map(Number));
+          while (chars.length <= maxLockedPos) {
+            chars.push(' ');
+          }
+
+          // Place locked letters at their positions
+          Object.keys(locked).forEach((pos) => {
+            const position = parseInt(pos);
+            chars[position] = locked[pos];
+          });
+
+          processedValue = chars.join('');
+        }
+      }
+
+      // Use different sanitization based on whether we have locked letters
+      const sanitized = locked
+        ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
+        : sanitizeInput(processedValue); // Regular sanitization for normal input
 
       setAnswers((prev) => {
         const newAnswers = [...prev];
@@ -203,7 +245,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers]
+    [checkedWrongAnswers, lockedLetters]
   );
 
   const completeGame = useCallback(
@@ -295,6 +337,13 @@ export function useGameWithInitialData(initialPuzzleData) {
           setActiveHintIndex(null);
         }
 
+        // Clear locked letters for this answer since it's now correct
+        setLockedLetters((prev) => {
+          const newLocked = [...prev];
+          newLocked[index] = null;
+          return newLocked;
+        });
+
         setSolved((prev) => {
           const newSolved = prev + 1;
 
@@ -322,12 +371,33 @@ export function useGameWithInitialData(initialPuzzleData) {
 
         return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.PUZZLE_COUNT };
       } else {
-        // Wrong answer - clear the input
-        setAnswers((prev) => {
-          const newAnswers = [...prev];
-          newAnswers[index] = '';
-          return newAnswers;
-        });
+        // Wrong answer - check for letters in correct positions (smart hints)
+        const correctAnswer = puzzleItem.answer.toLowerCase();
+        const userAnswerLower = userAnswer.toLowerCase();
+        const lockedPositions = {};
+
+        // Compare character by character
+        for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
+          if (userAnswerLower[i] === correctAnswer[i]) {
+            lockedPositions[i] = userAnswerLower[i];
+          }
+        }
+
+        // Update locked letters if we found any matches
+        if (Object.keys(lockedPositions).length > 0) {
+          setLockedLetters((prev) => {
+            const newLocked = [...prev];
+            newLocked[index] = lockedPositions;
+            return newLocked;
+          });
+        } else {
+          // No matching letters, clear the input
+          setAnswers((prev) => {
+            const newAnswers = [...prev];
+            newAnswers[index] = '';
+            return newAnswers;
+          });
+        }
 
         setMistakes((prev) => {
           const newMistakes = Math.min(prev + 1, GAME_CONFIG.MAX_MISTAKES);
@@ -375,6 +445,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     let incorrect = 0;
     const newCorrectAnswers = [...correctAnswers];
     const newCheckedWrong = [...checkedWrongAnswers];
+    const newLockedLetters = [...lockedLetters];
 
     setHasCheckedAnswers(true);
 
@@ -386,13 +457,33 @@ export function useGameWithInitialData(initialPuzzleData) {
         if (isCorrect) {
           newCorrectAnswers[index] = true;
           correct++;
+          // Clear locked letters for correct answer
+          newLockedLetters[index] = null;
         } else {
           incorrect++;
           newCheckedWrong[index] = true;
+
+          // Check for letters in correct positions (smart hints)
+          const correctAnswer = puzzleItem.answer.toLowerCase();
+          const userAnswerLower = answer.trim().toLowerCase();
+          const lockedPositions = {};
+
+          // Compare character by character
+          for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
+            if (userAnswerLower[i] === correctAnswer[i]) {
+              lockedPositions[i] = userAnswerLower[i];
+            }
+          }
+
+          // Store locked letters if we found any matches
+          if (Object.keys(lockedPositions).length > 0) {
+            newLockedLetters[index] = lockedPositions;
+          }
         }
       }
     });
 
+    setLockedLetters(newLockedLetters);
     setCorrectAnswers(newCorrectAnswers);
     setCheckedWrongAnswers(newCheckedWrong);
 
@@ -445,6 +536,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     currentPuzzleDate,
     hintsUsed,
     checkedWrongAnswers,
+    lockedLetters,
   ]);
 
   const useHint = useCallback(
@@ -542,6 +634,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     setHintedAnswers([]);
     setUnlockedHints(1);
     setActiveHintIndex(null);
+    setLockedLetters([null, null, null, null]);
     setHardModeTimeUp(false);
   }, []);
 
@@ -580,6 +673,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     hintedAnswers,
     unlockedHints,
     activeHintIndex,
+    lockedLetters,
     isHardMode,
     hardModeTimeUp,
     setIsHardMode,

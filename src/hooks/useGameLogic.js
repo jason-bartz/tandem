@@ -32,6 +32,7 @@ export function useGameLogic(
     setUnlockedHints,
     setActiveHintIndex,
     setHasCheckedAnswers,
+    setLockedLetters,
   } = setters;
 
   const checkSingleAnswer = useCallback(
@@ -61,6 +62,13 @@ export function useGameLogic(
           newCheckedWrongAnswers[index] = false;
           setCheckedWrongAnswers(newCheckedWrongAnswers);
         }
+
+        // Clear locked letters for this answer since it's now correct
+        setLockedLetters((prev) => {
+          const newLocked = [...prev];
+          newLocked[index] = null;
+          return newLocked;
+        });
 
         // Clear active hint if this answer is showing a hint
         if (activeHintIndex === index) {
@@ -97,6 +105,27 @@ export function useGameLogic(
 
         return { isCorrect: true, gameComplete: false };
       } else {
+        // Check for letters in correct positions (smart hints)
+        const correctAnswer = puzzle.puzzles[index].answer.toLowerCase();
+        const userAnswerLower = userAnswer.toLowerCase();
+        const lockedPositions = {};
+
+        // Compare character by character
+        for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
+          if (userAnswerLower[i] === correctAnswer[i]) {
+            lockedPositions[i] = userAnswerLower[i];
+          }
+        }
+
+        // Update locked letters if we found any matches
+        if (Object.keys(lockedPositions).length > 0) {
+          setLockedLetters((prev) => {
+            const newLocked = [...prev];
+            newLocked[index] = lockedPositions;
+            return newLocked;
+          });
+        }
+
         if (!checkedWrongAnswers[index]) {
           const newCheckedWrongAnswers = [...checkedWrongAnswers];
           newCheckedWrongAnswers[index] = true;
@@ -148,6 +177,8 @@ export function useGameLogic(
       const newCorrectAnswers = [...correctAnswers];
       const newCheckedWrongAnswers = [...checkedWrongAnswers];
 
+      const newLockedLetters = [...Array(4)].map(() => null);
+
       puzzle.puzzles.forEach((p, i) => {
         if (correctAnswers[i]) {
           newSolved++;
@@ -160,7 +191,26 @@ export function useGameLogic(
             newCorrectAnswers[i] = true;
             newCheckedWrongAnswers[i] = false;
             newSolved++;
+            // Clear locked letters for correct answer
+            newLockedLetters[i] = null;
           } else {
+            // Check for letters in correct positions (smart hints)
+            const correctAnswer = p.answer.toLowerCase();
+            const userAnswerLower = userAnswer.toLowerCase();
+            const lockedPositions = {};
+
+            // Compare character by character
+            for (let j = 0; j < Math.min(userAnswerLower.length, correctAnswer.length); j++) {
+              if (userAnswerLower[j] === correctAnswer[j]) {
+                lockedPositions[j] = userAnswerLower[j];
+              }
+            }
+
+            // Store locked letters if we found any matches
+            if (Object.keys(lockedPositions).length > 0) {
+              newLockedLetters[i] = lockedPositions;
+            }
+
             if (!checkedWrongAnswers[i]) {
               newMistakes++;
             }
@@ -168,6 +218,9 @@ export function useGameLogic(
           }
         }
       });
+
+      // Update locked letters state
+      setLockedLetters(newLockedLetters);
 
       setCorrectAnswers(newCorrectAnswers);
       setCheckedWrongAnswers(newCheckedWrongAnswers);
