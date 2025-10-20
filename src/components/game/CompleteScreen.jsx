@@ -57,6 +57,15 @@ export default function CompleteScreen({
   // We pass this directly to generateShareText which expects an array of indices
   const hintPositions = hintedAnswers || [];
 
+  // Debug logging
+  console.log('[CompleteScreen] Share text generation:', {
+    hintsUsed,
+    hintedAnswers,
+    hintPositions,
+    won,
+    correctAnswers,
+  });
+
   const shareText = generateShareText(
     puzzleDate,
     puzzleTheme || 'Tandem Puzzle',
