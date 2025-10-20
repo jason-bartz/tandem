@@ -32,7 +32,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [mistakes, setMistakes] = useState(0);
   const [solved, setSolved] = useState(0);
   const [loading, setLoading] = useState(!initialPuzzleData);
-  const [error, setError] = useState(initialPuzzleData ? null : 'Failed to load puzzle');
+  const [error, setError] = useState(null);
   const [isArchiveGame, setIsArchiveGame] = useState(false);
   const [currentPuzzleDate, setCurrentPuzzleDate] = useState(initialPuzzleData?.date || null);
   const [hintsUsed, setHintsUsed] = useState(0);
@@ -46,13 +46,12 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
 
   // Only load puzzle if we don't have initial data
+  // Following Wordle's approach: client-side fetches puzzle using local timezone
   useEffect(() => {
     if (!initialPuzzleData) {
       async function loadPuzzle() {
         try {
-          const today = new Date().toISOString().split('T')[0];
-          setCurrentPuzzleDate(today);
-
+          // Client-side puzzle fetch - puzzleService.getPuzzle() will use client's local date
           const response = await puzzleService.getPuzzle();
 
           if (response && response.puzzle) {
@@ -60,12 +59,14 @@ export function useGameWithInitialData(initialPuzzleData) {
             const puzzleWithData = {
               ...response.puzzle,
               puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
-              date: response.date || today,
+              date: response.date || response.puzzle.date,
             };
             setPuzzle(puzzleWithData);
+            setCurrentPuzzleDate(response.date);
             setError(null);
           } else if (response) {
             setPuzzle(response);
+            setCurrentPuzzleDate(response.date);
             setError(null);
           } else {
             setError('No puzzle available');
