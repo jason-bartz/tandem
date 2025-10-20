@@ -39,7 +39,7 @@ export const EventTypes = {
 
   // Migration events
   STATS_MIGRATED: 'STATS_MIGRATED',
-  LEGACY_DATA_IMPORTED: 'LEGACY_DATA_IMPORTED'
+  LEGACY_DATA_IMPORTED: 'LEGACY_DATA_IMPORTED',
 };
 
 // Event schema validation
@@ -52,7 +52,7 @@ const EventSchema = {
   sessionId: { type: 'string', required: true },
   version: { type: 'number', required: true },
   data: { type: 'object', required: true },
-  metadata: { type: 'object', required: false }
+  metadata: { type: 'object', required: false },
 };
 
 class GameEventStore {
@@ -110,8 +110,8 @@ class GameEventStore {
         ...metadata,
         appVersion: this.getAppVersion(),
         platform: this.getPlatform(),
-        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
-      }
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      },
     };
 
     // Validate event schema
@@ -145,7 +145,13 @@ class GameEventStore {
         throw new Error(`Invalid value for ${field}: ${event[field]}`);
       }
 
-      if (rules.type && typeof event[field] !== rules.type && event[field] !== undefined) {
+      // Skip type checking for null/undefined values on non-required fields
+      if (
+        rules.type &&
+        typeof event[field] !== rules.type &&
+        event[field] !== undefined &&
+        event[field] !== null
+      ) {
         throw new Error(`Invalid type for ${field}: expected ${rules.type}`);
       }
     }
@@ -207,7 +213,7 @@ class GameEventStore {
    */
   computeStats(events = this.events, untilTimestamp = null) {
     const relevantEvents = untilTimestamp
-      ? events.filter(e => new Date(e.timestamp) <= new Date(untilTimestamp))
+      ? events.filter((e) => new Date(e.timestamp) <= new Date(untilTimestamp))
       : events;
 
     const stats = {
@@ -227,16 +233,15 @@ class GameEventStore {
       puzzlesCompleted: new Set(),
       dailyStats: {},
       weeklyStats: {},
-      monthlyStats: {}
+      monthlyStats: {},
     };
 
     // Process events chronologically
-    const sortedEvents = [...relevantEvents].sort((a, b) =>
-      new Date(a.timestamp) - new Date(b.timestamp)
+    const sortedEvents = [...relevantEvents].sort(
+      (a, b) => new Date(a.timestamp) - new Date(b.timestamp)
     );
 
     let currentStreakValue = 0;
-    let lastStreakDate = null;
 
     for (const event of sortedEvents) {
       switch (event.type) {
@@ -323,7 +328,7 @@ class GameEventStore {
         played: 0,
         won: 0,
         time: 0,
-        mistakes: 0
+        mistakes: 0,
       };
     }
 
@@ -346,7 +351,7 @@ class GameEventStore {
    * Get events within a time range
    */
   getEventsByTimeRange(startTime, endTime) {
-    return this.events.filter(event => {
+    return this.events.filter((event) => {
       const eventTime = new Date(event.timestamp);
       return eventTime >= new Date(startTime) && eventTime <= new Date(endTime);
     });
@@ -356,7 +361,7 @@ class GameEventStore {
    * Get events by type
    */
   getEventsByType(type) {
-    return this.events.filter(event => event.type === type);
+    return this.events.filter((event) => event.type === type);
   }
 
   /**
@@ -364,7 +369,7 @@ class GameEventStore {
    */
   deduplicateEvents(events) {
     const seen = new Set();
-    return events.filter(event => {
+    return events.filter((event) => {
       if (seen.has(event.id)) {
         return false;
       }
@@ -381,9 +386,7 @@ class GameEventStore {
     const deduplicated = this.deduplicateEvents(allEvents);
 
     // Sort by timestamp
-    return deduplicated.sort((a, b) =>
-      new Date(a.timestamp) - new Date(b.timestamp)
-    );
+    return deduplicated.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
   }
 
   /**
@@ -435,7 +438,7 @@ class GameEventStore {
       const stored = {
         events: this.events,
         version: this.version,
-        lastUpdated: new Date().toISOString()
+        lastUpdated: new Date().toISOString(),
       };
 
       localStorage.setItem('gameEvents', JSON.stringify(stored));
@@ -465,7 +468,7 @@ class GameEventStore {
       exportDate: new Date().toISOString(),
       deviceId: this.getDeviceId(),
       events: this.events,
-      stats: this.computeStats()
+      stats: this.computeStats(),
     };
   }
 
@@ -488,7 +491,7 @@ class GameEventStore {
 
     return {
       imported: backup.events.length,
-      total: this.events.length
+      total: this.events.length,
     };
   }
 
