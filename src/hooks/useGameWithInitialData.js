@@ -116,9 +116,10 @@ export function useGameWithInitialData(initialPuzzleData) {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
-        setActiveHints([null, null, null, null]);
-        setHintPositionsUsed([false, false, false, false]);
-        setLockedLetters([null, null, null, null]);
+        setHintsUsed(0);
+        setHintedAnswers([]);
+        setUnlockedHints(1);
+        setActiveHintIndex(null);
         console.log('[useGameWithInitialData] Puzzle loaded successfully');
         return true;
       } else if (response) {
@@ -134,9 +135,10 @@ export function useGameWithInitialData(initialPuzzleData) {
         setCheckedWrongAnswers([false, false, false, false]);
         setMistakes(0);
         setSolved(0);
-        setActiveHints([null, null, null, null]);
-        setHintPositionsUsed([false, false, false, false]);
-        setLockedLetters([null, null, null, null]);
+        setHintsUsed(0);
+        setHintedAnswers([]);
+        setUnlockedHints(1);
+        setActiveHintIndex(null);
         return true;
       } else {
         console.error('[useGameWithInitialData] No response or empty response');
@@ -168,9 +170,9 @@ export function useGameWithInitialData(initialPuzzleData) {
     setError(null);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
-    setActiveHints([null, null, null, null]);
-    setHintPositionsUsed([false, false, false, false]);
-    setLockedLetters([null, null, null, null]);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
 
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
