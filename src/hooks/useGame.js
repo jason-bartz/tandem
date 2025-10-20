@@ -169,6 +169,18 @@ export function useGame() {
 
   const completeGame = useCallback(
     async (won) => {
+      // CRITICAL: Capture hintedAnswers at the start before any state changes
+      const capturedHintedAnswers = [...hintedAnswers];
+
+      console.log('[useGame.completeGame] Called with:', {
+        won,
+        hintsUsed,
+        hintedAnswers,
+        capturedHintedAnswers,
+        solved,
+        mistakes,
+      });
+
       setGameState(GAME_STATES.COMPLETE);
 
       // Play appropriate sound
@@ -216,11 +228,12 @@ export function useGame() {
       }
 
       // Save the final result AFTER updating stats
+      // CRITICAL: Use the captured hintedAnswers to ensure we have the correct value
       if (puzzleDateToUse) {
-        console.log('[useGame] Saving puzzle result with hintedAnswers:', {
+        console.log('[useGame] Saving puzzle result with capturedHintedAnswers:', {
           won,
           hintsUsed,
-          hintedAnswers,
+          hintedAnswers: capturedHintedAnswers,
           puzzleDate: puzzleDateToUse,
         });
         savePuzzleResult(puzzleDateToUse, {
@@ -228,7 +241,7 @@ export function useGame() {
           mistakes,
           solved,
           hintsUsed,
-          hintedAnswers, // Save which puzzles had hints used
+          hintedAnswers: capturedHintedAnswers, // Use captured value to ensure correctness
           theme: puzzle?.theme, // Save the theme with the result
           time: null, // Could add time tracking if needed
           isArchive: isArchive, // Pass the archive flag to properly track puzzle type
@@ -484,7 +497,17 @@ export function useGame() {
       }
 
       // Add this answer to the hinted list
-      setHintedAnswers((prev) => [...prev, hintIndex]);
+      console.log(
+        '[useHint] Adding hint for puzzle index:',
+        hintIndex,
+        'Current hintedAnswers:',
+        hintedAnswers
+      );
+      setHintedAnswers((prev) => {
+        const newHintedAnswers = [...prev, hintIndex];
+        console.log('[useHint] Updated hintedAnswers:', newHintedAnswers);
+        return newHintedAnswers;
+      });
 
       // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
