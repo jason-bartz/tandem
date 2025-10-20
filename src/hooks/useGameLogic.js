@@ -74,6 +74,11 @@ export function useGameLogic(
         if (newSolved >= 2 && unlockedHints === 1) {
           setUnlockedHints(2);
           console.log('[checkSingleAnswer] Unlocked second hint!');
+
+          // Dispatch event for HintEarnedToast
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('hintEarned'));
+          }
         }
 
         if (currentPuzzleDate) {
@@ -169,6 +174,17 @@ export function useGameLogic(
       setMistakes((prev) => prev + newMistakes);
       setSolved(newSolved);
 
+      // Check if we should unlock second hint (after 2 correct answers)
+      if (newSolved >= 2 && unlockedHints === 1) {
+        setUnlockedHints(2);
+        console.log('[checkAnswers] Unlocked second hint!');
+
+        // Dispatch event for HintEarnedToast
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('hintEarned'));
+        }
+      }
+
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,
@@ -255,6 +271,11 @@ export function useGameLogic(
       if (solved >= 2 && unlockedHints === 1) {
         setUnlockedHints(2);
         console.log('[useHint] Unlocked second hint!');
+
+        // Dispatch event for HintEarnedToast
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('hintEarned'));
+        }
       }
 
       // Save progress

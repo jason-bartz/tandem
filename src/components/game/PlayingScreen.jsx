@@ -4,6 +4,7 @@ import { formatTime, formatDateShort } from '@/lib/utils';
 import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import HintDisplay from './HintDisplay';
+import HintEarnedToast from './HintEarnedToast';
 import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
@@ -302,6 +303,9 @@ export default function PlayingScreen({
 
   return (
     <div className="animate-slide-up">
+      {/* Hint Earned Toast */}
+      <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
+
       {/* Control buttons */}
       <div className="flex justify-end gap-2 mb-2 sm:mb-3 px-4 sm:px-0">
         <button
@@ -458,9 +462,7 @@ export default function PlayingScreen({
                   aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
                 >
                   <span className="text-lg sm:text-xl">💡</span>
-                  {unlockedHints > 1
-                    ? `Use Hint (${unlockedHints - hintsUsed} of ${unlockedHints})`
-                    : `Use Hint (${unlockedHints - hintsUsed} available)`}
+                  Use Hint
                 </button>
                 {unlockedHints === 1 && solved >= 1 && (
                   <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
