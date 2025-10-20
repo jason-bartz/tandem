@@ -1,12 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import {
-  sanitizeInput,
-  sanitizeInputPreserveSpaces,
-  checkAnswerWithPlurals,
-  getCorrectPositions,
-} from '@/lib/utils';
+import { sanitizeInput, sanitizeInputPreserveSpaces, checkAnswerWithPlurals } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -39,9 +34,9 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [hasCheckedAnswers, setHasCheckedAnswers] = useState(false);
   const [checkedWrongAnswers, setCheckedWrongAnswers] = useState([false, false, false, false]);
   const [won, setWon] = useState(false);
-  const [activeHints, setActiveHints] = useState([null, null, null, null]);
-  const [hintPositionsUsed, setHintPositionsUsed] = useState([false, false, false, false]);
-  const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
+  const [hintedAnswers, setHintedAnswers] = useState([]);
+  const [unlockedHints, setUnlockedHints] = useState(1);
+  const [activeHintIndex, setActiveHintIndex] = useState(null);
   const [isHardMode, setIsHardMode] = useState(false);
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
 
@@ -328,13 +323,12 @@ export function useGameWithInitialData(initialPuzzleData) {
           solved: solved,
           time: 0,
           hintsUsed: hintsUsed,
-          hintPositionsUsed: hintPositionsUsed,
           attempted: true,
           isArchive: isArchiveGame, // Pass the archive flag to properly track puzzle type
         });
       }
     },
-    [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed, hintPositionsUsed]
+    [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed]
   );
 
   const checkSingleAnswer = useCallback(
@@ -358,21 +352,19 @@ export function useGameWithInitialData(initialPuzzleData) {
           return newCorrect;
         });
 
-        // Clear hint and locked letters for this puzzle if they were active
-        if (activeHints[index]) {
-          const newActiveHints = [...activeHints];
-          newActiveHints[index] = null;
-          setActiveHints(newActiveHints);
-        }
-
-        if (lockedLetters[index]) {
-          const newLockedLetters = [...lockedLetters];
-          newLockedLetters[index] = null;
-          setLockedLetters(newLockedLetters);
+        // Clear active hint if this answer is showing a hint
+        if (activeHintIndex === index) {
+          setActiveHintIndex(null);
         }
 
         setSolved((prev) => {
           const newSolved = prev + 1;
+
+          // Check if we should unlock second hint (after 2 correct answers)
+          if (newSolved >= 2 && unlockedHints === 1) {
+            setUnlockedHints(2);
+            console.log('[checkSingleAnswer] Unlocked second hint!');
+          }
 
           if (currentPuzzleDate) {
             savePuzzleProgress(currentPuzzleDate, {
@@ -392,48 +384,12 @@ export function useGameWithInitialData(initialPuzzleData) {
 
         return { isCorrect: true, gameComplete: solved + 1 === GAME_CONFIG.PUZZLE_COUNT };
       } else {
-        // Check for correct positions (new mechanic)
-        const correctPositions = getCorrectPositions(userAnswer, puzzleItem.answer);
-
-        if (correctPositions) {
-          // We have some letters in correct positions!
-          // Update locked letters for this puzzle
-          setLockedLetters((prev) => {
-            const newLockedLetters = [...prev];
-            newLockedLetters[index] = correctPositions;
-            return newLockedLetters;
-          });
-
-          // Build the new answer with only locked letters, preserving positions
-          setAnswers((prev) => {
-            const newAnswers = [...prev];
-            // Get the full answer length
-            const fullAnswer = puzzleItem.answer.includes(',')
-              ? puzzleItem.answer.split(',')[0].trim()
-              : puzzleItem.answer;
-            const answerLength = fullAnswer.length;
-
-            // Build string with spaces to preserve positions, using full answer length
-            let newAnswer = '';
-            for (let i = 0; i < answerLength; i++) {
-              if (correctPositions[i]) {
-                newAnswer += correctPositions[i];
-              } else {
-                // Use empty string (will be trimmed for display)
-                newAnswer += ' ';
-              }
-            }
-            newAnswers[index] = newAnswer;
-            return newAnswers;
-          });
-        } else {
-          // No correct positions, clear the answer
-          setAnswers((prev) => {
-            const newAnswers = [...prev];
-            newAnswers[index] = '';
-            return newAnswers;
-          });
-        }
+        // Wrong answer - clear the input
+        setAnswers((prev) => {
+          const newAnswers = [...prev];
+          newAnswers[index] = '';
+          return newAnswers;
+        });
 
         setMistakes((prev) => {
           const newMistakes = Math.min(prev + 1, GAME_CONFIG.MAX_MISTAKES);
@@ -471,8 +427,8 @@ export function useGameWithInitialData(initialPuzzleData) {
       completeGame,
       currentPuzzleDate,
       hintsUsed,
-      activeHints,
-      lockedLetters,
+      activeHintIndex,
+      unlockedHints,
     ]
   );
 
@@ -554,133 +510,82 @@ export function useGameWithInitialData(initialPuzzleData) {
   ]);
 
   const useHint = useCallback(
-    (_targetIndex) => {
-      if (!puzzle || !puzzle.puzzles || hintsUsed > 0) {
-        return;
+    (targetIndex) => {
+      // Check if we can use a hint
+      if (!puzzle || !puzzle.puzzles || hintsUsed >= unlockedHints) {
+        console.log('[useHint] Cannot use hint:', {
+          hasPuzzle: !!puzzle,
+          hintsUsed,
+          unlockedHints,
+        });
+        return false;
       }
 
-      // Find the next unfilled position level across all answers
-      // For example, if all first positions are filled (via hints or locked letters),
-      // move to the second position, and so on
+      // Use the provided targetIndex if valid, otherwise find first unanswered
+      let hintIndex = targetIndex;
 
-      let hintPosition = 0;
-      let candidateIndices = [];
-
-      // Find all unanswered puzzles
-      const unansweredIndices = [];
-      for (let i = 0; i < puzzle.puzzles.length; i++) {
-        if (!correctAnswers[i]) {
-          unansweredIndices.push(i);
+      // Only fallback to first unanswered if targetIndex is not provided or already correct
+      if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
+        // Find first unanswered puzzle as fallback
+        hintIndex = correctAnswers.findIndex((correct) => !correct);
+        if (hintIndex === -1) {
+          console.log('[useHint] All puzzles already solved');
+          return false;
         }
       }
 
-      if (unansweredIndices.length === 0) {
-        return;
+      // Check if this answer already has a hint shown
+      if (hintedAnswers.includes(hintIndex)) {
+        console.log('[useHint] Answer already has hint shown:', hintIndex);
+        // Allow showing hint again even if already used - just don't consume another hint
+        // Just update the active hint index to show it again
+        setActiveHintIndex(hintIndex);
+        return true;
       }
 
-      // Determine which position to hint at by finding the first unfilled position across all answers
-      const maxAnswerLength = Math.max(
-        ...puzzle.puzzles.map((p) => {
-          const ans = p.answer.includes(',') ? p.answer.split(',')[0].trim() : p.answer;
-          return ans.length;
-        })
-      );
-
-      for (let pos = 0; pos < maxAnswerLength; pos++) {
-        candidateIndices = [];
-
-        for (const idx of unansweredIndices) {
-          const locked = lockedLetters[idx];
-          const answer = answers[idx];
-
-          // Check if this position is already filled (either locked or in answer)
-          const isPositionFilled = (locked && locked[pos]) || (answer && answer.length > pos);
-
-          if (!isPositionFilled) {
-            candidateIndices.push(idx);
-          }
-        }
-
-        // If we found puzzles with this position unfilled, use this position
-        if (candidateIndices.length > 0) {
-          hintPosition = pos;
-          break;
-        }
+      // Check if puzzle has hint data
+      const puzzleHint = puzzle.puzzles[hintIndex].hint;
+      if (!puzzleHint) {
+        console.log('[useHint] No hint available for puzzle:', hintIndex);
+        return false;
       }
 
-      // If no unfilled positions found (shouldn't happen), just use first unanswered puzzle
-      if (candidateIndices.length === 0) {
-        candidateIndices = unansweredIndices;
-        hintPosition = 0;
+      // Add this answer to the hinted list
+      setHintedAnswers((prev) => [...prev, hintIndex]);
+
+      // Set the active hint index to show the hint
+      setActiveHintIndex(hintIndex);
+
+      // Increment hints used
+      setHintsUsed((prev) => prev + 1);
+
+      // Check if we should unlock another hint (after 2 correct answers)
+      if (solved >= 2 && unlockedHints === 1) {
+        setUnlockedHints(2);
+        console.log('[useHint] Unlocked second hint!');
       }
 
-      // Randomly select one of the candidates
-      const hintIndex = candidateIndices[Math.floor(Math.random() * candidateIndices.length)];
-
-      // Get the answer and create hint data
-      const fullAnswer = puzzle.puzzles[hintIndex].answer;
-      const firstAnswer = fullAnswer.includes(',') ? fullAnswer.split(',')[0].trim() : fullAnswer;
-
-      // Create hint data with the appropriate position letter
-      const hintLetter = firstAnswer.charAt(hintPosition).toUpperCase();
-      const hintData = {
-        firstLetter: hintLetter,
-        position: hintPosition,
-        length: firstAnswer.length,
-        fullAnswer: firstAnswer.toUpperCase(),
-      };
-
-      // Update active hints
-      const newActiveHints = [...activeHints];
-      newActiveHints[hintIndex] = hintData;
-      setActiveHints(newActiveHints);
-
-      // Mark this position as having used a hint (this won't be cleared)
-      const newHintPositions = [...hintPositionsUsed];
-      newHintPositions[hintIndex] = true;
-      setHintPositionsUsed(newHintPositions);
-
-      // Update the answer to include the hint letter at the correct position
-      const newAnswers = [...answers];
-      const currentAnswer = answers[hintIndex] || '';
-      const locked = lockedLetters[hintIndex];
-
-      // Build new answer with hint letter at the right position
-      let newAnswer = '';
-      for (let i = 0; i <= hintPosition; i++) {
-        if (locked && locked[i]) {
-          newAnswer += locked[i];
-        } else if (i === hintPosition) {
-          newAnswer += hintLetter;
-        } else if (i < currentAnswer.length) {
-          newAnswer += currentAnswer[i];
-        } else {
-          newAnswer += '';
-        }
-      }
-      newAnswers[hintIndex] = newAnswer;
-      setAnswers(newAnswers);
-
-      setHintsUsed(1);
-
-      // Save progress with hint usage
+      // Save progress
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,
           solved,
           mistakes,
-          hintsUsed: 1,
+          hintsUsed: hintsUsed + 1,
+          hintedAnswers: [...hintedAnswers, hintIndex],
+          unlockedHints,
+          activeHintIndex: hintIndex,
         });
       }
+
+      return true;
     },
     [
       puzzle,
       correctAnswers,
       hintsUsed,
-      activeHints,
-      hintPositionsUsed,
-      lockedLetters,
-      answers,
+      unlockedHints,
+      hintedAnswers,
       currentPuzzleDate,
       solved,
       mistakes,
@@ -696,9 +601,9 @@ export function useGameWithInitialData(initialPuzzleData) {
     setSolved(0);
     setHintsUsed(0);
     setHasCheckedAnswers(false);
-    setActiveHints([null, null, null, null]);
-    setHintPositionsUsed([false, false, false, false]);
-    setLockedLetters([null, null, null, null]);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
     setHardModeTimeUp(false);
   }, []);
 
@@ -734,9 +639,9 @@ export function useGameWithInitialData(initialPuzzleData) {
     won,
     hintsUsed,
     hasCheckedAnswers,
-    activeHints,
-    hintPositionsUsed,
-    lockedLetters,
+    hintedAnswers,
+    unlockedHints,
+    activeHintIndex,
     isHardMode,
     hardModeTimeUp,
     setIsHardMode,
