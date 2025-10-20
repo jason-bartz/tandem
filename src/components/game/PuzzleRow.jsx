@@ -15,6 +15,7 @@ export default function PuzzleRow({
   isFocused,
   readonly: _readonly = false,
   hasHint = false, // Whether this answer has a hint shown
+  lockedLetters = null, // Object mapping position -> letter for locked (correct-position) letters
   answerLength = 0,
   isSmallPhone = false,
   isMobilePhone = false,
@@ -52,7 +53,7 @@ export default function PuzzleRow({
     }
   };
 
-  // Generate visual representation with spaced underscores
+  // Generate visual representation with spaced underscores and green locked letters
   const getVisualDisplay = () => {
     if (answerLength === 0) return '';
 
@@ -60,9 +61,20 @@ export default function PuzzleRow({
     const chars = [];
 
     for (let i = 0; i < answerLength; i++) {
+      const isLocked = lockedLetters && lockedLetters[i];
+
       if (currentValue && i < currentValue.length && currentValue[i] !== ' ') {
         const char = currentValue[i].toUpperCase();
-        chars.push(<span key={i}>{char}</span>);
+        // Style locked letters in green
+        if (isLocked) {
+          chars.push(
+            <span key={i} className="text-green-500 font-bold">
+              {char}
+            </span>
+          );
+        } else {
+          chars.push(<span key={i}>{char}</span>);
+        }
       } else {
         chars.push(<span key={i}>_</span>);
       }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, sanitizeInputPreserveSpaces, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -190,46 +190,9 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      const locked = lockedLetters[index];
-
-      let processedValue = value;
-
-      // If we have locked letters, check if value is already properly formatted
-      if (locked) {
-        // Check if the value already has locked letters in their correct positions
-        const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
-          const position = parseInt(pos);
-          return value[position] === locked[pos];
-        });
-
-        if (hasLockedLettersInPlace) {
-          // Value is already properly formatted with locked letters in position
-          processedValue = value;
-        } else {
-          // Value doesn't have locked letters in correct positions
-          // Ensure locked letters are placed correctly
-          const chars = value.split('');
-
-          // Ensure the array is long enough
-          const maxLockedPos = Math.max(...Object.keys(locked).map(Number));
-          while (chars.length <= maxLockedPos) {
-            chars.push(' ');
-          }
-
-          // Place locked letters at their positions
-          Object.keys(locked).forEach((pos) => {
-            const position = parseInt(pos);
-            chars[position] = locked[pos];
-          });
-
-          processedValue = chars.join('');
-        }
-      }
-
-      // Use different sanitization based on whether we have locked letters
-      const sanitized = locked
-        ? sanitizeInputPreserveSpaces(processedValue) // Preserve spaces for position-based input
-        : sanitizeInput(processedValue); // Regular sanitization for normal input
+      // Simple update - just set the value
+      // Locked letter logic is handled in keyboard handlers, not here
+      const sanitized = sanitizeInput(value);
 
       setAnswers((prev) => {
         const newAnswers = [...prev];
@@ -245,7 +208,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers, lockedLetters]
+    [checkedWrongAnswers]
   );
 
   const completeGame = useCallback(
@@ -689,6 +652,62 @@ export function useGameWithInitialData(initialPuzzleData) {
     }
   }, []);
 
+  // Helper to handle backspace with locked letters
+  const handleBackspace = useCallback(
+    (index) => {
+      const currentValue = answers[index] || '';
+      const locked = lockedLetters[index];
+
+      if (!locked || Object.keys(locked).length === 0) {
+        // No locked letters, just remove last character
+        updateAnswer(index, currentValue.slice(0, -1));
+        return;
+      }
+
+      // Find the last non-locked, non-space character
+      for (let i = currentValue.length - 1; i >= 0; i--) {
+        if (!locked[i] && currentValue[i] !== ' ') {
+          // Remove this character
+          const chars = currentValue.split('');
+          chars[i] = ' ';
+          updateAnswer(index, chars.join(''));
+          return;
+        }
+      }
+      // If we got here, there's nothing to delete
+    },
+    [answers, lockedLetters, updateAnswer]
+  );
+
+  // Helper to handle letter input with locked letters
+  const handleLetterInput = useCallback(
+    (index, letter, maxLength) => {
+      const currentValue = answers[index] || '';
+      const locked = lockedLetters[index];
+
+      if (!locked || Object.keys(locked).length === 0) {
+        // No locked letters, just append if under max length
+        if (currentValue.length < maxLength) {
+          updateAnswer(index, currentValue + letter);
+        }
+        return;
+      }
+
+      // Find the first unlocked position
+      for (let i = 0; i < maxLength; i++) {
+        if (!locked[i] && (!currentValue[i] || currentValue[i] === ' ')) {
+          // This position is unlocked and empty, fill it
+          const chars = (currentValue + ' '.repeat(maxLength)).split('').slice(0, maxLength);
+          chars[i] = letter;
+          updateAnswer(index, chars.join(''));
+          return;
+        }
+      }
+      // If we got here, all unlocked positions are filled
+    },
+    [answers, lockedLetters, updateAnswer]
+  );
+
   return {
     gameState,
     puzzle,
@@ -720,5 +739,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     resetGame,
     returnToWelcome,
     endGame,
+    handleBackspace,
+    handleLetterInput,
   };
 }

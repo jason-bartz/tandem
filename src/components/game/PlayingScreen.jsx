@@ -35,9 +35,11 @@ export default function PlayingScreen({
   hintedAnswers,
   unlockedHints,
   activeHintIndex,
+  lockedLetters = [null, null, null, null],
   onUseHint,
   _hasCheckedAnswers,
   onReturnToWelcome,
+  game,
   isMobilePhone = false,
   isSmallPhone = false,
   isHardMode = false,
@@ -145,9 +147,15 @@ export default function PlayingScreen({
           return;
         }
 
-        const currentValue = answers[focusedIndex];
-        if (currentValue && currentValue.length > 0) {
-          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+        // Use helper that handles locked letters
+        if (game.handleBackspace) {
+          game.handleBackspace(focusedIndex);
+        } else {
+          // Fallback to simple behavior
+          const currentValue = answers[focusedIndex];
+          if (currentValue && currentValue.length > 0) {
+            onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+          }
         }
       } else if (/^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
@@ -157,17 +165,21 @@ export default function PlayingScreen({
           return;
         }
 
-        const currentValue = answers[focusedIndex] || '';
-
         const answerLength = puzzle?.puzzles[focusedIndex]?.answer
           ? puzzle.puzzles[focusedIndex].answer.includes(',')
             ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
             : puzzle.puzzles[focusedIndex].answer.length
           : 15;
 
-        // Just check against answer length
-        if (currentValue.length < answerLength) {
-          onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+        // Use helper that handles locked letters
+        if (game.handleLetterInput) {
+          game.handleLetterInput(focusedIndex, e.key.toUpperCase(), answerLength);
+        } else {
+          // Fallback to simple behavior
+          const currentValue = answers[focusedIndex] || '';
+          if (currentValue.length < answerLength) {
+            onUpdateAnswer(focusedIndex, currentValue + e.key.toUpperCase());
+          }
         }
       }
     };
@@ -192,6 +204,7 @@ export default function PlayingScreen({
     onCheckSingleAnswer,
     correctAnswer,
     incorrectAnswer,
+    game,
   ]);
 
   const handleKeyboardInput = (key) => {
@@ -242,9 +255,15 @@ export default function PlayingScreen({
         return;
       }
 
-      const currentValue = answers[focusedIndex];
-      if (currentValue.length > 0) {
-        onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+      // Use helper that handles locked letters
+      if (game.handleBackspace) {
+        game.handleBackspace(focusedIndex);
+      } else {
+        // Fallback to simple behavior
+        const currentValue = answers[focusedIndex];
+        if (currentValue.length > 0) {
+          onUpdateAnswer(focusedIndex, currentValue.slice(0, -1));
+        }
       }
       return;
     }
@@ -256,17 +275,21 @@ export default function PlayingScreen({
         return;
       }
 
-      const currentValue = answers[focusedIndex] || '';
-
       const answerLength = puzzle?.puzzles[focusedIndex]?.answer
         ? puzzle.puzzles[focusedIndex].answer.includes(',')
           ? puzzle.puzzles[focusedIndex].answer.split(',')[0].trim().length
           : puzzle.puzzles[focusedIndex].answer.length
         : 15;
 
-      // Just check against answer length
-      if (currentValue.length < answerLength) {
-        onUpdateAnswer(focusedIndex, currentValue + key);
+      // Use helper that handles locked letters
+      if (game.handleLetterInput) {
+        game.handleLetterInput(focusedIndex, key, answerLength);
+      } else {
+        // Fallback to simple behavior
+        const currentValue = answers[focusedIndex] || '';
+        if (currentValue.length < answerLength) {
+          onUpdateAnswer(focusedIndex, currentValue + key);
+        }
       }
     }
   };
@@ -423,6 +446,7 @@ export default function PlayingScreen({
                       isFocused={focusedIndex === index}
                       readonly={true}
                       hasHint={hintedAnswers.includes(index)}
+                      lockedLetters={lockedLetters[index]}
                       answerLength={
                         p.answer
                           ? p.answer.includes(',')
