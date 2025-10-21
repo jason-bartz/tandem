@@ -11,7 +11,7 @@ import {
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import StatsModal from './StatsModal';
-import ArchiveModalPaginated from './ArchiveModalPaginated';
+import ArchiveCalendar from './ArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
@@ -313,11 +313,6 @@ export default function CompleteScreen({
               >
                 {puzzleTheme}
               </p>
-              {difficultyRating && (
-                <p className="text-xs text-gray-600 dark:text-gray-400 mt-2">
-                  Difficulty: {difficultyRating}
-                </p>
-              )}
             </div>
           )}
 
@@ -378,9 +373,30 @@ export default function CompleteScreen({
             </div>
           </div>
 
-          {hintsUsed > 0 && (
-            <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-              💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
+          {(hintsUsed > 0 || difficultyRating) && (
+            <div
+              className={`flex items-center text-sm text-gray-600 dark:text-gray-400 mb-6 ${hintsUsed > 0 ? 'justify-between' : 'justify-end'}`}
+            >
+              {hintsUsed > 0 && (
+                <div>
+                  💡 {hintsUsed} hint{hintsUsed > 1 ? 's' : ''} used
+                </div>
+              )}
+              {difficultyRating && (
+                <div className="flex items-center gap-1.5">
+                  <span>Difficulty: {difficultyRating}</span>
+                  <button
+                    onClick={() => {
+                      lightTap();
+                      setShowHowToPlay(true);
+                    }}
+                    className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+                    aria-label="Learn about difficulty ratings"
+                  >
+                    ⓘ
+                  </button>
+                </div>
+              )}
             </div>
           )}
 
@@ -436,14 +452,14 @@ export default function CompleteScreen({
       {showStats && <StatsModal onClose={() => setShowStats(false)} />}
 
       <StatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
-      <ArchiveModalPaginated
+      <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
-        onSelectPuzzle={(date) => {
+        onSelectPuzzle={(puzzleNumber) => {
           setShowArchive(false);
           // Small delay to ensure modal closes before loading new puzzle
           setTimeout(() => {
-            onSelectPuzzle(date);
+            onSelectPuzzle(puzzleNumber);
           }, 100);
         }}
       />
