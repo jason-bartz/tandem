@@ -6,6 +6,7 @@ import { Browser } from '@capacitor/browser';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { ASSET_VERSION } from '@/lib/constants';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [loading, setLoading] = useState(false);
@@ -253,7 +254,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         {/* Logo */}
         <div className="w-20 h-20 mx-auto mb-4 relative">
           <Image
-            src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+            src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
             alt="Tandem Logo"
             width={80}
             height={80}

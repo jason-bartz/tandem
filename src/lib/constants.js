@@ -132,6 +132,8 @@ export const THEME_MODE = {
   DEFAULT: 'auto',
 };
 
+export const ASSET_VERSION = '1.0.1'; // Increment this when assets change to bust cache
+
 export const ADMIN_CONFIG = {
   SESSION_DURATION: '7d',
   MAX_BULK_OPERATIONS: 30,

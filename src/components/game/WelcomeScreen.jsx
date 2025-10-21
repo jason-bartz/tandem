@@ -11,6 +11,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
+import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
 
 export default function WelcomeScreen({
@@ -152,7 +153,7 @@ export default function WelcomeScreen({
         {(!isMobilePhone || !isNativeApp) && (
           <div className="w-24 h-24 mx-auto mb-5 relative">
             <Image
-              src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+              src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
               alt="Tandem Logo"
               width={96}
               height={96}
