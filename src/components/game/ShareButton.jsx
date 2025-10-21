@@ -96,13 +96,13 @@ export default function ShareButton({ shareText, className = '' }) {
         className={`
           share-button
           w-full py-3 px-4
-          text-white rounded-xl font-semibold
-          hover:shadow-lg transition-all
+          text-white rounded-2xl font-semibold
+          transition-all border-[3px]
           flex items-center justify-center gap-2
           ${
             highContrast
-              ? 'bg-hc-success border-4 border-hc-border hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-teal-600 to-green-600 dark:from-teal-600 dark:to-green-600'
+              ? 'bg-hc-success border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-green border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }
           ${showSuccessBurst && !reduceMotion ? 'share-success' : ''}
           ${className}

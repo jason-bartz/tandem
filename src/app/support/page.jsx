@@ -103,29 +103,29 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">Difficulty Scale</h4>
             <div className="space-y-3 text-sm">
-              <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg">
+              <div className="p-3 bg-[#7ed957]/20 border-[3px] border-[#7ed957] rounded-2xl">
                 <p className="font-semibold mb-1">⭐ Easy</p>
                 <p>
                   Straightforward connections with common vocabulary and clear emojis. Most players
                   solve these quickly.
                 </p>
               </div>
-              <div className="p-3 bg-lime-50 dark:bg-lime-900/20 rounded-lg">
+              <div className="p-3 bg-[#7ed957]/10 border-[3px] border-[#7ed957]/60 rounded-2xl">
                 <p className="font-semibold mb-1">⭐ Medium-Easy</p>
                 <p>Some thinking required, but vocabulary and connections are mostly familiar.</p>
               </div>
-              <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg">
+              <div className="p-3 bg-[#ffce00]/20 border-[3px] border-[#ffce00] rounded-2xl">
                 <p className="font-semibold mb-1">⭐ Medium</p>
                 <p>
                   Balanced challenge requiring creative thinking. Connections may not be immediately
                   obvious.
                 </p>
               </div>
-              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
+              <div className="p-3 bg-[#ff751f]/20 border-[3px] border-[#ff751f] rounded-2xl">
                 <p className="font-semibold mb-1">⭐ Medium-Hard</p>
                 <p>Clever connections with wordplay. Requires lateral thinking and persistence.</p>
               </div>
-              <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg">
+              <div className="p-3 bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl">
                 <p className="font-semibold mb-1">⭐ Hard</p>
                 <p>
                   Abstract themes, challenging vocabulary, or obscure connections. These puzzles
@@ -308,7 +308,7 @@ export default function Support() {
               Hard Mode is an exclusive feature for Tandem Unlimited subscribers (iOS only) that
               adds a challenging twist to the classic Tandem gameplay.
             </p>
-            <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20 rounded-lg p-4">
+            <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
               <ul className="list-disc list-inside text-sm space-y-1">
                 <li>
@@ -397,7 +397,7 @@ export default function Support() {
             </ul>
           </div>
 
-          <div className="bg-sky-50 dark:bg-sky-900/20 rounded-lg p-4">
+          <div className="bg-[#38b6ff]/20 border-[3px] border-[#38b6ff] rounded-2xl p-4">
             <p className="text-sm">
               <strong>Note:</strong> Hard Mode is only available for subscribers with an active
               Tandem Unlimited subscription. Non-subscribers will see the Hard Mode toggle greyed
@@ -463,7 +463,7 @@ export default function Support() {
                   href="https://discord.gg/uSxtYQXtHN"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sky-600 dark:text-sky-400 hover:underline"
+                  className="text-[#38b6ff] dark:text-[#38b6ff] hover:underline font-semibold"
                 >
                   discord.gg/uSxtYQXtHN
                 </a>
@@ -474,7 +474,7 @@ export default function Support() {
                   href="https://www.reddit.com/r/Tandem_Daily/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sky-600 dark:text-sky-400 hover:underline"
+                  className="text-[#38b6ff] dark:text-[#38b6ff] hover:underline font-semibold"
                 >
                   r/Tandem_Daily
                 </a>
@@ -517,80 +517,86 @@ export default function Support() {
           </Link>
 
           {/* Main content card */}
-          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-sky-500 to-sky-600 dark:from-sky-600 dark:to-sky-700 p-6 text-white">
-              <h1 className="text-3xl font-bold">Tandem Support</h1>
-              <p className="mt-2 text-sky-100">
-                Welcome! We're here to help you enjoy your daily puzzle experience.
-              </p>
-            </div>
-
-            {/* Content */}
-            <div className="p-6">
-              <div className="space-y-2">
-                {sections.map((section) => (
-                  <div
-                    key={section.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
-                  >
-                    <button
-                      onClick={() =>
-                        setActiveSection(activeSection === section.id ? null : section.id)
-                      }
-                      className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
-                    >
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">
-                        {section.title}
-                      </span>
-                      <svg
-                        className={`h-5 w-5 text-gray-500 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {activeSection === section.id && (
-                      <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                        {section.content}
-                      </div>
-                    )}
-                  </div>
-                ))}
+          <div className="relative">
+            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden translate-x-[4px] translate-y-[4px] relative z-10">
+              {/* Header */}
+              <div className="bg-[#38b6ff] border-b-[3px] border-black dark:border-white p-6 text-black">
+                <h1 className="text-3xl font-bold">Tandem Support</h1>
+                <p className="mt-2 text-black/80">
+                  Welcome! We're here to help you enjoy your daily puzzle experience.
+                </p>
               </div>
 
-              {/* System Requirements */}
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
-                  System Requirements
-                </h3>
-                <div className="grid md:grid-cols-2 gap-4 text-sm">
-                  <div>
-                    <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">iOS App</h4>
-                    <ul className="text-gray-600 dark:text-gray-400 space-y-1">
-                      <li>• iPhone or iPad</li>
-                      <li>• iOS 14.0 or later</li>
-                      <li>• 50MB free storage</li>
-                    </ul>
-                  </div>
-                  <div>
-                    <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">Web (PWA)</h4>
-                    <ul className="text-gray-600 dark:text-gray-400 space-y-1">
-                      <li>• Chrome 90+, Safari 14+</li>
-                      <li>• Active internet connection</li>
-                      <li>• JavaScript enabled</li>
-                    </ul>
+              {/* Content */}
+              <div className="p-6">
+                <div className="space-y-2">
+                  {sections.map((section) => (
+                    <div
+                      key={section.id}
+                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
+                    >
+                      <button
+                        onClick={() =>
+                          setActiveSection(activeSection === section.id ? null : section.id)
+                        }
+                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        <span className="font-semibold text-gray-800 dark:text-gray-200">
+                          {section.title}
+                        </span>
+                        <svg
+                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                      {activeSection === section.id && (
+                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                          {section.content}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* System Requirements */}
+                <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                  <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                    System Requirements
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">iOS App</h4>
+                      <ul className="text-gray-600 dark:text-gray-400 space-y-1">
+                        <li>• iPhone or iPad</li>
+                        <li>• iOS 14.0 or later</li>
+                        <li>• 50MB free storage</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">
+                        Web (PWA)
+                      </h4>
+                      <ul className="text-gray-600 dark:text-gray-400 space-y-1">
+                        <li>• Chrome 90+, Safari 14+</li>
+                        <li>• Active internet connection</li>
+                        <li>• JavaScript enabled</li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            {/* Faux drop shadow */}
+            <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
           {/* Additional info */}

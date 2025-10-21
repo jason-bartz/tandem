@@ -437,123 +437,127 @@ export default function PrivacyPolicy() {
           </Link>
 
           {/* Main content card */}
-          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-sky-500 to-sky-600 dark:from-sky-600 dark:to-sky-700 p-6 text-white">
-              <h1 className="text-3xl font-bold">Privacy Policy</h1>
-              <p className="mt-2 text-sky-100">Your privacy is important to us</p>
-            </div>
+          <div className="relative">
+            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden translate-x-[4px] translate-y-[4px] relative z-10">
+              {/* Header */}
+              <div className="bg-[#7ed957] border-b-[3px] border-black dark:border-white p-6 text-black">
+                <h1 className="text-3xl font-bold">Privacy Policy</h1>
+                <p className="mt-2 text-black/80">Your privacy is important to us</p>
+              </div>
 
-            {/* Summary Card */}
-            <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                Tandem is designed with privacy in mind:
-              </p>
-              <ul className="text-sm space-y-1">
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  No account required
-                </li>
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  No personal data collection (names, emails, etc.)
-                </li>
-                <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Gameplay scores stored on our servers for leaderboards
-                </li>
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  No ads or third-party trackers
-                </li>
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  No data sales to third parties
-                </li>
-                <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  Family-friendly and safe for all ages
-                </li>
-              </ul>
-            </div>
+              {/* Summary Card */}
+              <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Tandem is designed with privacy in mind:
+                </p>
+                <ul className="text-sm space-y-1">
+                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    No account required
+                  </li>
+                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    No personal data collection (names, emails, etc.)
+                  </li>
+                  <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Gameplay scores stored on our servers for leaderboards
+                  </li>
+                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    No ads or third-party trackers
+                  </li>
+                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    No data sales to third parties
+                  </li>
+                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    Family-friendly and safe for all ages
+                  </li>
+                </ul>
+              </div>
 
-            {/* Content */}
-            <div className="p-6 pt-0">
-              <div className="space-y-2">
-                {sections.map((section) => (
-                  <div
-                    key={section.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
-                  >
-                    <button
-                      onClick={() =>
-                        setActiveSection(activeSection === section.id ? null : section.id)
-                      }
-                      className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
+              {/* Content */}
+              <div className="p-6 pt-0">
+                <div className="space-y-2">
+                  {sections.map((section) => (
+                    <div
+                      key={section.id}
+                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
                     >
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">
-                        {section.title}
-                      </span>
-                      <svg
-                        className={`h-5 w-5 text-gray-500 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                      <button
+                        onClick={() =>
+                          setActiveSection(activeSection === section.id ? null : section.id)
+                        }
+                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {activeSection === section.id && (
-                      <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                        {section.content}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                        <span className="font-semibold text-gray-800 dark:text-gray-200">
+                          {section.title}
+                        </span>
+                        <svg
+                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                      {activeSection === section.id && (
+                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                          {section.content}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+            {/* Faux drop shadow */}
+            <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
           {/* Additional info */}

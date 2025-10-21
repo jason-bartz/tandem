@@ -166,7 +166,10 @@ export default function TermsOfUse() {
             privacy practices.
           </p>
           <p>
-            <Link href="/privacypolicy" className="text-sky-600 dark:text-sky-400 hover:underline">
+            <Link
+              href="/privacypolicy"
+              className="text-[#38b6ff] dark:text-[#38b6ff] hover:underline font-semibold"
+            >
               View our Privacy Policy
             </Link>
           </p>
@@ -383,80 +386,84 @@ export default function TermsOfUse() {
           </Link>
 
           {/* Main content card */}
-          <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-md rounded-3xl shadow-xl overflow-hidden">
-            {/* Header */}
-            <div className="bg-gradient-to-r from-teal-500 to-teal-600 dark:from-teal-600 dark:to-teal-700 p-6 text-white">
-              <h1 className="text-3xl font-bold">Terms of Use</h1>
-              <p className="mt-2 text-teal-100">Please read these terms carefully</p>
-            </div>
+          <div className="relative">
+            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden translate-x-[4px] translate-y-[4px] relative z-10">
+              {/* Header */}
+              <div className="bg-[#ff66c4] border-b-[3px] border-black dark:border-white p-6 text-black">
+                <h1 className="text-3xl font-bold">Terms of Use</h1>
+                <p className="mt-2 text-black/80">Please read these terms carefully</p>
+              </div>
 
-            {/* Summary Card */}
-            <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700">
-              <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Points</h3>
-              <ul className="text-sm space-y-1">
-                <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="text-teal-500">•</span>
-                  Free to play daily puzzle
-                </li>
-                <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="text-teal-500">•</span>
-                  Optional subscriptions for archive access
-                </li>
-                <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="text-teal-500">•</span>
-                  Suitable for all ages
-                </li>
-                <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="text-teal-500">•</span>
-                  Personal, non-commercial use only
-                </li>
-                <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                  <span className="text-teal-500">•</span>
-                  Subscriptions managed through Apple
-                </li>
-              </ul>
-            </div>
+              {/* Summary Card */}
+              <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Points</h3>
+                <ul className="text-sm space-y-1">
+                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <span className="text-[#ff66c4]">•</span>
+                    Free to play daily puzzle
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <span className="text-[#ff66c4]">•</span>
+                    Optional subscriptions for archive access
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <span className="text-[#ff66c4]">•</span>
+                    Suitable for all ages
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <span className="text-[#ff66c4]">•</span>
+                    Personal, non-commercial use only
+                  </li>
+                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                    <span className="text-[#ff66c4]">•</span>
+                    Subscriptions managed through Apple
+                  </li>
+                </ul>
+              </div>
 
-            {/* Content */}
-            <div className="p-6 pt-0">
-              <div className="space-y-2">
-                {sections.map((section) => (
-                  <div
-                    key={section.id}
-                    className="border border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden"
-                  >
-                    <button
-                      onClick={() =>
-                        setActiveSection(activeSection === section.id ? null : section.id)
-                      }
-                      className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:hover:bg-gray-900/70 transition-colors"
+              {/* Content */}
+              <div className="p-6 pt-0">
+                <div className="space-y-2">
+                  {sections.map((section) => (
+                    <div
+                      key={section.id}
+                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
                     >
-                      <span className="font-semibold text-gray-800 dark:text-gray-200">
-                        {section.title}
-                      </span>
-                      <svg
-                        className={`h-5 w-5 text-gray-500 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
+                      <button
+                        onClick={() =>
+                          setActiveSection(activeSection === section.id ? null : section.id)
+                        }
+                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-                    {activeSection === section.id && (
-                      <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300">
-                        {section.content}
-                      </div>
-                    )}
-                  </div>
-                ))}
+                        <span className="font-semibold text-gray-800 dark:text-gray-200">
+                          {section.title}
+                        </span>
+                        <svg
+                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M19 9l-7 7-7-7"
+                          />
+                        </svg>
+                      </button>
+                      {activeSection === section.id && (
+                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                          {section.content}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
+            {/* Faux drop shadow */}
+            <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
           {/* Additional info */}

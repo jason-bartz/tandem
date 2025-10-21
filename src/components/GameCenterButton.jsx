@@ -2,11 +2,13 @@
 import { useState, useEffect } from 'react';
 import gameCenterService from '@/services/gameCenter.service';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHaptics } from '@/hooks/useHaptics';
 
 export default function GameCenterButton() {
   const [isAvailable, setIsAvailable] = useState(false);
   const { highContrast } = useTheme();
+  const getIconPath = useUIIcon();
   const { lightTap } = useHaptics();
 
   useEffect(() => {
@@ -37,17 +39,17 @@ export default function GameCenterButton() {
       <button
         onClick={handleShowAchievements}
         className={`
-          w-full py-3 px-4 rounded-xl font-semibold
+          w-full py-3 px-4 rounded-2xl font-semibold
           transition-all flex items-center justify-between
           ${
             highContrast
-              ? 'bg-hc-surface border-2 border-hc-border text-hc-text hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-amber-100 to-yellow-100 dark:from-amber-900/40 dark:to-yellow-900/40 text-gray-800 dark:text-gray-200 hover:from-amber-200 hover:to-yellow-200 dark:hover:from-amber-800/50 dark:hover:to-yellow-800/50'
+              ? 'bg-hc-surface border-[3px] border-hc-border text-hc-text hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-yellow/20 dark:bg-amber-900/40 border-[3px] border-accent-yellow dark:border-gray-600 text-gray-800 dark:text-gray-200 shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }
         `}
       >
         <span className="flex items-center gap-2">
-          <span className="text-xl">🏆</span>
+          <img src={getIconPath('achievements')} alt="Achievements" className="w-5 h-5" />
           <span>View Achievements</span>
         </span>
         <span className="text-gray-500 dark:text-gray-400">›</span>
@@ -56,17 +58,17 @@ export default function GameCenterButton() {
       <button
         onClick={handleShowLeaderboard}
         className={`
-          w-full py-3 px-4 rounded-xl font-semibold
+          w-full py-3 px-4 rounded-2xl font-semibold
           transition-all flex items-center justify-between
           ${
             highContrast
-              ? 'bg-hc-surface border-2 border-hc-border text-hc-text hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900/40 dark:to-teal-900/40 text-gray-800 dark:text-gray-200 hover:from-sky-200 hover:to-teal-200 dark:hover:from-sky-800/50 dark:hover:to-teal-800/50'
+              ? 'bg-hc-surface border-[3px] border-hc-border text-hc-text hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-blue/20 dark:bg-sky-900/40 border-[3px] border-accent-blue dark:border-gray-600 text-gray-800 dark:text-gray-200 shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }
         `}
       >
         <span className="flex items-center gap-2">
-          <span className="text-xl">📊</span>
+          <img src={getIconPath('leaderboard')} alt="Leaderboard" className="w-5 h-5" />
           <span>View Leaderboard</span>
         </span>
         <span className="text-gray-500 dark:text-gray-400">›</span>

@@ -40,14 +40,14 @@ const PuzzleItem = memo(
     return (
       <button
         onClick={() => onClick(puzzle)}
-        className={`w-full p-3 rounded-xl transition-all text-left transform ${
+        className={`w-full p-3 rounded-2xl transition-all text-left transform border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
           highContrast
             ? actuallyLocked
-              ? 'bg-hc-surface border-4 border-hc-error opacity-75 hover:opacity-100'
-              : 'bg-hc-surface border-2 border-hc-border hover:bg-hc-focus hover:text-white active:scale-98'
+              ? 'bg-hc-surface border-hc-error opacity-75 hover:opacity-100 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-hc-surface border-hc-border hover:bg-hc-focus hover:text-white active:scale-98 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
             : actuallyLocked
-              ? 'bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 opacity-75 hover:opacity-100'
-              : 'bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 active:scale-98'
+              ? 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-75 hover:opacity-100'
+              : 'bg-white dark:bg-bg-card border-border-main hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
         }`}
         style={{
           WebkitTapHighlightColor: 'transparent',
@@ -106,8 +106,10 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
     {Array.from({ length: count }).map((_, index) => (
       <div
         key={index}
-        className={`w-full p-3 rounded-xl mb-2 ${
-          highContrast ? 'bg-hc-surface border-2 border-hc-border' : 'bg-gray-100 dark:bg-gray-700'
+        className={`w-full p-3 rounded-2xl mb-2 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+          highContrast
+            ? 'bg-hc-surface border-hc-border'
+            : 'bg-white dark:bg-bg-card border-border-main'
         }`}
       >
         <div className="animate-pulse">
@@ -581,8 +583,10 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-modal-enter gpu-accelerated ${
-          highContrast ? 'bg-hc-background border-4 border-hc-border' : 'bg-white dark:bg-gray-800'
+        className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-modal-enter gpu-accelerated ${
+          highContrast
+            ? 'bg-hc-background border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
       >
         {/* Header */}
@@ -602,10 +606,10 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           </div>
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-full border-none text-lg cursor-pointer transition-all flex items-center justify-center ${
+            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white font-bold'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
             }`}
             aria-label="Close"
           >
@@ -623,7 +627,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         {/* Puzzle List */}
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto modal-scrollbar"
           style={{
             WebkitOverflowScrolling: 'touch',
             overscrollBehavior: 'contain',
@@ -688,10 +692,10 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         {/* Close Button */}
         <button
           onClick={onClose}
-          className={`mt-4 w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all transform hover:scale-102 active:scale-98 ${
+          className={`mt-4 w-full py-3 text-white font-semibold rounded-2xl transition-all border-[3px] ${
             highContrast
-              ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500'
+              ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }`}
           style={{
             WebkitTapHighlightColor: 'transparent',

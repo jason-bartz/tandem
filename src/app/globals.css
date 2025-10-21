@@ -6,31 +6,94 @@
 @import '../styles/micro-animations.css';
 
 :root {
-  --plum: #6b46c1;
-  --peach: #ffb5a7;
-  --sage-green: #87a96b;
-  --warm-yellow: #ffd23f;
-  --coral-red: #ff6b6b;
-  --off-white: #faf8f3;
-  --light-sand: #f5f2ed;
-  --dark-text: #2c2c2c;
-  --gray-text: #6b7280;
-  --border-color: #e5e7eb;
+  /* New minimal pastel color palette */
+  --accent-green: #7ed957;
+  --accent-yellow: #ffce00;
+  --accent-pink: #ff66c4;
+  --accent-blue: #38b6ff;
+  --accent-red: #ff5757;
+  --accent-orange: #ff751f;
+
+  /* Background colors - solid, no gradients */
+  --bg-primary: #ffce00;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+
+  /* Text colors */
+  --text-primary: #2c2c2c;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+
+  /* Border colors - thicker borders */
+  --border-color: #2c2c2c;
+  --border-light: #e5e7eb;
+  --border-width: 3px;
+
+  /* Shadows - faux drop shadow */
+  --shadow-card: 4px 4px 0px rgba(0, 0, 0, 1);
+  --shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
+  --shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
+
   --modal-bg: rgba(0, 0, 0, 0.5);
 }
 
 [data-theme='dark'] {
-  --plum: #8b5cf6;
-  --peach: #fca5a5;
-  --sage-green: #86efac;
-  --warm-yellow: #fde047;
-  --coral-red: #f87171;
-  --off-white: #1f2937;
-  --light-sand: #374151;
-  --dark-text: #f9fafb;
-  --gray-text: #9ca3af;
+  /* Dark mode color adjustments */
+  --accent-green: #7ed957;
+  --accent-yellow: #ffce00;
+  --accent-pink: #ff66c4;
+  --accent-blue: #38b6ff;
+  --accent-red: #ff5757;
+  --accent-orange: #ff751f;
+
+  /* Background colors - dark blue/purple complementary to yellow */
+  --bg-primary: #1a1a2e;
+  --bg-surface: #16213e;
+  --bg-card: #0f3460;
+
+  /* Text colors */
+  --text-primary: #f9fafb;
+  --text-secondary: #d1d5db;
+  --text-muted: #9ca3af;
+
+  /* Border colors - toned down for dark mode */
   --border-color: #4b5563;
+  --border-light: #4b5563;
+  --border-width: 3px;
+
+  /* Shadows - softer, less bright in dark mode */
+  --shadow-card: 4px 4px 0px rgba(0, 0, 0, 0.5);
+  --shadow-button: 3px 3px 0px rgba(0, 0, 0, 0.5);
+  --shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.3);
+
   --modal-bg: rgba(0, 0, 0, 0.7);
+}
+
+/* Custom scrollbar styling for modals */
+.modal-scrollbar::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+  margin: 8px 0;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.5);
+  border-radius: 4px;
+}
+
+.modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(156, 163, 175, 0.7);
+}
+
+[data-theme='dark'] .modal-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.7);
+}
+
+[data-theme='dark'] .modal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(75, 85, 99, 0.9);
 }
 
 * {
@@ -170,7 +233,8 @@ select {
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
-  background-color: #fafafa;
+  background-color: var(--bg-primary);
+  background-image: none !important; /* Remove any background images */
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -179,17 +243,22 @@ body {
 }
 
 [data-theme='dark'] body {
-  background-color: #1a1a1a;
+  background-color: var(--bg-primary);
+  background-image: none !important; /* Remove any background images */
 }
 
 .game-container {
-  background: var(--off-white);
-  border-radius: 24px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  background: var(--bg-card);
+  border-radius: 32px;
+  border: var(--border-width) solid var(--border-color);
+  box-shadow: var(--shadow-card);
   width: 100%;
   max-width: 420px;
   overflow: hidden;
-  transition: background 0.3s ease;
+  transition:
+    background 0.3s ease,
+    border 0.3s ease,
+    box-shadow 0.3s ease;
 }
 
 /* ============================================
@@ -744,33 +813,33 @@ body {
   background-color: var(--hc-surface) !important;
 }
 
-/* Light mode high contrast - Color blind friendly palette */
+/* Light mode high contrast - Color blind friendly palette - Updated for minimal design */
 .high-contrast:not(.dark) {
-  --hc-primary: #0055cc;
+  --hc-primary: #38b6ff;
   --hc-primary-text: #ffffff;
-  --hc-success: #117733;
-  --hc-error: #882255;
-  --hc-warning: #ee7733;
+  --hc-success: #7ed957;
+  --hc-error: #ff5757;
+  --hc-warning: #ffce00;
   --hc-background: #ffffff;
   --hc-surface: #f5f5f5;
   --hc-text: #000000;
-  --hc-border: #333333;
-  --hc-focus: #0055cc;
+  --hc-border: #2c2c2c;
+  --hc-focus: #38b6ff;
   --hc-neutral: #666666;
 }
 
-/* Dark mode high contrast - Color blind friendly palette */
+/* Dark mode high contrast - Color blind friendly palette - Updated for minimal design */
 .high-contrast.dark {
-  --hc-primary: #5599ff;
+  --hc-primary: #38b6ff;
   --hc-primary-text: #000000;
-  --hc-success: #44aa77;
-  --hc-error: #cc6677;
-  --hc-warning: #ffaa44;
-  --hc-background: #000000;
-  --hc-surface: #1a1a1a;
+  --hc-success: #7ed957;
+  --hc-error: #ff5757;
+  --hc-warning: #ffce00;
+  --hc-background: #1a1a2e;
+  --hc-surface: #16213e;
   --hc-text: #ffffff;
-  --hc-border: #cccccc;
-  --hc-focus: #5599ff;
+  --hc-border: #38b6ff;
+  --hc-focus: #ff66c4;
   --hc-neutral: #999999;
 }
 

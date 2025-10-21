@@ -17,6 +17,7 @@ import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
 import Settings from '@/components/Settings';
 
@@ -48,6 +49,7 @@ export default function CompleteScreen({
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
+  const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
 
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
@@ -156,45 +158,67 @@ export default function CompleteScreen({
             lightTap();
             setShowPlayerStats(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Statistics"
         >
-          📊
+          <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowArchive(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Archive"
         >
-          📅
+          <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowHowToPlay(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="How to Play"
         >
-          ❓
+          <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowSettings(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Settings"
         >
-          ⚙️
+          <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
         </button>
       </div>
 
       {/* Main completion card */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center relative">
+      <div
+        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
+          highContrast
+            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+        }`}
+      >
         {/* Back arrow button at top left */}
         <button
           onClick={() => {
@@ -267,12 +291,12 @@ export default function CompleteScreen({
 
           {puzzleTheme && (
             <div
-              className={`rounded-2xl p-5 mb-6 relative overflow-hidden ${
+              className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
                 highContrast
-                  ? 'bg-hc-surface'
+                  ? 'bg-hc-surface border-hc-border'
                   : won
-                    ? 'bg-gradient-to-br from-yellow-100 via-amber-100 to-orange-100 dark:from-yellow-900/40 dark:via-amber-900/40 dark:to-orange-900/40'
-                    : 'bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-700'
+                    ? 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-accent-yellow'
+                    : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
               }`}
             >
               <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
@@ -283,7 +307,7 @@ export default function CompleteScreen({
                   highContrast
                     ? 'text-hc-text'
                     : won
-                      ? 'text-amber-800 dark:text-amber-200'
+                      ? 'text-accent-yellow dark:text-accent-yellow'
                       : 'text-gray-800 dark:text-gray-200'
                 }`}
               >
@@ -299,27 +323,55 @@ export default function CompleteScreen({
 
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div
-              className={`rounded-xl p-4 text-center animate-scale-fade-in stagger-1 ${
-                isHardMode
-                  ? 'bg-gradient-to-br from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-700'
-                  : 'bg-gray-50 dark:bg-gray-800'
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-1 ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : isHardMode
+                    ? 'bg-accent-red/20 dark:bg-red-900/40 border-accent-red'
+                    : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
               }`}
             >
               <div
                 className={`text-lg font-bold ${
-                  isHardMode ? 'text-red-600 dark:text-red-400' : 'text-gray-800 dark:text-gray-200'
+                  highContrast
+                    ? 'text-hc-text'
+                    : isHardMode
+                      ? 'text-accent-red dark:text-accent-red'
+                      : 'text-accent-blue dark:text-accent-blue'
                 }`}
               >
                 {formatTime(time)}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center animate-scale-fade-in stagger-2">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">{mistakes}/4</div>
+            <div
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-2 ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-accent-orange/20 dark:bg-orange-900/40 border-accent-orange'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-accent-orange dark:text-accent-orange'
+                }`}
+              >
+                {mistakes}/4
+              </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
             </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 text-center flex flex-col items-center justify-center animate-scale-fade-in stagger-3">
-              <div className="text-lg font-bold text-gray-800 dark:text-gray-200">
+            <div
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-accent-pink/20 dark:bg-pink-900/40 border-accent-pink'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-accent-pink dark:text-accent-pink'
+                }`}
+              >
                 {formatDateShort(puzzleDate)}
               </div>
               <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Date</div>
@@ -338,10 +390,10 @@ export default function CompleteScreen({
                 lightTap();
                 setShowRevealAnswers(true);
               }}
-              className={`w-full py-4 rounded-xl font-bold text-white transition-all shadow-md hover:shadow-lg mb-6 ${
+              className={`w-full py-4 rounded-2xl font-bold text-white transition-all mb-6 border-[3px] ${
                 highContrast
-                  ? 'bg-hc-primary border-2 border-hc-border hover:bg-hc-focus'
-                  : 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600'
+                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-accent-orange text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               📖 Reveal Correct Answers
@@ -356,7 +408,11 @@ export default function CompleteScreen({
               lightTap();
               setShowArchive(true);
             }}
-            className="w-full py-3 px-4 bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white rounded-xl font-semibold hover:shadow-lg transition-all"
+            className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
+              highContrast
+                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+            }`}
           >
             Play from Archive
           </button>
@@ -367,7 +423,11 @@ export default function CompleteScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="text-sky-600 dark:text-sky-400 hover:underline text-sm"
+          className={`text-sm font-medium ${
+            highContrast
+              ? 'text-hc-primary hover:text-hc-focus'
+              : 'text-accent-blue dark:text-accent-blue hover:underline'
+          }`}
         >
           View All Statistics
         </button>

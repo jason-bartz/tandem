@@ -2,6 +2,7 @@
 import { useRef, useEffect, useState } from 'react';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHoverAnimation, useTouchAnimation } from '@/hooks/useAnimation';
 
 export default function PuzzleRow({
@@ -22,6 +23,7 @@ export default function PuzzleRow({
 }) {
   const { selectionStart } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
+  const getIconPath = useUIIcon();
   const { hoverHandlers } = useHoverAnimation();
   const { touchHandlers } = useTouchAnimation();
   const emojiRef = useRef(null);
@@ -110,10 +112,10 @@ export default function PuzzleRow({
               : isMobilePhone
                 ? 'w-[65px] h-[55px] px-1'
                 : 'w-[70px] sm:w-[80px] h-[60px] sm:h-[70px] px-1 sm:px-2'
-          } rounded-[18px] flex items-center justify-center shadow-md transition-all flex-shrink-0 cursor-pointer select-none ${
+          } rounded-[18px] flex items-center justify-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex-shrink-0 cursor-pointer select-none ${
             highContrast
-              ? 'bg-hc-surface border-2 border-hc-border'
-              : 'bg-light-sand dark:bg-gray-700'
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-white dark:bg-gray-700 border-gray-800 dark:border-gray-500'
           } ${!reduceMotion ? 'hover:animate-hover-tilt active:animate-touch-squish' : ''} ${
             isCorrect && !reduceMotion ? 'animate-victory-wiggle' : ''
           }`}
@@ -169,30 +171,29 @@ export default function PuzzleRow({
           readOnly={true}
           aria-label={`Answer ${index + 1}${hasHint ? ' (hint available)' : ''}`}
           className={`
-            w-full ${isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-4'} rounded-xl ${
+            w-full ${isSmallPhone ? 'p-2' : isMobilePhone ? 'p-2.5' : 'p-3 sm:p-4'} rounded-2xl ${
               isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm sm:text-base'
-            } font-medium transition-all outline-none uppercase tracking-[0.15em]
-            ${highContrast ? 'border-4' : 'border-2'}
+            } font-medium transition-all outline-none uppercase tracking-[0.15em] border-[3px]
             ${
               isCorrect
                 ? highContrast
                   ? 'bg-hc-success text-white border-hc-success pattern-correct text-opacity-100'
-                  : `bg-gradient-to-r from-teal-600 to-green-600 text-white border-teal-600 text-opacity-100 ${
+                  : `bg-accent-green text-white border-black dark:border-accent-green shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(126,217,87,0.5)] text-opacity-100 ${
                       !reduceMotion && showCelebration ? 'animate-correct-celebration' : ''
-                    } ${!reduceMotion ? 'animate-soft-glow' : ''}`
+                    }`
                 : isWrong
                   ? highContrast
                     ? 'bg-hc-surface border-hc-error text-hc-error pattern-wrong border-double'
-                    : `bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600 text-red-900 dark:text-red-400 ${
+                    : `bg-accent-red/20 dark:bg-red-900/20 border-accent-red dark:border-accent-red text-red-900 dark:text-red-400 shadow-[3px_3px_0px_rgba(255,87,87,0.3)] ${
                         !reduceMotion ? 'animate-enhanced-shake' : ''
                       }`
                   : hasHint
                     ? highContrast
                       ? 'bg-hc-background border-hc-warning text-hc-text'
-                      : 'bg-yellow-50 dark:bg-yellow-900/20 text-dark-text dark:text-gray-200 border-yellow-400 dark:border-yellow-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
+                      : 'bg-accent-yellow/20 dark:bg-yellow-900/20 text-dark-text dark:text-gray-200 border-accent-yellow dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] focus:border-accent-blue dark:focus:border-accent-blue'
                     : highContrast
                       ? 'bg-hc-background text-hc-text border-hc-border focus:border-hc-focus'
-                      : 'bg-off-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-border-color dark:border-gray-600 focus:border-sky-500 dark:focus:border-sky-400 focus:shadow-md focus:shadow-sky-500/20'
+                      : 'bg-white dark:bg-gray-800 text-dark-text dark:text-gray-200 border-gray-800 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.2)] focus:border-accent-blue dark:focus:border-accent-blue'
             }
             disabled:cursor-not-allowed
             ${isCorrect ? '' : 'caret-transparent'}
@@ -203,22 +204,20 @@ export default function PuzzleRow({
             color: isCorrect ? undefined : 'transparent',
             textShadow: isCorrect ? undefined : 'none',
             WebkitTextFillColor: isCorrect ? undefined : 'transparent',
-            ...(isCorrect && !highContrast
-              ? {
-                  backgroundImage: 'linear-gradient(to right, #0d9488, #16a34a)',
-                  borderColor: '#0d9488',
-                }
-              : {}),
           }}
         />
         {hasHint && !isCorrect && (
           <span
             className={`absolute ${
-              isSmallPhone ? 'right-2 text-base' : 'right-3 text-xl'
+              isSmallPhone ? 'right-2' : 'right-3'
             } top-1/2 -translate-y-1/2 z-10 pointer-events-none`}
             aria-label="Hint shown for this answer"
           >
-            💡
+            <img
+              src={getIconPath('hint')}
+              alt="Hint"
+              className={`${isSmallPhone ? 'w-4 h-4' : 'w-5 h-5'}`}
+            />
           </span>
         )}
       </div>
