@@ -374,32 +374,6 @@ export default function CharacterBlockGrid({
       >
         {blocks}
       </div>
-
-      {/* Hint indicator */}
-      {hasHint && !isCorrect && (
-        <div
-          className={`absolute ${
-            isSmallPhone ? '-right-6' : '-right-7'
-          } top-1/2 -translate-y-1/2 z-10 pointer-events-none`}
-          aria-label="Hint shown for this answer"
-        >
-          <div
-            className={`
-              ${isSmallPhone ? 'w-5 h-5' : 'w-6 h-6'}
-              rounded-full
-              flex items-center justify-center
-              ${
-                highContrast
-                  ? 'bg-hc-warning text-white'
-                  : 'bg-yellow-400 dark:bg-amber-600'
-              }
-              shadow-md
-            `}
-          >
-            <span className={`${isSmallPhone ? 'text-xs' : 'text-sm'}`}>💡</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

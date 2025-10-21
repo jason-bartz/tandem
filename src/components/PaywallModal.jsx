@@ -260,31 +260,63 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         </h2>
 
         {/* Benefits list */}
-        <div className="bg-gradient-to-br from-sky-50 to-teal-50 dark:from-gray-700 dark:to-gray-700 rounded-2xl p-4 mb-6">
+        <div
+          className={`rounded-2xl p-4 mb-6 border-[2px] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-gradient-to-br from-sky-50 to-teal-50 dark:from-gray-700 dark:to-gray-700 border-transparent'
+          }`}
+        >
           <div className="space-y-3">
             <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">
+              <span
+                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+              >
+                ✓
+              </span>
+              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
                 Play any puzzle from the archive
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Ad-free experience</span>
+              <span
+                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+              >
+                ✓
+              </span>
+              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+                Ad-free experience
+              </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">
+              <span
+                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+              >
+                ✓
+              </span>
+              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
                 Access to Hard Mode and future exclusive modes and features
               </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Cancel anytime</span>
+              <span
+                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+              >
+                ✓
+              </span>
+              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+                Cancel anytime
+              </span>
             </div>
             <div className="flex items-center gap-3">
-              <span className="text-green-500 text-xl">✓</span>
-              <span className="text-gray-700 dark:text-gray-300">Support a solo developer</span>
+              <span
+                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+              >
+                ✓
+              </span>
+              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+                Support a solo developer
+              </span>
             </div>
           </div>
         </div>
