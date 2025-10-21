@@ -422,6 +422,21 @@ export default function CharacterBlockGrid({
   // Determine if we need horizontal scrolling
   const needsScroll = answerLength > 8 && isMobilePhone;
 
+  // Debug logging for iOS
+  useEffect(() => {
+    if (answerLength > 8) {
+      console.log('[CharacterBlockGrid] Scroll Debug:', {
+        answerLength,
+        isMobilePhone,
+        isSmallPhone,
+        needsScroll,
+        answerIndex,
+        windowWidth: typeof window !== 'undefined' ? window.innerWidth : 'N/A',
+        windowHeight: typeof window !== 'undefined' ? window.innerHeight : 'N/A',
+      });
+    }
+  }, [answerLength, isMobilePhone, isSmallPhone, needsScroll, answerIndex]);
+
   return (
     <div className="relative">
       {/* Hidden input for keyboard management */}
@@ -440,10 +455,10 @@ export default function CharacterBlockGrid({
 
       {needsScroll ? (
         // Scrollable container for long words on mobile
-        <div className="relative">
+        <div className="relative max-w-full">
           <div
             ref={scrollContainerRef}
-            className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar"
+            className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar max-w-full"
             style={{
               scrollPaddingLeft: '0px',
               WebkitOverflowScrolling: 'touch',

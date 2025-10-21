@@ -82,7 +82,7 @@ export default function PuzzleRow({
           </span>
         </div>
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         {/* Character Block Grid - replaces the old input field */}
         <CharacterBlockGrid
           value={value}
