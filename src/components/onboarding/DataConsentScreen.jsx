@@ -4,7 +4,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { Preferences } from '@capacitor/preferences';
-import { STORAGE_KEYS } from '@/lib/constants';
+import { STORAGE_KEYS, ASSET_VERSION } from '@/lib/constants';
 import Image from 'next/image';
 
 export default function DataConsentScreen({ onContinue, onSkip }) {
@@ -64,7 +64,7 @@ export default function DataConsentScreen({ onContinue, onSkip }) {
         <div className="flex justify-center mb-8">
           <div className="w-24 h-24 relative">
             <Image
-              src={theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}
+              src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
               alt="Tandem Logo"
               width={96}
               height={96}

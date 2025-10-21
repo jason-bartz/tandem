@@ -19,6 +19,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
+import { ASSET_VERSION } from '@/lib/constants';
 import Settings from '@/components/Settings';
 
 export default function CompleteScreen({
@@ -256,7 +257,7 @@ export default function CompleteScreen({
               title="Return to Welcome Screen"
             >
               <Image
-                src={theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}
+                src={`${theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
                 alt="Tandem Logo"
                 width={96}
                 height={96}
@@ -322,8 +323,8 @@ export default function CompleteScreen({
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : isHardMode
-                    ? 'bg-accent-red/30 dark:bg-red-900/50 border-accent-red'
-                    : 'bg-accent-blue/30 dark:bg-sky-900/50 border-accent-blue'
+                    ? 'bg-accent-red/20 dark:bg-red-900/50 border-accent-red'
+                    : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
               }`}
             >
               <div
@@ -343,7 +344,7 @@ export default function CompleteScreen({
               className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-2 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-accent-orange/30 dark:bg-orange-900/50 border-accent-orange'
+                  : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
               }`}
             >
               <div
@@ -359,7 +360,7 @@ export default function CompleteScreen({
               className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-accent-pink/30 dark:bg-pink-900/50 border-accent-pink'
+                  : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
               }`}
             >
               <div
