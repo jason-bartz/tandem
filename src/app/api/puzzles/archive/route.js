@@ -1,17 +1,28 @@
 import { NextResponse } from 'next/server';
 import { getPuzzle } from '@/lib/db';
-import { getCurrentPuzzleNumber, getDateForPuzzleNumber } from '@/lib/puzzleNumber';
+import {
+  getCurrentPuzzleNumber,
+  getDateForPuzzleNumber,
+  getPuzzleNumberForDate,
+} from '@/lib/puzzleNumber';
 import logger from '@/lib/logger';
 
 /**
- * Archive API - Returns puzzles by number range
+ * Archive API - Returns puzzles by number range OR date range
  * Client calculates which puzzle numbers are available based on their timezone
  * Following Wordle's approach for consistent user experience
  *
  * @route GET /api/puzzles/archive
+ *
+ * Number-based query:
  * @param {number} start - Starting puzzle number (inclusive)
  * @param {number} end - Ending puzzle number (inclusive)
  * @param {number} limit - Maximum puzzles to return (default: 20, max: 50)
+ *
+ * Date-based query (for calendar view):
+ * @param {string} startDate - Start date (YYYY-MM-DD)
+ * @param {string} endDate - End date (YYYY-MM-DD)
+ *
  * @returns {Object} Puzzle list with metadata
  */
 export async function GET(request) {
@@ -21,10 +32,30 @@ export async function GET(request) {
     // Get current puzzle number from user's timezone
     const currentNumber = getCurrentPuzzleNumber();
 
-    // Parse parameters with defaults
-    const startNum = parseInt(searchParams.get('start') || '1');
-    const endNum = parseInt(searchParams.get('end') || currentNumber.toString());
-    const limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50); // Max 50 for performance
+    // Check if this is a date-based query (for calendar view)
+    const startDate = searchParams.get('startDate');
+    const endDate = searchParams.get('endDate');
+
+    let startNum, endNum, limit;
+
+    if (startDate && endDate) {
+      // Date-based query for calendar view
+      try {
+        startNum = getPuzzleNumberForDate(startDate);
+        endNum = getPuzzleNumberForDate(endDate);
+        limit = 31; // Max days in a month
+      } catch (error) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid date format or date before launch' },
+          { status: 400 }
+        );
+      }
+    } else {
+      // Number-based query (legacy support)
+      startNum = parseInt(searchParams.get('start') || '1');
+      endNum = parseInt(searchParams.get('end') || currentNumber.toString());
+      limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50); // Max 50 for performance
+    }
 
     // Validate range
     if (startNum < 1) {

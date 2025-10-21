@@ -9,7 +9,7 @@ import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
 import StatsModal from './StatsModal';
-import ArchiveModalPaginated from './ArchiveModalPaginated';
+import ArchiveCalendar from './ArchiveCalendar';
 import Settings from '@/components/Settings';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -641,7 +641,7 @@ export default function PlayingScreen({
 
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModalPaginated
+      <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}

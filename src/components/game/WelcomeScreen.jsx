@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { getCurrentPuzzleNumber, getDisplayDate } from '@/lib/puzzleNumber';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
 import StatsModal from './StatsModal';
-import ArchiveModalPaginated from './ArchiveModalPaginated';
+import ArchiveCalendar from './ArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -200,14 +200,14 @@ export default function WelcomeScreen({
       </div>
 
       <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModalPaginated
+      <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
-        onSelectPuzzle={(date) => {
+        onSelectPuzzle={(puzzleNumber) => {
           setShowArchive(false);
           // Small delay to ensure modal closes before loading new puzzle
           setTimeout(() => {
-            onSelectPuzzle(date);
+            onSelectPuzzle(puzzleNumber);
           }, 100);
         }}
       />
