@@ -8,14 +8,14 @@ import { useState, useEffect } from 'react';
 
 /**
  * Breakpoints for device detection
- * Phones: <= 768px width AND <= 850px height (excludes tablets/iPads)
- * Tablets: > 768px width OR > 850px height
+ * Phones: <= 768px width AND <= 1000px height (includes modern iPhones with notch/Dynamic Island)
+ * Tablets: > 768px width OR > 1000px height
  */
 export const DEVICE_BREAKPOINTS = {
   PHONE_WIDTH: 768,
-  PHONE_HEIGHT: 850,
+  PHONE_HEIGHT: 1000, // Updated to include iPhone 14/15 Pro Max (~930px)
   SMALL_PHONE_HEIGHT: 700, // iPhone SE, compact devices
-  LARGE_PHONE_HEIGHT: 850, // iPhone Pro Max
+  LARGE_PHONE_HEIGHT: 1000, // Modern iPhone Pro Max
 };
 
 /**
