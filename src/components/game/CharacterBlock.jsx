@@ -70,8 +70,8 @@ export default function CharacterBlock({
 
   // Determine cell size based on device - crossword cells are more compact
   const getCellSize = () => {
-    if (isSmallPhone) return 'w-6 h-8'; // 24x32pt - compact for mobile
-    if (isMobilePhone) return 'w-7 h-9'; // 28x36pt - compact for mobile
+    if (isSmallPhone) return 'w-7 h-8'; // 28x32pt - compact for mobile
+    if (isMobilePhone) return 'w-8 h-9'; // 32x36pt - compact for mobile
     return 'w-8 h-10 sm:w-9 sm:h-11'; // 32x40pt / 36x44pt - compact desktop
   };
 
@@ -124,13 +124,9 @@ export default function CharacterBlock({
       return 'bg-accent-blue';
     }
     if (isWrong) {
-      return highContrast
-        ? 'bg-hc-surface'
-        : 'bg-accent-red/20 dark:bg-red-900/20';
+      return highContrast ? 'bg-hc-surface' : 'bg-accent-red/20 dark:bg-red-900/20';
     }
-    return highContrast
-      ? 'bg-hc-background'
-      : 'bg-white dark:bg-gray-800';
+    return highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-800';
   };
 
   // Determine text color
@@ -167,11 +163,7 @@ export default function CharacterBlock({
       variants={variants}
       initial={false} // Don't use initial animation on mount if already correct/wrong
       animate={
-        isCorrect && !reduceMotion
-          ? 'correct'
-          : isWrong && !reduceMotion
-            ? 'wrong'
-            : 'animate'
+        isCorrect && !reduceMotion ? 'correct' : isWrong && !reduceMotion ? 'wrong' : 'animate'
       }
       onClick={handleClick}
       onMouseEnter={() => !isLocked && !isCorrect && lightTap()}
@@ -218,7 +210,6 @@ export default function CharacterBlock({
           {value.toUpperCase()}
         </motion.span>
       ) : null}
-
     </motion.div>
   );
 }
