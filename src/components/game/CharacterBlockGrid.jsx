@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import CharacterBlock from './CharacterBlock';
 import { useTheme } from '@/contexts/ThemeContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * CharacterBlockGrid Component
@@ -51,9 +52,12 @@ export default function CharacterBlockGrid({
 }) {
   const { highContrast } = useTheme();
   const [activeBlockIndex, setActiveBlockIndex] = useState(0);
+  const [showScrollIndicator, setShowScrollIndicator] = useState(true);
   const gridRef = useRef(null);
+  const scrollContainerRef = useRef(null);
   const hiddenInputRef = useRef(null);
   const wasFocused = useRef(false);
+  const activeBlockRef = useRef(null);
 
   // Initialize activeBlockIndex to first non-locked, empty position when focused
   // Only run when focus changes, not when value changes
@@ -81,6 +85,41 @@ export default function CharacterBlockGrid({
     wasFocused.current = isFocused;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, answerLength, lockedLetters, isCorrect]); // Removed 'value' from dependencies to prevent cursor reset
+
+  // Auto-scroll active block into view when it changes
+  useEffect(() => {
+    if (
+      isFocused &&
+      !isCorrect &&
+      answerLength > 8 &&
+      isMobilePhone &&
+      activeBlockRef.current &&
+      scrollContainerRef.current
+    ) {
+      // Smooth scroll the active block into view, centered
+      activeBlockRef.current.scrollIntoView({
+        behavior: 'smooth',
+        block: 'nearest',
+        inline: 'center',
+      });
+    }
+  }, [activeBlockIndex, isFocused, isCorrect, answerLength, isMobilePhone]);
+
+  // Hide scroll indicator on first scroll
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || answerLength <= 8 || !isMobilePhone) return;
+
+    const handleScroll = () => {
+      setShowScrollIndicator(false);
+    };
+
+    container.addEventListener('scroll', handleScroll, { once: true });
+
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [answerLength, isMobilePhone]);
 
   // Find next available block (skipping locked ones)
   const findNextAvailableBlock = useCallback(
@@ -299,23 +338,29 @@ export default function CharacterBlockGrid({
     // Always show the character value (including spaces) - the CharacterBlock will handle display
     // This ensures letters don't disappear when answer is marked correct/wrong
     const displayChar = char && char !== ' ' ? char : null;
+    const isActiveBlock = isFocused && activeBlockIndex === i && !isCorrect;
 
     blocks.push(
-      <CharacterBlock
-        key={`block-${answerIndex}-${i}`}
-        value={displayChar}
-        isActive={isFocused && activeBlockIndex === i && !isCorrect}
-        isLocked={isLocked}
-        isWrong={isWrong && !isLocked}
-        isCorrect={isCorrect}
-        position={i}
-        totalLength={answerLength}
-        onFocus={() => handleBlockFocus(i)}
-        themeColor={themeColor}
-        isSmallPhone={isSmallPhone}
-        isMobilePhone={isMobilePhone}
-        entryDelay={i * 50} // Stagger entry animation
-      />
+      <div
+        key={`block-wrapper-${answerIndex}-${i}`}
+        ref={isActiveBlock ? activeBlockRef : null}
+        className="flex-shrink-0"
+      >
+        <CharacterBlock
+          value={displayChar}
+          isActive={isActiveBlock}
+          isLocked={isLocked}
+          isWrong={isWrong && !isLocked}
+          isCorrect={isCorrect}
+          position={i}
+          totalLength={answerLength}
+          onFocus={() => handleBlockFocus(i)}
+          themeColor={themeColor}
+          isSmallPhone={isSmallPhone}
+          isMobilePhone={isMobilePhone}
+          entryDelay={i * 50} // Stagger entry animation
+        />
+      </div>
     );
   }
 
@@ -336,6 +381,9 @@ export default function CharacterBlockGrid({
     return 'shadow-[2px_2px_0px_rgba(0,0,0,0.2)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]';
   };
 
+  // Determine if we need horizontal scrolling
+  const needsScroll = answerLength > 8 && isMobilePhone;
+
   return (
     <div className="relative">
       {/* Hidden input for keyboard management */}
@@ -352,29 +400,91 @@ export default function CharacterBlockGrid({
         readOnly
       />
 
-      {/* Character blocks grid - crossword style with outer border */}
-      <div
-        ref={gridRef}
-        className={`
-          inline-flex
-          ${getOuterBorderColor()}
-          ${getShadow()}
-          border-[3px]
-          rounded-xl
-          overflow-hidden
-          transition-all
-          duration-200
-        `}
-        role="group"
-        aria-label={`Answer ${answerIndex + 1}, ${answerLength} characters${hasHint ? ', hint available' : ''}`}
-        onClick={() => {
-          if (!isCorrect && onFocus) {
-            onFocus();
-          }
-        }}
-      >
-        {blocks}
-      </div>
+      {needsScroll ? (
+        // Scrollable container for long words on mobile
+        <div className="relative">
+          <div
+            ref={scrollContainerRef}
+            className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar"
+            style={{
+              scrollPaddingLeft: '0px',
+              WebkitOverflowScrolling: 'touch',
+            }}
+            role="region"
+            aria-label="Scrollable answer input"
+          >
+            {/* Character blocks grid - crossword style with outer border */}
+            <div
+              ref={gridRef}
+              className={`
+                inline-flex
+                ${getOuterBorderColor()}
+                ${getShadow()}
+                border-[3px]
+                rounded-xl
+                overflow-hidden
+                transition-all
+                duration-200
+              `}
+              role="group"
+              aria-label={`Answer ${answerIndex + 1}, ${answerLength} characters${hasHint ? ', hint available' : ''}`}
+              onClick={() => {
+                if (!isCorrect && onFocus) {
+                  onFocus();
+                }
+              }}
+            >
+              {blocks}
+            </div>
+          </div>
+
+          {/* Scroll indicator - subtle gradient on right edge */}
+          <AnimatePresence>
+            {showScrollIndicator && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+                className={`absolute right-0 top-0 h-full w-12 pointer-events-none ${
+                  highContrast
+                    ? 'bg-gradient-to-l from-hc-surface via-hc-surface/50 to-transparent'
+                    : 'bg-gradient-to-l from-white/90 via-white/40 to-transparent dark:from-gray-800/90 dark:via-gray-800/40 dark:to-transparent'
+                }`}
+                style={{
+                  maskImage: 'linear-gradient(to left, black 0%, black 30%, transparent 100%)',
+                  WebkitMaskImage:
+                    'linear-gradient(to left, black 0%, black 30%, transparent 100%)',
+                }}
+              />
+            )}
+          </AnimatePresence>
+        </div>
+      ) : (
+        // Normal non-scrollable grid for short words or desktop
+        <div
+          ref={gridRef}
+          className={`
+            inline-flex
+            ${getOuterBorderColor()}
+            ${getShadow()}
+            border-[3px]
+            rounded-xl
+            overflow-hidden
+            transition-all
+            duration-200
+          `}
+          role="group"
+          aria-label={`Answer ${answerIndex + 1}, ${answerLength} characters${hasHint ? ', hint available' : ''}`}
+          onClick={() => {
+            if (!isCorrect && onFocus) {
+              onFocus();
+            }
+          }}
+        >
+          {blocks}
+        </div>
+      )}
     </div>
   );
 }

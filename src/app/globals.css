@@ -216,6 +216,16 @@ select {
   -ms-user-select: none;
 }
 
+/* Hide scrollbar utility for horizontal scroll containers */
+.hide-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
 /* Ensure inputs don't zoom on iOS devices */
 @media screen and (max-width: 768px) {
   input[type='text'],
