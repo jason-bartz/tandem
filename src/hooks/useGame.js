@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
-import { sanitizeInput, checkAnswerWithPlurals, getCurrentPuzzleInfo } from '@/lib/utils';
+import { sanitizeInputPreserveSpaces, checkAnswerWithPlurals, getCurrentPuzzleInfo } from '@/lib/utils';
 import { savePuzzleProgress, savePuzzleResult, hasPlayedPuzzle } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import { Capacitor } from '@capacitor/core';
@@ -146,8 +146,8 @@ export function useGame() {
 
   const updateAnswer = useCallback(
     (index, value) => {
-      // Simple sanitization - no hint or locked letter logic needed
-      const sanitized = sanitizeInput(value);
+      // Use sanitization that preserves spaces for position-based input
+      const sanitized = sanitizeInputPreserveSpaces(value);
 
       setAnswers((prev) => {
         const newAnswers = [...prev];
