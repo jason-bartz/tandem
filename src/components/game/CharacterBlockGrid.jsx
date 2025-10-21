@@ -86,6 +86,44 @@ export default function CharacterBlockGrid({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isFocused, answerLength, lockedLetters, isCorrect]); // Removed 'value' from dependencies to prevent cursor reset
 
+  // Update activeBlockIndex when value changes (for on-screen keyboard input)
+  // This ensures the blue highlight follows the cursor when typing via on-screen keyboard
+  useEffect(() => {
+    if (!isFocused || isCorrect) return;
+
+    // Find the next empty position after the last filled character
+    const paddedValue = (value || '').padEnd(answerLength, ' ');
+    let lastFilledIndex = -1;
+
+    // Find the last non-empty, non-locked character
+    for (let i = 0; i < answerLength; i++) {
+      const isLocked = lockedLetters && lockedLetters[i];
+      const hasValue = paddedValue[i] && paddedValue[i] !== ' ';
+      if (!isLocked && hasValue) {
+        lastFilledIndex = i;
+      }
+    }
+
+    // Set active index to the position after the last filled character
+    // or stay at current position if it's still empty
+    let newActiveIndex = lastFilledIndex + 1;
+
+    // Make sure we don't go past the end
+    if (newActiveIndex >= answerLength) {
+      newActiveIndex = answerLength - 1;
+    }
+
+    // Skip locked positions
+    while (newActiveIndex < answerLength && lockedLetters && lockedLetters[newActiveIndex]) {
+      newActiveIndex++;
+    }
+
+    // Only update if the new index is valid and different from current
+    if (newActiveIndex < answerLength && newActiveIndex !== activeBlockIndex) {
+      setActiveBlockIndex(newActiveIndex);
+    }
+  }, [value, isFocused, isCorrect, answerLength, lockedLetters, activeBlockIndex]);
+
   // Auto-scroll active block into view when it changes
   useEffect(() => {
     if (
