@@ -3,12 +3,14 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export default function AdminLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
+  const { toggleTheme, isDark, mounted } = useTheme();
 
   // Special pages that don't need authentication
   const isPublicPage =
@@ -89,9 +91,9 @@ export default function AdminLayout({ children }) {
   }
 
   // Show loading spinner while checking auth
-  if (loading) {
+  if (loading || !mounted) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-white">
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-surface">
         <LoadingSpinner />
       </div>
     );
@@ -104,20 +106,32 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div className="min-h-screen bg-white">
-      <nav className="bg-white shadow-lg border-b border-gray-200">
+    <div className="min-h-screen bg-bg-primary">
+      <nav
+        className="bg-bg-surface border-b-[3px] border-border-main"
+        style={{ boxShadow: 'var(--shadow-card)' }}
+      >
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-1"></div>
             <div className="flex items-center justify-center">
               <img src="/icons/tandem-admin-logo.png" alt="Tandem Admin" className="h-10" />
             </div>
-            <div className="flex-1 flex items-center justify-end space-x-4">
+            <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
+              <button
+                onClick={toggleTheme}
+                className="p-2 rounded-lg border-[3px] border-border-main bg-bg-card hover:bg-accent-yellow transition-colors"
+                style={{ boxShadow: 'var(--shadow-small)' }}
+                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+              >
+                {isDark ? '☀️' : '🌙'}
+              </button>
               <a
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-sky-600 hover:text-sky-700 font-medium"
+                className="hidden sm:inline-block px-4 py-2 border-[3px] border-border-main bg-accent-blue text-text-primary rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 View Game
               </a>
@@ -126,7 +140,8 @@ export default function AdminLayout({ children }) {
                   localStorage.removeItem('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 text-white rounded-lg hover:shadow-lg transition-all font-medium"
+                className="px-4 py-2 border-[3px] border-border-main bg-gradient-to-r from-accent-red to-accent-pink text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 Logout
               </button>
@@ -135,7 +150,10 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-2xl shadow-xl p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto">
+        <div
+          className="bg-bg-card rounded-2xl border-[3px] border-border-main p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto"
+          style={{ boxShadow: 'var(--shadow-card)' }}
+        >
           {children}
         </div>
       </main>
