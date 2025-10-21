@@ -405,10 +405,10 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   !canGoPrevious
-                    ? 'opacity-30 cursor-not-allowed'
+                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
                     : highContrast
-                      ? 'border-hc-border hover:bg-hc-focus hover:text-white'
-                      : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                      ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
                 }
               `}
               aria-label="Previous month"
@@ -430,8 +430,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   highContrast
-                    ? 'border-hc-border hover:bg-hc-focus hover:text-white'
-                    : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                    ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
                 }
               `}
               aria-label="Select month and year"
@@ -455,10 +455,10 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 transition-all
                 ${
                   !canGoNext
-                    ? 'opacity-30 cursor-not-allowed'
+                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
                     : highContrast
-                      ? 'border-hc-border hover:bg-hc-focus hover:text-white'
-                      : 'border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                      ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
                 }
               `}
               aria-label="Next month"

@@ -100,18 +100,18 @@ const CalendarDayCell = memo(
     // Get cell background and text styles
     const getCellStyle = () => {
       if (!isCurrentMonth || !isPastFirstPuzzle || isFutureDate) {
-        return 'text-gray-300 dark:text-gray-700 cursor-not-allowed';
+        return 'text-gray-400 dark:text-gray-500 cursor-not-allowed';
       }
 
       if (isToday) {
         return highContrast
-          ? 'text-hc-text bg-hc-primary border-[2px] border-hc-border font-bold'
+          ? 'text-hc-primary-text bg-hc-primary border-[2px] border-hc-border font-bold'
           : 'text-white bg-accent-pink border-[2px] border-black font-bold';
       }
 
       if (isInteractive) {
         return highContrast
-          ? 'text-hc-text hover:bg-hc-focus hover:text-white active:scale-95 cursor-pointer'
+          ? 'text-hc-text hover:bg-hc-primary hover:text-hc-primary-text active:scale-95 cursor-pointer'
           : 'text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95 cursor-pointer';
       }
 

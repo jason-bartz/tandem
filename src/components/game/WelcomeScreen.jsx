@@ -87,7 +87,11 @@ export default function WelcomeScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
+          className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+          }`}
           title="Statistics"
         >
           <Image src={getIconPath('stats')} alt="Statistics" width={24} height={24} />
@@ -97,7 +101,11 @@ export default function WelcomeScreen({
             lightTap();
             setShowArchive(true);
           }}
-          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
+          className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+          }`}
           title="Archive"
         >
           <Image src={getIconPath('archive')} alt="Archive" width={24} height={24} />
@@ -107,7 +115,11 @@ export default function WelcomeScreen({
             lightTap();
             setShowHowToPlay(true);
           }}
-          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
+          className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+          }`}
           title="How to Play"
         >
           <Image src={getIconPath('how-to-play')} alt="How to Play" width={24} height={24} />
@@ -117,7 +129,11 @@ export default function WelcomeScreen({
             lightTap();
             setShowSettings(true);
           }}
-          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
+          className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+          }`}
           title="Settings"
         >
           <Image src={getIconPath('settings')} alt="Settings" width={24} height={24} />
@@ -125,7 +141,13 @@ export default function WelcomeScreen({
       </div>
 
       {/* Main welcome card */}
-      <div className="bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] overflow-hidden p-10 text-center">
+      <div
+        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
+          highContrast
+            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+        }`}
+      >
         {/* Logo - Hide on native mobile app to save space, but show on web version */}
         {(!isMobilePhone || !isNativeApp) && (
           <div className="w-24 h-24 mx-auto mb-5 relative">

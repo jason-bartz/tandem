@@ -34,6 +34,8 @@ export function ThemeProvider({ children }) {
   }, [themeMode, systemTheme, theme]);
 
   const applyThemeToDOM = useCallback((themeValue, highContrastValue, reduceMotionValue) => {
+    if (typeof document === 'undefined') return;
+
     // Apply theme
     document.documentElement.setAttribute('data-theme', themeValue);
 
@@ -131,6 +133,9 @@ export function ThemeProvider({ children }) {
           if (themeMode === THEME_MODE.AUTO) {
             const sysTheme = detectSystemTheme();
             applyThemeToDOM(sysTheme, highContrast, reduceMotion);
+          } else {
+            // Reapply current theme to ensure classes are set
+            applyThemeToDOM(theme, highContrast, reduceMotion);
           }
         }
       };
@@ -141,7 +146,26 @@ export function ThemeProvider({ children }) {
         window.Capacitor.Plugins.App.removeAllListeners();
       };
     }
-  }, [themeMode, highContrast, reduceMotion, applyThemeToDOM, detectSystemTheme]);
+  }, [themeMode, theme, highContrast, reduceMotion, applyThemeToDOM, detectSystemTheme]);
+
+  // Listen for browser tab visibility changes to reapply theme
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        // Tab became visible, reapply theme settings
+        const effectiveTheme = getEffectiveTheme();
+        applyThemeToDOM(effectiveTheme, highContrast, reduceMotion);
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [highContrast, reduceMotion, applyThemeToDOM, getEffectiveTheme]);
 
   const toggleTheme = useCallback(() => {
     const effectiveTheme = getEffectiveTheme();

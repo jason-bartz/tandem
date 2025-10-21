@@ -564,7 +564,7 @@ export default function PlayingScreen({
                     isSmallPhone ? 'p-2.5' : isMobilePhone ? 'p-3' : 'p-3 sm:p-4'
                   } text-sm sm:text-base rounded-2xl font-bold cursor-pointer transition-all flex items-center justify-center gap-2 relative overflow-hidden border-[3px] ${
                     highContrast
-                      ? 'bg-hc-warning text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      ? 'bg-hc-warning text-hc-primary-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                       : 'bg-accent-yellow text-dark-text dark:text-gray-900 border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                   disabled={focusedIndex === null || correctAnswers[focusedIndex]}

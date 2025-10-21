@@ -21,7 +21,7 @@ export default function HintDisplay({
   answerIndex,
   onDismiss,
   isSmallPhone = false,
-  isMobilePhone = false
+  isMobilePhone = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { selectionStart } = useHaptics();
@@ -52,8 +52,8 @@ export default function HintDisplay({
       height: 0,
       transition: {
         duration: reduceMotion ? 0 : 0.3,
-        ease: 'easeInOut'
-      }
+        ease: 'easeInOut',
+      },
     },
     visible: {
       opacity: 1,
@@ -61,9 +61,9 @@ export default function HintDisplay({
       height: 'auto',
       transition: {
         duration: reduceMotion ? 0 : 0.3,
-        ease: 'easeInOut'
-      }
-    }
+        ease: 'easeInOut',
+      },
+    },
   };
 
   return (
@@ -87,7 +87,6 @@ export default function HintDisplay({
             exit="hidden"
             className={`
               ${isSmallPhone ? 'mt-2' : isMobilePhone ? 'mt-2' : 'mt-2'}
-              overflow-hidden
             `}
           >
             <div
@@ -96,9 +95,10 @@ export default function HintDisplay({
                 ${isSmallPhone ? 'px-3 py-2' : isMobilePhone ? 'px-3 py-2' : 'px-4 py-3'}
                 rounded-2xl
                 border-[3px]
-                ${highContrast
-                  ? 'bg-hc-warning/10 border-hc-warning shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-yellow/20 dark:bg-yellow-900/30 border-accent-yellow dark:border-yellow-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
+                ${
+                  highContrast
+                    ? 'bg-hc-warning border-hc-warning shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
             >
@@ -106,9 +106,10 @@ export default function HintDisplay({
               <p
                 className={`
                   ${isSmallPhone ? 'text-xs' : isMobilePhone ? 'text-sm' : 'text-sm sm:text-base'}
-                  ${highContrast
-                    ? 'text-hc-text font-bold'
-                    : 'text-dark-text dark:text-gray-200 font-semibold'
+                  ${
+                    highContrast
+                      ? 'text-hc-text font-bold'
+                      : 'text-gray-900 dark:text-gray-100 font-semibold'
                   }
                   flex-1 leading-relaxed
                 `}
@@ -123,19 +124,20 @@ export default function HintDisplay({
                   className={`
                     ${isSmallPhone ? 'p-1' : 'p-1.5'}
                     rounded-lg
-                    ${highContrast
-                      ? 'hover:bg-hc-surface focus:bg-hc-surface'
-                      : 'hover:bg-yellow-200 dark:hover:bg-yellow-800/50 focus:bg-yellow-200 dark:focus:bg-yellow-800/50'
+                    ${
+                      highContrast
+                        ? 'hover:bg-hc-surface focus:bg-hc-surface'
+                        : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700'
                     }
                     transition-colors
-                    focus:outline-none focus:ring-2 focus:ring-yellow-500
+                    focus:outline-none focus:ring-2 focus:ring-yellow-800
                   `}
                   aria-label="Dismiss hint"
                 >
                   <svg
                     className={`
                       ${isSmallPhone ? 'w-3 h-3' : 'w-4 h-4'}
-                      ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                      ${highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'}
                     `}
                     fill="none"
                     strokeLinecap="round"

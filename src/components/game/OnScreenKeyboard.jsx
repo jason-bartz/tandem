@@ -109,9 +109,9 @@ export default function OnScreenKeyboard({
         baseClasses += `
           ${
             isEnterKey
-              ? 'bg-hc-primary text-white border-2 border-hc-border'
+              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
               : isBackspaceKey
-                ? 'bg-hc-warning text-black border-2 border-hc-border'
+                ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
                 : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:border-hc-focus }'}
@@ -121,13 +121,13 @@ export default function OnScreenKeyboard({
         baseClasses += `
           ${
             isEnterKey
-              ? 'bg-hc-primary text-white border-2 border-hc-border'
+              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
               : isBackspaceKey
-                ? 'bg-hc-warning text-white border-2 border-hc-border'
+                ? 'bg-hc-warning text-hc-text border-2 border-hc-border'
                 : 'bg-hc-surface text-hc-text border-2 border-hc-border'
           }
-          ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-white }'}
-          ${isPressed && 'bg-hc-focus text-white'}
+          ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-hc-primary-text }'}
+          ${isPressed && 'bg-hc-focus text-hc-primary-text'}
         `;
       }
     } else {
