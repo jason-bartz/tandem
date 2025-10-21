@@ -342,13 +342,14 @@ export default function CharacterBlockGrid({
       <input
         ref={hiddenInputRef}
         type="text"
+        inputMode="none"
         className="sr-only"
         aria-hidden="true"
         tabIndex={-1}
         onKeyDown={handleKeyDown}
         onChange={handleInputChange}
         value=""
-        readOnly={isCorrect}
+        readOnly
       />
 
       {/* Character blocks grid - crossword style with outer border */}
