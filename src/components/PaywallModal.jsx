@@ -228,7 +228,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-2xl animate-modal-enter gpu-accelerated"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar shadow-2xl animate-modal-enter gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}

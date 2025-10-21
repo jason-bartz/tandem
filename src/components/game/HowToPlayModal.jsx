@@ -14,18 +14,20 @@ export default function HowToPlayModal({ isOpen, onClose }) {
     >
       <div
         onClick={(e) => e.stopPropagation()}
-        className={`rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto animate-modal-enter gpu-accelerated ${
-          highContrast ? 'bg-hc-background border-4 border-hc-border' : 'bg-white dark:bg-gray-800'
+        className={`rounded-[32px] border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-6 max-w-md w-full max-h-[80vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated ${
+          highContrast
+            ? 'bg-hc-background border-hc-border'
+            : 'bg-white dark:bg-bg-card border-border-main'
         }`}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">How To Play</h2>
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-full border-none text-lg cursor-pointer transition-all flex items-center justify-center ${
+            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white font-bold'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
             }`}
             aria-label="Close"
           >
@@ -47,10 +49,10 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           </div>
 
           <div
-            className={`rounded-xl p-4 ${
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
-                ? 'bg-hc-success text-white border-2 border-hc-border'
-                : 'bg-green-50 dark:bg-green-900/20'
+                ? 'bg-hc-success text-white border-hc-border'
+                : 'bg-accent-green/20 dark:bg-green-900/20 border-accent-green'
             }`}
           >
             <h4
@@ -239,10 +241,10 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
         <button
           onClick={onClose}
-          className={`mt-6 w-full py-3 text-white font-semibold rounded-xl hover:shadow-lg transition-all ${
+          className={`mt-6 w-full py-3 text-white font-semibold rounded-2xl transition-all border-[3px] ${
             highContrast
-              ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus'
-              : 'bg-gradient-to-r from-sky-500 to-teal-400'
+              ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }`}
         >
           Got it!

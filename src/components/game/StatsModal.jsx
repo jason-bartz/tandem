@@ -54,17 +54,17 @@ Completion: ${winRate}%
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto animate-modal-enter shadow-2xl gpu-accelerated"
+        className="bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-200">Statistics</h2>
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-full border-none text-lg cursor-pointer transition-all flex items-center justify-center ${
+            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-primary hover:text-white font-bold'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
             }`}
             aria-label="Close"
           >
@@ -74,17 +74,15 @@ Completion: ${winRate}%
 
         <div className="grid grid-cols-2 gap-4 mb-4" key={`stats-grid-${animationKey}`}>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-2xl text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
               highContrast
-                ? 'bg-hc-surface border-2 border-hc-border'
-                : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
             }`}
           >
             <div
               className={`text-3xl font-extrabold ${
-                highContrast
-                  ? 'text-hc-primary'
-                  : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
+                highContrast ? 'text-hc-primary' : 'text-accent-blue dark:text-accent-blue'
               } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
               {animatedPlayed}
@@ -98,17 +96,15 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-2xl text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(126,217,87,0.3)] ${
               highContrast
-                ? 'bg-hc-surface border-2 border-hc-border'
-                : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-accent-green/20 dark:bg-green-900/40 border-accent-green'
             }`}
           >
             <div
               className={`text-3xl font-extrabold ${
-                highContrast
-                  ? 'text-hc-primary'
-                  : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
+                highContrast ? 'text-hc-primary' : 'text-accent-green dark:text-accent-green'
               } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
               {animatedWinRate}%
@@ -122,18 +118,16 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-2xl text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
               highContrast
-                ? 'bg-hc-surface border-2 border-hc-border'
-                : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-accent-yellow'
             }`}
           >
             <div className="text-3xl font-extrabold">
               <span
                 className={`${
-                  highContrast
-                    ? 'text-hc-primary'
-                    : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
+                  highContrast ? 'text-hc-primary' : 'text-accent-yellow dark:text-accent-yellow'
                 } ${!reduceMotion ? 'animate-count-up' : ''}`}
               >
                 {animatedCurrentStreak}
@@ -149,17 +143,15 @@ Completion: ${winRate}%
             </div>
           </div>
           <div
-            className={`p-4 rounded-xl text-center ${
+            className={`p-4 rounded-2xl text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(255,102,196,0.3)] ${
               highContrast
-                ? 'bg-hc-surface border-2 border-hc-border'
-                : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-accent-pink/20 dark:bg-pink-900/40 border-accent-pink'
             }`}
           >
             <div
               className={`text-3xl font-extrabold ${
-                highContrast
-                  ? 'text-hc-primary'
-                  : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
+                highContrast ? 'text-hc-primary' : 'text-accent-pink dark:text-accent-pink'
               } ${!reduceMotion ? 'animate-count-up' : ''}`}
             >
               {animatedBestStreak}
@@ -176,17 +168,15 @@ Completion: ${winRate}%
 
         <div
           key={`total-wins-${animationKey}`}
-          className={`p-4 rounded-xl text-center mb-4 ${
+          className={`p-4 rounded-2xl text-center mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(255,117,31,0.3)] ${
             highContrast
-              ? 'bg-hc-surface border-2 border-hc-border'
-              : 'bg-gradient-to-r from-sky-100 to-teal-100 dark:from-sky-900 dark:to-teal-900'
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-accent-orange/20 dark:bg-orange-900/40 border-accent-orange'
           }`}
         >
           <div
             className={`text-3xl font-extrabold ${
-              highContrast
-                ? 'text-hc-primary'
-                : 'bg-gradient-to-r from-sky-600 to-teal-500 bg-clip-text text-transparent'
+              highContrast ? 'text-hc-primary' : 'text-accent-orange dark:text-accent-orange'
             } ${!reduceMotion ? 'animate-count-up' : ''}`}
           >
             {animatedWins}

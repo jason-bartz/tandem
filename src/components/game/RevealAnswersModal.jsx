@@ -11,7 +11,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-modal-enter shadow-2xl max-h-[80vh] overflow-y-auto gpu-accelerated"
+        className="bg-white dark:bg-gray-800 rounded-3xl p-6 sm:p-8 max-w-md w-full animate-modal-enter shadow-2xl max-h-[80vh] overflow-y-auto modal-scrollbar gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">

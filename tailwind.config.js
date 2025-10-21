@@ -40,34 +40,27 @@ module.exports = {
           border: 'var(--hc-border)',
           focus: 'var(--hc-focus)',
         },
-        // Violet/Purple - complementing sky blues
-        plum: {
-          DEFAULT: '#8B5CF6',
-          dark: '#7C3AED',
-          light: '#A78BFA',
+        // New minimal pastel accent colors
+        accent: {
+          green: '#7ed957',
+          yellow: '#ffce00',
+          pink: '#ff66c4',
+          blue: '#38b6ff',
+          red: '#ff5757',
+          orange: '#ff751f',
         },
-        // Warm sunset tones
-        peach: {
-          DEFAULT: '#FB923C',
-          dark: '#EA580C',
-          light: '#FED7AA',
-        },
-        // Nature greens - matching landscape
-        sage: {
-          DEFAULT: '#10B981',
-          dark: '#059669',
-          light: '#86EFAC',
-        },
-        // Coral accents
-        coral: {
-          DEFAULT: '#F87171',
-          dark: '#EF4444',
-          light: '#FCA5A5',
-        },
-        // Additional custom colors
-        'warm-yellow': '#FCD34D',
-        'light-sand': '#FEF3C7',
-        'off-white': '#FFFBEB',
+        // Background colors
+        'bg-primary': 'var(--bg-primary)',
+        'bg-surface': 'var(--bg-surface)',
+        'bg-card': 'var(--bg-card)',
+        // Text colors
+        'text-primary': 'var(--text-primary)',
+        'text-secondary': 'var(--text-secondary)',
+        'text-muted': 'var(--text-muted)',
+        // Border
+        'border-main': 'var(--border-color)',
+        'border-light': 'var(--border-light)',
+        // Legacy colors for backward compatibility
         'gray-text': '#6B7280',
         'dark-text': '#1F2937',
         'border-color': '#E5E7EB',

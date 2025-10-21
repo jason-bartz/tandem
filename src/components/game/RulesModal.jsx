@@ -11,7 +11,7 @@ export default function RulesModal({ isOpen, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto animate-modal-enter gpu-accelerated"
+        className="bg-white dark:bg-gray-800 rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-4">

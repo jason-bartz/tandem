@@ -9,6 +9,7 @@ import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
 import { Capacitor } from '@capacitor/core';
 
@@ -28,6 +29,7 @@ export default function WelcomeScreen({
   const [showSettings, setShowSettings] = useState(false);
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
+  const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
   const isNativeApp = Capacitor.isNativePlatform();
 
@@ -72,45 +74,45 @@ export default function WelcomeScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
           title="Statistics"
         >
-          📊
+          <Image src={getIconPath('stats')} alt="Statistics" width={24} height={24} />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowArchive(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
           title="Archive"
         >
-          📅
+          <Image src={getIconPath('archive')} alt="Archive" width={24} height={24} />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowHowToPlay(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
           title="How to Play"
         >
-          ❓
+          <Image src={getIconPath('how-to-play')} alt="How to Play" width={24} height={24} />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowSettings(true);
           }}
-          className="w-10 h-10 rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center text-lg hover:scale-110 active:scale-95 transition-transform duration-instant"
+          className="w-12 h-12 rounded-2xl bg-white dark:bg-bg-card border-[3px] border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2"
           title="Settings"
         >
-          ⚙️
+          <Image src={getIconPath('settings')} alt="Settings" width={24} height={24} />
         </button>
       </div>
 
       {/* Main welcome card */}
-      <div className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden p-10 text-center">
+      <div className="bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] overflow-hidden p-10 text-center">
         {/* Logo - Hide on native mobile app to save space, but show on web version */}
         {(!isMobilePhone || !isNativeApp) && (
           <div className="w-24 h-24 mx-auto mb-5 relative">
@@ -172,11 +174,11 @@ export default function WelcomeScreen({
         <button
           onClick={handlePlayClick}
           disabled={!puzzle}
-          className={`w-full p-4 text-white rounded-2xl text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+          className={`w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
             ${
               highContrast
-                ? 'bg-hc-primary border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
-                : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 border-none hover:-translate-y-0.5 hover:shadow-lg hover:shadow-sky-500/30 dark:hover:shadow-sky-400/20'
+                ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
             }
           `}
         >

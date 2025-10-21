@@ -14,6 +14,7 @@ import Settings from '@/components/Settings';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import platformService from '@/services/platform';
 import { motion } from 'framer-motion';
 
@@ -58,6 +59,7 @@ export default function PlayingScreen({
   const [previousUnlockedHints, setPreviousUnlockedHints] = useState(unlockedHints);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
+  const getIconPath = useUIIcon();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
@@ -361,50 +363,74 @@ export default function PlayingScreen({
             lightTap();
             setShowStats(true);
           }}
-          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Statistics"
         >
-          📊
+          <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowArchive(true);
           }}
-          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Archive"
         >
-          📅
+          <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowHowToPlay(true);
           }}
-          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="How to Play"
         >
-          ❓
+          <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
         </button>
         <button
           onClick={() => {
             lightTap();
             setShowSettings(true);
           }}
-          className="w-10 h-10 text-lg rounded-full bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm shadow-lg flex items-center justify-center hover:scale-110 transition-all"
+          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+          }`}
           title="Settings"
         >
-          ⚙️
+          <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
         </button>
       </div>
 
       {/* Main game card */}
       <div
         ref={puzzleContainerRef}
-        className="bg-white dark:bg-gray-900 rounded-3xl shadow-2xl overflow-hidden"
+        className={`rounded-[32px] border-[3px] overflow-hidden ${
+          highContrast
+            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+        }`}
       >
         {/* Header - logo hidden on all devices, content centered */}
-        <div className="pt-4 pb-2 px-3 sm:px-5 text-center bg-white dark:bg-gray-900 flex items-center justify-center">
+        <div
+          className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center ${
+            highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
+          }`}
+        >
           <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
             <button
               onClick={() => {
@@ -434,7 +460,7 @@ export default function PlayingScreen({
               {isHardMode && (
                 <div className="flex items-center gap-2 mt-1">
                   <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
-                    <span className="text-sm">🔥</span>
+                    <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
                     HARD MODE
                   </span>
                 </div>
