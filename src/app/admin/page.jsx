@@ -21,64 +21,62 @@ export default function AdminDashboard() {
     <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
-            Puzzle Management
-          </h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Puzzle Management</h2>
           {mounted && (
             <button
               onClick={() => setShowBulkImport(true)}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-sky-500 hover:bg-sky-600 text-white font-semibold rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
-              style={{ backgroundColor: '#0ea5e9' }}
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-gradient-to-r from-accent-blue to-accent-green text-white border-[3px] border-border-main font-bold rounded-lg hover:translate-y-[-2px] transition-transform"
+              style={{ boxShadow: 'var(--shadow-button)' }}
             >
               📤 Bulk Import
             </button>
           )}
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-text-secondary font-medium">
           Create and manage daily puzzles for Tandem
         </p>
       </div>
 
-      <div className="border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
-        <nav className="-mb-px flex space-x-4 sm:space-x-8 min-w-max">
+      <div className="border-b-[3px] border-border-main overflow-x-auto mb-6">
+        <nav className="-mb-[3px] flex space-x-4 sm:space-x-8 min-w-max">
           <button
             onClick={() => setActiveTab('calendar')}
             className={`
-              py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap
+              py-3 px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all
               ${
                 activeTab === 'calendar'
-                  ? 'border-sky-500 text-sky-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent-yellow text-text-primary bg-accent-yellow/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
               }
             `}
           >
-            Calendar
+            📅 Calendar
           </button>
           <button
             onClick={() => setActiveTab('editor')}
             className={`
-              py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap
+              py-3 px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all
               ${
                 activeTab === 'editor'
-                  ? 'border-sky-500 text-sky-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent-green text-text-primary bg-accent-green/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
               }
             `}
           >
-            Editor
+            ✏️ Editor
           </button>
           <button
             onClick={() => setActiveTab('themes')}
             className={`
-              py-2 px-2 sm:px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap
+              py-3 px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all
               ${
                 activeTab === 'themes'
-                  ? 'border-sky-500 text-sky-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  ? 'border-accent-pink text-text-primary bg-accent-pink/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
               }
             `}
           >
-            Themes
+            🎨 Themes
           </button>
         </nav>
       </div>
