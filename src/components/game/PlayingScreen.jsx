@@ -235,6 +235,36 @@ export default function PlayingScreen({
   ]);
 
   const handleKeyboardInput = (key) => {
+    // Handle ARROW_UP - move to previous answer
+    if (key === 'ARROW_UP') {
+      if (focusedIndex > 0) {
+        // Find previous non-correct answer
+        let prevIndex = focusedIndex - 1;
+        while (prevIndex >= 0 && correctAnswers[prevIndex]) {
+          prevIndex--;
+        }
+        if (prevIndex >= 0) {
+          setFocusedIndex(prevIndex);
+        }
+      }
+      return;
+    }
+
+    // Handle ARROW_DOWN - move to next answer
+    if (key === 'ARROW_DOWN') {
+      if (focusedIndex < 3) {
+        // Find next non-correct answer
+        let nextIndex = focusedIndex + 1;
+        while (nextIndex < 4 && correctAnswers[nextIndex]) {
+          nextIndex++;
+        }
+        if (nextIndex < 4) {
+          setFocusedIndex(nextIndex);
+        }
+      }
+      return;
+    }
+
     // Ignore if the field is already correct
     if (correctAnswers[focusedIndex]) {
       return;
@@ -489,7 +519,7 @@ export default function PlayingScreen({
                     <PuzzleRow
                       emoji={p.emoji || '❓❓'}
                       value={answers[index]}
-                      onChange={(value) => onUpdateAnswer(index, value)}
+                      onChange={(answerIndex, value) => onUpdateAnswer(answerIndex, value)}
                       isCorrect={correctAnswers[index]}
                       isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
                       index={index}
@@ -505,6 +535,8 @@ export default function PlayingScreen({
                             : p.answer.length
                           : 0
                       }
+                      onKeyboardInput={handleKeyboardInput}
+                      themeColor={puzzle?.themeColor || '#3B82F6'}
                       isSmallPhone={isSmallPhone}
                       isMobilePhone={isMobilePhone}
                     />
@@ -528,11 +560,13 @@ export default function PlayingScreen({
                     lightTap();
                     handleUseHint();
                   }}
-                  className={`w-full p-2.5 sm:p-3 text-sm sm:text-base rounded-xl font-semibold cursor-pointer transition-all flex items-center justify-center gap-2 hint-button relative overflow-hidden ${
+                  className={`w-full ${
+                    isSmallPhone ? 'p-2.5' : isMobilePhone ? 'p-3' : 'p-3 sm:p-4'
+                  } text-sm sm:text-base rounded-2xl font-bold cursor-pointer transition-all flex items-center justify-center gap-2 relative overflow-hidden border-[3px] ${
                     highContrast
-                      ? 'bg-hc-warning text-white border-4 border-hc-border hover:bg-hc-focus hover:shadow-lg'
-                      : 'bg-yellow-400 hover:bg-yellow-500 dark:bg-amber-600 dark:hover:bg-amber-700 text-gray-800 dark:text-gray-100 border-none'
-                  }`}
+                      ? 'bg-hc-warning text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-yellow text-dark-text dark:text-gray-900 border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  } disabled:opacity-50 disabled:cursor-not-allowed`}
                   disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                   aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
                   // Celebratory animation when second hint appears
@@ -560,22 +594,6 @@ export default function PlayingScreen({
                       <span className="text-3xl">✨</span>
                     </motion.div>
                   )}
-
-                  {/* Lightbulb icon with celebration pulse */}
-                  <motion.span
-                    className="text-lg sm:text-xl"
-                    animate={
-                      showSecondHintCelebration && !reduceMotion
-                        ? {
-                            scale: [1, 1.3, 1],
-                            rotate: [0, 15, -15, 0],
-                          }
-                        : {}
-                    }
-                    transition={{ duration: 0.5 }}
-                  >
-                    💡
-                  </motion.span>
 
                   {/* Button text - changes during celebration */}
                   <motion.span

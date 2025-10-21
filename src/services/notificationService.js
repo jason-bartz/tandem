@@ -206,24 +206,21 @@ class NotificationService {
     // Get random time for tomorrow's notification
     const randomTime = this.getRandomDailyReminderTime();
 
+    // Schedule for tomorrow at the specified time
+    const scheduleDate = new Date();
+    scheduleDate.setDate(scheduleDate.getDate() + 1);
+    scheduleDate.setHours(randomTime.hours, randomTime.minutes, 0, 0);
+
     // Get current stats for context
     const stats = await loadStats();
-    const isWeekend = this.isWeekend();
+    // Check if the SCHEDULED date (tomorrow) is a weekend, not today
+    const isWeekend = this.isWeekend(scheduleDate);
 
-    // Get appropriate message
+    // Get appropriate message based on tomorrow's day
     const message = getDailyReminder({
       streak: stats.currentStreak,
       isWeekend,
     });
-
-    // Use random time
-    const hours = randomTime.hours;
-    const minutes = randomTime.minutes;
-
-    // Schedule for tomorrow at the specified time
-    const scheduleDate = new Date();
-    scheduleDate.setDate(scheduleDate.getDate() + 1);
-    scheduleDate.setHours(hours, minutes, 0, 0);
 
     // Adjust for weekends (add 30 minutes for variety)
     if (this.isWeekend(scheduleDate)) {

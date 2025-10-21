@@ -50,6 +50,19 @@ export default function WelcomeScreen({
     }
   }, [welcomeMelody]);
 
+  // Handle Enter key to start the daily puzzle
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        handlePlayClick();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [onStart]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const handlePlayClick = () => {
     try {
       playButtonTone(); // Use the new distinct button tone
