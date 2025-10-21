@@ -438,7 +438,7 @@ export default function PrivacyPolicy() {
 
           {/* Main content card */}
           <div className="relative">
-            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden translate-x-[4px] translate-y-[4px] relative z-10">
+            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
               {/* Header */}
               <div className="bg-[#7ed957] border-b-[3px] border-black dark:border-white p-6 text-black">
                 <h1 className="text-3xl font-bold">Privacy Policy</h1>
