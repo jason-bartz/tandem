@@ -228,14 +228,22 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-3xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar shadow-2xl animate-modal-enter gpu-accelerated"
+        className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated ${
+          highContrast
+            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+        }`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
         <div className="flex justify-end mb-6">
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full border-none bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 text-lg cursor-pointer transition-all hover:bg-gray-200 dark:hover:bg-gray-600 flex items-center justify-center"
+            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+            }`}
             aria-label="Close"
           >
             ×
@@ -261,60 +269,70 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
         {/* Benefits list */}
         <div
-          className={`rounded-2xl p-4 mb-6 border-[2px] ${
+          className={`rounded-2xl p-5 mb-6 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-gradient-to-br from-sky-50 to-teal-50 dark:from-gray-700 dark:to-gray-700 border-transparent'
+              : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
           }`}
         >
           <div className="space-y-3">
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
-                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
               >
                 ✓
               </span>
-              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Play any puzzle from the archive
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
-                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
               >
                 ✓
               </span>
-              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Ad-free experience
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
-                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
               >
                 ✓
               </span>
-              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Access to Hard Mode and future exclusive modes and features
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
-                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
               >
                 ✓
               </span>
-              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Cancel anytime
               </span>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <span
-                className={`text-xl font-bold ${highContrast ? 'text-hc-success' : 'text-green-500'}`}
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
               >
                 ✓
               </span>
-              <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Support a solo developer
               </span>
             </div>
@@ -340,16 +358,20 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(BUDDY_PASS)}
               disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
-              className={`w-full p-4 rounded-2xl border-2 transition-all relative ${
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
                 buddyActive
                   ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
-                    ? 'opacity-50 border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-700'
-                    : 'hover:scale-[1.02] hover:shadow-lg border-sky-200 dark:border-sky-700 bg-white dark:bg-gray-700'
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                    : highContrast
+                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
               }`}
             >
               {buddyActive && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                   ✓ ACTIVE
                 </div>
               )}
@@ -361,7 +383,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                       className={`font-bold text-lg ${
                         buddyActive
                           ? 'text-gray-500 dark:text-gray-500'
-                          : 'text-gray-800 dark:text-gray-200'
+                          : highContrast
+                            ? 'text-hc-text'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
                       Buddy Pass
@@ -382,7 +406,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     className={`text-xl font-bold ${
                       buddyActive
                         ? 'text-gray-500 dark:text-gray-500'
-                        : 'text-sky-600 dark:text-sky-400'
+                        : highContrast
+                          ? 'text-hc-primary'
+                          : 'text-sky-600 dark:text-sky-400'
                     }`}
                   >
                     {getPrice(BUDDY_PASS) || '$1.99'}
@@ -396,27 +422,27 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(BEST_FRIENDS)}
               disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
-              className={`w-full p-4 pt-6 rounded-2xl border-2 transition-all relative ${
+              className={`w-full p-4 pt-6 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all relative ${
                 bestFriendsActive
                   ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
                     ? highContrast
                       ? 'opacity-50 bg-hc-surface border-hc-border'
-                      : 'opacity-50 border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+                      : 'opacity-50 border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
                     : highContrast
-                      ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-primary border-4'
-                      : 'hover:scale-[1.02] hover:shadow-lg border-teal-400 dark:border-teal-600 bg-gradient-to-br from-teal-50 to-sky-50 dark:from-gray-700 dark:to-gray-700'
+                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[4px]'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
               }`}
             >
               {/* Best Value badge */}
               <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                   BEST VALUE • SAVE 37%
                 </span>
               </div>
 
               {bestFriendsActive && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full z-10">
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)] z-10">
                   ✓ ACTIVE
                 </div>
               )}
@@ -456,7 +482,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-500 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-primary'
-                          : 'text-teal-600 dark:text-teal-400'
+                          : 'text-accent-teal dark:text-accent-teal'
                     }`}
                   >
                     {getPrice(BEST_FRIENDS) || '$14.99'}
@@ -470,30 +496,30 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(SOULMATES)}
               disabled={loading || restoring || soulmatesActive}
-              className={`w-full p-4 rounded-2xl border-2 transition-all relative ${
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
                 soulmatesActive
                   ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
                     ? highContrast
                       ? 'opacity-50 bg-hc-surface border-hc-border'
-                      : 'opacity-50 border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+                      : 'opacity-50 border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
                     : currentSubscription && !soulmatesActive
                       ? highContrast
-                        ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-warning border-4 ring-2 ring-hc-warning'
-                        : 'hover:scale-[1.02] hover:shadow-lg border-purple-500 dark:border-purple-500 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 ring-2 ring-purple-400'
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-warning border-[4px]'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/30 dark:bg-pink-900/50 border-[4px]'
                       : highContrast
-                        ? 'hover:scale-[1.02] hover:shadow-lg bg-hc-surface border-hc-primary border-4'
-                        : 'hover:scale-[1.02] hover:shadow-lg border-purple-400 dark:border-purple-600 bg-gradient-to-br from-purple-50 to-pink-50 dark:from-gray-700 dark:to-gray-700'
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[3px]'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
               }`}
             >
               {soulmatesActive && (
-                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                   ✓ ACTIVE
                 </div>
               )}
               {currentSubscription && !soulmatesActive && (
                 <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                     ⭐ UPGRADE TO LIFETIME
                   </span>
                 </div>
@@ -533,7 +559,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-500 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-warning'
-                          : 'text-purple-600 dark:text-purple-400'
+                          : 'text-accent-pink dark:text-accent-pink'
                     }`}
                   >
                     {getPrice(SOULMATES) || '$29.99'}
@@ -608,10 +634,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         <div className="mt-6">
           <button
             onClick={onClose}
-            className={`w-full py-3 font-semibold rounded-xl transition-all ${
+            className={`w-full py-3 font-semibold rounded-2xl transition-all border-[3px] ${
               highContrast
-                ? 'bg-hc-primary text-white border-2 border-hc-border hover:bg-hc-focus'
-                : 'bg-gradient-to-r from-sky-500 to-teal-400 dark:from-sky-600 dark:to-teal-500 text-white hover:shadow-lg'
+                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-accent-pink text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
             Done

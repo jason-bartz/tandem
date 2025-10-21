@@ -344,7 +344,11 @@ export default function Settings({ isOpen, onClose }) {
                     <div className="bg-accent-blue dark:bg-accent-blue rounded-2xl border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] p-4 text-center">
                       <div className="flex items-center justify-center gap-2 mb-1">
                         <img
-                          src="/ui-icons/tandem-unlimited.png"
+                          src={
+                            theme === 'dark'
+                              ? '/icons/ui/tandem-unlimited-dark.png'
+                              : '/icons/ui/tandem-unlimited.png'
+                          }
                           alt="Unlimited"
                           className="w-6 h-6"
                         />
@@ -358,7 +362,15 @@ export default function Settings({ isOpen, onClose }) {
                       <div className="flex items-center justify-between">
                         <div>
                           <div className="flex items-center gap-2">
-                            <img src="/ui-icons/hardmode.png" alt="Hard Mode" className="w-5 h-5" />
+                            <img
+                              src={
+                                theme === 'dark'
+                                  ? '/icons/ui/hardmode-dark.png'
+                                  : '/icons/ui/hardmode.png'
+                              }
+                              alt="Hard Mode"
+                              className="w-5 h-5"
+                            />
                             <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
                               Hard Mode
                             </p>
@@ -428,7 +440,11 @@ export default function Settings({ isOpen, onClose }) {
                         <div>
                           <div className="flex items-center gap-2">
                             <img
-                              src="/ui-icons/hardmode.png"
+                              src={
+                                theme === 'dark'
+                                  ? '/icons/ui/hardmode-dark.png'
+                                  : '/icons/ui/hardmode.png'
+                              }
                               alt="Hard Mode"
                               className="w-5 h-5 opacity-50"
                             />
