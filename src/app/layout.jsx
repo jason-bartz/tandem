@@ -6,6 +6,8 @@ import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -202,6 +204,13 @@ export default function RootLayout({ children }) {
             <IOSContainerWrapper>{children}</IOSContainerWrapper>
           </ThemeProvider>
         </ErrorBoundary>
+        {/* Vercel Analytics - only for web builds */}
+        {process.env.BUILD_TARGET !== 'capacitor' && (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        )}
       </body>
     </html>
   );
