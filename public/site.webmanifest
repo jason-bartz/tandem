@@ -1,7 +1,7 @@
 {
   "name": "Tandem - Daily Emoji Word Puzzle Game",
   "short_name": "Tandem",
-  "description": "Challenge your brain with Tandem! Match emoji pairs to words in this addictive daily puzzle game. New puzzle every day at midnight ET.",
+  "description": "Challenge your brain with Tandem! Match emoji pairs to words in this addictive daily puzzle game. New puzzle every day at midnight.",
   "categories": ["games", "puzzle", "entertainment"],
   "lang": "en-US",
   "dir": "ltr",
