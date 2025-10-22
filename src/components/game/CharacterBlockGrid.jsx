@@ -274,7 +274,9 @@ export default function CharacterBlockGrid({
           const prevIndex = findNextAvailableBlock(activeBlockIndex, -1);
           setActiveBlockIndex(prevIndex);
 
-          if (paddedValue[prevIndex] && paddedValue[prevIndex] !== ' ') {
+          // Only delete if the previous position is not locked
+          const isPrevLocked = lockedLetters && lockedLetters[prevIndex];
+          if (!isPrevLocked && paddedValue[prevIndex] && paddedValue[prevIndex] !== ' ') {
             const chars = paddedValue.split('');
             chars[prevIndex] = ' ';
             const newValue = chars.join('');

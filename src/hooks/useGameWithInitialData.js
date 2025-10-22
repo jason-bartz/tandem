@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
-import { sanitizeInput, checkAnswerWithPlurals } from '@/lib/utils';
+import { sanitizeInput, sanitizeInputPreserveSpaces, checkAnswerWithPlurals } from '@/lib/utils';
 import {
   savePuzzleProgress,
   savePuzzleResult,
@@ -192,7 +192,10 @@ export function useGameWithInitialData(initialPuzzleData) {
     (index, value) => {
       // Simple update - just set the value
       // Locked letter logic is handled in keyboard handlers, not here
-      const sanitized = sanitizeInput(value);
+      const hasLockedLetters = lockedLetters && lockedLetters[index];
+      const sanitized = hasLockedLetters
+        ? sanitizeInputPreserveSpaces(value)
+        : sanitizeInput(value);
 
       setAnswers((prev) => {
         const newAnswers = [...prev];
@@ -208,7 +211,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [checkedWrongAnswers]
+    [checkedWrongAnswers, lockedLetters]
   );
 
   const completeGame = useCallback(
@@ -300,13 +303,15 @@ export function useGameWithInitialData(initialPuzzleData) {
         return { isCorrect: false, gameComplete: false };
       }
 
-      const userAnswer = answers[index].trim();
-      if (!userAnswer) {
+      // Don't trim if we have locked letters, as positions matter
+      const hasLockedLetters = lockedLetters && lockedLetters[index];
+      const userAnswer = hasLockedLetters ? answers[index] : answers[index].trim();
+      if (!userAnswer || !userAnswer.trim()) {
         return { isCorrect: false, gameComplete: false };
       }
 
       const puzzleItem = puzzle.puzzles[index];
-      const isCorrect = checkAnswerWithPlurals(userAnswer, puzzleItem.answer);
+      const isCorrect = checkAnswerWithPlurals(userAnswer.trim(), puzzleItem.answer);
 
       if (isCorrect) {
         setCorrectAnswers((prev) => {
@@ -362,7 +367,8 @@ export function useGameWithInitialData(initialPuzzleData) {
         // Compare character by character to find letters in correct positions
         for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
           if (userAnswerLower[i] === correctAnswer[i]) {
-            lockedPositions[i] = userAnswerLower[i];
+            // Store uppercase version for consistency with sanitized input
+            lockedPositions[i] = userAnswerLower[i].toUpperCase();
           }
         }
 
@@ -454,7 +460,10 @@ export function useGameWithInitialData(initialPuzzleData) {
     answers.forEach((answer, index) => {
       if (!correctAnswers[index] && answer.trim()) {
         const puzzleItem = puzzle.puzzles[index];
-        const isCorrect = checkAnswerWithPlurals(answer, puzzleItem.answer);
+        // Don't trim for comparison if we have locked letters
+        const hasLockedLetters = lockedLetters && lockedLetters[index];
+        const answerToCheck = hasLockedLetters ? answer.trim() : answer;
+        const isCorrect = checkAnswerWithPlurals(answerToCheck, puzzleItem.answer);
 
         if (isCorrect) {
           newCorrectAnswers[index] = true;
@@ -467,13 +476,15 @@ export function useGameWithInitialData(initialPuzzleData) {
 
           // Check for letters in correct positions (smart hints)
           const correctAnswer = puzzleItem.answer.toLowerCase();
-          const userAnswerLower = answer.trim().toLowerCase();
+          // Use original answer (not trimmed) to preserve positions
+          const userAnswerLower = answer.toLowerCase();
           const lockedPositions = {};
 
           // Compare character by character
           for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
             if (userAnswerLower[i] === correctAnswer[i]) {
-              lockedPositions[i] = userAnswerLower[i];
+              // Store uppercase version for consistency with sanitized input
+              lockedPositions[i] = userAnswerLower[i].toUpperCase();
             }
           }
 
