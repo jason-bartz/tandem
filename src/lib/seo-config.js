@@ -2,11 +2,12 @@ export const siteConfig = {
   name: 'Tandem',
   title: 'Tandem - Daily Emoji Word Puzzle Game',
   titleTemplate: '%s | Tandem',
-  description: 'Challenge your brain with Tandem, the addictive daily word puzzle game! Match emoji pairs to words, share your scores, and compete with friends. New puzzle every day at midnight ET.',
+  description:
+    'Challenge your brain with Tandem, the addictive daily word puzzle game! Match emoji pairs to words, share your scores, and compete with friends. New puzzle every day at midnight ET.',
   shortDescription: 'Match emoji pairs to words in this addictive daily puzzle game',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com',
-  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/og-image.webp`,
-  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/twitter-image.webp`,
+  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/og-image.webp?v=2`,
+  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/twitter-image.webp?v=2`,
   locale: 'en_US',
   type: 'website',
   keywords: [
@@ -24,63 +25,65 @@ export const siteConfig = {
     'online puzzle',
     'daily word game',
     'vocabulary game',
-    'brain training'
+    'brain training',
   ],
   authors: [
     {
       name: 'Tandem Game',
-      url: 'https://tandemdaily.com'
-    }
+      url: 'https://tandemdaily.com',
+    },
   ],
   creator: 'Tandem Game',
   publisher: 'Tandem Game',
   category: 'Games',
   classification: 'Puzzle Game',
-  
+
   // Social Media
   twitter: {
     card: 'summary_large_image',
     site: '@tandemgame',
-    creator: '@tandemgame'
+    creator: '@tandemgame',
   },
-  
+
   // Theme colors for different contexts
   themeColors: {
     light: '#0EA5E9', // Sky-500
-    dark: '#14B8A6'   // Teal-600
+    dark: '#14B8A6', // Teal-600
   },
-  
+
   // Apple specific
   appleStatusBar: 'black-translucent',
-  
+
   // Verification codes (add your actual codes when ready)
   verification: {
     google: '', // Google Search Console verification
-    bing: '',   // Bing Webmaster Tools
+    bing: '', // Bing Webmaster Tools
     yandex: '', // Yandex
-    pinterest: '' // Pinterest
-  }
+    pinterest: '', // Pinterest
+  },
 };
 
 // Generate dynamic metadata based on puzzle info
 export function generatePuzzleMetadata(puzzleInfo) {
   const puzzleNumber = puzzleInfo?.puzzleNumber || '';
   const theme = puzzleInfo?.puzzle?.theme || '';
-  const date = puzzleInfo?.displayDate || new Date().toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-  
-  const title = puzzleNumber 
+  const date =
+    puzzleInfo?.displayDate ||
+    new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+
+  const title = puzzleNumber
     ? `Puzzle #${puzzleNumber} - ${theme || 'Daily Challenge'}`
     : 'Daily Emoji Word Puzzle Game';
-    
+
   const description = puzzleNumber
     ? `Play Tandem Puzzle #${puzzleNumber}${theme ? ` - Theme: ${theme}` : ''}. Match emoji pairs to words in today's brain-teasing challenge! ${date}`
     : siteConfig.description;
-  
+
   return {
     title,
     description,
@@ -93,15 +96,15 @@ export function generatePuzzleMetadata(puzzleInfo) {
           width: 1200,
           height: 630,
           alt: `Tandem Puzzle ${puzzleNumber ? `#${puzzleNumber}` : ''}`,
-          type: 'image/webp'
-        }
-      ]
+          type: 'image/webp',
+        },
+      ],
     },
     twitter: {
       title: `Tandem ${puzzleNumber ? `#${puzzleNumber}` : 'Daily Puzzle'}`,
       description: description.substring(0, 200),
-      images: [siteConfig.twitterImage]
-    }
+      images: [siteConfig.twitterImage],
+    },
   };
 }
 
@@ -117,16 +120,16 @@ export function generateStructuredData(puzzleInfo) {
         name: siteConfig.name,
         description: siteConfig.description,
         publisher: {
-          '@id': `${siteConfig.url}/#organization`
+          '@id': `${siteConfig.url}/#organization`,
         },
         potentialAction: {
           '@type': 'SearchAction',
           target: {
             '@type': 'EntryPoint',
-            urlTemplate: `${siteConfig.url}/?s={search_term_string}`
+            urlTemplate: `${siteConfig.url}/?s={search_term_string}`,
           },
-          'query-input': 'required name=search_term_string'
-        }
+          'query-input': 'required name=search_term_string',
+        },
       },
       {
         '@type': 'Organization',
@@ -137,14 +140,14 @@ export function generateStructuredData(puzzleInfo) {
           '@type': 'ImageObject',
           url: `${siteConfig.url}/images/main-logo.webp`,
           width: 512,
-          height: 512
+          height: 512,
         },
         sameAs: [
           // Add your social media URLs here
           // 'https://twitter.com/tandemgame',
           // 'https://facebook.com/tandemgame',
           // 'https://instagram.com/tandemgame'
-        ]
+        ],
       },
       {
         '@type': 'WebPage',
@@ -152,12 +155,12 @@ export function generateStructuredData(puzzleInfo) {
         url: siteConfig.url,
         name: siteConfig.title,
         isPartOf: {
-          '@id': `${siteConfig.url}/#website`
+          '@id': `${siteConfig.url}/#website`,
         },
         about: {
-          '@id': `${siteConfig.url}/#game`
+          '@id': `${siteConfig.url}/#game`,
         },
-        description: siteConfig.description
+        description: siteConfig.description,
       },
       {
         '@type': 'Game',
@@ -168,7 +171,7 @@ export function generateStructuredData(puzzleInfo) {
         numberOfPlayers: {
           '@type': 'QuantitativeValue',
           minValue: 1,
-          maxValue: 1
+          maxValue: 1,
         },
         playMode: 'SinglePlayer',
         applicationCategory: 'GameApplication',
@@ -177,19 +180,19 @@ export function generateStructuredData(puzzleInfo) {
         offers: {
           '@type': 'Offer',
           price: '0',
-          priceCurrency: 'USD'
+          priceCurrency: 'USD',
         },
         aggregateRating: {
           '@type': 'AggregateRating',
           ratingValue: '4.8',
           ratingCount: '1250',
           bestRating: '5',
-          worstRating: '1'
-        }
-      }
-    ]
+          worstRating: '1',
+        },
+      },
+    ],
   };
-  
+
   // Add puzzle-specific data if available
   if (puzzleInfo?.puzzleNumber) {
     baseStructuredData['@graph'].push({
@@ -199,14 +202,14 @@ export function generateStructuredData(puzzleInfo) {
       description: `Daily word puzzle #${puzzleInfo.puzzleNumber}${puzzleInfo.puzzle?.theme ? ` - Theme: ${puzzleInfo.puzzle.theme}` : ''}`,
       datePublished: puzzleInfo.date || new Date().toISOString(),
       author: {
-        '@id': `${siteConfig.url}/#organization`
+        '@id': `${siteConfig.url}/#organization`,
       },
       isPartOf: {
-        '@id': `${siteConfig.url}/#game`
-      }
+        '@id': `${siteConfig.url}/#game`,
+      },
     });
   }
-  
+
   return baseStructuredData;
 }
 
@@ -215,7 +218,7 @@ export function generateAlternateLinks() {
   // Add more languages as you expand
   return [
     { hrefLang: 'en', href: siteConfig.url },
-    { hrefLang: 'x-default', href: siteConfig.url }
+    { hrefLang: 'x-default', href: siteConfig.url },
   ];
 }
 
@@ -226,22 +229,22 @@ export function generateBreadcrumbs(path = []) {
       '@type': 'ListItem',
       position: 1,
       name: 'Home',
-      item: siteConfig.url
-    }
+      item: siteConfig.url,
+    },
   ];
-  
+
   path.forEach((item, index) => {
     items.push({
       '@type': 'ListItem',
       position: index + 2,
       name: item.name,
-      item: `${siteConfig.url}${item.path}`
+      item: `${siteConfig.url}${item.path}`,
     });
   });
-  
+
   return {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items
+    itemListElement: items,
   };
 }
