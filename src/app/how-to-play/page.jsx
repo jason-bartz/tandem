@@ -1,18 +1,17 @@
-import { siteConfig, generateBreadcrumbs } from '@/lib/seo-config';
-import Breadcrumbs from '@/components/seo/Breadcrumbs';
+'use client';
 
-export const metadata = {
-  title: 'How to Play Tandem - Wordle-Style Emoji Puzzle Guide',
-  description:
-    'Learn how to play Tandem, the Wordle alternative with emoji pairs. Complete guide with examples, tips, and strategies for solving daily emoji word puzzles.',
-  openGraph: {
-    title: 'How to Play Tandem - Complete Guide',
-    description: 'Master this Wordle-style emoji puzzle game with our complete how-to guide.',
-    url: `${siteConfig.url}/how-to-play`,
-  },
-};
+import { useState } from 'react';
+import { generateBreadcrumbs } from '@/lib/seo-config';
+import { useTheme } from '@/contexts/ThemeContext';
+import Link from 'next/link';
 
 export default function HowToPlayPage() {
+  const { theme } = useTheme();
+  const [activeSection, setActiveSection] = useState(null);
+
+  const backgroundImage =
+    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
+
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'How to Play', path: '/how-to-play' }]);
 
   const howToSchema = {
@@ -44,6 +43,187 @@ export default function HowToPlayPage() {
     ],
   };
 
+  const sections = [
+    {
+      id: 'basics',
+      title: 'The Basics',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Each puzzle shows two emojis that represent a single word. Type your guess and press
+            Enter to submit.
+          </p>
+          <p>
+            You have 4 mistakes across all puzzles. The theme is revealed only when you solve all
+            four emoji pairs.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'smart-hints',
+      title: '💡 Smart Hints',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <p className="mb-3">
+              <strong className="text-[#7ed957]">Green letters = locked in!</strong> When you guess
+              incorrectly, any letters in the correct position turn green and stay locked. Just fill
+              in the remaining blanks.
+            </p>
+            <div className="bg-gray-100 dark:bg-gray-900 rounded-2xl p-4 border-[3px] border-black dark:border-white">
+              <p className="font-semibold mb-2">Example: Answer is PLAN</p>
+              <div className="space-y-2 font-mono text-sm">
+                <p>
+                  Guess: <span className="text-[#ff5757] font-bold">PILL</span> → Result:{' '}
+                  <span className="text-[#7ed957] font-bold">P</span>_ _ _
+                </p>
+                <p>Next guess: Only type 3 letters for the blanks</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p>
+              <span className="font-semibold">💡 Need help?</span> Select an answer field and tap
+              the hint button to reveal helpful context below that specific answer. You start with 1
+              hint and unlock a 2nd hint after solving 2 puzzles.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'example',
+      title: 'Example Round',
+      content: (
+        <div className="space-y-3 text-sm">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
+              <span className="text-2xl">☀️🔥</span>
+              <span className="font-mono font-bold">= SUN</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
+              Star → hot in the sky
+            </p>
+
+            <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
+              <span className="text-2xl">🌶️🔥</span>
+              <span className="font-mono font-bold">= PEPPER</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
+              Spice → burns your mouth
+            </p>
+
+            <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
+              <span className="text-2xl">☕🍵</span>
+              <span className="font-mono font-bold">= COFFEE</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
+              Drink → served hot
+            </p>
+
+            <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
+              <span className="text-2xl">🏜️🌡️</span>
+              <span className="font-mono font-bold">= DESERT</span>
+            </div>
+            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
+              Climate → scorching heat
+            </p>
+
+            <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-2xl text-center font-bold border-[3px] border-black dark:border-white">
+              🎉 Theme Revealed: Things That Are Hot 🔥
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'difficulty',
+      title: 'Difficulty Ratings ⭐',
+      content: (
+        <div className="space-y-4 text-sm">
+          <p>
+            Each puzzle has a difficulty rating that appears after you complete it. These ratings
+            help you reflect on the challenge and track your progress.
+          </p>
+          <div className="space-y-3">
+            <div className="p-3 bg-[#7ed957]/20 border-[3px] border-[#7ed957] rounded-2xl">
+              <p className="font-semibold mb-1">⭐ Easy</p>
+              <p>Straightforward connections, common vocabulary, clear emojis</p>
+            </div>
+            <div className="p-3 bg-[#7ed957]/10 border-[3px] border-[#7ed957]/60 rounded-2xl">
+              <p className="font-semibold mb-1">⭐⭐ Medium-Easy</p>
+              <p>Some thinking required, mostly familiar words</p>
+            </div>
+            <div className="p-3 bg-[#ffce00]/20 border-[3px] border-[#ffce00] rounded-2xl">
+              <p className="font-semibold mb-1">⭐⭐⭐ Medium</p>
+              <p>Balanced challenge, requires creative thinking</p>
+            </div>
+            <div className="p-3 bg-[#ff751f]/20 border-[3px] border-[#ff751f] rounded-2xl">
+              <p className="font-semibold mb-1">⭐⭐⭐⭐ Medium-Hard</p>
+              <p>Clever connections, wordplay involved</p>
+            </div>
+            <div className="p-3 bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl">
+              <p className="font-semibold mb-1">⭐⭐⭐⭐⭐ Hard</p>
+              <p>Abstract themes, challenging vocabulary, obscure connections</p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'streaks',
+      title: 'Streaks 🔥',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Complete the daily puzzle on your first try and play consecutive days to build your
+            streak! Keep coming back daily to maintain your streak and show off your consistency.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'hard-mode',
+      title: '🔥 Hard Mode (Tandem Unlimited)',
+      content: (
+        <div className="space-y-4 text-sm">
+          <p>
+            For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode (iOS
+            only):
+          </p>
+          <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
+            <h4 className="font-semibold mb-2">Hard Mode Rules:</h4>
+            <ul className="space-y-2">
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>
+                  <strong>3-minute time limit</strong> - Complete the puzzle before time runs out
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>
+                  <strong>No hints available</strong> - Rely only on your word skills
+                </span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span>•</span>
+                <span>
+                  <strong>Same mistake limit</strong> - You still have 4 mistakes maximum
+                </span>
+              </li>
+            </ul>
+          </div>
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            Enable Hard Mode in Settings when you have an active subscription. Only available on
+            iOS.
+          </p>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <>
       <script
@@ -55,272 +235,149 @@ export default function HowToPlayPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
       />
 
-      <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <Breadcrumbs />
-        <div className="container mx-auto px-4 py-8 max-w-4xl">
-          {/* Header */}
-          <header className="text-center mb-12">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
-              How to Play Tandem
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300">
-              Master the Wordle-Style Emoji Puzzle Game
-            </p>
-          </header>
+      <div
+        className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
+        style={{
+          backgroundImage,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundAttachment: 'fixed',
+        }}
+      >
+        {/* Scrollable content container */}
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
+            {/* Back to game link */}
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              <span className="text-sm font-medium">Back to Game</span>
+            </Link>
 
-          {/* Main Content */}
-          <div className="space-y-8">
-            {/* The Basics */}
-            <section className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border-2 border-gray-200 dark:border-gray-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">The Basics</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                Each puzzle shows two emojis that represent a single word. Type your guess and press
-                Enter to submit.
-              </p>
-              <p className="text-lg text-gray-700 dark:text-gray-300">
-                You have 4 mistakes across all puzzles. The theme is revealed only when you solve
-                all four emoji pairs.
-              </p>
-            </section>
+            {/* Main content card */}
+            <div className="relative">
+              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                {/* Header */}
+                <div className="bg-[#ff66c4] border-b-[3px] border-black dark:border-white p-6 text-black">
+                  <h1 className="text-3xl font-bold">How to Play Tandem</h1>
+                  <p className="mt-2 text-black/80">Master the emoji puzzle game</p>
+                </div>
 
-            {/* Smart Hints */}
-            <section className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-3xl p-8 shadow-lg border-2 border-green-300 dark:border-green-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                <span className="text-2xl">💡</span> Smart Hints
-              </h2>
+                {/* Quick Start Card */}
+                <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                  <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                    Quick Start
+                  </h3>
+                  <ol className="text-sm space-y-2">
+                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                      <span className="text-[#ff66c4] font-bold">1.</span>
+                      Look at the emoji pairs and guess the word they represent
+                    </li>
+                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                      <span className="text-[#ff66c4] font-bold">2.</span>
+                      Type your answer and press Enter
+                    </li>
+                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                      <span className="text-[#ff66c4] font-bold">3.</span>
+                      Correct letters lock in green - fill in the rest!
+                    </li>
+                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+                      <span className="text-[#ff66c4] font-bold">4.</span>
+                      Solve all 4 to reveal the hidden theme
+                    </li>
+                  </ol>
+                </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 mb-6">
-                <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                  <strong className="text-green-600 dark:text-green-400">
-                    Green letters = locked in!
-                  </strong>{' '}
-                  When you guess incorrectly, any letters in the correct position turn green and
-                  stay locked. Just fill in the remaining blanks.
-                </p>
+                {/* Content Accordion */}
+                <div className="p-6 pt-0">
+                  <div className="space-y-2">
+                    {sections.map((section) => (
+                      <div
+                        key={section.id}
+                        className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
+                      >
+                        <button
+                          onClick={() =>
+                            setActiveSection(activeSection === section.id ? null : section.id)
+                          }
+                          className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                        >
+                          <span className="font-semibold text-gray-800 dark:text-gray-200">
+                            {section.title}
+                          </span>
+                          <svg
+                            className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+                        {activeSection === section.id && (
+                          <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                            {section.content}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
 
-                <div className="bg-gray-50 dark:bg-gray-900 rounded-xl p-6 border-2 border-gray-200 dark:border-gray-700">
-                  <p className="font-semibold text-gray-900 dark:text-white mb-3">
-                    Example: Answer is PLAN
-                  </p>
-                  <div className="space-y-2 font-mono">
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Guess: <span className="text-red-600 dark:text-red-400 font-bold">PILL</span>{' '}
-                      → Result:{' '}
-                      <span className="text-green-600 dark:text-green-400 font-bold">P</span>_ _ _
+                  {/* Call to Action */}
+                  <div className="mt-6 pt-6 border-t-[3px] border-black dark:border-white">
+                    <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                      Ready to Play?
+                    </h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                      A new puzzle is released daily at midnight. Come back tomorrow for a fresh
+                      challenge!
                     </p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Next guess: Only type 3 letters for the blanks
-                    </p>
+                    <div className="flex gap-3 flex-wrap">
+                      <Link
+                        href="/"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff66c4] hover:bg-[#ff66c4]/90 text-black font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                      >
+                        🎮 Play Today's Puzzle
+                      </Link>
+                      <Link
+                        href="/about"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                      >
+                        ℹ️ About Tandem
+                      </Link>
+                    </div>
                   </div>
                 </div>
               </div>
+              {/* Faux drop shadow */}
+              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+            </div>
 
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6">
-                <p className="text-lg text-gray-700 dark:text-gray-300">
-                  <span className="font-semibold">💡 Need help?</span> Select an answer field and
-                  tap the hint button to reveal helpful context below that specific answer. You
-                  start with 1 hint and unlock a 2nd hint after solving 2 puzzles.
-                </p>
-              </div>
-            </section>
-
-            {/* Example Round */}
-            <section className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border-2 border-gray-200 dark:border-gray-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
-                Example Round
-              </h2>
-
-              <div className="space-y-6">
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-4xl">☀️🔥</span>
-                    <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">
-                      = SUN
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                    Star → hot in the sky
-                  </p>
-                </div>
-
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-4xl">🌶️🔥</span>
-                    <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">
-                      = PEPPER
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                    Spice → burns your mouth
-                  </p>
-                </div>
-
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-4xl">☕🍵</span>
-                    <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">
-                      = COFFEE
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                    Drink → served hot
-                  </p>
-                </div>
-
-                <div className="bg-gradient-to-r from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-2xl p-6 border-2 border-orange-200 dark:border-orange-800">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-4xl">🏜️🌡️</span>
-                    <span className="font-mono text-xl font-bold text-gray-900 dark:text-white">
-                      = DESERT
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 italic">
-                    Climate → scorching heat
-                  </p>
-                </div>
-
-                <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-2xl p-6 shadow-lg">
-                  <p className="text-xl font-bold text-center">
-                    🎉 Theme Revealed: Things That Are Hot 🔥
-                  </p>
-                </div>
-              </div>
-            </section>
-
-            {/* Difficulty Ratings */}
-            <section className="bg-white dark:bg-gray-800 rounded-3xl p-8 shadow-lg border-2 border-gray-200 dark:border-gray-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                Difficulty Ratings ⭐
-              </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-                Each puzzle has a difficulty rating that appears after you complete it. These
-                ratings help you reflect on the challenge and track your progress.
+            {/* Footer */}
+            <div className="mt-6 text-center text-white/80 text-sm">
+              <p>
+                Questions?{' '}
+                <Link href="/support" className="text-white hover:underline font-semibold">
+                  Visit our support page
+                </Link>
               </p>
-
-              <div className="space-y-4">
-                <div className="flex items-start gap-4 bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border-2 border-green-200 dark:border-green-800">
-                  <span className="text-2xl flex-shrink-0">⭐</span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Easy</p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Straightforward connections, common vocabulary, clear emojis
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-green-50 dark:bg-green-900/20 rounded-xl p-4 border-2 border-green-200 dark:border-green-800">
-                  <span className="text-2xl flex-shrink-0">⭐⭐</span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Medium-Easy</p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Some thinking required, mostly familiar words
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl p-4 border-2 border-yellow-200 dark:border-yellow-800">
-                  <span className="text-2xl flex-shrink-0">⭐⭐⭐</span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Medium</p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Balanced challenge, requires creative thinking
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-orange-50 dark:bg-orange-900/20 rounded-xl p-4 border-2 border-orange-200 dark:border-orange-800">
-                  <span className="text-2xl flex-shrink-0">⭐⭐⭐⭐</span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Medium-Hard</p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Clever connections, wordplay involved
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start gap-4 bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border-2 border-red-200 dark:border-red-800">
-                  <span className="text-2xl flex-shrink-0">⭐⭐⭐⭐⭐</span>
-                  <div>
-                    <p className="font-semibold text-gray-900 dark:text-white">Hard</p>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      Abstract themes, challenging vocabulary, obscure connections
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Streaks */}
-            <section className="bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 rounded-3xl p-8 shadow-lg border-2 border-orange-300 dark:border-orange-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Streaks 🔥</h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300">
-                Complete the daily puzzle on your first try and play consecutive days to build your
-                streak! Keep coming back daily to maintain your streak and show off your
-                consistency.
-              </p>
-            </section>
-
-            {/* Hard Mode */}
-            <section className="bg-gradient-to-br from-red-100 to-orange-100 dark:from-red-900/30 dark:to-orange-900/30 rounded-3xl p-8 shadow-lg border-2 border-red-300 dark:border-red-700">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
-                <span className="text-2xl">🔥</span> Hard Mode
-                <span className="text-sm px-3 py-1 rounded-full bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 font-normal">
-                  Tandem Unlimited
-                </span>
-              </h2>
-
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
-                For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
-              </p>
-
-              <ul className="space-y-3 mb-4">
-                <li className="flex items-start gap-3 text-lg text-gray-700 dark:text-gray-300">
-                  <span className="text-2xl flex-shrink-0">⏱️</span>
-                  <span>
-                    <strong>3-minute time limit</strong> - Complete the puzzle before time runs out
-                  </span>
-                </li>
-                <li className="flex items-start gap-3 text-lg text-gray-700 dark:text-gray-300">
-                  <span className="text-2xl flex-shrink-0">🚫</span>
-                  <span>
-                    <strong>No hints available</strong> - Rely only on your word skills
-                  </span>
-                </li>
-              </ul>
-
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                Enable Hard Mode in Settings when you have an active subscription. Only available on
-                iOS.
-              </p>
-            </section>
-
-            {/* Daily Puzzle */}
-            <section className="bg-gradient-to-br from-sky-100 to-teal-100 dark:from-sky-900/20 dark:to-teal-900/20 rounded-3xl p-8 shadow-lg border-2 border-sky-300 dark:border-sky-700 text-center">
-              <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-                Ready to Play?
-              </h2>
-              <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-                A new puzzle is released daily at midnight. Come back tomorrow for a fresh
-                challenge!
-              </p>
-              <a
-                href="/"
-                className="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-600 text-white font-semibold px-8 py-4 rounded-2xl shadow-lg transition-all border-2 border-sky-700 hover:translate-y-[-2px]"
-              >
-                <span className="text-xl">🎮</span> Play Today's Puzzle
-              </a>
-            </section>
+            </div>
           </div>
-
-          {/* Footer */}
-          <footer className="mt-16 text-center">
-            <p className="text-gray-600 dark:text-gray-400">
-              Questions?{' '}
-              <a href="/about" className="text-sky-500 hover:text-sky-600 underline">
-                Learn more about Tandem
-              </a>
-            </p>
-          </footer>
         </div>
       </div>
     </>
