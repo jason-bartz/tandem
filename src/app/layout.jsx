@@ -2,7 +2,7 @@ import './globals.css';
 import '@/styles/ios-optimizations.css';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
-import { siteConfig } from '@/lib/seo-config';
+import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
@@ -147,6 +147,8 @@ export default function RootLayout({ children }) {
     },
   };
 
+  const faqSchema = generateFAQSchema();
+
   return (
     <html lang="en" suppressHydrationWarning className="scroll-smooth">
       <head>
@@ -161,6 +163,11 @@ export default function RootLayout({ children }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        />
+        {/* FAQ Schema for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
         />
         {/* Google Analytics */}
         {process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID && (
