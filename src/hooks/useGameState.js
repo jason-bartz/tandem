@@ -54,7 +54,7 @@ export function useGameState() {
         // Check if the value already has locked letters in their correct positions
         const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
           const position = parseInt(pos);
-          return value[position] === locked[pos];
+          return value[position]?.toLowerCase() === locked[pos]?.toLowerCase();
         });
 
         if (hasLockedLettersInPlace) {

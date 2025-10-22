@@ -46,12 +46,14 @@ export function useGameLogic(
         return { isCorrect: true, gameComplete: false };
       }
 
-      const userAnswer = answers[index].trim();
-      if (!userAnswer) {
+      // Don't trim if we have locked letters, as positions matter
+      const hasLockedLetters = lockedLetters && lockedLetters[index];
+      const userAnswer = hasLockedLetters ? answers[index] : answers[index].trim();
+      if (!userAnswer || !userAnswer.trim()) {
         return { isCorrect: false, gameComplete: false };
       }
 
-      const isCorrect = checkAnswerWithPlurals(userAnswer, puzzle.puzzles[index].answer);
+      const isCorrect = checkAnswerWithPlurals(userAnswer.trim(), puzzle.puzzles[index].answer);
 
       if (isCorrect) {
         const newCorrectAnswers = [...correctAnswers];
@@ -114,7 +116,8 @@ export function useGameLogic(
         // Compare character by character to find letters in correct positions
         for (let i = 0; i < Math.min(userAnswerLower.length, correctAnswer.length); i++) {
           if (userAnswerLower[i] === correctAnswer[i]) {
-            lockedPositions[i] = userAnswerLower[i];
+            // Store uppercase version for consistency with sanitized input
+            lockedPositions[i] = userAnswerLower[i].toUpperCase();
           }
         }
 
@@ -228,7 +231,8 @@ export function useGameLogic(
             // Compare character by character
             for (let j = 0; j < Math.min(userAnswerLower.length, correctAnswer.length); j++) {
               if (userAnswerLower[j] === correctAnswer[j]) {
-                lockedPositions[j] = userAnswerLower[j];
+                // Store uppercase version for consistency with sanitized input
+                lockedPositions[j] = userAnswerLower[j].toUpperCase();
               }
             }
 
