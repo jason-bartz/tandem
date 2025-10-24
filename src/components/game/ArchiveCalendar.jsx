@@ -92,7 +92,11 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
       // This is simpler and avoids timezone conversion issues
       const currentNum = getCurrentPuzzleNumber();
 
+      // ALWAYS get fresh game history first - this is critical for showing updated status
+      const gameHistory = await getGameHistory();
+
       // Fetch puzzles from API using puzzle numbers (not dates)
+      // Note: We could cache the puzzle list, but we MUST always refresh game history
       let response;
       let data;
 
@@ -122,9 +126,6 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
 
         data = await response.json();
       }
-
-      // Get game history for status
-      const gameHistory = await getGameHistory();
 
       // Build puzzle data map keyed by day of month
       // Filter to only puzzles that fall in the current viewing month (in local timezone)
