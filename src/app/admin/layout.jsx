@@ -106,7 +106,7 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div className="min-h-screen bg-bg-primary">
+    <div className="admin-theme min-h-screen bg-bg-primary">
       <nav
         className="bg-bg-surface border-b-[3px] border-border-main"
         style={{ boxShadow: 'var(--shadow-card)' }}
@@ -120,7 +120,7 @@ export default function AdminLayout({ children }) {
             <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg border-[3px] border-border-main bg-bg-card hover:bg-accent-yellow transition-colors"
+                className="p-2 rounded-lg border-[2px] border-border-main bg-bg-card hover:bg-accent-yellow/20 transition-colors"
                 style={{ boxShadow: 'var(--shadow-small)' }}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
@@ -130,7 +130,7 @@ export default function AdminLayout({ children }) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-4 py-2 border-[3px] border-border-main bg-accent-blue text-text-primary rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                className="hidden sm:inline-block px-4 py-2 border-[2px] border-border-main bg-accent-blue/90 text-white rounded-lg font-bold hover:bg-accent-blue hover:translate-y-[-1px] transition-all"
                 style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 View Game
@@ -140,7 +140,7 @@ export default function AdminLayout({ children }) {
                   localStorage.removeItem('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-4 py-2 border-[3px] border-border-main bg-gradient-to-r from-accent-red to-accent-pink text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                className="px-4 py-2 border-[2px] border-border-main bg-gradient-to-r from-accent-red/90 to-accent-pink/90 text-white rounded-lg font-bold hover:from-accent-red hover:to-accent-pink hover:translate-y-[-1px] transition-all"
                 style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 Logout
@@ -151,7 +151,7 @@ export default function AdminLayout({ children }) {
       </nav>
       <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
         <div
-          className="bg-bg-card rounded-2xl border-[3px] border-border-main p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto"
+          className="bg-bg-card rounded-2xl border-[2px] border-border-main p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto"
           style={{ boxShadow: 'var(--shadow-card)' }}
         >
           {children}
