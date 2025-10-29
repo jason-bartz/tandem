@@ -5,7 +5,7 @@ class AIService {
   constructor() {
     this.client = null;
     this.enabled = process.env.AI_GENERATION_ENABLED !== 'false';
-    this.model = process.env.AI_MODEL || 'claude-3-5-sonnet-20241022';
+    this.model = process.env.AI_MODEL || 'claude-sonnet-4-5-20250929';
     this.maxRetries = 2;
     this.timeout = 30000; // 30 seconds
     this.generationCount = 0; // Track for analytics
