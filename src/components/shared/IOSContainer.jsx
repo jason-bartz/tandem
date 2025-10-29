@@ -23,10 +23,17 @@ export default function IOSContainer({ children }) {
 
         // Handle keyboard events
         const handleKeyboardShow = (info) => {
-          document.documentElement.style.setProperty(
-            '--keyboard-height',
-            `${info.keyboardHeight}px`
-          );
+          // Hardware keyboards typically report 0 or very small keyboard heights
+          // Only adjust layout for on-screen keyboards with significant height
+          const keyboardHeight = info.keyboardHeight || 0;
+
+          // If keyboard height is less than 50px, it's likely a hardware keyboard
+          // Skip layout adjustments to prevent screen shift
+          if (keyboardHeight < 50) {
+            return;
+          }
+
+          document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
           document.documentElement.classList.add('keyboard-visible');
 
           // Auto-scroll to active input field
@@ -38,7 +45,6 @@ export default function IOSContainer({ children }) {
               if (scrollContainer) {
                 const inputRect = activeElement.getBoundingClientRect();
                 const containerRect = scrollContainer.getBoundingClientRect();
-                const keyboardHeight = info.keyboardHeight || 300;
                 const viewportHeight = window.innerHeight - keyboardHeight;
 
                 // Check if input is below the visible area
