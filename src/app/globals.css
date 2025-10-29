@@ -35,6 +35,19 @@
   --shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
 
   --modal-bg: rgba(0, 0, 0, 0.5);
+
+  /* Admin-specific softer color palette */
+  --admin-bg-primary: #faf8f5;
+  --admin-bg-surface: #f5f3ef;
+  --admin-bg-card: #fdfcfa;
+  --admin-text-primary: #3a3632;
+  --admin-text-secondary: #6b6662;
+  --admin-text-muted: #a39d96;
+  --admin-border-main: #c4bfb8;
+  --admin-border-light: #e5e1db;
+  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 0.12);
+  --admin-shadow-button: 2px 2px 0px rgba(0, 0, 0, 0.15);
+  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.1);
 }
 
 [data-theme='dark'] {
@@ -67,6 +80,19 @@
   --shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.3);
 
   --modal-bg: rgba(0, 0, 0, 0.7);
+
+  /* Admin-specific softer dark mode palette */
+  --admin-bg-primary: #24292e;
+  --admin-bg-surface: #2d333b;
+  --admin-bg-card: #373e47;
+  --admin-text-primary: #e8eaed;
+  --admin-text-secondary: #c1c6cc;
+  --admin-text-muted: #8b949e;
+  --admin-border-main: #525964;
+  --admin-border-light: #444c56;
+  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 0.4);
+  --admin-shadow-button: 2px 2px 0px rgba(0, 0, 0, 0.4);
+  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.3);
 }
 
 /* Custom scrollbar styling for modals */
@@ -799,6 +825,112 @@ body {
 /* Hidden canvas for image export */
 #shareCanvas {
   display: none;
+}
+
+/* Admin-specific styling for better readability */
+.admin-theme {
+  --bg-primary: var(--admin-bg-primary);
+  --bg-surface: var(--admin-bg-surface);
+  --bg-card: var(--admin-bg-card);
+  --text-primary: var(--admin-text-primary);
+  --text-secondary: var(--admin-text-secondary);
+  --text-muted: var(--admin-text-muted);
+  --border-main: var(--admin-border-main);
+  --border-light: var(--admin-border-light);
+  --shadow-card: var(--admin-shadow-card);
+  --shadow-button: var(--admin-shadow-button);
+  --shadow-small: var(--admin-shadow-small);
+  --border-width: 2px;
+}
+
+.admin-theme .border-border-main {
+  border-color: var(--admin-border-main);
+}
+
+.admin-theme .border-\\[3px\\] {
+  border-width: 2px;
+}
+
+.admin-theme .border-\\[2px\\] {
+  border-width: 2px;
+}
+
+.admin-theme .bg-bg-primary {
+  background-color: var(--admin-bg-primary);
+}
+
+.admin-theme .bg-bg-surface {
+  background-color: var(--admin-bg-surface);
+}
+
+.admin-theme .bg-bg-card {
+  background-color: var(--admin-bg-card);
+}
+
+.admin-theme .text-text-primary {
+  color: var(--admin-text-primary);
+}
+
+.admin-theme .text-text-secondary {
+  color: var(--admin-text-secondary);
+}
+
+.admin-theme .text-text-muted {
+  color: var(--admin-text-muted);
+}
+
+/* Softer accent colors for admin interface */
+.admin-theme .bg-accent-green\/10 {
+  background-color: rgba(126, 217, 87, 0.08);
+}
+
+.admin-theme .bg-accent-blue\/20 {
+  background-color: rgba(56, 182, 255, 0.12);
+}
+
+.admin-theme .bg-accent-pink\/20,
+.admin-theme .bg-accent-pink\/10 {
+  background-color: rgba(255, 102, 196, 0.1);
+}
+
+.admin-theme .bg-accent-yellow\/20 {
+  background-color: rgba(255, 206, 0, 0.12);
+}
+
+.admin-theme .bg-accent-red\/20 {
+  background-color: rgba(255, 87, 87, 0.1);
+}
+
+.admin-theme .bg-accent-orange\/10 {
+  background-color: rgba(255, 117, 31, 0.08);
+}
+
+/* Input and form styling improvements for admin */
+.admin-theme input[type='text'],
+.admin-theme input[type='date'],
+.admin-theme input[type='number'],
+.admin-theme select,
+.admin-theme textarea {
+  transition: all 0.2s ease;
+}
+
+.admin-theme input[type='text']:focus,
+.admin-theme input[type='date']:focus,
+.admin-theme input[type='number']:focus,
+.admin-theme select:focus,
+.admin-theme textarea:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(56, 182, 255, 0.1);
+}
+
+/* Softer hover states */
+.admin-theme button:hover {
+  transition: all 0.2s ease;
+}
+
+/* Calendar day cells - softer borders */
+.admin-theme .hover\\:border-accent-yellow:hover {
+  border-color: rgba(255, 206, 0, 0.6);
 }
 
 /* High Contrast & Color Blind Friendly Mode */
