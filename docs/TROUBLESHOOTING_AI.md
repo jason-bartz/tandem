@@ -84,7 +84,7 @@ Puzzle pair needs exactly 2 emojis
 
 - System automatically retries up to 3 times
 - If persistent, the AI prompt may need adjustment in `ai.service.js`
-- Check that the model is `claude-3-5-sonnet-20241022` (in `.env.local`)
+- Check that the model is `claude-sonnet-4-5-20250929` (in `.env.local`)
 
 ### 2. AI Generation Always Returns 503
 
@@ -168,7 +168,7 @@ const client = new Anthropic({
 async function test() {
   try {
     const message = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 100,
       messages: [{ role: 'user', content: 'Hello!' }],
     });
@@ -267,7 +267,7 @@ If issues persist:
 ANTHROPIC_API_KEY=sk-ant-api03-...
 
 # Optional (with defaults)
-AI_MODEL=claude-3-5-sonnet-20241022
+AI_MODEL=claude-sonnet-4-5-20250929
 AI_GENERATION_ENABLED=true
 ```
 

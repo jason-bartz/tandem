@@ -27,7 +27,7 @@ console.log(
 );
 console.log(
   '   AI_MODEL:',
-  process.env.AI_MODEL || 'not set (defaults to claude-3-5-sonnet-20241022)'
+  process.env.AI_MODEL || 'not set (defaults to claude-sonnet-4-5-20250929)'
 );
 console.log('   NODE_ENV:', process.env.NODE_ENV);
 console.log('');
@@ -67,7 +67,7 @@ try {
 
   try {
     const testMessage = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-5-20250929',
       max_tokens: 50,
       messages: [{ role: 'user', content: 'Reply with just the word SUCCESS' }],
     });
