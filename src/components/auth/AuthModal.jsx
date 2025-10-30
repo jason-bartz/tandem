@@ -110,7 +110,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
       }}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl max-w-md w-full p-6 relative"
+        className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-6 relative"
         onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
@@ -267,7 +267,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           <button
             type="submit"
             disabled={loading}
-            className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
           >
             {loading ? 'Please wait...' : mode === 'signup' ? 'Become a Member' : 'Sign In'}
           </button>
@@ -277,7 +277,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
         <div className="mt-6 text-center">
           <button
             onClick={toggleMode}
-            className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
           >
             {mode === 'signup'
               ? 'Already have an account? Sign in'
