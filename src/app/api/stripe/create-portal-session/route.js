@@ -33,17 +33,24 @@ export async function POST(request) {
     // Get user's Stripe customer ID from subscription
     const supabase = createServerClient();
 
-    const { data: subscription, error } = await supabase
+    const { data: subscriptions, error } = await supabase
       .from('subscriptions')
-      .select('stripe_customer_id')
+      .select('stripe_customer_id, status')
       .eq('user_id', user.id)
-      .single();
+      .in('status', ['active', 'past_due', 'cancelled'])
+      .order('created_at', { ascending: false });
 
-    if (error || !subscription?.stripe_customer_id) {
-      return NextResponse.json(
-        { error: 'No active subscription found' },
-        { status: 404 }
-      );
+    if (error) {
+      logger.error('Database query failed', error);
+      return NextResponse.json({ error: 'Failed to fetch subscription' }, { status: 500 });
+    }
+
+    // Get the most recent subscription with a valid Stripe customer ID
+    const subscription = subscriptions?.find((sub) => sub.stripe_customer_id);
+
+    if (!subscription?.stripe_customer_id) {
+      logger.warn('No stripe customer ID found', { userId: user.id });
+      return NextResponse.json({ error: 'No active subscription found' }, { status: 404 });
     }
 
     // Create portal session
@@ -63,9 +70,6 @@ export async function POST(request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     logger.error('Portal session creation failed', error);
-    return NextResponse.json(
-      { error: 'Failed to create portal session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create portal session' }, { status: 500 });
   }
 }
