@@ -14,12 +14,41 @@ const INIT_STATE = {
   FAILED: 'FAILED',
 };
 
+// Cache key for raw subscription data
+const CACHE_KEY = 'tandem_subscription_raw';
+
 class WebSubscriptionService {
   constructor() {
     this.subscriptionStatus = null;
     this.loading = false;
     this.initState = INIT_STATE.NOT_STARTED;
     this.initPromise = null;
+
+    // Eager hydration from localStorage on construction
+    this.hydrateFromCache();
+  }
+
+  /**
+   * Hydrate subscription status from localStorage cache
+   * Called immediately on service construction for instant availability
+   */
+  hydrateFromCache() {
+    if (typeof window === 'undefined') return;
+
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        // Reconstruct Date object if present
+        if (parsed.expiryDate) {
+          parsed.expiryDate = new Date(parsed.expiryDate);
+        }
+        this.subscriptionStatus = parsed;
+      }
+    } catch (error) {
+      console.error('[WebSubscriptionService] Failed to hydrate from cache:', error);
+      this.subscriptionStatus = null;
+    }
   }
 
   /**
@@ -68,12 +97,16 @@ class WebSubscriptionService {
 
   /**
    * Load subscription status from API
+   * Uses cache-first strategy: returns cached data immediately if available,
+   * then updates in background
    */
   async loadSubscriptionStatus() {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       const headers = {};
       if (session?.access_token) {
@@ -87,20 +120,65 @@ class WebSubscriptionService {
 
       if (!response.ok) {
         // Not authenticated or no subscription
-        this.subscriptionStatus = { isActive: false };
+        const clearedStatus = { isActive: false };
+        this.subscriptionStatus = clearedStatus;
+
+        // Clear cache when not authenticated
+        this.clearCache();
         return;
       }
 
       const data = await response.json();
-      this.subscriptionStatus = {
+      const newStatus = {
         isActive: data.isActive || false,
         productId: data.tier || null,
         expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
         cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
       };
+
+      this.subscriptionStatus = newStatus;
+
+      // Update cache with new data
+      this.updateCache(newStatus);
     } catch (error) {
-      console.error('Failed to load subscription status:', error);
-      this.subscriptionStatus = { isActive: false };
+      console.error('[WebSubscriptionService] Failed to load subscription status:', error);
+
+      // On error, keep cached status if available, otherwise mark as inactive
+      if (!this.subscriptionStatus) {
+        this.subscriptionStatus = { isActive: false };
+      }
+    }
+  }
+
+  /**
+   * Update localStorage cache with current subscription status
+   */
+  updateCache(status) {
+    if (typeof window === 'undefined') return;
+
+    try {
+      // Serialize Date objects for storage
+      const cacheData = {
+        ...status,
+        expiryDate: status.expiryDate?.toISOString() || null,
+      };
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+    } catch (error) {
+      // Handle quota exceeded or other storage errors
+      console.error('[WebSubscriptionService] Failed to update cache:', error);
+    }
+  }
+
+  /**
+   * Clear localStorage cache
+   */
+  clearCache() {
+    if (typeof window === 'undefined') return;
+
+    try {
+      localStorage.removeItem(CACHE_KEY);
+    } catch (error) {
+      console.error('[WebSubscriptionService] Failed to clear cache:', error);
     }
   }
 
@@ -161,7 +239,9 @@ class WebSubscriptionService {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
         throw new Error('Not authenticated');
@@ -171,7 +251,7 @@ class WebSubscriptionService {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         credentials: 'include',
         body: JSON.stringify({ tier }),
@@ -200,7 +280,9 @@ class WebSubscriptionService {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
       if (!session?.access_token) {
         throw new Error('Not authenticated');
@@ -209,7 +291,7 @@ class WebSubscriptionService {
       const response = await fetch('/api/stripe/create-portal-session', {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${session.access_token}`,
+          Authorization: `Bearer ${session.access_token}`,
         },
         credentials: 'include',
       });
@@ -241,7 +323,7 @@ class WebSubscriptionService {
    */
   getProducts() {
     return {
-      'buddypass': {
+      buddypass: {
         id: 'buddypass',
         title: 'Buddy Pass',
         description: 'Monthly subscription',
@@ -250,7 +332,7 @@ class WebSubscriptionService {
         valid: true,
         canPurchase: true,
       },
-      'bestfriends': {
+      bestfriends: {
         id: 'bestfriends',
         title: 'Best Friends',
         description: 'Yearly subscription',
@@ -259,7 +341,7 @@ class WebSubscriptionService {
         valid: true,
         canPurchase: true,
       },
-      'soulmates': {
+      soulmates: {
         id: 'soulmates',
         title: 'Soulmates',
         description: 'Lifetime access',

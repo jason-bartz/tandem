@@ -1,21 +1,19 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import notificationService from '@/services/notificationService';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import GameCenterButton from '@/components/GameCenterButton';
 import { STORAGE_KEYS } from '@/lib/constants';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
-  const [subscriptionInfo, setSubscriptionInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(openPaywall);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
@@ -36,6 +34,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   } = useTheme();
   const { syncStatus, toggleSync } = useUnifiedSync();
   const { user } = useAuth();
+  const { isActive: isSubscriptionActive, loading: subscriptionLoading } = useSubscription();
 
   // Detect platform
   const platform = Capacitor.getPlatform();
@@ -43,7 +42,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
 
   useEffect(() => {
     if (isOpen) {
-      loadSubscriptionInfo();
       loadNotificationSettings();
       loadKeyboardLayout();
       loadHardModePreference();
@@ -169,19 +167,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     }
   };
 
-  const loadSubscriptionInfo = async () => {
-    setLoading(true);
-    try {
-      await subscriptionService.initialize();
-      const status = await subscriptionService.refreshSubscriptionStatus();
-      setSubscriptionInfo(status);
-    } catch (error) {
-      console.error('Failed to load subscription info:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (!isOpen) {
     return null;
   }
@@ -224,9 +209,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             >
               {/* Section Header */}
               <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
-                  Account
-                </h3>
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Account</h3>
               </div>
 
               {/* Section Content */}
@@ -241,9 +224,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
                       {user.email}
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Signed in
-                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
                   </div>
                 </div>
 
@@ -379,158 +360,156 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
 
         {/* Subscription Section - Both iOS and Web */}
         <div className="mb-8">
-            {/* Section Card */}
-            <div
-              className={`rounded-2xl border-[2px] overflow-hidden ${
-                highContrast
-                  ? 'border-hc-border bg-hc-surface'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
-              }`}
-            >
-              {/* Section Header */}
-              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
-                  Subscription
-                </h3>
-              </div>
+          {/* Section Card */}
+          <div
+            className={`rounded-2xl border-[2px] overflow-hidden ${
+              highContrast
+                ? 'border-hc-border bg-hc-surface'
+                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+            }`}
+          >
+            {/* Section Header */}
+            <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+              <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Subscription</h3>
+            </div>
 
-              {/* Section Content */}
-              <div className="p-5">
-                {loading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-                  </div>
-                ) : subscriptionInfo?.isActive ? (
-                  <div className="space-y-3">
-                    {/* Premium Badge */}
-                    <div className="bg-accent-blue dark:bg-accent-blue rounded-2xl border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] p-4 text-center">
-                      <div className="flex items-center justify-center gap-2 mb-1">
-                        <img
-                          src={
-                            theme === 'dark'
-                              ? '/icons/ui/tandem-unlimited-dark.png'
-                              : '/icons/ui/tandem-unlimited.png'
-                          }
-                          alt="Unlimited"
-                          className="w-6 h-6"
-                        />
-                        <p className="text-white font-bold text-lg">Tandem Unlimited</p>
-                      </div>
-                      <p className="text-white/90 text-sm">Active Player</p>
+            {/* Section Content */}
+            <div className="p-5">
+              {subscriptionLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+                </div>
+              ) : isSubscriptionActive ? (
+                <div className="space-y-3">
+                  {/* Premium Badge */}
+                  <div className="bg-accent-blue dark:bg-accent-blue rounded-2xl border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] p-4 text-center">
+                    <div className="flex items-center justify-center gap-2 mb-1">
+                      <img
+                        src={
+                          theme === 'dark'
+                            ? '/icons/ui/tandem-unlimited-dark.png'
+                            : '/icons/ui/tandem-unlimited.png'
+                        }
+                        alt="Unlimited"
+                        className="w-6 h-6"
+                      />
+                      <p className="text-white font-bold text-lg">Tandem Unlimited</p>
                     </div>
+                    <p className="text-white/90 text-sm">Active Player</p>
+                  </div>
 
-                    {/* Hard Mode Toggle - Only for Premium Users */}
-                    <div className="bg-accent-orange/20 dark:bg-gray-700 rounded-2xl border-[3px] border-accent-orange dark:border-accent-orange p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={
-                                theme === 'dark'
-                                  ? '/icons/ui/hardmode-dark.png'
-                                  : '/icons/ui/hardmode.png'
-                              }
-                              alt="Hard Mode"
-                              className="w-5 h-5"
-                            />
-                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                              Hard Mode
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            3-minute time limit • No hints available
+                  {/* Hard Mode Toggle - Only for Premium Users */}
+                  <div className="bg-accent-orange/20 dark:bg-gray-700 rounded-2xl border-[3px] border-accent-orange dark:border-accent-orange p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={
+                              theme === 'dark'
+                                ? '/icons/ui/hardmode-dark.png'
+                                : '/icons/ui/hardmode.png'
+                            }
+                            alt="Hard Mode"
+                            className="w-5 h-5"
+                          />
+                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                            Hard Mode
                           </p>
                         </div>
-                        <button
-                          onClick={handleHardModeToggle}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                            highContrast
-                              ? hardModeEnabled
-                                ? 'bg-hc-primary border-2 border-hc-border'
-                                : 'bg-hc-surface border-2 border-hc-border'
-                              : hardModeEnabled
-                                ? 'bg-red-500'
-                                : 'bg-gray-200 dark:bg-gray-600'
-                          }`}
-                          role="switch"
-                          aria-checked={hardModeEnabled}
-                        >
-                          <span
-                            className={`${
-                              hardModeEnabled ? 'translate-x-6' : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full ${
-                              highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                            } transition-transform`}
-                          />
-                        </button>
+                        <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                          3-minute time limit • No hints available
+                        </p>
                       </div>
+                      <button
+                        onClick={handleHardModeToggle}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          highContrast
+                            ? hardModeEnabled
+                              ? 'bg-hc-primary border-2 border-hc-border'
+                              : 'bg-hc-surface border-2 border-hc-border'
+                            : hardModeEnabled
+                              ? 'bg-red-500'
+                              : 'bg-gray-200 dark:bg-gray-600'
+                        }`}
+                        role="switch"
+                        aria-checked={hardModeEnabled}
+                      >
+                        <span
+                          className={`${
+                            hardModeEnabled ? 'translate-x-6' : 'translate-x-1'
+                          } inline-block h-4 w-4 transform rounded-full ${
+                            highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
+                          } transition-transform`}
+                        />
+                      </button>
                     </div>
+                  </div>
 
-                    {/* View Plans Button */}
+                  {/* View Plans Button */}
+                  <button
+                    onClick={() => setShowPaywall(true)}
+                    className={`w-full py-2 font-semibold rounded-2xl transition-all ${
+                      highContrast
+                        ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border hover:bg-hc-focus hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white dark:bg-gray-700 border-[3px] border-accent-blue dark:border-gray-600 text-accent-blue dark:text-accent-blue shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                    }`}
+                  >
+                    View Plans
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
+                    <p className="text-gray-600 dark:text-gray-400 mb-3">
+                      Get unlimited access to all puzzles with Tandem Unlimited!
+                    </p>
                     <button
                       onClick={() => setShowPaywall(true)}
                       className={`w-full py-2 font-semibold rounded-2xl transition-all ${
                         highContrast
-                          ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border hover:bg-hc-focus hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white dark:bg-gray-700 border-[3px] border-accent-blue dark:border-gray-600 text-accent-blue dark:text-accent-blue shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                          ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : 'bg-accent-blue text-white border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0px_rgba(0,0,0,0.5)]'
                       }`}
                     >
                       View Plans
                     </button>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
-                      <p className="text-gray-600 dark:text-gray-400 mb-3">
-                        Get unlimited access to all puzzles with Tandem Unlimited!
-                      </p>
-                      <button
-                        onClick={() => setShowPaywall(true)}
-                        className={`w-full py-2 font-semibold rounded-2xl transition-all ${
-                          highContrast
-                            ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-accent-blue text-white border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0px_rgba(0,0,0,0.5)]'
-                        }`}
-                      >
-                        View Plans
-                      </button>
-                    </div>
 
-                    {/* Hard Mode - Disabled for non-subscribers */}
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl border-[3px] border-gray-300 dark:border-gray-700 p-4 opacity-60">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={
-                                theme === 'dark'
-                                  ? '/icons/ui/hardmode-dark.png'
-                                  : '/icons/ui/hardmode.png'
-                              }
-                              alt="Hard Mode"
-                              className="w-5 h-5 opacity-50"
-                            />
-                            <p className="text-sm font-semibold text-gray-500 dark:text-gray-500">
-                              Hard Mode
-                            </p>
-                            <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
-                              Tandem Unlimited
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                            3-minute time limit • No hints available
+                  {/* Hard Mode - Disabled for non-subscribers */}
+                  <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl border-[3px] border-gray-300 dark:border-gray-700 p-4 opacity-60">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <img
+                            src={
+                              theme === 'dark'
+                                ? '/icons/ui/hardmode-dark.png'
+                                : '/icons/ui/hardmode.png'
+                            }
+                            alt="Hard Mode"
+                            className="w-5 h-5 opacity-50"
+                          />
+                          <p className="text-sm font-semibold text-gray-500 dark:text-gray-500">
+                            Hard Mode
                           </p>
+                          <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
+                            Tandem Unlimited
+                          </span>
                         </div>
-                        <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed">
-                          <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-gray-300 dark:bg-gray-600 transition-transform" />
-                        </div>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
+                          3-minute time limit • No hints available
+                        </p>
+                      </div>
+                      <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed">
+                        <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-gray-300 dark:bg-gray-600 transition-transform" />
                       </div>
                     </div>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
+        </div>
 
         {/* iCloud Sync Section */}
         {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (
