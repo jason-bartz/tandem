@@ -1,11 +1,12 @@
 'use client';
 import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
-import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
+import subscriptionService from '@/services/subscriptionService';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import platformService from '@/services/platform';
 
 /**
@@ -150,6 +151,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const [error, setError] = useState(null);
 
   const { highContrast } = useTheme();
+  const { isActive: isSubscriptionActive, refreshStatus } = useSubscription();
   const scrollContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -379,22 +381,18 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
   /**
    * Check access permissions for puzzles - SYNCHRONOUS and INSTANT
-   * Uses cached subscription status from subscriptionService
+   * Uses subscription context for reactive updates
    * Never blocks UI thread
    */
   const checkAccessPermissions = useCallback(
     (puzzlesToCheck, append = false) => {
       const accessMap = append ? { ...puzzleAccessMap } : {};
 
-      // Force re-check subscription status to ensure it's current
-      // Note: isSubscribed is checked internally by canAccessPuzzle
-
       puzzlesToCheck.forEach((puzzle) => {
         const cacheKey = puzzle.number.toString();
 
-        // Always re-check access to ensure accuracy after restore/purchase
-        // This is synchronous and fast, so no performance impact
-        // Check subscription for both iOS and Web platforms
+        // Check access using subscription service (synchronous)
+        // This respects both subscription status and free tier access
         const hasAccess = subscriptionService.canAccessPuzzle(puzzle.number);
 
         accessMap[cacheKey] = !hasAccess; // Invert for lock display
@@ -467,14 +465,13 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   );
 
   // Handle purchase complete
-  const handlePurchaseComplete = () => {
-    // Refresh subscription status in background
-    subscriptionService.refreshSubscriptionStatus().then(() => {
-      // Clear cache and re-check access synchronously with new subscription state
-      paginatedCache.puzzleAccessMap = {};
-      checkAccessPermissions(puzzles);
-    });
-  };
+  const handlePurchaseComplete = useCallback(async () => {
+    // Refresh subscription status via context
+    await refreshStatus();
+    // Clear cache and re-check access with new subscription state
+    paginatedCache.puzzleAccessMap = {};
+    checkAccessPermissions(puzzles);
+  }, [refreshStatus, puzzles, checkAccessPermissions]);
 
   // Format date for display
   const formatDate = useCallback((dateStr) => {
@@ -498,18 +495,14 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     });
   }, []);
 
-  // Subscribe to subscription init state changes
+  // Re-check access when subscription status changes
   useEffect(() => {
-    const unsubscribe = subscriptionService.onStateChange((newState) => {
-      // When subscription becomes ready, re-check puzzle access
-      if (newState === INIT_STATE.READY && puzzles.length > 0) {
-        paginatedCache.puzzleAccessMap = {}; // Clear cache
-        checkAccessPermissions(puzzles, false);
-      }
-    });
-
-    return unsubscribe;
-  }, [puzzles, checkAccessPermissions]);
+    if (puzzles.length > 0 && isOpen) {
+      // Clear cache and re-check access when subscription changes
+      paginatedCache.puzzleAccessMap = {};
+      checkAccessPermissions(puzzles, false);
+    }
+  }, [isSubscriptionActive, puzzles, isOpen, checkAccessPermissions]);
 
   // Load initial data when modal opens
   useEffect(() => {
@@ -517,15 +510,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       // Reset state
       setHasMore(true);
       loadingRef.current = false;
-
-      // Always refresh subscription status when modal opens to ensure it's current
-      // This is important after restoring purchases or app launch
-      if (Capacitor.isNativePlatform() && subscriptionService.isReady()) {
-        subscriptionService.refreshSubscriptionStatus().then(() => {
-          // Clear the access cache to force re-check with updated status
-          paginatedCache.puzzleAccessMap = {};
-        });
-      }
 
       if (isInitialLoad.current || puzzles.length === 0) {
         // First time opening OR puzzles are empty - fetch fresh data

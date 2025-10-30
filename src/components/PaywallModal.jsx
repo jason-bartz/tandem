@@ -7,6 +7,7 @@ import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import AuthModal from '@/components/auth/AuthModal';
 import { ASSET_VERSION } from '@/lib/constants';
 
@@ -21,6 +22,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
   const { theme, highContrast, reduceMotion } = useTheme();
   const { user } = useAuth();
+  const { refreshStatus } = useSubscription();
 
   // Detect platform
   const platform = Capacitor.getPlatform();
@@ -107,6 +109,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       if (isIOS) {
         // iOS: Use IAP
         await subscriptionService.purchase(productId);
+
+        // Refresh subscription status via context
+        await refreshStatus();
 
         // Success! Show confetti and haptic feedback
         successHaptic();
@@ -210,6 +215,9 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     try {
       const restored = await subscriptionService.restorePurchases();
 
+      // Refresh subscription status via context
+      await refreshStatus();
+
       if (restored && restored.isActive) {
         successHaptic();
         setError('Purchases restored successfully!');
@@ -235,7 +243,8 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   // Handle successful authentication (web only)
   const handleAuthSuccess = async () => {
     setShowAuthModal(false);
-    // Refresh subscription status after auth
+    // Refresh subscription status via context after auth
+    await refreshStatus();
     const status = await subscriptionService.getSubscriptionStatus();
     setCurrentSubscription(status?.tier || null);
   };

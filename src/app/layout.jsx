@@ -7,6 +7,7 @@ import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -203,7 +204,9 @@ export default function RootLayout({ children }) {
         <ErrorBoundary name="RootLayout">
           <ThemeProvider>
             <AuthProvider>
-              <IOSContainerWrapper>{children}</IOSContainerWrapper>
+              <SubscriptionProvider>
+                <IOSContainerWrapper>{children}</IOSContainerWrapper>
+              </SubscriptionProvider>
             </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>
