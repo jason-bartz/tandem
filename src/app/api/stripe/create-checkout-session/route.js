@@ -45,7 +45,10 @@ export async function POST(request) {
 
     // Create Stripe checkout session
     const stripe = getStripe();
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+    // Use VERCEL_URL for automatic deployment URL detection, fallback to NEXT_PUBLIC_APP_URL or localhost
+    const appUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
 
     const session = await stripe.checkout.sessions.create({
       customer_email: user.email,
@@ -78,9 +81,6 @@ export async function POST(request) {
     return NextResponse.json({ url: session.url });
   } catch (error) {
     logger.error('Checkout session creation failed', error);
-    return NextResponse.json(
-      { error: 'Failed to create checkout session' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 });
   }
 }
