@@ -196,13 +196,14 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     }
   };
 
-  const handleRestore = async () => {
-    // Only for iOS
-    if (!isIOS) {
-      setError('Use your account settings to manage your subscription.');
+  const handleRestoreOrLogin = async () => {
+    // For Web: Open login modal
+    if (isWeb) {
+      setShowAuthModal(true);
       return;
     }
 
+    // For iOS: Restore purchases
     setRestoring(true);
     setError(null);
 
@@ -332,9 +333,15 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         </div>
 
         {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-2">
           Tandem Unlimited
         </h2>
+
+        {/* Subtitle */}
+        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
+          Become a Tandem Unlimited Member and unlock access to all puzzles, new game modes, and
+          more!
+        </p>
 
         {/* Benefits list */}
         <div
@@ -680,13 +687,19 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         )}
 
-        {/* Restore Purchase button */}
+        {/* Restore Purchase (iOS) or Login (Web) button */}
         <button
-          onClick={handleRestore}
+          onClick={handleRestoreOrLogin}
           disabled={loading || restoring || productsLoading}
           className="w-full py-3 text-sky-600 dark:text-sky-400 font-medium text-sm hover:underline disabled:opacity-50"
         >
-          {restoring ? 'Restoring...' : 'Restore Purchase'}
+          {restoring
+            ? 'Restoring...'
+            : isWeb
+              ? user
+                ? 'Already a Member?'
+                : 'Login'
+              : 'Restore Purchase'}
         </button>
 
         {/* Payment disclaimers */}
