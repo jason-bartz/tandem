@@ -29,7 +29,7 @@ export default function TermsOfUse() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: October 13, 2025
+            <strong>Last Updated</strong>: October 30, 2025
           </p>
         </div>
       ),
@@ -100,11 +100,20 @@ export default function TermsOfUse() {
 
           <div>
             <h4 className="font-semibold mb-2">Billing and Renewal</h4>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+            <p className="mb-2 text-sm"><strong>iOS App Store:</strong></p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400 mb-3">
               <li>Payment processed through Apple App Store</li>
               <li>Subscriptions auto-renew unless canceled 24 hours before renewal</li>
               <li>Manage subscriptions in your Apple ID Account Settings</li>
               <li>No refunds for partial subscription periods</li>
+            </ul>
+            <p className="mb-2 text-sm"><strong>Web (via Stripe):</strong></p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Payment processed securely through Stripe</li>
+              <li>Requires account creation with email and password or Google OAuth</li>
+              <li>Subscriptions auto-renew unless canceled before renewal</li>
+              <li>Manage subscriptions through your account page or Stripe customer portal</li>
+              <li>Refund policy follows Stripe's standard terms</li>
             </ul>
           </div>
 
@@ -249,6 +258,26 @@ export default function TermsOfUse() {
       ),
     },
     {
+      id: 'user-accounts',
+      title: 'User Accounts (Web Only)',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Web users may create an account to access Tandem Unlimited features. By creating an account, you agree to:
+          </p>
+          <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+            <li>Provide accurate and complete information</li>
+            <li>Maintain the security of your account credentials</li>
+            <li>Accept responsibility for all activities under your account</li>
+            <li>Notify us immediately of any unauthorized use</li>
+          </ul>
+          <p>
+            We reserve the right to suspend or terminate accounts that violate these Terms or for any other reason.
+          </p>
+        </div>
+      ),
+    },
+    {
       id: 'age-requirements',
       title: 'Age Requirements',
       content: (
@@ -303,6 +332,25 @@ export default function TermsOfUse() {
               <li>iCloud data is governed by Apple's iCloud Terms and Conditions</li>
               <li>We are not responsible for iCloud sync failures or data loss</li>
               <li>You can disable iCloud sync at any time in Settings</li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'stripe-terms',
+      title: 'Stripe Payment Processing',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Web Subscriptions</h4>
+            <p className="mb-2">For web users, payments are processed by Stripe, Inc. ("Stripe"):</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your payment information is collected and processed by Stripe</li>
+              <li>You must comply with Stripe's Terms of Service</li>
+              <li>Stripe's privacy policy applies to your payment data</li>
+              <li>We do not store your credit card information on our servers</li>
+              <li>Billing disputes should be addressed through Stripe's customer service</li>
             </ul>
           </div>
         </div>

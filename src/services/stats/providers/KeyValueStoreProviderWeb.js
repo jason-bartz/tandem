@@ -10,21 +10,21 @@ export class KeyValueStoreProviderWeb {
     console.log('[KeyValueStoreProviderWeb] Web stub implementation - KeyValueStore not available on web');
   }
 
-  async getValue({ key }) {
+  async getValue({ key: _key }) {
     return {
       value: null,
       error: 'KeyValueStore is only available on iOS devices'
     };
   }
 
-  async setValue({ key, value }) {
+  async setValue({ key: _key, value: _value }) {
     return {
       success: false,
       error: 'KeyValueStore is only available on iOS devices'
     };
   }
 
-  async removeValue({ key }) {
+  async removeValue({ key: _key }) {
     return {
       success: false,
       error: 'KeyValueStore is only available on iOS devices'
@@ -47,7 +47,7 @@ export class KeyValueStoreProviderWeb {
     };
   }
 
-  addListener(eventName, callback) {
+  addListener(eventName, _callback) {
     // No-op for web
     console.log('[KeyValueStoreProviderWeb] Event listener not supported on web:', eventName);
     return {

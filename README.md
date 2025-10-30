@@ -173,8 +173,19 @@ tandem/
 │   ├── manifest.json           # PWA manifest
 │   └── sw.js                   # Service worker
 ├── scripts/                    # Utility scripts
-│   ├── hash-password.js        # Password hash generator
-│   └── seed-puzzles.js         # Puzzle seeding script
+│   ├── admin/                  # Admin & setup scripts
+│   │   ├── hash-password.js    # Password hash generator
+│   │   ├── seed-puzzles.js     # Puzzle seeding script
+│   │   └── [others]            # JWT, passwords, achievements
+│   ├── maintenance/            # Data migration & fixes
+│   └── README.md               # Scripts documentation
+├── docs/                       # Documentation
+│   ├── setup/                  # Setup & configuration guides
+│   ├── features/               # Feature documentation
+│   ├── development/            # Developer guides
+│   └── README.md               # Documentation index
+├── supabase/                   # Supabase project files
+│   └── migrations/             # Database migrations
 └── tests/                      # Test files
 ```
 
@@ -593,6 +604,17 @@ The `BUILD_TARGET=capacitor` environment variable ensures:
 - Static export for Capacitor
 - Proper asset paths
 - iOS-optimized builds
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the [docs/](docs/) directory:
+
+- **[Setup Guides](docs/setup/)** - CloudKit, Supabase, Game Center configuration
+- **[Feature Documentation](docs/features/)** - Detailed feature implementations
+- **[Development Guides](docs/development/)** - Architecture and troubleshooting
+- **[Scripts Documentation](scripts/README.md)** - Utility scripts reference
+
+See [docs/README.md](docs/README.md) for a complete documentation index.
 
 ## 🐛 Troubleshooting
 

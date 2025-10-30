@@ -394,8 +394,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
 
         // Always re-check access to ensure accuracy after restore/purchase
         // This is synchronous and fast, so no performance impact
-        const hasAccess =
-          !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.number);
+        // Check subscription for both iOS and Web platforms
+        const hasAccess = subscriptionService.canAccessPuzzle(puzzle.number);
 
         accessMap[cacheKey] = !hasAccess; // Invert for lock display
         paginatedCache.puzzleAccessMap[cacheKey] = hasAccess;

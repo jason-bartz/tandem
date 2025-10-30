@@ -158,6 +158,7 @@ export default function Support() {
               </li>
               <li>Full offline support - play without internet connection</li>
               <li>Optimized for iPhone and iPad</li>
+              <li>Tandem Unlimited subscription with full Hard Mode support</li>
               <li>Download from the App Store</li>
             </ul>
           </div>
@@ -169,6 +170,7 @@ export default function Support() {
               </li>
               <li>Install to home screen for app-like experience</li>
               <li>Works on all devices with modern browsers</li>
+              <li>Tandem Unlimited subscription available via Stripe</li>
               <li>Requires internet connection to play</li>
               <li>Visit tandemdaily.com to play</li>
             </ul>
@@ -193,7 +195,7 @@ export default function Support() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-medium">Q: Is Tandem free to play?</p>
-                <p>A: Yes! Tandem is completely free with no advertisements.</p>
+                <p>A: Yes! Tandem is completely free with no advertisements. Today's puzzle and the last 3 days are always free. Tandem Unlimited subscriptions unlock access to all archived puzzles and exclusive features.</p>
               </div>
               <div>
                 <p className="font-medium">Q: When do new puzzles become available?</p>
@@ -201,11 +203,11 @@ export default function Support() {
               </div>
               <div>
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
-                <p>A: Yes! You can access and play previous puzzles through the archive feature.</p>
+                <p>A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require a Tandem Unlimited subscription, available on both iOS (via App Store) and web (via Stripe).</p>
               </div>
               <div>
                 <p className="font-medium">Q: Is there a time limit?</p>
-                <p>A: No time limit! Take as long as you need to solve the puzzle.</p>
+                <p>A: No time limit in regular mode! Take as long as you need. Hard Mode (iOS subscribers only) adds a 3-minute time limit for extra challenge.</p>
               </div>
             </div>
           </div>
@@ -305,8 +307,8 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
-              Hard Mode is an exclusive feature for Tandem Unlimited subscribers (iOS only) that
-              adds a challenging twist to the classic Tandem gameplay.
+              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that
+              adds a challenging twist to the classic Tandem gameplay. Note: Hard Mode gameplay is currently available on iOS only.
             </p>
             <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>

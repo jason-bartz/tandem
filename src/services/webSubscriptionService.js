@@ -1,0 +1,280 @@
+/**
+ * Web Subscription Service
+ * Uses secure API routes (no direct DB access from browser)
+ * Mirrors iOS subscription service interface for compatibility
+ */
+
+import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
+
+// Initialization states (matching iOS interface)
+const INIT_STATE = {
+  NOT_STARTED: 'NOT_STARTED',
+  INITIALIZING: 'INITIALIZING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+};
+
+class WebSubscriptionService {
+  constructor() {
+    this.subscriptionStatus = null;
+    this.loading = false;
+    this.initState = INIT_STATE.NOT_STARTED;
+    this.initPromise = null;
+  }
+
+  /**
+   * Get current initialization state
+   * @returns {string} One of INIT_STATE values
+   */
+  getInitState() {
+    return this.initState;
+  }
+
+  /**
+   * Add a listener for initialization state changes (no-op for web, for compatibility)
+   * @param {Function} _callback - Called with (newState, oldState)
+   * @returns {Function} Unsubscribe function
+   */
+  onStateChange(_callback) {
+    // Web is always ready, so this is a no-op
+    return () => {};
+  }
+
+  /**
+   * Initialize (no-op for web, kept for interface compatibility)
+   * Web subscription service is always ready
+   */
+  async initialize() {
+    if (this.initPromise) {
+      return this.initPromise;
+    }
+
+    this.initState = INIT_STATE.INITIALIZING;
+    this.initPromise = this.loadSubscriptionStatus().then(() => {
+      this.initState = INIT_STATE.READY;
+    });
+
+    return this.initPromise;
+  }
+
+  /**
+   * Force re-initialization (for web, just reloads status)
+   */
+  async forceReinitialize() {
+    this.initPromise = null;
+    this.initState = INIT_STATE.NOT_STARTED;
+    return this.initialize();
+  }
+
+  /**
+   * Load subscription status from API
+   */
+  async loadSubscriptionStatus() {
+    try {
+      // Get the Supabase session token from localStorage
+      const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      const headers = {};
+      if (session?.access_token) {
+        headers['Authorization'] = `Bearer ${session.access_token}`;
+      }
+
+      const response = await fetch('/api/subscription/status', {
+        headers,
+        credentials: 'include', // Include cookies for auth
+      });
+
+      if (!response.ok) {
+        // Not authenticated or no subscription
+        this.subscriptionStatus = { isActive: false };
+        return;
+      }
+
+      const data = await response.json();
+      this.subscriptionStatus = {
+        isActive: data.isActive || false,
+        productId: data.tier || null,
+        expiryDate: data.expiryDate ? new Date(data.expiryDate) : null,
+        cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
+      };
+    } catch (error) {
+      console.error('Failed to load subscription status:', error);
+      this.subscriptionStatus = { isActive: false };
+    }
+  }
+
+  /**
+   * Refresh subscription status
+   */
+  async refreshSubscriptionStatus() {
+    await this.loadSubscriptionStatus();
+    return this.subscriptionStatus;
+  }
+
+  /**
+   * Check if subscription is active
+   */
+  isSubscriptionActive() {
+    return this.subscriptionStatus?.isActive || false;
+  }
+
+  /**
+   * Get subscription status
+   */
+  getSubscriptionStatus() {
+    return this.subscriptionStatus;
+  }
+
+  /**
+   * Check if user can access a puzzle by number
+   * Same logic as iOS: current day + 3 days back = 4 days free
+   */
+  canAccessPuzzle(puzzleNumber) {
+    const currentPuzzleNumber = getCurrentPuzzleNumber();
+    const oldestFreePuzzle = currentPuzzleNumber - 3;
+
+    // Free access to last 4 days
+    if (puzzleNumber >= oldestFreePuzzle && puzzleNumber <= currentPuzzleNumber) {
+      return true;
+    }
+
+    // Check subscription for older puzzles
+    return this.isSubscriptionActive();
+  }
+
+  /**
+   * Check if user can access a puzzle by date
+   */
+  canAccessPuzzleByDate(dateString) {
+    const puzzleNumber = getPuzzleNumberForDate(dateString);
+    return this.canAccessPuzzle(puzzleNumber);
+  }
+
+  /**
+   * Create Stripe checkout session
+   * Redirects to Stripe hosted checkout
+   */
+  async createCheckoutSession(tier) {
+    this.loading = true;
+
+    try {
+      // Get the Supabase session token from localStorage
+      const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch('/api/stripe/create-checkout-session', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        credentials: 'include',
+        body: JSON.stringify({ tier }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create checkout session');
+      }
+
+      const data = await response.json();
+
+      // Redirect to Stripe checkout
+      window.location.href = data.url;
+    } catch (error) {
+      this.loading = false;
+      throw error;
+    }
+  }
+
+  /**
+   * Create Stripe customer portal session
+   * For managing existing subscription
+   */
+  async createPortalSession() {
+    try {
+      // Get the Supabase session token from localStorage
+      const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error('Not authenticated');
+      }
+
+      const response = await fetch('/api/stripe/create-portal-session', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to create portal session');
+      }
+
+      const data = await response.json();
+
+      // Redirect to Stripe customer portal
+      window.location.href = data.url;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  /**
+   * Check if service is ready (always true for web)
+   */
+  isReady() {
+    return this.initState === INIT_STATE.READY;
+  }
+
+  /**
+   * Get products (for display in paywall)
+   * Returns static product info for web
+   */
+  getProducts() {
+    return {
+      'buddypass': {
+        id: 'buddypass',
+        title: 'Buddy Pass',
+        description: 'Monthly subscription',
+        price: '$1.99',
+        pricing: { price: '$1.99' },
+        valid: true,
+        canPurchase: true,
+      },
+      'bestfriends': {
+        id: 'bestfriends',
+        title: 'Best Friends',
+        description: 'Yearly subscription',
+        price: '$14.99',
+        pricing: { price: '$14.99' },
+        valid: true,
+        canPurchase: true,
+      },
+      'soulmates': {
+        id: 'soulmates',
+        title: 'Soulmates',
+        description: 'Lifetime access',
+        price: '$29.99',
+        pricing: { price: '$29.99' },
+        valid: true,
+        canPurchase: true,
+      },
+    };
+  }
+}
+
+// Export singleton instance
+const webSubscriptionService = new WebSubscriptionService();
+export default webSubscriptionService;
+
+// Export INIT_STATE for compatibility
+export { INIT_STATE };
