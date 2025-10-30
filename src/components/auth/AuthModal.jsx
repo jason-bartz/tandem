@@ -24,7 +24,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const { signUp, signIn, signInWithGoogle } = useAuth();
+  const { signUp, signIn } = useAuth(); // signInWithGoogle temporarily disabled
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -69,23 +69,24 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
     }
   };
 
-  const handleGoogleSignIn = async () => {
-    setError(null);
-    setLoading(true);
+  // Temporarily disabled pending Google verification
+  // const handleGoogleSignIn = async () => {
+  //   setError(null);
+  //   setLoading(true);
 
-    try {
-      const { error } = await signInWithGoogle();
+  //   try {
+  //     const { error } = await signInWithGoogle();
 
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-      }
-      // Don't set loading to false here - user will be redirected
-    } catch (err) {
-      setError('Failed to sign in with Google');
-      setLoading(false);
-    }
-  };
+  //     if (error) {
+  //       setError(error.message);
+  //       setLoading(false);
+  //     }
+  //     // Don't set loading to false here - user will be redirected
+  //   } catch (err) {
+  //     setError('Failed to sign in with Google');
+  //     setLoading(false);
+  //   }
+  // };
 
   const toggleMode = () => {
     setMode(mode === 'login' ? 'signup' : 'login');
@@ -119,12 +120,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
           aria-label="Close"
         >
-          <svg
-            className="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -167,7 +163,8 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           </div>
         )}
 
-        {/* Google Sign In */}
+        {/* Google Sign In - Temporarily disabled pending Google verification (3-5 weeks) */}
+        {/*
         <button
           onClick={handleGoogleSignIn}
           disabled={loading}
@@ -196,12 +193,12 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           </span>
         </button>
 
-        {/* Divider */}
         <div className="flex items-center gap-4 my-6">
           <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
           <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
           <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
         </div>
+        */}
 
         {/* Email/Password Form */}
         <form onSubmit={handleSubmit}>
@@ -272,11 +269,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
             disabled={loading}
             className="w-full px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading
-              ? 'Please wait...'
-              : mode === 'signup'
-              ? 'Become a Member'
-              : 'Sign In'}
+            {loading ? 'Please wait...' : mode === 'signup' ? 'Become a Member' : 'Sign In'}
           </button>
         </form>
 
