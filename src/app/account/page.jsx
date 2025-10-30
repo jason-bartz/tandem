@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHoroscope } from '@/hooks/useHoroscope';
 import subscriptionService from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
 import Link from 'next/link';
@@ -13,7 +14,6 @@ export default function AccountPage() {
   const { highContrast } = useTheme();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [managingSubscription, setManagingSubscription] = useState(false);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -44,17 +44,9 @@ export default function AccountPage() {
     }
   }, [user]);
 
-  const handleManageSubscription = async () => {
-    setManagingSubscription(true);
-    try {
-      await subscriptionService.createPortalSession();
-      // User will be redirected to Stripe
-    } catch (error) {
-      console.error('Failed to open portal:', error);
-      alert('Failed to open subscription management. Please try again.');
-    } finally {
-      setManagingSubscription(false);
-    }
+  const handleManageAccount = () => {
+    // Open Stripe billing portal directly
+    window.open('https://billing.stripe.com/p/login/14A14ncFW5L43do7ij8ww00', '_blank');
   };
 
   const handleSignOut = async () => {
@@ -76,39 +68,6 @@ export default function AccountPage() {
     });
   };
 
-  const getZodiacSign = (dateString) => {
-    if (!dateString) return null;
-    const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.getMonth() + 1; // getMonth() returns 0-11
-
-    const zodiacSigns = [
-      { sign: 'Capricorn ♑', emoji: '♑', start: [12, 22], end: [1, 19] },
-      { sign: 'Aquarius ♒', emoji: '♒', start: [1, 20], end: [2, 18] },
-      { sign: 'Pisces ♓', emoji: '♓', start: [2, 19], end: [3, 20] },
-      { sign: 'Aries ♈', emoji: '♈', start: [3, 21], end: [4, 19] },
-      { sign: 'Taurus ♉', emoji: '♉', start: [4, 20], end: [5, 20] },
-      { sign: 'Gemini ♊', emoji: '♊', start: [5, 21], end: [6, 20] },
-      { sign: 'Cancer ♋', emoji: '♋', start: [6, 21], end: [7, 22] },
-      { sign: 'Leo ♌', emoji: '♌', start: [7, 23], end: [8, 22] },
-      { sign: 'Virgo ♍', emoji: '♍', start: [8, 23], end: [9, 22] },
-      { sign: 'Libra ♎', emoji: '♎', start: [9, 23], end: [10, 22] },
-      { sign: 'Scorpio ♏', emoji: '♏', start: [10, 23], end: [11, 21] },
-      { sign: 'Sagittarius ♐', emoji: '♐', start: [11, 22], end: [12, 21] },
-    ];
-
-    for (const zodiac of zodiacSigns) {
-      const [startMonth, startDay] = zodiac.start;
-      const [endMonth, endDay] = zodiac.end;
-
-      if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
-        return zodiac.sign;
-      }
-    }
-
-    return null;
-  };
-
   const getUserTimezone = () => {
     try {
       return Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -116,6 +75,46 @@ export default function AccountPage() {
       return 'Unknown';
     }
   };
+
+  const getZodiacSign = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1; // getMonth() returns 0-11
+
+    const zodiacSigns = [
+      { sign: 'Capricorn ♑', name: 'Capricorn', emoji: '♑', start: [12, 22], end: [1, 19] },
+      { sign: 'Aquarius ♒', name: 'Aquarius', emoji: '♒', start: [1, 20], end: [2, 18] },
+      { sign: 'Pisces ♓', name: 'Pisces', emoji: '♓', start: [2, 19], end: [3, 20] },
+      { sign: 'Aries ♈', name: 'Aries', emoji: '♈', start: [3, 21], end: [4, 19] },
+      { sign: 'Taurus ♉', name: 'Taurus', emoji: '♉', start: [4, 20], end: [5, 20] },
+      { sign: 'Gemini ♊', name: 'Gemini', emoji: '♊', start: [5, 21], end: [6, 20] },
+      { sign: 'Cancer ♋', name: 'Cancer', emoji: '♋', start: [6, 21], end: [7, 22] },
+      { sign: 'Leo ♌', name: 'Leo', emoji: '♌', start: [7, 23], end: [8, 22] },
+      { sign: 'Virgo ♍', name: 'Virgo', emoji: '♍', start: [8, 23], end: [9, 22] },
+      { sign: 'Libra ♎', name: 'Libra', emoji: '♎', start: [9, 23], end: [10, 22] },
+      { sign: 'Scorpio ♏', name: 'Scorpio', emoji: '♏', start: [10, 23], end: [11, 21] },
+      { sign: 'Sagittarius ♐', name: 'Sagittarius', emoji: '♐', start: [11, 22], end: [12, 21] },
+    ];
+
+    for (const zodiac of zodiacSigns) {
+      const [startMonth, startDay] = zodiac.start;
+      const [endMonth, endDay] = zodiac.end;
+
+      if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
+        return { display: zodiac.sign, name: zodiac.name };
+      }
+    }
+
+    return null;
+  };
+
+  // Get zodiac sign data for horoscope
+  const zodiacData = user?.created_at ? getZodiacSign(user.created_at) : null;
+  const userTimezone = getUserTimezone();
+
+  // Fetch daily horoscope
+  const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
 
   const getTierName = (tier) => {
     const tiers = {
@@ -204,21 +203,49 @@ export default function AccountPage() {
               </p>
             </div>
 
-            {getZodiacSign(user?.created_at) && (
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Timezone</p>
+              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{userTimezone}</p>
+            </div>
+
+            {zodiacData && (
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Tandem Zodiac Sign</p>
                 <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
-                  {getZodiacSign(user?.created_at)}
+                  {zodiacData.display}
                 </p>
               </div>
             )}
 
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Timezone</p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
-                {getUserTimezone()}
-              </p>
-            </div>
+            {/* Daily Horoscope */}
+            {zodiacData && (
+              <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
+                  Today&apos;s Horoscope
+                </p>
+                {horoscopeLoading ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-sky-500 border-t-transparent"></div>
+                  </div>
+                ) : horoscope ? (
+                  <div
+                    className={`p-4 rounded-2xl border-2 ${
+                      highContrast
+                        ? 'bg-hc-focus/10 border-hc-border'
+                        : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800'
+                    }`}
+                  >
+                    <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                      {horoscope.text}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
+                    Horoscope unavailable
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
@@ -277,26 +304,31 @@ export default function AccountPage() {
                   </div>
                 )}
 
-              {/* Manage Subscription Button */}
+              {/* Manage Account Button */}
               {isWeb && (
-                <button
-                  onClick={handleManageSubscription}
-                  disabled={managingSubscription}
-                  className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-                    highContrast
-                      ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                      : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50'
-                  }`}
-                >
-                  {managingSubscription ? 'Opening...' : 'Manage Subscription'}
-                </button>
+                <div className="space-y-3">
+                  <button
+                    onClick={handleManageAccount}
+                    className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+                      highContrast
+                        ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                        : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    }`}
+                  >
+                    Manage Account
+                  </button>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                    Access the full Stripe portal to manage your subscription, payment method,
+                    billing history, and cancel if needed
+                  </p>
+                </div>
               )}
 
-              <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                {isWeb
-                  ? 'Opens Stripe Customer Portal to manage your subscription, payment method, and billing history'
-                  : 'Manage your subscription through the App Store'}
-              </p>
+              {!isWeb && (
+                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                  Manage your subscription through the App Store
+                </p>
+              )}
             </div>
           ) : (
             <div className="text-center py-6">
