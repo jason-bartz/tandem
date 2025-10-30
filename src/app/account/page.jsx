@@ -101,10 +101,7 @@ export default function AccountPage() {
       const [startMonth, startDay] = zodiac.start;
       const [endMonth, endDay] = zodiac.end;
 
-      if (
-        (month === startMonth && day >= startDay) ||
-        (month === endMonth && day <= endDay)
-      ) {
+      if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
         return zodiac.sign;
       }
     }
@@ -181,9 +178,7 @@ export default function AccountPage() {
               : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
           }`}
         >
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-            Profile
-          </h2>
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
 
           <div className="space-y-3">
             <div>
@@ -211,7 +206,7 @@ export default function AccountPage() {
 
             {getZodiacSign(user?.created_at) && (
               <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Zodiac Sign</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Tandem Zodiac Sign</p>
                 <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
                   {getZodiacSign(user?.created_at)}
                 </p>
@@ -240,9 +235,7 @@ export default function AccountPage() {
           }`}
         >
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-              Subscription
-            </h2>
+            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Subscription</h2>
             {subscription?.isActive && (
               <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
                 ACTIVE
@@ -403,10 +396,7 @@ export default function AccountPage() {
         <div className="mt-8 text-center">
           <p className="text-sm text-white/80 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
             Questions? Contact{' '}
-            <a
-              href="mailto:support@tandemdaily.com"
-              className="underline hover:text-white"
-            >
+            <a href="mailto:support@tandemdaily.com" className="underline hover:text-white">
               support@tandemdaily.com
             </a>
           </p>
