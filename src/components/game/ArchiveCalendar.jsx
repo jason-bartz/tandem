@@ -157,9 +157,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
             attempted: historyData.attempted || false,
           };
 
-          // Check access permissions
-          const hasAccess =
-            !Capacitor.isNativePlatform() || subscriptionService.canAccessPuzzle(puzzle.number);
+          // Check access permissions (same logic for both web and iOS)
+          const hasAccess = subscriptionService.canAccessPuzzle(puzzle.number);
           accessMap[day] = !hasAccess; // Invert for lock display
         });
       }

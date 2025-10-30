@@ -189,8 +189,7 @@ export default function HowToPlayPage() {
       content: (
         <div className="space-y-4 text-sm">
           <p>
-            For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode (iOS
-            only):
+            For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
           </p>
           <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
             <h4 className="font-semibold mb-2">Hard Mode Rules:</h4>
@@ -216,8 +215,7 @@ export default function HowToPlayPage() {
             </ul>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Enable Hard Mode in Settings when you have an active subscription. Only available on
-            iOS.
+            Enable Hard Mode in Settings when you have an active Tandem Unlimited subscription. Note: Hard Mode gameplay is currently available on iOS only, but web users can view the feature in Settings.
           </p>
         </div>
       ),

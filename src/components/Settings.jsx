@@ -1,20 +1,22 @@
 'use client';
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import subscriptionService from '@/services/subscriptionService';
 import PaywallModal from '@/components/PaywallModal';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import notificationService from '@/services/notificationService';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import GameCenterButton from '@/components/GameCenterButton';
 import { STORAGE_KEYS } from '@/lib/constants';
 
-export default function Settings({ isOpen, onClose }) {
+export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [subscriptionInfo, setSubscriptionInfo] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(openPaywall);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
@@ -33,6 +35,11 @@ export default function Settings({ isOpen, onClose }) {
     isAuto,
   } = useTheme();
   const { syncStatus, toggleSync } = useUnifiedSync();
+  const { user } = useAuth();
+
+  // Detect platform
+  const platform = Capacitor.getPlatform();
+  const isWeb = platform === 'web';
 
   useEffect(() => {
     if (isOpen) {
@@ -42,8 +49,13 @@ export default function Settings({ isOpen, onClose }) {
       loadHardModePreference();
       loadLeaderboardPreference();
       checkAppBannerVisibility();
+
+      // Auto-open paywall if requested
+      if (openPaywall) {
+        setShowPaywall(true);
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, openPaywall]);
 
   const checkAppBannerVisibility = () => {
     // Only show banner on web version
@@ -158,10 +170,6 @@ export default function Settings({ isOpen, onClose }) {
   };
 
   const loadSubscriptionInfo = async () => {
-    if (!Capacitor.isNativePlatform()) {
-      return;
-    }
-
     setLoading(true);
     try {
       await subscriptionService.initialize();
@@ -202,6 +210,61 @@ export default function Settings({ isOpen, onClose }) {
             ×
           </button>
         </div>
+
+        {/* Account Section - Web Only */}
+        {isWeb && user && (
+          <div className="mb-8">
+            {/* Section Card */}
+            <div
+              className={`rounded-2xl border-[2px] overflow-hidden ${
+                highContrast
+                  ? 'border-hc-border bg-hc-surface'
+                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+              }`}
+            >
+              {/* Section Header */}
+              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
+                  Account
+                </h3>
+              </div>
+
+              {/* Section Content */}
+              <div className="p-5 space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="flex-1">
+                    {user.user_metadata?.full_name && (
+                      <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                        Hi {user.user_metadata.full_name}! 👋
+                      </p>
+                    )}
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                      {user.email}
+                    </p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Signed in
+                    </p>
+                  </div>
+                </div>
+
+                <Link
+                  href="/account"
+                  onClick={() => {
+                    lightTap();
+                    onClose();
+                  }}
+                  className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
+                    highContrast
+                      ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  }`}
+                >
+                  Manage Account & Subscription
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* iOS App Promotion Banner - Web Only */}
         {showAppBanner && !Capacitor.isNativePlatform() && (
@@ -314,9 +377,8 @@ export default function Settings({ isOpen, onClose }) {
           </div>
         )}
 
-        {/* Subscription Section */}
-        {Capacitor.isNativePlatform() && (
-          <div className="mb-8">
+        {/* Subscription Section - Both iOS and Web */}
+        <div className="mb-8">
             {/* Section Card */}
             <div
               className={`rounded-2xl border-[2px] overflow-hidden ${
@@ -469,7 +531,6 @@ export default function Settings({ isOpen, onClose }) {
               </div>
             </div>
           </div>
-        )}
 
         {/* iCloud Sync Section */}
         {Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios' && (

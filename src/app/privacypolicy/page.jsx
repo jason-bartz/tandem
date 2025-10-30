@@ -30,7 +30,7 @@ export default function PrivacyPolicy() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: October 13, 2025
+            <strong>Last Updated</strong>: October 30, 2025
           </p>
         </div>
       ),
@@ -135,6 +135,36 @@ export default function PrivacyPolicy() {
               iCloud account or data. iCloud sync is optional and can be toggled in Settings.
             </p>
           </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">7. User Accounts (Web Only)</h4>
+            <p className="mb-2">If you create an account on our web platform, we collect:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Email address (for account identification and communication)</li>
+              <li>Full name (optional, for personalization)</li>
+              <li>Password (encrypted and securely stored via Supabase)</li>
+              <li>OAuth provider information (if signing in with Google)</li>
+              <li>Account creation date and last login time</li>
+              <li>Subscription status and tier</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords are hashed and never stored in plain text. OAuth authentication is handled by Google and Supabase.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">8. Payment Information (Web Only)</h4>
+            <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Stripe customer ID (for managing subscriptions)</li>
+              <li>Subscription status and billing cycle</li>
+              <li>Payment method type (card brand, last 4 digits)</li>
+              <li>Transaction history and invoices</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Important: We do NOT store credit card numbers, CVV codes, or full payment details. All payment information is securely handled and stored by Stripe, Inc. Payment data is governed by Stripe's privacy policy and PCI-DSS compliance standards.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -150,9 +180,14 @@ export default function PrivacyPolicy() {
             <li>Provide gameplay features like streak tracking and achievements</li>
             <li>Sync your progress across devices (iOS with iCloud only)</li>
             <li>Enable Game Center features like leaderboards (iOS only)</li>
+            <li>Manage user accounts and authentication (web only)</li>
+            <li>Process subscription payments and manage billing (web via Stripe, iOS via Apple)</li>
+            <li>Send important account and subscription notifications (web only)</li>
+            <li>Provide customer support and respond to inquiries</li>
             <li>Generate anonymous aggregated statistics</li>
             <li>Improve game difficulty and puzzle quality</li>
             <li>Ensure the Service operates correctly</li>
+            <li>Prevent fraud and abuse</li>
           </ul>
         </div>
       ),
@@ -176,8 +211,9 @@ export default function PrivacyPolicy() {
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Gameplay statistics and scores are stored on Vercel KV (Redis)</li>
               <li>Data is used for leaderboards and global statistics</li>
-              <li>No personally identifiable information is stored on our servers</li>
-              <li>Server data is encrypted in transit and at rest</li>
+              <li>User accounts and subscription data stored in Supabase (PostgreSQL) - web only</li>
+              <li>Payment information stored by Stripe (not on our servers) - web only</li>
+              <li>All server data is encrypted in transit (HTTPS/TLS) and at rest</li>
             </ul>
           </div>
 
@@ -236,6 +272,15 @@ export default function PrivacyPolicy() {
               sync, data is shared with Apple according to their privacy policy
             </li>
             <li>
+              <strong>Stripe (Payment Processor)</strong>: For web subscriptions, payment data is shared with Stripe to process transactions. Stripe's privacy policy governs this data.
+            </li>
+            <li>
+              <strong>Supabase (Database Provider)</strong>: For web accounts, account data is stored in Supabase's secure PostgreSQL database
+            </li>
+            <li>
+              <strong>Google OAuth</strong>: If you sign in with Google, authentication data is shared with Google according to their privacy policy
+            </li>
+            <li>
               <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game
               improvements
             </li>
@@ -272,11 +317,15 @@ export default function PrivacyPolicy() {
             children under 13. The game:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>Does not require account creation</li>
-            <li>Does not collect personal information</li>
+            <li>Does not require account creation to play (iOS and free web access)</li>
+            <li>Web accounts require parental consent for users under 18</li>
+            <li>Does not collect personal information beyond what's necessary for account management (web accounts only)</li>
             <li>Does not include chat or communication features</li>
             <li>Contains no inappropriate content</li>
           </ul>
+          <p className="mt-2">
+            If a parent or guardian becomes aware that their child under 13 has created a web account without consent, please contact us at support@goodvibesgames.com to have the account deleted.
+          </p>
         </div>
       ),
     },
@@ -301,7 +350,10 @@ export default function PrivacyPolicy() {
             <h4 className="font-semibold mb-2">Managing Your Data</h4>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Local data can be cleared through browser settings</li>
+              <li>Web account holders can request account deletion through the account page</li>
               <li>Contact us to request deletion of server-side gameplay data</li>
+              <li>Web users can manage subscription billing through the Stripe customer portal</li>
+              <li>iOS users can manage subscriptions through Apple ID settings</li>
               <li>Use privacy-focused browsers that limit storage</li>
             </ul>
           </div>
@@ -346,6 +398,12 @@ export default function PrivacyPolicy() {
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>
               <strong>Local Data</strong>: Retained indefinitely until you clear it
+            </li>
+            <li>
+              <strong>Account Data</strong>: Retained while account is active; deleted within 30 days of account deletion request (web only)
+            </li>
+            <li>
+              <strong>Subscription Data</strong>: Retained for duration of subscription plus 7 years for tax/legal compliance
             </li>
             <li>
               <strong>Server Data</strong>: Anonymous statistics retained for up to 1 year
@@ -460,17 +518,17 @@ export default function PrivacyPolicy() {
                         clipRule="evenodd"
                       />
                     </svg>
-                    No account required
+                    No account required for free play
                   </li>
-                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
+                  <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    No personal data collection (names, emails, etc.)
+                    Optional web accounts for subscriptions (email + password or Google OAuth)
                   </li>
                   <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                     <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">

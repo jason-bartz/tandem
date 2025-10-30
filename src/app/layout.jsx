@@ -6,6 +6,7 @@ import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -201,7 +202,9 @@ export default function RootLayout({ children }) {
         )}
         <ErrorBoundary name="RootLayout">
           <ThemeProvider>
-            <IOSContainerWrapper>{children}</IOSContainerWrapper>
+            <AuthProvider>
+              <IOSContainerWrapper>{children}</IOSContainerWrapper>
+            </AuthProvider>
           </ThemeProvider>
         </ErrorBoundary>
         {/* Vercel Analytics - only for web builds */}

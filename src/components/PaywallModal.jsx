@@ -6,6 +6,8 @@ import { Browser } from '@capacitor/browser';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 import { ASSET_VERSION } from '@/lib/constants';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
@@ -15,11 +17,18 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [productsLoading, setProductsLoading] = useState(true);
   const [products, setProducts] = useState({});
   const [currentSubscription, setCurrentSubscription] = useState(null);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
   const { theme, highContrast, reduceMotion } = useTheme();
+  const { user } = useAuth();
+
+  // Detect platform
+  const platform = Capacitor.getPlatform();
+  const isIOS = platform === 'ios';
+  const isWeb = platform === 'web';
 
   useEffect(() => {
-    if (!isOpen || !Capacitor.isNativePlatform()) {
+    if (!isOpen) {
       return;
     }
 
@@ -27,45 +36,56 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     setError(null);
 
     // Load products and subscription status
-    const loadProductsAndStatus = () => {
-      const allProducts = subscriptionService.getProducts();
-      const status = subscriptionService.getSubscriptionStatus();
+    const loadProductsAndStatus = async () => {
+      const allProducts = await subscriptionService.getProducts();
+      const status = await subscriptionService.getSubscriptionStatus();
 
       setProducts(allProducts);
-      setCurrentSubscription(status?.productId || null);
+      setCurrentSubscription(status?.productId || status?.tier || null);
 
       // If no products loaded, show helpful error
       if (!allProducts || Object.keys(allProducts).length === 0) {
-        setError(
-          'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
-        );
+        if (isIOS) {
+          setError(
+            'Subscription options are loading. This may take a moment in TestFlight. Please close and try again.'
+          );
+        } else {
+          setError('Unable to load subscription options. Please try again later.');
+        }
       }
       setProductsLoading(false);
     };
 
-    // Check if service is already ready (initialized at app bootstrap)
-    const serviceReady = subscriptionService.isReady();
+    // For iOS: Check if service is already ready (initialized at app bootstrap)
+    if (isIOS) {
+      const serviceReady = subscriptionService.isReady();
 
-    if (serviceReady) {
-      loadProductsAndStatus();
-      return;
-    }
-
-    // Subscribe to state changes if not ready
-    const unsubscribe = subscriptionService.onStateChange((state) => {
-      if (state === INIT_STATE.READY) {
+      if (serviceReady) {
         loadProductsAndStatus();
-      } else if (state === INIT_STATE.FAILED) {
-        setError('Unable to load subscription options. Please try again later.');
-        setProductsLoading(false);
+        return;
       }
-    });
 
-    // Cleanup subscription on unmount or when modal closes
-    return () => {
-      unsubscribe();
-    };
-  }, [isOpen]);
+      // Subscribe to state changes if not ready
+      const unsubscribe = subscriptionService.onStateChange((state) => {
+        if (state === INIT_STATE.READY) {
+          loadProductsAndStatus();
+        } else if (state === INIT_STATE.FAILED) {
+          setError('Unable to load subscription options. Please try again later.');
+          setProductsLoading(false);
+        }
+      });
+
+      // Cleanup subscription on unmount or when modal closes
+      return () => {
+        unsubscribe();
+      };
+    } else {
+      // For Web: Initialize and load products
+      subscriptionService.initialize().then(() => {
+        loadProductsAndStatus();
+      });
+    }
+  }, [isOpen, isIOS]);
 
   const handlePurchase = async (productId) => {
     // Check if already owned
@@ -74,36 +94,64 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       return;
     }
 
+    // For Web: Check authentication first
+    if (isWeb && !user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      await subscriptionService.purchase(productId);
+      if (isIOS) {
+        // iOS: Use IAP
+        await subscriptionService.purchase(productId);
 
-      // Success! Show confetti and haptic feedback ONLY for actual new purchase
-      successHaptic();
-      if (!reduceMotion) {
-        confetti({
-          particleCount: 100,
-          spread: 70,
-          origin: { y: 0.6 },
-        });
+        // Success! Show confetti and haptic feedback
+        successHaptic();
+        if (!reduceMotion) {
+          confetti({
+            particleCount: 100,
+            spread: 70,
+            origin: { y: 0.6 },
+          });
+        }
+
+        // Notify parent and close
+        if (onPurchaseComplete) {
+          onPurchaseComplete();
+        }
+
+        setTimeout(() => {
+          onClose();
+        }, 1500);
+      } else {
+        // Web: Use Stripe - Convert iOS product ID to tier
+        const tier = productIdToTier(productId);
+        await subscriptionService.createCheckoutSession(tier);
+        // User will be redirected to Stripe, no need to close modal
       }
-
-      // Notify parent and close
-      if (onPurchaseComplete) {
-        onPurchaseComplete();
-      }
-
-      setTimeout(() => {
-        onClose();
-      }, 1500);
     } catch (err) {
       setError(err.message || 'Purchase failed. Please try again.');
       errorHaptic();
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to convert iOS product IDs to web tier names
+  const productIdToTier = (productId) => {
+    if (productId === 'com.tandemdaily.app.buddypass' || productId === 'buddypass') {
+      return 'buddypass';
+    }
+    if (productId === 'com.tandemdaily.app.bestfriends' || productId === 'bestfriends') {
+      return 'bestfriends';
+    }
+    if (productId === 'com.tandemdaily.app.soulmates' || productId === 'soulmates') {
+      return 'soulmates';
+    }
+    return productId;
   };
 
   const handleOpenLink = async (url) => {
@@ -149,6 +197,12 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   };
 
   const handleRestore = async () => {
+    // Only for iOS
+    if (!isIOS) {
+      setError('Use your account settings to manage your subscription.');
+      return;
+    }
+
     setRestoring(true);
     setError(null);
 
@@ -175,6 +229,14 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     } finally {
       setRestoring(false);
     }
+  };
+
+  // Handle successful authentication (web only)
+  const handleAuthSuccess = async () => {
+    setShowAuthModal(false);
+    // Refresh subscription status after auth
+    const status = await subscriptionService.getSubscriptionStatus();
+    setCurrentSubscription(status?.tier || null);
   };
 
   // Helper to check if a product is the ACTIVE subscription
@@ -226,7 +288,12 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter gpu-accelerated"
-      onClick={onClose}
+      onMouseDown={(e) => {
+        // Only close if clicking the backdrop itself
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
     >
       <div
         className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated ${
@@ -234,6 +301,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
+        onMouseDown={(e) => e.stopPropagation()}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header with close button */}
@@ -276,6 +344,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
           }`}
         >
+          <h3
+            className={`text-base font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+          >
+            What Members Get
+          </h3>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
               <span
@@ -287,6 +360,18 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
                 Play any puzzle from the archive
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Sync and save your progress across devices
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -604,14 +689,12 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           {restoring ? 'Restoring...' : 'Restore Purchase'}
         </button>
 
-        {/* Apple-required disclaimers */}
+        {/* Payment disclaimers */}
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
           <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-            Payment will be charged to your Apple ID account at confirmation of purchase.
-            Subscription automatically renews unless canceled at least 24 hours before the end of
-            the current period. Your account will be charged for renewal within 24 hours prior to
-            the end of the current period. You can manage and cancel your subscriptions by going to
-            your account settings on the App Store after purchase.
+            {isWeb
+              ? 'Payment will be charged to your account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions in your account settings after purchase.'
+              : 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.'}
           </p>
           <div className="flex justify-center gap-4 mt-3">
             <button
@@ -655,6 +738,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         )}
       </div>
+
+      {/* Auth Modal for Web Users */}
+      {isWeb && (
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          initialMode="signup"
+          onSuccess={handleAuthSuccess}
+        />
+      )}
     </div>
   );
 }

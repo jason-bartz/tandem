@@ -53,6 +53,7 @@ export default function PlayingScreen({
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [openPaywall, setOpenPaywall] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showSecondHintCelebration, setShowSecondHintCelebration] = useState(false);
@@ -62,6 +63,21 @@ export default function PlayingScreen({
   const getIconPath = useUIIcon();
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
+
+  // Check URL parameters for auto-opening settings/paywall
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('settings') === 'true') {
+        setShowSettings(true);
+        if (params.get('paywall') === 'true') {
+          setOpenPaywall(true);
+        }
+        // Clean up URL
+        window.history.replaceState({}, '', window.location.pathname);
+      }
+    }
+  }, []);
 
   // Detect when second hint is unlocked and trigger celebration
   useEffect(() => {
@@ -647,7 +663,14 @@ export default function PlayingScreen({
         onSelectPuzzle={onSelectPuzzle}
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <Settings
+        isOpen={showSettings}
+        onClose={() => {
+          setShowSettings(false);
+          setOpenPaywall(false);
+        }}
+        openPaywall={openPaywall}
+      />
     </div>
   );
 }
