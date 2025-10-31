@@ -18,6 +18,7 @@ export default function AccountPage() {
   const isWeb = platform === 'web';
 
   // Redirect to home if not authenticated (web only)
+  // iOS users access this page from within the app after signing in via Settings
   useEffect(() => {
     if (!authLoading && !user && isWeb) {
       router.push('/?auth=required');

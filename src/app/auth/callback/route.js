@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server';
 import { createServerComponentClient } from '@/lib/supabase/server';
 import { createServerClient } from '@/lib/supabase/server';
 
+// For static export (Capacitor builds), we can't have dynamic routes
+// This route is only needed for web OAuth, not native iOS
+const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
+
 /**
  * OAuth Callback Handler
  *
@@ -9,9 +13,16 @@ import { createServerClient } from '@/lib/supabase/server';
  * After the user authenticates with Google, they are redirected here with
  * an auth code that we exchange for a session.
  *
+ * Note: This route is skipped in Capacitor builds as OAuth is handled natively
+ *
  * @route GET /auth/callback
  */
 export async function GET(request) {
+  // Skip in Capacitor builds
+  if (isCapacitorBuild) {
+    return NextResponse.json({ error: 'Route not available in native app' }, { status: 404 });
+  }
+
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
 
