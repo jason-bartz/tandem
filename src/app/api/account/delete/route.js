@@ -16,9 +16,10 @@
  */
 
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs';
-import { cookies } from 'next/headers';
+import { createServerClient } from '@/lib/supabase/server';
+import { verifyAuth } from '@/lib/auth/verify';
 import { revokeAppleToken } from '@/lib/apple-auth';
+import logger from '@/lib/logger';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,21 +43,18 @@ export const dynamic = 'force-dynamic';
  */
 export async function DELETE(request) {
   try {
-    // Initialize Supabase client
-    const supabase = createRouteHandlerClient({ cookies });
-
     // Verify authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
+    const { user, error: authError } = await verifyAuth(request);
 
-    if (sessionError || !session) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id;
-    const userEmail = session.user.email;
+    const userId = user.id;
+    const userEmail = user.email;
+
+    // Get Supabase client with service role for admin operations
+    const supabase = createServerClient();
 
     // Parse request body
     let appleRefreshToken = null;
@@ -81,22 +79,24 @@ export async function DELETE(request) {
       );
     }
 
-    console.log(`[AccountDeletion] Starting deletion for user ${userId} (${userEmail})`);
+    logger.info('[AccountDeletion] Starting deletion', { userId, userEmail });
 
     // Step 1: Revoke Apple Sign In tokens if applicable
     if (appleRefreshToken) {
-      console.log('[AccountDeletion] Revoking Apple Sign In tokens...');
+      logger.info('[AccountDeletion] Revoking Apple Sign In tokens');
       // The token could be an authorization code or refresh token
       // Try as authorization code first (more common on iOS)
       const revokeResult = await revokeAppleToken(appleRefreshToken, 'authorization_code');
 
       if (!revokeResult.success) {
-        console.error('[AccountDeletion] Failed to revoke Apple token:', revokeResult.error);
+        logger.error('[AccountDeletion] Failed to revoke Apple token', {
+          error: revokeResult.error,
+        });
         // Continue with deletion even if revocation fails
         // Apple tokens may already be revoked, expired, or invalid
         // The user's account deletion request must still be honored
       } else {
-        console.log('[AccountDeletion] Apple tokens revoked successfully');
+        logger.info('[AccountDeletion] Apple tokens revoked successfully');
       }
     }
 
@@ -118,7 +118,7 @@ export async function DELETE(request) {
     const { error: subError } = await supabase.from('subscriptions').delete().eq('user_id', userId);
 
     if (subError) {
-      console.error('[AccountDeletion] Failed to delete subscriptions:', subError);
+      logger.error('[AccountDeletion] Failed to delete subscriptions', { error: subError });
     }
 
     // Delete game statistics (if you have a stats table)
@@ -131,10 +131,11 @@ export async function DELETE(request) {
 
       if (statsError && statsError.code !== '42P01') {
         // Ignore "table doesn't exist" error
-        console.error('[AccountDeletion] Failed to delete stats:', statsError);
+        logger.error('[AccountDeletion] Failed to delete stats', { error: statsError });
       }
     } catch (e) {
       // Table may not exist
+      logger.warn('[AccountDeletion] Stats table may not exist', { error: e.message });
     }
 
     // Step 4: Delete the auth user
@@ -142,7 +143,7 @@ export async function DELETE(request) {
     const { error: deleteError } = await supabase.auth.admin.deleteUser(userId);
 
     if (deleteError) {
-      console.error('[AccountDeletion] Failed to delete auth user:', deleteError);
+      logger.error('[AccountDeletion] Failed to delete auth user', { error: deleteError });
       return NextResponse.json(
         {
           error: 'Failed to delete account. Please contact support.',
@@ -152,7 +153,7 @@ export async function DELETE(request) {
       );
     }
 
-    console.log(`[AccountDeletion] Successfully deleted account for user ${userId}`);
+    logger.info('[AccountDeletion] Successfully deleted account', { userId });
 
     // Prepare response with important information
     const response = {
@@ -178,12 +179,9 @@ export async function DELETE(request) {
       };
     }
 
-    // Sign out the user
-    await supabase.auth.signOut();
-
     return NextResponse.json(response, { status: 200 });
   } catch (error) {
-    console.error('[AccountDeletion] Unexpected error:', error);
+    logger.error('[AccountDeletion] Unexpected error', { error });
     return NextResponse.json(
       {
         error: 'An unexpected error occurred during account deletion',
@@ -200,32 +198,30 @@ export async function DELETE(request) {
  * Returns information about the account deletion process
  * Used to inform users before they delete their account
  */
-export async function GET() {
+export async function GET(request) {
   try {
-    const supabase = createRouteHandlerClient({ cookies });
-
     // Verify authentication
-    const {
-      data: { session },
-      error: sessionError,
-    } = await supabase.auth.getSession();
+    const { user, error: authError } = await verifyAuth(request);
 
-    if (sessionError || !session) {
+    if (authError || !user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+
+    // Get Supabase client
+    const supabase = createServerClient();
 
     // Check for active subscription
     const { data: subscription } = await supabase
       .from('subscriptions')
       .select('*')
-      .eq('user_id', session.user.id)
+      .eq('user_id', user.id)
       .eq('status', 'active')
       .single();
 
     return NextResponse.json({
       accountInfo: {
-        email: session.user.email,
-        createdAt: session.user.created_at,
+        email: user.email,
+        createdAt: user.created_at,
         hasActiveSubscription: !!subscription,
       },
       deletionInfo: {
@@ -256,7 +252,7 @@ export async function GET() {
         : null,
     });
   } catch (error) {
-    console.error('[AccountDeletion] Error fetching deletion info:', error);
+    logger.error('[AccountDeletion] Error fetching deletion info', { error });
     return NextResponse.json(
       {
         error: 'Failed to fetch account deletion information',
