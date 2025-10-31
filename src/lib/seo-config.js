@@ -310,7 +310,7 @@ export function generateFAQSchema() {
         name: 'Is Tandem free to play?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: "Yes! Tandem is completely free to play. You get one new puzzle every day at midnight. For unlimited access to past puzzles and Hard Mode, there's an optional Tandem Unlimited subscription available on iOS.",
+          text: "Yes! Tandem is completely free to play. You get one new puzzle every day at midnight. For unlimited access to past puzzles and Hard Mode, there's an optional Tandem Unlimited subscription available.",
         },
       },
       {
