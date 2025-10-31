@@ -183,11 +183,14 @@ export function AuthProvider({ children }) {
    */
   const signInWithApple = async () => {
     try {
-      // Check if we're on iOS
-      const { Capacitor } = await import('@capacitor/core');
-      const isIOS = Capacitor.getPlatform() === 'ios';
+      // Check if we're running in a Capacitor environment
+      // Use globalThis to avoid build-time module resolution
+      const isCapacitor =
+        typeof window !== 'undefined' &&
+        window.Capacitor &&
+        window.Capacitor.getPlatform() === 'ios';
 
-      if (!isIOS) {
+      if (!isCapacitor) {
         // On web, use Supabase's Apple OAuth
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'apple',
@@ -201,7 +204,10 @@ export function AuthProvider({ children }) {
       }
 
       // On iOS, use native Apple Sign In
-      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+      // Dynamic import only happens on iOS at runtime
+      const { SignInWithApple } = await import(
+        /* webpackIgnore: true */ '@capacitor-community/apple-sign-in'
+      );
 
       // Generate raw nonce for Apple Sign In
       // Apple requires the nonce to be SHA-256 hashed, but Supabase needs the raw nonce
