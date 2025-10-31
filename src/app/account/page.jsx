@@ -167,21 +167,39 @@ export default function AccountPage() {
   const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
 
   const getTierName = (tier) => {
+    if (!tier) return 'Tandem Unlimited';
+
+    // Handle both short names and full iOS bundle IDs
+    const tierLower = tier.toLowerCase();
+
     const tiers = {
       buddypass: '🤝 Buddy Pass',
+      'com.tandemdaily.app.buddypass': '🤝 Buddy Pass',
       bestfriends: '👯 Best Friends',
+      'com.tandemdaily.app.bestfriends': '👯 Best Friends',
       soulmates: '💕 Soulmates',
+      'com.tandemdaily.app.soulmates': '💕 Soulmates',
     };
-    return tiers[tier] || tier;
+
+    return tiers[tierLower] || tiers[tier] || 'Tandem Unlimited';
   };
 
   const getTierDescription = (tier) => {
+    if (!tier) return '';
+
+    // Handle both short names and full iOS bundle IDs
+    const tierLower = tier.toLowerCase();
+
     const descriptions = {
       buddypass: 'Monthly subscription',
+      'com.tandemdaily.app.buddypass': 'Monthly subscription',
       bestfriends: 'Yearly subscription',
+      'com.tandemdaily.app.bestfriends': 'Yearly subscription',
       soulmates: 'Lifetime access',
+      'com.tandemdaily.app.soulmates': 'Lifetime access',
     };
-    return descriptions[tier] || '';
+
+    return descriptions[tierLower] || descriptions[tier] || '';
   };
 
   if (authLoading || (loading && user)) {
