@@ -245,57 +245,15 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   </h3>
                 </div>
 
-                {/* Features List */}
-                <div className="space-y-2">
-                  <div className="flex items-start gap-2">
-                    <span
-                      className={`mt-0.5 font-bold ${
-                        highContrast ? 'text-white' : 'text-accent-blue dark:text-accent-blue'
-                      }`}
-                    >
-                      ✓
-                    </span>
-                    <p
-                      className={`text-sm ${
-                        highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      Never lose your streaks & progress
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span
-                      className={`mt-0.5 font-bold ${
-                        highContrast ? 'text-white' : 'text-accent-blue dark:text-accent-blue'
-                      }`}
-                    >
-                      ✓
-                    </span>
-                    <p
-                      className={`text-sm ${
-                        highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      Access Hard Mode and other exclusive modes and features
-                    </p>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span
-                      className={`mt-0.5 font-bold ${
-                        highContrast ? 'text-white' : 'text-accent-blue dark:text-accent-blue'
-                      }`}
-                    >
-                      ✓
-                    </span>
-                    <p
-                      className={`text-sm ${
-                        highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      Automatic cloud sync across devices
-                    </p>
-                  </div>
-                </div>
+                {/* Message */}
+                <p
+                  className={`text-sm ${
+                    highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Download Tandem today for iPhone and iPad. Enjoy a seamless native experience with
+                  the full power of iOS.
+                </p>
 
                 {/* Action Buttons */}
                 <div className="flex items-center gap-3 pt-1">
@@ -363,6 +321,27 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         {user.email}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
+
+                      {/* Tandem Unlimited Badge - Show if subscribed */}
+                      {isSubscriptionActive && (
+                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-[2px] border-yellow-500 bg-transparent">
+                          <img
+                            src={
+                              theme === 'dark'
+                                ? '/icons/ui/tandem-unlimited-dark.png'
+                                : '/icons/ui/tandem-unlimited.png'
+                            }
+                            alt="Unlimited"
+                            className="w-4 h-4"
+                          />
+                          <span className="text-xs font-bold text-gray-800 dark:text-gray-200">
+                            Tandem Unlimited
+                          </span>
+                          <span className="text-xs text-gray-600 dark:text-gray-400">
+                            • Active Member
+                          </span>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -532,23 +511,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 </div>
               ) : isSubscriptionActive ? (
                 <div className="space-y-3">
-                  {/* Premium Badge */}
-                  <div className="bg-accent-blue dark:bg-accent-blue rounded-2xl border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] p-4 text-center">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <img
-                        src={
-                          theme === 'dark'
-                            ? '/icons/ui/tandem-unlimited-dark.png'
-                            : '/icons/ui/tandem-unlimited.png'
-                        }
-                        alt="Unlimited"
-                        className="w-6 h-6"
-                      />
-                      <p className="text-white font-bold text-lg">Tandem Unlimited</p>
-                    </div>
-                    <p className="text-white/90 text-sm">Active Player</p>
-                  </div>
-
                   {/* Hard Mode Toggle - Only for Premium Users */}
                   <div className="bg-accent-orange/20 dark:bg-gray-700 rounded-2xl border-[3px] border-accent-orange dark:border-accent-orange p-4">
                     <div className="flex items-center justify-between">
