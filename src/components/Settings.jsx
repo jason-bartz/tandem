@@ -337,9 +337,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           <span className="text-xs font-bold text-gray-800 dark:text-gray-200">
                             Tandem Unlimited
                           </span>
-                          <span className="text-xs text-gray-600 dark:text-gray-400">
-                            • Active Member
-                          </span>
+                          <span className="text-xs text-gray-600 dark:text-gray-400">• Active</span>
                         </div>
                       )}
                     </div>
@@ -378,7 +376,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
                         }`}
                       >
-                        Create an account to:
+                        Create a free account to:
                       </p>
                       <div className="space-y-2">
                         <div className="flex items-start gap-2">

@@ -396,8 +396,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
         {/* Subtitle */}
         <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
-          Become a Tandem Unlimited Member and unlock access to all puzzles, new game modes, and
-          more!
+          Subscribe to unlock access to all puzzles, Hard Mode, and future features!
         </p>
 
         {/* Benefits list */}
@@ -411,7 +410,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           <h3
             className={`text-base font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
           >
-            What Members Get
+            What You Get
           </h3>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -507,7 +506,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <p
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}
               >
-                Create an account to access your subscription on all your devices
+                Sign in to access your subscription on all devices
               </p>
             </div>
 

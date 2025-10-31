@@ -151,7 +151,7 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
             Thanks for subscribing!
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400">
-            Create an account to access your subscription on all your devices
+            Sign in to access your subscription on all devices
           </p>
         </div>
 
@@ -252,7 +252,7 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
 
         {/* Small disclaimer */}
         <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-          You can always create an account later in Settings
+          You can sign in anytime in Settings
         </p>
       </div>
     </div>
