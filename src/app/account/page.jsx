@@ -397,7 +397,7 @@ export default function AccountPage() {
                         : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                     }`}
                   >
-                    Manage Account
+                    Manage Subscription
                   </button>
                   <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
                     Access the full Stripe portal to manage your subscription, payment method,
@@ -460,7 +460,9 @@ export default function AccountPage() {
               <div className="flex items-start gap-3">
                 <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
                 <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">Hard Mode</p>
+                  <p className="font-medium text-gray-800 dark:text-gray-200">
+                    Access to Hard Mode and Future Exclusive Modes and Features
+                  </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Challenge yourself with time limits
                   </p>
@@ -481,7 +483,7 @@ export default function AccountPage() {
                 <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
                 <div>
                   <p className="font-medium text-gray-800 dark:text-gray-200">
-                    Support Solo Developer
+                    Support a Solo Developer
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Help keep Tandem running

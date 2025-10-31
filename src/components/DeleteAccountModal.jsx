@@ -113,13 +113,23 @@ export default function DeleteAccountModal({
       });
 
       console.log('[DeleteAccount] Response status:', response.status);
+      console.log('[DeleteAccount] Response headers:', {
+        contentType: response.headers.get('content-type'),
+      });
+
+      // Get the raw response text first to debug
+      const responseText = await response.text();
+      console.log('[DeleteAccount] Raw response text:', responseText);
 
       let data;
       try {
-        data = await response.json();
+        data = JSON.parse(responseText);
         console.log('[DeleteAccount] Response data:', data);
       } catch (parseErr) {
-        console.error('[DeleteAccount] Failed to parse response:', parseErr);
+        console.error('[DeleteAccount] Failed to parse response:', {
+          error: parseErr,
+          responseText: responseText.substring(0, 200), // First 200 chars
+        });
         throw new Error('Invalid response from server');
       }
 
@@ -199,8 +209,8 @@ export default function DeleteAccountModal({
                         <>Cancel via the Stripe billing portal before deleting your account</>
                       ) : (
                         <>
-                          Cancel via iPhone Settings → Your Name → Subscriptions before deleting
-                          your account
+                          Cancel via iOS Settings → Your Name → Subscriptions before deleting your
+                          account
                         </>
                       )}
                     </p>
@@ -231,12 +241,6 @@ export default function DeleteAccountModal({
                   <span className="text-red-500 mt-1">✗</span>
                   <p className="text-sm text-gray-700 dark:text-gray-300">
                     Your user preferences and settings
-                  </p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-red-500 mt-1">✗</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Your subscription records (billing history retained for legal compliance)
                   </p>
                 </div>
                 {appleRefreshToken && (
