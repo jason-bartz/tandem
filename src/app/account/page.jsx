@@ -8,6 +8,7 @@ import subscriptionService from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
 import Link from 'next/link';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
+import PaywallModal from '@/components/PaywallModal';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -16,6 +17,7 @@ export default function AccountPage() {
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
   const [appleRefreshToken, setAppleRefreshToken] = useState(null);
   const platform = Capacitor.getPlatform();
@@ -106,6 +108,18 @@ export default function AccountPage() {
     // Sign out and redirect to home
     await signOut();
     router.push('/');
+  };
+
+  const handlePurchaseComplete = async () => {
+    // Reload subscription status after purchase
+    try {
+      await subscriptionService.initialize();
+      const status = await subscriptionService.getSubscriptionStatus();
+      setSubscription(status);
+      setShowPaywall(false);
+    } catch (error) {
+      console.error('Failed to reload subscription:', error);
+    }
   };
 
   const formatDate = (dateString) => {
@@ -403,16 +417,16 @@ export default function AccountPage() {
               <p className="text-gray-600 dark:text-gray-400 mb-4">
                 You don't have an active subscription
               </p>
-              <Link
-                href="/?settings=true&paywall=true"
-                className={`inline-block py-3 px-6 rounded-2xl border-[3px] font-semibold transition-all ${
+              <button
+                onClick={() => setShowPaywall(true)}
+                className={`py-3 px-6 rounded-2xl border-[3px] font-semibold transition-all ${
                   highContrast
                     ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                     : 'bg-gradient-to-r from-teal-500 to-sky-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 }`}
               >
                 Get Tandem Unlimited
-              </Link>
+              </button>
             </div>
           )}
         </div>
@@ -538,6 +552,13 @@ export default function AccountPage() {
         onSuccess={handleDeleteSuccess}
         accountInfo={accountInfo}
         appleRefreshToken={appleRefreshToken}
+      />
+
+      {/* Paywall Modal */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseComplete={handlePurchaseComplete}
       />
     </div>
   );
