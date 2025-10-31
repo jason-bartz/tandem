@@ -1,6 +1,7 @@
 'use client';
 import { memo } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import Image from 'next/image';
 
 /**
  * CalendarDayCell Component
@@ -158,10 +159,19 @@ const CalendarDayCell = memo(
         {/* Day number */}
         <div className="text-sm font-medium mb-1">{day}</div>
 
-        {/* Status indicator */}
+        {/* Status indicator or lock icon */}
         {isCurrentMonth && isPastFirstPuzzle && !isFutureDate && status !== 'no_puzzle' && (
           <div className="relative flex items-center justify-center">
-            {statusStyle.halfCircle ? (
+            {isLocked ? (
+              // Lock icon - replaces status indicator when puzzle is locked
+              <Image
+                src={`/icons/ui/lock${highContrast ? '' : ''}.png`}
+                alt="Locked"
+                width={16}
+                height={16}
+                className="opacity-60 dark:hidden"
+              />
+            ) : statusStyle.halfCircle ? (
               // Half-circle for attempted/in-progress
               <div className={`${statusStyle.size} relative`}>
                 <div
@@ -186,8 +196,16 @@ const CalendarDayCell = memo(
               />
             )}
 
-            {/* Lock indicator overlay */}
-            {isLocked && <div className="absolute -top-1 -right-1 text-[10px]">🔒</div>}
+            {/* Dark mode lock icon */}
+            {isLocked && (
+              <Image
+                src="/icons/ui/lock-dark.png"
+                alt="Locked"
+                width={16}
+                height={16}
+                className="opacity-60 hidden dark:block"
+              />
+            )}
           </div>
         )}
 

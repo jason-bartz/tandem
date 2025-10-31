@@ -8,6 +8,7 @@ import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import platformService from '@/services/platform';
+import Image from 'next/image';
 
 /**
  * Production-ready Archive Modal with pagination
@@ -74,7 +75,22 @@ const PuzzleItem = memo(
           </div>
           <div className="flex items-center gap-2">
             {actuallyLocked ? (
-              <span className="text-gray-500 dark:text-gray-400 text-xl">🔒</span>
+              <>
+                <Image
+                  src="/icons/ui/lock.png"
+                  alt="Locked"
+                  width={20}
+                  height={20}
+                  className="opacity-60 dark:hidden"
+                />
+                <Image
+                  src="/icons/ui/lock-dark.png"
+                  alt="Locked"
+                  width={20}
+                  height={20}
+                  className="opacity-60 hidden dark:block"
+                />
+              </>
             ) : (
               <div className={`${status.color} text-xl`} title={status.title}>
                 {status.icon}
