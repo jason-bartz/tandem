@@ -40,6 +40,8 @@ export default function DeleteAccountModal({
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
+  console.log('[DeleteAccountModal] Platform:', platform, 'isWeb:', isWeb);
+
   const hasActiveSubscription = accountInfo?.hasActiveSubscription || false;
 
   if (!isOpen) {
@@ -77,6 +79,8 @@ export default function DeleteAccountModal({
     setError(null);
 
     try {
+      console.log('[DeleteAccount] Starting deletion process');
+
       // Get session token
       const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
       const supabase = getSupabaseBrowserClient();
@@ -84,11 +88,18 @@ export default function DeleteAccountModal({
         data: { session },
       } = await supabase.auth.getSession();
 
+      console.log('[DeleteAccount] Session check:', { hasSession: !!session });
+
       if (!session) {
         throw new Error('Not authenticated');
       }
 
       // Call delete API
+      console.log('[DeleteAccount] Calling API with:', {
+        hasAppleToken: !!appleRefreshToken,
+        isWeb,
+      });
+
       const response = await fetch('/api/account/delete', {
         method: 'DELETE',
         headers: {
@@ -101,18 +112,35 @@ export default function DeleteAccountModal({
         }),
       });
 
-      const data = await response.json();
+      console.log('[DeleteAccount] Response status:', response.status);
 
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to delete account');
+      let data;
+      try {
+        data = await response.json();
+        console.log('[DeleteAccount] Response data:', data);
+      } catch (parseErr) {
+        console.error('[DeleteAccount] Failed to parse response:', parseErr);
+        throw new Error('Invalid response from server');
       }
 
+      if (!response.ok) {
+        const errorMsg = data.error || data.details || 'Failed to delete account';
+        console.error('[DeleteAccount] API error:', errorMsg);
+        throw new Error(errorMsg);
+      }
+
+      console.log('[DeleteAccount] Deletion successful');
       correctAnswer();
 
       // Call success callback (will sign out and redirect)
       onSuccess?.(data);
     } catch (err) {
-      console.error('[DeleteAccount] Error:', err);
+      console.error('[DeleteAccount] Error:', {
+        message: err.message,
+        stack: err.stack,
+        name: err.name,
+        error: err,
+      });
       setError(err.message || 'Failed to delete account');
       incorrectAnswer();
     } finally {
