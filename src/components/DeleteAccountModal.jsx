@@ -36,7 +36,7 @@ export default function DeleteAccountModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const { highContrast } = useTheme();
-  const { playHaptic } = useHaptics();
+  const { mediumTap, incorrectAnswer, correctAnswer } = useHaptics();
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -61,7 +61,7 @@ export default function DeleteAccountModal({
   };
 
   const handleProceedToConfirmation = () => {
-    playHaptic('warning');
+    mediumTap();
     setStep(2);
   };
 
@@ -69,7 +69,7 @@ export default function DeleteAccountModal({
     // Verify confirmation text for web users
     if (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE') {
       setError('Please type DELETE to confirm');
-      playHaptic('error');
+      incorrectAnswer();
       return;
     }
 
@@ -107,14 +107,14 @@ export default function DeleteAccountModal({
         throw new Error(data.error || 'Failed to delete account');
       }
 
-      playHaptic('success');
+      correctAnswer();
 
       // Call success callback (will sign out and redirect)
       onSuccess?.(data);
     } catch (err) {
       console.error('[DeleteAccount] Error:', err);
       setError(err.message || 'Failed to delete account');
-      playHaptic('error');
+      incorrectAnswer();
     } finally {
       setLoading(false);
     }
