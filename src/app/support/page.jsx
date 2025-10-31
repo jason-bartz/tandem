@@ -216,8 +216,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is there a time limit?</p>
                 <p>
-                  A: No time limit in regular mode! Take as long as you need. Hard Mode (iOS
-                  subscribers only) adds a 3-minute time limit for extra challenge.
+                  A: No time limit in regular mode! Take as long as you need. Hard Mode (Tandem
+                  Unlimited subscribers only) adds a 3-minute time limit for extra challenge.
                 </p>
               </div>
             </div>
@@ -367,8 +367,7 @@ export default function Support() {
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
               Hard Mode is an exclusive feature for Tandem Unlimited subscribers that adds a
-              challenging twist to the classic Tandem gameplay. Note: Hard Mode gameplay is
-              currently available on iOS only.
+              challenging twist to the classic Tandem gameplay.
             </p>
             <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>

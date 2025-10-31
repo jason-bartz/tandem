@@ -68,7 +68,7 @@ export default function PrivacyPolicy() {
               <li>High contrast mode preference</li>
               <li>Reduced motion preference</li>
               <li>Keyboard layout preference</li>
-              <li>Hard mode preference (iOS subscribers only)</li>
+              <li>Hard mode preference (Tandem Unlimited subscribers only)</li>
               <li>Game state for the current puzzle</li>
             </ul>
           </div>

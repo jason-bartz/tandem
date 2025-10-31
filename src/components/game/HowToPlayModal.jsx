@@ -227,8 +227,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             <p
               className={`text-xs mt-2 ${highContrast ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}
             >
-              Enable Hard Mode in Settings when you have an active subscription. Only available on
-              iOS.
+              Enable Hard Mode in Settings when you have an active Tandem Unlimited subscription.
             </p>
           </div>
 
