@@ -195,7 +195,11 @@ export default function Support() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-medium">Q: Is Tandem free to play?</p>
-                <p>A: Yes! Tandem is completely free with no advertisements. Today's puzzle and the last 3 days are always free. Tandem Unlimited subscriptions unlock access to all archived puzzles and exclusive features.</p>
+                <p>
+                  A: Yes! Tandem is completely free with no advertisements. Today's puzzle and the
+                  last 3 days are always free. Tandem Unlimited subscriptions unlock access to all
+                  archived puzzles and exclusive features.
+                </p>
               </div>
               <div>
                 <p className="font-medium">Q: When do new puzzles become available?</p>
@@ -203,11 +207,66 @@ export default function Support() {
               </div>
               <div>
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
-                <p>A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require a Tandem Unlimited subscription, available on both iOS (via App Store) and web (via Stripe).</p>
+                <p>
+                  A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
+                  a Tandem Unlimited subscription, available on both iOS (via App Store) and web
+                  (via Stripe).
+                </p>
               </div>
               <div>
                 <p className="font-medium">Q: Is there a time limit?</p>
-                <p>A: No time limit in regular mode! Take as long as you need. Hard Mode (iOS subscribers only) adds a 3-minute time limit for extra challenge.</p>
+                <p>
+                  A: No time limit in regular mode! Take as long as you need. Hard Mode (iOS
+                  subscribers only) adds a 3-minute time limit for extra challenge.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Account Management</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Q: How do I delete my account?</p>
+                <p>
+                  A: You can delete your account directly in the app. Web users: Go to Account page
+                  → Danger Zone → Delete Account. iOS users: Go to Settings → Account → Manage
+                  Account → Danger Zone → Delete Account. You will be asked to confirm before
+                  deletion proceeds.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What happens when I delete my account?</p>
+                <p>
+                  A: Account deletion is immediate and permanent. All your account data, game
+                  progress, statistics, and preferences will be deleted. If you used Sign in with
+                  Apple, your authorization will be revoked. Note: Billing history is retained for 7
+                  years for legal compliance.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Will deleting my account cancel my subscription?</p>
+                <p>
+                  A: No! Account deletion does NOT cancel your subscription. You must cancel
+                  separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web:
+                  Cancel via the Stripe billing portal (accessible from Account page → Manage
+                  Account). Cancel your subscription BEFORE deleting your account to avoid continued
+                  billing.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Can I recover my account after deletion?</p>
+                <p>
+                  A: No. Account deletion is permanent and irreversible. Once deleted, all your data
+                  is permanently removed and cannot be recovered.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: How long does it take to delete my account?</p>
+                <p>
+                  A: Account deletion is immediate. Your account and associated data are deleted as
+                  soon as you confirm the deletion. Some data (billing history, security logs) may
+                  be retained for legal compliance.
+                </p>
               </div>
             </div>
           </div>
@@ -307,8 +366,9 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
-              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that
-              adds a challenging twist to the classic Tandem gameplay. Note: Hard Mode gameplay is currently available on iOS only.
+              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that adds a
+              challenging twist to the classic Tandem gameplay. Note: Hard Mode gameplay is
+              currently available on iOS only.
             </p>
             <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>

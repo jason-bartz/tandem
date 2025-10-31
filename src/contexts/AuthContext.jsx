@@ -233,6 +233,36 @@ export function AuthProvider({ children }) {
 
       if (error) throw error;
 
+      // Store Apple authorization code for account deletion token revocation
+      // Per App Store Review Guideline 5.1.1(v), apps using Sign in with Apple
+      // must revoke user tokens when deleting accounts
+      if (result.response.authorizationCode) {
+        try {
+          const { Preferences } = await import('@capacitor/preferences');
+          await Preferences.set({
+            key: 'apple_authorization_code',
+            value: result.response.authorizationCode,
+          });
+          console.log('[Auth] Stored Apple authorization code for account deletion');
+        } catch (prefError) {
+          console.error('[Auth] Failed to store Apple authorization code:', prefError);
+          // Non-critical error - continue with sign in
+        }
+      }
+
+      // Also store the user identifier for server-to-server notifications
+      if (result.response.user) {
+        try {
+          const { Preferences } = await import('@capacitor/preferences');
+          await Preferences.set({
+            key: 'apple_user_id',
+            value: result.response.user,
+          });
+        } catch (prefError) {
+          console.error('[Auth] Failed to store Apple user ID:', prefError);
+        }
+      }
+
       // Create user profile in database if new user
       if (data.user && data.user.user_metadata) {
         const { error: profileError } = await supabase.from('users').insert({

@@ -423,6 +423,9 @@ class GameEventStore {
         const parsed = JSON.parse(stored);
         this.events = parsed.events || [];
         this.version = parsed.version || 1;
+
+        // Automatically cleanup old events on load
+        await this.cleanupOldEvents();
       }
     } catch (error) {
       console.error('[GameEventStore] Failed to load events:', error);
@@ -578,6 +581,105 @@ class GameEventStore {
       return window.Capacitor.getPlatform();
     }
     return 'web';
+  }
+
+  /**
+   * Cleanup old events to prevent storage quota issues
+   * Keeps only the most recent events needed for stats
+   */
+  async cleanupOldEvents() {
+    const MAX_EVENTS = 100; // Keep last 100 events (about 2-3 months of daily play)
+    const KEEP_DAYS = 90; // Keep events from last 90 days
+
+    if (this.events.length <= MAX_EVENTS) {
+      return; // No cleanup needed
+    }
+
+    console.log('[GameEventStore] Starting cleanup. Current events:', this.events.length);
+
+    try {
+      // Calculate stats before cleanup to preserve important data
+      const currentStats = this.computeStats();
+
+      // Sort events by timestamp (newest first)
+      const sortedEvents = [...this.events].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      // Keep recent events
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - KEEP_DAYS);
+
+      const recentEvents = sortedEvents.filter((e) => new Date(e.timestamp) > cutoffDate);
+
+      // If we still have too many, take only MAX_EVENTS
+      const eventsToKeep = recentEvents.slice(0, MAX_EVENTS);
+
+      // Create a synthetic migration event to preserve the stats
+      const migrationEvent = {
+        id: `cleanup-migration-${Date.now()}`,
+        type: EventTypes.STATS_MIGRATED,
+        timestamp: new Date().toISOString(),
+        deviceId: await this.getDeviceId(),
+        userId: await this.getUserId(),
+        sessionId: this.getSessionId(),
+        version: this.version,
+        data: {
+          fromVersion: this.version,
+          toVersion: this.version,
+          stats: currentStats,
+          synthetic: true,
+          reason: 'storage-cleanup',
+          originalEventCount: this.events.length,
+        },
+        metadata: {
+          appVersion: this.getAppVersion(),
+          platform: this.getPlatform(),
+          timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+      };
+
+      // Keep the migration event + recent events
+      this.events = [migrationEvent, ...eventsToKeep];
+
+      // Persist the cleaned up events
+      const stored = {
+        events: this.events,
+        version: this.version,
+        lastUpdated: new Date().toISOString(),
+        lastCleanup: new Date().toISOString(),
+      };
+
+      localStorage.setItem('gameEvents', JSON.stringify(stored));
+
+      console.log('[GameEventStore] Cleanup completed. Kept', this.events.length, 'events');
+    } catch (error) {
+      console.error('[GameEventStore] Cleanup failed:', error);
+      // Don't throw - continue with existing events
+    }
+  }
+
+  /**
+   * Get storage usage stats
+   */
+  getStorageStats() {
+    try {
+      const stored = localStorage.getItem('gameEvents');
+      const sizeInBytes = stored ? new Blob([stored]).size : 0;
+      const sizeInKB = (sizeInBytes / 1024).toFixed(2);
+      const sizeInMB = (sizeInBytes / (1024 * 1024)).toFixed(2);
+
+      return {
+        eventCount: this.events.length,
+        sizeInBytes,
+        sizeInKB: parseFloat(sizeInKB),
+        sizeInMB: parseFloat(sizeInMB),
+        formattedSize: sizeInMB > 1 ? `${sizeInMB} MB` : `${sizeInKB} KB`,
+      };
+    } catch (error) {
+      console.error('[GameEventStore] Failed to get storage stats:', error);
+      return null;
+    }
   }
 
   /**

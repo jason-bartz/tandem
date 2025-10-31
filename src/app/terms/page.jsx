@@ -100,14 +100,18 @@ export default function TermsOfUse() {
 
           <div>
             <h4 className="font-semibold mb-2">Billing and Renewal</h4>
-            <p className="mb-2 text-sm"><strong>iOS App Store:</strong></p>
+            <p className="mb-2 text-sm">
+              <strong>iOS App Store:</strong>
+            </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400 mb-3">
               <li>Payment processed through Apple App Store</li>
               <li>Subscriptions auto-renew unless canceled 24 hours before renewal</li>
               <li>Manage subscriptions in your Apple ID Account Settings</li>
               <li>No refunds for partial subscription periods</li>
             </ul>
-            <p className="mb-2 text-sm"><strong>Web (via Stripe):</strong></p>
+            <p className="mb-2 text-sm">
+              <strong>Web (via Stripe):</strong>
+            </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Payment processed securely through Stripe</li>
               <li>Requires account creation with email and password or Google OAuth</li>
@@ -263,7 +267,8 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Web users may create an account to access Tandem Unlimited features. By creating an account, you agree to:
+            Web users may create an account to access Tandem Unlimited features. By creating an
+            account, you agree to:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Provide accurate and complete information</li>
@@ -272,8 +277,96 @@ export default function TermsOfUse() {
             <li>Notify us immediately of any unauthorized use</li>
           </ul>
           <p>
-            We reserve the right to suspend or terminate accounts that violate these Terms or for any other reason.
+            We reserve the right to suspend or terminate accounts that violate these Terms or for
+            any other reason.
           </p>
+        </div>
+      ),
+    },
+    {
+      id: 'account-deletion-rights',
+      title: 'Account Deletion Rights',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Your Right to Delete Your Account</h4>
+            <p className="mb-2">
+              In compliance with applicable laws and regulations, you have the right to delete your
+              account at any time. Account deletion is available directly within the app:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>
+                <strong>Web Users</strong>: Navigate to Account page → Danger Zone → Delete Account
+              </li>
+              <li>
+                <strong>iOS Users</strong>: Settings → Account → Manage Account → Danger Zone →
+                Delete Account
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">What Happens When You Delete Your Account</h4>
+            <p className="mb-2">When you delete your account:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your account credentials and personal data will be permanently deleted</li>
+              <li>Your game progress and statistics will be erased</li>
+              <li>
+                Your subscription records will be deleted (subject to legal retention requirements)
+              </li>
+              <li>If you used Sign in with Apple, your authorization will be revoked</li>
+              <li>This action is immediate and irreversible</li>
+            </ul>
+          </div>
+
+          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
+            <p className="font-semibold mb-2 text-orange-900 dark:text-orange-200">
+              Important: Active Subscriptions
+            </p>
+            <p className="text-orange-800 dark:text-orange-300 mb-2">
+              Deleting your account does NOT cancel active subscriptions. You must cancel your
+              subscription separately:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-orange-800 dark:text-orange-300">
+              <li>
+                <strong>iOS</strong>: Cancel via App Store → Subscriptions before deleting your
+                account
+              </li>
+              <li>
+                <strong>Web</strong>: Cancel via Stripe billing portal before deleting your account
+              </li>
+            </ul>
+            <p className="text-orange-800 dark:text-orange-300 mt-2">
+              Failure to cancel your subscription before deleting your account will result in
+              continued billing.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Data Retention After Deletion</h4>
+            <p className="mb-2">
+              While we delete most data immediately upon account deletion, we may retain certain
+              information for legal and regulatory compliance:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>
+                Transaction records and billing history: Retained for 7 years (tax and financial
+                regulations)
+              </li>
+              <li>Security logs: Retained for 30 days</li>
+              <li>
+                Anonymized analytics data: May be retained indefinitely for product improvement
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Questions About Account Deletion?</h4>
+            <p>
+              For assistance with account deletion or questions about data removal, contact us at
+              support@goodvibesgames.com. We typically respond within 24-48 hours.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -344,7 +437,9 @@ export default function TermsOfUse() {
         <div className="space-y-4 text-sm">
           <div>
             <h4 className="font-semibold mb-2">Web Subscriptions</h4>
-            <p className="mb-2">For web users, payments are processed by Stripe, Inc. ("Stripe"):</p>
+            <p className="mb-2">
+              For web users, payments are processed by Stripe, Inc. ("Stripe"):
+            </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Your payment information is collected and processed by Stripe</li>
               <li>You must comply with Stripe's Terms of Service</li>
