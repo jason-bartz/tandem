@@ -7,6 +7,7 @@ import { useHoroscope } from '@/hooks/useHoroscope';
 import subscriptionService from '@/services/subscriptionService';
 import { Capacitor } from '@capacitor/core';
 import Link from 'next/link';
+import DeleteAccountModal from '@/components/DeleteAccountModal';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -14,6 +15,9 @@ export default function AccountPage() {
   const { highContrast } = useTheme();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [accountInfo, setAccountInfo] = useState(null);
+  const [appleRefreshToken, setAppleRefreshToken] = useState(null);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -57,6 +61,51 @@ export default function AccountPage() {
     } catch (error) {
       console.error('Failed to sign out:', error);
     }
+  };
+
+  const handleDeleteAccount = async () => {
+    // Load account deletion info and Apple authorization code if applicable
+    try {
+      // Get Apple authorization code from Preferences if iOS
+      if (!isWeb) {
+        try {
+          const { Preferences } = await import('@capacitor/preferences');
+          const result = await Preferences.get({ key: 'apple_authorization_code' });
+          if (result.value) {
+            setAppleRefreshToken(result.value); // Using same state for authorization code
+          }
+        } catch (error) {
+          console.error('[Account] Failed to get Apple authorization code:', error);
+        }
+      }
+
+      // Prepare account info for modal
+      setAccountInfo({
+        email: user?.email,
+        hasActiveSubscription: subscription?.isActive || false,
+      });
+
+      setShowDeleteModal(true);
+    } catch (error) {
+      console.error('[Account] Failed to prepare deletion:', error);
+      alert('Failed to open account deletion. Please try again.');
+    }
+  };
+
+  const handleDeleteSuccess = async (response) => {
+    // Account deleted successfully
+    console.log('[Account] Deletion successful:', response);
+
+    // Show success message if needed
+    if (response.subscription?.warning) {
+      alert(
+        `Account deleted successfully.\n\n${response.subscription.warning}\n\n${response.subscription.action}`
+      );
+    }
+
+    // Sign out and redirect to home
+    await signOut();
+    router.push('/');
   };
 
   const formatDate = (dateString) => {
@@ -411,19 +460,47 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* Sign Out Button */}
-        {isWeb && (
-          <button
-            onClick={handleSignOut}
-            className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-800 text-red-600 dark:text-red-400 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-            }`}
-          >
-            Sign Out
-          </button>
-        )}
+        {/* Danger Zone - Account Actions */}
+        <div
+          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-error'
+              : 'bg-white dark:bg-gray-800 border-red-500'
+          }`}
+        >
+          <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            Irreversible account actions
+          </p>
+
+          <div className="space-y-3">
+            {/* Delete Account Button */}
+            <button
+              onClick={handleDeleteAccount}
+              className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+                highContrast
+                  ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              }`}
+            >
+              Delete Account
+            </button>
+
+            {/* Sign Out Button */}
+            {isWeb && (
+              <button
+                onClick={handleSignOut}
+                className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                }`}
+              >
+                Sign Out
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* Footer */}
         <div className="mt-8 text-center">
@@ -435,6 +512,15 @@ export default function AccountPage() {
           </p>
         </div>
       </div>
+
+      {/* Delete Account Modal */}
+      <DeleteAccountModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onSuccess={handleDeleteSuccess}
+        accountInfo={accountInfo}
+        appleRefreshToken={appleRefreshToken}
+      />
     </div>
   );
 }

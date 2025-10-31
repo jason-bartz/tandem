@@ -127,14 +127,17 @@ export class LocalStorageProvider extends BaseProvider {
       // Validate data
       this.validateData(data);
 
+      // Cleanup old events to prevent quota issues
+      const cleanedData = this.cleanupOldEvents(data);
+
       // Create backup before saving
       await this.createBackup();
 
       // Add metadata
       const dataToSave = {
-        ...data,
+        ...cleanedData,
         timestamp: new Date().toISOString(),
-        device: await this.getDeviceInfo()
+        device: await this.getDeviceInfo(),
       };
 
       const serialized = this.serialize(dataToSave);
@@ -148,7 +151,7 @@ export class LocalStorageProvider extends BaseProvider {
       if (this.useCapacitor) {
         await Preferences.set({
           key: this.storageKey,
-          value: serialized
+          value: serialized,
         });
       } else {
         localStorage.setItem(this.storageKey, serialized);
@@ -163,7 +166,7 @@ export class LocalStorageProvider extends BaseProvider {
 
       return {
         success: true,
-        timestamp: dataToSave.timestamp
+        timestamp: dataToSave.timestamp,
       };
     } catch (error) {
       // Try to restore from backup if save failed
@@ -205,7 +208,7 @@ export class LocalStorageProvider extends BaseProvider {
         if (current.value) {
           await Preferences.set({
             key: this.backupKey,
-            value: current.value
+            value: current.value,
           });
         }
       } else {
@@ -234,7 +237,7 @@ export class LocalStorageProvider extends BaseProvider {
         if (backup.value) {
           await Preferences.set({
             key: this.storageKey,
-            value: backup.value
+            value: backup.value,
           });
         }
       } else {
@@ -258,12 +261,7 @@ export class LocalStorageProvider extends BaseProvider {
   async migrateOldData() {
     try {
       // Check for old format data
-      const oldKeys = [
-        'tandemStats',
-        'tandem_stats',
-        'gameStats',
-        'game_stats'
-      ];
+      const oldKeys = ['tandemStats', 'tandem_stats', 'gameStats', 'game_stats'];
 
       for (const oldKey of oldKeys) {
         let oldData;
@@ -312,7 +310,7 @@ export class LocalStorageProvider extends BaseProvider {
       stats: {},
       events: [],
       timestamp: new Date().toISOString(),
-      version: 2
+      version: 2,
     };
 
     // Map old stats to new format
@@ -349,12 +347,52 @@ export class LocalStorageProvider extends BaseProvider {
           fromVersion: 1,
           toVersion: 2,
           stats: newFormat.stats,
-          synthetic: true
-        }
+          synthetic: true,
+        },
       });
     }
 
     return newFormat;
+  }
+
+  /**
+   * Cleanup old events to keep storage size manageable
+   */
+  cleanupOldEvents(data) {
+    const MAX_EVENTS = 100; // Keep last 100 events
+    const KEEP_DAYS = 90; // Keep events from last 90 days
+
+    if (!data.events || data.events.length <= MAX_EVENTS) {
+      return data; // No cleanup needed
+    }
+
+    console.log('[LocalStorageProvider] Cleaning up events. Current:', data.events.length);
+
+    try {
+      // Sort events by timestamp (newest first)
+      const sortedEvents = [...data.events].sort(
+        (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
+      );
+
+      // Keep recent events
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - KEEP_DAYS);
+
+      const recentEvents = sortedEvents.filter((e) => new Date(e.timestamp) > cutoffDate);
+
+      // If we still have too many, take only MAX_EVENTS
+      const eventsToKeep = recentEvents.slice(0, MAX_EVENTS);
+
+      console.log('[LocalStorageProvider] Kept', eventsToKeep.length, 'events');
+
+      return {
+        ...data,
+        events: eventsToKeep,
+      };
+    } catch (error) {
+      console.error('[LocalStorageProvider] Cleanup failed:', error);
+      return data; // Return original data on error
+    }
   }
 
   /**
@@ -393,7 +431,7 @@ export class LocalStorageProvider extends BaseProvider {
   async getDeviceInfo() {
     const info = {
       platform: 'unknown',
-      userAgent: navigator.userAgent || 'unknown'
+      userAgent: navigator.userAgent || 'unknown',
     };
 
     if (window.Capacitor && window.Capacitor.Plugins.Device) {
@@ -425,7 +463,7 @@ export class LocalStorageProvider extends BaseProvider {
 
       // Create downloadable blob
       const blob = new Blob([this.serialize(data)], {
-        type: 'application/json'
+        type: 'application/json',
       });
 
       const url = URL.createObjectURL(blob);
@@ -434,7 +472,7 @@ export class LocalStorageProvider extends BaseProvider {
       return {
         url,
         filename: `tandem_backup_${timestamp}.json`,
-        size: blob.size
+        size: blob.size,
       };
     } catch (error) {
       console.error('[LocalStorageProvider] Failed to export data:', error);
@@ -458,7 +496,7 @@ export class LocalStorageProvider extends BaseProvider {
       return {
         success: true,
         stats: data.stats,
-        eventCount: data.events?.length || 0
+        eventCount: data.events?.length || 0,
       };
     } catch (error) {
       console.error('[LocalStorageProvider] Failed to import data:', error);

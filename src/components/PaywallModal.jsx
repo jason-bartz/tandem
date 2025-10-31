@@ -9,6 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import AuthModal from '@/components/auth/AuthModal';
+import PostPurchaseAccountPrompt from '@/components/PostPurchaseAccountPrompt';
 import { ASSET_VERSION } from '@/lib/constants';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
@@ -19,9 +20,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [products, setProducts] = useState({});
   const [currentSubscription, setCurrentSubscription] = useState(null);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showPostPurchasePrompt, setShowPostPurchasePrompt] = useState(false);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
   const { theme, highContrast, reduceMotion } = useTheme();
-  const { user } = useAuth();
+  const { user, signInWithApple } = useAuth();
   const { refreshStatus } = useSubscription();
 
   // Detect platform
@@ -123,14 +125,23 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           });
         }
 
-        // Notify parent and close
+        // Notify parent
         if (onPurchaseComplete) {
           onPurchaseComplete();
         }
 
-        setTimeout(() => {
-          onClose();
-        }, 1500);
+        // If user is not authenticated, show post-purchase prompt
+        // Otherwise just close the modal
+        if (!user) {
+          setTimeout(() => {
+            onClose();
+            setShowPostPurchasePrompt(true);
+          }, 1500);
+        } else {
+          setTimeout(() => {
+            onClose();
+          }, 1500);
+        }
       } else {
         // Web: Use Stripe - Convert iOS product ID to tier
         const tier = productIdToTier(productId);
@@ -249,8 +260,45 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     setCurrentSubscription(status?.tier || null);
   };
 
+  // Handle Apple Sign In (iOS)
+  const handleAppleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+
+    try {
+      const result = await signInWithApple();
+
+      if (result.error) {
+        setError(result.error.message || 'Failed to sign in with Apple');
+        errorHaptic();
+      } else {
+        // Success - refresh subscription status
+        await refreshStatus();
+        successHaptic();
+      }
+    } catch (err) {
+      setError(err.message || 'Failed to sign in with Apple');
+      errorHaptic();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Helper to check if a product is the ACTIVE subscription
   const isActive = (productId) => {
+    // For web, also check tier names
+    if (isWeb && currentSubscription) {
+      const tierMap = {
+        buddypass: 'com.tandemdaily.app.buddypass',
+        bestfriends: 'com.tandemdaily.app.bestfriends',
+        soulmates: 'com.tandemdaily.app.soulmates',
+      };
+      return (
+        currentSubscription === productId ||
+        tierMap[currentSubscription] === productId ||
+        productId === tierMap[currentSubscription]
+      );
+    }
     return currentSubscription === productId;
   };
 
@@ -440,6 +488,57 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             </div>
           </div>
         </div>
+
+        {/* iOS: Sign in with Apple prompt - show if not authenticated */}
+        {isIOS && !user && (
+          <div
+            className={`rounded-2xl p-5 mb-6 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+              highContrast
+                ? 'bg-hc-surface border-hc-border'
+                : 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-blue-300 dark:border-blue-700'
+            }`}
+          >
+            <div className="text-center mb-4">
+              <h3
+                className={`text-base font-bold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+              >
+                Sign in to sync across devices
+              </h3>
+              <p
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}
+              >
+                Create an account to access your subscription on all your devices
+              </p>
+            </div>
+
+            <button
+              onClick={handleAppleSignIn}
+              disabled={loading}
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 ${
+                loading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              } ${
+                highContrast
+                  ? 'bg-black text-white border-hc-border'
+                  : 'bg-black text-white border-black dark:border-gray-600'
+              }`}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+              </svg>
+              <span className="font-bold">Sign in with Apple</span>
+            </button>
+
+            <div className="text-center mt-4">
+              <p
+                className={`text-xs ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}
+              >
+                or continue below without an account
+              </p>
+            </div>
+          </div>
+        )}
 
         {/* Subscription options */}
         {productsLoading ? (
@@ -696,20 +795,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         )}
 
-        {/* Restore Purchase (iOS) or Login (Web) button */}
-        <button
-          onClick={handleRestoreOrLogin}
-          disabled={loading || restoring || productsLoading}
-          className="w-full py-3 text-sky-600 dark:text-sky-400 font-medium text-sm hover:underline disabled:opacity-50"
-        >
-          {restoring
-            ? 'Restoring...'
-            : isWeb
-              ? user
-                ? 'Already a Member?'
-                : 'Login'
-              : 'Restore Purchase'}
-        </button>
+        {/* Restore Purchase (iOS) or Login (Web) button - Only show if not logged in */}
+        {(!isWeb || !user) && (
+          <button
+            onClick={handleRestoreOrLogin}
+            disabled={loading || restoring || productsLoading}
+            className="w-full py-3 text-sky-600 dark:text-sky-400 font-medium text-sm hover:underline disabled:opacity-50"
+          >
+            {restoring ? 'Restoring...' : isWeb ? 'Login' : 'Restore Purchase'}
+          </button>
+        )}
 
         {/* Payment disclaimers */}
         <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
@@ -768,6 +863,18 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           onClose={() => setShowAuthModal(false)}
           initialMode="signup"
           onSuccess={handleAuthSuccess}
+        />
+      )}
+
+      {/* Post-Purchase Account Prompt for iOS Anonymous Purchases */}
+      {isIOS && (
+        <PostPurchaseAccountPrompt
+          isOpen={showPostPurchasePrompt}
+          onClose={() => setShowPostPurchasePrompt(false)}
+          onSuccess={() => {
+            // Refresh subscription status after linking
+            refreshStatus();
+          }}
         />
       )}
     </div>

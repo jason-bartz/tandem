@@ -303,9 +303,10 @@ class SubscriptionService {
     await storage.set({ key: STORAGE_KEYS.PRODUCT_ID, value: product.id });
 
     // Store transaction ID for validation
+    let originalTransactionId = null;
     if (transaction) {
       const transactionId = transaction.transactionId || transaction.id;
-      const originalTransactionId =
+      originalTransactionId =
         transaction.originalTransactionId || transaction.originalId || transactionId;
 
       if (transactionId) {
@@ -319,14 +320,15 @@ class SubscriptionService {
       }
     }
 
-    // Set expiry date based on product type
+    // Calculate expiry date based on product type
+    let expiryDate;
     if (product.id === PRODUCTS.SOULMATES_LIFETIME) {
       // Lifetime purchase - set expiry far in future
-      const expiryDate = new Date();
+      expiryDate = new Date();
       expiryDate.setFullYear(expiryDate.getFullYear() + 100);
       await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
     } else {
-      const expiryDate = new Date();
+      expiryDate = new Date();
       if (product.id === PRODUCTS.BUDDY_MONTHLY) {
         expiryDate.setMonth(expiryDate.getMonth() + 1);
       } else if (product.id === PRODUCTS.BEST_FRIENDS_YEARLY) {
@@ -334,6 +336,9 @@ class SubscriptionService {
       }
       await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate.toISOString() });
     }
+
+    // If user is authenticated, link purchase to their account
+    await this.linkPurchaseToAccount(originalTransactionId, product.id, expiryDate);
 
     // Force refresh the store to update product ownership
     if (this.store) {
@@ -345,6 +350,63 @@ class SubscriptionService {
 
     // Update subscription status in memory
     await this.loadSubscriptionStatus();
+  }
+
+  /**
+   * Link Apple IAP purchase to authenticated user account
+   * Called automatically after successful purchase if user is signed in
+   */
+  async linkPurchaseToAccount(originalTransactionId, productId, expiryDate) {
+    if (!originalTransactionId) {
+      console.log('[iOSSubscription] No transaction ID to link');
+      return;
+    }
+
+    try {
+      // Check if user is authenticated
+      const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+      const supabase = getSupabaseBrowserClient();
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user) {
+        console.log('[iOSSubscription] User not authenticated - skipping account linking');
+        return;
+      }
+
+      console.log('[iOSSubscription] Linking purchase to user account', {
+        userId: session.user.id,
+        productId,
+      });
+
+      // Call API to link purchase
+      const response = await fetch('/api/iap/link-to-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          originalTransactionId,
+          productId,
+          expiryDate: expiryDate?.toISOString(),
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        console.error('[iOSSubscription] Failed to link purchase to account', error);
+        return;
+      }
+
+      const data = await response.json();
+      console.log('[iOSSubscription] Successfully linked purchase to account', data);
+    } catch (error) {
+      console.error('[iOSSubscription] Error linking purchase to account', error);
+      // Don't throw - linking is optional and shouldn't break the purchase flow
+    }
   }
 
   async loadSubscriptionStatus() {

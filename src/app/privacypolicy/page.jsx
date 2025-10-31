@@ -148,7 +148,9 @@ export default function PrivacyPolicy() {
               <li>Subscription status and tier</li>
             </ul>
             <p className="mt-2 text-xs italic">
-              Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords are hashed and never stored in plain text. OAuth authentication is handled by Google and Supabase.
+              Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords
+              are hashed and never stored in plain text. OAuth authentication is handled by Google
+              and Supabase.
             </p>
           </div>
 
@@ -162,7 +164,9 @@ export default function PrivacyPolicy() {
               <li>Transaction history and invoices</li>
             </ul>
             <p className="mt-2 text-xs italic">
-              Important: We do NOT store credit card numbers, CVV codes, or full payment details. All payment information is securely handled and stored by Stripe, Inc. Payment data is governed by Stripe's privacy policy and PCI-DSS compliance standards.
+              Important: We do NOT store credit card numbers, CVV codes, or full payment details.
+              All payment information is securely handled and stored by Stripe, Inc. Payment data is
+              governed by Stripe's privacy policy and PCI-DSS compliance standards.
             </p>
           </div>
         </div>
@@ -181,7 +185,9 @@ export default function PrivacyPolicy() {
             <li>Sync your progress across devices (iOS with iCloud only)</li>
             <li>Enable Game Center features like leaderboards (iOS only)</li>
             <li>Manage user accounts and authentication (web only)</li>
-            <li>Process subscription payments and manage billing (web via Stripe, iOS via Apple)</li>
+            <li>
+              Process subscription payments and manage billing (web via Stripe, iOS via Apple)
+            </li>
             <li>Send important account and subscription notifications (web only)</li>
             <li>Provide customer support and respond to inquiries</li>
             <li>Generate anonymous aggregated statistics</li>
@@ -211,7 +217,9 @@ export default function PrivacyPolicy() {
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Gameplay statistics and scores are stored on Vercel KV (Redis)</li>
               <li>Data is used for leaderboards and global statistics</li>
-              <li>User accounts and subscription data stored in Supabase (PostgreSQL) - web only</li>
+              <li>
+                User accounts and subscription data stored in Supabase (PostgreSQL) - web only
+              </li>
               <li>Payment information stored by Stripe (not on our servers) - web only</li>
               <li>All server data is encrypted in transit (HTTPS/TLS) and at rest</li>
             </ul>
@@ -272,13 +280,16 @@ export default function PrivacyPolicy() {
               sync, data is shared with Apple according to their privacy policy
             </li>
             <li>
-              <strong>Stripe (Payment Processor)</strong>: For web subscriptions, payment data is shared with Stripe to process transactions. Stripe's privacy policy governs this data.
+              <strong>Stripe (Payment Processor)</strong>: For web subscriptions, payment data is
+              shared with Stripe to process transactions. Stripe's privacy policy governs this data.
             </li>
             <li>
-              <strong>Supabase (Database Provider)</strong>: For web accounts, account data is stored in Supabase's secure PostgreSQL database
+              <strong>Supabase (Database Provider)</strong>: For web accounts, account data is
+              stored in Supabase's secure PostgreSQL database
             </li>
             <li>
-              <strong>Google OAuth</strong>: If you sign in with Google, authentication data is shared with Google according to their privacy policy
+              <strong>Google OAuth</strong>: If you sign in with Google, authentication data is
+              shared with Google according to their privacy policy
             </li>
             <li>
               <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game
@@ -319,12 +330,17 @@ export default function PrivacyPolicy() {
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Does not require account creation to play (iOS and free web access)</li>
             <li>Web accounts require parental consent for users under 18</li>
-            <li>Does not collect personal information beyond what's necessary for account management (web accounts only)</li>
+            <li>
+              Does not collect personal information beyond what's necessary for account management
+              (web accounts only)
+            </li>
             <li>Does not include chat or communication features</li>
             <li>Contains no inappropriate content</li>
           </ul>
           <p className="mt-2">
-            If a parent or guardian becomes aware that their child under 13 has created a web account without consent, please contact us at support@goodvibesgames.com to have the account deleted.
+            If a parent or guardian becomes aware that their child under 13 has created a web
+            account without consent, please contact us at support@goodvibesgames.com to have the
+            account deleted.
           </p>
         </div>
       ),
@@ -356,6 +372,106 @@ export default function PrivacyPolicy() {
               <li>iOS users can manage subscriptions through Apple ID settings</li>
               <li>Use privacy-focused browsers that limit storage</li>
             </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'account-deletion',
+      title: 'Account Deletion',
+      content: (
+        <div className="space-y-4 text-sm">
+          <p>
+            In compliance with App Store requirements, we provide an easy way for you to delete your
+            account and associated data directly within the app.
+          </p>
+
+          <div>
+            <h4 className="font-semibold mb-2">How to Delete Your Account</h4>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>
+                <strong>Web Users</strong>: Navigate to Account page → Danger Zone → Delete Account
+              </li>
+              <li>
+                <strong>iOS Users</strong>: Go to Settings → Account → Manage Account → Danger Zone
+                → Delete Account
+              </li>
+              <li>You will be asked to confirm your decision before deletion proceeds</li>
+              <li>Account deletion is immediate and permanent</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">What Gets Deleted</h4>
+            <p className="mb-2">When you delete your account, we will immediately delete:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your account credentials and authentication data</li>
+              <li>Your game statistics and progress data</li>
+              <li>Your user preferences and settings</li>
+              <li>Your subscription records (subject to legal retention requirements)</li>
+              <li>
+                If you used Sign in with Apple, we will revoke your Apple authorization tokens
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">What Is NOT Deleted</h4>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>
+                <strong>Active Subscriptions</strong>: Account deletion does NOT cancel your
+                subscription. You must cancel separately through the App Store (iOS) or Stripe
+                billing portal (web)
+              </li>
+              <li>
+                <strong>Billing History</strong>: We retain billing and transaction records for 7
+                years to comply with financial and tax regulations
+              </li>
+              <li>
+                <strong>Anonymized Analytics</strong>: Aggregated, anonymized data used for game
+                improvement may be retained
+              </li>
+              <li>
+                <strong>Local Device Data</strong>: Data stored locally on your device (browser or
+                app) must be cleared separately
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Data Retention After Deletion</h4>
+            <p className="mb-2">
+              After account deletion, we retain certain information for legal compliance:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Transaction and billing records: Retained for 7 years (legal requirement)</li>
+              <li>Security logs: Retained for 30 days</li>
+              <li>All other personal data: Deleted immediately</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+            <p className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-200">
+              Important: Subscription Cancellation
+            </p>
+            <p className="text-sm text-blue-800 dark:text-blue-300 mb-2">
+              Deleting your account does NOT cancel your subscription. You will continue to be
+              charged until you cancel separately.
+            </p>
+            <p className="text-sm text-blue-800 dark:text-blue-300">
+              <strong>iOS</strong>: Cancel via iPhone Settings → Your Name → Subscriptions
+              <br />
+              <strong>Web</strong>: Cancel via Account page → Manage Account (Stripe billing portal)
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Need Help?</h4>
+            <p>
+              If you encounter any issues deleting your account or have questions about data
+              deletion, please contact us at support@goodvibesgames.com. We will assist you within
+              24-48 hours.
+            </p>
           </div>
         </div>
       ),
@@ -400,10 +516,12 @@ export default function PrivacyPolicy() {
               <strong>Local Data</strong>: Retained indefinitely until you clear it
             </li>
             <li>
-              <strong>Account Data</strong>: Retained while account is active; deleted within 30 days of account deletion request (web only)
+              <strong>Account Data</strong>: Retained while account is active; deleted within 30
+              days of account deletion request (web only)
             </li>
             <li>
-              <strong>Subscription Data</strong>: Retained for duration of subscription plus 7 years for tax/legal compliance
+              <strong>Subscription Data</strong>: Retained for duration of subscription plus 7 years
+              for tax/legal compliance
             </li>
             <li>
               <strong>Server Data</strong>: Anonymous statistics retained for up to 1 year
