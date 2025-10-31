@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
@@ -42,6 +43,11 @@ export default function DeleteAccountModal({
   const hasActiveSubscription = accountInfo?.hasActiveSubscription || false;
 
   if (!isOpen) {
+    return null;
+  }
+
+  // Check if we're in a browser environment
+  if (typeof window === 'undefined') {
     return null;
   }
 
@@ -114,7 +120,7 @@ export default function DeleteAccountModal({
     }
   };
 
-  return (
+  const modalContent = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 animate-fadeIn"
       onClick={handleClose}
@@ -363,4 +369,6 @@ export default function DeleteAccountModal({
       </div>
     </div>
   );
+
+  return createPortal(modalContent, document.body);
 }
