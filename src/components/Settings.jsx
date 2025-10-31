@@ -481,21 +481,26 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         )}
                       </button>
                     ) : (
-                      // Web: Link to account page
-                      <Link
-                        href="/account"
+                      // Web: Trigger AuthModal
+                      <button
                         onClick={() => {
                           lightTap();
                           onClose();
+                          // Dispatch custom event to open AuthModal
+                          window.dispatchEvent(
+                            new CustomEvent('authModalOpen', {
+                              detail: { mode: 'login' },
+                            })
+                          );
                         }}
-                        className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
+                        className={`w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
                           highContrast
                             ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                         }`}
                       >
                         Sign In or Create Account
-                      </Link>
+                      </button>
                     )}
                   </div>
                 </>

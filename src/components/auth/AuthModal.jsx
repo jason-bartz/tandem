@@ -2,12 +2,13 @@
 
 import { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { Capacitor } from '@capacitor/core';
 
 /**
  * AuthModal - Unified authentication modal
  *
  * Handles both sign up and login flows in a single modal.
- * Includes email/password auth and Google OAuth.
+ * Includes email/password auth (web and iOS) and Apple Sign In (iOS only).
  *
  * Props:
  * @param {boolean} isOpen - Whether the modal is open
@@ -25,6 +26,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
   const [successMessage, setSuccessMessage] = useState(null);
 
   const { signUp, signIn, signInWithApple } = useAuth();
+  const isIOS = Capacitor.getPlatform() === 'ios';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -200,42 +202,46 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
           </div>
         )}
 
-        {/* Sign in with Apple - Following Apple HIG */}
-        <button
-          onClick={handleAppleSignIn}
-          disabled={loading}
-          type="button"
-          aria-label="Sign in with Apple"
-          className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
-            loading
-              ? 'opacity-50 cursor-not-allowed'
-              : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-          } bg-black text-white border-black dark:border-gray-600`}
-        >
-          {loading ? (
-            <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-          ) : (
-            <>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-              </svg>
-              <span className="font-bold">Sign in with Apple</span>
-            </>
-          )}
-        </button>
+        {/* Sign in with Apple - iOS only (native Apple Sign In) */}
+        {isIOS && (
+          <>
+            <button
+              onClick={handleAppleSignIn}
+              disabled={loading}
+              type="button"
+              aria-label="Sign in with Apple"
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
+                loading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+              } bg-black text-white border-black dark:border-gray-600`}
+            >
+              {loading ? (
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+              ) : (
+                <>
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                  </svg>
+                  <span className="font-bold">Sign in with Apple</span>
+                </>
+              )}
+            </button>
 
-        {/* Divider */}
-        <div className="flex items-center gap-4 my-6">
-          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-          <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
-          <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
-        </div>
+            {/* Divider */}
+            <div className="flex items-center gap-4 my-6">
+              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+              <span className="text-sm text-gray-500 dark:text-gray-400">or</span>
+              <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+            </div>
+          </>
+        )}
 
         {/* Google Sign In - Temporarily disabled pending Google verification (3-5 weeks) */}
         {/*
