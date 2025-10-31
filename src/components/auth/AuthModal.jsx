@@ -171,7 +171,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          {mode === 'signup' ? 'Become a Member' : 'Welcome Back'}
+          {mode === 'signup' ? 'Create Your Account' : 'Welcome Back'}
         </h2>
 
         {/* Success message */}
@@ -349,7 +349,7 @@ export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSu
             disabled={loading}
             className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
           >
-            {loading ? 'Please wait...' : mode === 'signup' ? 'Become a Member' : 'Sign In'}
+            {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
           </button>
         </form>
 
