@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
 
 const AuthContext = createContext({
   user: null,
@@ -11,7 +12,22 @@ const AuthContext = createContext({
   signIn: async () => {},
   signOut: async () => {},
   signInWithGoogle: async () => {},
+  signInWithApple: async () => {},
 });
+
+/**
+ * Helper function to hash a string using SHA-256
+ * Used for hashing nonces for Apple Sign In
+ *
+ * @param {string} str - The string to hash
+ * @returns {Promise<string>} The SHA-256 hash as a hex string
+ */
+async function sha256(str) {
+  const buffer = new TextEncoder().encode(str);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+}
 
 /**
  * AuthProvider - Global authentication state management
@@ -24,6 +40,7 @@ const AuthContext = createContext({
  * - Real-time auth state updates
  * - Email/password authentication
  * - Google OAuth authentication
+ * - Apple Sign In (iOS native)
  * - Session persistence
  *
  * Usage:
@@ -43,6 +60,11 @@ export function AuthProvider({ children }) {
   const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
+    // Auto-cleanup storage if needed (prevent quota issues)
+    autoCleanupIfNeeded().catch((error) => {
+      console.error('[AuthProvider] Auto cleanup failed:', error);
+    });
+
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -153,6 +175,81 @@ export function AuthProvider({ children }) {
   };
 
   /**
+   * Sign in with Apple
+   *
+   * Uses native Apple Sign In on iOS via Capacitor plugin
+   *
+   * @returns {Promise<{user, session, error}>}
+   */
+  const signInWithApple = async () => {
+    try {
+      // Check if we're on iOS
+      const { Capacitor } = await import('@capacitor/core');
+      const isIOS = Capacitor.getPlatform() === 'ios';
+
+      if (!isIOS) {
+        // On web, use Supabase's Apple OAuth
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'apple',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (error) throw error;
+        return { error: null };
+      }
+
+      // On iOS, use native Apple Sign In
+      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+
+      // Generate raw nonce for Apple Sign In
+      // Apple requires the nonce to be SHA-256 hashed, but Supabase needs the raw nonce
+      const rawNonce = crypto.randomUUID();
+      const hashedNonce = await sha256(rawNonce);
+
+      // Get Apple credentials
+      const result = await SignInWithApple.authorize({
+        clientId: 'com.tandemdaily.app', // Your app's bundle ID
+        redirectURI: 'https://tandemdaily.com/auth/callback',
+        scopes: 'email name',
+        state: crypto.randomUUID(),
+        nonce: hashedNonce, // Pass hashed nonce to Apple
+      });
+
+      // Use the identity token to authenticate with Supabase
+      // IMPORTANT: Pass the raw (unhashed) nonce to Supabase, not the hashed one
+      const { data, error } = await supabase.auth.signInWithIdToken({
+        provider: 'apple',
+        token: result.response.identityToken,
+        nonce: rawNonce, // Pass raw nonce to Supabase
+      });
+
+      if (error) throw error;
+
+      // Create user profile in database if new user
+      if (data.user && data.user.user_metadata) {
+        const { error: profileError } = await supabase.from('users').insert({
+          id: data.user.id,
+          email: data.user.email || result.response.email,
+          full_name: data.user.user_metadata.full_name || result.response.givenName,
+          avatar_url: data.user.user_metadata.avatar_url || null,
+        });
+
+        if (profileError && profileError.code !== '23505') {
+          // Ignore duplicate key errors (user already exists)
+          console.error('Failed to create user profile:', profileError);
+        }
+      }
+
+      return { user: data.user, session: data.session, error: null };
+    } catch (error) {
+      console.error('Apple sign in error:', error);
+      return { user: null, session: null, error };
+    }
+  };
+
+  /**
    * Sign out the current user
    *
    * @returns {Promise<{error}>}
@@ -178,6 +275,7 @@ export function AuthProvider({ children }) {
     signIn,
     signOut,
     signInWithGoogle,
+    signInWithApple,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -21,6 +21,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [showAppBanner, setShowAppBanner] = useState(false);
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
+  const [signingIn, setSigningIn] = useState(false);
   const { playHaptic, lightTap } = useHaptics();
   const {
     theme,
@@ -33,7 +34,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     isAuto,
   } = useTheme();
   const { syncStatus, toggleSync } = useUnifiedSync();
-  const { user } = useAuth();
+  const { user, signInWithApple } = useAuth();
   const { isActive: isSubscriptionActive, loading: subscriptionLoading } = useSubscription();
 
   // Detect platform
@@ -111,6 +112,30 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     } catch (error) {
       console.error('Failed to load leaderboard preference:', error);
       setLeaderboardsEnabled(true); // Default to true on error
+    }
+  };
+
+  const handleSignInWithApple = async () => {
+    setSigningIn(true);
+    try {
+      const result = await signInWithApple();
+      // Only show error if there's actually an error with a message
+      if (result.error && result.error.message) {
+        alert(result.error.message);
+        playHaptic('error');
+      } else if (result.user) {
+        // Successfully signed in
+        playHaptic('success');
+      } else if (result.error) {
+        // Error object exists but no message - log for debugging but don't alert
+        console.error('Sign in error (no message):', result.error);
+      }
+    } catch (error) {
+      console.error('Sign in error:', error);
+      alert('Failed to sign in with Apple');
+      playHaptic('error');
+    } finally {
+      setSigningIn(false);
     }
   };
 
@@ -195,57 +220,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             ×
           </button>
         </div>
-
-        {/* Account Section - Web Only */}
-        {isWeb && user && (
-          <div className="mb-8">
-            {/* Section Card */}
-            <div
-              className={`rounded-2xl border-[2px] overflow-hidden ${
-                highContrast
-                  ? 'border-hc-border bg-hc-surface'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
-              }`}
-            >
-              {/* Section Header */}
-              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
-                <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Account</h3>
-              </div>
-
-              {/* Section Content */}
-              <div className="p-5 space-y-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex-1">
-                    {user.user_metadata?.full_name && (
-                      <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                        Hi {user.user_metadata.full_name}! 👋
-                      </p>
-                    )}
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                      {user.email}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
-                  </div>
-                </div>
-
-                <Link
-                  href="/account"
-                  onClick={() => {
-                    lightTap();
-                    onClose();
-                  }}
-                  className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
-                    highContrast
-                      ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                      : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  }`}
-                >
-                  Manage Account & Subscription
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
 
         {/* iOS App Promotion Banner - Web Only */}
         {showAppBanner && !Capacitor.isNativePlatform() && (
@@ -358,6 +332,178 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           </div>
         )}
 
+        {/* Account Section - iOS and Web */}
+        <div className="mb-8">
+          {/* Section Card */}
+          <div
+            className={`rounded-2xl border-[2px] overflow-hidden ${
+              highContrast
+                ? 'border-hc-border bg-hc-surface'
+                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+            }`}
+          >
+            {/* Section Header */}
+            <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+              <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Account</h3>
+            </div>
+
+            {/* Section Content */}
+            <div className="p-5 space-y-3">
+              {user ? (
+                <>
+                  {/* User is signed in */}
+                  <div className="flex items-start gap-3">
+                    <div className="flex-1">
+                      {user.user_metadata?.full_name && (
+                        <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                          Hi {user.user_metadata.full_name}! 👋
+                        </p>
+                      )}
+                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
+                        {user.email}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
+                    </div>
+                  </div>
+
+                  {/* Manage Account Button - Navigate within app for all platforms */}
+                  <Link
+                    href="/account"
+                    onClick={() => {
+                      lightTap();
+                      onClose();
+                    }}
+                    className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
+                      highContrast
+                        ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                        : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    }`}
+                  >
+                    Manage Account & Subscription
+                  </Link>
+                </>
+              ) : (
+                <>
+                  {/* User is not signed in - Show account benefits and sign in option */}
+                  <div className="space-y-3">
+                    {/* Benefits Card */}
+                    <div
+                      className={`rounded-xl p-4 ${
+                        highContrast
+                          ? 'bg-hc-surface/50'
+                          : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
+                      }`}
+                    >
+                      <p
+                        className={`text-sm font-medium mb-3 ${
+                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        Create an account to:
+                      </p>
+                      <div className="space-y-2">
+                        <div className="flex items-start gap-2">
+                          <span
+                            className={`text-sm mt-0.5 ${
+                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            ✓
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            Access your subscription on all devices
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span
+                            className={`text-sm mt-0.5 ${
+                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            ✓
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            Sync your progress and stats
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span
+                            className={`text-sm mt-0.5 ${
+                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            ✓
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            Recover subscription if you switch devices
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sign In Button - Different per platform */}
+                    {!isWeb ? (
+                      // iOS: Sign in with Apple button (following Apple HIG)
+                      <button
+                        onClick={handleSignInWithApple}
+                        disabled={signingIn}
+                        className={`w-full p-3 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-2 ${
+                          signingIn
+                            ? 'opacity-50 cursor-not-allowed'
+                            : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                        } ${
+                          highContrast
+                            ? 'bg-black text-white border-hc-border'
+                            : 'bg-black text-white border-black dark:border-gray-600'
+                        }`}
+                      >
+                        {signingIn ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                        ) : (
+                          <>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                            </svg>
+                            <span className="font-bold text-sm">Sign in with Apple</span>
+                          </>
+                        )}
+                      </button>
+                    ) : (
+                      // Web: Link to account page
+                      <Link
+                        href="/account"
+                        onClick={() => {
+                          lightTap();
+                          onClose();
+                        }}
+                        className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
+                          highContrast
+                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        }`}
+                      >
+                        Sign In or Create Account
+                      </Link>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+
         {/* Subscription Section - Both iOS and Web */}
         <div className="mb-8">
           {/* Section Card */}
@@ -444,36 +590,27 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       </button>
                     </div>
                   </div>
-
-                  {/* View Plans Button */}
-                  <button
-                    onClick={() => setShowPaywall(true)}
-                    className={`w-full py-2 font-semibold rounded-2xl transition-all ${
-                      highContrast
-                        ? 'bg-hc-surface text-hc-text border-[3px] border-hc-border hover:bg-hc-focus hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white dark:bg-gray-700 border-[3px] border-accent-blue dark:border-gray-600 text-accent-blue dark:text-accent-blue shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    }`}
-                  >
-                    View Plans
-                  </button>
                 </div>
               ) : (
                 <div className="space-y-3">
-                  <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
-                    <p className="text-gray-600 dark:text-gray-400 mb-3">
-                      Get unlimited access to all puzzles with Tandem Unlimited!
-                    </p>
-                    <button
-                      onClick={() => setShowPaywall(true)}
-                      className={`w-full py-2 font-semibold rounded-2xl transition-all ${
-                        highContrast
-                          ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'bg-accent-blue text-white border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0px_rgba(0,0,0,0.5)]'
-                      }`}
-                    >
-                      View Plans
-                    </button>
-                  </div>
+                  {/* Only show promotional message when user is NOT logged in */}
+                  {!user && (
+                    <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
+                      <p className="text-gray-600 dark:text-gray-400 mb-3">
+                        Get unlimited access to all puzzles with Tandem Unlimited!
+                      </p>
+                      <button
+                        onClick={() => setShowPaywall(true)}
+                        className={`w-full py-2 font-semibold rounded-2xl transition-all ${
+                          highContrast
+                            ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-accent-blue text-white border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0px_rgba(0,0,0,0.5)]'
+                        }`}
+                      >
+                        View Plans
+                      </button>
+                    </div>
+                  )}
 
                   {/* Hard Mode - Disabled for non-subscribers */}
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl border-[3px] border-gray-300 dark:border-gray-700 p-4 opacity-60">
