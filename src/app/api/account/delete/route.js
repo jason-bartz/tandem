@@ -21,8 +21,6 @@ import { verifyAuth } from '@/lib/auth/verify';
 import { revokeAppleToken } from '@/lib/apple-auth';
 import logger from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
-
 /**
  * DELETE /api/account/delete
  *
