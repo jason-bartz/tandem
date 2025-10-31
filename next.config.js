@@ -12,7 +12,19 @@ const nextConfig = {
     unoptimized: isCapacitorBuild,
   },
   eslint: {
-    ignoreDuringBuilds: true
+    ignoreDuringBuilds: true,
+  },
+  // Webpack configuration to handle Capacitor modules
+  webpack: (config) => {
+    // Ignore Capacitor modules during web builds
+    if (!isCapacitorBuild) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        '@capacitor/core': false,
+        '@capacitor-community/apple-sign-in': false,
+      };
+    }
+    return config;
   },
   // For iOS static export
   ...(isCapacitorBuild && {
@@ -22,6 +34,6 @@ const nextConfig = {
       unoptimized: true,
     },
   }),
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
