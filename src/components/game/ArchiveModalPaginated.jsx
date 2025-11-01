@@ -4,10 +4,9 @@ import { getGameHistory } from '@/lib/storage';
 import subscriptionService from '@/services/subscriptionService';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import PaywallModal from '@/components/PaywallModal';
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import platformService from '@/services/platform';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import Image from 'next/image';
 
 /**
@@ -231,64 +230,26 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           headers['If-None-Match'] = paginatedCache.etag;
         }
 
-        let response;
+        // Use capacitorFetch for cross-platform support (web + iOS)
+        const apiUrl = getApiUrl(
+          `/api/puzzles/archive?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`
+        );
+        const response = await capacitorFetch(apiUrl, {
+          signal: abortControllerRef.current.signal,
+          headers,
+        });
+
         let data;
         let useCache = false;
 
-        // Use CapacitorHttp on iOS to bypass CORS
-        if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-          const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
-          response = await CapacitorHttp.get({
-            url: `${apiUrl}?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
-            headers: {
-              ...headers,
-              Accept: 'application/json',
-            },
-            responseType: 'json',
-          });
-
-          // Handle 304 Not Modified - use cached data
-          if (response.status === 304) {
-            useCache = true;
-          } else if (response.status >= 400) {
-            // Defensive parsing: handle both string and object responses
-            let errorData;
-            try {
-              errorData =
-                typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-            } catch (parseError) {
-              console.error('[ArchiveModal] Failed to parse error response:', parseError);
-              errorData = {};
-            }
-            throw new Error(errorData?.error || 'Failed to fetch puzzles');
-          } else {
-            // Defensive parsing: CapacitorHttp may return string or object
-            try {
-              data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-            } catch (parseError) {
-              console.error('[ArchiveModal] Failed to parse response data:', parseError);
-              throw new Error('Invalid response format from server');
-            }
-          }
+        // Handle 304 Not Modified - use cached data
+        if (response.status === 304) {
+          useCache = true;
+        } else if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || 'Failed to fetch puzzles');
         } else {
-          // Use regular fetch for web
-          response = await fetch(
-            `/api/puzzles/archive?start=${calculatedStartNum}&end=${endNum}&limit=${BATCH_SIZE}`,
-            {
-              signal: abortControllerRef.current.signal,
-              headers,
-            }
-          );
-
-          // Handle 304 Not Modified - use cached data
-          if (response.status === 304) {
-            useCache = true;
-          } else if (!response.ok) {
-            const errorData = await response.json().catch(() => ({}));
-            throw new Error(errorData.error || 'Failed to fetch puzzles');
-          } else {
-            data = await response.json();
-          }
+          data = await response.json();
         }
 
         // Use cached data if 304 response
@@ -326,11 +287,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           // Check access permissions
           checkAccessPermissions(refreshedPuzzles, append);
         } else if (data && data.success) {
-          // Store ETag for caching
-          const etag =
-            Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios'
-              ? response.headers?.ETag || response.headers?.etag
-              : response.headers.get('ETag');
+          // Store ETag for caching (works with both standard Response and Capacitor response)
+          const etag = response.headers.get ? response.headers.get('ETag') : response.headers?.etag;
           if (etag) {
             paginatedCache.etag = etag;
           }

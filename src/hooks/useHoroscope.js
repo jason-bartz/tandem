@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 /**
  * Custom hook for fetching and caching daily horoscopes
@@ -73,10 +74,12 @@ export function useHoroscope(sign, timezone = 'UTC') {
         }
       }
 
-      // Fetch from API
-      const response = await fetch(
+      // Fetch from API (using capacitorFetch for iOS support)
+      const apiUrl = getApiUrl(
         `/api/horoscope?sign=${encodeURIComponent(sign)}&timezone=${encodeURIComponent(timezone)}`
       );
+
+      const response = await capacitorFetch(apiUrl);
 
       if (!response.ok) {
         throw new Error('Failed to fetch horoscope');
