@@ -20,14 +20,14 @@ export const SyncState = {
   SYNCING: 'syncing',
   RESOLVING_CONFLICT: 'resolvingConflict',
   ERROR: 'error',
-  OFFLINE: 'offline'
+  OFFLINE: 'offline',
 };
 
 // Sync priorities
 export const SyncPriority = {
-  HIGH: 'high',      // User-initiated sync
-  NORMAL: 'normal',  // Auto sync
-  LOW: 'low'         // Background sync
+  HIGH: 'high', // User-initiated sync
+  NORMAL: 'normal', // Auto sync
+  LOW: 'low', // Background sync
 };
 
 class UnifiedStatsManager {
@@ -53,7 +53,7 @@ class UnifiedStatsManager {
       conflictResolutionStrategy: 'smart',
       enableOfflineMode: true,
       syncBatchSize: 100,
-      syncTimeout: 30000 // 30 seconds
+      syncTimeout: 30000, // 30 seconds
     };
 
     this.stats = {
@@ -63,7 +63,7 @@ class UnifiedStatsManager {
       conflictsResolved: 0,
       conflictsManual: 0,
       lastError: null,
-      averageSyncTime: 0
+      averageSyncTime: 0,
     };
 
     this.isInitialized = false;
@@ -119,7 +119,7 @@ class UnifiedStatsManager {
       gameCenter: new GameCenterProvider(),
       cloudKit: new CloudKitProvider(),
       localStorage: new LocalStorageProvider(),
-      keyValueStore: new KeyValueStoreProvider()
+      keyValueStore: new KeyValueStoreProvider(),
     };
 
     // Initialize each provider
@@ -244,7 +244,7 @@ class UnifiedStatsManager {
       // Record sync start event
       await gameEventStore.createEvent(EventTypes.SYNC_STARTED, {
         syncType: priority === SyncPriority.HIGH ? 'manual' : 'auto',
-        provider: this.primary.name
+        provider: this.primary.name,
       });
 
       // Fetch from all available sources
@@ -283,7 +283,7 @@ class UnifiedStatsManager {
         provider: this.primary.name,
         recordsSynced: mergedEvents.length,
         duration: syncDuration,
-        conflicts: conflicts.length
+        conflicts: conflicts.length,
       });
 
       // Update stats
@@ -298,7 +298,7 @@ class UnifiedStatsManager {
         success: true,
         duration: syncDuration,
         recordsSynced: mergedEvents.length,
-        conflicts: conflicts.length
+        conflicts: conflicts.length,
       };
     } catch (error) {
       console.error('[UnifiedStatsManager] Sync failed:', error);
@@ -308,7 +308,7 @@ class UnifiedStatsManager {
         syncType: priority === SyncPriority.HIGH ? 'manual' : 'auto',
         provider: this.primary.name,
         error: error.message,
-        errorCode: error.code
+        errorCode: error.code,
       });
 
       this.stats.syncFailures++;
@@ -366,7 +366,7 @@ class UnifiedStatsManager {
     // Always include local data
     sources.local = {
       events: gameEventStore.events,
-      stats: gameEventStore.computeStats()
+      stats: gameEventStore.computeStats(),
     };
 
     return sources;
@@ -383,16 +383,13 @@ class UnifiedStatsManager {
       const primaryStats = sources.primary.stats || {};
       const secondaryStats = sources.secondary.stats || {};
 
-      const conflictFields = this.conflictResolver.detectConflicts(
-        primaryStats,
-        secondaryStats
-      );
+      const conflictFields = this.conflictResolver.detectConflicts(primaryStats, secondaryStats);
 
       if (conflictFields.length > 0) {
         conflicts.push({
           type: 'provider',
           sources: ['primary', 'secondary'],
-          fields: conflictFields
+          fields: conflictFields,
         });
       }
     }
@@ -402,16 +399,13 @@ class UnifiedStatsManager {
       const primaryStats = sources.primary.stats || {};
       const localStats = sources.local.stats || {};
 
-      const conflictFields = this.conflictResolver.detectConflicts(
-        primaryStats,
-        localStats
-      );
+      const conflictFields = this.conflictResolver.detectConflicts(primaryStats, localStats);
 
       if (conflictFields.length > 0) {
         conflicts.push({
           type: 'local',
           sources: ['primary', 'local'],
-          fields: conflictFields
+          fields: conflictFields,
         });
       }
     }
@@ -437,16 +431,16 @@ class UnifiedStatsManager {
         primary: 3,
         secondary: 2,
         tertiary: 1,
-        local: 0
-      }
+        local: 0,
+      },
     });
 
     // Record conflict resolution
     await gameEventStore.createEvent(EventTypes.CONFLICT_RESOLVED, {
       conflictType: 'automatic',
       resolution: this.config.conflictResolutionStrategy,
-      fields: conflicts.flatMap(c => c.fields),
-      userChoice: false
+      fields: conflicts.flatMap((c) => c.fields),
+      userChoice: false,
     });
 
     return resolved;
@@ -462,7 +456,7 @@ class UnifiedStatsManager {
     this.emit('conflictDetected', {
       sources,
       conflicts,
-      resolver: (resolution) => this.applyManualResolution(resolution)
+      resolver: (resolution) => this.applyManualResolution(resolution),
     });
 
     // Wait for resolution (with timeout)
@@ -489,7 +483,7 @@ class UnifiedStatsManager {
       conflictType: 'manual',
       resolution: resolution.choice,
       fields: resolution.fields,
-      userChoice: true
+      userChoice: true,
     });
 
     this.stats.conflictsManual++;
@@ -506,7 +500,7 @@ class UnifiedStatsManager {
     const allEvents = [];
 
     // Collect events from all sources
-    for (const [source, data] of Object.entries(sources)) {
+    for (const [, data] of Object.entries(sources)) {
       if (data && data.events) {
         allEvents.push(...data.events);
       }
@@ -515,7 +509,9 @@ class UnifiedStatsManager {
     // Deduplicate and sort
     const merged = gameEventStore.mergeEvents(allEvents, []);
 
-    console.log(`[UnifiedStatsManager] Merged ${merged.length} events from ${Object.keys(sources).length} sources`);
+    console.log(
+      `[UnifiedStatsManager] Merged ${merged.length} events from ${Object.keys(sources).length} sources`
+    );
 
     return merged;
   }
@@ -528,7 +524,7 @@ class UnifiedStatsManager {
       stats,
       events,
       timestamp: new Date().toISOString(),
-      version: 2
+      version: 2,
     };
 
     const savePromises = [];
@@ -539,16 +535,15 @@ class UnifiedStatsManager {
         stats: {
           // Only send streak data since that's the only leaderboard configured in App Store Connect
           currentStreak: stats.currentStreak || 0,
-          lastStreakDate: stats.lastStreakDate
-        }
+          lastStreakDate: stats.lastStreakDate,
+        },
       };
 
       savePromises.push(
-        this.providers.gameCenter.save(gameCenterData)
-          .catch(error => {
-            console.error('[UnifiedStatsManager] Failed to save streak to Game Center:', error);
-            return { success: false, error };
-          })
+        this.providers.gameCenter.save(gameCenterData).catch((error) => {
+          console.error('[UnifiedStatsManager] Failed to save streak to Game Center:', error);
+          return { success: false, error };
+        })
       );
     }
 
@@ -557,11 +552,10 @@ class UnifiedStatsManager {
       // Skip if primary is Game Center (we already saved above)
       if (this.primary.name !== 'gameCenter') {
         savePromises.push(
-          this.primary.save(saveData)
-            .catch(error => {
-              console.error('[UnifiedStatsManager] Failed to save to primary:', error);
-              return { success: false, error };
-            })
+          this.primary.save(saveData).catch((error) => {
+            console.error('[UnifiedStatsManager] Failed to save to primary:', error);
+            return { success: false, error };
+          })
         );
       }
     }
@@ -571,11 +565,10 @@ class UnifiedStatsManager {
       // Skip if secondary is Game Center (we already saved above)
       if (this.secondary.name !== 'gameCenter') {
         savePromises.push(
-          this.secondary.save(saveData)
-            .catch(error => {
-              console.error('[UnifiedStatsManager] Failed to save to secondary:', error);
-              return { success: false, error };
-            })
+          this.secondary.save(saveData).catch((error) => {
+            console.error('[UnifiedStatsManager] Failed to save to secondary:', error);
+            return { success: false, error };
+          })
         );
       }
     }
@@ -583,11 +576,10 @@ class UnifiedStatsManager {
     // Save to tertiary
     if (this.tertiary && this.tertiary.name !== 'gameCenter') {
       savePromises.push(
-        this.tertiary.save(saveData)
-          .catch(error => {
-            console.error('[UnifiedStatsManager] Failed to save to tertiary:', error);
-            return { success: false, error };
-          })
+        this.tertiary.save(saveData).catch((error) => {
+          console.error('[UnifiedStatsManager] Failed to save to tertiary:', error);
+          return { success: false, error };
+        })
       );
     }
 
@@ -755,12 +747,17 @@ class UnifiedStatsManager {
   subscribeToEvents() {
     gameEventStore.subscribe(async (event) => {
       // Trigger sync for important events
-      if (event.type === EventTypes.GAME_COMPLETED ||
-          event.type === EventTypes.STREAK_CONTINUED ||
-          event.type === EventTypes.ACHIEVEMENT_UNLOCKED) {
-
+      if (
+        event.type === EventTypes.GAME_COMPLETED ||
+        event.type === EventTypes.STREAK_CONTINUED ||
+        event.type === EventTypes.ACHIEVEMENT_UNLOCKED
+      ) {
         // Immediately submit to Game Center for iOS
-        if (this.getPlatform() === 'ios' && this.providers.gameCenter && await this.providers.gameCenter.isAvailable()) {
+        if (
+          this.getPlatform() === 'ios' &&
+          this.providers.gameCenter &&
+          (await this.providers.gameCenter.isAvailable())
+        ) {
           await this.submitToGameCenter(event);
         }
 
@@ -791,14 +788,17 @@ class UnifiedStatsManager {
       const gameCenterData = {
         stats: {
           currentStreak: currentStats.currentStreak,
-          lastStreakDate: currentStats.lastStreakDate
-        }
+          lastStreakDate: currentStats.lastStreakDate,
+        },
       };
 
-      // Submit to Game Center (will only update the longest_streak leaderboard)
+      // Submit to Game Center (will update the longest_streak leaderboard with best streak)
       await this.providers.gameCenter.save(gameCenterData);
 
-      console.log('[UnifiedStatsManager] Game Center streak submission complete:', currentStats.currentStreak);
+      console.log(
+        '[UnifiedStatsManager] Game Center best streak submission complete:',
+        Math.max(currentStats.currentStreak, currentStats.bestStreak)
+      );
     } catch (error) {
       console.error('[UnifiedStatsManager] Game Center streak submission failed:', error);
       // Don't throw - we don't want to break the flow if Game Center fails
@@ -840,7 +840,7 @@ class UnifiedStatsManager {
       syncInProgress: this.syncInProgress,
       queueSize: this.syncQueue.length,
       retryQueueSize: this.retryQueue.length,
-      stats: this.stats
+      stats: this.stats,
     };
   }
 
@@ -859,8 +859,8 @@ class UnifiedStatsManager {
     console.warn('[UnifiedStatsManager] Clearing all data...');
 
     // Clear from all providers
-    const clearPromises = Object.values(this.providers).map(provider =>
-      provider.clear().catch(error => {
+    const clearPromises = Object.values(this.providers).map((provider) =>
+      provider.clear().catch((error) => {
         console.error(`Failed to clear ${provider.name}:`, error);
       })
     );
@@ -878,7 +878,7 @@ class UnifiedStatsManager {
       conflictsResolved: 0,
       conflictsManual: 0,
       lastError: null,
-      averageSyncTime: 0
+      averageSyncTime: 0,
     };
 
     console.warn('[UnifiedStatsManager] All data cleared');
@@ -910,7 +910,7 @@ class UnifiedStatsManager {
 
   emit(event, ...args) {
     if (this.listeners[event]) {
-      this.listeners[event].forEach(callback => {
+      this.listeners[event].forEach((callback) => {
         try {
           callback(...args);
         } catch (error) {

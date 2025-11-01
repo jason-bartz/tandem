@@ -10,7 +10,7 @@ import { registerPlugin } from '@capacitor/core';
 
 // Register the native plugin
 const EnhancedGameCenter = registerPlugin('EnhancedGameCenterPlugin', {
-  web: () => import('./GameCenterProviderWeb').then(m => new m.GameCenterProviderWeb())
+  web: () => import('./GameCenterProviderWeb').then((m) => new m.GameCenterProviderWeb()),
 });
 
 export class GameCenterProvider extends BaseProvider {
@@ -44,7 +44,7 @@ export class GameCenterProvider extends BaseProvider {
         this.playerInfo = {
           playerID: authResult.playerID,
           displayName: authResult.displayName,
-          alias: authResult.alias
+          alias: authResult.alias,
         };
 
         this.available = true;
@@ -131,7 +131,7 @@ export class GameCenterProvider extends BaseProvider {
         events: [], // Game Center doesn't store events
         timestamp: new Date().toISOString(),
         version: 2,
-        source: 'gameCenter'
+        source: 'gameCenter',
       };
 
       this.lastSyncTime = data.timestamp;
@@ -169,14 +169,21 @@ export class GameCenterProvider extends BaseProvider {
       // Submit only to the actual configured leaderboard
       const scoreSubmissions = [];
 
-      // Only submit current streak to the "Longest Active Streak" leaderboard
-      if (stats.currentStreak !== undefined) {
+      // Submit best streak to the "Longest Streak" leaderboard
+      // Game Center leaderboards are designed for high scores (historical bests), not current state
+      // The leaderboard will automatically keep the highest value ever submitted
+      const bestStreak = Math.max(stats.currentStreak || 0, stats.bestStreak || 0);
+      if (bestStreak > 0) {
         scoreSubmissions.push({
           leaderboardID: 'longestStreak', // Use the key, not the full ID
-          score: stats.currentStreak
+          score: bestStreak,
         });
 
-        console.log('[GameCenterProvider] Submitting current streak:', stats.currentStreak, 'to leaderboard: longestStreak (com.tandemdaily.app.longest_streak)');
+        console.log(
+          '[GameCenterProvider] Submitting best streak:',
+          bestStreak,
+          'to leaderboard: longestStreak (com.tandemdaily.app.longest_streak)'
+        );
       }
 
       // Note: Other stats (games played, wins, etc.) are synced via CloudKit only
@@ -185,7 +192,7 @@ export class GameCenterProvider extends BaseProvider {
       // Batch submit scores
       if (scoreSubmissions.length > 0) {
         await EnhancedGameCenter.batchSubmitScores({
-          scores: scoreSubmissions
+          scores: scoreSubmissions,
         });
       }
 
@@ -201,7 +208,7 @@ export class GameCenterProvider extends BaseProvider {
 
       return {
         success: true,
-        timestamp: this.lastSyncTime
+        timestamp: this.lastSyncTime,
       };
     } catch (error) {
       this.recordSaveError(error);
@@ -225,7 +232,7 @@ export class GameCenterProvider extends BaseProvider {
     if (stats.gamesWon >= 1) {
       achievements.push({
         achievementID: 'firstWin',
-        percentComplete: 100
+        percentComplete: 100,
       });
     }
 
@@ -233,14 +240,14 @@ export class GameCenterProvider extends BaseProvider {
     const winMilestones = [
       { count: 10, id: 'wins10' },
       { count: 50, id: 'wins50' },
-      { count: 100, id: 'wins100' }
+      { count: 100, id: 'wins100' },
     ];
 
     for (const milestone of winMilestones) {
       if (stats.gamesWon >= milestone.count) {
         achievements.push({
           achievementID: milestone.id,
-          percentComplete: 100
+          percentComplete: 100,
         });
       }
     }
@@ -250,7 +257,7 @@ export class GameCenterProvider extends BaseProvider {
       { days: 7, id: 'streak7' },
       { days: 30, id: 'streak30' },
       { days: 90, id: 'streak90' },
-      { days: 365, id: 'streak365' }
+      { days: 365, id: 'streak365' },
     ];
 
     const bestStreak = Math.max(stats.currentStreak || 0, stats.bestStreak || 0);
@@ -259,14 +266,14 @@ export class GameCenterProvider extends BaseProvider {
       if (bestStreak >= milestone.days) {
         achievements.push({
           achievementID: milestone.id,
-          percentComplete: 100
+          percentComplete: 100,
         });
       } else if (stats.currentStreak > 0) {
         // Report partial progress
         const progress = (stats.currentStreak / milestone.days) * 100;
         achievements.push({
           achievementID: milestone.id,
-          percentComplete: Math.min(progress, 99)
+          percentComplete: Math.min(progress, 99),
         });
       }
     }
@@ -276,21 +283,32 @@ export class GameCenterProvider extends BaseProvider {
       try {
         await EnhancedGameCenter.reportAchievement(achievement);
       } catch (error) {
-        console.error('[GameCenterProvider] Failed to report achievement:', achievement.achievementID, error);
+        console.error(
+          '[GameCenterProvider] Failed to report achievement:',
+          achievement.achievementID,
+          error
+        );
       }
     }
   }
 
   /**
    * Convert Game Center format to our standard format
+   *
+   * IMPORTANT: Game Center leaderboards store HIGH SCORES (historical bests),
+   * not current state. The longest_streak leaderboard represents the player's
+   * best streak ever achieved, which is used for competitive ranking.
+   *
+   * Following Apple HIG, currentStreak comes from CloudKit/localStorage,
+   * which track actual current state and can reset when streaks break.
    */
   convertFromGameCenterFormat(gameCenterStats) {
-    // Since we only have the longest_streak leaderboard, we only get that value from Game Center
-    // All other stats come from CloudKit
+    // Game Center only provides bestStreak (historical high score from leaderboard)
+    // All other stats, including currentStreak, come from CloudKit/localStorage
     return {
       gamesPlayed: 0, // Synced via CloudKit
       gamesWon: 0, // Synced via CloudKit
-      currentStreak: gameCenterStats.longest_streak || gameCenterStats.currentStreak || 0,
+      currentStreak: 0, // MUST come from CloudKit/localStorage - not Game Center
       bestStreak: gameCenterStats.longest_streak || gameCenterStats.bestStreak || 0,
       lastStreakDate: gameCenterStats.lastStreakDate,
       winRate: 0, // Synced via CloudKit
@@ -301,7 +319,7 @@ export class GameCenterProvider extends BaseProvider {
       puzzlesCompleted: [],
       dailyStats: {},
       weeklyStats: {},
-      monthlyStats: {}
+      monthlyStats: {},
     };
   }
 
@@ -327,7 +345,11 @@ export class GameCenterProvider extends BaseProvider {
   async processPendingOperations() {
     if (this.pendingOperations.length === 0) return;
 
-    console.log('[GameCenterProvider] Processing', this.pendingOperations.length, 'pending operations');
+    console.log(
+      '[GameCenterProvider] Processing',
+      this.pendingOperations.length,
+      'pending operations'
+    );
 
     const operations = [...this.pendingOperations];
     this.pendingOperations = [];
@@ -373,12 +395,12 @@ export class GameCenterProvider extends BaseProvider {
       return {
         ...info,
         provider: this.name,
-        pendingOperations: this.pendingOperations.length
+        pendingOperations: this.pendingOperations.length,
       };
     } catch (error) {
       return {
         provider: this.name,
-        error: error.message
+        error: error.message,
       };
     }
   }
