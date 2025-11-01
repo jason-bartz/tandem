@@ -204,9 +204,9 @@ export function AuthProvider({ children }) {
       }
 
       // On iOS, use native Apple Sign In
-      // Dynamic import only happens on iOS at runtime
+      // Dynamic import to avoid bundling on web builds
       const { SignInWithApple } = await import(
-        /* webpackIgnore: true */ '@capacitor-community/apple-sign-in'
+        '@capacitor-community/apple-sign-in'
       );
 
       // Generate raw nonce for Apple Sign In
@@ -264,23 +264,30 @@ export function AuthProvider({ children }) {
       }
 
       // Create user profile in database if new user
-      if (data.user && data.user.user_metadata) {
-        const { error: profileError } = await supabase.from('users').insert({
-          id: data.user.id,
-          email: data.user.email || result.response.email,
-          full_name: data.user.user_metadata.full_name || result.response.givenName,
-          avatar_url: data.user.user_metadata.avatar_url || null,
-        });
+      if (data.user) {
+        try {
+          const { error: profileError } = await supabase.from('users').insert({
+            id: data.user.id,
+            email: data.user.email || result.response.email,
+            full_name: data.user.user_metadata?.full_name || result.response.givenName,
+            avatar_url: data.user.user_metadata?.avatar_url || null,
+          });
 
-        if (profileError && profileError.code !== '23505') {
-          // Ignore duplicate key errors (user already exists)
-          console.error('Failed to create user profile:', profileError);
+          if (profileError && profileError.code !== '23505') {
+            // Ignore duplicate key errors (user already exists)
+            console.warn('[Auth] Profile creation warning:', profileError.message);
+            // Don't fail sign-in if profile creation fails
+          }
+        } catch (profileErr) {
+          console.warn('[Auth] Profile creation error:', profileErr.message);
+          // Don't fail sign-in if profile creation fails
         }
       }
 
+      console.log('[Auth] Apple sign-in successful:', { userId: data.user?.id });
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
-      console.error('Apple sign in error:', error);
+      console.error('[Auth] Apple sign-in failed:', error);
       return { user: null, session: null, error };
     }
   };

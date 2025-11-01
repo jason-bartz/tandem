@@ -1,6 +1,7 @@
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
+import { getApiUrl } from '@/lib/api-config';
 
 // Product IDs - must match App Store Connect configuration
 const PRODUCTS = {
@@ -382,7 +383,8 @@ class SubscriptionService {
       });
 
       // Call API to link purchase
-      const response = await fetch('/api/iap/link-to-user', {
+      const apiUrl = getApiUrl('/api/iap/link-to-user');
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

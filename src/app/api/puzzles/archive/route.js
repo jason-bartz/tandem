@@ -51,10 +51,15 @@ export async function GET(request) {
         );
       }
     } else {
-      // Number-based query (legacy support)
+      // Number-based query
       startNum = parseInt(searchParams.get('start') || '1');
       endNum = parseInt(searchParams.get('end') || currentNumber.toString());
-      limit = Math.min(parseInt(searchParams.get('limit') || '20'), 50); // Max 50 for performance
+
+      // Smart limit defaults:
+      // - Default: 31 (max days in a month for calendar views)
+      // - Max: 100 (safety cap for non-calendar queries)
+      // With month-based queries from ArchiveCalendar, this will always be ≤31
+      limit = Math.min(parseInt(searchParams.get('limit') || '31'), 100);
     }
 
     // Validate range

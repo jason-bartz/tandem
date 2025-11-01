@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 /**
  * DeleteAccountModal
@@ -88,19 +89,32 @@ export default function DeleteAccountModal({
         data: { session },
       } = await supabase.auth.getSession();
 
-      console.log('[DeleteAccount] Session check:', { hasSession: !!session });
+      console.log('[DeleteAccount] Session check:', {
+        hasSession: !!session,
+        hasAccessToken: !!session?.access_token,
+        tokenLength: session?.access_token?.length,
+        tokenPreview: session?.access_token?.substring(0, 20) + '...',
+      });
 
       if (!session) {
         throw new Error('Not authenticated');
       }
 
+      if (!session.access_token) {
+        throw new Error('No access token in session');
+      }
+
       // Call delete API
+      const apiUrl = getApiUrl('/api/account/delete');
       console.log('[DeleteAccount] Calling API with:', {
         hasAppleToken: !!appleRefreshToken,
         isWeb,
+        apiUrl,
+        platform: typeof window !== 'undefined' && window.Capacitor ? window.Capacitor.getPlatform() : 'unknown',
+        authHeaderPreview: `Bearer ${session.access_token.substring(0, 20)}...`,
       });
 
-      const response = await fetch('/api/account/delete', {
+      const response = await capacitorFetch(apiUrl, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -110,6 +124,14 @@ export default function DeleteAccountModal({
           appleRefreshToken,
           confirmationText: 'DELETE',
         }),
+      }).catch((fetchError) => {
+        console.error('[DeleteAccount] Fetch error:', {
+          message: fetchError.message,
+          name: fetchError.name,
+          stack: fetchError.stack,
+          type: fetchError.constructor.name,
+        });
+        throw fetchError;
       });
 
       console.log('[DeleteAccount] Response status:', response.status);

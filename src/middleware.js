@@ -114,19 +114,27 @@ export async function middleware(request) {
       const allowedOrigins = [
         process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
         'https://tandem-game.vercel.app', // Add your production domain
+        'capacitor://localhost', // Allow Capacitor iOS app
+        'ionic://localhost', // Allow Capacitor iOS app (alternative scheme)
       ];
-      
+
       if (origin && allowedOrigins.includes(origin)) {
         response.headers.set('Access-Control-Allow-Origin', origin);
         response.headers.set('Access-Control-Allow-Credentials', 'true');
       }
     } else {
-      // Allow CORS for public API routes
-      response.headers.set('Access-Control-Allow-Origin', '*');
+      // Allow CORS for public API routes, including Capacitor apps
+      const origin = request.headers.get('origin');
+      if (origin && (origin.startsWith('capacitor://') || origin.startsWith('ionic://'))) {
+        response.headers.set('Access-Control-Allow-Origin', origin);
+      } else {
+        response.headers.set('Access-Control-Allow-Origin', '*');
+      }
     }
-    
+
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    response.headers.set('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
   }
   
   return response;

@@ -6,6 +6,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import subscriptionService from '@/services/subscriptionService';
+import { getApiUrl } from '@/lib/api-config';
 
 /**
  * PostPurchaseAccountPrompt
@@ -90,7 +91,8 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
         throw new Error('Not authenticated');
       }
 
-      const response = await fetch('/api/iap/link-to-user', {
+      const apiUrl = getApiUrl('/api/iap/link-to-user');
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
