@@ -7,8 +7,7 @@ import PaywallModal from '@/components/PaywallModal';
 import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import subscriptionService from '@/services/subscriptionService';
-import { Capacitor, CapacitorHttp } from '@capacitor/core';
-import platformService from '@/services/platform';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 /**
  * ArchiveCalendar Component
@@ -108,35 +107,17 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
 
       // Fetch puzzles from API using puzzle numbers for the current month only
       // This is optimized for calendar views - only fetches what's displayed
-      let response;
-      let data;
+      // Using capacitorFetch for cross-platform support (web + iOS)
+      const apiUrl = getApiUrl(`/api/puzzles/archive?start=${startPuzzle}&end=${endPuzzle}`);
+      const response = await capacitorFetch(apiUrl, {
+        signal: abortControllerRef.current.signal,
+      });
 
-      if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
-        const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
-        response = await CapacitorHttp.get({
-          url: `${apiUrl}?start=${startPuzzle}&end=${endPuzzle}`,
-          headers: {
-            Accept: 'application/json',
-          },
-          responseType: 'json',
-        });
-
-        if (response.status >= 400) {
-          throw new Error('Failed to fetch puzzles');
-        }
-
-        data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
-      } else {
-        response = await fetch(`/api/puzzles/archive?start=${startPuzzle}&end=${endPuzzle}`, {
-          signal: abortControllerRef.current.signal,
-        });
-
-        if (!response.ok) {
-          throw new Error('Failed to fetch puzzles');
-        }
-
-        data = await response.json();
+      if (!response.ok) {
+        throw new Error('Failed to fetch puzzles');
       }
+
+      const data = await response.json();
 
       // Build puzzle data map keyed by day of month
       // Filter to only puzzles that fall in the current viewing month (in local timezone)
