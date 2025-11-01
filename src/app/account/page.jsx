@@ -494,7 +494,32 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* Danger Zone - Account Actions */}
+        {/* Sign Out Section */}
+        <div
+          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
+          }`}
+        >
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Account Actions
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Sign out of your account</p>
+
+          <button
+            onClick={handleSignOut}
+            className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Sign Out
+          </button>
+        </div>
+
+        {/* Danger Zone - Irreversible Actions */}
         <div
           className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
             highContrast
@@ -507,33 +532,17 @@ export default function AccountPage() {
             Irreversible account actions
           </p>
 
-          <div className="space-y-3">
-            {/* Delete Account Button */}
-            <button
-              onClick={handleDeleteAccount}
-              className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-                highContrast
-                  ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              }`}
-            >
-              Delete Account
-            </button>
-
-            {/* Sign Out Button */}
-            {isWeb && (
-              <button
-                onClick={handleSignOut}
-                className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                Sign Out
-              </button>
-            )}
-          </div>
+          {/* Delete Account Button */}
+          <button
+            onClick={handleDeleteAccount}
+            className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+              highContrast
+                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Delete Account
+          </button>
         </div>
 
         {/* Footer */}

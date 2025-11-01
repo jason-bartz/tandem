@@ -155,7 +155,7 @@ class NotificationService {
   }
 
   // Get random daily reminder time between 9 AM and 10:30 AM at 15-minute intervals
-  getRandomDailyReminderTime() {
+  async getRandomDailyReminderTime() {
     const timeSlots = [
       { hours: 9, minutes: 0 }, // 9:00 AM
       { hours: 9, minutes: 15 }, // 9:15 AM
@@ -166,8 +166,8 @@ class NotificationService {
       { hours: 10, minutes: 30 }, // 10:30 AM
     ];
 
-    // Get last used time to avoid consecutive repeats
-    const lastUsedTime = this.getNotificationPreference('last_daily_reminder_time', null);
+    // Get last used time to avoid consecutive repeats (MUST await!)
+    const lastUsedTime = await this.getNotificationPreference('last_daily_reminder_time', null);
 
     // Filter out last used time if it exists
     let availableSlots = timeSlots;
@@ -178,13 +178,18 @@ class NotificationService {
       });
     }
 
+    // Ensure we have at least one slot available
+    if (availableSlots.length === 0) {
+      availableSlots = timeSlots;
+    }
+
     // Select random slot from available ones
     const randomIndex = Math.floor(Math.random() * availableSlots.length);
     const selectedSlot = availableSlots[randomIndex];
 
-    // Store the selected time as last used
+    // Store the selected time as last used (MUST await!)
     const selectedTimeStr = `${selectedSlot.hours}:${String(selectedSlot.minutes).padStart(2, '0')}`;
-    this.setNotificationPreference('last_daily_reminder_time', selectedTimeStr);
+    await this.setNotificationPreference('last_daily_reminder_time', selectedTimeStr);
 
     return selectedSlot;
   }
@@ -204,7 +209,7 @@ class NotificationService {
     await this.cancelNotification(NOTIFICATION_IDS.DAILY_REMINDER);
 
     // Get random time for tomorrow's notification
-    const randomTime = this.getRandomDailyReminderTime();
+    const randomTime = await this.getRandomDailyReminderTime();
 
     // Schedule for tomorrow at the specified time
     const scheduleDate = new Date();
@@ -238,6 +243,9 @@ class NotificationService {
       scheduleDate.setHours(endHours, endMinutes, 0, 0);
     }
 
+    // CRITICAL FIX: Do NOT use repeats: true
+    // Instead, schedule a single notification for tomorrow
+    // The app will reschedule on next launch with fresh content
     await LocalNotifications.schedule({
       notifications: [
         {
@@ -246,17 +254,32 @@ class NotificationService {
           body: message.body,
           schedule: {
             at: scheduleDate,
-            repeats: true,
-            every: 'day',
+            // REMOVED: repeats: true, every: 'day'
+            // This ensures each day gets fresh content based on current context
           },
           sound: 'default',
           actionTypeId: 'PLAY_GAME',
           extra: {
             type: 'daily_reminder',
+            scheduleDate: scheduleDate.toISOString(),
+            isWeekend,
+            streak: stats.currentStreak,
           },
         },
       ],
     });
+
+    // Log scheduling for debugging
+    console.log('[NotificationService] Daily reminder scheduled:', {
+      scheduleDate: scheduleDate.toISOString(),
+      localTime: scheduleDate.toLocaleString(),
+      isWeekend,
+      message: { title: message.title, body: message.body },
+      streak: stats.currentStreak,
+    });
+
+    // Store when we last scheduled
+    await this.setNotificationPreference('last_daily_reminder_scheduled', new Date().toISOString());
   }
 
   async scheduleStreakSaver() {
@@ -321,9 +344,18 @@ class NotificationService {
           extra: {
             type: 'streak_saver',
             streak: stats.currentStreak,
+            scheduleDate: scheduleDate.toISOString(),
           },
         },
       ],
+    });
+
+    console.log('[NotificationService] Streak saver scheduled:', {
+      scheduleDate: scheduleDate.toISOString(),
+      localTime: scheduleDate.toLocaleString(),
+      streak: stats.currentStreak,
+      hoursLeft: Math.floor(hoursLeft),
+      message: { title: message.title, body: message.body },
     });
   }
 
@@ -383,9 +415,8 @@ class NotificationService {
     scheduleDate.setDate(scheduleDate.getDate() + daysUntilSunday);
     scheduleDate.setHours(11, 0, 0, 0);
 
-    // We'll use a placeholder notification that will trigger the actual calculation
-    // Note: This is a limitation of the current system - we can't calculate future stats
-    // The app would need to be running on Sunday to send accurate stats
+    // Schedule a single notification for next Sunday
+    // The app will reschedule on launch with fresh stats
     await LocalNotifications.schedule({
       notifications: [
         {
@@ -394,16 +425,22 @@ class NotificationService {
           body: 'Check your Tandem stats for this week! 🎯',
           schedule: {
             at: scheduleDate,
-            repeats: true,
-            every: 'week',
+            // REMOVED: repeats: true, every: 'week'
+            // This ensures fresh stats calculation each week
           },
           sound: 'default',
           actionTypeId: 'PLAY_GAME',
           extra: {
             type: 'weekly_summary_trigger',
+            scheduleDate: scheduleDate.toISOString(),
           },
         },
       ],
+    });
+
+    console.log('[NotificationService] Weekly summary scheduled:', {
+      scheduleDate: scheduleDate.toISOString(),
+      localTime: scheduleDate.toLocaleString(),
     });
   }
 
@@ -539,13 +576,32 @@ class NotificationService {
     // Clear badge
     await this.clearBadge();
 
-    // Check if we need to reschedule notifications
+    console.log('[NotificationService] App launched, checking notification schedule...');
+
+    // CRITICAL FIX: Always reschedule notifications on launch
+    // This ensures we have fresh content with correct day-of-week and streak
     const today = getTodayDateString();
     const lastCheck = await this.getNotificationPreference('last_notification_check');
 
-    if (lastCheck !== today) {
+    // Check if we need to reschedule
+    const shouldReschedule = lastCheck !== today;
+
+    if (shouldReschedule) {
+      console.log('[NotificationService] Date changed, rescheduling all notifications...');
       await this.rescheduleAllNotifications();
       await this.setNotificationPreference('last_notification_check', today);
+    } else {
+      // Even on the same day, verify notifications are scheduled
+      // This handles cases where notifications were delivered or cancelled
+      const pending = await LocalNotifications.getPending();
+      const hasDailyReminder = pending.notifications.some(
+        (n) => n.id === NOTIFICATION_IDS.DAILY_REMINDER
+      );
+
+      if (!hasDailyReminder) {
+        console.log('[NotificationService] Daily reminder missing, rescheduling...');
+        await this.scheduleDailyReminder();
+      }
     }
 
     // Check if it's Sunday and we should send weekly summary
@@ -557,6 +613,7 @@ class NotificationService {
     const lastWeeklySummary = await this.getNotificationPreference('last_weekly_summary_date');
 
     if (dayOfWeek === 0 && hours >= 10 && lastWeeklySummary !== today) {
+      console.log('[NotificationService] Sending weekly summary...');
       // Send weekly summary with actual stats
       await this.sendWeeklySummaryNow();
       await this.setNotificationPreference('last_weekly_summary_date', today);

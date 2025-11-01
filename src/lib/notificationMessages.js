@@ -355,13 +355,32 @@ export function formatMessage(message, data = {}) {
   // Replace placeholders in title and body
   Object.keys(data).forEach((key) => {
     const placeholder = `{${key}}`;
+    // Handle undefined/null values - convert to string to avoid "undefined" text
+    const value = data[key] !== undefined && data[key] !== null ? String(data[key]) : '';
+
     if (formattedMessage.title) {
-      formattedMessage.title = formattedMessage.title.replace(placeholder, data[key]);
+      // Use replaceAll to replace ALL occurrences, not just the first
+      formattedMessage.title = formattedMessage.title.replaceAll(placeholder, value);
     }
     if (formattedMessage.body) {
-      formattedMessage.body = formattedMessage.body.replace(placeholder, data[key]);
+      // Use replaceAll to replace ALL occurrences, not just the first
+      formattedMessage.body = formattedMessage.body.replaceAll(placeholder, value);
     }
   });
+
+  // Validation: check for unreplaced placeholders and warn
+  const unreplacedPattern = /\{[^}]+\}/g;
+  const titleHasUnreplaced =
+    formattedMessage.title && unreplacedPattern.test(formattedMessage.title);
+  const bodyHasUnreplaced = formattedMessage.body && unreplacedPattern.test(formattedMessage.body);
+
+  if (titleHasUnreplaced || bodyHasUnreplaced) {
+    console.warn('[NotificationMessages] Unreplaced placeholders detected:', {
+      title: formattedMessage.title,
+      body: formattedMessage.body,
+      providedData: data,
+    });
+  }
 
   return formattedMessage;
 }
