@@ -272,17 +272,39 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       if (result.error && result.error.message) {
         setError(result.error.message);
         errorHaptic();
-      } else if (result.user) {
-        // Successfully signed in - refresh subscription status
+        setLoading(false);
+        return;
+      }
+
+      // Check for successful sign-in
+      if (!result.user) {
+        // No error message but also no user - silent failure, just log
+        if (result.error) {
+          console.error('[PaywallModal] Sign in error (no message):', result.error);
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Successfully signed in - play success haptic immediately
+      successHaptic();
+
+      // Refresh subscription status (handle errors separately to not block success)
+      try {
         await refreshStatus();
-        successHaptic();
-      } else if (result.error) {
-        // Error object exists but no message - log for debugging but don't show generic message
-        console.error('[PaywallModal] Sign in error (no message):', result.error);
+      } catch (refreshError) {
+        // Log but don't show error - sign-in was successful
+        console.error('[PaywallModal] Failed to refresh subscription after sign-in:', refreshError);
+        // Subscription will be refreshed on next app interaction
       }
     } catch (err) {
+      // Only catch actual sign-in errors, not refresh errors
       console.error('[PaywallModal] Sign in error:', err);
-      setError(err.message || 'Failed to sign in with Apple');
+      if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Failed to sign in with Apple');
+      }
       errorHaptic();
     } finally {
       setLoading(false);
