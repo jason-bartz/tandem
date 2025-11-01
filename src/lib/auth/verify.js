@@ -27,7 +27,9 @@ export async function verifyAuth(request) {
     logger.info('Auth verification attempt', {
       hasAuthHeader: !!authHeader,
       authHeaderPrefix: authHeader?.substring(0, 20),
-      allHeaders: Array.from(request.headers.entries()).map(([k, v]) => `${k}: ${v.substring(0, 30)}...`),
+      allHeaders: Array.from(request.headers.entries()).map(
+        ([k, v]) => `${k}: ${v.substring(0, 30)}...`
+      ),
     });
 
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -40,10 +42,25 @@ export async function verifyAuth(request) {
 
       // Create Supabase client and verify token
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
-      const { data: { user }, error } = await supabase.auth.getUser(token);
+
+      logger.info('About to verify token with Supabase', {
+        supabaseUrl,
+        hasAnonKey: !!supabaseAnonKey,
+        anonKeyPrefix: supabaseAnonKey?.substring(0, 20),
+      });
+
+      const {
+        data: { user },
+        error,
+      } = await supabase.auth.getUser(token);
 
       if (error || !user) {
-        logger.info('Auth verification failed (token)', { error: error?.message });
+        logger.info('Auth verification failed (token)', {
+          error: error?.message,
+          errorCode: error?.code,
+          errorStatus: error?.status,
+          fullError: error,
+        });
         return { user: null, error: error?.message || 'Invalid token' };
       }
 
@@ -56,8 +73,8 @@ export async function verifyAuth(request) {
     const allCookies = cookieStore.getAll();
 
     logger.info('Trying cookie auth', {
-      cookieNames: allCookies.map(c => c.name),
-      hasCookies: allCookies.length > 0
+      cookieNames: allCookies.map((c) => c.name),
+      hasCookies: allCookies.length > 0,
     });
 
     // Create Supabase client with cookie handling for API routes
