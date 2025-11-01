@@ -134,3 +134,74 @@ export function isPuzzleAvailable(puzzleNumber) {
 export function getTotalPuzzles() {
   return getCurrentPuzzleNumber();
 }
+
+/**
+ * Get the puzzle number range for a specific month
+ * Optimized for calendar views - only fetches puzzles for the displayed month
+ * Scales indefinitely regardless of total puzzle count
+ *
+ * @param {number} month - Month (0-11, where 0 = January)
+ * @param {number} year - Year (e.g., 2025)
+ * @returns {Object|null} Object with startPuzzle, endPuzzle, and count, or null if month is entirely before launch
+ * @example
+ * getPuzzleRangeForMonth(7, 2025) // August 2025
+ * // Returns { startPuzzle: 1, endPuzzle: 17, count: 17 }
+ *
+ * getPuzzleRangeForMonth(9, 2025) // October 2025
+ * // Returns { startPuzzle: 48, endPuzzle: 78, count: 31 }
+ *
+ * getPuzzleRangeForMonth(6, 2025) // July 2025 (before launch)
+ * // Returns null
+ */
+export function getPuzzleRangeForMonth(month, year) {
+  // Get first and last day of month in local timezone
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0); // 0 = last day of previous month
+
+  // Format dates as YYYY-MM-DD
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  };
+
+  const firstDateStr = formatDate(firstDay);
+  const lastDateStr = formatDate(lastDay);
+
+  // Check if entire month is before launch
+  const lastDayUTC = new Date(lastDateStr + 'T00:00:00Z');
+  if (lastDayUTC < LAUNCH_DATE) {
+    return null; // Month is entirely before game launch
+  }
+
+  // Calculate puzzle numbers
+  let startPuzzle;
+  let endPuzzle;
+
+  // Handle months that start before launch (e.g., August 2025)
+  const firstDayUTC = new Date(firstDateStr + 'T00:00:00Z');
+  if (firstDayUTC < LAUNCH_DATE) {
+    startPuzzle = 1; // Start from first puzzle
+  } else {
+    startPuzzle = getPuzzleNumberForDate(firstDateStr);
+  }
+
+  // Calculate end puzzle
+  endPuzzle = getPuzzleNumberForDate(lastDateStr);
+
+  // Cap at current puzzle number (don't include future puzzles)
+  const currentPuzzle = getCurrentPuzzleNumber();
+  endPuzzle = Math.min(endPuzzle, currentPuzzle);
+
+  // Validate range
+  if (endPuzzle < startPuzzle) {
+    return null; // Month is entirely in the future
+  }
+
+  return {
+    startPuzzle,
+    endPuzzle,
+    count: endPuzzle - startPuzzle + 1,
+  };
+}

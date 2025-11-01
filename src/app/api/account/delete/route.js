@@ -45,7 +45,12 @@ export async function DELETE(request) {
     const { user, error: authError } = await verifyAuth(request);
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      // Add CORS headers for Capacitor app
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'DELETE, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     const userId = user.id;
@@ -177,17 +182,41 @@ export async function DELETE(request) {
       };
     }
 
-    return NextResponse.json(response, { status: 200 });
+    const successResponse = NextResponse.json(response, { status: 200 });
+    // Add CORS headers for Capacitor app
+    successResponse.headers.set('Access-Control-Allow-Origin', '*');
+    successResponse.headers.set('Access-Control-Allow-Methods', 'DELETE, OPTIONS');
+    successResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return successResponse;
   } catch (error) {
     logger.error('[AccountDeletion] Unexpected error', { error });
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {
         error: 'An unexpected error occurred during account deletion',
         details: error.message,
       },
       { status: 500 }
     );
+    // Add CORS headers for Capacitor app
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'DELETE, OPTIONS');
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return errorResponse;
   }
+}
+
+/**
+ * OPTIONS /api/account/delete
+ *
+ * Handles CORS preflight requests
+ */
+export async function OPTIONS() {
+  const response = new NextResponse(null, { status: 204 });
+  response.headers.set('Access-Control-Allow-Origin', '*');
+  response.headers.set('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
+  response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  response.headers.set('Access-Control-Max-Age', '86400'); // 24 hours
+  return response;
 }
 
 /**
@@ -202,7 +231,11 @@ export async function GET(request) {
     const { user, error: authError } = await verifyAuth(request);
 
     if (authError || !user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      const response = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      response.headers.set('Access-Control-Allow-Origin', '*');
+      response.headers.set('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
+      response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      return response;
     }
 
     // Get Supabase client
@@ -216,7 +249,7 @@ export async function GET(request) {
       .eq('status', 'active')
       .single();
 
-    return NextResponse.json({
+    const response = NextResponse.json({
       accountInfo: {
         email: user.email,
         createdAt: user.created_at,
@@ -249,14 +282,24 @@ export async function GET(request) {
           }
         : null,
     });
+    // Add CORS headers for Capacitor app
+    response.headers.set('Access-Control-Allow-Origin', '*');
+    response.headers.set('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
+    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return response;
   } catch (error) {
     logger.error('[AccountDeletion] Error fetching deletion info', { error });
-    return NextResponse.json(
+    const errorResponse = NextResponse.json(
       {
         error: 'Failed to fetch account deletion information',
         details: error.message,
       },
       { status: 500 }
     );
+    // Add CORS headers for Capacitor app
+    errorResponse.headers.set('Access-Control-Allow-Origin', '*');
+    errorResponse.headers.set('Access-Control-Allow-Methods', 'GET, DELETE, OPTIONS');
+    errorResponse.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    return errorResponse;
   }
 }

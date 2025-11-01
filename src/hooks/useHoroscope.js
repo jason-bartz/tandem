@@ -9,7 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
  * - Memory efficient (only stores current horoscope)
  * - Fast load times with cache-first strategy
  * - Handles timezone changes gracefully
- * - Graceful fallback for iOS native app (static export)
+ * - Works on both web and iOS native (Capacitor)
  *
  * @param {string} sign - Zodiac sign (e.g., "Aries")
  * @param {string} timezone - User's timezone
@@ -19,12 +19,6 @@ export function useHoroscope(sign, timezone = 'UTC') {
   const [horoscope, setHoroscope] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Check if we're running on iOS native (Capacitor)
-  const isIOS =
-    typeof window !== 'undefined' &&
-    (window.navigator.userAgent.includes('Capacitor') ||
-      /iPhone|iPad|iPod/.test(navigator.userAgent));
 
   // Generate cache key based on sign and current date
   const getCacheKey = useCallback(() => {
@@ -66,10 +60,10 @@ export function useHoroscope(sign, timezone = 'UTC') {
             const cachedData = JSON.parse(cached);
             setHoroscope(cachedData);
             setLoading(false);
-            // Return early if cache is fresh (< 24 hours old) or if on iOS native
+            // Return early if cache is fresh (< 24 hours old)
             const cacheTime = cachedData.cachedAt || 0;
             const isCacheFresh = Date.now() - cacheTime < 24 * 60 * 60 * 1000;
-            if (isCacheFresh || isIOS) {
+            if (isCacheFresh) {
               return;
             }
           }
@@ -79,30 +73,7 @@ export function useHoroscope(sign, timezone = 'UTC') {
         }
       }
 
-      // Skip API fetch on iOS native app (static export doesn't support API routes)
-      if (isIOS) {
-        // Provide a friendly message for iOS users
-        const fallbackData = {
-          text: 'Your cosmic journey continues! ✨ Visit tandemdaily.com on the web for your personalized daily horoscope.',
-          sign,
-          date: new Date().toISOString().split('T')[0],
-          cachedAt: Date.now(),
-          isFallback: true,
-        };
-        setHoroscope(fallbackData);
-        // Cache the fallback for 24 hours
-        if (cacheKey) {
-          try {
-            localStorage.setItem(cacheKey, JSON.stringify(fallbackData));
-          } catch (e) {
-            console.warn('Cache write error:', e);
-          }
-        }
-        setLoading(false);
-        return;
-      }
-
-      // Fetch from API (web only)
+      // Fetch from API
       const response = await fetch(
         `/api/horoscope?sign=${encodeURIComponent(sign)}&timezone=${encodeURIComponent(timezone)}`
       );
@@ -153,7 +124,7 @@ export function useHoroscope(sign, timezone = 'UTC') {
     } finally {
       setLoading(false);
     }
-  }, [sign, timezone, getCacheKey, isIOS]);
+  }, [sign, timezone, getCacheKey]);
 
   // Fetch on mount and when dependencies change
   useEffect(() => {

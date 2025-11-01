@@ -5,7 +5,7 @@ import CalendarDayCell from './CalendarDayCell';
 import CalendarDatePicker from './CalendarDatePicker';
 import PaywallModal from '@/components/PaywallModal';
 import { getGameHistory } from '@/lib/storage';
-import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
+import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import subscriptionService from '@/services/subscriptionService';
 import { Capacitor, CapacitorHttp } from '@capacitor/core';
 import platformService from '@/services/platform';
@@ -88,22 +88,33 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
     setIsLoading(true);
 
     try {
-      // Instead of querying by date, get all puzzles from 1 to current
-      // This is simpler and avoids timezone conversion issues
-      const currentNum = getCurrentPuzzleNumber();
+      // Calculate the puzzle range for the current viewing month
+      // This ensures we only fetch puzzles for the displayed month (max 31)
+      // Scales indefinitely regardless of total puzzle count
+      const puzzleRange = getPuzzleRangeForMonth(month, year);
+
+      // If month is entirely before launch or in future, show empty calendar
+      if (!puzzleRange) {
+        setPuzzleData({});
+        setPuzzleAccessMap({});
+        setIsLoading(false);
+        return;
+      }
+
+      const { startPuzzle, endPuzzle } = puzzleRange;
 
       // ALWAYS get fresh game history first - this is critical for showing updated status
       const gameHistory = await getGameHistory();
 
-      // Fetch puzzles from API using puzzle numbers (not dates)
-      // Note: We could cache the puzzle list, but we MUST always refresh game history
+      // Fetch puzzles from API using puzzle numbers for the current month only
+      // This is optimized for calendar views - only fetches what's displayed
       let response;
       let data;
 
       if (Capacitor.isNativePlatform() && Capacitor.getPlatform() === 'ios') {
         const apiUrl = platformService.getApiUrl('/api/puzzles/archive');
         response = await CapacitorHttp.get({
-          url: `${apiUrl}?start=1&end=${currentNum}&limit=100`,
+          url: `${apiUrl}?start=${startPuzzle}&end=${endPuzzle}`,
           headers: {
             Accept: 'application/json',
           },
@@ -116,7 +127,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
 
         data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
-        response = await fetch(`/api/puzzles/archive?start=1&end=${currentNum}&limit=100`, {
+        response = await fetch(`/api/puzzles/archive?start=${startPuzzle}&end=${endPuzzle}`, {
           signal: abortControllerRef.current.signal,
         });
 

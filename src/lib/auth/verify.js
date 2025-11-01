@@ -24,8 +24,19 @@ export async function verifyAuth(request) {
     // Try to get auth token from Authorization header first (preferred for API routes)
     const authHeader = request.headers.get('authorization');
 
+    logger.info('Auth verification attempt', {
+      hasAuthHeader: !!authHeader,
+      authHeaderPrefix: authHeader?.substring(0, 20),
+      allHeaders: Array.from(request.headers.entries()).map(([k, v]) => `${k}: ${v.substring(0, 30)}...`),
+    });
+
     if (authHeader && authHeader.startsWith('Bearer ')) {
       const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+      logger.info('Verifying token', {
+        tokenLength: token.length,
+        tokenPrefix: token.substring(0, 20),
+      });
 
       // Create Supabase client and verify token
       const supabase = createClient(supabaseUrl, supabaseAnonKey);
@@ -36,6 +47,7 @@ export async function verifyAuth(request) {
         return { user: null, error: error?.message || 'Invalid token' };
       }
 
+      logger.info('Auth verification successful (token)', { userId: user.id });
       return { user, error: null };
     }
 
