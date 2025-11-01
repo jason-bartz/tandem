@@ -268,15 +268,20 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     try {
       const result = await signInWithApple();
 
-      if (result.error) {
-        setError(result.error.message || 'Failed to sign in with Apple');
+      // Only show error if there's actually an error with a message
+      if (result.error && result.error.message) {
+        setError(result.error.message);
         errorHaptic();
-      } else {
-        // Success - refresh subscription status
+      } else if (result.user) {
+        // Successfully signed in - refresh subscription status
         await refreshStatus();
         successHaptic();
+      } else if (result.error) {
+        // Error object exists but no message - log for debugging but don't show generic message
+        console.error('[PaywallModal] Sign in error (no message):', result.error);
       }
     } catch (err) {
+      console.error('[PaywallModal] Sign in error:', err);
       setError(err.message || 'Failed to sign in with Apple');
       errorHaptic();
     } finally {
