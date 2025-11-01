@@ -22,7 +22,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
-  const { playHaptic, lightTap } = useHaptics();
+  const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic, lightTap } = useHaptics();
   const {
     theme,
     toggleTheme,
@@ -119,21 +119,35 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     setSigningIn(true);
     try {
       const result = await signInWithApple();
+
       // Only show error if there's actually an error with a message
       if (result.error && result.error.message) {
         alert(result.error.message);
-        playHaptic('error');
-      } else if (result.user) {
-        // Successfully signed in
-        playHaptic('success');
-      } else if (result.error) {
-        // Error object exists but no message - log for debugging but don't alert
-        console.error('Sign in error (no message):', result.error);
+        errorHaptic();
+        setSigningIn(false);
+        return;
       }
+
+      // Check for successful sign-in
+      if (!result.user) {
+        // No error message but also no user - silent failure, just log
+        if (result.error) {
+          console.error('[Settings] Sign in error (no message):', result.error);
+        }
+        setSigningIn(false);
+        return;
+      }
+
+      // Successfully signed in - play success haptic
+      successHaptic();
     } catch (error) {
-      console.error('Sign in error:', error);
-      alert('Failed to sign in with Apple');
-      playHaptic('error');
+      console.error('[Settings] Sign in error:', error);
+      if (error.message) {
+        alert(error.message);
+      } else {
+        alert('Failed to sign in with Apple');
+      }
+      errorHaptic();
     } finally {
       setSigningIn(false);
     }
