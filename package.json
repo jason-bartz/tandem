@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "build:web": "next build",
-    "build:ios": "BUILD_TARGET=capacitor next build",
+    "build:ios": "export $(cat .env.ios | xargs) && BUILD_TARGET=capacitor next build",
     "start": "next start",
     "lint": "next lint",
     "lint:fix": "next lint --fix",
