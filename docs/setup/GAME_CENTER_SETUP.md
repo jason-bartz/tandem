@@ -5,9 +5,10 @@ Complete guide for implementing and configuring Game Center for Tandem Daily.
 ## Overview
 
 Tandem Daily includes 31 achievements and 1 leaderboard integrated with Apple Game Center:
+
 - **23 Streak Achievements** - Based on consecutive daily puzzle completions
 - **8 Total Wins Achievements** - Based on lifetime puzzle completions
-- **1 Leaderboard** - Longest Active Streak
+- **1 Leaderboard** - Longest Streak (best streak ever achieved)
 
 ## Prerequisites
 
@@ -19,6 +20,7 @@ Tandem Daily includes 31 achievements and 1 leaderboard integrated with Apple Ga
 ## Part 1: Xcode Configuration
 
 ### Step 1: Open iOS Project
+
 ```bash
 cd /Users/jasonbartz/Documents/Development\ Projects/Tandem
 npx cap open ios
@@ -36,6 +38,7 @@ npx cap open ios
 ### Step 3: Verify Info.plist (Auto-configured)
 
 The Game Center capability automatically configures Info.plist. Verify it contains:
+
 ```xml
 <key>UIRequiredDeviceCapabilities</key>
 <array>
@@ -46,6 +49,7 @@ The Game Center capability automatically configures Info.plist. Verify it contai
 ### Step 4: Build and Archive
 
 Build the app to ensure no errors:
+
 1. Select "Any iOS Device (arm64)" as the destination
 2. Product → Build (⌘B)
 3. Verify no Game Center-related errors
@@ -64,7 +68,7 @@ Build the app to ensure no errors:
 1. Click "**+**" next to Leaderboards
 2. Select "**Classic Leaderboard**"
 3. Fill in details:
-   - **Leaderboard Reference Name**: Longest Active Streak
+   - **Leaderboard Reference Name**: Longest Streak
    - **Leaderboard ID**: `com.tandemdaily.app.longest_streak`
    - **Score Format**: Integer
    - **Score Submission Type**: Best Score
@@ -73,7 +77,7 @@ Build the app to ensure no errors:
    - **Score Range Maximum**: 10000
 
 4. **Leaderboard Localization** (English - U.S.):
-   - **Name**: Longest Active Streak
+   - **Name**: Longest Streak
    - **Score Format Suffix (Singular)**: day
    - **Score Format Suffix (Plural)**: days
 
@@ -87,44 +91,44 @@ Click "**+**" next to Achievements and create each achievement with these detail
 
 #### Streak Achievements (23 achievements)
 
-| Achievement ID | Name | Description | Points | Hidden |
-|---------------|------|-------------|--------|--------|
-| `com.tandemdaily.app.first_pedal` | First Pedal | Maintain a 3-day streak | 5 | NO |
-| `com.tandemdaily.app.finding_rhythm` | Finding Rhythm | Maintain a 5-day streak | 5 | NO |
-| `com.tandemdaily.app.picking_up_speed` | Picking Up Speed | Maintain a 7-day streak | 10 | NO |
-| `com.tandemdaily.app.steady_cadence` | Steady Cadence | Maintain a 10-day streak | 10 | NO |
-| `com.tandemdaily.app.cruising_along` | Cruising Along | Maintain a 15-day streak | 15 | NO |
-| `com.tandemdaily.app.rolling_hills` | Rolling Hills | Maintain a 20-day streak | 15 | NO |
-| `com.tandemdaily.app.coast_to_coast` | Coast to Coast | Maintain a 25-day streak | 20 | NO |
-| `com.tandemdaily.app.monthly_rider` | Monthly Rider | Maintain a 30-day streak | 25 | NO |
-| `com.tandemdaily.app.swift_cyclist` | Swift Cyclist | Maintain a 40-day streak | 25 | NO |
-| `com.tandemdaily.app.starlight_ride` | Starlight Ride | Maintain a 50-day streak | 30 | NO |
-| `com.tandemdaily.app.seaside_route` | Seaside Route | Maintain a 60-day streak | 30 | NO |
-| `com.tandemdaily.app.summit_seeker` | Summit Seeker | Maintain a 75-day streak | 40 | NO |
-| `com.tandemdaily.app.cross_country` | Cross Country | Maintain a 90-day streak | 40 | NO |
-| `com.tandemdaily.app.century_ride` | Century Ride | Maintain a 100-day streak | 50 | NO |
-| `com.tandemdaily.app.mountain_pass` | Mountain Pass | Maintain a 125-day streak | 60 | NO |
-| `com.tandemdaily.app.pathfinder` | Pathfinder | Maintain a 150-day streak | 60 | NO |
-| `com.tandemdaily.app.coastal_cruiser` | Coastal Cruiser | Maintain a 175-day streak | 75 | NO |
-| `com.tandemdaily.app.horizon_chaser` | Horizon Chaser | Maintain a 200-day streak | 75 | NO |
-| `com.tandemdaily.app.grand_tour` | Grand Tour | Maintain a 250-day streak | 80 | NO |
-| `com.tandemdaily.app.world_traveler` | World Traveler | Maintain a 300-day streak | 100 | NO |
-| `com.tandemdaily.app.round_the_sun` | Round the Sun | Maintain a 365-day streak | 100 | NO |
-| `com.tandemdaily.app.infinite_road` | Infinite Road | Maintain a 500-day streak | 100 | NO |
-| `com.tandemdaily.app.legendary_journey` | Legendary Journey | Maintain a 1000-day streak | 100 | NO |
+| Achievement ID                          | Name              | Description                | Points | Hidden |
+| --------------------------------------- | ----------------- | -------------------------- | ------ | ------ |
+| `com.tandemdaily.app.first_pedal`       | First Pedal       | Maintain a 3-day streak    | 5      | NO     |
+| `com.tandemdaily.app.finding_rhythm`    | Finding Rhythm    | Maintain a 5-day streak    | 5      | NO     |
+| `com.tandemdaily.app.picking_up_speed`  | Picking Up Speed  | Maintain a 7-day streak    | 10     | NO     |
+| `com.tandemdaily.app.steady_cadence`    | Steady Cadence    | Maintain a 10-day streak   | 10     | NO     |
+| `com.tandemdaily.app.cruising_along`    | Cruising Along    | Maintain a 15-day streak   | 15     | NO     |
+| `com.tandemdaily.app.rolling_hills`     | Rolling Hills     | Maintain a 20-day streak   | 15     | NO     |
+| `com.tandemdaily.app.coast_to_coast`    | Coast to Coast    | Maintain a 25-day streak   | 20     | NO     |
+| `com.tandemdaily.app.monthly_rider`     | Monthly Rider     | Maintain a 30-day streak   | 25     | NO     |
+| `com.tandemdaily.app.swift_cyclist`     | Swift Cyclist     | Maintain a 40-day streak   | 25     | NO     |
+| `com.tandemdaily.app.starlight_ride`    | Starlight Ride    | Maintain a 50-day streak   | 30     | NO     |
+| `com.tandemdaily.app.seaside_route`     | Seaside Route     | Maintain a 60-day streak   | 30     | NO     |
+| `com.tandemdaily.app.summit_seeker`     | Summit Seeker     | Maintain a 75-day streak   | 40     | NO     |
+| `com.tandemdaily.app.cross_country`     | Cross Country     | Maintain a 90-day streak   | 40     | NO     |
+| `com.tandemdaily.app.century_ride`      | Century Ride      | Maintain a 100-day streak  | 50     | NO     |
+| `com.tandemdaily.app.mountain_pass`     | Mountain Pass     | Maintain a 125-day streak  | 60     | NO     |
+| `com.tandemdaily.app.pathfinder`        | Pathfinder        | Maintain a 150-day streak  | 60     | NO     |
+| `com.tandemdaily.app.coastal_cruiser`   | Coastal Cruiser   | Maintain a 175-day streak  | 75     | NO     |
+| `com.tandemdaily.app.horizon_chaser`    | Horizon Chaser    | Maintain a 200-day streak  | 75     | NO     |
+| `com.tandemdaily.app.grand_tour`        | Grand Tour        | Maintain a 250-day streak  | 80     | NO     |
+| `com.tandemdaily.app.world_traveler`    | World Traveler    | Maintain a 300-day streak  | 100    | NO     |
+| `com.tandemdaily.app.round_the_sun`     | Round the Sun     | Maintain a 365-day streak  | 100    | NO     |
+| `com.tandemdaily.app.infinite_road`     | Infinite Road     | Maintain a 500-day streak  | 100    | NO     |
+| `com.tandemdaily.app.legendary_journey` | Legendary Journey | Maintain a 1000-day streak | 100    | NO     |
 
 #### Total Wins Achievements (8 achievements)
 
-| Achievement ID | Name | Description | Points | Hidden |
-|---------------|------|-------------|--------|--------|
-| `com.tandemdaily.app.first_win` | First Win | Solve your first puzzle | 5 | NO |
-| `com.tandemdaily.app.getting_hang` | Getting the Hang of It | Solve 10 puzzles | 10 | NO |
-| `com.tandemdaily.app.puzzle_pal` | Puzzle Pal | Solve 25 puzzles | 25 | NO |
-| `com.tandemdaily.app.clever_cookie` | Clever Cookie | Solve 50 puzzles | 30 | NO |
-| `com.tandemdaily.app.brainy_buddy` | Brainy Buddy | Solve 100 puzzles | 50 | NO |
-| `com.tandemdaily.app.puzzle_whiz` | Puzzle Whiz | Solve 250 puzzles | 75 | NO |
-| `com.tandemdaily.app.word_wizard` | Word Wizard | Solve 500 puzzles | 100 | NO |
-| `com.tandemdaily.app.puzzle_king` | Puzzle King | Solve 1000 puzzles | 100 | NO |
+| Achievement ID                      | Name                   | Description             | Points | Hidden |
+| ----------------------------------- | ---------------------- | ----------------------- | ------ | ------ |
+| `com.tandemdaily.app.first_win`     | First Win              | Solve your first puzzle | 5      | NO     |
+| `com.tandemdaily.app.getting_hang`  | Getting the Hang of It | Solve 10 puzzles        | 10     | NO     |
+| `com.tandemdaily.app.puzzle_pal`    | Puzzle Pal             | Solve 25 puzzles        | 25     | NO     |
+| `com.tandemdaily.app.clever_cookie` | Clever Cookie          | Solve 50 puzzles        | 30     | NO     |
+| `com.tandemdaily.app.brainy_buddy`  | Brainy Buddy           | Solve 100 puzzles       | 50     | NO     |
+| `com.tandemdaily.app.puzzle_whiz`   | Puzzle Whiz            | Solve 250 puzzles       | 75     | NO     |
+| `com.tandemdaily.app.word_wizard`   | Word Wizard            | Solve 500 puzzles       | 100    | NO     |
+| `com.tandemdaily.app.puzzle_king`   | Puzzle King            | Solve 1000 puzzles      | 100    | NO     |
 
 **Total Points**: ~1395 points across all achievements
 
@@ -152,12 +156,14 @@ For each achievement above:
 For rapid deployment, we're using emoji-based artwork. Create 31 images (512x512px PNG):
 
 #### Tools:
+
 - Figma
 - Sketch
 - Canva
 - Or programmatically with Node.js canvas
 
 #### Specifications:
+
 - **Size**: 512x512px
 - **Format**: PNG with transparency
 - **Content**: Large emoji centered (Apple applies circular mask)
@@ -165,6 +171,7 @@ For rapid deployment, we're using emoji-based artwork. Create 31 images (512x512
 - **Safety Margin**: Keep important content within 400px diameter circle
 
 #### Emoji Mapping:
+
 - 🔥 First Pedal
 - ⭐ Finding Rhythm
 - 💪 Picking Up Speed
@@ -232,12 +239,15 @@ See `scripts/generate-achievement-artwork.js` for automated generation.
 ### Common Testing Issues
 
 **Issue**: Achievements not appearing
+
 - **Solution**: Wait 5-10 minutes for App Store Connect to propagate
 
 **Issue**: Authentication fails
+
 - **Solution**: Ensure Game Center capability is properly signed
 
 **Issue**: Sandbox ID doesn't work
+
 - **Solution**: Sign out of production Game Center first
 
 ## Part 5: Deployment
@@ -267,18 +277,22 @@ See `scripts/generate-achievement-artwork.js` for automated generation.
 ### Build Errors
 
 **Error**: Game Center capability signing failed
+
 - Ensure provisioning profile includes Game Center
 
 **Error**: GameConnect plugin not found
+
 - Run `npm install && npx cap sync`
 
 ### Runtime Errors
 
 **Error**: Authentication fails silently
+
 - Check console logs for detailed error
 - Verify Game Center is enabled in Settings app
 
 **Error**: Achievements don't unlock
+
 - Check offline queue in storage
 - Verify achievement IDs match exactly
 

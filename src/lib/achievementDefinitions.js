@@ -271,8 +271,8 @@ export const WINS_ACHIEVEMENTS = [
 export const LEADERBOARDS = {
   LONGEST_STREAK: {
     id: 'com.tandemdaily.app.longest_streak',
-    name: 'Longest Active Streak',
-    description: 'Compete for the longest active streak',
+    name: 'Longest Streak',
+    description: 'Compete for the longest streak ever achieved',
   },
 };
 
