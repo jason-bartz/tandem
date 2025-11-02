@@ -104,6 +104,9 @@ class WebSubscriptionService {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+
+      // Try to refresh session first, but don't fail if it doesn't work
+      // (user might not be authenticated)
       const {
         data: { session },
       } = await supabase.auth.getSession();
@@ -239,12 +242,43 @@ class WebSubscriptionService {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+
+      // IMPORTANT: Refresh the session to ensure we have a valid, non-expired token
+      // This is critical for production where sessions may have expired
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+        error: sessionError,
+      } = await supabase.auth.refreshSession();
 
-      if (!session?.access_token) {
-        throw new Error('Not authenticated');
+      if (sessionError || !session?.access_token) {
+        // If refresh fails, try getting the existing session as fallback
+        const {
+          data: { session: existingSession },
+        } = await supabase.auth.getSession();
+
+        if (!existingSession?.access_token) {
+          throw new Error('Not authenticated. Please sign in again.');
+        }
+
+        // Use existing session if available
+        const response = await fetch('/api/stripe/create-checkout-session', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${existingSession.access_token}`,
+          },
+          credentials: 'include',
+          body: JSON.stringify({ tier }),
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create checkout session');
+        }
+
+        const data = await response.json();
+        window.location.href = data.url;
+        return;
       }
 
       const response = await fetch('/api/stripe/create-checkout-session', {
@@ -280,12 +314,39 @@ class WebSubscriptionService {
     try {
       // Get the Supabase session token from localStorage
       const supabase = (await import('@/lib/supabase/client')).getSupabaseBrowserClient();
+
+      // IMPORTANT: Refresh the session to ensure we have a valid, non-expired token
       const {
         data: { session },
-      } = await supabase.auth.getSession();
+        error: sessionError,
+      } = await supabase.auth.refreshSession();
 
-      if (!session?.access_token) {
-        throw new Error('Not authenticated');
+      if (sessionError || !session?.access_token) {
+        // If refresh fails, try getting the existing session as fallback
+        const {
+          data: { session: existingSession },
+        } = await supabase.auth.getSession();
+
+        if (!existingSession?.access_token) {
+          throw new Error('Not authenticated. Please sign in again.');
+        }
+
+        const response = await fetch('/api/stripe/create-portal-session', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${existingSession.access_token}`,
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create portal session');
+        }
+
+        const data = await response.json();
+        window.location.href = data.url;
+        return;
       }
 
       const response = await fetch('/api/stripe/create-portal-session', {
