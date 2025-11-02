@@ -6,6 +6,7 @@ import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AuthModalManager from '@/components/auth/AuthModalManager';
+import PaywallModalManager from '@/components/PaywallModalManager';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
@@ -208,6 +209,7 @@ export default function RootLayout({ children }) {
               <SubscriptionProvider>
                 <IOSContainerWrapper>{children}</IOSContainerWrapper>
                 <AuthModalManager />
+                <PaywallModalManager />
               </SubscriptionProvider>
             </AuthProvider>
           </ThemeProvider>
