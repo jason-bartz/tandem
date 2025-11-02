@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AuthModal from './AuthModal';
+import WelcomeBackModal from './WelcomeBackModal';
 import { Capacitor } from '@capacitor/core';
 
 /**
@@ -19,6 +20,7 @@ export default function AuthModalManager() {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState('login');
   const [confirmationMessage, setConfirmationMessage] = useState(null);
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWeb = Capacitor.getPlatform() === 'web';
@@ -31,10 +33,8 @@ export default function AuthModalManager() {
     const authError = searchParams?.get('auth_error');
 
     if (emailConfirmed === 'true') {
-      // Email confirmed successfully - show success message and open login modal
-      setConfirmationMessage('Email confirmed! You can now sign in.');
-      setMode('login');
-      setIsOpen(true);
+      // Email confirmed successfully - show welcome back modal instead of auth modal
+      setShowWelcomeBack(true);
       // Clean up URL parameter
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
@@ -101,13 +101,34 @@ export default function AuthModalManager() {
     router.refresh();
   };
 
+  const handleWelcomeBackClose = () => {
+    setShowWelcomeBack(false);
+  };
+
+  const handleSubscribe = () => {
+    // Trigger the paywall modal to open
+    // This event should be caught by components that manage the paywall
+    window.dispatchEvent(
+      new CustomEvent('openPaywall', {
+        detail: { source: 'welcome_back' },
+      })
+    );
+  };
+
   return (
-    <AuthModal
-      isOpen={isOpen}
-      onClose={handleClose}
-      initialMode={mode}
-      onSuccess={handleSuccess}
-      initialMessage={confirmationMessage}
-    />
+    <>
+      <AuthModal
+        isOpen={isOpen}
+        onClose={handleClose}
+        initialMode={mode}
+        onSuccess={handleSuccess}
+        initialMessage={confirmationMessage}
+      />
+      <WelcomeBackModal
+        isOpen={showWelcomeBack}
+        onClose={handleWelcomeBackClose}
+        onSubscribe={handleSubscribe}
+      />
+    </>
   );
 }
