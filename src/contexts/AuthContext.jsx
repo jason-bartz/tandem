@@ -99,6 +99,9 @@ export function AuthProvider({ children }) {
         password,
         options: {
           data: metadata,
+          // Redirect user back to home page after email confirmation
+          // They can then sign in from there
+          emailRedirectTo: `${window.location.origin}/`,
         },
       });
 
@@ -205,9 +208,7 @@ export function AuthProvider({ children }) {
 
       // On iOS, use native Apple Sign In
       // Dynamic import to avoid bundling on web builds
-      const { SignInWithApple } = await import(
-        '@capacitor-community/apple-sign-in'
-      );
+      const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
 
       // Generate raw nonce for Apple Sign In
       // Apple requires the nonce to be SHA-256 hashed, but Supabase needs the raw nonce

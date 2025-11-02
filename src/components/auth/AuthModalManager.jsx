@@ -18,6 +18,7 @@ import { Capacitor } from '@capacitor/core';
 export default function AuthModalManager() {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState('login');
+  const [confirmationMessage, setConfirmationMessage] = useState(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const isWeb = Capacitor.getPlatform() === 'web';
@@ -26,7 +27,26 @@ export default function AuthModalManager() {
   useEffect(() => {
     if (!isWeb) return;
     const authParam = searchParams?.get('auth');
-    if (authParam) {
+    const emailConfirmed = searchParams?.get('email_confirmed');
+    const authError = searchParams?.get('auth_error');
+
+    if (emailConfirmed === 'true') {
+      // Email confirmed successfully - show success message and open login modal
+      setConfirmationMessage('Email confirmed! You can now sign in.');
+      setMode('login');
+      setIsOpen(true);
+      // Clean up URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else if (authError === 'true') {
+      // Authentication error
+      setConfirmationMessage('Authentication failed. Please try again.');
+      setMode('login');
+      setIsOpen(true);
+      // Clean up URL parameter
+      const newUrl = window.location.pathname;
+      window.history.replaceState({}, '', newUrl);
+    } else if (authParam) {
       // Open modal based on URL parameter
       if (authParam === 'required' || authParam === 'login') {
         setMode('login');
@@ -61,6 +81,7 @@ export default function AuthModalManager() {
 
   const handleClose = () => {
     setIsOpen(false);
+    setConfirmationMessage(null);
     // Clean up URL parameter without triggering navigation
     if (searchParams?.get('auth')) {
       const newUrl = window.location.pathname;
@@ -70,6 +91,7 @@ export default function AuthModalManager() {
 
   const handleSuccess = () => {
     setIsOpen(false);
+    setConfirmationMessage(null);
     // Clean up URL parameter
     if (searchParams?.get('auth')) {
       const newUrl = window.location.pathname;
@@ -80,6 +102,12 @@ export default function AuthModalManager() {
   };
 
   return (
-    <AuthModal isOpen={isOpen} onClose={handleClose} initialMode={mode} onSuccess={handleSuccess} />
+    <AuthModal
+      isOpen={isOpen}
+      onClose={handleClose}
+      initialMode={mode}
+      onSuccess={handleSuccess}
+      initialMessage={confirmationMessage}
+    />
   );
 }

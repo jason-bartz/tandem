@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Capacitor } from '@capacitor/core';
 
@@ -15,18 +15,32 @@ import { Capacitor } from '@capacitor/core';
  * @param {function} onClose - Callback when modal closes
  * @param {string} initialMode - 'signup' or 'login' (default: 'login')
  * @param {function} onSuccess - Callback after successful authentication
+ * @param {string} initialMessage - Optional success message to display when modal opens
  */
-export default function AuthModal({ isOpen, onClose, initialMode = 'login', onSuccess }) {
+export default function AuthModal({
+  isOpen,
+  onClose,
+  initialMode = 'login',
+  onSuccess,
+  initialMessage = null,
+}) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(initialMessage);
 
   const { signUp, signIn, signInWithApple } = useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
+
+  // Update success message when initialMessage prop changes
+  useEffect(() => {
+    if (initialMessage) {
+      setSuccessMessage(initialMessage);
+    }
+  }, [initialMessage]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
