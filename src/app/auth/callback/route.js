@@ -25,6 +25,7 @@ export async function GET(request) {
 
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
+  const type = requestUrl.searchParams.get('type'); // 'signup' for email confirmation
 
   if (code) {
     const supabase = await createServerComponentClient();
@@ -62,6 +63,11 @@ export async function GET(request) {
       if (profileError) {
         console.error('Failed to create user profile:', profileError);
       }
+    }
+
+    // For email confirmations, redirect with success message
+    if (type === 'signup') {
+      return NextResponse.redirect(`${requestUrl.origin}/?email_confirmed=true`);
     }
   }
 
