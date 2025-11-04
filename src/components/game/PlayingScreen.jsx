@@ -470,7 +470,7 @@ export default function PlayingScreen({
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
-        style={{ height: 'calc(100vh - 12rem)' }}
+        style={{ height: 'calc(100dvh - 9rem)' }}
       >
         {/* Header - logo hidden on all devices, content centered */}
         <div

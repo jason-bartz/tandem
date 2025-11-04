@@ -303,7 +303,7 @@ export default function CrypticGameScreen({
               ? 'bg-hc-surface border-hc-border'
               : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
           }`}
-          style={{ height: 'calc(100vh - 12rem)' }}
+          style={{ height: 'calc(100dvh - 9rem)' }}
         >
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto p-6 md:p-8">
