@@ -26,22 +26,6 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
         <div className="max-w-2xl w-full">
           {/* Header */}
           <div className="text-center mb-8">
-            {/* Tandem Unlimited Badge */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 rounded-full mb-4">
-              <img
-                src="/icons/ui/tandem-unlimited.png"
-                alt="Tandem Unlimited"
-                className="w-5 h-5 dark:hidden"
-              />
-              <img
-                src="/icons/ui/tandem-unlimited-dark.png"
-                alt="Tandem Unlimited"
-                className="w-5 h-5 hidden dark:block"
-              />
-              <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                Tandem Unlimited
-              </span>
-            </div>
             <div className="mb-4">
               <img
                 src="/images/daily-cryptic-logo.webp"
@@ -54,12 +38,8 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
                 className="w-20 h-20 mx-auto rounded-2xl hidden dark:block"
               />
             </div>
-            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              Daily Cryptic
-            </h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400">
-              Cryptic Word Puzzle
-            </p>
+            <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">Daily Cryptic</h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400">Cryptic Word Puzzle</p>
             <p className="text-lg text-gray-600 dark:text-gray-400">
               {formatDate(currentPuzzleDate)}
             </p>
@@ -93,11 +73,7 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
                   onClick={() => setShowArchive(true)}
                   className="flex-1 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm font-bold rounded-[16px] border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
-                  <img
-                    src="/icons/ui/archive.png"
-                    alt=""
-                    className="w-5 h-5 dark:hidden"
-                  />
+                  <img src="/icons/ui/archive.png" alt="" className="w-5 h-5 dark:hidden" />
                   <img
                     src="/icons/ui/archive-dark.png"
                     alt=""
@@ -109,11 +85,7 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
                   onClick={() => setShowGuide(true)}
                   className="flex-1 px-4 py-2.5 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm font-bold rounded-[16px] border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[3px] active:translate-y-[3px] active:shadow-none transition-all flex items-center justify-center gap-2"
                 >
-                  <img
-                    src="/icons/ui/how-to-play.png"
-                    alt=""
-                    className="w-5 h-5 dark:hidden"
-                  />
+                  <img src="/icons/ui/how-to-play.png" alt="" className="w-5 h-5 dark:hidden" />
                   <img
                     src="/icons/ui/how-to-play-dark.png"
                     alt=""
