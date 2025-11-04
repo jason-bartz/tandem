@@ -17,6 +17,7 @@ import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
+import AvatarPromptModal from '@/components/AvatarPromptModal';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
@@ -35,6 +36,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { user } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+  const [showFullAvatarModal, setShowFullAvatarModal] = useState(false);
 
   // Avatar prompt for first-time users (with 2-second delay for UX)
   const { showAvatarPrompt, dismissPrompt, closePrompt } = useAvatarPrompt(user, 2000);
@@ -347,19 +349,27 @@ export default function GameContainerClient({ initialPuzzleData }) {
         </div>
       </div>
 
-      {/* Avatar Selection Modal - First-time prompt */}
+      {/* Avatar Prompt Modal - Small preview with action buttons */}
       {/* Only shown after onboarding completes and game loads */}
-      {onboardingChecked && !showOnboarding && showAvatarPrompt && user && (
-        <AvatarSelectionModal
+      {onboardingChecked && !showOnboarding && showAvatarPrompt && user && !showFullAvatarModal && (
+        <AvatarPromptModal
           isOpen={showAvatarPrompt}
+          onSelectAvatar={() => setShowFullAvatarModal(true)}
+          onSkip={() => dismissPrompt()}
+        />
+      )}
+
+      {/* Full Avatar Selection Modal */}
+      {showFullAvatarModal && user && (
+        <AvatarSelectionModal
+          isOpen={showFullAvatarModal}
           onClose={(avatarId) => {
+            setShowFullAvatarModal(false);
             if (avatarId) {
               // Avatar selected
               closePrompt();
-            } else {
-              // Skipped - dismiss permanently
-              dismissPrompt();
             }
+            // If closed without selecting, user can still see prompt modal again
           }}
           userId={user.id}
           isFirstTime={true}
