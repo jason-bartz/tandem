@@ -9,9 +9,6 @@ export default function AboutPage() {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
-
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'About', path: '/about' }]);
 
   const sections = [
@@ -159,16 +156,7 @@ export default function AboutPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
       />
 
-      <div
-        className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-        style={{
-          backgroundImage,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center py-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">

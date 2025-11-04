@@ -8,9 +8,6 @@ export default function TermsOfUse() {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
-
   const sections = [
     {
       id: 'acceptance',
@@ -18,12 +15,12 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Tandem ("the Game") at tandemdaily.com or through our iOS app,
+            By accessing or playing Tandem Daily or Daily Cryptic ("the Games") at tandemdaily.com or through our iOS app,
             you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
-            Terms, please do not use the Game.
+            Terms, please do not use the Games.
           </p>
           <p>
-            These Terms apply to all users of the Game, including those who access it through our
+            These Terms apply to all users of the Games, including those who access them through our
             website, progressive web app (PWA), or iOS application.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -40,13 +37,19 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Tandem is a daily word puzzle game where players decode emoji pairs to guess words
-            related to a daily theme. The Game is provided by Good Vibes Games ("we," "us," or
-            "our") for entertainment purposes.
+            We offer two daily word puzzle games provided by Good Vibes Games ("we," "us," or "our") for entertainment purposes:
           </p>
+          <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-3">
+            <li>
+              <strong>Tandem Daily</strong>: Decode emoji pairs to guess words related to a daily theme
+            </li>
+            <li>
+              <strong>Daily Cryptic</strong>: Solve cryptic crossword-style clues with emoji hints and wordplay
+            </li>
+          </ul>
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>One free daily puzzle for all users</li>
+            <li>One free daily puzzle for all users (both games)</li>
             <li>Archive of past puzzles (subscription required for full access)</li>
             <li>Statistics tracking and streak counting</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
@@ -499,16 +502,7 @@ export default function TermsOfUse() {
   ];
 
   return (
-    <div
-      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-      style={{
-        backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
@@ -566,6 +560,13 @@ export default function TermsOfUse() {
 
               {/* Content */}
               <div className="p-6 pt-0">
+                {/* Agreement statement */}
+                <div className="mb-6 p-4 bg-[#ff66c4]/10 border-[3px] border-[#ff66c4] rounded-2xl">
+                  <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+                    By playing <strong>Tandem Daily</strong> or <strong>Daily Cryptic</strong>, you agree to these terms
+                  </p>
+                </div>
+
                 <div className="space-y-2">
                   {sections.map((section) => (
                     <div
@@ -609,10 +610,6 @@ export default function TermsOfUse() {
             <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
-          {/* Additional info */}
-          <div className="mt-6 text-center text-white/80 text-sm">
-            <p>By playing Tandem, you agree to these terms</p>
-          </div>
         </div>
       </div>
     </div>

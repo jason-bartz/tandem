@@ -10,8 +10,8 @@
 -- =====================================================
 -- 1. HOROSCOPES TABLE
 -- =====================================================
--- Stores 30 horoscopes for each of the 12 zodiac signs
--- Total: 360 horoscopes
+-- Stores 100 horoscopes for each of the 12 zodiac signs
+-- Total: 1200 horoscopes
 -- Public read access, no user modifications needed
 
 CREATE TABLE IF NOT EXISTS horoscopes (
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS horoscopes (
     'Aquarius',
     'Pisces'
   )),
-  horoscope_number SMALLINT NOT NULL CHECK (horoscope_number BETWEEN 1 AND 30),
+  horoscope_number SMALLINT NOT NULL CHECK (horoscope_number BETWEEN 1 AND 100),
   text TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

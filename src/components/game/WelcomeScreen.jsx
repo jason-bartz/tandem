@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { getCurrentPuzzleNumber, getDisplayDate } from '@/lib/puzzleNumber';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
-import StatsModal from './StatsModal';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveCalendar from './ArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
@@ -13,6 +13,7 @@ import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
+import CrypticWelcomeCard from '@/components/cryptic/CrypticWelcomeCard';
 
 export default function WelcomeScreen({
   onStart,
@@ -143,7 +144,7 @@ export default function WelcomeScreen({
 
       {/* Main welcome card */}
       <div
-        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
+        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center mb-6 ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
@@ -163,17 +164,21 @@ export default function WelcomeScreen({
           </div>
         )}
 
+        {/* Title and Subtitle */}
+        <div className="mb-4">
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+            Tandem Daily
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Emoji Word Puzzle</p>
+        </div>
+
         {/* Puzzle number and date */}
         <div className="mb-6">
-          <div className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-1">
+          <div className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">
             Puzzle #{puzzleNumber}
           </div>
           <div className="text-sm text-gray-500 dark:text-gray-400">{displayDate}</div>
         </div>
-
-        <p className="text-gray-text dark:text-gray-300 text-lg font-medium mb-8">
-          4 pairs. 1 hidden theme.
-        </p>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
           <h3 className="text-sm uppercase tracking-wider text-gray-text dark:text-gray-300 mb-4 font-semibold">
@@ -181,24 +186,24 @@ export default function WelcomeScreen({
           </h3>
           <div className="space-y-3">
             <div className="flex items-start">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                ✌️
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
+                <Image src={getIconPath('peace')} alt="" width={24} height={24} />
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
                 Each emoji pair = 1 word
               </span>
             </div>
             <div className="flex items-start">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                📖
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
+                <Image src={getIconPath('theme')} alt="" width={24} height={24} />
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
                 All answers share a hidden theme
               </span>
             </div>
             <div className="flex items-start">
-              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 text-xl flex-shrink-0">
-                ❌
+              <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
+                <Image src={getIconPath('wrong')} alt="" width={24} height={24} />
               </div>
               <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
                 4 chances to be wrong
@@ -214,7 +219,7 @@ export default function WelcomeScreen({
             ${
               highContrast
                 ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                : 'bg-accent-blue border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
             }
           `}
         >
@@ -222,7 +227,12 @@ export default function WelcomeScreen({
         </button>
       </div>
 
-      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      {/* Cryptic Welcome Card */}
+      <div className="mb-6">
+        <CrypticWelcomeCard />
+      </div>
+
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

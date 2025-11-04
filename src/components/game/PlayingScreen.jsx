@@ -8,7 +8,7 @@ import HintEarnedToast from './HintEarnedToast';
 import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
-import StatsModal from './StatsModal';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveCalendar from './ArchiveCalendar';
 import Settings from '@/components/Settings';
 import OnScreenKeyboard from './OnScreenKeyboard';
@@ -465,15 +465,16 @@ export default function PlayingScreen({
       {/* Main game card */}
       <div
         ref={puzzleContainerRef}
-        className={`rounded-[32px] border-[3px] overflow-hidden ${
+        className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
+        style={{ height: 'calc(100vh - 12rem)' }}
       >
         {/* Header - logo hidden on all devices, content centered */}
         <div
-          className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center ${
+          className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center flex-shrink-0 ${
             highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
           }`}
         >
@@ -515,7 +516,8 @@ export default function PlayingScreen({
           </div>
         </div>
 
-        <div className="p-4 sm:p-6" ref={contentRef}>
+        {/* Scrollable Content Area */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6" ref={contentRef}>
           <div className="max-w-lg mx-auto">
             <StatsBar
               time={formatTime(time)}
@@ -567,7 +569,12 @@ export default function PlayingScreen({
                   </div>
                 ))}
             </div>
+          </div>
+        </div>
 
+        {/* Fixed Bottom Section - Hint Button + Keyboard */}
+        <div className="flex-shrink-0 p-4 sm:p-6">
+          <div className="max-w-lg mx-auto">
             {/* Hint button - positioned before keyboard (not shown in hard mode) */}
             {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
               <div className="mb-3">
@@ -656,7 +663,7 @@ export default function PlayingScreen({
       </div>
 
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
-      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

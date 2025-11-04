@@ -849,6 +849,1287 @@ Analyze the puzzle above and provide your assessment.`;
   }
 
   /**
+   * Generate a cryptic crossword-style puzzle
+   * @param {Object} options - Generation options
+   * @param {string} options.difficulty - Difficulty level (2-4)
+   * @param {Array<string>} options.crypticDevices - Preferred cryptic devices to include (optional)
+   * @param {string} options.themeHint - Optional theme hint from user
+   * @param {boolean} options.allowMultiWord - Require multi-word phrase (2-3 words)
+   * @returns {Promise<Object>} - Generated cryptic puzzle
+   */
+  async generateCrypticPuzzle({ difficulty = 3, crypticDevices = [], themeHint = null, allowMultiWord = false }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // Retry logic for production reliability
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildCrypticPrompt({ difficulty, crypticDevices, themeHint, allowMultiWord });
+        const genInfo = {
+          difficulty,
+          crypticDevices,
+          hasThemeHint: !!themeHint,
+          allowMultiWord,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+        console.log('[ai.service] Generating cryptic puzzle with AI:', genInfo);
+
+        // DEBUG: Log if multi-word requirement is in prompt
+        if (allowMultiWord) {
+          const hasRequirement = prompt.includes('MULTI-WORD REQUIREMENT');
+          console.log('[ai.service] DEBUG: Multi-word enabled, requirement in prompt:', hasRequirement);
+          if (hasRequirement) {
+            const requirementSection = prompt.match(/🚨 MULTI-WORD REQUIREMENT[\s\S]{0,300}/)?.[0];
+            console.log('[ai.service] DEBUG: Requirement section:', requirementSection?.substring(0, 200));
+          }
+        }
+
+        logger.info('Generating cryptic puzzle with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 1536,
+          temperature: 1.0,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        const responseInfo = {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        };
+        console.log('[ai.service] AI cryptic puzzle response received:', responseInfo);
+        logger.info('AI cryptic puzzle response received', responseInfo);
+
+        const puzzle = this.parseCrypticResponse(responseText);
+        this.validateCrypticPuzzle(puzzle);
+
+        // CRITICAL: Enforce multi-word requirement if enabled
+        if (allowMultiWord) {
+          const isMultiWord = puzzle.answer.includes(' ');
+          if (!isMultiWord) {
+            throw new Error('Multi-word requirement not met: AI generated single-word answer when multi-word was required. Retrying...');
+          }
+          const wordCount = puzzle.answer.split(/\s+/).length;
+          if (wordCount < 2) {
+            throw new Error(`Multi-word requirement not met: Answer has only ${wordCount} word. Retrying...`);
+          }
+          logger.info('[ai.service] Multi-word requirement validated', {
+            answer: puzzle.answer,
+            wordCount,
+            wordPattern: puzzle.word_pattern
+          });
+        }
+
+        // Track successful generation
+        this.generationCount++;
+        const successInfo = {
+          answer: puzzle.answer,
+          device: puzzle.cryptic_device,
+          difficulty: puzzle.difficulty_rating,
+          duration,
+          totalGenerations: this.generationCount,
+        };
+        console.log('[ai.service] ✓ Cryptic puzzle generated successfully:', successInfo);
+        logger.info('Cryptic puzzle generated successfully', successInfo);
+
+        return puzzle;
+      } catch (error) {
+        lastError = error;
+
+        // Enhanced error logging
+        logger.error('AI cryptic puzzle generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        // Handle Anthropic API specific errors
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        // Don't retry on authentication errors
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
+          throw error;
+        }
+
+        // Service overloaded - retry with longer backoff
+        if (error.status === 529) {
+          logger.warn('Service overloaded, will retry with longer delay', { attempt: attempt + 1 });
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+            continue;
+          }
+        }
+
+        // Validation errors - retry with fresh generation
+        if (error.message.includes('Invalid') || error.message.includes('must be')) {
+          if (attempt < this.maxRetries) {
+            logger.warn('Validation error, retrying with fresh generation', {
+              error: error.message,
+            });
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            continue;
+          }
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        // Brief delay before retry (exponential backoff)
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    // All retries failed
+    logger.error('AI cryptic puzzle generation failed after all retries', {
+      attempts: this.maxRetries + 1,
+      error: lastError,
+    });
+    throw new Error(
+      `AI cryptic generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build the prompt for cryptic puzzle generation - REVISED VERSION v6 (Construction-First Methodology)
+   * CRITICAL CHANGE: Build from cryptic devices UP to answer, not backwards
+   * Focuses on mathematical correctness and sound cryptic logic before cleverness
+   */
+  buildCrypticPrompt({ difficulty, crypticDevices, themeHint, allowMultiWord }) {
+    let deviceInstructions = '';
+
+    if (crypticDevices && crypticDevices.length > 0) {
+      const deviceList = crypticDevices.map(d => d.replace('_', ' ')).join(', ');
+      if (crypticDevices.length === 1) {
+        deviceInstructions = `REQUIRED CRYPTIC DEVICE: ${deviceList}\nYou MUST use this specific device in your puzzle.`;
+      } else {
+        deviceInstructions = `REQUIRED CRYPTIC DEVICES: ${deviceList}\nYou MUST incorporate ALL of these devices into your puzzle. Create a puzzle that uses multiple cryptic techniques from this list.`;
+      }
+    } else {
+      deviceInstructions = `Choose ONE primary cryptic device that works cleanly (prefer: charade, anagram, deletion, or hidden).`;
+    }
+
+    const themeInstructions = themeHint
+      ? `THEME/TOPIC HINT: "${themeHint}"\nTry to incorporate this theme or topic into your puzzle if possible, but prioritize creating a mathematically correct, high-quality cryptic clue.`
+      : '';
+
+    const multiWordRequirement = allowMultiWord
+      ? `
+🚨 MULTI-WORD REQUIREMENT - MANDATORY:
+You MUST create a multi-word phrase answer (2-3 words).
+- Examples: "BLUE FEATHERS" (4,8), "DOWN IN THE DUMPS" (4,2,3,5), "OUT OF SORTS" (3,2,5)
+- Each word must be at least 2 letters
+- Total letters: 5-11 (excluding spaces)
+- Maximum 3 words for readability
+- Return answer WITH SPACES: e.g., "BLUE FEATHERS" not "BLUEFEATHERS"
+- Set word_pattern to array of word lengths: e.g., [4, 8] for "BLUE FEATHERS"
+
+This is NOT optional - single-word answers will be rejected.`
+      : '';
+
+    const difficultyGuidance = {
+      2: 'Easy - Use familiar words with clear wordplay. Most solvers should be able to work it out.',
+      3: 'Medium - Balanced difficulty. Clever but fair wordplay. Standard cryptic crossword difficulty.',
+      4: 'Challenging - More complex wordplay or less common (but still known) words. Requires cryptic experience.',
+    };
+
+    return `You are creating ONE cryptic crossword puzzle in the style of "Minute Cryptic."
+${allowMultiWord ? `
+🚨🚨🚨 MANDATORY REQUIREMENT - READ THIS FIRST 🚨🚨🚨
+YOU MUST CREATE A MULTI-WORD ANSWER (2-3 WORDS WITH SPACES)
+Single-word answers are FORBIDDEN and will be REJECTED.
+Examples: "BLUE FEATHERS", "DOWN IN THE DUMPS", "OUT OF SORTS"
+🚨🚨🚨 DO NOT IGNORE THIS - IT IS NON-NEGOTIABLE 🚨🚨🚨
+` : ''}
+🚨 CRITICAL RULES:
+1. Use ONLY common, everyday English words (think Wordle difficulty)
+2. Source fodder must be simple words everyone knows
+3. Follow the steps IN EXACT ORDER - don't jump ahead
+4. For ANAGRAMS: Your source word MUST be common (not ARGENTS, MORTICAN, etc.)
+5. EMOJIS MUST REPLACE WORDS - They are NOT decorative elements!
+6. ⚠️ EMOJI ≠ ANSWER: Emojis must NEVER directly depict/represent the answer
+   - Think: If someone sees the emoji, can they guess the answer directly?
+   - ❌ If YES → BANNED! Choose different emojis
+   - ✅ If NO → Safe to use
+   - Emojis should represent: fodder words, indicators, or unrelated concepts
+   - NOT the answer itself or obvious visual representations of it
+7. ⚠️ ABBREVIATIONS & SUBSTITUTIONS - "Earned, Not Arbitrary"
+
+   Use abbreviations/substitutions ONLY when they feel natural within the surface reading!
+
+   ✅ ALLOWED - Earned through surface context:
+   - "club" → C (playing cards, Roman numeral - if surface mentions cards/clubs)
+   - "one" → I or A (Roman numeral, article - universally known)
+   - "department" → DEPT (standard abbreviation)
+   - "$0.01" → CENT, PENNY (natural way to read the symbol)
+   - "direction" → N/S/E/W (if surface is about navigation/geography)
+   - "note" → A-G (musical notes - if surface is music-themed)
+   - Common acronyms: USA, TV, PC, CEO, FBI, NYC, etc.
+
+   ⚠️ USE CAREFULLY - Valid but must be contextual:
+   - "saint" → S, ST (only if surface mentions religion/saints)
+   - "river" → R (only if surface is about geography/water)
+   - "left/right" → L/R (only if surface is about directions)
+
+   ❌ AVOID - Arbitrary or forced:
+   - Random letter assignments with no surface logic
+   - Abbreviations that break the natural reading flow
+   - Obscure jargon requiring specialized knowledge
+   - Multiple obscure abbreviations in one clue
+
+   🎯 KEY PRINCIPLE: If the substitution feels "earned" through the surface reading's context, it's valid!
+
+TARGET DIFFICULTY: ${difficulty}/5 - ${difficultyGuidance[difficulty] || difficultyGuidance[3]}
+${deviceInstructions}
+${themeInstructions}
+${multiWordRequirement}
+
+═══════════════════════════════════════════════════════════════════
+✨ SURFACE READING - THE ART OF CRYPTIC DELIGHT
+═══════════════════════════════════════════════════════════════════
+
+The "surface" is what your clue appears to say before solving. This is what makes cryptic crosswords delightful!
+
+🎯 GOAL: Create a natural, coherent sentence that:
+- Reads like real English (headline, phrase, or conversational snippet)
+- Suggests one scenario, but the answer reveals something completely different
+- Makes the solver smile when decoded ("Ah! THAT's what it meant!")
+- Uses misdirection elegantly (not just listing mechanical steps)
+
+✅ EXAMPLES OF BRILLIANT SURFACE READINGS:
+
+**"Buzzer-beater was thrown with second on stopwatch (4)"** → SWAT
+- Surface story: Basketball game-winner at the buzzer
+- Reality: WAS (thrown/scrambled) + S (second on stopwatch) = SWAT
+- Delight factor: Sports → Police action (unexpected twist)
+
+**"One goes into debt flying private jet? (5)"** → BIDET
+- Surface story: Rich person's luxury spending habits
+- Reality: I (one) goes into DEBT (scrambled/flying) = BIDET
+- Delight factor: Wealth → Bathroom fixture (hilarious misdirection)
+
+**"Goodbye! you blurted out, after ladies undressed (5)"** → ADIEU
+- Surface story: Awkward/scandalous social situation
+- Reality: U (you, said aloud) after ADIE (ladies undressed/letters removed)
+- Delight factor: Social faux pas → French farewell
+
+**"Campers on alert... bears close to home (8)"** → PERSONAL
+- Surface story: Camping warning about wildlife
+- Reality: Hidden in "camPERS ON ALert" = PERSONAL (close to home)
+- Delight factor: Outdoor survival → Intimate/private
+
+❌ ANTI-EXAMPLES (mechanically correct but boring):
+
+**"Scrambled parties for sea raiders (7)"** → PIRATES
+- Just describes the mechanics with no misdirection
+- Solver immediately sees: "Oh, it's an anagram of parties"
+- No surface story, no delight, no "aha moment"
+
+**"Stop reversed in pans (4)"** → POTS
+- Too transparent, just states the operation
+- No narrative, no cleverness
+
+🎨 SURFACE READING TECHNIQUES:
+
+1. **Tell a micro-story**: "Song at night club leaves Lucy transfixed by mirrorball"
+2. **Use cultural references**: "FINISH HIM!" (Mortal Kombat) for FIGHTING
+3. **Create scenarios**: "Seductive, romantic guy dumped after 'mid' sex"
+4. **Employ misdirection**: "$0.02?" suggests money, but means ADVICE
+5. **Build atmosphere**: "Deadly agent playing phone tag" (spy thriller feel)
+
+💡 REMEMBER: Mechanical correctness is required, but artistry makes it memorable!
+
+═══════════════════════════════════════════════════════════════════
+🎯 EMOJI USAGE PHILOSOPHY - FUNCTIONAL, NOT DECORATIVE
+═══════════════════════════════════════════════════════════════════
+
+⚠️ CRITICAL EMOJI RULES - EXACTLY 2 EMOJIS REQUIRED:
+- You MUST use EXACTLY 2 emojis in your clue
+- Emojis must REPLACE actual words in the clue (not decorate it)
+- Test: Remove emojis → clue should have GAPS (missing words)
+- Emojis can be used individually OR paired (your choice based on utility)
+
+✅ CORRECT USAGE - Emojis REPLACE words:
+- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
+  * 💬🔥 REPLACES "moods" (the fodder being scrambled)
+  * Remove emojis: "_____ disrupted for gloomy fates" → HAS GAP ✓
+  * MOODS scrambled = DOOMS
+
+- "🍟 Trim potato 🪓 with permission (6)" → PERMIT
+  * 🍟 REPLACES "French" (FRY/FRENCH connection)
+  * 🪓 REPLACES "strip" (cutting/chopping indicator)
+  * Remove emojis: "____ Trim potato ____ with permission" → HAS GAPS ✓
+  * FR (from FRY/French) + EMIT (hidden in "Trim potato") = PERMIT? No, this needs work...
+
+Let me show BETTER example:
+- "🛑 🔄 in pans (4)" → POTS
+  * 🛑 REPLACES "stop" (the fodder word)
+  * 🔄 REPLACES "reversed" (the indicator)
+  * Remove emojis: "____ ____ in pans" → HAS GAPS ✓
+  * STOP reversed = POTS
+
+❌ WRONG USAGE - Emojis are decorative:
+- "🍟🥔 Thin slice? Trim potato strip with permission (6)"
+  * Remove emojis: "Thin slice? Trim potato strip with permission" → NO GAPS!
+  * The clue works fine without emojis → DECORATIVE → WRONG
+  * 🍟🥔 are just thematic decoration suggesting "potato theme"
+
+═══════════════════════════════════════════════════════════════════
+HOW TO USE YOUR 2 EMOJIS
+═══════════════════════════════════════════════════════════════════
+
+OPTION A: Both emojis paired together = ONE word
+- "🐝🦂 gets Ray wandering (8)" → STRAYING
+  * 🐝🦂 together REPLACE "sting" (bee + scorpion = stinging creatures)
+  * Remove: "_____ gets Ray wandering" → HAS GAP ✓
+  * ST(RAY)ING = STRAYING
+
+OPTION B: Each emoji represents DIFFERENT words
+- "Parties ⚡ for 🏴‍☠️ (7)" → PIRATES
+  * ⚡ REPLACES "energized" or similar indicator (anagram)
+  * 🏴‍☠️ REPLACES "sea raiders" (definition)
+  * Remove: "Parties _____ for _____ (7)" → HAS GAPS ✓
+  * PARTIES scrambled = PIRATES
+
+OPTION C: Individual emojis with different functions
+- "🎉 mixed for dire outcomes (5)" → DOOMS
+  * 🎉 REPLACES "party" → no wait, that's PARTY (5 letters)
+
+Better example:
+- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
+  * 💬🔥 paired = "moods" (chat + fire = heated moods)
+  * Remove: "_____ disrupted for gloomy fates" → HAS GAP ✓
+  * MOODS disrupted = DOOMS
+
+═══════════════════════════════════════════════════════════════════
+EMOJI SELECTION - Principles Over Prescriptive Lists
+═══════════════════════════════════════════════════════════════════
+
+Choose emojis CREATIVELY based on your specific clue. Don't limit yourself to preset lists!
+
+🎯 **EMOJI SELECTION PRINCIPLES:**
+
+1. **Visual/Conceptual Clarity**: Emoji should clearly suggest the intended word
+2. **Functional Replacement**: Must actually replace a word (not just decorate)
+3. **Not-Too-Obvious**: Should require slight decoding, but be fair
+4. **Answer Independence**: NEVER use emojis that directly depict the answer
+
+⚠️ CRITICAL TEST: "Does this emoji visually show/depict the answer?"
+- ❌ If YES → Don't use it! Choose something else
+- ✅ If NO → Safe to use
+
+**INDICATOR EMOJIS** (signal the cryptic device):
+
+*Anagram indicators (chaos, mixing, energy):*
+⚡ = energized, charged, electric → anagram
+💫 = dizzy, scrambled, confused → anagram
+🌪️ = whirlwind, tornado, mixed up → anagram
+🎲 = dice, random, shuffled → anagram
+🎰 = slot machine, mixed, jumbled → anagram
+🃏 = joker, wild, chaotic → anagram
+🔀 = shuffle (use sparingly - too obvious)
+🌀 = spiral, swirled, twisted → anagram
+
+*Reversal indicators (backwards, rotation):*
+🔄 = reversed, back, circular → reversal
+↩️ = return, back, reversed → reversal
+🔃 = clockwise/counterclockwise → reversal
+⤴️⤵️ = up/down, flipped → reversal
+🪞 = mirror, reflected → reversal
+
+*Container indicators (wrapping, holding):*
+📦 = box, contains, holds → container
+🎁 = wrapped, gift, enclosed → container
+🗄️ = filing, stored within → container
+🧰 = toolbox, carries → container
+🫙 = jar, holds → container
+
+*Deletion indicators (cutting, removing):*
+✂️ = scissors, cut, snipped → deletion
+🔪 = knife, sliced, trimmed → deletion
+❌ = crossed out, deleted → deletion
+🚫 = prohibited, without, minus → deletion
+🪓 = axe, chopped, split → deletion/charade
+
+*Homophone indicators (sound, hearing):*
+🔊 = volume, sounds like, heard → homophone
+👂 = ear, listening, sounds → homophone
+📢 = announcement, spoken → homophone
+🗣️ = speaking, said aloud → homophone
+
+**FODDER EMOJIS** (words being manipulated):
+
+*Common single-emoji fodder:*
+🛑 = STOP, HALT, END
+🎉 = PARTY, CELEBRATION
+🎪 = CIRCUS, TENT, RING
+🌸 = FLOWER, BLOOM, ROSE
+⭐ = STAR, STELLAR
+🌙 = MOON, LUNAR, NIGHT
+☀️ = SUN, SOLAR, DAY
+🎵 = NOTE, MUSIC, SONG
+🏃 = RUN, RUNNER, RACE
+💰 = MONEY, GOLD, CASH
+
+*Paired-emoji fodder (2 emojis = 1 word):*
+💬🔥 = MOODS (chat + fire = heated emotions)
+🐝🦂 = STING (bee + scorpion = stinging creatures)
+🎪🏃 = CIRCUS RUN → could represent MASTER (ringmaster)
+🌸🌺 = FLOWER (multiple flowers)
+🃏🎲 = CHEATER (cards + dice = gambling/cheating)
+👹🧛 = DEMONS (devil + vampire = evil beings)
+🎉🥳 = PARTIES (party + celebration)
+
+*Creative pairing principles:*
+- Combine related concepts (🐝🦂 both sting)
+- Use category + example (🎪🏃 = circus performer)
+- Build compound meaning (💬🔥 = heated conversation)
+
+**DEFINITION EMOJIS** (can hint at answer meaning):
+Use with caution - should not make answer too obvious!
+
+🏴‍☠️ = PIRATE, RAIDER (specific enough)
+🌊 = STREAM, RIVER, OCEAN, FLOW (multiple interpretations - good)
+🏫 = SCHOOL, CLASS, TEACHER (contextual)
+🍲 = POT, STEW, COOK (cooking-related)
+⚖️ = JUSTICE, BALANCE, LEGAL
+
+💡 **EMOJI SELECTION STRATEGY:**
+
+PREFER: Emojis for FODDER and INDICATORS (not definitions)
+- Keeps answer non-obvious
+- Forces solver to work through cryptic mechanics
+- More satisfying solve experience
+
+EXAMPLE GOOD USAGE:
+- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
+  * 💬🔥 = MOODS (fodder)
+  * "disrupted" = anagram indicator (text)
+  * "gloomy fates" = definition (text)
+  * Answer not guessable from emojis alone ✓
+
+EXAMPLE BAD USAGE:
+- "💬🔥 disrupted for 😱💀 (5)" → DOOMS
+  * 😱💀 directly suggests DOOMS (scary + death)
+  * Answer is guessable without solving cryptic ✗
+
+═══════════════════════════════════════════════════════════════════
+CONSTRUCTION APPROACH - Outcome-Focused, Not Mechanical
+═══════════════════════════════════════════════════════════════════
+
+🎯 **THINK HOLISTICALLY, NOT STEP-BY-STEP**
+
+Instead of following rigid steps, focus on achieving these three outcomes simultaneously:
+
+**OUTCOME 1: Natural Surface Reading**
+- Clue reads like a complete, real-world sentence
+- Has narrative flow or tells a micro-story
+- Employs clever misdirection (surface suggests X, answer is Y)
+- Makes solver smile when decoded
+
+**OUTCOME 2: Clean Cryptic Mechanics**
+- Device works mathematically/phonetically perfectly
+- Letter counts match exactly (for anagrams, containers, charades)
+- Indicators are standard and recognizable
+- Definition is accurate and fair
+
+**OUTCOME 3: Common, Accessible Vocabulary**
+- Answer is Wordle-level familiar
+- Fodder words are everyday language
+- Avoid technical jargon, specialized terms, or obscure words
+- Both answer and components should feel earned, not arbitrary
+
+═══════════════════════════════════════════════════════════════════
+
+🛠️ **FLEXIBLE CONSTRUCTION WORKFLOW** (adapt as needed):
+
+**Option A: Answer-First Approach**
+1. Pick a common answer word (5-11 letters)
+2. Choose a cryptic device that naturally fits it
+3. Design the wordplay mechanics
+4. Craft a surface reading that disguises the mechanics
+5. Replace 2 words with emojis
+6. Verify all three outcomes ✓
+
+**Option B: Device-First Approach**
+1. Choose your cryptic device
+2. Select common fodder that works well
+3. Calculate what answer emerges
+4. Verify answer is common/valid
+5. Craft engaging surface reading around it
+6. Replace 2 words with emojis
+7. Verify all three outcomes ✓
+
+**Option C: Surface-First Approach (Advanced)**
+1. Think of a clever surface reading scenario
+2. Identify what cryptic device could work within it
+3. Engineer the mechanics to fit the narrative
+4. Verify answer emerges correctly
+5. Replace 2 words with emojis
+6. Verify all three outcomes ✓
+
+═══════════════════════════════════════════════════════════════════
+
+📋 **CRITICAL VERIFICATION CHECKLIST** (regardless of approach):
+
+**Vocabulary Check:**
+□ Answer is common, Wordle-level familiar (5-11 letters)
+□ Fodder words are everyday language (not ARGENTS, MORTICAN, etc.)
+□ No technical jargon, foreign words, or obscure terms
+
+**Mechanics Check:**
+□ For ANAGRAMS: Letters match EXACTLY
+   - Write out both words letter-by-letter and compare:
+   - MOODS = M,O,O,D,S vs DOOMS = D,O,O,M,S ✓ (same letters)
+   - AGENTS = A,G,E,N,T,S vs STAGES = S,T,A,G,E,S ✗ (different!)
+□ For CONTAINERS: Length math works (outer + inner = answer)
+□ For CHARADES: Parts combine to make answer
+□ For REVERSALS: Backward spelling is exact
+□ For HIDDEN: Letters appear consecutively
+□ For HOMOPHONES: Pronunciation is genuinely identical
+
+**Surface Reading Check:**
+□ Reads as natural, complete sentence
+□ Has narrative or thematic coherence
+□ Employs misdirection (not just mechanical description)
+□ Would make solver smile/say "aha!" when solved
+
+**Emoji Check:**
+□ EXACTLY 2 emojis used
+□ Emojis REPLACE specific words (test: remove them → gaps!)
+□ Emojis are decodable but not obvious
+□ Emojis DON'T directly depict the answer
+
+**Definition Check:**
+□ Definition is accurate synonym or description
+□ Positioned at start OR end of clue (not middle)
+□ Fair and dictionary-valid
+
+═══════════════════════════════════════════════════════════════════
+
+💡 **REMEMBER:**
+- Artistry > Mechanical correctness (but both are required!)
+- Surface reading is what makes cryptics delightful
+- Common vocabulary ensures accessibility
+- Emojis add visual interest but shouldn't give away answer
+
+═══════════════════════════════════════════════════════════════════
+COMPLETE EXAMPLES - From Good to Great
+═══════════════════════════════════════════════════════════════════
+
+**EXAMPLE 1: Basic Anagram** (Mechanically Correct, But Uninspired)
+
+"💬🔥 disrupted for gloomy fates (5)" → DOOMS
+
+Analysis:
+- Device: Anagram
+- 💬🔥 = MOODS (fodder - chat + fire = emotional states)
+- "disrupted" = anagram indicator
+- "gloomy fates" = definition
+- Mechanics: MOODS (M-O-O-D-S) scrambled = DOOMS (D-O-O-M-S) ✓
+- Emoji test: Remove → "_____ disrupted for gloomy fates" (has gap) ✓
+
+What's missing: No surface story, no misdirection, just states the mechanics
+
+═══════════════════════════════════════════════════════════════════
+
+**EXAMPLE 2: Enhanced Anagram** (Better Surface Reading)
+
+"Deadly 💀 🎲 tag? (8)" → PATHOGEN
+
+Analysis:
+- Device: Anagram
+- 💀 = PHONE (skull represents death/calling)... wait, that doesn't work
+- Let me reconsider: "💀🎲 playing phone tag? (8)" → PATHOGEN
+
+Better version:
+"Deadly agent 💫 📞🏷️ (8)" → PATHOGEN
+- 💫 = "playing" (anagram indicator - scrambled/mixed)
+- 📞🏷️ = "phone tag" (fodder)
+- "Deadly agent" = PATHOGEN (definition)
+- Surface: Spy thriller imagery, but answer is biological!
+- Mechanics: PHONETAG (P-H-O-N-E-T-A-G) scrambled = PATHOGEN ✓
+
+═══════════════════════════════════════════════════════════════════
+
+**EXAMPLE 3: Sophisticated Container** (Multi-layered Misdirection)
+
+"🐝🦂 gets Ray wandering (8)" → STRAYING
+
+Analysis:
+- Device: Container
+- 🐝🦂 = STING (bee + scorpion = creatures that sting)
+- "gets" = contains (container indicator)
+- "Ray" = RAY (proper name suggests person, actually a light ray!)
+- "wandering" = STRAYING (definition)
+- Surface: Sounds like Ray is a person who wanders/gets lost
+- Reality: STING wraps around RAY → ST(RAY)ING = STRAYING
+- Mechanics: 5 letters (STING) + 3 (RAY) = 8 (STRAYING) ✓
+- Emoji test: Remove → "_____ gets Ray wandering" (has gap) ✓
+
+Why this works: Clever use of "Ray" as both a name AND a common word
+
+═══════════════════════════════════════════════════════════════════
+
+**EXAMPLE 4: Playful Reversal** (Simple But Effective)
+
+"🛑 🔄 in kitchen vessels (4)" → POTS
+
+Analysis:
+- Device: Reversal
+- 🛑 = STOP (fodder)
+- 🔄 = turned/reversed (reversal indicator)
+- "kitchen vessels" = POTS (definition - more interesting than just "pans")
+- Mechanics: STOP reversed = POTS ✓
+- Surface: Minimal but functional
+
+Better surface version:
+"🛑 🔄 for cooking gear (4)" → POTS
+- Reads more naturally
+- "cooking gear" is specific but not too obvious
+
+═══════════════════════════════════════════════════════════════════
+
+**EXAMPLE 5: Hidden Word** (Narrative Surface)
+
+"Campers on alert 🐻 personal belongings (8)" → PERSONAL
+
+Analysis:
+- Device: Hidden word
+- Surface: Camping scenario, bears threatening belongings
+- 🐻 = "bears" (hidden word indicator - "bears" as in "carries/contains")
+- Actually, let's use 2 emojis properly:
+
+Revised: "🏕️⚠️ alert bears personal items (8)" → PERSONAL
+- 🏕️⚠️ = "Campers on" (but that's the fodder, not indicator...)
+
+Better: "Alert 🏕️ 🐻 personal stuff (8)" → PERSONAL
+- "Alert campers" contains hidden word
+- 🐻 = "bears" (indicator)
+- Hidden in "camPERS ON ALert" = PERSONAL
+- "personal stuff" = definition
+
+Actually, this is complex. Let me show a clearer hidden word:
+
+"Dozen, 💭🔝 (6)" → ZENITH
+- 💭 = "I think" (from the phrase)
+- 🔝 = "top" (definition)
+- Hidden in "doZEN, I THink" = ZENITH
+- Surface: Simple but works
+
+═══════════════════════════════════════════════════════════════════
+VALID COMMON ANAGRAM SOURCES (Use ONLY these types!)
+═══════════════════════════════════════════════════════════════════
+
+ALWAYS use common English words that people use every day:
+
+5-letter sources: AGENT, HEART, EARTH, BREAD, TEAMS, MASTER, LISTEN, PHONE
+6-letter sources: LISTEN, MASTER, GARDEN, PLANET, SILENT, AGENTS, FRIEND
+7-letter sources: KITCHEN, GARDENS, STRANGE, CHAPTER, MONSTER
+8-letter sources: ROMANTIC, PATHOGEN (phone tag), ESTIMATE (teams tie)
+
+Test your anagram source:
+✓ Would it appear in Wordle?
+✓ Do people say it in normal conversation?
+✓ Would a 10-year-old know this word?
+
+If NO to any of these → choose a different source word!
+
+═══════════════════════════════════════════════════════════════════
+MULTI-DEVICE CLUES (Advanced - Difficulty 4-5)
+═══════════════════════════════════════════════════════════════════
+
+For higher difficulty, combine multiple cryptic devices in one clue:
+
+**EXAMPLE: Deletion + Anagram**
+"Every other 🏠🐕 💫 for cattle (4)" → HERD
+- "Every other" = deletion indicator (take alternating letters)
+- 🏠🐕 = HOMEBRED (house + dog bred at home)
+- 💫 = "mixed" (anagram indicator)
+- Take every other letter from HOMEBRED: H_M_B_E_ → HMBE? No...
+- Actually: H-O-M-E-B-R-E-D, every prime (2,3,5,7) = O-M-B-E → rearranged...
+
+Let me show a clearer multi-device:
+
+**EXAMPLE: Container + Anagram**
+"💫 debt traps 💰 jet (5)" → BIDET
+- Device: Anagram + Container
+- 💫 = "mixed" (anagram indicator)
+- "debt" = DEBT (to be scrambled)
+- "traps" = contains (container indicator)
+- 💰 = "one" → I (Roman numeral)
+- "jet" = BIDET (definition - water jet)
+- Mechanics: DEBT scrambled (flying) = BDET... contains I = BIDET? No...
+- Actually: I goes INTO (trapped by) DEBT scrambled = BIDET
+- Proper: "One trapped by 💫 debt jet? (5)" → BIDET
+
+⚠️ **Note on Multi-Device Clues:**
+- Only use for difficulty 4-5
+- All mechanics must work perfectly
+- Surface reading becomes even more important
+- Each device must contribute to the answer
+- Don't force complexity - simple elegance > complicated mess
+
+═══════════════════════════════════════════════════════════════════
+QUALITY BENCHMARKS - Good vs. Great Clues
+═══════════════════════════════════════════════════════════════════
+
+**⭐ GOOD CLUE (Acceptable - Difficulty 2-3):**
+- Mechanics work correctly ✓
+- Uses common vocabulary ✓
+- Has basic surface reading
+- Straightforward, transparent
+- Example: "💬🔥 disrupted for gloomy fates (5)" → DOOMS
+
+**⭐⭐⭐ GREAT CLUE (Target - Difficulty 3-4):**
+- Mechanics work perfectly ✓
+- Uses common, accessible vocabulary ✓
+- Engaging surface reading with narrative ✓
+- Clever misdirection ✓
+- Makes solver smile ("aha!") ✓
+- Example: "Deadly agent 💫 📞🏷️ (8)" → PATHOGEN
+  * Surface suggests spy thriller
+  * Answer is biological agent
+  * "Phone tag" is colloquial phrase
+  * Delight factor when decoded
+
+**⭐⭐⭐⭐⭐ EXCEPTIONAL CLUE (Aspire To - Difficulty 4-5):**
+- All "Great" qualities PLUS:
+- Multi-layered misdirection
+- Cultural reference or wordplay
+- Surface tells complete micro-story
+- Multiple possible interpretations before solving
+- Memorable, quotable
+- Example from Minute Cryptic: "Goodbye! you blurted out, after ladies undressed (5)" → ADIEU
+  * Surface: Scandalous social situation
+  * Multiple devices working together
+  * Homophone (U sounds like YOU) + deletion (ladies undressed)
+  * Unforgettable imagery
+
+🎯 **TARGET QUALITY LEVEL:**
+- Aim for ⭐⭐⭐ GREAT as baseline
+- Difficulty 2-3: Can be simpler (⭐ GOOD is acceptable)
+- Difficulty 4-5: Reach for ⭐⭐⭐⭐⭐ EXCEPTIONAL
+- Remember: A simple, elegant clue > a forced complex one
+
+═══════════════════════════════════════════════════════════════════
+DEVICE QUICK REFERENCE
+═══════════════════════════════════════════════════════════════════
+
+CHARADE: Join words | Indicators: with, and, by, before, after
+Build: Pick 2 common words, verify they join to make a real word
+Example: SUN + RISE = SUNRISE, CAR + PET = CARPET
+
+ANAGRAM: Scramble letters | Indicators: mixed, jumbled, broken, playing, disrupted
+Build: Pick COMMON source word, find what common words it anagrams to
+Example: TEAMS TIE → ESTIMATE, LISTEN → SILENT
+
+DELETION: Remove letters | Indicators: without, loses, drops, cut, headless
+Build: Pick common word, remove specific letter(s), verify remainder is a word
+Example: HOMEBRED (removing alternates) → HERD
+
+HIDDEN: Word in phrase | Indicators: in, within, bears, features of, absorbed
+Build: Create natural phrase that CONTAINS your target word
+Example: "camPERS ON ALert" contains PERSONAL
+
+═══════════════════════════════════════════════════════════════════
+FINAL INSTRUCTIONS
+═══════════════════════════════════════════════════════════════════
+
+Now complete Steps 1-6 above. Then format as JSON.
+
+🚨 BEFORE YOU SUBMIT - VERIFY:
+1. All fodder words are COMMON (in everyday vocabulary)
+2. Answer is COMMON (would appear in Wordle)
+3. Letter counts are CORRECT
+4. For anagrams: source word is NOT obscure or made-up
+5. Exactly 2 emojis
+6. Explanation is ONE clear sentence
+7. HINTS DO NOT CONTAIN THE ANSWER WORD - guide without revealing!
+
+CRITICAL: Check each hint carefully:
+- Fodder hint: Describe components, DON'T say the answer word
+- Indicator hint: Explain the operation, DON'T say the answer word
+- Definition hint: Point to the definition, DON'T say the answer word
+- Letter hint: Only give first letter
+
+Example: If answer is ESTIMATE, hints can say "teams tie" but NOT "estimate"
+
+═══════════════════════════════════════════════════════════════════
+JSON OUTPUT FORMAT
+═══════════════════════════════════════════════════════════════════
+${allowMultiWord ? `
+🚨 FINAL REMINDER: Your answer MUST be multi-word with spaces!
+"BLUE FEATHERS" ✓ | "BLUEFEATHERS" ✗ | "MOONLIGHT" ✗
+` : ''}
+Return ONLY this JSON (no markdown, no explanations after):
+
+${allowMultiWord ? `
+// MULTI-WORD EXAMPLE:
+{
+  "clue": "Blue feathers discarded? (4, 8)",
+  "answer": "BLUE FEATHERS",
+  "length": 12,
+  "word_pattern": [4, 8],
+  "hints": [
+    {
+      "type": "indicator",
+      "text": "'discarded' signals a double definition clue - look for two ways to read 'Blue feathers discarded'.",
+      "order": 1
+    },
+    {
+      "type": "fodder",
+      "text": "This is a double definition - 'Blue' can mean sad or down, and 'feathers discarded' suggests plumage that's been thrown away.",
+      "order": 2
+    },
+    {
+      "type": "definition",
+      "text": "The phrase means feeling sad or down - a state of being dispirited.",
+      "order": 3
+    },
+    {
+      "type": "letter",
+      "text": "Starts with D",
+      "order": 4
+    }
+  ],
+  "explanation": "Double definition: 'Blue' (down/sad) + 'feathers discarded' (down in the dumps) = DOWN IN THE DUMPS",
+  "difficulty_rating": ${difficulty},
+  "cryptic_device": "double_definition"
+}
+
+NOTE: For multi-word answers:
+- Include spaces in "answer": "BLUE FEATHERS" NOT "BLUEFEATHERS"
+- Add "word_pattern" field with array of word lengths: [4, 8]
+- Update "length" to total letters (excluding spaces): 12
+- Clue should show pattern: (4, 8) not just (12)
+` : `
+// SINGLE-WORD EXAMPLE:
+{
+  "clue": "💬🔥 disrupted for gloomy fates (5)",
+  "answer": "DOOMS",
+  "length": 5,
+  "hints": [
+    {
+      "type": "indicator",
+      "text": "'disrupted' signals anagram - it tells you to rearrange the letters of a neighboring word.",
+      "order": 1
+    },
+    {
+      "type": "fodder",
+      "text": "💬🔥 represent heated emotions - think chat and fire combining. This gives you the letters to work with (the word that gets disrupted).",
+      "order": 2
+    },
+    {
+      "type": "definition",
+      "text": "Definition is 'gloomy fates' - terrible destinies or inevitable ends. This tells you what the answer means.",
+      "order": 3
+    },
+    {
+      "type": "letter",
+      "text": "Starts with D",
+      "order": 4
+    }
+  ],
+  "explanation": "MOODS (💬🔥) disrupted = DOOMS",
+  "difficulty_rating": ${difficulty},
+  "cryptic_device": "anagram"
+}`}
+
+HINT WRITING GUIDELINES (CRITICAL):
+- Order hints: Indicator → Fodder → Definition → Letter (matches Minute Cryptic pedagogy)
+- INDICATOR hint: Explain which word(s) signal the cryptic device and what they tell you to do
+- FODDER hint: Explain what the emoji(s) represent and how to decode them (but DON'T reveal the fodder word itself unless necessary)
+- DEFINITION hint: Explain what the definition means (but DON'T use the answer word - guide without revealing!)
+- LETTER hint: Just give first letter
+- Each hint should teach HOW to solve, not just give the answer
+
+═══════════════════════════════════════════════════════════════════
+🚨 FINAL MANDATORY CHECKS BEFORE SUBMITTING
+═══════════════════════════════════════════════════════════════════
+
+**EMOJI REQUIREMENTS:**
+□ EXACTLY 2 emojis in clue (count: 1... 2... stop!)
+□ Remove emojis → clue has OBVIOUS GAPS (not "still works fine")
+□ Emojis REPLACE specific words (fodder/indicator, NOT answer)
+□ NO EMOJI = ANSWER VIOLATION
+   - Look at your answer, then look at BOTH emojis
+   - Question: "Does this emoji visually depict my answer?"
+   - ❌ If YES → INVALID! Choose different emojis!
+   - ✅ If NO → Safe to proceed
+
+**VOCABULARY REQUIREMENTS:**
+${allowMultiWord ? '🚨 □ MULTI-WORD ANSWER REQUIRED: 2-3 words with spaces (e.g., "BLUE FEATHERS")' : '□ Answer is common everyday word (Wordle-level)'}
+□ Answer is 5-11 letters total (excluding spaces)
+□ Fodder words are everyday vocabulary (not ARGENTS, MORTICAN, etc.)
+□ No technical jargon or specialized terminology
+□ Abbreviations are "earned" through surface context (not arbitrary)
+${allowMultiWord ? '□ Each word in multi-word answer must be at least 2 letters\n□ Include spaces in answer field: "BLUE FEATHERS" NOT "BLUEFEATHERS"' : ''}
+
+**MECHANICS VERIFICATION:**
+□ For ANAGRAMS: Letters match EXACTLY
+   - Write out BOTH words letter-by-letter:
+   - Fodder: M-O-O-D-S vs Answer: D-O-O-M-S ✓ (same letters)
+   - Fodder: A-G-E-N-T-S vs Answer: S-T-A-G-E-S ✗ (AGENTS has N, STAGES doesn't!)
+□ For CONTAINERS: outer word wraps inner word perfectly
+   - Length math: outer + inner = answer length
+□ For REVERSALS: fodder backwards = answer (letter-perfect)
+□ For CHARADES: parts combine to form answer exactly
+□ For HIDDEN: consecutive letters spell answer
+□ For HOMOPHONES: pronunciation is genuinely identical
+
+**SURFACE READING QUALITY:**
+□ Clue reads as natural, complete sentence
+□ Has narrative coherence or tells a micro-story
+□ Employs misdirection (surface context ≠ answer context)
+□ Would make solver say "aha!" when decoded
+□ NOT just a mechanical description of the cryptic device
+
+**HINT QUALITY:**
+□ Hints ordered: Indicator → Fodder → Definition → Letter
+□ Hints teach HOW to solve (not just reveal answer)
+□ NO hint reveals the answer word directly
+□ Fodder hint explains emoji meaning clearly
+□ Definition hint guides without using answer word
+
+**OVERALL QUALITY TARGET:**
+□ For difficulty 2-3: Aim for ⭐⭐⭐ GOOD baseline
+□ For difficulty 3-4: Aim for ⭐⭐⭐ GREAT with engaging surface
+□ For difficulty 4-5: Reach for ⭐⭐⭐⭐⭐ EXCEPTIONAL with multiple layers
+
+═══════════════════════════════════════════════════════════════════
+🎯 FINAL REMINDER - CORE PRINCIPLES
+═══════════════════════════════════════════════════════════════════
+
+1. **Surface Reading is King**: Mechanical correctness is required, but artistry makes it memorable
+2. **Common Vocabulary Only**: Accessibility matters - Wordle-level words only
+3. **Exactly 2 Emojis Always**: Signature mechanic - functional, not decorative
+4. **Misdirection is Delight**: Best clues suggest one thing, reveal another
+5. **Fair But Clever**: Solver should feel smart for solving it, not frustrated
+
+Think like a Minute Cryptic constructor: natural language flow, clever wordplay, satisfying "aha!" moment.
+
+NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra text).`;
+  }
+
+  /**
+   * Parse AI cryptic response into puzzle format
+   */
+  parseCrypticResponse(responseText) {
+    try {
+      // First, try to extract JSON from markdown code blocks
+      const codeBlockRegex = /```json\s*([\s\S]*?)\s*```/g;
+      const codeBlocks = [];
+      let match;
+
+      while ((match = codeBlockRegex.exec(responseText)) !== null) {
+        codeBlocks.push(match[1]);
+      }
+
+      // If we found code blocks, use the LAST one (AI often corrects itself)
+      let jsonText;
+      if (codeBlocks.length > 0) {
+        jsonText = codeBlocks[codeBlocks.length - 1];
+        console.log(`[ai.service] Found ${codeBlocks.length} JSON code blocks, using the last one`);
+      } else {
+        // Fallback: try to extract JSON without code blocks
+        const jsonMatch = responseText.match(/\{[\s\S]*?\}(?=\s*$|\s*```|\s*\n\n)/);
+        if (!jsonMatch) {
+          throw new Error('No JSON found in response');
+        }
+        jsonText = jsonMatch[0];
+      }
+
+      const puzzle = JSON.parse(jsonText);
+
+      // Normalize the structure
+      const answer = (puzzle.answer?.trim() || '').toUpperCase();
+      const totalLength = answer.replace(/\s/g, '').length; // Exclude spaces
+
+      return {
+        clue: puzzle.clue?.trim() || '',
+        answer,
+        length: puzzle.length || totalLength || 0,
+        word_pattern: puzzle.word_pattern || null,
+        hints: puzzle.hints || [],
+        explanation: puzzle.explanation?.trim() || '',
+        difficulty_rating: puzzle.difficulty_rating || 3,
+        cryptic_device: puzzle.cryptic_device || 'charade',
+      };
+    } catch (error) {
+      logger.error('Failed to parse AI cryptic response', { error, responseText });
+      throw new Error('Failed to parse AI cryptic response. Please try again.');
+    }
+  }
+
+  /**
+   * Validate cryptic puzzle structure
+   */
+  validateCrypticPuzzle(puzzle) {
+    const errors = [];
+
+    if (!puzzle.clue || puzzle.clue.length < 5) {
+      errors.push('Clue is missing or too short');
+    }
+
+    // CRITICAL: Check for "=" in clue (not cryptic style!)
+    if (puzzle.clue && puzzle.clue.includes('=')) {
+      errors.push('Clue contains "=" which is not cryptic crossword style. Clues must disguise the wordplay, not reveal it with mathematical notation.');
+    }
+
+    // CRITICAL: Validate TWO-emoji requirement (Daily Cryptic signature mechanic)
+    if (puzzle.clue) {
+      const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2})/gu;
+      const emojis = puzzle.clue.match(emojiRegex) || [];
+      const emojiCount = emojis.length;
+
+      if (emojiCount !== 2) {
+        errors.push(`TWO-EMOJI REQUIREMENT: Must have exactly 2 emojis (found ${emojiCount}). This is the signature Daily Cryptic mechanic.`);
+      }
+    }
+
+    // Validate answer length (excluding spaces for multi-word)
+    const totalLetters = puzzle.answer ? puzzle.answer.replace(/\s/g, '').length : 0;
+
+    if (!puzzle.answer || totalLetters < 5) {
+      errors.push('Answer is missing or too short (min 5 letters excluding spaces)');
+    }
+
+    if (totalLetters > 11) {
+      errors.push('Answer is too long (max 11 letters excluding spaces)');
+    }
+
+    if (puzzle.length !== totalLetters) {
+      errors.push(`Length mismatch: length=${puzzle.length} but answer="${puzzle.answer}" has ${totalLetters} letters (excluding spaces)`);
+    }
+
+    // Allow spaces in multi-word answers
+    if (!/^[A-Z\s]+$/.test(puzzle.answer || '')) {
+      errors.push('Answer must be uppercase letters and spaces only');
+    }
+
+    // Validate word_pattern for multi-word answers
+    if (puzzle.answer && puzzle.answer.includes(' ')) {
+      const words = puzzle.answer.split(/\s+/).filter(w => w.length > 0);
+
+      if (!puzzle.word_pattern) {
+        errors.push('Multi-word answer requires word_pattern field');
+      } else if (puzzle.word_pattern.length !== words.length) {
+        errors.push(`word_pattern length (${puzzle.word_pattern.length}) does not match number of words (${words.length})`);
+      } else {
+        // Validate each word length
+        for (let i = 0; i < words.length; i++) {
+          if (words[i].length !== puzzle.word_pattern[i]) {
+            errors.push(`Word ${i + 1} "${words[i]}" has ${words[i].length} letters but pattern specifies ${puzzle.word_pattern[i]}`);
+          }
+          if (words[i].length < 2) {
+            errors.push(`Word ${i + 1} "${words[i]}" is too short (min 2 letters per word)`);
+          }
+        }
+      }
+
+      if (words.length > 3) {
+        errors.push('Multi-word answers should have max 3 words for readability');
+      }
+    }
+
+    if (!Array.isArray(puzzle.hints) || puzzle.hints.length !== 4) {
+      errors.push('Must have exactly 4 hints');
+    } else {
+      const requiredTypes = ['fodder', 'indicator', 'definition', 'letter'];
+      puzzle.hints.forEach((hint, index) => {
+        if (!hint.type || !requiredTypes.includes(hint.type)) {
+          errors.push(`Hint ${index + 1} has invalid type: ${hint.type}`);
+        }
+        if (!hint.text || hint.text.trim().length === 0) {
+          errors.push(`Hint ${index + 1} text is empty`);
+        }
+
+        // CRITICAL: Check that hints don't reveal the answer (except for 'letter' hint which gives first letter)
+        if (hint.type !== 'letter' && puzzle.answer) {
+          const hintLower = hint.text.toLowerCase();
+          const answerLower = puzzle.answer.toLowerCase();
+
+          // Check if hint contains the full answer word as a standalone word (not as substring)
+          // Use word boundaries to avoid false positives (e.g., "EARLS" in hint when answer is "PEARLS")
+          const wordBoundaryRegex = new RegExp(`\\b${answerLower}\\b`, 'i');
+          if (wordBoundaryRegex.test(hintLower)) {
+            errors.push(`Hint ${index + 1} (${hint.type}) contains the answer "${puzzle.answer}". Hints should guide, not reveal!`);
+          }
+
+          // Additional check: if hint spells out the answer letter by letter (e.g., "H-A-L-L-M-A-R-K")
+          const spelledOut = puzzle.answer.split('').join('-');
+          if (hintLower.includes(spelledOut.toLowerCase())) {
+            errors.push(`Hint ${index + 1} (${hint.type}) spells out the answer. This is too revealing!`);
+          }
+        }
+      });
+    }
+
+    if (!puzzle.explanation || puzzle.explanation.length < 10) {
+      errors.push('Explanation is missing or too short');
+    }
+
+    if (!puzzle.cryptic_device) {
+      errors.push('Cryptic device is missing');
+    }
+
+    const validDevices = [
+      'charade',
+      'container',
+      'deletion',
+      'anagram',
+      'reversal',
+      'homophone',
+      'hidden',
+      'double_definition',
+      'initial_letters',
+    ];
+    if (puzzle.cryptic_device && !validDevices.includes(puzzle.cryptic_device)) {
+      errors.push(`Invalid cryptic device: ${puzzle.cryptic_device}`);
+    }
+
+    if (puzzle.difficulty_rating < 1 || puzzle.difficulty_rating > 5) {
+      errors.push('Difficulty rating must be between 1 and 5');
+    }
+
+    // CRITICAL: Validate anagram mechanics (letter-perfect matching)
+    if (puzzle.cryptic_device === 'anagram') {
+      // Extract fodder word from explanation (e.g., "MOODS (💬🔥) disrupted = DOOMS")
+      const explanationMatch = puzzle.explanation?.match(/^([A-Z]+)\s*(?:\([^)]+\))?\s*(?:scrambled|mixed|disrupted|broken|rearranged)/i);
+      if (explanationMatch) {
+        const fodder = explanationMatch[1].toUpperCase();
+        const answer = puzzle.answer.toUpperCase();
+
+        // Sort letters to compare
+        const fodderSorted = fodder.split('').sort().join('');
+        const answerSorted = answer.split('').sort().join('');
+
+        if (fodderSorted !== answerSorted) {
+          errors.push(
+            `ANAGRAM VERIFICATION FAILED: "${fodder}" (${fodder.split('').join(',')}) cannot become "${answer}" (${answer.split('').join(',')}). ` +
+            `Letters don't match! Fodder sorted: [${fodderSorted}], Answer sorted: [${answerSorted}]`
+          );
+        } else {
+          logger.info('Anagram verification passed', { fodder, answer, sorted: fodderSorted });
+        }
+      } else {
+        // Couldn't extract fodder from explanation - warn but don't fail
+        logger.warn('Could not extract fodder from anagram explanation for verification', {
+          explanation: puzzle.explanation,
+          answer: puzzle.answer
+        });
+      }
+    }
+
+    // CRITICAL: Check for emoji=answer violations
+    // Heuristic check - looks for hints that describe the answer word directly
+    if (puzzle.hints && Array.isArray(puzzle.hints)) {
+      const answerLower = puzzle.answer.toLowerCase();
+
+      // Check for common singular/plural variations
+      const answerVariations = new Set([answerLower]);
+      if (answerLower.endsWith('s')) {
+        answerVariations.add(answerLower.slice(0, -1)); // SPEARS → SPEAR
+      } else {
+        answerVariations.add(answerLower + 's'); // SPEAR → SPEARS
+      }
+
+      // Common patterns where hints explicitly mention the answer
+      const suspiciousPatterns = [];
+      for (const variation of answerVariations) {
+        suspiciousPatterns.push(
+          `represents ${variation}`,
+          `means ${variation}`,
+          `shows ${variation}`,
+          `depicts ${variation}`,
+          `is ${variation}`,
+          `are ${variation}`,
+          `is a ${variation}`,
+          `are a ${variation}`,
+        );
+      }
+
+      // Check fodder and definition hints (most common violation points)
+      const hintsToCheck = puzzle.hints.filter(h => h.type === 'fodder' || h.type === 'definition');
+
+      for (const hint of hintsToCheck) {
+        const hintLower = hint.text.toLowerCase();
+
+        for (const pattern of suspiciousPatterns) {
+          if (hintLower.includes(pattern)) {
+            errors.push(
+              `EMOJI=ANSWER VIOLATION DETECTED: ${hint.type} hint directly mentions the answer. ` +
+              `Hint contains "${pattern.split(' ').slice(-1)[0]}" when answer is "${puzzle.answer}". ` +
+              `Emojis must represent fodder/indicators, NOT the answer itself. ` +
+              `Players should NOT be able to guess the answer just by seeing the emojis.`
+            );
+            logger.error('Emoji=Answer violation detected', {
+              answer: puzzle.answer,
+              hintType: hint.type,
+              hintText: hint.text,
+              matchedPattern: pattern,
+            });
+            break;
+          }
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      const errorMsg = 'Invalid cryptic puzzle: ' + errors.join(', ');
+      logger.error('Cryptic puzzle validation failed', { errors, puzzle });
+      throw new Error(errorMsg);
+    }
+
+    logger.info('Cryptic puzzle validation passed', {
+      answer: puzzle.answer,
+      length: puzzle.length,
+      device: puzzle.cryptic_device,
+    });
+  }
+
+  /**
    * Check if AI generation is available
    */
   isEnabled() {
