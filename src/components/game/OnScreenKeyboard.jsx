@@ -281,7 +281,7 @@ export default function OnScreenKeyboard({
                   onTouchEnd={() => handleKeyRelease(key)}
                   onTouchCancel={() => handleKeyRelease(key)}
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
-                    isSmallPhone ? 'h-[50px]' : isMobilePhone ? 'h-14' : 'h-14 sm:h-[58px]'
+                    isSmallPhone ? 'h-9' : isMobilePhone ? 'h-10' : 'h-10 sm:h-11'
                   }`}
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
                 >
