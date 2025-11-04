@@ -96,27 +96,6 @@ export default function CrypticWelcomeCard() {
           : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
       }`}
     >
-      {/* Tandem Unlimited Badge */}
-      <div className="inline-flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-full mb-6">
-        <Image
-          src="/icons/ui/tandem-unlimited.png"
-          alt="Tandem Unlimited"
-          width={20}
-          height={20}
-          className="dark:hidden"
-        />
-        <Image
-          src="/icons/ui/tandem-unlimited-dark.png"
-          alt="Tandem Unlimited"
-          width={20}
-          height={20}
-          className="hidden dark:block"
-        />
-        <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-          Tandem Unlimited
-        </span>
-      </div>
-
       {/* Header with Icon */}
       <div className="flex flex-col items-center justify-center mb-6">
         <div className="w-20 h-20 relative mb-3">
@@ -136,9 +115,7 @@ export default function CrypticWelcomeCard() {
           />
         </div>
         <div className="text-center">
-          <h3 className="font-bold text-xl text-gray-800 dark:text-gray-200">
-            Daily Cryptic
-          </h3>
+          <h3 className="font-bold text-xl text-gray-800 dark:text-gray-200">Daily Cryptic</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">Cryptic Word Puzzle</p>
         </div>
       </div>
@@ -148,9 +125,7 @@ export default function CrypticWelcomeCard() {
         <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
           Puzzle #{getPuzzleNumber()}
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-          {formatDate(puzzle.date)}
-        </p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{formatDate(puzzle.date)}</p>
       </div>
 
       {/* Clue Preview */}
@@ -158,9 +133,7 @@ export default function CrypticWelcomeCard() {
         <p className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 font-semibold">
           Today&apos;s Clue
         </p>
-        <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">
-          {puzzle.clue}
-        </p>
+        <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">{puzzle.clue}</p>
       </div>
 
       {/* Play Button */}
