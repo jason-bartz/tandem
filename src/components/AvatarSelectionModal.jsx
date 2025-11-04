@@ -33,7 +33,7 @@ export default function AvatarSelectionModal({
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic, lightTap } = useHaptics();
 
   // Load avatars when modal opens
@@ -43,6 +43,7 @@ export default function AvatarSelectionModal({
       setSelectedAvatar(currentAvatarId); // Reset selection to current
       setError(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, currentAvatarId]);
 
   /**
@@ -107,7 +108,6 @@ export default function AvatarSelectionModal({
       await avatarService.updateUserAvatar(userId, selectedAvatar);
 
       // Avatar saved successfully
-      console.log('[AvatarSelectionModal] Avatar saved successfully');
       successHaptic();
 
       // Close modal and pass selected avatar back
@@ -194,10 +194,8 @@ export default function AvatarSelectionModal({
               </button>
             )}
           </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {isFirstTime
-              ? 'Pick a character that matches your puzzle-solving style!'
-              : 'Select a new avatar to represent you'}
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+            Select an avatar to represent you!
           </p>
         </div>
 
@@ -225,104 +223,218 @@ export default function AvatarSelectionModal({
 
         {/* Avatar Grid - Apple HIG: 8pt grid system, consistent spacing */}
         {!loading && avatars.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-            {avatars.map((avatar) => {
-              const isSelected = selectedAvatar === avatar.id;
-              const isExpanded = expandedAvatar === avatar.id;
+          <>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {avatars.map((avatar) => {
+                const isSelected = selectedAvatar === avatar.id;
 
-              return (
-                <div
-                  key={avatar.id}
-                  className={`p-4 rounded-2xl border-[3px] transition-all ${
-                    isSelected
-                      ? highContrast
-                        ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                        : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[6px_6px_0px_rgba(147,51,234,0.5)]'
-                      : highContrast
-                        ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
-                  } ${isExpanded ? 'md:col-span-2' : ''}`}
-                >
-                  <button
-                    onClick={() => handleSelect(avatar.id)}
-                    className="w-full text-left"
-                    aria-pressed={isSelected}
-                    aria-label={`Select ${avatar.display_name}`}
+                return (
+                  <div
+                    key={avatar.id}
+                    className={`p-4 rounded-2xl border-[3px] transition-all ${
+                      isSelected
+                        ? highContrast
+                          ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                          : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[6px_6px_0px_rgba(147,51,234,0.5)]'
+                        : highContrast
+                          ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                          : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
+                    }`}
                   >
-                    <div className="flex flex-col items-center">
-                      {/* Avatar Image - Rounded corners */}
-                      <div className="relative w-20 h-20 mb-3 rounded-2xl overflow-hidden">
-                        <Image
-                          src={avatar.image_path}
-                          alt={avatar.display_name}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                          priority={avatar.sort_order <= 4}
-                        />
+                    <button
+                      onClick={() => handleSelect(avatar.id)}
+                      className="w-full text-left"
+                      aria-pressed={isSelected}
+                      aria-label={`Select ${avatar.display_name}`}
+                    >
+                      <div className="flex flex-col items-center">
+                        {/* Avatar Image - Rounded corners */}
+                        <div className="relative w-20 h-20 mb-3 rounded-2xl overflow-hidden">
+                          <Image
+                            src={avatar.image_path}
+                            alt={avatar.display_name}
+                            fill
+                            className="object-cover"
+                            sizes="80px"
+                            priority={avatar.sort_order <= 4}
+                          />
+                        </div>
+
+                        {/* Avatar Name - Apple HIG: Clear hierarchy */}
+                        <h3
+                          className={`font-bold text-lg mb-1 ${
+                            isSelected
+                              ? highContrast
+                                ? 'text-white'
+                                : 'text-purple-700 dark:text-purple-300'
+                              : 'text-gray-800 dark:text-gray-200'
+                          }`}
+                        >
+                          {avatar.display_name}
+                        </h3>
+
+                        {/* Avatar Bio - Truncated */}
+                        <p
+                          className={`text-xs text-center line-clamp-3 ${
+                            isSelected
+                              ? highContrast
+                                ? 'text-white/90'
+                                : 'text-purple-900 dark:text-purple-200'
+                              : 'text-gray-600 dark:text-gray-400'
+                          }`}
+                        >
+                          {avatar.bio}
+                        </p>
+
+                        {/* Selection Indicator - Apple HIG: Clear visual feedback */}
+                        {isSelected && (
+                          <div className="mt-2">
+                            <div
+                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
+                                highContrast
+                                  ? 'bg-white text-hc-primary'
+                                  : 'bg-purple-500 text-white'
+                              }`}
+                            >
+                              <span className="text-xs font-bold">✓ Selected</span>
+                            </div>
+                          </div>
+                        )}
                       </div>
+                    </button>
 
-                      {/* Avatar Name - Apple HIG: Clear hierarchy */}
-                      <h3
-                        className={`font-bold text-lg mb-1 ${
-                          isSelected
-                            ? highContrast
-                              ? 'text-white'
-                              : 'text-purple-700 dark:text-purple-300'
-                            : 'text-gray-800 dark:text-gray-200'
-                        }`}
-                      >
-                        {avatar.display_name}
-                      </h3>
+                    {/* Expand/Collapse Button */}
+                    <button
+                      onClick={(e) => toggleExpanded(avatar.id, e)}
+                      className={`w-full mt-2 text-xs font-medium ${
+                        isSelected
+                          ? 'text-purple-700 dark:text-purple-300'
+                          : 'text-sky-600 dark:text-sky-400'
+                      } hover:underline`}
+                      aria-label="Show full bio"
+                    >
+                      ▼ Full bio
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
 
-                      {/* Avatar Bio - Expandable */}
-                      <p
-                        className={`text-xs text-center ${
-                          isExpanded ? '' : 'line-clamp-3'
-                        } ${
-                          isSelected
-                            ? highContrast
-                              ? 'text-white/90'
-                              : 'text-purple-900 dark:text-purple-200'
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}
-                      >
-                        {avatar.bio}
-                      </p>
+            {/* Expanded Avatar Popup Overlay */}
+            {expandedAvatar && (
+              <div
+                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-60 animate-fadeIn"
+                onClick={() => setExpandedAvatar(null)}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="expanded-avatar-title"
+              >
+                <div
+                  className={`rounded-[32px] border-[3px] p-6 max-w-md w-full shadow-[8px_8px_0px_rgba(0,0,0,1)] animate-scaleIn ${
+                    highContrast
+                      ? 'bg-hc-surface border-hc-border'
+                      : selectedAvatar === expandedAvatar
+                        ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500'
+                        : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
+                  }`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {(() => {
+                    const avatar = avatars.find((a) => a.id === expandedAvatar);
+                    if (!avatar) return null;
+                    const isSelected = selectedAvatar === avatar.id;
 
-                      {/* Selection Indicator - Apple HIG: Clear visual feedback */}
-                      {isSelected && (
-                        <div className="mt-2">
-                          <div
-                            className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
+                    return (
+                      <>
+                        {/* Close button */}
+                        <div className="flex justify-end mb-2">
+                          <button
+                            onClick={() => setExpandedAvatar(null)}
+                            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
                               highContrast
-                                ? 'bg-white text-hc-primary'
-                                : 'bg-purple-500 text-white'
+                                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                            }`}
+                            aria-label="Close"
+                          >
+                            ×
+                          </button>
+                        </div>
+
+                        {/* Avatar content */}
+                        <div className="flex flex-col items-center text-center">
+                          {/* Avatar Image */}
+                          <div className="relative w-32 h-32 mb-4 rounded-2xl overflow-hidden">
+                            <Image
+                              src={avatar.image_path}
+                              alt={avatar.display_name}
+                              fill
+                              className="object-cover"
+                              sizes="128px"
+                            />
+                          </div>
+
+                          {/* Avatar Name */}
+                          <h3
+                            id="expanded-avatar-title"
+                            className={`font-bold text-2xl mb-3 ${
+                              isSelected
+                                ? highContrast
+                                  ? 'text-white'
+                                  : 'text-purple-700 dark:text-purple-300'
+                                : 'text-gray-800 dark:text-gray-200'
                             }`}
                           >
-                            <span className="text-xs font-bold">✓ Selected</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </button>
+                            {avatar.display_name}
+                          </h3>
 
-                  {/* Expand/Collapse Button */}
-                  <button
-                    onClick={(e) => toggleExpanded(avatar.id, e)}
-                    className={`w-full mt-2 text-xs font-medium ${
-                      isSelected
-                        ? 'text-purple-700 dark:text-purple-300'
-                        : 'text-sky-600 dark:text-sky-400'
-                    } hover:underline`}
-                    aria-label={isExpanded ? 'Show less' : 'Show more'}
-                  >
-                    {isExpanded ? '▲ Show less' : '▼ Full bio'}
-                  </button>
+                          {/* Full Bio */}
+                          <p
+                            className={`text-sm mb-4 ${
+                              isSelected
+                                ? highContrast
+                                  ? 'text-white/90'
+                                  : 'text-purple-900 dark:text-purple-200'
+                                : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
+                            {avatar.bio}
+                          </p>
+
+                          {/* Selection Indicator or Select Button */}
+                          {isSelected ? (
+                            <div
+                              className={`inline-flex items-center gap-1 px-3 py-2 rounded-full ${
+                                highContrast
+                                  ? 'bg-white text-hc-primary'
+                                  : 'bg-purple-500 text-white'
+                              }`}
+                            >
+                              <span className="text-sm font-bold">✓ Selected</span>
+                            </div>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                handleSelect(avatar.id);
+                                setExpandedAvatar(null);
+                              }}
+                              className={`py-2 px-6 rounded-xl border-[3px] font-semibold transition-all ${
+                                highContrast
+                                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                              }`}
+                            >
+                              Select {avatar.display_name}
+                            </button>
+                          )}
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
-              );
-            })}
-          </div>
+              </div>
+            )}
+          </>
         )}
 
         {/* Empty State */}
