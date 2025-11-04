@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { CRYPTIC_CONFIG } from '@/lib/constants';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -19,8 +19,8 @@ export default function CrypticGameScreen({
   checkAnswer,
   hintsUsed,
   unlockedHints,
-  useHint,
-  getAvailableHints,
+  useHint: onUseHint,
+  getAvailableHints: _getAvailableHints,
   canUseHint,
   elapsedTime,
   attempts,
@@ -29,7 +29,6 @@ export default function CrypticGameScreen({
   const [showFeedback, setShowFeedback] = useState(false);
   const [isIncorrect, setIsIncorrect] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0); // Overall letter index (across all words)
-  const [activeWordIndex, setActiveWordIndex] = useState(0); // Which word group is active
   const [showGuide, setShowGuide] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -38,7 +37,6 @@ export default function CrypticGameScreen({
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const { highContrast } = useTheme();
   const getIconPath = useUIIcon();
-  const inputRefs = useRef([]);
   const scrollContainerRef = useRef(null);
   const activeBlockRef = useRef(null);
 
@@ -52,48 +50,33 @@ export default function CrypticGameScreen({
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Helper: Get which word an overall index belongs to
-  const getWordIndexFromLetterIndex = (letterIndex) => {
-    let cumulativeLength = 0;
-    for (let i = 0; i < wordPattern.length; i++) {
-      cumulativeLength += wordPattern[i];
-      if (letterIndex < cumulativeLength) {
-        return i;
-      }
-    }
-    return wordPattern.length - 1;
-  };
-
   // Helper: Get the starting index of a word
   const getWordStartIndex = (wordIndex) => {
     return wordPattern.slice(0, wordIndex).reduce((sum, len) => sum + len, 0);
   };
 
-  // Helper: Get the ending index of a word (last letter)
-  const getWordEndIndex = (wordIndex) => {
-    return getWordStartIndex(wordIndex) + wordPattern[wordIndex] - 1;
-  };
+  const handleSubmit = useCallback(
+    async (e) => {
+      e.preventDefault();
+      if (!userAnswer.trim()) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!userAnswer.trim()) return;
-
-    const correct = await checkAnswer();
-    if (!correct) {
-      // Show incorrect feedback
-      setIsIncorrect(true);
-      setShowFeedback(true);
-      setTimeout(() => {
-        setShowFeedback(false);
-        setIsIncorrect(false);
-      }, 2000);
-    }
-    // If correct, the game state will transition to COMPLETE
-  };
+      const correct = await checkAnswer();
+      if (!correct) {
+        // Show incorrect feedback
+        setIsIncorrect(true);
+        setShowFeedback(true);
+        setTimeout(() => {
+          setShowFeedback(false);
+          setIsIncorrect(false);
+        }, 2000);
+      }
+      // If correct, the game state will transition to COMPLETE
+    },
+    [userAnswer, checkAnswer]
+  );
 
   const handleCharacterClick = (index) => {
     setActiveIndex(index);
-    setActiveWordIndex(getWordIndexFromLetterIndex(index));
   };
 
   // Initialize scroll position to show beginning of word
@@ -108,45 +91,49 @@ export default function CrypticGameScreen({
     return () => clearTimeout(timer);
   }, [puzzle.id, activeIndex]);
 
-  const handleKeyPress = (key) => {
-    if (key === 'ENTER') {
-      handleSubmit({ preventDefault: () => {} });
-    } else if (key === 'BACKSPACE') {
-      const answerArray = userAnswer.padEnd(puzzle.length, ' ').split('');
-      if (answerArray[activeIndex] && answerArray[activeIndex] !== ' ') {
-        // Delete current character
-        answerArray[activeIndex] = ' ';
-        updateAnswer(answerArray.join('').trimEnd());
-      } else if (activeIndex > 0) {
-        // Move back and delete
-        const newIndex = activeIndex - 1;
-        setActiveIndex(newIndex);
-        setActiveWordIndex(getWordIndexFromLetterIndex(newIndex));
-        answerArray[newIndex] = ' ';
-        updateAnswer(answerArray.join('').trimEnd());
-      }
-    } else {
-      // Letter key
-      const answerArray = userAnswer.padEnd(puzzle.length, ' ').split('');
-      answerArray[activeIndex] = key;
-      const newAnswer = answerArray.join('').trimEnd();
-      updateAnswer(newAnswer);
+  const handleKeyPress = useCallback(
+    (key) => {
+      if (key === 'ENTER') {
+        handleSubmit({ preventDefault: () => {} });
+      } else if (key === 'BACKSPACE') {
+        const answerArray = userAnswer.padEnd(puzzle.length, ' ').split('');
+        if (answerArray[activeIndex] && answerArray[activeIndex] !== ' ') {
+          // Delete current character
+          answerArray[activeIndex] = ' ';
+          updateAnswer(answerArray.join('').trimEnd());
+        } else if (activeIndex > 0) {
+          // Move back and delete
+          const newIndex = activeIndex - 1;
+          setActiveIndex(newIndex);
+          answerArray[newIndex] = ' ';
+          updateAnswer(answerArray.join('').trimEnd());
+        }
+      } else {
+        // Letter key
+        const answerArray = userAnswer.padEnd(puzzle.length, ' ').split('');
+        answerArray[activeIndex] = key;
+        const newAnswer = answerArray.join('').trimEnd();
+        updateAnswer(newAnswer);
 
-      // Move to next cell
-      if (activeIndex < puzzle.length - 1) {
-        const newIndex = activeIndex + 1;
-        setActiveIndex(newIndex);
-        setActiveWordIndex(getWordIndexFromLetterIndex(newIndex));
+        // Move to next cell
+        if (activeIndex < puzzle.length - 1) {
+          const newIndex = activeIndex + 1;
+          setActiveIndex(newIndex);
+        }
       }
-    }
-  };
+    },
+    [handleSubmit, userAnswer, puzzle.length, activeIndex, updateAnswer]
+  );
 
-  const handleUnlockHint = (hintIndex) => {
-    if (canUseHint) {
-      useHint(hintIndex);
-      // Don't close the modal automatically - let user review hints
-    }
-  };
+  const handleUnlockHint = useCallback(
+    (hintIndex) => {
+      if (canUseHint) {
+        onUseHint(hintIndex);
+        // Don't close the modal automatically - let user review hints
+      }
+    },
+    [canUseHint, onUseHint]
+  );
 
   // Load keyboard layout and handle physical keyboard input
   useEffect(() => {
@@ -192,7 +179,6 @@ export default function CrypticGameScreen({
         if (activeIndex > 0) {
           const newIndex = activeIndex - 1;
           setActiveIndex(newIndex);
-          setActiveWordIndex(getWordIndexFromLetterIndex(newIndex));
         }
         return;
       }
@@ -202,7 +188,6 @@ export default function CrypticGameScreen({
         if (activeIndex < puzzle.length - 1) {
           const newIndex = activeIndex + 1;
           setActiveIndex(newIndex);
-          setActiveWordIndex(getWordIndexFromLetterIndex(newIndex));
         }
         return;
       }
@@ -241,15 +226,11 @@ export default function CrypticGameScreen({
       document.removeEventListener('touchstart', preventMobileKeyboard);
       document.removeEventListener('focus', preventFocus, true);
     };
-  }, [userAnswer, activeIndex, puzzle.length]);
+  }, [userAnswer, activeIndex, puzzle.length, handleKeyPress, handleSubmit]);
 
   // Auto-scroll active block into view when it changes (only for long words)
   useEffect(() => {
-    if (
-      puzzle.length > 8 &&
-      activeBlockRef.current &&
-      scrollContainerRef.current
-    ) {
+    if (puzzle.length > 8 && activeBlockRef.current && scrollContainerRef.current) {
       // Smooth scroll the active block into view, centered (like main game)
       activeBlockRef.current.scrollIntoView({
         behavior: 'smooth',
@@ -316,104 +297,119 @@ export default function CrypticGameScreen({
 
       {/* Main Content - Game Card with Keyboard */}
       <div className="max-w-4xl w-full mx-auto flex-1 flex flex-col px-4 pb-4">
-        <div className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}>
+        <div
+          className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+          }`}
+          style={{ height: 'calc(100vh - 12rem)' }}
+        >
           {/* Scrollable Content Area */}
           <div className="flex-1 overflow-y-auto p-6 md:p-8">
-          {/* Header row with back button, time, and attempts */}
-          <div className="flex items-center justify-between mb-6">
-            <button
-              onClick={onBack}
-              className={`w-10 h-10 rounded-xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant ${
-                highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-              }`}
-              title="Back"
-            >
-              <span className="text-lg">‹</span>
-            </button>
-            <div className="flex items-center gap-2 text-sm">
-              <div className={`px-3 py-1.5 rounded-xl border-[2px] ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border text-hc-text'
-                  : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
-              } font-bold`}>
-                {formatTime(elapsedTime)}
-              </div>
-              <div className={`px-3 py-1.5 rounded-xl border-[2px] ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border text-hc-text'
-                  : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
-              } font-bold`}>
-                Attempts: {attempts}
-              </div>
-            </div>
-          </div>
-
-          {/* Clue */}
-          <div className="mb-8">
-            <h2 className={`text-sm font-bold uppercase tracking-wide mb-3 ${
-              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-            }`}>
-              Cryptic Clue
-            </h2>
-            <div className={`text-2xl md:text-3xl leading-relaxed ${
-              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-            }`}>
-              {puzzle.clue}
-            </div>
-          </div>
-
-          {/* Crossword-style Answer Grid - Multi-Word Support */}
-          <div className="mb-6">
-            <h3 className={`text-sm font-bold uppercase tracking-wide mb-4 ${
-              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-            }`}>
-              Your Answer {isMultiWord && <span className="text-xs opacity-75">({wordPattern.length} words)</span>}
-            </h3>
-            <div className="relative max-w-full mb-4">
-              <div
-                ref={scrollContainerRef}
-                className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar max-w-full"
-                style={{
-                  scrollPaddingLeft: '0px',
-                  WebkitOverflowScrolling: 'touch',
-                }}
+            {/* Header row with back button, time, and attempts */}
+            <div className="flex items-center justify-between mb-6">
+              <button
+                onClick={onBack}
+                className={`w-10 h-10 rounded-xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                }`}
+                title="Back"
               >
-                <div className="inline-flex gap-3 items-center px-2">
-                  {wordPattern.map((wordLength, wordIndex) => {
-                    const wordStartIndex = getWordStartIndex(wordIndex);
-                    const isWordActive = wordIndex === activeWordIndex;
+                <span className="text-lg">‹</span>
+              </button>
+              <div className="flex items-center gap-2 text-sm">
+                <div
+                  className={`px-3 py-1.5 rounded-xl border-[2px] ${
+                    highContrast
+                      ? 'bg-hc-surface border-hc-border text-hc-text'
+                      : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
+                  } font-bold`}
+                >
+                  {formatTime(elapsedTime)}
+                </div>
+                <div
+                  className={`px-3 py-1.5 rounded-xl border-[2px] ${
+                    highContrast
+                      ? 'bg-hc-surface border-hc-border text-hc-text'
+                      : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
+                  } font-bold`}
+                >
+                  Attempts: {attempts}
+                </div>
+              </div>
+            </div>
 
-                    return (
-                      <div
-                        key={wordIndex}
-                        className={`inline-flex rounded-xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all duration-200 ${
-                          highContrast
-                            ? 'border-hc-border dark:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                            : 'border-black dark:border-gray-600 dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
-                        }`}
-                        role="group"
-                        aria-label={`Word ${wordIndex + 1} of ${wordPattern.length}`}
-                      >
-                        {Array.from({ length: wordLength }).map((_, letterIndexInWord) => {
-                          const overallIndex = wordStartIndex + letterIndexInWord;
-                          const char = answerArray[overallIndex];
-                          const isActive = overallIndex === activeIndex;
-                          const hasValue = char && char !== ' ';
-                          const isFirst = letterIndexInWord === 0;
-                          const isLast = letterIndexInWord === wordLength - 1;
+            {/* Clue */}
+            <div className="mb-8">
+              <h2
+                className={`text-sm font-bold uppercase tracking-wide mb-3 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Cryptic Clue
+              </h2>
+              <div
+                className={`text-2xl md:text-3xl leading-relaxed ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                {puzzle.clue}
+              </div>
+            </div>
 
-                          return (
-                            <div
-                              key={overallIndex}
-                              ref={isActive ? activeBlockRef : null}
-                              onClick={() => handleCharacterClick(overallIndex)}
-                              className={`
+            {/* Crossword-style Answer Grid - Multi-Word Support */}
+            <div className="mb-6">
+              <h3
+                className={`text-sm font-bold uppercase tracking-wide mb-4 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Your Answer{' '}
+                {isMultiWord && (
+                  <span className="text-xs opacity-75">({wordPattern.length} words)</span>
+                )}
+              </h3>
+              <div className="relative max-w-full mb-4">
+                <div
+                  ref={scrollContainerRef}
+                  className="overflow-x-auto scroll-smooth snap-x snap-proximity hide-scrollbar max-w-full"
+                  style={{
+                    scrollPaddingLeft: '0px',
+                    WebkitOverflowScrolling: 'touch',
+                  }}
+                >
+                  <div className="inline-flex gap-3 items-center px-2">
+                    {wordPattern.map((wordLength, wordIndex) => {
+                      const wordStartIndex = getWordStartIndex(wordIndex);
+
+                      return (
+                        <div
+                          key={wordIndex}
+                          className={`inline-flex rounded-xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all duration-200 ${
+                            highContrast
+                              ? 'border-hc-border dark:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                              : 'border-black dark:border-gray-600 dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+                          }`}
+                          role="group"
+                          aria-label={`Word ${wordIndex + 1} of ${wordPattern.length}`}
+                        >
+                          {Array.from({ length: wordLength }).map((_, letterIndexInWord) => {
+                            const overallIndex = wordStartIndex + letterIndexInWord;
+                            const char = answerArray[overallIndex];
+                            const isActive = overallIndex === activeIndex;
+                            const hasValue = char && char !== ' ';
+                            const isFirst = letterIndexInWord === 0;
+                            const isLast = letterIndexInWord === wordLength - 1;
+
+                            return (
+                              <div
+                                key={overallIndex}
+                                ref={isActive ? activeBlockRef : null}
+                                onClick={() => handleCharacterClick(overallIndex)}
+                                className={`
                                 w-9 h-11 sm:w-10 sm:h-12
                                 flex items-center justify-center
                                 font-bold text-lg sm:text-xl
@@ -440,31 +436,33 @@ export default function CrypticGameScreen({
                                 }
                                 ${isIncorrect ? 'animate-shake' : ''}
                               `}
-                              aria-label={`Letter ${letterIndexInWord + 1} of ${wordLength} in word ${wordIndex + 1}`}
-                            >
-                              {hasValue ? char : ''}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    );
-                  })}
+                                aria-label={`Letter ${letterIndexInWord + 1} of ${wordLength} in word ${wordIndex + 1}`}
+                              >
+                                {hasValue ? char : ''}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {showFeedback && isIncorrect && (
-              <div className="text-center">
-                <div className={`inline-block px-4 py-2 rounded-xl border-[3px] font-bold ${
-                  highContrast
-                    ? 'bg-hc-error text-white border-hc-border'
-                    : 'bg-accent-red/20 text-red-900 dark:text-red-400 border-accent-red'
-                }`}>
-                  Not quite right. Try again!
+              {showFeedback && isIncorrect && (
+                <div className="text-center">
+                  <div
+                    className={`inline-block px-4 py-2 rounded-xl border-[3px] font-bold ${
+                      highContrast
+                        ? 'bg-hc-error text-white border-hc-border'
+                        : 'bg-accent-red/20 text-red-900 dark:text-red-400 border-accent-red'
+                    }`}
+                  >
+                    Not quite right. Try again!
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
           </div>
 
           {/* Fixed Bottom Section Inside Card - Action Buttons + Keyboard */}
@@ -505,9 +503,16 @@ export default function CrypticGameScreen({
 
       <style jsx>{`
         @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-10px); }
-          75% { transform: translateX(10px); }
+          0%,
+          100% {
+            transform: translateX(0);
+          }
+          25% {
+            transform: translateX(-10px);
+          }
+          75% {
+            transform: translateX(10px);
+          }
         }
         .animate-shake {
           animation: shake 0.3s ease-in-out;
