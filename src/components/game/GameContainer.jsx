@@ -48,20 +48,9 @@ export default function GameContainer() {
     }
   };
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
-
   if (game.loading) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{
-          backgroundImage: "url('/images/light-mode-bg.webp')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <LoadingSpinner />
       </div>
     );
@@ -69,15 +58,7 @@ export default function GameContainer() {
 
   if (game.error) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{
-          backgroundImage,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
@@ -92,17 +73,9 @@ export default function GameContainer() {
     );
   }
 
-  // Main container with wallpaper background
+  // Main container with solid background
   return (
-    <div
-      className={`fixed inset-0 w-full h-full overflow-auto ${theme}`}
-      style={{
-        backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      }}
-    >
+    <div className={`fixed inset-0 w-full h-full overflow-auto bg-bg-primary ${theme}`}>
       <div className="min-h-screen flex items-center justify-center p-4 pb-12">
         <div className="w-full max-w-md h-[90vh] sm:h-auto flex flex-col">
           {game.gameState === GAME_STATES.WELCOME && (

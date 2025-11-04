@@ -32,7 +32,7 @@ export default function AuthModal({
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(initialMessage);
 
-  const { signUp, signIn, signInWithApple } = useAuth();
+  const { signUp, signIn, signInWithApple, resetPassword } = useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
 
   // Update success message when initialMessage prop changes
@@ -65,6 +65,20 @@ export default function AuthModal({
           setPassword('');
           setFullName('');
           // Don't close the modal - keep it open for sign in
+        }
+      } else if (mode === 'reset') {
+        // Password reset
+        const { error } = await resetPassword(email);
+
+        if (error) {
+          setError(error.message);
+        } else {
+          // Success - show confirmation message
+          setSuccessMessage(
+            'Password reset email sent! Check your inbox for a link to reset your password.'
+          );
+          setMode('login');
+          setPassword('');
         }
       } else {
         // Login
@@ -185,7 +199,11 @@ export default function AuthModal({
 
         {/* Title */}
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          {mode === 'signup' ? 'Create Your Account' : 'Welcome Back'}
+          {mode === 'signup'
+            ? 'Create Your Account'
+            : mode === 'reset'
+              ? 'Reset Password'
+              : 'Welcome Back'}
         </h2>
 
         {/* Success message */}
@@ -334,49 +352,92 @@ export default function AuthModal({
             />
           </div>
 
-          <div className="mb-6">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-              placeholder="••••••••"
-              minLength={6}
-              required
-            />
-            {mode === 'signup' && (
-              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                Must be at least 6 characters
-              </p>
-            )}
-          </div>
+          {mode !== 'reset' && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300"
+                >
+                  Password
+                </label>
+                {mode === 'login' && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode('reset');
+                      setError(null);
+                      setSuccessMessage(null);
+                      setPassword('');
+                    }}
+                    className="text-xs font-medium text-accent-pink hover:text-accent-pink/80 transition-colors"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+              </div>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                placeholder="••••••••"
+                minLength={6}
+                required
+              />
+              {mode === 'signup' && (
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Must be at least 6 characters
+                </p>
+              )}
+            </div>
+          )}
+
+          {mode === 'reset' && (
+            <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+              Enter your email address and we'll send you a link to reset your password.
+            </p>
+          )}
 
           <button
             type="submit"
             disabled={loading}
             className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
           >
-            {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
+            {loading
+              ? 'Please wait...'
+              : mode === 'signup'
+                ? 'Create Account'
+                : mode === 'reset'
+                  ? 'Send Reset Link'
+                  : 'Sign In'}
           </button>
         </form>
 
         {/* Toggle mode */}
         <div className="mt-6 text-center">
-          <button
-            onClick={toggleMode}
-            className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
-          >
-            {mode === 'signup'
-              ? 'Already have an account? Sign in'
-              : "Don't have an account? Sign up"}
-          </button>
+          {mode === 'reset' ? (
+            <button
+              onClick={() => {
+                setMode('login');
+                setError(null);
+                setSuccessMessage(null);
+              }}
+              className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
+            >
+              Back to sign in
+            </button>
+          ) : (
+            <button
+              onClick={toggleMode}
+              className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
+            >
+              {mode === 'signup'
+                ? 'Already have an account? Sign in'
+                : "Don't have an account? Sign up"}
+            </button>
+          )}
         </div>
       </div>
     </div>

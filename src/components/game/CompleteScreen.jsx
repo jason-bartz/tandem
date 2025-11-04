@@ -10,7 +10,7 @@ import {
   getRandomCongratulation,
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
-import StatsModal from './StatsModal';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveCalendar from './ArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import RevealAnswersModal from './RevealAnswersModal';
@@ -450,9 +450,9 @@ export default function CompleteScreen({
         </button>
       </div>
 
-      {showStats && <StatsModal onClose={() => setShowStats(false)} />}
+      {showStats && <UnifiedStatsModal onClose={() => setShowStats(false)} />}
 
-      <StatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
+      <UnifiedStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
       <ArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import Image from 'next/image';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -115,22 +116,27 @@ export default function AdminLayout({ children }) {
           <div className="flex justify-between items-center h-16">
             <div className="flex-1"></div>
             <div className="flex items-center justify-center">
-              <img src="/icons/tandem-admin-logo.png" alt="Tandem Admin" className="h-10" />
+              <Image src="/icons/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
               <button
                 onClick={toggleTheme}
-                className="p-2 rounded-lg border-[2px] border-border-main bg-bg-card hover:bg-accent-yellow/20 transition-colors"
-                style={{ boxShadow: 'var(--shadow-small)' }}
+                className="p-2 rounded-lg border-[3px] border-border-main bg-bg-card hover:translate-y-[-2px] transition-transform"
+                style={{ boxShadow: 'var(--shadow-button)' }}
                 title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
               >
-                {isDark ? '☀️' : '🌙'}
+                <Image
+                  src={isDark ? '/icons/ui/light-mode.png' : '/icons/ui/dark-mode.png'}
+                  alt={isDark ? 'Light mode' : 'Dark mode'}
+                  width={24}
+                  height={24}
+                />
               </button>
               <a
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-4 py-2 border-[2px] border-border-main bg-accent-blue/90 text-white rounded-lg font-bold hover:bg-accent-blue hover:translate-y-[-1px] transition-all"
+                className="hidden sm:inline-block px-4 py-2 border-[3px] border-border-main bg-accent-blue text-white rounded-xl font-bold hover:translate-y-[-2px] active:translate-y-0 transition-transform"
                 style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 View Game
@@ -140,7 +146,7 @@ export default function AdminLayout({ children }) {
                   localStorage.removeItem('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-4 py-2 border-[2px] border-border-main bg-gradient-to-r from-accent-red/90 to-accent-pink/90 text-white rounded-lg font-bold hover:from-accent-red hover:to-accent-pink hover:translate-y-[-1px] transition-all"
+                className="px-4 py-2 border-[3px] border-border-main bg-accent-red text-white rounded-xl font-bold hover:translate-y-[-2px] active:translate-y-0 transition-transform"
                 style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 Logout
@@ -151,8 +157,8 @@ export default function AdminLayout({ children }) {
       </nav>
       <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
         <div
-          className="bg-bg-card rounded-2xl border-[2px] border-border-main p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto"
-          style={{ boxShadow: 'var(--shadow-card)' }}
+          className="bg-bg-card rounded-[32px] border-[3px] border-border-main p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto"
+          style={{ boxShadow: '6px 6px 0px rgba(0,0,0,0.3)' }}
         >
           {children}
         </div>

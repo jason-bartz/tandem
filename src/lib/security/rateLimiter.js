@@ -1,6 +1,13 @@
 import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 
+// Check if KV is available (localhost vs production)
+const isKvAvailable = !!(
+  process.env.KV_REST_API_URL &&
+  process.env.KV_REST_API_TOKEN &&
+  !process.env.KV_REST_API_URL.includes('localhost')
+);
+
 // Rate limiter configuration
 const RATE_LIMIT_WINDOW = 15 * 60 * 1000; // 15 minutes in milliseconds
 const MAX_ATTEMPTS = 5; // Maximum attempts allowed
@@ -43,6 +50,11 @@ function getApiRateLimitKey(identifier, endpoint) {
  * Check if an identifier is currently locked out
  */
 export async function isLockedOut(identifier) {
+  // Skip KV checks on localhost
+  if (!isKvAvailable) {
+    return { locked: false };
+  }
+
   try {
     const lockoutKey = getLockoutKey(identifier);
     const lockoutData = await kv.get(lockoutKey);
@@ -88,6 +100,11 @@ export async function isLockedOut(identifier) {
  * Record a failed authentication attempt
  */
 export async function recordFailedAttempt(identifier) {
+  // Skip KV checks on localhost
+  if (!isKvAvailable) {
+    return { locked: false };
+  }
+
   try {
     const rateLimitKey = getAuthRateLimitKey(identifier);
     const lockoutKey = getLockoutKey(identifier);
@@ -168,6 +185,11 @@ export async function recordFailedAttempt(identifier) {
  * Clear failed attempts on successful authentication
  */
 export async function clearFailedAttempts(identifier) {
+  // Skip KV checks on localhost
+  if (!isKvAvailable) {
+    return;
+  }
+
   try {
     const rateLimitKey = getAuthRateLimitKey(identifier);
     await kv.del(rateLimitKey);
@@ -180,6 +202,11 @@ export async function clearFailedAttempts(identifier) {
  * Check API rate limit
  */
 export async function checkApiRateLimit(identifier, endpoint = 'general') {
+  // Skip KV checks on localhost
+  if (!isKvAvailable) {
+    return { allowed: true };
+  }
+
   try {
     const key = getApiRateLimitKey(identifier, endpoint);
     const limit = API_MAX_REQUESTS[endpoint] || API_MAX_REQUESTS.general;

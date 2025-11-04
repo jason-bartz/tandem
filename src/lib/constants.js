@@ -174,3 +174,52 @@ export const MESSAGES = {
     CHECKING: 'Checking answers...',
   },
 };
+
+// Daily Cryptic Game Configuration
+export const CRYPTIC_CONFIG = {
+  MAX_HINTS: 4,
+  MIN_ANSWER_LENGTH: 5,
+  MAX_ANSWER_LENGTH: 11,
+  HINT_TYPES: ['fodder', 'indicator', 'definition', 'letter'],
+  GAME_ROUTE: '/dailycryptic',
+  MAX_ATTEMPTS: null, // Unlimited attempts
+  // Access control:
+  // - Daily puzzle: Free for all account holders
+  // - Archive: Requires Tandem Unlimited subscription
+};
+
+export const CRYPTIC_STORAGE_KEYS = {
+  CURRENT_GAME: 'cryptic_current_game',
+  STATS: 'cryptic_stats',
+  COMPLETED_PUZZLES: 'cryptic_completed',
+  PUZZLE_PROGRESS: 'cryptic_puzzle_progress_',
+  STREAK: 'cryptic_streak',
+  LAST_PLAYED_DATE: 'cryptic_last_played_date',
+};
+
+export const CRYPTIC_GAME_STATES = {
+  WELCOME: 'welcome',
+  PLAYING: 'playing',
+  COMPLETE: 'complete',
+  ERROR: 'error',
+};
+
+export const CRYPTIC_API_ENDPOINTS = {
+  PUZZLE: '/api/cryptic/puzzle',
+  STATS: '/api/cryptic/stats',
+  ADMIN_PUZZLES: '/api/admin/cryptic/puzzles',
+  ADMIN_GENERATE: '/api/admin/cryptic/generate-puzzle',
+  ADMIN_ASSESS: '/api/admin/cryptic/assess-difficulty',
+};
+
+export const CRYPTIC_DEVICES = {
+  CHARADE: 'charade',
+  CONTAINER: 'container',
+  DELETION: 'deletion',
+  ANAGRAM: 'anagram',
+  REVERSAL: 'reversal',
+  HOMOPHONE: 'homophone',
+  HIDDEN: 'hidden',
+  DOUBLE_DEFINITION: 'double_definition',
+  INITIAL_LETTERS: 'initial_letters',
+};

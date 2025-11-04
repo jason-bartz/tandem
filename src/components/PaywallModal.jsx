@@ -428,7 +428,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
         {/* Benefits list */}
         <div
-          className={`rounded-2xl p-5 mb-6 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+          className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
               : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
@@ -449,7 +449,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Play any puzzle from the archive
+                Archive access for all past puzzles (Tandem emoji word puzzle and Daily Cryptic)
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -485,7 +485,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Access to Hard Mode and future exclusive modes and features
+                Access to Hard Mode and future exclusive features
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -509,10 +509,27 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Support a solo developer
+                Support a solo developer to keep building great puzzles
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Keep Daily Puzzle Free Message */}
+        <div
+          className={`rounded-2xl p-4 mb-6 text-center border-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-success'
+              : 'bg-accent-green/10 border-accent-green/30'
+          }`}
+        >
+          <p
+            className={`text-sm font-medium ${
+              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            💚 Tandem Unlimited members keep the daily puzzle free for everyone to play!
+          </p>
         </div>
 
         {/* iOS: Sign in with Apple prompt - show if not authenticated */}
@@ -776,7 +793,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
-                    Lifetime • Shareable with Family
+                    {isIOS ? 'Lifetime • Shareable with Family' : 'Lifetime'}
                   </p>
                 </div>
                 <div className="text-right">

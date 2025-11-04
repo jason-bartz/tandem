@@ -16,7 +16,7 @@ A fun easter egg feature that displays a daily rotating horoscope on the account
 
 ✅ **Database**
 
-- 360 literary/language-themed horoscopes (30 per zodiac sign)
+- 1200 literary/language-themed horoscopes (100 per zodiac sign)
 - Optimized with indexes for fast queries
 - Public read access (RLS enabled)
 
@@ -41,7 +41,7 @@ A fun easter egg feature that displays a daily rotating horoscope on the account
 
 1. **Database Migration**
    - `supabase/migrations/003_horoscopes_table.sql`
-   - Creates horoscopes table with all 360 horoscopes
+   - Creates horoscopes table with all 1200 horoscopes
 
 2. **API Route**
    - `src/app/api/horoscope/route.js`
@@ -89,8 +89,8 @@ After running the migration, verify in Supabase dashboard:
 
 1. Go to Table Editor
 2. You should see a new table: `horoscopes`
-3. Check that it contains 360 rows (30 per sign × 12 signs)
-4. Filter by sign (e.g., "Aries") and verify 30 horoscopes exist
+3. Check that it contains 1200 rows (100 per sign × 12 signs)
+4. Filter by sign (e.g., "Aries") and verify 100 horoscopes exist
 
 ### 3. Test the Feature
 
@@ -169,7 +169,7 @@ After running the migration, verify in Supabase dashboard:
 
 ### Horoscope Content
 
-All 360 horoscopes are:
+All 1200 horoscopes are:
 
 - Literary and language-themed
 - Humorous and entertaining
@@ -212,7 +212,7 @@ GET /api/horoscope?sign=Aries&timezone=America/New_York
 
 1. **Check migration ran successfully**
    - Query in Supabase: \`SELECT count(\*) FROM horoscopes;\`
-   - Should return 360
+   - Should return 1200
 
 2. **Check API response**
    - Open browser DevTools → Network tab
@@ -258,7 +258,7 @@ GET /api/horoscope?sign=Aries&timezone=America/New_York
 
 ## Testing Checklist
 
-- [ ] Migration completed successfully (360 rows in horoscopes table)
+- [ ] Migration completed successfully (1200 rows in horoscopes table)
 - [ ] Account page displays without errors
 - [ ] Timezone appears above Zodiac Sign
 - [ ] Horoscope loads and displays correctly

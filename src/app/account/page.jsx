@@ -1,25 +1,33 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import subscriptionService from '@/services/subscriptionService';
+import avatarService from '@/services/avatar.service';
 import { Capacitor } from '@capacitor/core';
+import { useHaptics } from '@/hooks/useHaptics';
 import Link from 'next/link';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 import PaywallModal from '@/components/PaywallModal';
+import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 
 export default function AccountPage() {
   const router = useRouter();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { highContrast } = useTheme();
+  const { highContrast, theme } = useTheme();
+  const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [accountInfo, setAccountInfo] = useState(null);
   const [appleRefreshToken, setAppleRefreshToken] = useState(null);
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [loadingAvatar, setLoadingAvatar] = useState(false);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -50,6 +58,41 @@ export default function AccountPage() {
       loadSubscription();
     }
   }, [user]);
+
+  // Load user avatar
+  useEffect(() => {
+    const loadAvatar = async () => {
+      if (!user?.id) return;
+
+      try {
+        setLoadingAvatar(true);
+        const profile = await avatarService.getUserProfileWithAvatar(user.id);
+        setUserAvatar(profile);
+      } catch (error) {
+        console.error('[Account] Failed to load user avatar:', error);
+        // Fail silently - avatar is non-critical feature
+      } finally {
+        setLoadingAvatar(false);
+      }
+    };
+
+    if (user) {
+      loadAvatar();
+    }
+  }, [user]);
+
+  const handleAvatarChange = (avatarId) => {
+    setShowAvatarModal(false);
+    if (avatarId) {
+      // Avatar was selected, reload avatar data
+      successHaptic();
+      // Reload avatar
+      avatarService
+        .getUserProfileWithAvatar(user.id)
+        .then(setUserAvatar)
+        .catch((error) => console.error('[Account] Failed to reload avatar:', error));
+    }
+  };
 
   const handleManageAccount = () => {
     // Open Stripe billing portal directly
@@ -218,7 +261,7 @@ export default function AccountPage() {
 
   if (authLoading || (loading && user)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-sky-400 via-purple-400 to-pink-400 dark:from-sky-900 dark:via-purple-900 dark:to-pink-900">
+      <div className="min-h-screen flex items-center justify-center bg-accent-blue">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
       </div>
     );
@@ -229,7 +272,7 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-400 via-purple-400 to-pink-400 dark:from-sky-900 dark:via-purple-900 dark:to-pink-900 py-8 px-4">
+    <div className="min-h-screen bg-accent-blue py-8 px-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="mb-6">
@@ -244,11 +287,6 @@ export default function AccountPage() {
           >
             ← Back to Game
           </Link>
-
-          {/* Title */}
-          <h1 className="text-4xl font-bold text-white drop-shadow-[3px_3px_0px_rgba(0,0,0,0.5)] text-center">
-            Account
-          </h1>
         </div>
 
         {/* Account Info Card */}
@@ -259,41 +297,116 @@ export default function AccountPage() {
               : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
           }`}
         >
+          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">Account</h1>
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
 
           <div className="space-y-3">
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
-                {user?.email || 'Not available'}
-              </p>
+            {/* Avatar Section - Apple HIG: 96pt large avatar for profile */}
+            <div className="flex flex-col items-center mb-4 pb-4 border-b-[2px] border-gray-200 dark:border-gray-700">
+              {!loadingAvatar ? (
+                <>
+                  <button
+                    onClick={() => {
+                      setShowAvatarModal(true);
+                      lightTap();
+                    }}
+                    className="relative w-24 h-24 rounded-2xl overflow-hidden border-[3px] border-purple-500 shadow-[4px_4px_0px_rgba(147,51,234,0.5)] mb-3 hover:scale-105 transition-transform"
+                    aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
+                  >
+                    <Image
+                      src={
+                        userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
+                          ? userAvatar.avatar_image_path
+                          : '/images/avatars/default-profile.png'
+                      }
+                      alt={userAvatar?.avatar_display_name || 'Profile'}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                      priority
+                    />
+                  </button>
+                  {userAvatar?.avatar_display_name && (
+                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+                      {userAvatar.avatar_display_name}
+                    </p>
+                  )}
+                  <button
+                    onClick={() => {
+                      setShowAvatarModal(true);
+                      lightTap();
+                    }}
+                    className={`text-sm font-medium hover:underline ${
+                      userAvatar?.selected_avatar_id
+                        ? 'text-purple-600 dark:text-purple-400'
+                        : ''
+                    }`}
+                  >
+                    {userAvatar?.selected_avatar_id ? 'Change Avatar' : ''}
+                  </button>
+                  {!userAvatar?.selected_avatar_id && (
+                    <button
+                      onClick={() => {
+                        setShowAvatarModal(true);
+                        lightTap();
+                      }}
+                      className={`py-2 px-4 rounded-xl border-[2px] font-medium text-sm transition-all mt-2 ${
+                        highContrast
+                          ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      }`}
+                    >
+                      Select Your Avatar
+                    </button>
+                  )}
+                </>
+              ) : (
+                <>
+                  <div className="w-24 h-24 rounded-2xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-3"></div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading avatar...</p>
+                </>
+              )}
             </div>
 
             {user?.user_metadata?.full_name && (
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {user.user_metadata.full_name}
                 </p>
               </div>
             )}
 
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Anniversary</p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
-                {formatDate(user?.created_at)}
+              <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                {user?.email || 'Not available'}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Account ID</p>
+              <p className="text-sm font-mono text-gray-600 dark:text-gray-400 break-all">
+                {user?.id || 'Not available'}
               </p>
             </div>
 
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Timezone</p>
-              <p className="text-lg font-medium text-gray-800 dark:text-gray-200">{userTimezone}</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{userTimezone}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Anniversary</p>
+              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                {formatDate(user?.created_at)}
+              </p>
             </div>
 
             {zodiacData && (
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Tandem Zodiac Sign</p>
-                <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                   {zodiacData.display}
                 </p>
               </div>
@@ -303,7 +416,7 @@ export default function AccountPage() {
             {zodiacData && (
               <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                  Today&apos;s Horoscope
+                  Today&apos;s Tandem Horoscope
                 </p>
                 {horoscopeLoading ? (
                   <div className="flex items-center justify-center py-4">
@@ -361,7 +474,7 @@ export default function AccountPage() {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-500 dark:text-gray-400">Plan</p>
-                <p className="text-2xl font-bold text-gray-800 dark:text-gray-200">
+                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
                   {getTierName(subscription.tier || subscription.productId)}
                 </p>
                 <p className="text-sm text-gray-600 dark:text-gray-400">
@@ -375,7 +488,7 @@ export default function AccountPage() {
                     <p className="text-sm text-gray-500 dark:text-gray-400">
                       {subscription.cancelAtPeriodEnd ? 'Expires on' : 'Renews on'}
                     </p>
-                    <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
+                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
                       {formatDate(subscription.expiryDate)}
                     </p>
                     {subscription.cancelAtPeriodEnd && (
@@ -444,7 +557,7 @@ export default function AccountPage() {
               Your Benefits
             </h2>
 
-            <div className="space-y-3">
+            <div className="space-y-3 mb-4">
               <div className="flex items-start gap-3">
                 <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
                 <div>
@@ -452,7 +565,7 @@ export default function AccountPage() {
                     Unlimited Archive Access
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Play any puzzle from day one
+                    Play all past puzzles for both Tandem emoji word puzzle and Daily Cryptic
                   </p>
                 </div>
               </div>
@@ -461,10 +574,10 @@ export default function AccountPage() {
                 <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
                 <div>
                   <p className="font-medium text-gray-800 dark:text-gray-200">
-                    Access to Hard Mode and Future Exclusive Modes and Features
+                    Access to Hard Mode and Future Exclusive Features
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Challenge yourself with time limits
+                    Challenge yourself with time limits and more
                   </p>
                 </div>
               </div>
@@ -486,10 +599,16 @@ export default function AccountPage() {
                     Support a Solo Developer
                   </p>
                   <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Help keep Tandem running
+                    Help keep building great puzzles
                   </p>
                 </div>
               </div>
+            </div>
+
+            <div className="bg-accent-green/10 border-2 border-accent-green/30 rounded-2xl p-4 text-center">
+              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
+                💚 Your subscription keeps the daily puzzle free for everyone to play!
+              </p>
             </div>
           </div>
         )}
@@ -570,6 +689,15 @@ export default function AccountPage() {
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
         onPurchaseComplete={handlePurchaseComplete}
+      />
+
+      {/* Avatar Selection Modal */}
+      <AvatarSelectionModal
+        isOpen={showAvatarModal}
+        onClose={handleAvatarChange}
+        userId={user?.id}
+        currentAvatarId={userAvatar?.selected_avatar_id}
+        isFirstTime={false}
       />
     </div>
   );

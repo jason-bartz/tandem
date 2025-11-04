@@ -3,15 +3,17 @@
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Support() {
   const { theme } = useTheme();
+  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
+  const tandemIcon = theme === 'dark' ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png';
 
-  const sections = [
+  // Tandem Daily sections
+  const tandemSections = [
     {
       id: 'getting-started',
       title: 'Getting Started',
@@ -146,46 +148,6 @@ export default function Support() {
       ),
     },
     {
-      id: 'platforms',
-      title: 'Available Platforms',
-      content: (
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-2">iOS App (iPhone & iPad)</h4>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              <li>
-                <strong>Native iOS app</strong> available on the Apple App Store
-              </li>
-              <li>Full offline support - play without internet connection</li>
-              <li>Optimized for iPhone and iPad</li>
-              <li>Tandem Unlimited subscription with full Hard Mode support</li>
-              <li>Download from the App Store</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Progressive Web App (PWA)</h4>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              <li>
-                <strong>Web-based version</strong> accessible from any browser
-              </li>
-              <li>Install to home screen for app-like experience</li>
-              <li>Works on all devices with modern browsers</li>
-              <li>Tandem Unlimited subscription available via Stripe</li>
-              <li>Requires internet connection to play</li>
-              <li>Visit tandemdaily.com to play</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Android App</h4>
-            <p className="text-sm">
-              <strong>Coming Soon</strong> to Google Play Store. Currently, Android users can enjoy
-              the PWA version. Visit tandemdaily.com on your Android device.
-            </p>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: 'faq',
       title: 'Frequently Asked Questions',
       content: (
@@ -218,54 +180,6 @@ export default function Support() {
                 <p>
                   A: No time limit in regular mode! Take as long as you need. Hard Mode (Tandem
                   Unlimited subscribers only) adds a 3-minute time limit for extra challenge.
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-1">Account Management</h4>
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="font-medium">Q: How do I delete my account?</p>
-                <p>
-                  A: You can delete your account directly in the app. Web users: Go to Account page
-                  → Danger Zone → Delete Account. iOS users: Go to Settings → Account → Manage
-                  Account → Danger Zone → Delete Account. You will be asked to confirm before
-                  deletion proceeds.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Q: What happens when I delete my account?</p>
-                <p>
-                  A: Account deletion is immediate and permanent. All your account data, game
-                  progress, statistics, and preferences will be deleted. If you used Sign in with
-                  Apple, your authorization will be revoked. Note: Billing history is retained for 7
-                  years for legal compliance.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Q: Will deleting my account cancel my subscription?</p>
-                <p>
-                  A: No! Account deletion does NOT cancel your subscription. You must cancel
-                  separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web:
-                  Cancel via the Stripe billing portal (accessible from Account page → Manage
-                  Account). Cancel your subscription BEFORE deleting your account to avoid continued
-                  billing.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Q: Can I recover my account after deletion?</p>
-                <p>
-                  A: No. Account deletion is permanent and irreversible. Once deleted, all your data
-                  is permanently removed and cannot be recovered.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Q: How long does it take to delete my account?</p>
-                <p>
-                  A: Account deletion is immediate. Your account and associated data are deleted as
-                  soon as you confirm the deletion. Some data (billing history, security logs) may
-                  be retained for legal compliance.
                 </p>
               </div>
             </div>
@@ -306,51 +220,6 @@ export default function Support() {
                   A: No! The theme is hidden during gameplay and only revealed after you complete
                   the puzzle or use all your mistakes. This adds an element of discovery to the
                   game.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'troubleshooting',
-      title: 'Troubleshooting',
-      content: (
-        <div className="space-y-4 text-sm">
-          <div>
-            <h4 className="font-semibold mb-2">Common Issues and Solutions</h4>
-            <div className="space-y-3">
-              <div>
-                <p className="font-medium">Problem: Game shows yesterday's puzzle</p>
-                <p className="italic">
-                  Solution: Hard refresh the page (Ctrl+F5 on desktop, pull down to refresh on
-                  mobile) or force quit and reopen the iOS app.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Problem: Keyboard doesn't appear on mobile</p>
-                <p className="italic">Solution: Tap directly on the answer input field.</p>
-              </div>
-              <div>
-                <p className="font-medium">Problem: Dark mode isn't working</p>
-                <p className="italic">
-                  Solution: Toggle the moon/sun icon in the top corner. The preference saves
-                  automatically.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Problem: Can't share results</p>
-                <p className="italic">
-                  Solution: Ensure your device supports sharing. Try taking a screenshot if the
-                  share button isn't working.
-                </p>
-              </div>
-              <div>
-                <p className="font-medium">Problem: Streak reset unexpectedly</p>
-                <p className="italic">
-                  Solution: Streaks reset if you miss a day. For PWA users, clearing browser data
-                  will also reset streaks.
                 </p>
               </div>
             </div>
@@ -411,32 +280,6 @@ export default function Support() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Hard Mode Features</h4>
-            <div className="space-y-3 text-sm">
-              <div>
-                <p className="font-medium">Visual Indicators:</p>
-                <ul className="list-disc list-inside ml-2">
-                  <li>🔥 HARD MODE badge below puzzle date</li>
-                  <li>Red countdown timer showing time remaining</li>
-                  <li>
-                    Red-tinted stats bar with pulsing animation when time is critical (30s left)
-                  </li>
-                  <li>Special completion messages for Hard Mode victories</li>
-                </ul>
-              </div>
-
-              <div>
-                <p className="font-medium">Statistics:</p>
-                <ul className="list-disc list-inside ml-2">
-                  <li>Hard Mode games count toward regular statistics</li>
-                  <li>No separate hard mode stats tracking</li>
-                  <li>Streaks include both regular and hard mode completions</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-
-          <div>
             <h4 className="font-semibold mb-2">Strategy Tips</h4>
             <ul className="list-disc list-inside text-sm space-y-1">
               <li>
@@ -457,13 +300,423 @@ export default function Support() {
               </li>
             </ul>
           </div>
+        </div>
+      ),
+    },
+    {
+      id: 'troubleshooting',
+      title: 'Troubleshooting',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Common Issues and Solutions</h4>
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">Problem: Game shows yesterday's puzzle</p>
+                <p className="italic">
+                  Solution: Hard refresh the page (Ctrl+F5 on desktop, pull down to refresh on
+                  mobile) or force quit and reopen the iOS app.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Keyboard doesn't appear on mobile</p>
+                <p className="italic">Solution: Tap directly on the answer input field.</p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Dark mode isn't working</p>
+                <p className="italic">
+                  Solution: Toggle the moon/sun icon in the top corner. The preference saves
+                  automatically.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Can't share results</p>
+                <p className="italic">
+                  Solution: Ensure your device supports sharing. Try taking a screenshot if the
+                  share button isn't working.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Streak reset unexpectedly</p>
+                <p className="italic">
+                  Solution: Streaks reset if you miss a day. For PWA users, clearing browser data
+                  will also reset streaks.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
 
-          <div className="bg-[#38b6ff]/20 border-[3px] border-[#38b6ff] rounded-2xl p-4">
-            <p className="text-sm">
-              <strong>Note:</strong> Hard Mode is only available for subscribers with an active
-              Tandem Unlimited subscription. Non-subscribers will see the Hard Mode toggle greyed
-              out in Settings.
+  // Daily Cryptic sections
+  const crypticSections = [
+    {
+      id: 'cryptic-intro',
+      title: 'Introduction to Daily Cryptic',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">What is Daily Cryptic?</h4>
+            <p className="text-sm mb-3">
+              Daily Cryptic is a cryptic crossword-style puzzle game where each clue is a two-part puzzle:
+              a <strong>definition</strong> (straightforward meaning) and <strong>wordplay</strong> (clever
+              construction using cryptic devices).
             </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">The Emoji Innovation</h4>
+            <p className="text-sm mb-2">
+              Every Daily Cryptic puzzle uses <strong>exactly TWO emojis</strong> at the start of each clue.
+              These emojis can:
+            </p>
+            <ul className="list-disc list-inside text-sm space-y-1 ml-4">
+              <li>Work <strong>together</strong> to represent one concept (🐝🦂 = STING)</li>
+              <li>Each represent <strong>different parts</strong> of the clue (⚡ = indicator, 🏴‍☠️ = definition)</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Daily Puzzle Features</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li><strong>One puzzle daily</strong> at midnight in your local time</li>
+              <li><strong>4-tier hint system</strong> to help you learn (Fodder, Indicator, Definition, Letter)</li>
+              <li><strong>Archive access</strong> to play previous puzzles</li>
+              <li><strong>Dark mode support</strong> for comfortable solving</li>
+              <li><strong>No time limit</strong> - solve at your own pace</li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'emoji-mechanics',
+      title: 'Understanding Emoji Clues',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Pattern 1: Both Emojis Together</h4>
+            <p className="text-sm mb-2">
+              Sometimes both emojis combine to represent one word or concept:
+            </p>
+            <div className="space-y-2 text-sm">
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">👑🦁</span>
+                  <span className="font-semibold">→ ROYAL, PRIDE, or KING</span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Both together = regal concepts</p>
+              </div>
+              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">🐝🦂</span>
+                  <span className="font-semibold">→ STING or STINGING</span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">Both together = stinging creatures</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Pattern 2: Each Emoji Different Role</h4>
+            <p className="text-sm mb-2">
+              Sometimes each emoji serves a different purpose in the clue:
+            </p>
+            <div className="space-y-2 text-sm">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">⚡🏴‍☠️</span>
+                  <span className="font-semibold">→ Different purposes</span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  ⚡ might = anagram indicator, 🏴‍☠️ might = pirate/definition
+                </p>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-2xl">🎓🔀</span>
+                  <span className="font-semibold">→ Different purposes</span>
+                </div>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  🎓 might = academic/teacher, 🔀 might = anagram indicator
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-400">
+            <p className="text-sm">
+              <strong>💡 Key Insight:</strong> Look at the rest of the clue for context. The emojis provide
+              fodder (building blocks), indicators (operations), or thematic hints. They never directly show
+              the final answer!
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'cryptic-devices',
+      title: 'Common Cryptic Devices',
+      content: (
+        <div className="space-y-4">
+          <p className="text-sm mb-3">
+            Cryptic clues use various "devices" or techniques to construct the answer. Here are the most common:
+          </p>
+          <div className="space-y-3 text-sm">
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>🔀</span> Anagram
+              </div>
+              <p className="text-xs mb-1">Letters rearranged to form a new word</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: mixed, confused, scrambled, wild, broken, dancing, crazy
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>➕</span> Charade
+              </div>
+              <p className="text-xs mb-1">Two or more parts joined together (CAR + PET = CARPET)</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: with, and, before, after, following, by, next to
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>📦</span> Container
+              </div>
+              <p className="text-xs mb-1">One word placed inside another (B(AN)D = BAD)</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: in, into, within, holding, containing, around, about
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>✂️</span> Deletion
+              </div>
+              <p className="text-xs mb-1">Remove specific letters from a word</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: without, loses, drops, missing, headless, endless, heartless
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>↩️</span> Reversal
+              </div>
+              <p className="text-xs mb-1">Read a word or letters backward (STOP → POTS)</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: back, returned, reversed, reflected, retreating
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>🔍</span> Hidden Word
+              </div>
+              <p className="text-xs mb-1">Answer hiding in consecutive letters</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: in, within, part of, some of, concealed, buried
+              </p>
+            </div>
+            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
+              <div className="font-semibold mb-1 flex items-center gap-2">
+                <span>🔊</span> Homophone
+              </div>
+              <p className="text-xs mb-1">A word that sounds like another word</p>
+              <p className="text-xs italic text-gray-600 dark:text-gray-400">
+                Indicators: sounds like, heard, spoken, said, audibly, aloud
+              </p>
+            </div>
+          </div>
+          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400">
+            <p className="text-sm">
+              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine emoji interpretation with 2-3
+              traditional devices. Look for multiple indicator words in the clue!
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'hint-system',
+      title: 'The Hint System',
+      content: (
+        <div className="space-y-4">
+          <p className="text-sm mb-3">
+            Daily Cryptic offers a 4-tier progressive hint system. Each hint builds on the previous one:
+          </p>
+          <div className="space-y-3">
+            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
+              <div className="font-semibold mb-1">1. Fodder (Most Detailed)</div>
+              <p className="text-sm">
+                Identifies all components: what the emoji pair represents, what each piece of text means,
+                any substitutions needed. Walks you through the raw materials.
+              </p>
+            </div>
+            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+              <div className="font-semibold mb-1">2. Indicator (Operational)</div>
+              <p className="text-sm">
+                Points out indicator words and what cryptic operations they signal. Tells you what to DO
+                with the fodder (rearrange? reverse? combine?).
+              </p>
+            </div>
+            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300">
+              <div className="font-semibold mb-1">3. Definition (Concise)</div>
+              <p className="text-sm">
+                Reveals which part of the clue is the straightforward definition - your synonym for the answer.
+              </p>
+            </div>
+            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
+              <div className="font-semibold mb-1">4. First Letter (Final Nudge)</div>
+              <p className="text-sm">
+                Gives you the first letter of the answer. This is your last hint before solving!
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'solving-tips',
+      title: 'Solving Strategy',
+      content: (
+        <div className="space-y-4">
+          <ul className="space-y-3 text-sm">
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">1.</span>
+              <div>
+                <span className="font-semibold">Start with the emojis</span> - What do they suggest? They might
+                work together or serve different roles.
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">2.</span>
+              <div>
+                <span className="font-semibold">Find the definition</span> - Usually at the start or end of the
+                clue, it's a straightforward synonym for the answer.
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">3.</span>
+              <div>
+                <span className="font-semibold">Spot the indicators</span> - Words like "mixed", "back", "in",
+                "loses" tell you what operation to perform.
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">4.</span>
+              <div>
+                <span className="font-semibold">Identify the fodder</span> - Which words/letters will you manipulate?
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">5.</span>
+              <div>
+                <span className="font-semibold">Use hints progressively</span> - Start with Hint 1, then 2, etc.
+                They build on each other!
+              </div>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="font-bold text-purple-600 dark:text-purple-400">6.</span>
+              <div>
+                <span className="font-semibold">Think laterally</span> - Cryptic clues reward creative thinking.
+              </div>
+            </li>
+          </ul>
+          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-400 mt-4">
+            <p className="text-sm font-semibold mb-2">Remember:</p>
+            <ul className="space-y-1 text-sm">
+              <li>✓ Every word in a cryptic clue has a purpose</li>
+              <li>✓ Emojis might work together or represent different parts</li>
+              <li>✓ There's no penalty for using hints - they're designed to teach!</li>
+              <li>✓ The more you play, the better you'll recognize patterns</li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
+  // Shared sections (platforms, account, contact)
+  const sharedSections = [
+    {
+      id: 'platforms',
+      title: 'Available Platforms',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">iOS App (iPhone & iPad)</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Native iOS app</strong> available on the Apple App Store
+              </li>
+              <li>Full offline support - play without internet connection</li>
+              <li>Optimized for iPhone and iPad</li>
+              <li>Tandem Unlimited subscription with full Hard Mode support</li>
+              <li>Download from the App Store</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Progressive Web App (PWA)</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Web-based version</strong> accessible from any browser
+              </li>
+              <li>Install to home screen for app-like experience</li>
+              <li>Works on all devices with modern browsers</li>
+              <li>Tandem Unlimited subscription available via Stripe</li>
+              <li>Requires internet connection to play</li>
+              <li>Visit tandemdaily.com to play</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Android App</h4>
+            <p className="text-sm">
+              <strong>Coming Soon</strong> to Google Play Store. Currently, Android users can enjoy
+              the PWA version. Visit tandemdaily.com on your Android device.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'account',
+      title: 'Account Management',
+      content: (
+        <div className="space-y-4">
+          <div className="space-y-3 text-sm">
+            <div>
+              <p className="font-medium">Q: How do I delete my account?</p>
+              <p>
+                A: You can delete your account directly in the app. Web users: Go to Account page
+                → Danger Zone → Delete Account. iOS users: Go to Settings → Account → Manage
+                Account → Danger Zone → Delete Account. You will be asked to confirm before
+                deletion proceeds.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Q: What happens when I delete my account?</p>
+              <p>
+                A: Account deletion is immediate and permanent. All your account data, game
+                progress, statistics, and preferences will be deleted. If you used Sign in with
+                Apple, your authorization will be revoked. Note: Billing history is retained for 7
+                years for legal compliance.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Q: Will deleting my account cancel my subscription?</p>
+              <p>
+                A: No! Account deletion does NOT cancel your subscription. You must cancel
+                separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web:
+                Cancel via the Stripe billing portal (accessible from Account page → Manage
+                Account). Cancel your subscription BEFORE deleting your account to avoid continued
+                billing.
+              </p>
+            </div>
+            <div>
+              <p className="font-medium">Q: Can I recover my account after deletion?</p>
+              <p>
+                A: No. Account deletion is permanent and irreversible. Once deleted, all your data
+                is permanently removed and cannot be recovered.
+              </p>
+            </div>
           </div>
         </div>
       ),
@@ -497,6 +750,7 @@ export default function Support() {
             <h4 className="font-semibold mb-2">When Contacting Support</h4>
             <p className="text-sm mb-2">Please include:</p>
             <ul className="list-disc list-inside text-sm space-y-1">
+              <li>Which game (Tandem Daily or Daily Cryptic)</li>
               <li>Platform (iOS app or PWA)</li>
               <li>Device type and operating system</li>
               <li>App version (iOS) or browser name and version (PWA)</li>
@@ -506,16 +760,9 @@ export default function Support() {
             </ul>
           </div>
           <div>
-            <h4 className="font-semibold mb-2">Feedback & Suggestions</h4>
-            <p className="text-sm mb-3">
-              We love hearing from our players! Share your feedback, feature requests, bug reports,
-              and puzzle suggestions at support@goodvibesgames.com
-            </p>
-          </div>
-          <div>
             <h4 className="font-semibold mb-2">Join Our Community</h4>
             <p className="text-sm mb-3">
-              Connect with other Tandem players, share strategies, and stay updated:
+              Connect with other players, share strategies, and stay updated:
             </p>
             <div className="space-y-2 text-sm">
               <p>
@@ -547,17 +794,12 @@ export default function Support() {
     },
   ];
 
+  const currentSections = activeGame === 'tandem'
+    ? [...tandemSections, ...sharedSections]
+    : [...crypticSections, ...sharedSections];
+
   return (
-    <div
-      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-      style={{
-        backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
@@ -582,16 +824,64 @@ export default function Support() {
             <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
               {/* Header */}
               <div className="bg-[#38b6ff] border-b-[3px] border-black dark:border-white p-6 text-black">
-                <h1 className="text-3xl font-bold">Tandem Support</h1>
-                <p className="mt-2 text-black/80">
-                  Welcome! We're here to help you enjoy your daily puzzle experience.
+                <h1 className="text-3xl font-bold mb-2">Support & Help</h1>
+                <p className="text-black/80 text-sm mb-4">
+                  Welcome! We're here to help you enjoy your puzzle experience.
                 </p>
+
+                {/* Game Toggle */}
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setActiveGame('tandem');
+                      setActiveSection(null);
+                    }}
+                    className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                      activeGame === 'tandem'
+                        ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Image
+                        src={tandemIcon}
+                        alt="Tandem Daily"
+                        width={24}
+                        height={24}
+                        className="w-6 h-6"
+                      />
+                      <span>Tandem Daily</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActiveGame('cryptic');
+                      setActiveSection(null);
+                    }}
+                    className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                      activeGame === 'cryptic'
+                        ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                    }`}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <Image
+                        src="/icons/ui/cryptic.png"
+                        alt="Daily Cryptic"
+                        width={24}
+                        height={24}
+                        className="w-6 h-6 rounded-lg"
+                      />
+                      <span>Daily Cryptic</span>
+                    </div>
+                  </button>
+                </div>
               </div>
 
               {/* Content */}
               <div className="p-6">
                 <div className="space-y-2">
-                  {sections.map((section) => (
+                  {currentSections.map((section) => (
                     <div
                       key={section.id}
                       className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
@@ -660,10 +950,6 @@ export default function Support() {
             <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
-          {/* Additional info */}
-          <div className="mt-6 text-center text-white/80 text-sm">
-            <p>Thank you for playing Tandem! We hope you enjoy your daily puzzle adventure.</p>
-          </div>
         </div>
       </div>
     </div>

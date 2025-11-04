@@ -13,6 +13,7 @@ const AuthContext = createContext({
   signOut: async () => {},
   signInWithGoogle: async () => {},
   signInWithApple: async () => {},
+  resetPassword: async () => {},
 });
 
 /**
@@ -94,6 +95,9 @@ export function AuthProvider({ children }) {
    */
   const signUp = async (email, password, metadata = {}) => {
     try {
+      // Run cleanup before sign up to ensure we have space for auth token
+      await autoCleanupIfNeeded();
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -107,24 +111,40 @@ export function AuthProvider({ children }) {
 
       if (error) throw error;
 
-      // Create user profile in database
-      if (data.user) {
-        const { error: profileError } = await supabase.from('users').insert({
-          id: data.user.id,
-          email: data.user.email,
-          full_name: metadata.full_name || null,
-          avatar_url: metadata.avatar_url || null,
-        });
-
-        if (profileError && profileError.code !== '23505') {
-          // Ignore duplicate key errors (user already exists)
-          console.error('Failed to create user profile:', profileError);
-        }
-      }
+      // User profile is automatically created by database trigger
+      // (see migration 006_auto_create_user_profile.sql)
 
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
       console.error('Sign up error:', error);
+
+      // If quota exceeded, try emergency cleanup and retry once
+      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+        console.warn('[Auth] Storage quota exceeded during signup, attempting emergency cleanup...');
+        try {
+          const { emergencyCleanup } = await import('@/lib/storageCleanup');
+          await emergencyCleanup();
+
+          // Retry sign up after cleanup
+          const { data, error: retryError } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+              data: metadata,
+              emailRedirectTo: `${window.location.origin}/`,
+            },
+          });
+
+          if (retryError) throw retryError;
+
+          // User profile is automatically created by database trigger
+
+          return { user: data.user, session: data.session, error: null };
+        } catch (cleanupError) {
+          console.error('[Auth] Emergency cleanup/retry failed:', cleanupError);
+        }
+      }
+
       return { user: null, session: null, error };
     }
   };
@@ -138,6 +158,9 @@ export function AuthProvider({ children }) {
    */
   const signIn = async (email, password) => {
     try {
+      // Run cleanup before sign in to ensure we have space for auth token
+      await autoCleanupIfNeeded();
+
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -148,6 +171,28 @@ export function AuthProvider({ children }) {
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
       console.error('Sign in error:', error);
+
+      // If quota exceeded, try emergency cleanup and retry once
+      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+        console.warn('[Auth] Storage quota exceeded, attempting emergency cleanup...');
+        try {
+          const { emergencyCleanup } = await import('@/lib/storageCleanup');
+          await emergencyCleanup();
+
+          // Retry sign in after cleanup
+          const { data, error: retryError } = await supabase.auth.signInWithPassword({
+            email,
+            password,
+          });
+
+          if (retryError) throw retryError;
+
+          return { user: data.user, session: data.session, error: null };
+        } catch (cleanupError) {
+          console.error('[Auth] Emergency cleanup/retry failed:', cleanupError);
+        }
+      }
+
       return { user: null, session: null, error };
     }
   };
@@ -311,6 +356,30 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /**
+   * Request a password reset email
+   *
+   * Sends a password reset email to the user's email address.
+   * The email will contain a link to reset their password.
+   *
+   * @param {string} email - User's email address
+   * @returns {Promise<{error}>}
+   */
+  const resetPassword = async (email) => {
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) throw error;
+
+      return { error: null };
+    } catch (error) {
+      console.error('Password reset error:', error);
+      return { error };
+    }
+  };
+
   const value = {
     user,
     session,
@@ -320,6 +389,7 @@ export function AuthProvider({ children }) {
     signOut,
     signInWithGoogle,
     signInWithApple,
+    resetPassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

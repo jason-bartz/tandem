@@ -53,8 +53,8 @@ export async function GET(request) {
       return acc + char.charCodeAt(0);
     }, 0);
 
-    // Calculate horoscope number (1-30) using date seed
-    const horoscopeNumber = (seed % 30) + 1;
+    // Calculate horoscope number (1-100) using date seed
+    const horoscopeNumber = (seed % 100) + 1;
 
     // Fetch horoscope from database
     const { data, error } = await supabase

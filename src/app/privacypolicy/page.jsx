@@ -8,9 +8,6 @@ export default function PrivacyPolicy() {
   const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
-
   const sections = [
     {
       id: 'introduction',
@@ -18,13 +15,13 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Tandem ("we," "our," or "us"), a daily word puzzle game developed by Good
+            Welcome to Tandem Daily and Daily Cryptic ("we," "our," or "us"), daily word puzzle games developed by Good
             Vibes Games. We respect your privacy and are committed to protecting your personal data.
             This privacy policy explains how we collect, use, and safeguard information when you
-            play our game at tandemdaily.com (the "Service").
+            play our games at tandemdaily.com (the "Service").
           </p>
           <p>
-            By using Tandem, you agree to the collection and use of information in accordance with
+            By using Tandem Daily or Daily Cryptic, you agree to the collection and use of information in accordance with
             this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -324,18 +321,18 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Tandem is suitable for all ages. We do not knowingly collect personal information from
-            children under 13. The game:
+            Tandem Daily and Daily Cryptic are suitable for all ages. We do not knowingly collect personal information from
+            children under 13. Both games:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>Does not require account creation to play (iOS and free web access)</li>
+            <li>Do not require account creation to play (iOS and free web access)</li>
             <li>Web accounts require parental consent for users under 18</li>
             <li>
-              Does not collect personal information beyond what's necessary for account management
+              Do not collect personal information beyond what's necessary for account management
               (web accounts only)
             </li>
-            <li>Does not include chat or communication features</li>
-            <li>Contains no inappropriate content</li>
+            <li>Do not include chat or communication features</li>
+            <li>Contain no inappropriate content</li>
           </ul>
           <p className="mt-2">
             If a parent or guardian becomes aware that their child under 13 has created a web
@@ -583,16 +580,7 @@ export default function PrivacyPolicy() {
   ];
 
   return (
-    <div
-      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-      style={{
-        backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
       {/* Scrollable content container */}
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
@@ -625,74 +613,81 @@ export default function PrivacyPolicy() {
               <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                 <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Tandem is designed with privacy in mind:
+                  Tandem Daily and Daily Cryptic are designed with privacy in mind:
                 </p>
-                <ul className="text-sm space-y-1">
-                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <ul className="text-sm space-y-2">
+                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    No account required for free play
+                    <span>No account required for free play</span>
                   </li>
-                  <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    Optional web accounts for subscriptions (email + password or Google OAuth)
+                    <span>Optional web accounts for subscriptions (email + password or Google OAuth)</span>
                   </li>
-                  <li className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    Gameplay scores stored on our servers for leaderboards
+                    <span>Gameplay scores stored on our servers for leaderboards</span>
                   </li>
-                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    No ads or third-party trackers
+                    <span>No ads or third-party trackers</span>
                   </li>
-                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    No data sales to third parties
+                    <span>No data sales to third parties</span>
                   </li>
-                  <li className="flex items-center gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                       <path
                         fillRule="evenodd"
                         d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
                         clipRule="evenodd"
                       />
                     </svg>
-                    Family-friendly and safe for all ages
+                    <span>Family-friendly and safe for all ages</span>
                   </li>
                 </ul>
               </div>
 
               {/* Content */}
               <div className="p-6 pt-0">
+                {/* Thank you message */}
+                <div className="mb-6 p-4 bg-[#7ed957]/10 border-[3px] border-[#7ed957] rounded-2xl">
+                  <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+                    Thank you for playing <strong>Tandem Daily</strong> and <strong>Daily Cryptic</strong>!
+                  </p>
+                </div>
+
                 <div className="space-y-2">
                   {sections.map((section) => (
                     <div
@@ -736,10 +731,6 @@ export default function PrivacyPolicy() {
             <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
           </div>
 
-          {/* Additional info */}
-          <div className="mt-6 text-center text-white/80 text-sm">
-            <p>Thank you for playing Tandem!</p>
-          </div>
         </div>
       </div>
     </div>

@@ -293,12 +293,12 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 type="button"
                 onClick={handleGenerateWithAI}
                 disabled={generating || loading}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-pink to-accent-yellow border-[3px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ boxShadow: 'var(--shadow-button)' }}
                 title="Generate puzzle with AI"
               >
                 {generating ? (
-                  <span className="flex items-center gap-2">
+                  <span className="flex items-center gap-2 justify-center">
                     <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                       <circle
                         className="opacity-25"
@@ -315,11 +315,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    <span className="hidden sm:inline">Generating...</span>
+                    <span>Generating...</span>
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1">
-                    ✨ <span className="hidden sm:inline">AI Generate</span>
+                  <span className="flex items-center gap-1 justify-center">
+                    <span className="hidden sm:inline">✨</span>
+                    <span>AI</span>
+                    <span className="hidden sm:inline">Generate</span>
                   </span>
                 )}
               </button>
@@ -415,12 +417,12 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                   type="button"
                   onClick={handleAssessDifficulty}
                   disabled={assessingDifficulty || generating || loading}
-                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-pink to-accent-orange border-[3px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-orange text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ boxShadow: 'var(--shadow-button)' }}
                   title="Assess difficulty using AI"
                 >
                   {assessingDifficulty ? (
-                    <span className="flex items-center gap-2">
+                    <span className="flex items-center gap-2 justify-center">
                       <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
@@ -437,11 +439,11 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                         />
                       </svg>
-                      <span className="hidden sm:inline">Assessing...</span>
+                      <span>Assessing...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1">
-                      🎯 <span className="hidden sm:inline">Assess Difficulty</span>
+                    <span className="flex items-center gap-1 justify-center">
+                      🎯 <span>Assess Difficulty</span>
                     </span>
                   )}
                 </button>
@@ -519,7 +521,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
             <button
               type="submit"
               disabled={loading || !validateForm()}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-gradient-to-r from-accent-green to-accent-blue border-[3px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ boxShadow: 'var(--shadow-button)' }}
             >
               {loading ? 'Saving...' : 'Save Puzzle'}

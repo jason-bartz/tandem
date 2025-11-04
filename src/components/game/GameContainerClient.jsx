@@ -7,6 +7,8 @@ import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useDeviceType } from '@/lib/deviceDetection';
+import { useAuth } from '@/contexts/AuthContext';
+import { useAvatarPrompt } from '@/hooks/useAvatarPrompt';
 import { GAME_STATES, GAME_CONFIG, STORAGE_KEYS } from '@/lib/constants';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
@@ -14,6 +16,7 @@ import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
+import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
@@ -29,8 +32,12 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
   const { isMobilePhone, isSmallPhone } = useDeviceType();
+  const { user } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Avatar prompt for first-time users (with 2-second delay for UX)
+  const { showAvatarPrompt, dismissPrompt, closePrompt } = useAvatarPrompt(user, 2000);
 
   // Check if user has seen onboarding (iOS only)
   useEffect(() => {
@@ -223,21 +230,10 @@ export default function GameContainerClient({ initialPuzzleData }) {
     }
   };
 
-  const backgroundImage =
-    theme === 'dark' ? "url('/images/dark-mode-bg.webp')" : "url('/images/light-mode-bg.webp')";
-
   // Show loading while checking onboarding status or loading game
   if (!onboardingChecked || game.loading) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{
-          backgroundImage: "url('/images/light-mode-bg.webp')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <LoadingSpinner />
       </div>
     );
@@ -246,16 +242,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Show onboarding flow if user hasn't seen it yet
   if (showOnboarding) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full"
-        style={{
-          backgroundImage,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-          backgroundAttachment: 'fixed',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full bg-bg-primary">
         <OnboardingFlow
           onComplete={() => {
             setShowOnboarding(false);
@@ -267,15 +254,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   if (game.error) {
     return (
-      <div
-        className="fixed inset-0 w-full h-full flex items-center justify-center"
-        style={{
-          backgroundImage,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
-      >
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
@@ -291,16 +270,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   }
 
   return (
-    <div
-      className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden"
-      style={{
-        backgroundImage: backgroundImage,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
-      }}
-    >
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
       {/* Version checker for iOS app updates */}
       <VersionChecker />
       <AchievementToast />
@@ -376,6 +346,25 @@ export default function GameContainerClient({ initialPuzzleData }) {
           )}
         </div>
       </div>
+
+      {/* Avatar Selection Modal - First-time prompt */}
+      {/* Only shown after onboarding completes and game loads */}
+      {onboardingChecked && !showOnboarding && showAvatarPrompt && user && (
+        <AvatarSelectionModal
+          isOpen={showAvatarPrompt}
+          onClose={(avatarId) => {
+            if (avatarId) {
+              // Avatar selected
+              closePrompt();
+            } else {
+              // Skipped - dismiss permanently
+              dismissPrompt();
+            }
+          }}
+          userId={user.id}
+          isFirstTime={true}
+        />
+      )}
     </div>
   );
 }

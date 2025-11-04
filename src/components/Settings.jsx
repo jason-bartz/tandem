@@ -1,14 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import PaywallModal from '@/components/PaywallModal';
+import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useHoroscope } from '@/hooks/useHoroscope';
 import notificationService from '@/services/notificationService';
+import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import GameCenterButton from '@/components/GameCenterButton';
 import { STORAGE_KEYS } from '@/lib/constants';
@@ -22,6 +26,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
   const [signingIn, setSigningIn] = useState(false);
+  const [userAvatar, setUserAvatar] = useState(null);
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
+  const [loadingAvatar, setLoadingAvatar] = useState(false);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic, lightTap } = useHaptics();
   const {
     theme,
@@ -49,12 +56,17 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       loadLeaderboardPreference();
       checkAppBannerVisibility();
 
+      // Load user avatar if signed in
+      if (user) {
+        loadUserAvatar();
+      }
+
       // Auto-open paywall if requested
       if (openPaywall) {
         setShowPaywall(true);
       }
     }
-  }, [isOpen, openPaywall]);
+  }, [isOpen, openPaywall, user]);
 
   const checkAppBannerVisibility = () => {
     // Only show banner on web version
@@ -112,6 +124,116 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     } catch (error) {
       console.error('Failed to load leaderboard preference:', error);
       setLeaderboardsEnabled(true); // Default to true on error
+    }
+  };
+
+  const loadUserAvatar = async () => {
+    if (!user?.id) return;
+
+    try {
+      setLoadingAvatar(true);
+
+      // Mobile game dev best practice: Load from cache immediately to prevent flash
+      const cacheKey = `user_avatar_${user.id}`;
+      const cachedData = localStorage.getItem(cacheKey);
+      if (cachedData) {
+        try {
+          const cached = JSON.parse(cachedData);
+          // Check if cache is recent (within 5 minutes)
+          if (cached.timestamp && Date.now() - cached.timestamp < 5 * 60 * 1000) {
+            setUserAvatar(cached.data);
+            setLoadingAvatar(false); // Set loading to false immediately with cached data
+          }
+        } catch (e) {
+          // Invalid cache, continue with network fetch
+          console.warn('[Settings] Invalid avatar cache:', e);
+        }
+      }
+
+      // Fetch fresh data in background
+      const profile = await avatarService.getUserProfileWithAvatar(user.id);
+      setUserAvatar(profile);
+
+      // Cache the result for future loads
+      if (profile) {
+        try {
+          localStorage.setItem(
+            cacheKey,
+            JSON.stringify({
+              data: profile,
+              timestamp: Date.now(),
+            })
+          );
+        } catch (e) {
+          // Storage quota exceeded - non-critical, just log
+          console.warn('[Settings] Failed to cache avatar data:', e);
+        }
+      }
+    } catch (error) {
+      console.error('[Settings] Failed to load user avatar:', error);
+      // Fail silently - avatar is non-critical feature
+    } finally {
+      setLoadingAvatar(false);
+    }
+  };
+
+  // Helper functions for horoscope
+  const getUserTimezone = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return 'UTC';
+    }
+  };
+
+  const getZodiacSign = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+
+    const zodiacSigns = [
+      { sign: 'Capricorn ♑', name: 'Capricorn', emoji: '♑', start: [12, 22], end: [1, 19] },
+      { sign: 'Aquarius ♒', name: 'Aquarius', emoji: '♒', start: [1, 20], end: [2, 18] },
+      { sign: 'Pisces ♓', name: 'Pisces', emoji: '♓', start: [2, 19], end: [3, 20] },
+      { sign: 'Aries ♈', name: 'Aries', emoji: '♈', start: [3, 21], end: [4, 19] },
+      { sign: 'Taurus ♉', name: 'Taurus', emoji: '♉', start: [4, 20], end: [5, 20] },
+      { sign: 'Gemini ♊', name: 'Gemini', emoji: '♊', start: [5, 21], end: [6, 20] },
+      { sign: 'Cancer ♋', name: 'Cancer', emoji: '♋', start: [6, 21], end: [7, 22] },
+      { sign: 'Leo ♌', name: 'Leo', emoji: '♌', start: [7, 23], end: [8, 22] },
+      { sign: 'Virgo ♍', name: 'Virgo', emoji: '♍', start: [8, 23], end: [9, 22] },
+      { sign: 'Libra ♎', name: 'Libra', emoji: '♎', start: [9, 23], end: [10, 22] },
+      { sign: 'Scorpio ♏', name: 'Scorpio', emoji: '♏', start: [10, 23], end: [11, 21] },
+      { sign: 'Sagittarius ♐', name: 'Sagittarius', emoji: '♐', start: [11, 22], end: [12, 21] },
+    ];
+
+    for (const zodiac of zodiacSigns) {
+      const [startMonth, startDay] = zodiac.start;
+      const [endMonth, endDay] = zodiac.end;
+
+      if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
+        return { display: zodiac.sign, name: zodiac.name };
+      }
+    }
+
+    return null;
+  };
+
+  // Get zodiac sign and horoscope
+  const zodiacData = user?.created_at ? getZodiacSign(user.created_at) : null;
+  const userTimezone = getUserTimezone();
+  const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
+
+  const handleAvatarChange = (avatarId) => {
+    setShowAvatarModal(false);
+    if (avatarId) {
+      // Invalidate cache when avatar changes
+      const cacheKey = `user_avatar_${user.id}`;
+      localStorage.removeItem(cacheKey);
+
+      // Avatar was selected, reload avatar data
+      loadUserAvatar();
+      successHaptic();
     }
   };
 
@@ -325,6 +447,34 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 <>
                   {/* User is signed in */}
                   <div className="flex items-start gap-3">
+                    {/* Avatar Image - Apple HIG: 48pt avatar with rounded corners */}
+                    {loadingAvatar && !userAvatar ? (
+                      // Skeleton loader - mobile game best practice
+                      <div className="relative w-12 h-12 rounded-xl border-[2px] border-gray-300 dark:border-gray-600 flex-shrink-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setShowAvatarModal(true);
+                          lightTap();
+                        }}
+                        className="relative w-12 h-12 rounded-xl overflow-hidden border-[2px] border-purple-500 dark:border-purple-400 flex-shrink-0 hover:scale-105 transition-transform"
+                        aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
+                      >
+                        <Image
+                          src={
+                            userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
+                              ? userAvatar.avatar_image_path
+                              : '/images/avatars/default-profile.png'
+                          }
+                          alt={userAvatar?.avatar_display_name || 'Profile'}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                          priority
+                        />
+                      </button>
+                    )}
+
                     <div className="flex-1">
                       {user.user_metadata?.full_name && (
                         <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
@@ -335,27 +485,45 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         {user.email}
                       </p>
                       <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
-
-                      {/* Tandem Unlimited Badge - Show if subscribed */}
-                      {isSubscriptionActive && (
-                        <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border-[2px] border-yellow-500 bg-transparent">
-                          <img
-                            src={
-                              theme === 'dark'
-                                ? '/icons/ui/tandem-unlimited-dark.png'
-                                : '/icons/ui/tandem-unlimited.png'
-                            }
-                            alt="Unlimited"
-                            className="w-4 h-4"
-                          />
-                          <span className="text-xs font-bold text-gray-800 dark:text-gray-200">
-                            Tandem Unlimited
-                          </span>
-                          <span className="text-xs text-gray-600 dark:text-gray-400">• Active</span>
-                        </div>
-                      )}
                     </div>
                   </div>
+
+                  {/* Avatar Selection Prompt - Show if no avatar selected */}
+                  {!loadingAvatar && !userAvatar?.selected_avatar_id && (
+                    <div className="mt-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">
+                        Choose Your Avatar!
+                      </p>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 mb-2">
+                        Select a personalized avatar to represent you in Tandem.
+                      </p>
+                      <button
+                        onClick={() => {
+                          setShowAvatarModal(true);
+                          lightTap();
+                        }}
+                        className={`text-xs font-medium px-3 py-1.5 rounded-lg border-[2px] transition-all ${
+                          highContrast
+                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-purple-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                        }`}
+                      >
+                        Select Avatar
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Daily Horoscope - Show if available */}
+                  {zodiacData && horoscope && !horoscopeLoading && (
+                    <div className="mt-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
+                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">
+                        Your Tandem Horoscope Today ({zodiacData.display}):
+                      </p>
+                      <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
+                        {horoscope.text}
+                      </p>
+                    </div>
+                  )}
 
                   {/* Manage Account Button - Navigate within app for all platforms */}
                   <Link
@@ -542,7 +710,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           </p>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          3-minute time limit • No hints available
+                          Affects Tandem Daily: 3-minute time limit • No hints
                         </p>
                       </div>
                       <button
@@ -593,9 +761,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
 
                   {/* Hard Mode - Disabled for non-subscribers */}
                   <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl border-[3px] border-gray-300 dark:border-gray-700 p-4 opacity-60">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className="flex items-center gap-2">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
                           <img
                             src={
                               theme === 'dark'
@@ -603,20 +771,20 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                 : '/icons/ui/hardmode.png'
                             }
                             alt="Hard Mode"
-                            className="w-5 h-5 opacity-50"
+                            className="w-5 h-5 opacity-50 flex-shrink-0"
                           />
-                          <p className="text-sm font-semibold text-gray-500 dark:text-gray-500">
+                          <p className="text-sm font-semibold text-gray-500 dark:text-gray-500 flex-shrink-0">
                             Hard Mode
                           </p>
-                          <span className="text-xs bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">
+                          <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
                             Tandem Unlimited
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          3-minute time limit • No hints available
+                          Affects Tandem Daily: 3-minute time limit • No hints
                         </p>
                       </div>
-                      <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed">
+                      <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed flex-shrink-0">
                         <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-gray-300 dark:bg-gray-600 transition-transform" />
                       </div>
                     </div>
@@ -1244,6 +1412,15 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         onPurchaseComplete={() => {
           loadSubscriptionInfo();
         }}
+      />
+
+      {/* Avatar Selection Modal */}
+      <AvatarSelectionModal
+        isOpen={showAvatarModal}
+        onClose={handleAvatarChange}
+        userId={user?.id}
+        currentAvatarId={userAvatar?.selected_avatar_id}
+        isFirstTime={false}
       />
     </div>
   );
