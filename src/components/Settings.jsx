@@ -458,7 +458,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           lightTap();
                         }}
                         className="relative w-12 h-12 rounded-xl overflow-hidden border-[2px] border-purple-500 dark:border-purple-400 flex-shrink-0 hover:scale-105 transition-transform"
-                        aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
+                        aria-label={
+                          userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
+                        }
                       >
                         <Image
                           src={
@@ -517,7 +519,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   {zodiacData && horoscope && !horoscopeLoading && (
                     <div className="mt-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
                       <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">
-                        Your Tandem Horoscope Today ({zodiacData.display}):
+                        Today's Tandem Horoscope ({zodiacData.display}):
                       </p>
                       <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
                         {horoscope.text}
@@ -538,7 +540,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                     }`}
                   >
-                    Manage Account & Subscription
+                    Manage Your Account
                   </Link>
                 </>
               ) : (
