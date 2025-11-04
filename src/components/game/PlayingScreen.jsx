@@ -398,266 +398,273 @@ export default function PlayingScreen({
   };
 
   return (
-    <div className="animate-slide-up">
+    <div className="fixed inset-0 flex flex-col animate-slide-up">
       {/* Hint Earned Toast */}
       <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
 
-      {/* Control buttons */}
-      <div className="flex justify-end gap-2 mb-2 sm:mb-3 px-4 sm:px-0">
-        <button
-          onClick={() => {
-            lightTap();
-            setShowStats(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Statistics"
-        >
-          <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowArchive(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Archive"
-        >
-          <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowHowToPlay(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="How to Play"
-        >
-          <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowSettings(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Settings"
-        >
-          <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Main game card */}
-      <div
-        ref={puzzleContainerRef}
-        className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}
-        style={{ height: 'calc(100dvh - 9rem)' }}
-      >
-        {/* Header - logo hidden on all devices, content centered */}
-        <div
-          className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center flex-shrink-0 ${
-            highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
-          }`}
-        >
-          <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
+      {/* Control buttons - Fixed to top with safe-area */}
+      <div className="fixed top-0 left-0 right-0 z-10 pt-safe">
+        <div className="max-w-xl w-full mx-auto px-4">
+          <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
             <button
               onClick={() => {
                 lightTap();
-                onReturnToWelcome();
+                setShowStats(true);
               }}
-              className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-              title="Back to Home"
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              }`}
+              title="Statistics"
             >
-              <svg
-                className="w-5 h-5 text-gray-600 dark:text-gray-300"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
+              <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
             </button>
-            <div className="flex flex-col items-center">
-              <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
-              {isHardMode && (
-                <div className="flex items-center gap-2 mt-1">
-                  <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
-                    <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
-                    HARD MODE
-                  </span>
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => {
+                lightTap();
+                setShowArchive(true);
+              }}
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              }`}
+              title="Archive"
+            >
+              <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => {
+                lightTap();
+                setShowHowToPlay(true);
+              }}
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              }`}
+              title="How to Play"
+            >
+              <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
+            </button>
+            <button
+              onClick={() => {
+                lightTap();
+                setShowSettings(true);
+              }}
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              }`}
+              title="Settings"
+            >
+              <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
+            </button>
           </div>
         </div>
+      </div>
 
-        {/* Scrollable Content Area */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6" ref={contentRef}>
-          <div className="max-w-lg mx-auto">
-            <StatsBar
-              time={formatTime(time)}
-              mistakes={mistakes}
-              solved={solved}
-              isSmallPhone={isSmallPhone}
-              isMobilePhone={isMobilePhone}
-              isHardMode={isHardMode}
-              hardModeTimeLimit={hardModeTimeLimit}
-            />
-
-            <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4">
-              {puzzle &&
-                puzzle.puzzles &&
-                puzzle.puzzles.map((p, index) => (
-                  <div key={index} className="relative">
-                    <PuzzleRow
-                      emoji={p.emoji || '❓❓'}
-                      value={answers[index]}
-                      onChange={(answerIndex, value) => onUpdateAnswer(answerIndex, value)}
-                      isCorrect={correctAnswers[index]}
-                      isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
-                      index={index}
-                      onFocus={() => setFocusedIndex(index)}
-                      isFocused={focusedIndex === index}
-                      readonly={true}
-                      hasHint={hintedAnswers.includes(index)}
-                      lockedLetters={lockedLetters[index]}
-                      answerLength={
-                        p.answer
-                          ? p.answer.includes(',')
-                            ? p.answer.split(',')[0].trim().length
-                            : p.answer.length
-                          : 0
-                      }
-                      onKeyboardInput={handleKeyboardInput}
-                      themeColor={puzzle?.themeColor || '#3B82F6'}
-                      isSmallPhone={isSmallPhone}
-                      isMobilePhone={isMobilePhone}
-                    />
-                    {/* Show hint below this answer if it's the active hint */}
-                    <HintDisplay
-                      hint={p.hint}
-                      isVisible={activeHintIndex === index && !correctAnswers[index]}
-                      answerIndex={index}
-                      isSmallPhone={isSmallPhone}
-                      isMobilePhone={isMobilePhone}
-                    />
-                  </div>
-                ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Fixed Bottom Section - Hint Button + Keyboard */}
-        <div className="flex-shrink-0 p-4 sm:p-6">
-          <div className="max-w-lg mx-auto">
-            {/* Hint button - positioned before keyboard (not shown in hard mode) */}
-            {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
-              <div className="mb-3">
-                <motion.button
+      {/* Main game card */}
+      <div className="flex-1 flex flex-col pt-20 pb-safe">
+        <div className="max-w-xl w-full h-full mx-auto flex flex-col px-4">
+          <div
+            ref={puzzleContainerRef}
+            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col ${
+              highContrast
+                ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            }`}
+          >
+            {/* Header - logo hidden on all devices, content centered */}
+            <div
+              className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center flex-shrink-0 ${
+                highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
+              }`}
+            >
+              <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
+                <button
                   onClick={() => {
                     lightTap();
-                    handleUseHint();
+                    onReturnToWelcome();
                   }}
-                  className={`w-full ${
-                    isSmallPhone ? 'p-2.5' : isMobilePhone ? 'p-3' : 'p-3 sm:p-4'
-                  } text-sm sm:text-base rounded-2xl font-bold cursor-pointer transition-all flex items-center justify-center gap-2 relative overflow-hidden border-[3px] ${
-                    highContrast
-                      ? 'bg-hc-warning text-hc-primary-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      : 'bg-accent-yellow text-dark-text dark:text-gray-900 border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  } disabled:opacity-50 disabled:cursor-not-allowed`}
-                  disabled={focusedIndex === null || correctAnswers[focusedIndex]}
-                  aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
-                  // Celebratory animation when second hint appears
-                  animate={
-                    showSecondHintCelebration && !reduceMotion
-                      ? {
-                          scale: [1, 1.05, 0.98, 1.02, 1],
-                          rotate: [0, -2, 2, -1, 0],
-                        }
-                      : {}
-                  }
-                  transition={{
-                    duration: 0.6,
-                    ease: [0.34, 1.56, 0.64, 1], // iOS spring curve
-                  }}
+                  className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  title="Back to Home"
                 >
-                  {/* Sparkle effect overlay during celebration */}
-                  {showSecondHintCelebration && (
-                    <motion.div
-                      className="absolute inset-0 pointer-events-none flex items-center justify-center"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: [0, 1, 0] }}
-                      transition={{ duration: 0.6, times: [0, 0.5, 1] }}
-                    >
-                      <span className="text-3xl">✨</span>
-                    </motion.div>
-                  )}
-
-                  {/* Button text - changes during celebration */}
-                  <motion.span
-                    key={showSecondHintCelebration ? 'celebration' : 'normal'}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.3 }}
+                  <svg
+                    className="w-5 h-5 text-gray-600 dark:text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    {showSecondHintCelebration ? "You've earned a second hint!" : 'Use Hint'}
-                  </motion.span>
-
-                  {/* Extra sparkle for celebration */}
-                  {showSecondHintCelebration && (
-                    <motion.span
-                      className="text-lg sm:text-xl"
-                      initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                      exit={{ opacity: 0, scale: 0, rotate: 180 }}
-                      transition={{ duration: 0.5, ease: 'backOut' }}
-                    >
-                      🎉
-                    </motion.span>
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+                <div className="flex flex-col items-center">
+                  <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
+                  {isHardMode && (
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                        <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
+                        HARD MODE
+                      </span>
+                    </div>
                   )}
-                </motion.button>
-                {unlockedHints === 1 && solved >= 1 && (
-                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
-                    Get 1 more correct answer to unlock another hint!
-                  </p>
-                )}
+                </div>
               </div>
-            )}
+            </div>
 
-            {/* On-screen keyboard */}
-            <OnScreenKeyboard
-              onKeyPress={handleKeyboardInput}
-              disabled={solved === 4}
-              layout={keyboardLayout}
-              isSmallPhone={isSmallPhone}
-              isMobilePhone={isMobilePhone}
-            />
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6" ref={contentRef}>
+              <div className="max-w-lg mx-auto">
+                <StatsBar
+                  time={formatTime(time)}
+                  mistakes={mistakes}
+                  solved={solved}
+                  isSmallPhone={isSmallPhone}
+                  isMobilePhone={isMobilePhone}
+                  isHardMode={isHardMode}
+                  hardModeTimeLimit={hardModeTimeLimit}
+                />
+
+                <div className="flex flex-col gap-3 sm:gap-4 mb-4 sm:mb-6 mt-3 sm:mt-4">
+                  {puzzle &&
+                    puzzle.puzzles &&
+                    puzzle.puzzles.map((p, index) => (
+                      <div key={index} className="relative">
+                        <PuzzleRow
+                          emoji={p.emoji || '❓❓'}
+                          value={answers[index]}
+                          onChange={(answerIndex, value) => onUpdateAnswer(answerIndex, value)}
+                          isCorrect={correctAnswers[index]}
+                          isWrong={checkedWrongAnswers && checkedWrongAnswers[index]}
+                          index={index}
+                          onFocus={() => setFocusedIndex(index)}
+                          isFocused={focusedIndex === index}
+                          readonly={true}
+                          hasHint={hintedAnswers.includes(index)}
+                          lockedLetters={lockedLetters[index]}
+                          answerLength={
+                            p.answer
+                              ? p.answer.includes(',')
+                                ? p.answer.split(',')[0].trim().length
+                                : p.answer.length
+                              : 0
+                          }
+                          onKeyboardInput={handleKeyboardInput}
+                          themeColor={puzzle?.themeColor || '#3B82F6'}
+                          isSmallPhone={isSmallPhone}
+                          isMobilePhone={isMobilePhone}
+                        />
+                        {/* Show hint below this answer if it's the active hint */}
+                        <HintDisplay
+                          hint={p.hint}
+                          isVisible={activeHintIndex === index && !correctAnswers[index]}
+                          answerIndex={index}
+                          isSmallPhone={isSmallPhone}
+                          isMobilePhone={isMobilePhone}
+                        />
+                      </div>
+                    ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Fixed Bottom Section - Hint Button + Keyboard */}
+            <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
+              <div className="max-w-lg mx-auto">
+                {/* Hint button - positioned before keyboard (not shown in hard mode) */}
+                {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
+                  <div className="mb-3">
+                    <motion.button
+                      onClick={() => {
+                        lightTap();
+                        handleUseHint();
+                      }}
+                      className={`w-full ${
+                        isSmallPhone ? 'p-2.5' : isMobilePhone ? 'p-3' : 'p-3 sm:p-4'
+                      } text-sm sm:text-base rounded-2xl font-bold cursor-pointer transition-all flex items-center justify-center gap-2 relative overflow-hidden border-[3px] ${
+                        highContrast
+                          ? 'bg-hc-warning text-hc-primary-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                          : 'bg-accent-yellow text-dark-text dark:text-gray-900 border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                      disabled={focusedIndex === null || correctAnswers[focusedIndex]}
+                      aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
+                      // Celebratory animation when second hint appears
+                      animate={
+                        showSecondHintCelebration && !reduceMotion
+                          ? {
+                              scale: [1, 1.05, 0.98, 1.02, 1],
+                              rotate: [0, -2, 2, -1, 0],
+                            }
+                          : {}
+                      }
+                      transition={{
+                        duration: 0.6,
+                        ease: [0.34, 1.56, 0.64, 1], // iOS spring curve
+                      }}
+                    >
+                      {/* Sparkle effect overlay during celebration */}
+                      {showSecondHintCelebration && (
+                        <motion.div
+                          className="absolute inset-0 pointer-events-none flex items-center justify-center"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0] }}
+                          transition={{ duration: 0.6, times: [0, 0.5, 1] }}
+                        >
+                          <span className="text-3xl">✨</span>
+                        </motion.div>
+                      )}
+
+                      {/* Button text - changes during celebration */}
+                      <motion.span
+                        key={showSecondHintCelebration ? 'celebration' : 'normal'}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        {showSecondHintCelebration ? "You've earned a second hint!" : 'Use Hint'}
+                      </motion.span>
+
+                      {/* Extra sparkle for celebration */}
+                      {showSecondHintCelebration && (
+                        <motion.span
+                          className="text-lg sm:text-xl"
+                          initial={{ opacity: 0, scale: 0, rotate: -180 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          exit={{ opacity: 0, scale: 0, rotate: 180 }}
+                          transition={{ duration: 0.5, ease: 'backOut' }}
+                        >
+                          🎉
+                        </motion.span>
+                      )}
+                    </motion.button>
+                    {unlockedHints === 1 && solved >= 1 && (
+                      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
+                        Get 1 more correct answer to unlock another hint!
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                {/* On-screen keyboard */}
+                <OnScreenKeyboard
+                  onKeyPress={handleKeyboardInput}
+                  disabled={solved === 4}
+                  layout={keyboardLayout}
+                  isSmallPhone={isSmallPhone}
+                  isMobilePhone={isMobilePhone}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>
