@@ -247,51 +247,51 @@ export default function CrypticGameScreen({
     <div className="fixed inset-0 flex flex-col bg-gradient-to-b from-purple-200 to-purple-300 dark:from-gray-900 dark:to-gray-800">
       {/* Header with icons - Fixed to top with safe-area */}
       <div className="fixed top-0 left-0 right-0 z-10 pt-safe">
-        <div className="max-w-4xl w-full mx-auto p-4 pb-2">
-          <div className="flex justify-end gap-2">
+        <div className="max-w-4xl w-full mx-auto px-4">
+          <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
             <button
               onClick={() => setShowStats(true)}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
               }`}
               title="Statistics"
             >
-              <Image src={getIconPath('stats')} alt="Statistics" width={24} height={24} />
+              <Image src={getIconPath('stats')} alt="Statistics" width={20} height={20} />
             </button>
             <button
               onClick={() => setShowArchive(true)}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
               }`}
               title="Archive"
             >
-              <Image src={getIconPath('archive')} alt="Archive" width={24} height={24} />
+              <Image src={getIconPath('archive')} alt="Archive" width={20} height={20} />
             </button>
             <button
               onClick={() => setShowGuide(true)}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
               }`}
               title="How to Play"
             >
-              <Image src={getIconPath('how-to-play')} alt="How to Play" width={24} height={24} />
+              <Image src={getIconPath('how-to-play')} alt="How to Play" width={20} height={20} />
             </button>
             <button
               onClick={() => setShowSettings(true)}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
+              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
               }`}
               title="Settings"
             >
-              <Image src={getIconPath('settings')} alt="Settings" width={24} height={24} />
+              <Image src={getIconPath('settings')} alt="Settings" width={20} height={20} />
             </button>
           </div>
         </div>
