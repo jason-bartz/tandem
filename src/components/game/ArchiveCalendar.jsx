@@ -356,7 +356,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 id="archive-title" className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-              Archive
+              Tandem Daily Archive
             </h2>
             <button
               onClick={onClose}
@@ -495,18 +495,6 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
                 className={`w-3 h-3 rounded-full ${highContrast ? 'bg-hc-success' : 'bg-accent-green'}`}
               />
               <span className="text-gray-600 dark:text-gray-400">Completed</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-3 h-3 rounded-full ${highContrast ? 'bg-hc-warning' : 'bg-accent-yellow'}`}
-              />
-              <span className="text-gray-600 dark:text-gray-400">In Progress</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <div
-                className={`w-3 h-3 rounded-full ${highContrast ? 'bg-hc-error' : 'bg-accent-red'}`}
-              />
-              <span className="text-gray-600 dark:text-gray-400">Failed</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600" />

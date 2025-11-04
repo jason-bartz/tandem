@@ -1,399 +1,527 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import { useTheme } from '@/contexts/ThemeContext';
+import CalendarDayCell from '../game/CalendarDayCell';
+import CalendarDatePicker from '../game/CalendarDatePicker';
+import PaywallModal from '@/components/PaywallModal';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 
 /**
- * CrypticArchiveCalendar - Browse and play past cryptic puzzles
- * Archive requires Tandem Unlimited subscription
- * Shows completion status and allows selecting puzzles to replay
+ * CrypticArchiveCalendar Component
+ *
+ * Calendar-based cryptic puzzle archive interface matching the Tandem Daily archive.
+ * Shows month view with color-coded status dots for each puzzle.
+ *
+ * Features:
+ * - Full month visible without scrolling
+ * - Color-coded status indicators (green dot for completed, grey for unavailable)
+ * - Month/year navigation with iOS-style picker
+ * - Minimal design (no puzzle numbers or themes)
+ * - Subscription paywall integration
+ *
+ * Follows Apple HIG with:
+ * - Clear visual hierarchy
+ * - Smooth animations
+ * - Proper touch targets
+ * - Accessibility support
+ *
+ * @param {Object} props
+ * @param {boolean} props.isOpen - Whether modal is visible
+ * @param {Function} props.onClose - Close handler
  */
 export default function CrypticArchiveCalendar({ isOpen, onClose }) {
   const router = useRouter();
-  const { isActive: hasSubscription, loading: subscriptionLoading } = useSubscription();
   const { highContrast } = useTheme();
-  const getIconPath = useUIIcon();
-  const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [puzzles, setPuzzles] = useState([]);
+  const { isActive: hasSubscription } = useSubscription();
+  const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+  const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [puzzleData, setPuzzleData] = useState({});
   const [userStats, setUserStats] = useState(new Map());
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const abortControllerRef = useRef(null);
 
-  useEffect(() => {
-    if (isOpen) {
-      loadPuzzlesForMonth();
+  const monthNames = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+  ];
+
+  const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+  // First cryptic puzzle date (November 3, 2025)
+  const firstPuzzleDate = new Date(2025, 10, 3); // Month is 0-indexed, so 10 = November
+  const firstPuzzleMonth = 10; // November
+  const firstPuzzleYear = 2025;
+
+  // Get today's date in local timezone
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayDay = today.getDate();
+  const todayMonth = today.getMonth();
+  const todayYear = today.getFullYear();
+
+  /**
+   * Load puzzles for the current month
+   */
+  const loadMonthData = useCallback(async (month, year) => {
+    // Cancel previous request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
-  }, [isOpen, currentMonth]);
+    abortControllerRef.current = new AbortController();
 
-  const loadPuzzlesForMonth = async () => {
-    setLoading(true);
+    setIsLoading(true);
+
     try {
-      const year = currentMonth.getFullYear();
-      const month = currentMonth.getMonth();
       const startDate = new Date(year, month, 1).toISOString().split('T')[0];
       const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
 
-      // Load puzzles for this month
+      // Load puzzles for this month using public API
       const puzzlesResponse = await fetch(
-        `/api/admin/cryptic/puzzles?startDate=${startDate}&endDate=${endDate}`
+        `/api/cryptic/puzzle?startDate=${startDate}&endDate=${endDate}`,
+        { signal: abortControllerRef.current.signal }
       );
-      const puzzlesData = await puzzlesResponse.json();
 
       // Load user stats for this month
-      const statsResponse = await fetch(`/api/cryptic/stats`);
-      const statsData = await statsResponse.json();
+      const statsResponse = await fetch(`/api/cryptic/stats`, {
+        signal: abortControllerRef.current.signal,
+      });
+
+      const monthData = {};
+      const statsMap = new Map();
 
       if (puzzlesResponse.ok) {
-        setPuzzles(puzzlesData.puzzles || []);
+        const puzzlesData = await puzzlesResponse.json();
+        if (puzzlesData.success && puzzlesData.puzzles) {
+          puzzlesData.puzzles.forEach((puzzle) => {
+            const puzzleDate = new Date(puzzle.date + 'T00:00:00'); // Parse in local timezone
+            if (puzzleDate.getMonth() === month && puzzleDate.getFullYear() === year) {
+              const day = puzzleDate.getDate();
+              monthData[day] = {
+                id: puzzle.id,
+                date: puzzle.date,
+              };
+            }
+          });
+        }
       }
 
-      if (statsResponse.ok && statsData.stats) {
-        const statsMap = new Map();
-        statsData.stats.forEach((stat) => {
-          statsMap.set(stat.puzzle_date, stat);
-        });
-        setUserStats(statsMap);
+      if (statsResponse.ok) {
+        const statsData = await statsResponse.json();
+        if (statsData.stats) {
+          statsData.stats.forEach((stat) => {
+            statsMap.set(stat.puzzle_date, stat);
+          });
+        }
       }
+
+      setPuzzleData(monthData);
+      setUserStats(statsMap);
     } catch (error) {
-      console.error('Error loading archive:', error);
+      if (error.name !== 'AbortError') {
+        console.error('[CrypticArchiveCalendar] Failed to load month data:', error);
+      }
     } finally {
-      setLoading(false);
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Load data when month/year changes or modal opens
+  useEffect(() => {
+    if (isOpen) {
+      loadMonthData(currentMonth, currentYear);
+    }
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, [isOpen, currentMonth, currentYear, loadMonthData]);
+
+  // Reset to current month when opening
+  useEffect(() => {
+    if (isOpen) {
+      setCurrentMonth(todayMonth);
+      setCurrentYear(todayYear);
+    }
+  }, [isOpen, todayMonth, todayYear]);
+
+  /**
+   * Navigate to previous month
+   */
+  const handlePreviousMonth = () => {
+    // Don't go before November 2025 (first puzzle month)
+    if (currentYear === firstPuzzleYear && currentMonth === firstPuzzleMonth) {
+      return;
+    }
+
+    if (currentMonth === 0) {
+      if (currentYear > firstPuzzleYear) {
+        setCurrentMonth(11);
+        setCurrentYear(currentYear - 1);
+      }
+    } else {
+      setCurrentMonth(currentMonth - 1);
     }
   };
 
-  const getDaysInMonth = (date) => {
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
-
-    return { daysInMonth, startingDayOfWeek };
-  };
-
-  const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentMonth);
-
-  const previousMonth = () => {
-    setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1));
-  };
-
-  const nextMonth = () => {
-    const today = new Date();
-    const nextMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
-
-    // Don't allow going past current month
-    if (nextMonthDate <= today) {
-      setCurrentMonth(nextMonthDate);
+  /**
+   * Navigate to next month
+   */
+  const handleNextMonth = () => {
+    if (currentMonth === 11) {
+      if (currentYear < todayYear) {
+        setCurrentMonth(0);
+        setCurrentYear(currentYear + 1);
+      }
+    } else {
+      if (currentYear === todayYear && currentMonth >= todayMonth) {
+        return;
+      }
+      setCurrentMonth(currentMonth + 1);
     }
   };
 
-  const formatDate = (day) => {
-    const year = currentMonth.getFullYear();
-    const month = String(currentMonth.getMonth() + 1).padStart(2, '0');
-    const dayStr = String(day).padStart(2, '0');
-    return `${year}-${month}-${dayStr}`;
+  /**
+   * Handle date picker selection
+   */
+  const handleDateSelect = (month, year) => {
+    setCurrentMonth(month);
+    setCurrentYear(year);
   };
 
-  const isToday = (day) => {
-    const today = new Date();
-    return (
-      day === today.getDate() &&
-      currentMonth.getMonth() === today.getMonth() &&
-      currentMonth.getFullYear() === today.getFullYear()
-    );
-  };
-
-  const isFutureDate = (day) => {
-    const dateStr = formatDate(day);
-    const date = new Date(dateStr);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return date > today;
-  };
-
-  const hasPuzzle = (day) => {
-    const dateStr = formatDate(day);
-    return puzzles.some((p) => p.date === dateStr);
-  };
-
-  const isCompleted = (day) => {
-    const dateStr = formatDate(day);
-    const stat = userStats.get(dateStr);
-    return stat?.completed || false;
-  };
-
+  /**
+   * Handle day cell click
+   */
   const handleDayClick = (day) => {
-    if (isFutureDate(day) || !hasPuzzle(day)) return;
+    const puzzle = puzzleData[day];
+    if (!puzzle) return;
 
-    const dateStr = formatDate(day);
+    // Check subscription for archive access
+    if (!hasSubscription) {
+      setShowPaywall(true);
+      return;
+    }
+
     // Navigate to the cryptic game with the selected date
     onClose?.();
-    router.push(`/dailycryptic?date=${dateStr}`);
+    router.push(`/dailycryptic?date=${puzzle.date}`);
   };
 
-  const renderDays = () => {
+  /**
+   * Handle purchase complete
+   */
+  const handlePurchaseComplete = () => {
+    // Reload current month data with new subscription status
+    loadMonthData(currentMonth, currentYear);
+  };
+
+  /**
+   * Generate calendar grid
+   */
+  const generateCalendarDays = () => {
+    const firstDayOfMonth = new Date(currentYear, currentMonth, 1);
+    const lastDayOfMonth = new Date(currentYear, currentMonth + 1, 0);
+    const daysInMonth = lastDayOfMonth.getDate();
+    const startingDayOfWeek = firstDayOfMonth.getDay();
+
     const days = [];
-    const totalCells = Math.ceil((daysInMonth + startingDayOfWeek) / 7) * 7;
 
-    for (let i = 0; i < totalCells; i++) {
-      const dayNumber = i - startingDayOfWeek + 1;
-      const isValidDay = dayNumber > 0 && dayNumber <= daysInMonth;
+    // Empty cells for days before month starts
+    for (let i = 0; i < startingDayOfWeek; i++) {
+      days.push(<div key={`empty-${i}`} className="aspect-square" />);
+    }
 
-      if (!isValidDay) {
-        days.push(
-          <div
-            key={`empty-${i}`}
-            className="aspect-square p-2 bg-gray-50 dark:bg-gray-800/50"
-          />
-        );
-      } else {
-        const today = isToday(dayNumber);
-        const future = isFutureDate(dayNumber);
-        const puzzleExists = hasPuzzle(dayNumber);
-        const completed = isCompleted(dayNumber);
+    // Days of the month
+    for (let day = 1; day <= daysInMonth; day++) {
+      const puzzle = puzzleData[day];
+      const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
-        days.push(
-          <button
-            key={dayNumber}
-            onClick={() => handleDayClick(dayNumber)}
-            disabled={future || !puzzleExists}
-            className={`
-              aspect-square p-2 relative border transition-all
-              ${future ? 'bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-600 cursor-not-allowed' : ''}
-              ${!puzzleExists && !future ? 'bg-gray-50 dark:bg-gray-800/50 text-gray-400 dark:text-gray-600' : ''}
-              ${puzzleExists && !future ? 'bg-white dark:bg-gray-800 hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer' : ''}
-              ${today ? 'ring-2 ring-blue-500' : ''}
-              ${completed ? 'bg-green-50 dark:bg-green-900/20' : ''}
-              border-gray-200 dark:border-gray-700
-            `}
-          >
-            <span className={`text-sm ${today ? 'font-bold text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-gray-100'}`}>
-              {dayNumber}
-            </span>
+      // Check if this date is after first puzzle
+      const currentDate = new Date(currentYear, currentMonth, day);
+      const isPastFirstPuzzle = currentDate >= firstPuzzleDate;
 
-            {/* Completion indicator */}
-            {completed && (
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                <div className="text-xs">✓</div>
-              </div>
-            )}
+      // Check if this is a future date
+      const isFutureDate = currentDate > today;
 
-            {/* Puzzle available indicator */}
-            {puzzleExists && !completed && !future && (
-              <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2">
-                <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-              </div>
-            )}
-          </button>
-        );
+      // Check if completed
+      const dateStr = puzzle?.date;
+      const stat = dateStr ? userStats.get(dateStr) : null;
+      const isCompleted = stat?.completed || false;
+
+      // Determine status
+      let status = 'no_puzzle';
+      if (puzzle && isCompleted) {
+        status = 'completed';
+      } else if (puzzle && !isFutureDate) {
+        status = 'not_played';
+      } else if (!isPastFirstPuzzle || isFutureDate) {
+        status = 'no_puzzle';
       }
+
+      days.push(
+        <CalendarDayCell
+          key={day}
+          day={day}
+          status={status}
+          isToday={isToday}
+          isCurrentMonth={true}
+          isLocked={!hasSubscription && !!puzzle}
+          onClick={() => handleDayClick(day)}
+          isPastFirstPuzzle={isPastFirstPuzzle}
+          isFutureDate={isFutureDate}
+        />
+      );
     }
 
     return days;
   };
 
-  if (!isOpen) return null;
+  // Check if can navigate to previous month
+  const canGoPrevious =
+    currentYear > firstPuzzleYear ||
+    (currentYear === firstPuzzleYear && currentMonth > firstPuzzleMonth);
 
-  const canGoNext = () => {
-    const today = new Date();
-    const nextMonthDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1);
-    return nextMonthDate <= today;
-  };
+  // Check if can navigate to next month
+  const canGoNext =
+    currentYear < todayYear || (currentYear === todayYear && currentMonth < todayMonth);
 
-  // Show paywall if no subscription
-  if (!subscriptionLoading && !hasSubscription) {
-    return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-        <div className={`rounded-[32px] border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,1)] max-w-2xl w-full p-10 text-center ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-bg-card border-border-main dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}>
-          <div className="mb-6">
-            <div className="w-20 h-20 mx-auto mb-4 flex items-center justify-center">
-              <Image
-                src={highContrast ? '/images/main-logo.webp' : (typeof window !== 'undefined' && document.documentElement.classList.contains('dark') ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp')}
-                alt="Tandem Logo"
-                width={80}
-                height={80}
-                className="dark:hidden"
-              />
-              <Image
-                src="/images/dark-mode-logo.webp"
-                alt="Tandem Logo"
-                width={80}
-                height={80}
-                className="hidden dark:block"
-              />
-            </div>
-            <h2 className={`text-3xl font-bold mb-2 ${
-              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
-            }`}>
-              Archive Requires Tandem Unlimited
-            </h2>
-            <p className={`text-lg ${
-              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-            }`}>
-              The daily puzzle is free for all account holders, but the archive is exclusive to Tandem Unlimited subscribers.
-            </p>
-          </div>
-
-          <div className={`rounded-2xl p-6 mb-6 text-left ${
-            highContrast
-              ? 'bg-hc-surface border-[3px] border-hc-border'
-              : 'bg-gray-50 dark:bg-gray-800'
-          }`}>
-            <h3 className={`text-sm uppercase tracking-wider mb-4 font-semibold ${
-              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-            }`}>
-              With Tandem Unlimited:
-            </h3>
-            <ul className="space-y-3">
-              <li className="flex items-start">
-                <span className="text-accent-green text-xl mr-3 flex-shrink-0">✓</span>
-                <span className={highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}>
-                  Play all past puzzles in the archive for both Tandem and Daily Cryptic
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-accent-green text-xl mr-3 flex-shrink-0">✓</span>
-                <span className={highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}>
-                  Hard Mode for extra challenge
-                </span>
-              </li>
-              <li className="flex items-start">
-                <span className="text-accent-green text-xl mr-3 flex-shrink-0">✓</span>
-                <span className={highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}>
-                  Sync and save your progress across devices
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button
-              onClick={() => {
-                onClose();
-                router.push('/account');
-              }}
-              className={`px-8 py-4 text-white text-lg font-bold rounded-[20px] border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all ${
-                highContrast
-                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus'
-                  : 'border-black dark:border-gray-600 dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-              }`}
-              style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
-            >
-              Get Tandem Unlimited
-            </button>
-            <button
-              onClick={onClose}
-              className={`px-8 py-4 text-lg font-bold rounded-[20px] border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all ${
-                highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                  : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600 dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-              }`}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+  if (!isOpen) {
+    return null;
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-        {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 p-6 z-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Cryptic Archive</h2>
+    <>
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter"
+        onClick={onClose}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cryptic-archive-title"
+      >
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className={`
+            rounded-[32px]
+            border-[3px]
+            p-6
+            w-full max-w-md
+            animate-modal-enter
+            ${
+              highContrast
+                ? 'bg-hc-background border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-bg-card border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            }
+          `}
+        >
+          {/* Header */}
+          <div className="flex justify-between items-center mb-6">
+            <h2
+              id="cryptic-archive-title"
+              className="text-2xl font-bold text-gray-800 dark:text-gray-200"
+            >
+              Daily Cryptic Archive
+            </h2>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              className={`
+                w-8 h-8
+                rounded-xl
+                border-[2px]
+                flex items-center justify-center
+                text-lg font-bold
+                transition-all
+                ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                }
+              `}
+              aria-label="Close"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
             >
-              <svg className="w-6 h-6 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
+              ×
             </button>
           </div>
 
-          {/* Month Navigation */}
-          <div className="flex items-center justify-between">
+          {/* Month/Year Navigation */}
+          <div className="flex items-center justify-between mb-4">
             <button
-              onClick={previousMonth}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+              onClick={handlePreviousMonth}
+              disabled={!canGoPrevious}
+              className={`
+                w-10 h-10
+                rounded-xl
+                border-[2px]
+                flex items-center justify-center
+                text-xl
+                transition-all
+                ${
+                  !canGoPrevious
+                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
+                    : highContrast
+                      ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                }
+              `}
+              aria-label="Previous month"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-              </svg>
+              ‹
             </button>
 
-            <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-              {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-            </h3>
+            <button
+              onClick={() => setShowDatePicker(true)}
+              className={`
+                px-4 py-2
+                rounded-xl
+                border-[2px]
+                font-semibold
+                transition-all
+                ${
+                  highContrast
+                    ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                    : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                }
+              `}
+              aria-label="Select month and year"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            >
+              {monthNames[currentMonth]} {currentYear}
+            </button>
 
             <button
-              onClick={nextMonth}
-              disabled={!canGoNext()}
-              className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              onClick={handleNextMonth}
+              disabled={!canGoNext}
+              className={`
+                w-10 h-10
+                rounded-xl
+                border-[2px]
+                flex items-center justify-center
+                text-xl
+                transition-all
+                ${
+                  !canGoNext
+                    ? 'opacity-30 cursor-not-allowed text-gray-800 dark:text-gray-200'
+                    : highContrast
+                      ? 'border-hc-border text-hc-text hover:bg-hc-focus hover:text-white'
+                      : 'border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 active:scale-95'
+                }
+              `}
+              aria-label="Next month"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
             >
-              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
+              ›
             </button>
           </div>
-        </div>
 
-        {/* Calendar Content */}
-        <div className="p-6">
-          {loading ? (
-            <div className="flex justify-center items-center py-12">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+          {/* Day names */}
+          <div className="grid grid-cols-7 gap-1 mb-2">
+            {dayNames.map((name) => (
+              <div
+                key={name}
+                className="text-center text-xs font-semibold text-gray-500 dark:text-gray-400"
+              >
+                {name}
+              </div>
+            ))}
+          </div>
+
+          {/* Calendar grid */}
+          <div className="grid grid-cols-7 gap-1 mb-6">
+            {isLoading
+              ? // Loading skeleton
+                Array.from({ length: 35 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"
+                  />
+                ))
+              : generateCalendarDays()}
+          </div>
+
+          {/* Legend */}
+          <div className="flex flex-wrap gap-3 mb-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <div
+                className={`w-3 h-3 rounded-full ${highContrast ? 'bg-hc-success' : 'bg-accent-green'}`}
+              />
+              <span className="text-gray-600 dark:text-gray-400">Completed</span>
             </div>
-          ) : (
-            <>
-              {/* Day labels */}
-              <div className="grid grid-cols-7 gap-1 mb-2">
-                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
-                  <div key={day} className="text-center text-xs font-medium text-gray-500 dark:text-gray-400 py-2">
-                    {day}
-                  </div>
-                ))}
-              </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full bg-gray-300 dark:bg-gray-600" />
+              <span className="text-gray-600 dark:text-gray-400">Unavailable</span>
+            </div>
+          </div>
 
-              {/* Calendar grid */}
-              <div className="grid grid-cols-7 gap-1">{renderDays()}</div>
-
-              {/* Legend */}
-              <div className="mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="flex flex-wrap items-center gap-4 text-xs text-gray-600 dark:text-gray-400">
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded bg-green-50 dark:bg-green-900/20 flex items-center justify-center">
-                      <span className="text-xs">✓</span>
-                    </div>
-                    <span>Completed</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                      <div className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                    </div>
-                    <span>Available</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div className="w-4 h-4 rounded bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700" />
-                    <span>Coming soon</span>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
+          {/* Close button */}
+          <button
+            onClick={onClose}
+            className={`
+              w-full py-3
+              rounded-2xl
+              border-[3px]
+              font-semibold text-white
+              transition-all
+              ${
+                highContrast
+                  ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              }
+            `}
+            style={{
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+            }}
+          >
+            Close
+          </button>
         </div>
       </div>
-    </div>
+
+      {/* Date Picker Modal */}
+      <CalendarDatePicker
+        isOpen={showDatePicker}
+        onClose={() => setShowDatePicker(false)}
+        onSelect={handleDateSelect}
+        currentMonth={currentMonth}
+        currentYear={currentYear}
+        minYear={firstPuzzleYear}
+        maxYear={todayYear}
+      />
+
+      {/* Paywall Modal */}
+      <PaywallModal
+        isOpen={showPaywall}
+        onClose={() => setShowPaywall(false)}
+        onPurchaseComplete={handlePurchaseComplete}
+      />
+    </>
   );
 }
