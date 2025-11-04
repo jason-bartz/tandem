@@ -24,13 +24,36 @@ export default function ResetPasswordPage() {
     // Exchange the URL hash for a session
     const handlePasswordReset = async () => {
       try {
-        // Check if we have hash parameters (from email link)
+        // First, let Supabase automatically detect and handle the session from URL
+        // This is important because Supabase has built-in handling for PKCE flow
+        await new Promise((resolve) => setTimeout(resolve, 100)); // Small delay to let Supabase process the URL
+
+        // Now check if we have a session
+        const {
+          data: { session },
+          error: sessionError,
+        } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error('Session error:', sessionError);
+          setError('Invalid or expired reset link. Please request a new one.');
+          return;
+        }
+
+        if (session) {
+          console.log('Session established successfully:', session.user?.id);
+          setSessionReady(true);
+          return;
+        }
+
+        // If no session yet, manually try to extract and set session from hash
         const hashParams = new URLSearchParams(window.location.hash.substring(1));
         const access_token = hashParams.get('access_token');
         const refresh_token = hashParams.get('refresh_token');
         const type = hashParams.get('type');
 
         if (type === 'recovery' && access_token) {
+          console.log('Manually setting session from hash parameters...');
           // Set the session using the tokens from the URL
           const { data, error } = await supabase.auth.setSession({
             access_token,
@@ -38,32 +61,22 @@ export default function ResetPasswordPage() {
           });
 
           if (error) {
-            console.error('Session error:', error);
+            console.error('Session setup error:', error);
             setError('Invalid or expired reset link. Please request a new one.');
             return;
           }
 
           if (data.session) {
-            console.log('Session established successfully');
+            console.log('Session established successfully via manual setup');
             setSessionReady(true);
+            // Clear the hash from URL for security
+            window.history.replaceState(null, '', window.location.pathname);
           } else {
             setError('Invalid or expired reset link. Please request a new one.');
           }
         } else {
-          // No hash parameters, check if we already have a valid session
-          const { data: { session }, error } = await supabase.auth.getSession();
-
-          if (error) {
-            console.error('Session error:', error);
-            setError('Invalid or expired reset link. Please request a new one.');
-            return;
-          }
-
-          if (session) {
-            setSessionReady(true);
-          } else {
-            setError('Invalid or expired reset link. Please request a new one.');
-          }
+          // No valid session or hash parameters
+          setError('Invalid or expired reset link. Please request a new one.');
         }
       } catch (err) {
         console.error('Error setting up password reset:', err);
@@ -90,14 +103,42 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    // Double-check session is still valid before attempting update
+    if (!sessionReady) {
+      setError('Session expired. Please request a new password reset link.');
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Verify we still have a valid session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        setError('Auth session missing. Please request a new password reset link.');
+        setSessionReady(false);
+        setLoading(false);
+        return;
+      }
+
       const { error } = await supabase.auth.updateUser({
         password: password,
       });
 
-      if (error) throw error;
+      if (error) {
+        // Handle specific error cases
+        if (error.message?.includes('session') || error.message?.includes('token')) {
+          setError('Session expired. Please request a new password reset link.');
+          setSessionReady(false);
+        } else {
+          throw error;
+        }
+        setLoading(false);
+        return;
+      }
 
       setSuccess(true);
 
@@ -144,12 +185,35 @@ export default function ResetPasswordPage() {
     );
   }
 
+  // Show error state if session setup failed
+  if (error && !sessionReady) {
+    return (
+      <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
+        <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
+          <div className="text-center">
+            <div className="mb-4 text-6xl">⚠️</div>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Invalid Reset Link
+            </h2>
+            <div className="mb-6 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+            <button
+              onClick={() => router.push('/')}
+              className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
       <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] max-w-md w-full p-8">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
-          Set New Password
-        </h2>
+        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Set New Password</h2>
 
         {error && (
           <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
