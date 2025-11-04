@@ -28,6 +28,7 @@ export function useCrypticGame() {
   const [error, setError] = useState(null);
   const [currentPuzzleDate, setCurrentPuzzleDate] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState(null);
+  const [isArchive, setIsArchive] = useState(false); // Track if this is an archive puzzle
 
   // Timer state
   const [startTime, setStartTime] = useState(null);
@@ -104,7 +105,15 @@ export function useCrypticGame() {
       const targetDate = date || puzzleInfo.isoDate;
       setCurrentPuzzleDate(targetDate);
 
-      logger.info('[useCrypticGame] Loading puzzle', { date: targetDate });
+      // Determine if this is an archive puzzle
+      // Archive puzzle = user explicitly provided a date different from today's date
+      const isArchivePuzzle = date !== null && date !== puzzleInfo.isoDate;
+      setIsArchive(isArchivePuzzle);
+
+      logger.info('[useCrypticGame] Loading puzzle', {
+        date: targetDate,
+        isArchive: isArchivePuzzle,
+      });
 
       // Check if there's saved progress for this puzzle
       const savedProgress = await loadCrypticPuzzleProgress(targetDate);
@@ -189,15 +198,18 @@ export function useCrypticGame() {
   /**
    * Update user's answer
    */
-  const updateAnswer = useCallback((value) => {
-    // Sanitize input - allow only letters (no spaces in user input, spaces are for display only)
-    const sanitized = value.toUpperCase().replace(/[^A-Z]/g, '');
+  const updateAnswer = useCallback(
+    (value) => {
+      // Sanitize input - allow only letters (no spaces in user input, spaces are for display only)
+      const sanitized = value.toUpperCase().replace(/[^A-Z]/g, '');
 
-    // Limit to puzzle answer length (total letters excluding spaces)
-    if (puzzle && sanitized.length <= puzzle.length) {
-      setUserAnswer(sanitized);
-    }
-  }, [puzzle]);
+      // Limit to puzzle answer length (total letters excluding spaces)
+      if (puzzle && sanitized.length <= puzzle.length) {
+        setUserAnswer(sanitized);
+      }
+    },
+    [puzzle]
+  );
 
   /**
    * Check if the answer is correct
@@ -249,31 +261,46 @@ export function useCrypticGame() {
           hintsUsed,
           attempts: newAttempts,
           completedAt: new Date().toISOString(),
+          isDaily: !isArchive, // Track if this was a daily puzzle
+          isArchive: isArchive, // Track if this was an archive puzzle
         }).catch((err) => {
-          logger.error('[useCrypticGame] Failed to save completion progress', { error: err.message });
+          logger.error('[useCrypticGame] Failed to save completion progress', {
+            error: err.message,
+          });
         });
 
         // Update local stats (fire and forget)
-        updateCrypticStatsAfterCompletion(currentPuzzleDate, timeTaken, hintsUsed).catch((err) => {
+        // CRITICAL: Only count daily puzzles (not archive) for streaks
+        // This matches Tandem Daily's streak logic
+        const isFirstAttemptCompletion = newAttempts === 1; // First time solving this puzzle
+        updateCrypticStatsAfterCompletion(
+          currentPuzzleDate,
+          timeTaken,
+          hintsUsed,
+          isArchive, // Pass archive status
+          isFirstAttemptCompletion // Pass first attempt status
+        ).catch((err) => {
           logger.error('[useCrypticGame] Failed to update stats', { error: err.message });
         });
 
         // Save to server (async, don't wait)
         // Convert hint indices to types for backward compatibility
-        const hintTypes = unlockedHints.map((idx) =>
-          typeof idx === 'number' ? puzzle.hints[idx]?.type : idx
-        ).filter(Boolean);
+        const hintTypes = unlockedHints
+          .map((idx) => (typeof idx === 'number' ? puzzle.hints[idx]?.type : idx))
+          .filter(Boolean);
 
-        crypticService.saveStats({
-          puzzle_date: currentPuzzleDate,
-          completed: true,
-          time_taken: timeTaken,
-          hints_used: hintsUsed,
-          hints_used_types: hintTypes,
-          attempts: newAttempts,
-        }).catch((err) => {
-          logger.error('[useCrypticGame] Failed to save stats to server', { error: err.message });
-        });
+        crypticService
+          .saveStats({
+            puzzle_date: currentPuzzleDate,
+            completed: true,
+            time_taken: timeTaken,
+            hints_used: hintsUsed,
+            hints_used_types: hintTypes,
+            attempts: newAttempts,
+          })
+          .catch((err) => {
+            logger.error('[useCrypticGame] Failed to save stats to server', { error: err.message });
+          });
 
         // Clear saved game state (fire and forget)
         clearCrypticGameState().catch((err) => {
@@ -302,37 +329,40 @@ export function useCrypticGame() {
   /**
    * Use a hint - optionally specify which hint index to use
    */
-  const useHint = useCallback((hintIndex = null) => {
-    if (!puzzle || hintsUsed >= CRYPTIC_CONFIG.MAX_HINTS) {
-      return null;
-    }
+  const useHint = useCallback(
+    (hintIndex = null) => {
+      if (!puzzle || hintsUsed >= CRYPTIC_CONFIG.MAX_HINTS) {
+        return null;
+      }
 
-    // If no specific index provided, use the next sequential one
-    const targetIndex = hintIndex !== null ? hintIndex : hintsUsed;
-    const hint = puzzle.hints[targetIndex];
+      // If no specific index provided, use the next sequential one
+      const targetIndex = hintIndex !== null ? hintIndex : hintsUsed;
+      const hint = puzzle.hints[targetIndex];
 
-    if (!hint) {
-      logger.error('[useCrypticGame] No hint available at index', { index: targetIndex });
-      return null;
-    }
+      if (!hint) {
+        logger.error('[useCrypticGame] No hint available at index', { index: targetIndex });
+        return null;
+      }
 
-    // Check if this hint was already unlocked
-    if (unlockedHints.includes(targetIndex)) {
-      logger.warn('[useCrypticGame] Hint already unlocked', { index: targetIndex });
+      // Check if this hint was already unlocked
+      if (unlockedHints.includes(targetIndex)) {
+        logger.warn('[useCrypticGame] Hint already unlocked', { index: targetIndex });
+        return hint;
+      }
+
+      setHintsUsed((prev) => prev + 1);
+      setUnlockedHints((prev) => [...prev, targetIndex]);
+
+      logger.info('[useCrypticGame] Hint used', {
+        hintIndex: targetIndex,
+        hintType: hint.type,
+        totalHintsUsed: hintsUsed + 1,
+      });
+
       return hint;
-    }
-
-    setHintsUsed((prev) => prev + 1);
-    setUnlockedHints((prev) => [...prev, targetIndex]);
-
-    logger.info('[useCrypticGame] Hint used', {
-      hintIndex: targetIndex,
-      hintType: hint.type,
-      totalHintsUsed: hintsUsed + 1,
-    });
-
-    return hint;
-  }, [puzzle, hintsUsed, unlockedHints]);
+    },
+    [puzzle, hintsUsed, unlockedHints]
+  );
 
   /**
    * Get available hints
@@ -383,12 +413,15 @@ export function useCrypticGame() {
   /**
    * Play a different puzzle (from archive)
    */
-  const playPuzzle = useCallback(async (date) => {
-    const success = await loadPuzzle(date);
-    if (success) {
-      resetGame();
-    }
-  }, [loadPuzzle, resetGame]);
+  const playPuzzle = useCallback(
+    async (date) => {
+      const success = await loadPuzzle(date);
+      if (success) {
+        resetGame();
+      }
+    },
+    [loadPuzzle, resetGame]
+  );
 
   return {
     // State

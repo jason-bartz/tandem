@@ -285,12 +285,17 @@ export async function saveCrypticStats(stats, skipCloudSync = false) {
 
         if (syncResult.success && syncResult.mergedStats) {
           // CloudKit returned merged stats, update local storage
-          await setCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS, JSON.stringify(syncResult.mergedStats));
+          await setCrypticStorageItem(
+            CRYPTIC_STORAGE_KEYS.STATS,
+            JSON.stringify(syncResult.mergedStats)
+          );
           logger.info('[CrypticStorage] Stats synced and merged with CloudKit');
           return syncResult.mergedStats;
         }
       } catch (error) {
-        logger.error('[CrypticStorage] CloudKit sync failed (non-critical)', { error: error.message });
+        logger.error('[CrypticStorage] CloudKit sync failed (non-critical)', {
+          error: error.message,
+        });
         // Continue with local stats if sync fails
       }
     }
@@ -344,7 +349,9 @@ export async function loadCrypticStats() {
           return mergedStats;
         }
       } catch (error) {
-        logger.error('[CrypticStorage] CloudKit fetch failed (non-critical)', { error: error.message });
+        logger.error('[CrypticStorage] CloudKit fetch failed (non-critical)', {
+          error: error.message,
+        });
         // Continue with local stats if fetch fails
       }
     }
@@ -363,51 +370,69 @@ export async function loadCrypticStats() {
  * @param {string} date - ISO date string (YYYY-MM-DD)
  * @param {number} timeTaken - Time taken in seconds
  * @param {number} hintsUsed - Number of hints used
+ * @param {boolean} isArchive - Whether this is an archive puzzle (default: false)
+ * @param {boolean} isFirstAttempt - Whether this is the first attempt (default: true)
  * @returns {Promise<Object>} Updated stats object
  */
-export async function updateCrypticStatsAfterCompletion(date, timeTaken, hintsUsed) {
+export async function updateCrypticStatsAfterCompletion(
+  date,
+  timeTaken,
+  hintsUsed,
+  isArchive = false,
+  isFirstAttempt = true
+) {
   try {
     const stats = await loadCrypticStats();
 
-    // Add to completed puzzles
-    if (!stats.completedPuzzles) {
-      stats.completedPuzzles = {};
+    // Add to completed puzzles (only for first attempts)
+    if (isFirstAttempt) {
+      if (!stats.completedPuzzles) {
+        stats.completedPuzzles = {};
+      }
+      stats.completedPuzzles[date] = {
+        timeTaken,
+        hintsUsed,
+        completedAt: new Date().toISOString(),
+        isDaily: !isArchive, // Track if this was a daily puzzle
+        isArchive: isArchive, // Track if this was an archive puzzle
+      };
+
+      // Update total completed
+      stats.totalCompleted = Object.keys(stats.completedPuzzles).length;
+
+      // Update perfect solves
+      if (hintsUsed === 0) {
+        stats.perfectSolves = (stats.perfectSolves || 0) + 1;
+      }
+
+      // Update total hints used
+      stats.totalHintsUsed = (stats.totalHintsUsed || 0) + hintsUsed;
+
+      // Calculate average time
+      const times = Object.values(stats.completedPuzzles)
+        .map((p) => p.timeTaken)
+        .filter((t) => t && t > 0);
+      if (times.length > 0) {
+        stats.averageTime = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
+      }
     }
-    stats.completedPuzzles[date] = {
-      timeTaken,
-      hintsUsed,
-      completedAt: new Date().toISOString(),
-    };
 
-    // Update total completed
-    stats.totalCompleted = Object.keys(stats.completedPuzzles).length;
+    // CRITICAL: Only update streak for first-attempt daily puzzle completions
+    // This matches Tandem Daily's streak logic
+    if (isFirstAttempt && !isArchive) {
+      // Calculate current streak (only from daily puzzles)
+      stats.currentStreak = calculateCrypticStreak(stats.completedPuzzles);
+      stats.longestStreak = Math.max(stats.longestStreak || 0, stats.currentStreak);
 
-    // Update perfect solves
-    if (hintsUsed === 0) {
-      stats.perfectSolves = (stats.perfectSolves || 0) + 1;
+      // Save last played date
+      stats.lastPlayedDate = date;
     }
-
-    // Update total hints used
-    stats.totalHintsUsed = (stats.totalHintsUsed || 0) + hintsUsed;
-
-    // Calculate average time
-    const times = Object.values(stats.completedPuzzles)
-      .map((p) => p.timeTaken)
-      .filter((t) => t && t > 0);
-    if (times.length > 0) {
-      stats.averageTime = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
-    }
-
-    // Calculate current streak
-    stats.currentStreak = calculateCrypticStreak(stats.completedPuzzles);
-    stats.longestStreak = Math.max(stats.longestStreak || 0, stats.currentStreak);
-
-    // Save last played date
-    stats.lastPlayedDate = date;
 
     await saveCrypticStats(stats);
     logger.info('[CrypticStorage] Stats updated after completion', {
       date,
+      isArchive,
+      isFirstAttempt,
       streak: stats.currentStreak,
       totalCompleted: stats.totalCompleted,
     });
@@ -421,6 +446,11 @@ export async function updateCrypticStatsAfterCompletion(date, timeTaken, hintsUs
 
 /**
  * Calculate current cryptic puzzle streak
+ * CRITICAL: Only counts daily puzzles (not archive puzzles)
+ * This matches Tandem Daily's streak calculation logic
+ *
+ * @param {Object} completedPuzzles - Object mapping dates to puzzle completion data
+ * @returns {number} Current streak count
  */
 export function calculateCrypticStreak(completedPuzzles) {
   try {
@@ -428,9 +458,24 @@ export function calculateCrypticStreak(completedPuzzles) {
       return 0;
     }
 
+    // Filter to only include daily puzzles (not archive puzzles)
+    // For backwards compatibility, if isDaily/isArchive fields don't exist, assume it's a daily puzzle
+    const dailyPuzzles = {};
+    Object.entries(completedPuzzles).forEach(([date, data]) => {
+      const isDaily =
+        data.isDaily === true || (data.isDaily === undefined && data.isArchive !== true);
+      if (isDaily) {
+        dailyPuzzles[date] = data;
+      }
+    });
+
+    if (Object.keys(dailyPuzzles).length === 0) {
+      return 0;
+    }
+
     const puzzleInfo = getCurrentPuzzleInfo();
     const today = puzzleInfo.isoDate;
-    const dates = Object.keys(completedPuzzles).sort().reverse();
+    const dates = Object.keys(dailyPuzzles).sort().reverse();
 
     // Check if today or yesterday is included (streak is alive)
     const todayDate = new Date(today);
@@ -444,7 +489,7 @@ export function calculateCrypticStreak(completedPuzzles) {
       return 0; // Streak broken
     }
 
-    // Count consecutive days
+    // Count consecutive days (walking backwards from today)
     let streak = 0;
     const currentDate = new Date(todayStr);
 
@@ -510,7 +555,10 @@ export function mergeCrypticStats(localStats, cloudStats) {
       // Keep the one with faster time, or if times are equal, keep the one with fewer hints
       if (localPuzzle.timeTaken < cloudPuzzle.timeTaken) {
         mergedPuzzles[date] = localPuzzle;
-      } else if (localPuzzle.timeTaken === cloudPuzzle.timeTaken && localPuzzle.hintsUsed < cloudPuzzle.hintsUsed) {
+      } else if (
+        localPuzzle.timeTaken === cloudPuzzle.timeTaken &&
+        localPuzzle.hintsUsed < cloudPuzzle.hintsUsed
+      ) {
         mergedPuzzles[date] = localPuzzle;
       } else {
         mergedPuzzles[date] = cloudPuzzle;
@@ -521,12 +569,16 @@ export function mergeCrypticStats(localStats, cloudStats) {
   // Calculate derived stats from merged puzzles
   const totalCompleted = Object.keys(mergedPuzzles).length;
   const perfectSolves = Object.values(mergedPuzzles).filter((p) => p.hintsUsed === 0).length;
-  const totalHintsUsed = Object.values(mergedPuzzles).reduce((sum, p) => sum + (p.hintsUsed || 0), 0);
+  const totalHintsUsed = Object.values(mergedPuzzles).reduce(
+    (sum, p) => sum + (p.hintsUsed || 0),
+    0
+  );
 
   const times = Object.values(mergedPuzzles)
     .map((p) => p.timeTaken)
     .filter((t) => t && t > 0);
-  const averageTime = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+  const averageTime =
+    times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
 
   // Calculate streak from merged puzzles
   const currentStreak = calculateCrypticStreak(mergedPuzzles);
