@@ -91,10 +91,7 @@ export default function HintModal({
   return (
     <>
       {/* Backdrop */}
-      <div
-        className="fixed inset-0 bg-black/50 z-40 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 bg-black/50 z-40" onClick={onClose} />
 
       {/* Modal */}
       <div className="fixed inset-x-0 bottom-0 z-50 flex items-end justify-center p-4 pointer-events-none">
@@ -107,9 +104,11 @@ export default function HintModal({
         >
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
-            <h3 className={`text-xl font-bold ${
-              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-            }`}>
+            <h3
+              className={`text-xl font-bold ${
+                highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+              }`}
+            >
               Use Hints
             </h3>
             <button
@@ -146,29 +145,32 @@ export default function HintModal({
                   {/* Icon */}
                   <div className="flex justify-center mb-3">
                     <div className="w-12 h-12 flex items-center justify-center">
-                      <Image
-                        src={getHintIcon(hint.type)}
-                        alt=""
-                        width={48}
-                        height={48}
-                      />
+                      <Image src={getHintIcon(hint.type)} alt="" width={48} height={48} />
                     </div>
                   </div>
 
                   {/* Label */}
-                  <div className={`text-xs font-bold uppercase tracking-wide text-center mb-2 ${
-                    unlocked
-                      ? highContrast ? 'text-hc-text' : colors.text
-                      : highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                  }`}>
+                  <div
+                    className={`text-xs font-bold uppercase tracking-wide text-center mb-2 ${
+                      unlocked
+                        ? highContrast
+                          ? 'text-hc-text'
+                          : colors.text
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
                     {hintTypeLabels[hint.type] || 'Hint'}
                   </div>
 
                   {/* Hint Text or Unlock Button */}
                   {unlocked ? (
-                    <div className={`text-sm font-medium text-center ${
-                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                    }`}>
+                    <div
+                      className={`text-sm font-medium text-center ${
+                        highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
                       {hint.text}
                     </div>
                   ) : (
@@ -192,9 +194,11 @@ export default function HintModal({
           </div>
 
           {/* Footer Info */}
-          <div className={`mt-4 text-center text-xs ${
-            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-          }`}>
+          <div
+            className={`mt-4 text-center text-xs ${
+              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+            }`}
+          >
             Use any hints in any order to help solve the cryptic clue
           </div>
         </div>
