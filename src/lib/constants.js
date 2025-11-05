@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
   ADMIN_GENERATE_PUZZLE: '/api/admin/generate-puzzle',
   STATS: '/api/stats',
   USER_STATS: '/api/user-stats',
+  USER_CRYPTIC_STATS: '/api/user-cryptic-stats',
 };
 
 export const GAME_STATES = {
