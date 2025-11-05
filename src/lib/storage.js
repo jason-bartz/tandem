@@ -1,4 +1,4 @@
-import { STORAGE_KEYS } from './constants';
+import { STORAGE_KEYS, API_ENDPOINTS } from './constants';
 import cloudKitService from '@/services/cloudkit.service';
 import localDateService from '@/services/localDateService';
 import logger from '@/lib/logger';
@@ -127,6 +127,94 @@ async function recoverStreakFromHistory(lastPlayedDate) {
   }
 }
 
+/**
+ * Check if user is authenticated
+ * @private
+ */
+async function isUserAuthenticated() {
+  try {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    // Import dynamically to avoid SSR issues
+    const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+    const supabase = getSupabaseBrowserClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    return !!session?.user;
+  } catch (error) {
+    logger.error('[storage] Failed to check auth status', error);
+    return false;
+  }
+}
+
+/**
+ * Fetch user stats from database
+ * @private
+ */
+async function fetchUserStatsFromDatabase() {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_STATS, {
+      method: 'GET',
+      credentials: 'include', // Important for cookie-based auth
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated
+        return null;
+      }
+      throw new Error(`Failed to fetch user stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    logger.error('[storage] Failed to fetch user stats from database', error);
+    return null;
+  }
+}
+
+/**
+ * Save user stats to database
+ * @private
+ */
+async function saveUserStatsToDatabase(stats) {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_STATS, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Important for cookie-based auth
+      body: JSON.stringify({
+        played: stats.played || 0,
+        wins: stats.wins || 0,
+        currentStreak: stats.currentStreak || 0,
+        bestStreak: stats.bestStreak || 0,
+        lastStreakDate: stats.lastStreakDate || null,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated - skip sync
+        return null;
+      }
+      throw new Error(`Failed to save user stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    logger.error('[storage] Failed to save user stats to database', error);
+    return null;
+  }
+}
+
 export async function loadStats() {
   if (typeof window === 'undefined') {
     return { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
@@ -139,7 +227,64 @@ export async function loadStats() {
     : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
   logger.info('[storage.loadStats] Parsed stats:', parsedStats);
 
-  // Auto-sync with CloudKit on load if available
+  // First, try to sync with database if user is authenticated
+  const isAuthenticated = await isUserAuthenticated();
+  if (isAuthenticated) {
+    try {
+      const dbStats = await fetchUserStatsFromDatabase();
+
+      if (dbStats) {
+        logger.info('[storage.loadStats] Database stats fetched:', dbStats);
+
+        // Merge database stats with local stats
+        // Take the maximum values to ensure we don't lose progress
+        const mergedStats = {
+          played: Math.max(parsedStats.played || 0, dbStats.played || 0),
+          wins: Math.max(parsedStats.wins || 0, dbStats.wins || 0),
+          bestStreak: Math.max(parsedStats.bestStreak || 0, dbStats.bestStreak || 0),
+          currentStreak: 0, // Will be determined below
+          lastStreakDate: null, // Will be determined below
+        };
+
+        // For current streak, use the one with the most recent date
+        const localDate = parsedStats.lastStreakDate;
+        const dbDate = dbStats.lastStreakDate;
+
+        if (localDate && dbDate) {
+          if (dbDate >= localDate) {
+            mergedStats.currentStreak = dbStats.currentStreak || 0;
+            mergedStats.lastStreakDate = dbDate;
+          } else {
+            mergedStats.currentStreak = parsedStats.currentStreak || 0;
+            mergedStats.lastStreakDate = localDate;
+          }
+        } else if (dbDate) {
+          mergedStats.currentStreak = dbStats.currentStreak || 0;
+          mergedStats.lastStreakDate = dbDate;
+        } else if (localDate) {
+          mergedStats.currentStreak = parsedStats.currentStreak || 0;
+          mergedStats.lastStreakDate = localDate;
+        }
+
+        logger.info('[storage.loadStats] Merged stats (local + database):', mergedStats);
+
+        // Save merged stats locally (skip cloud and DB sync to avoid loops)
+        await saveStats(mergedStats, true, true);
+
+        // Update parsedStats to return the merged version
+        Object.assign(parsedStats, mergedStats);
+      } else {
+        logger.info('[storage.loadStats] No database stats found, using local stats');
+      }
+    } catch (error) {
+      logger.error('[storage.loadStats] Failed to sync with database', error);
+      // Continue with local stats if database sync fails
+    }
+  } else {
+    logger.info('[storage.loadStats] User not authenticated, skipping database sync');
+  }
+
+  // Auto-sync with CloudKit on load if available (iOS only)
   if (cloudKitService.isSyncAvailable()) {
     try {
       const cloudStats = await cloudKitService.fetchStats();
@@ -270,13 +415,34 @@ async function checkAndUpdateStreak(stats) {
   }
 }
 
-export async function saveStats(stats, skipCloudSync = false) {
+export async function saveStats(stats, skipCloudSync = false, skipDatabaseSync = false) {
   if (typeof window !== 'undefined') {
     logger.info('[storage.saveStats] Saving stats:', stats);
     await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
     logger.info('[storage.saveStats] Stats saved to key:', STORAGE_KEYS.STATS);
 
-    // Sync to iCloud and update local stats with merged result
+    // Sync to database if user is authenticated and not skipping
+    if (!skipDatabaseSync) {
+      const isAuthenticated = await isUserAuthenticated();
+      if (isAuthenticated) {
+        try {
+          const dbStats = await saveUserStatsToDatabase(stats);
+          if (dbStats) {
+            logger.info('[storage.saveStats] Stats synced to database:', dbStats);
+            // Update local storage with merged stats from database
+            await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(dbStats));
+            return dbStats;
+          }
+        } catch (error) {
+          logger.error('[storage.saveStats] Failed to sync with database', error);
+          // Non-critical error, continue with local stats
+        }
+      } else {
+        logger.info('[storage.saveStats] User not authenticated, skipping database sync');
+      }
+    }
+
+    // Sync to iCloud and update local stats with merged result (iOS only)
     if (!skipCloudSync && cloudKitService.isSyncAvailable()) {
       try {
         const syncResult = await cloudKitService.syncStats(stats);
