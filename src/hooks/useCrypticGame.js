@@ -9,6 +9,7 @@ import {
   loadCrypticPuzzleProgress,
   updateCrypticStatsAfterCompletion,
   clearCrypticGameState,
+  getCrypticStats,
 } from '@/lib/crypticStorage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import logger from '@/lib/logger';
@@ -340,8 +341,7 @@ export function useCrypticGame() {
             });
 
           // Submit streak to leaderboard
-          import('@/lib/crypticStorage')
-            .then((module) => module.getCrypticStats())
+          getCrypticStats()
             .then((stats) => {
               const currentStreak = stats?.currentStreak || 0;
               if (currentStreak > 0) {
