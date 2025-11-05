@@ -13,9 +13,10 @@ import { Capacitor } from '@capacitor/core';
  * Props:
  * @param {boolean} isOpen - Whether the modal is open
  * @param {function} onClose - Callback when modal closes
- * @param {string} initialMode - 'signup' or 'login' (default: 'login')
+ * @param {string} initialMode - 'signup', 'login', or 'reset' (default: 'login')
  * @param {function} onSuccess - Callback after successful authentication
- * @param {string} initialMessage - Optional success message to display when modal opens
+ * @param {string} initialMessage - Optional message to display when modal opens (can be success or error)
+ * @param {string} initialMessageType - Type of initial message: 'success' or 'error' (default: 'success')
  */
 export default function AuthModal({
   isOpen,
@@ -23,24 +24,39 @@ export default function AuthModal({
   initialMode = 'login',
   onSuccess,
   initialMessage = null,
+  initialMessageType = 'success',
 }) {
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [successMessage, setSuccessMessage] = useState(initialMessage);
+  const [error, setError] = useState(initialMessageType === 'error' ? initialMessage : null);
+  const [successMessage, setSuccessMessage] = useState(
+    initialMessageType === 'success' ? initialMessage : null
+  );
 
   const { signUp, signIn, signInWithApple, resetPassword } = useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
 
-  // Update success message when initialMessage prop changes
+  // Update mode when initialMode prop changes
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
+
+  // Update message when initialMessage prop changes
   useEffect(() => {
     if (initialMessage) {
-      setSuccessMessage(initialMessage);
+      if (initialMessageType === 'error') {
+        setError(initialMessage);
+        setSuccessMessage(null);
+      } else {
+        setSuccessMessage(initialMessage);
+        setError(null);
+      }
     }
-  }, [initialMessage]);
+  }, [initialMessage, initialMessageType]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -49,9 +65,19 @@ export default function AuthModal({
 
     try {
       if (mode === 'signup') {
+        // Validate username format
+        if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+          setError(
+            'Username must be 3-20 characters and can only contain letters, numbers, and underscores'
+          );
+          setLoading(false);
+          return;
+        }
+
         // Sign up
         const { error } = await signUp(email, password, {
-          full_name: fullName,
+          full_name: fullName || username, // Use username as full_name if not provided
+          username: username,
         });
 
         if (error) {
@@ -64,6 +90,7 @@ export default function AuthModal({
           setMode('login');
           setPassword('');
           setFullName('');
+          setUsername('');
           // Don't close the modal - keep it open for sign in
         }
       } else if (mode === 'reset') {
@@ -162,6 +189,7 @@ export default function AuthModal({
     setEmail('');
     setPassword('');
     setFullName('');
+    setUsername('');
   };
 
   if (!isOpen) return null;
@@ -315,23 +343,53 @@ export default function AuthModal({
         {/* Email/Password Form */}
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
-            <div className="mb-4">
-              <label
-                htmlFor="fullName"
-                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-              >
-                Full Name
-              </label>
-              <input
-                type="text"
-                id="fullName"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="John Doe"
-                required
-              />
-            </div>
+            <>
+              <div className="mb-4">
+                <label
+                  htmlFor="username"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Create Username
+                </label>
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => {
+                    // Only allow alphanumeric and underscore
+                    const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                    setUsername(sanitized);
+                  }}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="your_username"
+                  minLength={3}
+                  maxLength={20}
+                  required
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  3-20 characters, letters, numbers, and underscores only
+                </p>
+              </div>
+              <div className="mb-4">
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+                >
+                  Display Name (Optional)
+                </label>
+                <input
+                  type="text"
+                  id="fullName"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="John Doe"
+                />
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  This will be shown on your profile
+                </p>
+              </div>
+            </>
           )}
 
           <div className="mb-4">
