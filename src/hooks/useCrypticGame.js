@@ -312,6 +312,7 @@ export function useCrypticGame() {
         });
 
         if (!isArchive && timeTaken > 0 && currentPuzzleDate) {
+          // Submit daily speed score
           const payload = {
             gameType: 'cryptic',
             puzzleDate: currentPuzzleDate,
@@ -336,6 +337,40 @@ export function useCrypticGame() {
               });
               console.error('[useCrypticGame] Leaderboard error:', err);
               // Fail silently - leaderboard submission is not critical
+            });
+
+          // Submit streak to leaderboard
+          import('@/lib/crypticStorage')
+            .then((module) => module.getCrypticStats())
+            .then((stats) => {
+              const currentStreak = stats?.currentStreak || 0;
+              if (currentStreak > 0) {
+                console.log('[useCrypticGame] Submitting streak to leaderboard:', currentStreak);
+
+                return fetch('/api/leaderboard/streak', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({
+                    gameType: 'cryptic',
+                    streak: currentStreak,
+                  }),
+                });
+              }
+            })
+            .then((response) => {
+              if (response) {
+                return response.json();
+              }
+            })
+            .then((result) => {
+              if (result) {
+                console.log('[useCrypticGame] Streak leaderboard response:', result);
+              }
+            })
+            .catch((err) => {
+              console.error('[useCrypticGame] Failed to submit streak:', err);
+              // Fail silently
             });
         }
 

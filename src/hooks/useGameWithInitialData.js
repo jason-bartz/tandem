@@ -292,6 +292,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
 
         if (won && timeTaken > 0 && currentPuzzleDate) {
+          // Submit daily speed score
           const payload = {
             gameType: 'tandem',
             puzzleDate: currentPuzzleDate,
@@ -321,6 +322,43 @@ export function useGameWithInitialData(initialPuzzleData) {
           } catch (err) {
             console.error('[useGameWithInitialData] Failed to submit to leaderboard:', err);
             // Fail silently - leaderboard submission is not critical
+          }
+
+          // Submit streak to leaderboard if won (streak updated by statsService)
+          if (won) {
+            try {
+              // Get updated stats to get current streak
+              const stats = await updateGameStats(
+                won,
+                isFirstAttempt,
+                isArchiveGame,
+                currentPuzzleDate
+              );
+              const currentStreak = stats?.currentStreak || 0;
+
+              if (currentStreak > 0) {
+                console.log(
+                  '[useGameWithInitialData] Submitting streak to leaderboard:',
+                  currentStreak
+                );
+
+                const streakResponse = await fetch('/api/leaderboard/streak', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  credentials: 'include',
+                  body: JSON.stringify({
+                    gameType: 'tandem',
+                    streak: currentStreak,
+                  }),
+                });
+
+                const streakResult = await streakResponse.json();
+                console.log('[useGameWithInitialData] Streak leaderboard response:', streakResult);
+              }
+            } catch (err) {
+              console.error('[useGameWithInitialData] Failed to submit streak:', err);
+              // Fail silently
+            }
           }
         }
       }
