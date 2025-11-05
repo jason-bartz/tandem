@@ -398,12 +398,15 @@ export default function PlayingScreen({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col animate-slide-up">
+    <div
+      className="min-h-screen flex flex-col animate-slide-up overflow-y-auto"
+      style={{ WebkitOverflowScrolling: 'touch' }}
+    >
       {/* Hint Earned Toast */}
       <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
 
-      {/* Control buttons - Fixed to top with safe-area */}
-      <div className="fixed top-0 left-0 right-0 z-10 pt-safe">
+      {/* Control buttons - Sticky to top with safe-area */}
+      <div className="sticky top-0 left-0 right-0 z-10 pt-safe bg-gradient-to-b from-accent-yellow via-accent-yellow to-transparent">
         <div className="max-w-xl w-full mx-auto px-4">
           <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
             <button
@@ -467,7 +470,10 @@ export default function PlayingScreen({
       </div>
 
       {/* Main game card */}
-      <div className="flex-1 flex flex-col pt-24 md:pt-20 pb-safe">
+      <div
+        className="flex-1 flex flex-col pb-safe"
+        style={{ paddingBottom: isMobilePhone ? '6rem' : undefined }}
+      >
         <div className="max-w-xl w-full h-full mx-auto flex flex-col px-4">
           <div
             ref={puzzleContainerRef}
@@ -521,15 +527,8 @@ export default function PlayingScreen({
               </div>
             </div>
 
-            {/* Scrollable Content Area */}
-            <div
-              className="flex-1 overflow-y-auto p-4 sm:p-6 overflow-scroll -webkit-overflow-scrolling-touch"
-              ref={contentRef}
-              style={{
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: isMobilePhone ? '8rem' : '2rem',
-              }}
-            >
+            {/* Content Area */}
+            <div className="flex-1 p-4 sm:p-6" ref={contentRef}>
               <div className="max-w-lg mx-auto">
                 <StatsBar
                   time={formatTime(time)}
