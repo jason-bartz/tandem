@@ -27,7 +27,9 @@ export default function StreakLeaderboard({ gameType }) {
 
   async function fetchLeaderboard() {
     try {
-      const response = await fetch(`/api/leaderboard/streak?game=${gameType}&limit=10`);
+      const response = await fetch(`/api/leaderboard/streak?game=${gameType}&limit=10`, {
+        credentials: 'include', // Include cookies for authentication
+      });
       const data = await response.json();
 
       if (data.success) {
