@@ -189,10 +189,25 @@ public class EnhancedGameCenterPlugin: CAPPlugin {
     // MARK: - Leaderboard Operations
 
     @objc func submitScore(_ call: CAPPluginCall) {
-        guard let leaderboardKey = call.getString("leaderboardID"),
-              let score = call.getInt("score"),
-              let leaderboardID = leaderboardIDs[leaderboardKey] else {
-            call.reject("Invalid parameters")
+        // Handle both parameter naming conventions
+        var leaderboardID: String?
+        var scoreValue: Int?
+
+        // Check for leaderboardID (new convention)
+        if let leaderboardKey = call.getString("leaderboardID") {
+            leaderboardID = leaderboardKey
+        }
+
+        // Check for score (new convention)
+        if let score = call.getInt("totalScoreAmount") {
+            scoreValue = score
+        } else if let score = call.getInt("score") {
+            scoreValue = score
+        }
+
+        guard let finalLeaderboardID = leaderboardID,
+              let finalScore = scoreValue else {
+            call.reject("Invalid parameters: missing leaderboardID or score")
             return
         }
 
@@ -203,12 +218,11 @@ public class EnhancedGameCenterPlugin: CAPPlugin {
 
         Task {
             do {
-                try await submitScoreToLeaderboard(score: score, leaderboardID: leaderboardID)
+                // For direct leaderboard IDs (com.tandemdaily.app.xxx), use as-is
+                // For keys, look up in dictionary
+                let targetLeaderboardID = leaderboardIDs[finalLeaderboardID] ?? finalLeaderboardID
 
-                // Also submit to other relevant leaderboards
-                if leaderboardKey == "gamesPlayed" {
-                    try await updateWinRate(call.getInt("wins") ?? 0, played: score)
-                }
+                try await submitScoreToLeaderboard(score: finalScore, leaderboardID: targetLeaderboardID)
 
                 call.resolve(["success": true])
             } catch {
@@ -324,6 +338,34 @@ public class EnhancedGameCenterPlugin: CAPPlugin {
                 call.resolve(["success": true])
             } catch {
                 call.reject("Failed to report achievement", nil, error)
+            }
+        }
+    }
+
+    @objc func unlockAchievement(_ call: CAPPluginCall) {
+        guard let achievementID = call.getString("achievementID") else {
+            call.reject("Invalid achievement ID")
+            return
+        }
+
+        guard isAuthenticated else {
+            call.reject("Not authenticated")
+            return
+        }
+
+        Task {
+            do {
+                // For direct achievement IDs (com.tandemdaily.xxx), use as-is
+                // For keys, look up in dictionary
+                let targetAchievementID = achievementIDs[achievementID] ?? achievementID
+
+                try await reportAchievementProgress(
+                    achievementID: targetAchievementID,
+                    percentComplete: 100.0
+                )
+                call.resolve(["success": true])
+            } catch {
+                call.reject("Failed to unlock achievement", nil, error)
             }
         }
     }
@@ -496,6 +538,40 @@ public class EnhancedGameCenterPlugin: CAPPlugin {
         }
     }
 
+    // MARK: - UI Display Methods
+
+    @objc func showAchievements(_ call: CAPPluginCall) {
+        guard isAuthenticated else {
+            call.reject("Not authenticated")
+            return
+        }
+
+        DispatchQueue.main.async {
+            let viewController = GKGameCenterViewController(state: .achievements)
+            viewController.gameCenterDelegate = self
+            self.bridge?.viewController?.present(viewController, animated: true) {
+                call.resolve(["success": true])
+            }
+        }
+    }
+
+    @objc func showLeaderboard(_ call: CAPPluginCall) {
+        guard isAuthenticated else {
+            call.reject("Not authenticated")
+            return
+        }
+
+        let leaderboardID = call.getString("leaderboardID") ?? leaderboardIDs["longestStreak"] ?? ""
+
+        DispatchQueue.main.async {
+            let viewController = GKGameCenterViewController(leaderboardID: leaderboardID, playerScope: .global, timeScope: .allTime)
+            viewController.gameCenterDelegate = self
+            self.bridge?.viewController?.present(viewController, animated: true) {
+                call.resolve(["success": true])
+            }
+        }
+    }
+
     // MARK: - Error Recovery
 
     private func retryWithExponentialBackoff<T>(
@@ -602,5 +678,13 @@ public class EnhancedGameCenterPlugin: CAPPlugin {
             "lastFetch": lastFetchTime?.timeIntervalSince1970 ?? 0,
             "syncInProgress": syncInProgress
         ])
+    }
+}
+
+// MARK: - GKGameCenterControllerDelegate
+
+extension EnhancedGameCenterPlugin: GKGameCenterControllerDelegate {
+    public func gameCenterViewControllerDidFinish(_ gameCenterViewController: GKGameCenterViewController) {
+        gameCenterViewController.dismiss(animated: true, completion: nil)
     }
 }

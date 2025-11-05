@@ -1,7 +1,8 @@
 import { createBrowserClient as createBrowserClientSSR } from '@supabase/ssr';
+import { Capacitor } from '@capacitor/core';
 
 /**
- * Create Supabase client for browser use with cookie-based storage
+ * Create Supabase client for browser use with platform-appropriate storage
  * Uses anon key - SAFE for client (RLS enforced)
  *
  * This client is safe to use in:
@@ -9,7 +10,10 @@ import { createBrowserClient as createBrowserClientSSR } from '@supabase/ssr';
  * - Browser-side code
  * - Any code that runs in the user's browser
  *
- * Uses cookies instead of localStorage so sessions work with API routes.
+ * Storage:
+ * - Web: Uses cookies so sessions work with API routes
+ * - iOS/Android: Uses Capacitor Preferences for native storage
+ *
  * RLS policies will ensure users can only access their own data.
  */
 export function createBrowserClient() {
@@ -20,6 +24,23 @@ export function createBrowserClient() {
     throw new Error('Missing Supabase public environment variables');
   }
 
+  // On native platforms (iOS/Android), use localStorage instead of cookies
+  // Capacitor Preferences is async but Supabase SSR expects sync cookie handlers
+  const isNative = Capacitor.isNativePlatform();
+
+  if (isNative) {
+    // Use default storage (localStorage) for native - Supabase SSR handles this automatically
+    return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: false,
+      },
+    });
+  }
+
+  // On web, use document.cookie
   return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
     cookies: {
       get(name) {

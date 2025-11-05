@@ -138,7 +138,11 @@ export default function AccountPage() {
     try {
       setLoadingUsername(true);
 
-      const response = await fetch('/api/account/username', {
+      // Import API config helpers for iOS compatibility
+      const { capacitorFetch, getApiUrl } = await import('@/lib/api-config');
+      const apiUrl = getApiUrl('/api/account/username');
+
+      const response = await capacitorFetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

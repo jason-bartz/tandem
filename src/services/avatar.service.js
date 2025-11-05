@@ -142,7 +142,7 @@ class AvatarService {
         })
         .eq('id', userId)
         .select()
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('[AvatarService] Failed to update avatar - Full error:', {
@@ -155,6 +155,11 @@ class AvatarService {
         throw new Error(
           `Database error: ${error.message || 'Failed to save avatar selection. Please try again.'}`
         );
+      }
+
+      if (!data) {
+        console.error('[AvatarService] No user found to update avatar for:', userId);
+        throw new Error('User profile not found. Please try signing in again.');
       }
 
       console.log('[AvatarService] Avatar updated successfully:', {
@@ -188,7 +193,9 @@ class AvatarService {
       // Direct query instead of RPC to avoid function type mismatch issues
       const { data: userData, error: userError } = await supabase
         .from('users')
-        .select('id, email, username, avatar_url, selected_avatar_id, avatar_selected_at, created_at')
+        .select(
+          'id, email, username, avatar_url, selected_avatar_id, avatar_selected_at, created_at'
+        )
         .eq('id', userId)
         .maybeSingle();
 

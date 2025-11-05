@@ -27,11 +27,13 @@ export default function StreakLeaderboard({ gameType }) {
 
   async function fetchLeaderboard() {
     try {
-      const url = `/api/leaderboard/streak?game=${gameType}&limit=10`;
+      // Import API config for iOS compatibility
+      const { capacitorFetch, getApiUrl } = await import('@/lib/api-config');
+      const url = getApiUrl(`/api/leaderboard/streak?game=${gameType}&limit=10`);
       console.log('[StreakLeaderboard] Fetching from:', url);
 
-      const response = await fetch(url, {
-        credentials: 'include', // Include cookies for authentication
+      const response = await capacitorFetch(url, {
+        method: 'GET',
       });
       const data = await response.json();
 
