@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
@@ -40,6 +41,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [lockedLetters, setLockedLetters] = useState([null, null, null, null]);
   const [isHardMode, setIsHardMode] = useState(false);
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
+  const [startTime, setStartTime] = useState(null);
 
   // Only load puzzle if we don't have initial data
   // Following Wordle's approach: client-side fetches puzzle using local timezone
@@ -178,6 +180,10 @@ export function useGameWithInitialData(initialPuzzleData) {
     setActiveHintIndex(null);
     setLockedLetters([null, null, null, null]);
 
+    // Start time tracking for leaderboard
+    setStartTime(Date.now());
+    setCompletionTime(null);
+
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
         started: true,
@@ -219,6 +225,11 @@ export function useGameWithInitialData(initialPuzzleData) {
       // CRITICAL: Capture hintedAnswers at the start before any state changes
       const capturedHintedAnswers = [...hintedAnswers];
 
+      // Calculate completion time for leaderboard
+      const endTime = Date.now();
+      const timeTaken = startTime ? Math.floor((endTime - startTime) / 1000) : 0; // Time in seconds
+      setCompletionTime(timeTaken);
+
       console.log('[useGameWithInitialData.completeGame] Called with:', {
         won,
         hintsUsed,
@@ -226,6 +237,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         capturedHintedAnswers,
         solved,
         mistakes,
+        timeTaken,
       });
 
       setGameState(GAME_STATES.COMPLETE);
@@ -263,11 +275,51 @@ export function useGameWithInitialData(initialPuzzleData) {
         try {
           await puzzleService.submitCompletion({
             completed: won,
-            time: 0,
+            time: timeTaken,
             mistakes: mistakes,
           });
         } catch (err) {
           console.error('Failed to submit completion:', err);
+        }
+
+        // Submit to leaderboard if won and time is valid
+        console.log('[useGameWithInitialData] Leaderboard submission check:', {
+          won,
+          timeTaken,
+          currentPuzzleDate,
+          willSubmit: won && timeTaken > 0 && currentPuzzleDate,
+        });
+
+        if (won && timeTaken > 0 && currentPuzzleDate) {
+          const payload = {
+            gameType: 'tandem',
+            puzzleDate: currentPuzzleDate,
+            score: timeTaken,
+            metadata: { hintsUsed, mistakes, solved },
+          };
+          console.log('[useGameWithInitialData] Submitting to leaderboard:', payload);
+
+          try {
+            const response = await fetch('/api/leaderboard/daily', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            const result = await response.json();
+            console.log('[useGameWithInitialData] Leaderboard response:', {
+              status: response.status,
+              ok: response.ok,
+              result,
+            });
+
+            if (!response.ok) {
+              console.error('[useGameWithInitialData] Leaderboard submission failed:', result);
+            }
+          } catch (err) {
+            console.error('[useGameWithInitialData] Failed to submit to leaderboard:', err);
+            // Fail silently - leaderboard submission is not critical
+          }
         }
       }
 
@@ -294,7 +346,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         });
       }
     },
-    [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed, hintedAnswers]
+    [isArchiveGame, mistakes, solved, currentPuzzleDate, hintsUsed, hintedAnswers, startTime]
   );
 
   const checkSingleAnswer = useCallback(

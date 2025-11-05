@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { CRYPTIC_CONFIG, CRYPTIC_GAME_STATES } from '@/lib/constants';
 import crypticService from '@/services/cryptic.service';
@@ -301,6 +302,41 @@ export function useCrypticGame() {
           .catch((err) => {
             logger.error('[useCrypticGame] Failed to save stats to server', { error: err.message });
           });
+
+        // Submit to leaderboard if daily puzzle (not archive) and time is valid
+        console.log('[useCrypticGame] Leaderboard submission check:', {
+          isArchive,
+          timeTaken,
+          currentPuzzleDate,
+          willSubmit: !isArchive && timeTaken > 0 && currentPuzzleDate,
+        });
+
+        if (!isArchive && timeTaken > 0 && currentPuzzleDate) {
+          const payload = {
+            gameType: 'cryptic',
+            puzzleDate: currentPuzzleDate,
+            score: timeTaken,
+            metadata: { hintsUsed, attempts: newAttempts },
+          };
+          console.log('[useCrypticGame] Submitting to leaderboard:', payload);
+
+          fetch('/api/leaderboard/daily', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          })
+            .then((response) => response.json())
+            .then((result) => {
+              console.log('[useCrypticGame] Leaderboard response:', result);
+            })
+            .catch((err) => {
+              logger.error('[useCrypticGame] Failed to submit to leaderboard', {
+                error: err.message,
+              });
+              console.error('[useCrypticGame] Leaderboard error:', err);
+              // Fail silently - leaderboard submission is not critical
+            });
+        }
 
         // Clear saved game state (fire and forget)
         clearCrypticGameState().catch((err) => {
