@@ -64,6 +64,11 @@ export default function PlayingScreen({
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
+  // Scroll to top on mount to ensure proper initial view
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   // Check URL parameters for auto-opening settings/paywall
   useEffect(() => {
     if (typeof window !== 'undefined') {
