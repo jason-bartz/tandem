@@ -608,6 +608,22 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
                             }`}
                           >
+                            Compete in daily and all-time leaderboards
+                          </span>
+                        </div>
+                        <div className="flex items-start gap-2">
+                          <span
+                            className={`text-sm mt-0.5 ${
+                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
+                            }`}
+                          >
+                            ✓
+                          </span>
+                          <span
+                            className={`text-xs ${
+                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                            }`}
+                          >
                             Recover subscription if you switch devices
                           </span>
                         </div>
