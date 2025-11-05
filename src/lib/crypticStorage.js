@@ -8,7 +8,7 @@
  * - Matches Tandem Daily's proven storage pattern
  */
 
-import { CRYPTIC_STORAGE_KEYS } from './constants';
+import { CRYPTIC_STORAGE_KEYS, API_ENDPOINTS } from './constants';
 import { getCurrentPuzzleInfo } from './utils';
 import logger from './logger';
 import { Capacitor } from '@capacitor/core';
@@ -95,6 +95,97 @@ async function getCrypticStorageKeys() {
     return result.keys;
   } else {
     return Object.keys(localStorage);
+  }
+}
+
+/**
+ * Check if user is authenticated
+ * @private
+ */
+async function isUserAuthenticated() {
+  try {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    // Import dynamically to avoid SSR issues
+    const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+    const supabase = getSupabaseBrowserClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    return !!session?.user;
+  } catch (error) {
+    logger.error('[crypticStorage] Failed to check auth status', error);
+    return false;
+  }
+}
+
+/**
+ * Fetch user cryptic stats from database
+ * @private
+ */
+async function fetchUserCrypticStatsFromDatabase() {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_CRYPTIC_STATS, {
+      method: 'GET',
+      credentials: 'include', // Important for cookie-based auth
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated
+        return null;
+      }
+      throw new Error(`Failed to fetch user cryptic stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    logger.error('[crypticStorage] Failed to fetch user cryptic stats from database', error);
+    return null;
+  }
+}
+
+/**
+ * Save user cryptic stats to database
+ * @private
+ */
+async function saveUserCrypticStatsToDatabase(stats) {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_CRYPTIC_STATS, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // Important for cookie-based auth
+      body: JSON.stringify({
+        totalCompleted: stats.totalCompleted || 0,
+        currentStreak: stats.currentStreak || 0,
+        longestStreak: stats.longestStreak || 0,
+        totalHintsUsed: stats.totalHintsUsed || 0,
+        perfectSolves: stats.perfectSolves || 0,
+        averageTime: stats.averageTime || 0,
+        completedPuzzles: stats.completedPuzzles || {},
+        lastPlayedDate: stats.lastPlayedDate || null,
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated - skip sync
+        return null;
+      }
+      throw new Error(`Failed to save user cryptic stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    logger.error('[crypticStorage] Failed to save user cryptic stats to database', error);
+    return null;
   }
 }
 
@@ -270,15 +361,37 @@ export async function hasCrypticPuzzleCompleted(date) {
  * Platform-agnostic: Works on iOS (Preferences) and Web (localStorage)
  *
  * @param {Object} stats - Stats object to save
- * @param {boolean} _skipCloudSync - If true, skip CloudKit sync (will be used in Day 3-4)
- * @returns {Promise<Object>} The saved stats (may be merged with CloudKit)
+ * @param {boolean} skipCloudSync - If true, skip CloudKit sync
+ * @param {boolean} skipDatabaseSync - If true, skip database sync
+ * @returns {Promise<Object>} The saved stats (may be merged with database/CloudKit)
  */
-export async function saveCrypticStats(stats, skipCloudSync = false) {
+export async function saveCrypticStats(stats, skipCloudSync = false, skipDatabaseSync = false) {
   try {
     await setCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS, JSON.stringify(stats));
     logger.info('[CrypticStorage] Stats saved locally');
 
-    // Sync to CloudKit (Day 3 implementation)
+    // Sync to database if user is authenticated and not skipping
+    if (!skipDatabaseSync) {
+      const isAuthenticated = await isUserAuthenticated();
+      if (isAuthenticated) {
+        try {
+          const dbStats = await saveUserCrypticStatsToDatabase(stats);
+          if (dbStats) {
+            logger.info('[CrypticStorage] Stats synced to database:', dbStats);
+            // Update local storage with merged stats from database
+            await setCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS, JSON.stringify(dbStats));
+            return dbStats;
+          }
+        } catch (error) {
+          logger.error('[CrypticStorage] Failed to sync with database', error);
+          // Non-critical error, continue with local stats
+        }
+      } else {
+        logger.info('[CrypticStorage] User not authenticated, skipping database sync');
+      }
+    }
+
+    // Sync to CloudKit (iOS only)
     if (!skipCloudSync && cloudKitService.isSyncAvailable()) {
       try {
         const syncResult = await cloudKitService.syncStats(stats);
@@ -328,7 +441,36 @@ export async function loadCrypticStats() {
     const saved = await getCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS);
     const localStats = saved ? JSON.parse(saved) : defaultStats;
 
-    // Auto-sync with CloudKit on load if available (Day 3 implementation)
+    // First, try to sync with database if user is authenticated
+    const isAuthenticated = await isUserAuthenticated();
+    if (isAuthenticated) {
+      try {
+        const dbStats = await fetchUserCrypticStatsFromDatabase();
+
+        if (dbStats) {
+          logger.info('[CrypticStorage] Database stats fetched:', dbStats);
+
+          // Merge database stats with local stats
+          const mergedStats = mergeCrypticStats(localStats, dbStats);
+
+          logger.info('[CrypticStorage] Merged stats (local + database):', mergedStats);
+
+          // Save merged stats locally (skip cloud and DB sync to avoid loops)
+          await saveCrypticStats(mergedStats, true, true);
+
+          return mergedStats;
+        } else {
+          logger.info('[CrypticStorage] No database stats found, using local stats');
+        }
+      } catch (error) {
+        logger.error('[CrypticStorage] Failed to sync with database', error);
+        // Continue with local stats if database sync fails
+      }
+    } else {
+      logger.info('[CrypticStorage] User not authenticated, skipping database sync');
+    }
+
+    // Auto-sync with CloudKit on load if available (iOS only)
     if (cloudKitService.isSyncAvailable()) {
       try {
         const cloudStats = await cloudKitService.fetchStats();
