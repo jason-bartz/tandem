@@ -379,7 +379,7 @@ export default function AccountPage() {
 
           <div className="space-y-3">
             {/* Avatar Section - Apple HIG: 96pt large avatar for profile */}
-            <div className="flex flex-col items-center mb-4 pb-4 border-b-[2px] border-gray-200 dark:border-gray-700">
+            <div className="flex flex-col items-center mb-4">
               {!loadingAvatar ? (
                 <>
                   <button
@@ -414,9 +414,7 @@ export default function AccountPage() {
                       lightTap();
                     }}
                     className={`text-sm font-medium hover:underline ${
-                      userAvatar?.selected_avatar_id
-                        ? 'text-purple-600 dark:text-purple-400'
-                        : ''
+                      userAvatar?.selected_avatar_id ? 'text-purple-600 dark:text-purple-400' : ''
                     }`}
                   >
                     {userAvatar?.selected_avatar_id ? 'Change Avatar' : ''}
@@ -448,9 +446,7 @@ export default function AccountPage() {
             {/* Username Section */}
             <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
               <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-500 dark:text-gray-400">
-                  Username
-                </p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">Username</p>
                 {!editingUsername && (
                   <button
                     onClick={handleEditUsername}
