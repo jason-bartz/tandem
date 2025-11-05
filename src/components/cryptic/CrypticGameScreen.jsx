@@ -247,7 +247,7 @@ export default function CrypticGameScreen({
     <div className="fixed inset-0 flex flex-col bg-gradient-to-b from-purple-200 to-purple-300 dark:from-gray-900 dark:to-gray-800">
       {/* Header with icons - Fixed to top with safe-area */}
       <div className="fixed top-0 left-0 right-0 z-10 pt-safe">
-        <div className="max-w-4xl w-full mx-auto px-4">
+        <div className="max-w-2xl w-full mx-auto px-4">
           <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
             <button
               onClick={() => setShowStats(true)}
@@ -298,8 +298,8 @@ export default function CrypticGameScreen({
       </div>
 
       {/* Main Content - Game Card with Keyboard */}
-      <div className="flex-1 flex flex-col pt-20 pb-safe">
-        <div className="max-w-4xl w-full h-full mx-auto flex flex-col px-4">
+      <div className="flex-1 flex flex-col pt-24 md:pt-20 pb-safe">
+        <div className="max-w-2xl w-full h-full mx-auto flex flex-col px-4">
           <div
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
               highContrast
@@ -308,7 +308,7 @@ export default function CrypticGameScreen({
             }`}
           >
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto p-6 md:p-8">
+            <div className="flex-1 overflow-y-auto p-4 md:p-6">
               {/* Header row with back button, time, and attempts */}
               <div className="flex items-center justify-between mb-6">
                 <button

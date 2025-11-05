@@ -412,7 +412,7 @@ export default function PlayingScreen({
 
       {/* Control buttons - Sticky to top with safe-area */}
       <div className="sticky top-0 left-0 right-0 z-10 pt-safe bg-gradient-to-b from-accent-yellow via-accent-yellow to-transparent">
-        <div className="max-w-xl w-full mx-auto px-4">
+        <div className="max-w-2xl w-full mx-auto px-4">
           <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
             <button
               onClick={() => {
@@ -479,7 +479,7 @@ export default function PlayingScreen({
         className="flex-1 flex flex-col pb-safe"
         style={{ paddingBottom: isMobilePhone ? '6rem' : undefined }}
       >
-        <div className="max-w-xl w-full h-full mx-auto flex flex-col px-4">
+        <div className="max-w-2xl w-full h-full mx-auto flex flex-col px-4">
           <div
             ref={puzzleContainerRef}
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col ${
