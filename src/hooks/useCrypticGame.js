@@ -13,6 +13,7 @@ import {
 } from '@/lib/crypticStorage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import logger from '@/lib/logger';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 /**
  * Custom hook for managing The Daily Cryptic game state
@@ -230,16 +231,32 @@ export function useCrypticGame() {
       // Normalize user answer - remove all spaces and convert to uppercase
       const normalizedUserAnswer = userAnswer.replace(/\s/g, '').toUpperCase();
 
-      // Call the server-side validation API
-      const response = await fetch('/api/cryptic/puzzle', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      // Debug logging for iOS
+      console.log('[useCrypticGame] Checking answer:', {
+        date: currentPuzzleDate,
+        userAnswerLength: normalizedUserAnswer.length,
+        puzzleLength: puzzle.length,
+      });
+
+      // Call the server-side validation API using capacitorFetch for iOS compatibility
+      const response = await capacitorFetch(
+        getApiUrl('/api/cryptic/puzzle'),
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: currentPuzzleDate,
+            answer: normalizedUserAnswer,
+          }),
         },
-        body: JSON.stringify({
-          date: currentPuzzleDate,
-          answer: normalizedUserAnswer,
-        }),
+        false // Don't include auth headers - this is a public endpoint
+      );
+
+      console.log('[useCrypticGame] Answer check response:', {
+        ok: response.ok,
+        status: response.status,
       });
 
       if (!response.ok) {
@@ -248,6 +265,10 @@ export function useCrypticGame() {
       }
 
       const result = await response.json();
+      console.log('[useCrypticGame] Answer check result:', {
+        correct: result.correct,
+        hasAnswer: !!result.answer,
+      });
 
       if (result.correct) {
         // Correct answer!
@@ -323,12 +344,15 @@ export function useCrypticGame() {
           };
           console.log('[useCrypticGame] Submitting to leaderboard:', payload);
 
-          fetch('/api/leaderboard/daily', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include', // Include cookies for authentication
-            body: JSON.stringify(payload),
-          })
+          capacitorFetch(
+            getApiUrl('/api/leaderboard/daily'),
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            },
+            true // Include auth headers
+          )
             .then((response) => response.json())
             .then((result) => {
               console.log('[useCrypticGame] Leaderboard response:', result);
@@ -348,15 +372,18 @@ export function useCrypticGame() {
               if (currentStreak > 0) {
                 console.log('[useCrypticGame] Submitting streak to leaderboard:', currentStreak);
 
-                return fetch('/api/leaderboard/streak', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
-                  body: JSON.stringify({
-                    gameType: 'cryptic',
-                    streak: currentStreak,
-                  }),
-                });
+                return capacitorFetch(
+                  getApiUrl('/api/leaderboard/streak'),
+                  {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                      gameType: 'cryptic',
+                      streak: currentStreak,
+                    }),
+                  },
+                  true // Include auth headers
+                );
               }
             })
             .then((response) => {

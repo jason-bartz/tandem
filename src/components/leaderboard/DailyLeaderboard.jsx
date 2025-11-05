@@ -29,11 +29,16 @@ export default function DailyLeaderboard({ gameType }) {
   async function fetchLeaderboard() {
     try {
       const puzzleInfo = getCurrentPuzzleInfo();
-      const url = `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`;
+
+      // Import API config for iOS compatibility
+      const { capacitorFetch, getApiUrl } = await import('@/lib/api-config');
+      const url = getApiUrl(
+        `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`
+      );
       console.log('[DailyLeaderboard] Fetching from:', url);
 
-      const response = await fetch(url, {
-        credentials: 'include', // Include cookies for authentication
+      const response = await capacitorFetch(url, {
+        method: 'GET',
       });
       const data = await response.json();
 

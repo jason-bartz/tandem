@@ -4,7 +4,7 @@
  * achievement submissions, and leaderboard updates
  */
 
-import { Capacitor } from '@capacitor/core';
+import { Capacitor, registerPlugin } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { STORAGE_KEYS } from '@/lib/constants';
 import { LEADERBOARDS } from '@/lib/achievementDefinitions';
@@ -15,11 +15,10 @@ import {
   getAllQualifyingAchievements,
 } from '@/lib/achievementChecker';
 import logger from '@/lib/logger';
-import { CapacitorGameConnect } from '@openforge/capacitor-game-connect';
 import { loadStats } from '@/lib/storage';
 
-// Use the plugin
-const GameConnect = CapacitorGameConnect;
+// Use our custom EnhancedGameCenterPlugin instead of third-party plugin
+const GameConnect = registerPlugin('EnhancedGameCenterPlugin');
 
 class GameCenterService {
   constructor() {
@@ -61,12 +60,12 @@ class GameCenterService {
         logger.info('[GameCenter] Using cached authentication');
       }
 
-      // Attempt silent authentication
-      const result = await GameConnect.signIn();
+      // Attempt silent authentication using our custom plugin
+      const result = await GameConnect.authenticateLocalPlayer();
 
-      if (result && result.player_id) {
+      if (result && result.authenticated) {
         this.isAuthenticated = true;
-        this.playerId = result.player_id;
+        this.playerId = result.playerID;
 
         // Cache authentication status
         await Preferences.set({

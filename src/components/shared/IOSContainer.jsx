@@ -16,7 +16,7 @@ export default function IOSContainer({ children }) {
       try {
         // Configure status bar
         await StatusBar.setStyle({ style: 'dark' });
-        await StatusBar.setBackgroundColor({ color: '#ffffff' });
+        // Note: setBackgroundColor is Android-only, not supported on iOS
 
         // Add iOS-specific styles
         document.documentElement.classList.add('ios-app');
@@ -153,7 +153,7 @@ export default function IOSContainer({ children }) {
       /* Prevent bounce scroll while allowing natural scrolling on iPad */
       .ios-app body {
         -webkit-overflow-scrolling: touch;
-        overscroll-behavior: none;
+        overscroll-behavior-y: contain;
       }
 
       /* Allow scrolling in specific areas */

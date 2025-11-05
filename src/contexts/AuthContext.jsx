@@ -120,7 +120,9 @@ export function AuthProvider({ children }) {
 
       // If quota exceeded, try emergency cleanup and retry once
       if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        console.warn('[Auth] Storage quota exceeded during signup, attempting emergency cleanup...');
+        console.warn(
+          '[Auth] Storage quota exceeded during signup, attempting emergency cleanup...'
+        );
         try {
           const { emergencyCleanup } = await import('@/lib/storageCleanup');
           await emergencyCleanup();
@@ -238,8 +240,16 @@ export function AuthProvider({ children }) {
         window.Capacitor &&
         window.Capacitor.getPlatform() === 'ios';
 
+      console.log('[Auth] signInWithApple() - Platform check:', {
+        hasWindow: typeof window !== 'undefined',
+        hasCapacitor: !!window.Capacitor,
+        platform: window.Capacitor?.getPlatform(),
+        isCapacitor,
+      });
+
       if (!isCapacitor) {
         // On web, use Supabase's Apple OAuth
+        console.log('[Auth] Using web OAuth flow');
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'apple',
           options: {
@@ -252,15 +262,28 @@ export function AuthProvider({ children }) {
       }
 
       // On iOS, use native Apple Sign In
+      console.log('[Auth] Using native iOS Apple Sign In');
+
       // Dynamic import to avoid bundling on web builds
       const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
+      console.log('[Auth] SignInWithApple plugin imported');
 
       // Generate raw nonce for Apple Sign In
       // Apple requires the nonce to be SHA-256 hashed, but Supabase needs the raw nonce
       const rawNonce = crypto.randomUUID();
       const hashedNonce = await sha256(rawNonce);
+      console.log('[Auth] Generated nonces:', {
+        rawNonceLength: rawNonce.length,
+        hashedNonceLength: hashedNonce.length,
+      });
 
       // Get Apple credentials
+      console.log('[Auth] Requesting Apple authorization with config:', {
+        clientId: 'com.tandemdaily.app',
+        redirectURI: 'https://tandemdaily.com/auth/callback',
+        scopes: 'email name',
+      });
+
       const result = await SignInWithApple.authorize({
         clientId: 'com.tandemdaily.app', // Your app's bundle ID
         redirectURI: 'https://tandemdaily.com/auth/callback',
@@ -269,15 +292,33 @@ export function AuthProvider({ children }) {
         nonce: hashedNonce, // Pass hashed nonce to Apple
       });
 
+      console.log('[Auth] Apple authorization response received:', {
+        hasResponse: !!result.response,
+        hasIdentityToken: !!result.response?.identityToken,
+        hasAuthorizationCode: !!result.response?.authorizationCode,
+        hasUser: !!result.response?.user,
+        hasEmail: !!result.response?.email,
+      });
+
       // Use the identity token to authenticate with Supabase
       // IMPORTANT: Pass the raw (unhashed) nonce to Supabase, not the hashed one
+      console.log('[Auth] Authenticating with Supabase using identity token...');
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: result.response.identityToken,
         nonce: rawNonce, // Pass raw nonce to Supabase
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error('[Auth] Supabase signInWithIdToken error:', error);
+        throw error;
+      }
+
+      console.log('[Auth] Supabase authentication successful:', {
+        hasUser: !!data?.user,
+        hasSession: !!data?.session,
+        userId: data?.user?.id,
+      });
 
       // Store Apple authorization code for account deletion token revocation
       // Per App Store Review Guideline 5.1.1(v), apps using Sign in with Apple

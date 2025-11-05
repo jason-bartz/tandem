@@ -5,6 +5,7 @@
 
 import { CRYPTIC_API_ENDPOINTS } from '@/lib/constants';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import logger from '@/lib/logger';
 
 class CrypticService {
@@ -22,18 +23,25 @@ class CrypticService {
         targetDate = puzzleInfo.isoDate;
       }
 
-      const url = date
+      const endpoint = date
         ? `${CRYPTIC_API_ENDPOINTS.PUZZLE}?date=${targetDate}`
         : CRYPTIC_API_ENDPOINTS.PUZZLE;
 
-      logger.info('[CrypticService] Fetching puzzle', { date: targetDate });
+      // Use getApiUrl to handle iOS absolute URLs
+      const url = getApiUrl(endpoint);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      logger.info('[CrypticService] Fetching puzzle', { date: targetDate, url });
+
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        false
+      ); // Don't include auth - puzzle endpoint is public
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
@@ -74,14 +82,21 @@ class CrypticService {
    */
   async getStats(date = null) {
     try {
-      const url = date ? `${CRYPTIC_API_ENDPOINTS.STATS}?date=${date}` : CRYPTIC_API_ENDPOINTS.STATS;
+      const endpoint = date
+        ? `${CRYPTIC_API_ENDPOINTS.STATS}?date=${date}`
+        : CRYPTIC_API_ENDPOINTS.STATS;
+      const url = getApiUrl(endpoint);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        true
+      ); // Include auth - stats are per-user
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
@@ -122,13 +137,19 @@ class CrypticService {
         hintsUsed: statsData.hints_used,
       });
 
-      const response = await fetch(CRYPTIC_API_ENDPOINTS.STATS, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const url = getApiUrl(CRYPTIC_API_ENDPOINTS.STATS);
+
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(statsData),
         },
-        body: JSON.stringify(statsData),
-      });
+        true
+      ); // Include auth - saving user stats
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
@@ -170,14 +191,19 @@ class CrypticService {
       if (endDate) params.append('endDate', endDate);
       if (limit) params.append('limit', limit.toString());
 
-      const url = `${CRYPTIC_API_ENDPOINTS.PUZZLE}?${params.toString()}`;
+      const endpoint = `${CRYPTIC_API_ENDPOINTS.PUZZLE}?${params.toString()}`;
+      const url = getApiUrl(endpoint);
 
-      const response = await fetch(url, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        false
+      ); // Don't include auth - archive is public
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
@@ -212,12 +238,19 @@ class CrypticService {
    */
   async getAggregateStats() {
     try {
-      const response = await fetch(`${CRYPTIC_API_ENDPOINTS.STATS}/aggregate`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
+      const endpoint = `${CRYPTIC_API_ENDPOINTS.STATS}/aggregate`;
+      const url = getApiUrl(endpoint);
+
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
         },
-      });
+        true
+      ); // Include auth - aggregate stats are per-user
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
