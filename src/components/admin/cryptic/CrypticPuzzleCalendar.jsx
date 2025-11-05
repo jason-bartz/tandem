@@ -72,6 +72,12 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
     return puzzleMap.has(dateStr);
   };
 
+  // Get puzzle for date
+  const getPuzzle = (day) => {
+    const dateStr = formatDate(day);
+    return puzzleMap.get(dateStr);
+  };
+
   // Check if date is selected
   const isSelected = (day) => {
     const dateStr = formatDate(day);
@@ -95,15 +101,11 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
       const isValidDay = dayNumber > 0 && dayNumber <= daysInMonth;
 
       if (!isValidDay) {
-        days.push(
-          <div
-            key={`empty-${i}`}
-            className="min-h-[80px] sm:min-h-[100px] md:h-32"
-          />
-        );
+        days.push(<div key={`empty-${i}`} className="min-h-[80px] sm:min-h-[100px] md:h-32" />);
       } else {
         const today = isToday(dayNumber);
         const puzzleExists = hasPuzzle(dayNumber);
+        const puzzle = getPuzzle(dayNumber);
         const selected = isSelected(dayNumber);
         const holiday = holidays[dayNumber];
 
@@ -152,11 +154,19 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
               </div>
             )}
 
-            {/* Puzzle indicator - only show green dot, no text on mobile */}
+            {/* Display clue text on desktop (like PuzzleCalendar shows theme) */}
+            {puzzle && puzzle.clue && (
+              <div className="mt-0.5 sm:mt-1 flex-1">
+                <div className="hidden sm:block text-[9px] sm:text-[11px] text-text-primary font-medium leading-tight break-words line-clamp-3">
+                  {puzzle.clue}
+                </div>
+              </div>
+            )}
+
+            {/* Puzzle indicator - only show green dot on mobile */}
             {puzzleExists && (
               <div className="absolute bottom-1 left-1 right-1 flex items-center gap-1">
-                <div className="w-1.5 h-1.5 rounded-full bg-accent-green inline-block" />
-                <span className="hidden sm:inline text-[8px] sm:text-[9px] text-text-primary font-bold">Has puzzle</span>
+                <div className="sm:hidden w-1.5 h-1.5 rounded-full bg-accent-green inline-block" />
               </div>
             )}
           </div>
@@ -181,7 +191,12 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
           >
             {currentMonth.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
             </svg>
           </button>
 
@@ -191,7 +206,20 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
               style={{ boxShadow: 'var(--shadow-card)' }}
             >
               <div className="grid grid-cols-3 gap-2 mb-4">
-                {['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'].map((month, index) => (
+                {[
+                  'Jan',
+                  'Feb',
+                  'Mar',
+                  'Apr',
+                  'May',
+                  'Jun',
+                  'Jul',
+                  'Aug',
+                  'Sep',
+                  'Oct',
+                  'Nov',
+                  'Dec',
+                ].map((month, index) => (
                   <button
                     key={month}
                     onClick={() => {
@@ -293,11 +321,18 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
       {/* Stats */}
       <div className="mt-4 pt-4 border-t-[3px] border-border-main">
         <p className="text-sm text-text-secondary font-medium">
-          Total puzzles this month: <span className="font-bold text-text-primary">{puzzles.filter(p => {
-            const puzzleDate = new Date(p.date);
-            return puzzleDate.getMonth() === currentMonth.getMonth() &&
-                   puzzleDate.getFullYear() === currentMonth.getFullYear();
-          }).length}</span>
+          Total puzzles this month:{' '}
+          <span className="font-bold text-text-primary">
+            {
+              puzzles.filter((p) => {
+                const puzzleDate = new Date(p.date);
+                return (
+                  puzzleDate.getMonth() === currentMonth.getMonth() &&
+                  puzzleDate.getFullYear() === currentMonth.getFullYear()
+                );
+              }).length
+            }
+          </span>
         </p>
       </div>
     </div>
