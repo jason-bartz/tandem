@@ -577,24 +577,48 @@ export default function PlayingScreen({
               </div>
             </div>
 
-            {/* Fixed Bottom Section - Hint Button + Keyboard */}
+            {/* Fixed Bottom Section - Action Buttons + Keyboard */}
             <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
               <div className="max-w-lg mx-auto">
-                {/* Hint button - positioned before keyboard (not shown in hard mode) */}
-                {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
-                  <div className="mb-3">
+                {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
+                <div className="flex gap-3 mb-4">
+                  {/* Check Button */}
+                  <button
+                    onClick={() => {
+                      lightTap();
+                      if (handleKeyboardInput) {
+                        handleKeyboardInput('ENTER');
+                      }
+                    }}
+                    disabled={
+                      focusedIndex === null ||
+                      correctAnswers[focusedIndex] ||
+                      !answers[focusedIndex]?.trim()
+                    }
+                    className="flex-1 px-6 py-3 text-white text-base font-bold rounded-[20px] border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
+                    style={
+                      focusedIndex !== null &&
+                      !correctAnswers[focusedIndex] &&
+                      answers[focusedIndex]?.trim()
+                        ? { backgroundColor: '#3B82F6' }
+                        : {}
+                    }
+                  >
+                    Check
+                  </button>
+
+                  {/* Hints Button - Only show in non-hard mode when hints are available */}
+                  {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
                     <motion.button
                       onClick={() => {
                         lightTap();
                         handleUseHint();
                       }}
-                      className={`w-full ${
-                        isSmallPhone ? 'p-2.5' : isMobilePhone ? 'p-3' : 'p-3 sm:p-4'
-                      } text-sm sm:text-base rounded-2xl font-bold cursor-pointer transition-all flex items-center justify-center gap-2 relative overflow-hidden border-[3px] ${
+                      className={`flex-1 px-6 py-3 font-bold rounded-[20px] border-[3px] text-base transition-all ${
                         highContrast
-                          ? 'bg-hc-warning text-hc-primary-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-accent-yellow text-dark-text dark:text-gray-900 border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      } disabled:opacity-50 disabled:cursor-not-allowed`}
+                          ? 'bg-hc-warning text-black border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                          : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden`}
                       disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                       aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
                       // Celebratory animation when second hint appears
@@ -631,7 +655,9 @@ export default function PlayingScreen({
                         exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
                       >
-                        {showSecondHintCelebration ? "You've earned a second hint!" : 'Use Hint'}
+                        {showSecondHintCelebration
+                          ? "You've earned a second hint!"
+                          : `Hints (${hintsUsed}/${unlockedHints})`}
                       </motion.span>
 
                       {/* Extra sparkle for celebration */}
@@ -647,12 +673,17 @@ export default function PlayingScreen({
                         </motion.span>
                       )}
                     </motion.button>
-                    {unlockedHints === 1 && solved >= 1 && (
-                      <p className="text-xs text-center text-gray-500 dark:text-gray-400 mt-1">
-                        Get 1 more correct answer to unlock another hint!
-                      </p>
-                    )}
-                  </div>
+                  )}
+
+                  {/* Check Button Only - When hints are not available */}
+                  {(isHardMode || hintsUsed >= unlockedHints || solved >= 4) && (
+                    <div className="flex-1" />
+                  )}
+                </div>
+                {!isHardMode && unlockedHints === 1 && solved >= 1 && hintsUsed < unlockedHints && (
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-3">
+                    Get 1 more correct answer to unlock another hint!
+                  </p>
                 )}
 
                 {/* On-screen keyboard */}
