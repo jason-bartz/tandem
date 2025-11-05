@@ -582,7 +582,12 @@ export default function PlayingScreen({
             </div>
 
             {/* Fixed Bottom Section - Action Buttons + Keyboard */}
-            <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
+            <div
+              className="flex-shrink-0 p-4 pb-safe sm:p-6 sm:pb-safe"
+              style={{
+                paddingBottom: isMobilePhone ? 'max(5rem, env(safe-area-inset-bottom))' : undefined,
+              }}
+            >
               <div className="max-w-lg mx-auto">
                 {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
                 <div className="flex gap-3 mb-4 relative">
