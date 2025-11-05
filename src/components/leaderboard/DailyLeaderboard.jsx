@@ -29,20 +29,29 @@ export default function DailyLeaderboard({ gameType }) {
   async function fetchLeaderboard() {
     try {
       const puzzleInfo = getCurrentPuzzleInfo();
-      const response = await fetch(
-        `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`,
-        {
-          credentials: 'include', // Include cookies for authentication
-        }
-      );
+      const url = `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`;
+      console.log('[DailyLeaderboard] Fetching from:', url);
+
+      const response = await fetch(url, {
+        credentials: 'include', // Include cookies for authentication
+      });
       const data = await response.json();
+
+      console.log('[DailyLeaderboard] Response:', {
+        success: data.success,
+        leaderboardCount: data.leaderboard?.length || 0,
+        leaderboard: data.leaderboard,
+        userRank: data.userRank,
+      });
 
       if (data.success) {
         setLeaderboard(data.leaderboard || []);
         setUserRank(data.userRank);
+      } else {
+        console.error('[DailyLeaderboard] API returned success=false:', data);
       }
     } catch (err) {
-      console.error('Failed to fetch leaderboard:', err);
+      console.error('[DailyLeaderboard] Fetch error:', err);
     } finally {
       setLoading(false);
     }
