@@ -699,19 +699,6 @@ export default function PlayingScreen({
                           ? "You've earned a second hint!"
                           : `Hints (${hintsUsed}/${unlockedHints})`}
                       </motion.span>
-
-                      {/* Extra sparkle for celebration */}
-                      {showSecondHintCelebration && (
-                        <motion.span
-                          className="text-lg sm:text-xl"
-                          initial={{ opacity: 0, scale: 0, rotate: -180 }}
-                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                          exit={{ opacity: 0, scale: 0, rotate: 180 }}
-                          transition={{ duration: 0.5, ease: 'backOut' }}
-                        >
-                          🎉
-                        </motion.span>
-                      )}
                     </motion.button>
                   )}
 
