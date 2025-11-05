@@ -14,6 +14,7 @@ import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
 import CrypticWelcomeCard from '@/components/cryptic/CrypticWelcomeCard';
+import DailyCrypticAnnouncementModal from '@/components/DailyCrypticAnnouncementModal';
 
 export default function WelcomeScreen({
   onStart,
@@ -29,6 +30,7 @@ export default function WelcomeScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showCrypticAnnouncement, setShowCrypticAnnouncement] = useState(false);
   const { lightTap, mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
   const getIconPath = useUIIcon();
@@ -52,6 +54,20 @@ export default function WelcomeScreen({
     }
   }, [welcomeMelody]);
 
+  // Check if user has seen the Daily Cryptic announcement and show modal with delay
+  useEffect(() => {
+    const hasSeenAnnouncement = localStorage.getItem('hasSeenCrypticAnnouncement');
+
+    if (!hasSeenAnnouncement) {
+      // Show announcement after a 1.5 second delay for better UX
+      const timer = setTimeout(() => {
+        setShowCrypticAnnouncement(true);
+      }, 1500);
+
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Handle Enter key to start the daily puzzle
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -73,6 +89,12 @@ export default function WelcomeScreen({
       // Sound might fail on some browsers
     }
     onStart();
+  };
+
+  const handleCloseAnnouncement = () => {
+    setShowCrypticAnnouncement(false);
+    // Mark announcement as seen so it doesn't show again
+    localStorage.setItem('hasSeenCrypticAnnouncement', 'true');
   };
 
   // Placeholder for premium status check
@@ -166,9 +188,7 @@ export default function WelcomeScreen({
 
         {/* Title and Subtitle */}
         <div className="mb-4">
-          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-            Tandem Daily
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Tandem Daily</h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">Emoji Word Puzzle</p>
         </div>
 
@@ -252,6 +272,10 @@ export default function WelcomeScreen({
           // Refresh premium status when settings close
           checkPremiumStatus();
         }}
+      />
+      <DailyCrypticAnnouncementModal
+        isOpen={showCrypticAnnouncement}
+        onClose={handleCloseAnnouncement}
       />
     </div>
   );
