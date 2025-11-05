@@ -103,6 +103,20 @@ export default function DailyLeaderboard({ gameType }) {
 
   return (
     <div className="p-6">
+      {/* Show simple list if less than 3 players */}
+      {leaderboard.length > 0 && leaderboard.length < 3 && (
+        <div className="space-y-2">
+          {leaderboard.map((entry, idx) => (
+            <LeaderboardEntry
+              key={entry.user_id}
+              entry={entry}
+              rank={idx + 1}
+              isCurrentUser={user?.id === entry.user_id}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Top 3 Podium */}
       {leaderboard.length >= 3 && (
         <div className="flex justify-center items-end gap-4 mb-8 px-4">
