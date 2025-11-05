@@ -20,6 +20,7 @@ export default function AuthModalManager() {
   const [isOpen, setIsOpen] = useState(false);
   const [mode, setMode] = useState('login');
   const [confirmationMessage, setConfirmationMessage] = useState(null);
+  const [messageType, setMessageType] = useState('success'); // 'success' or 'error'
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -31,6 +32,20 @@ export default function AuthModalManager() {
     const authParam = searchParams?.get('auth');
     const emailConfirmed = searchParams?.get('email_confirmed');
     const authError = searchParams?.get('auth_error');
+    const error = searchParams?.get('error');
+    const errorCode = searchParams?.get('error_code');
+    const errorDescription = searchParams?.get('error_description');
+
+    // Also check hash parameters (Supabase sometimes puts errors in hash)
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const hashError = hashParams.get('error');
+    const hashErrorCode = hashParams.get('error_code');
+    const hashErrorDescription = hashParams.get('error_description');
+
+    // Determine which error source to use
+    const actualError = error || hashError;
+    const actualErrorCode = errorCode || hashErrorCode;
+    const actualErrorDescription = errorDescription || hashErrorDescription;
 
     if (emailConfirmed === 'true') {
       // Email confirmed successfully - show welcome back modal instead of auth modal
@@ -38,12 +53,25 @@ export default function AuthModalManager() {
       // Clean up URL parameter
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
-    } else if (authError === 'true') {
-      // Authentication error
-      setConfirmationMessage('Authentication failed. Please try again.');
-      setMode('login');
+    } else if (actualError || authError === 'true') {
+      // Handle authentication errors from various sources
+      let errorMessage = 'Authentication failed. Please try again.';
+
+      // Handle specific error cases
+      if (actualErrorCode === 'otp_expired' || actualError === 'access_denied') {
+        errorMessage =
+          'Your password reset link has expired or is invalid. Please request a new one.';
+        setMode('reset'); // Open in reset mode so user can request a new link
+      } else if (actualErrorDescription) {
+        // Use the actual error description if available
+        errorMessage = decodeURIComponent(actualErrorDescription.replace(/\+/g, ' '));
+      }
+
+      setConfirmationMessage(errorMessage);
+      setMessageType('error'); // This is an error message
       setIsOpen(true);
-      // Clean up URL parameter
+
+      // Clean up URL parameters (both query and hash)
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else if (authParam) {
@@ -82,6 +110,7 @@ export default function AuthModalManager() {
   const handleClose = () => {
     setIsOpen(false);
     setConfirmationMessage(null);
+    setMessageType('success'); // Reset to default
     // Clean up URL parameter without triggering navigation
     if (searchParams?.get('auth')) {
       const newUrl = window.location.pathname;
@@ -92,6 +121,7 @@ export default function AuthModalManager() {
   const handleSuccess = () => {
     setIsOpen(false);
     setConfirmationMessage(null);
+    setMessageType('success'); // Reset to default
     // Clean up URL parameter
     if (searchParams?.get('auth')) {
       const newUrl = window.location.pathname;
@@ -123,6 +153,7 @@ export default function AuthModalManager() {
         initialMode={mode}
         onSuccess={handleSuccess}
         initialMessage={confirmationMessage}
+        initialMessageType={messageType}
       />
       <WelcomeBackModal
         isOpen={showWelcomeBack}

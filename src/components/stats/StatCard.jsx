@@ -17,39 +17,39 @@ export default function StatCard({ value, label, color = 'blue', emoji = '', ani
 
   const colorClasses = {
     blue: {
-      bg: 'bg-accent-blue/20 dark:bg-sky-900/40',
-      border: 'border-accent-blue',
-      text: 'text-accent-blue dark:text-accent-blue',
+      bg: 'bg-accent-blue dark:bg-sky-600',
+      border: 'border-accent-blue dark:border-sky-600',
+      text: 'text-white dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
     },
     green: {
-      bg: 'bg-accent-green/20 dark:bg-green-900/40',
-      border: 'border-accent-green',
-      text: 'text-accent-green dark:text-accent-green',
+      bg: 'bg-accent-green dark:bg-green-600',
+      border: 'border-accent-green dark:border-green-600',
+      text: 'text-white dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(126,217,87,0.3)]',
     },
     yellow: {
-      bg: 'bg-accent-yellow/20 dark:bg-yellow-900/40',
-      border: 'border-accent-yellow',
-      text: 'text-accent-yellow dark:text-accent-yellow',
+      bg: 'bg-accent-yellow dark:bg-yellow-600',
+      border: 'border-accent-yellow dark:border-yellow-600',
+      text: 'text-gray-800 dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
     },
     pink: {
-      bg: 'bg-accent-pink/20 dark:bg-pink-900/40',
-      border: 'border-accent-pink',
-      text: 'text-accent-pink dark:text-accent-pink',
+      bg: 'bg-accent-pink dark:bg-pink-600',
+      border: 'border-accent-pink dark:border-pink-600',
+      text: 'text-white dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(255,102,196,0.3)]',
     },
     orange: {
-      bg: 'bg-accent-orange/20 dark:bg-orange-900/40',
-      border: 'border-accent-orange',
-      text: 'text-accent-orange dark:text-accent-orange',
+      bg: 'bg-accent-orange dark:bg-orange-600',
+      border: 'border-accent-orange dark:border-orange-600',
+      text: 'text-white dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(255,117,31,0.3)]',
     },
     purple: {
-      bg: 'bg-purple-100/50 dark:bg-purple-900/40',
-      border: 'border-purple-500',
-      text: 'text-purple-600 dark:text-purple-400',
+      bg: 'bg-purple-600 dark:bg-purple-700',
+      border: 'border-purple-600 dark:border-purple-700',
+      text: 'text-white dark:text-white',
       shadow: 'shadow-[3px_3px_0px_rgba(147,51,234,0.3)]',
     },
   };
@@ -76,7 +76,7 @@ export default function StatCard({ value, label, color = 'blue', emoji = '', ani
       </div>
       <div
         className={`text-xs mt-1 uppercase tracking-wide ${
-          highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+          highContrast ? 'text-hc-text' : 'text-white/90 dark:text-white/90'
         }`}
       >
         {label}

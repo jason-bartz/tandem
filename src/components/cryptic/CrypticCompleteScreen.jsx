@@ -12,23 +12,24 @@ import CrypticGuideModal from './CrypticGuideModal';
 import CrypticArchiveCalendar from './CrypticArchiveCalendar';
 import Settings from '@/components/Settings';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
 export default function CrypticCompleteScreen({
-  puzzle,
+  puzzle: _puzzle,
   answer,
   hintsUsed,
   elapsedTime,
   attempts,
   currentPuzzleDate,
-  onPlayAgain,
+  onPlayAgain: _onPlayAgain,
   onReturnHome,
 }) {
-  const [shareMessage, setShareMessage] = useState('');
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion, theme } = useTheme();
   const getIconPath = useUIIcon();
@@ -37,15 +38,6 @@ export default function CrypticCompleteScreen({
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-  };
-
-  const formatDate = (dateString) => {
-    const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    });
   };
 
   const getPuzzleNumber = () => {
@@ -217,91 +209,131 @@ export default function CrypticCompleteScreen({
 
       {/* Main Content */}
       <div className="max-w-4xl w-full mx-auto flex-1">
-        <div className={`rounded-[32px] border-[3px] p-8 md:p-10 shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}>
+        <div
+          className={`rounded-[32px] border-[3px] p-8 md:p-10 shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+          }`}
+        >
           {/* Logo */}
           <div className="mb-6">
             <img
-              src={theme === 'dark' ? '/images/daily-cryptic-logo-dark.webp' : '/images/daily-cryptic-logo.webp'}
+              src={
+                theme === 'dark'
+                  ? '/images/daily-cryptic-logo-dark.webp'
+                  : '/images/daily-cryptic-logo.webp'
+              }
               alt="Daily Cryptic"
               className="w-24 h-24 mx-auto rounded-2xl"
             />
           </div>
 
           {/* Title */}
-          <h1 className={`text-4xl font-bold mb-2 ${
-            highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-          }`}>
+          <h1
+            className={`text-4xl font-bold mb-2 ${
+              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+            }`}
+          >
             {perfectSolve ? 'Perfect Solve!' : 'Wonderful'}
           </h1>
-          <p className={`text-lg mb-8 ${
-            highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-          }`}>
+          <p
+            className={`text-lg mb-8 ${
+              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+            }`}
+          >
             You solved Daily Cryptic #{getPuzzleNumber()}
           </p>
 
           {/* Answer Section */}
-          <div className={`mb-8 pb-8 border-b-[3px] ${
-            highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-700'
-          }`}>
-            <div className={`text-sm font-bold uppercase tracking-wide mb-3 ${
-              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-            }`}>
+          <div
+            className={`mb-8 pb-8 border-b-[3px] ${
+              highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-700'
+            }`}
+          >
+            <div
+              className={`text-sm font-bold uppercase tracking-wide mb-3 ${
+                highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+              }`}
+            >
               The Answer
             </div>
-            <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">
-              {answer}
-            </div>
+            <div className="text-4xl font-bold text-purple-600 dark:text-purple-400">{answer}</div>
           </div>
 
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-4 mb-8">
-            <div className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
-            }`}>
-              <div className={`text-lg font-bold ${
-                highContrast ? 'text-hc-text' : 'text-accent-blue dark:text-accent-blue'
-              }`}>
+            <div
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-accent-blue dark:text-accent-blue'
+                }`}
+              >
                 {formatTime(elapsedTime)}
               </div>
-              <div className={`text-xs mt-1 ${
-                highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-              }`}>Time</div>
+              <div
+                className={`text-xs mt-1 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Time
+              </div>
             </div>
-            <div className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : hintsUsed === 0
-                  ? 'bg-accent-yellow/20 dark:bg-yellow-900/50 border-accent-yellow'
-                  : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
-            }`}>
-              <div className={`text-lg font-bold ${
-                highContrast ? 'text-hc-text' : hintsUsed === 0 ? 'text-accent-yellow dark:text-accent-yellow' : 'text-accent-orange dark:text-accent-orange'
-              }`}>
+            <div
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : hintsUsed === 0
+                    ? 'bg-accent-yellow/20 dark:bg-yellow-900/50 border-accent-yellow'
+                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  highContrast
+                    ? 'text-hc-text'
+                    : hintsUsed === 0
+                      ? 'text-accent-yellow dark:text-accent-yellow'
+                      : 'text-accent-orange dark:text-accent-orange'
+                }`}
+              >
                 {getHintText()}
               </div>
-              <div className={`text-xs mt-1 ${
-                highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-              }`}>Hints Used</div>
+              <div
+                className={`text-xs mt-1 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Hints Used
+              </div>
             </div>
-            <div className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
-            }`}>
-              <div className={`text-lg font-bold ${
-                highContrast ? 'text-hc-text' : 'text-accent-pink dark:text-accent-pink'
-              }`}>
+            <div
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
+              }`}
+            >
+              <div
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-accent-pink dark:text-accent-pink'
+                }`}
+              >
                 {attempts}
               </div>
-              <div className={`text-xs mt-1 ${
-                highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-              }`}>Attempts</div>
+              <div
+                className={`text-xs mt-1 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                }`}
+              >
+                Attempts
+              </div>
             </div>
           </div>
 
@@ -332,26 +364,42 @@ export default function CrypticCompleteScreen({
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-            }`}
+              }`}
             >
               Play from Archive
             </button>
-          </div>
 
-          {/* View All Statistics Link */}
-          <button
-            onClick={() => {
-              lightTap();
-              setShowStats(true);
-            }}
-            className={`text-sm font-medium ${
-              highContrast
-                ? 'text-hc-primary hover:text-hc-focus'
-                : 'text-accent-blue dark:text-accent-blue hover:underline'
-            }`}
-          >
-            View All Statistics
-          </button>
+            {/* View Stats and Leaderboard Buttons */}
+            <div className="grid grid-cols-2 gap-3">
+              <button
+                onClick={() => {
+                  lightTap();
+                  setShowStats(true);
+                }}
+                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }`}
+              >
+                Stats
+              </button>
+
+              <button
+                onClick={() => {
+                  lightTap();
+                  setShowLeaderboard(true);
+                }}
+                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }`}
+              >
+                Leaderboard
+              </button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -360,6 +408,12 @@ export default function CrypticCompleteScreen({
       <CrypticArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        gameType="cryptic"
+        initialTab="daily"
+      />
     </div>
   );
 }
