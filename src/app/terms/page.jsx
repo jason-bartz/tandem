@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
 export default function TermsOfUse() {
-  const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -26,7 +24,7 @@ export default function TermsOfUse() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: October 30, 2025
+            <strong>Last Updated</strong>: November 5, 2025
           </p>
         </div>
       ),
@@ -52,6 +50,7 @@ export default function TermsOfUse() {
             <li>One free daily puzzle for all users (both games)</li>
             <li>Archive of past puzzles (subscription required for full access)</li>
             <li>Statistics tracking and streak counting</li>
+            <li>Global leaderboards for competition (web only, requires free account)</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
             <li>iCloud sync across devices (iOS only)</li>
             <li>Optional in-app purchases for premium features</li>
@@ -129,6 +128,60 @@ export default function TermsOfUse() {
             <p>
               The daily puzzle will always remain free. Premium subscriptions provide access to
               archived puzzles and future premium features.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'leaderboards',
+      title: 'Leaderboards and Competitive Features',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Automatic Enrollment (Web Only)</h4>
+            <p>
+              When you create a free account on our web platform, you are automatically enrolled in
+              our global leaderboards to compete with players worldwide. Your username, avatar (if provided),
+              and gameplay performance will be publicly visible on leaderboards.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Opt-Out</h4>
+            <p>
+              You may disable leaderboard participation at any time in Settings. When disabled, your
+              scores will not appear on public leaderboards, though your gameplay statistics will still
+              be tracked privately for your personal use.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Fair Play</h4>
+            <p>By participating in leaderboards, you agree to:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Play fairly without using automated tools, bots, or cheating methods</li>
+              <li>Not manipulate scores or game times through technical exploits</li>
+              <li>Use appropriate usernames free of offensive or inappropriate content</li>
+              <li>Not impersonate other players or create multiple accounts to manipulate rankings</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Enforcement</h4>
+            <p>
+              We reserve the right to remove leaderboard entries, suspend accounts, or take other
+              actions against users who violate fair play rules or engage in inappropriate behavior.
+              Decisions regarding leaderboard moderation are at our sole discretion.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">No Guarantees</h4>
+            <p>
+              Leaderboard rankings are provided "as is" without warranty. We do not guarantee the
+              accuracy, completeness, or availability of leaderboard data. Rankings may be reset or
+              modified at our discretion.
             </p>
           </div>
         </div>

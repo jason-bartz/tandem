@@ -122,7 +122,7 @@ class AvatarService {
           const { error: createError } = await supabase.from('users').insert({
             id: userId,
             email: userData.user.email,
-            full_name: userData.user.user_metadata?.full_name || null,
+            username: userData.user.user_metadata?.username || null,
           });
 
           if (createError && createError.code !== '23505') {
@@ -185,17 +185,43 @@ class AvatarService {
 
       const supabase = getSupabaseBrowserClient();
 
-      // Use RPC function for efficient JOIN query
-      const { data, error } = await supabase.rpc('get_user_profile_with_avatar', {
-        p_user_id: userId,
-      });
+      // Direct query instead of RPC to avoid function type mismatch issues
+      const { data: userData, error: userError } = await supabase
+        .from('users')
+        .select('id, email, username, avatar_url, selected_avatar_id, avatar_selected_at, created_at')
+        .eq('id', userId)
+        .maybeSingle();
 
-      if (error) {
-        console.error('[AvatarService] Failed to fetch user profile:', error);
+      if (userError) {
+        console.error('[AvatarService] Failed to fetch user profile:', userError);
         throw new Error('Failed to load user profile.');
       }
 
-      return data?.[0] || null;
+      if (!userData) {
+        return null;
+      }
+
+      // If user has selected an avatar, fetch avatar details
+      let avatarData = null;
+      if (userData.selected_avatar_id) {
+        const { data: avatar, error: avatarError } = await supabase
+          .from('avatars')
+          .select('id, display_name, image_path')
+          .eq('id', userData.selected_avatar_id)
+          .eq('is_active', true)
+          .maybeSingle();
+
+        if (!avatarError && avatar) {
+          avatarData = avatar;
+        }
+      }
+
+      // Combine user data with avatar data
+      return {
+        ...userData,
+        avatar_display_name: avatarData?.display_name || null,
+        avatar_image_path: avatarData?.image_path || null,
+      };
     } catch (error) {
       console.error('[AvatarService] getUserProfileWithAvatar error:', error);
       throw error;

@@ -260,6 +260,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           completed: won,
           mistakes,
           solved,
+          time: timeTaken, // CRITICAL FIX: Include completion time for stats
           hintsUsed,
           isArchive: isArchiveGame,
           puzzleDate: currentPuzzleDate,

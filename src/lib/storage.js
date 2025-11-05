@@ -133,9 +133,11 @@ export async function loadStats() {
   }
 
   const stats = await getStorageItem(STORAGE_KEYS.STATS);
+  logger.info('[storage.loadStats] Raw stats from storage:', stats);
   const parsedStats = stats
     ? JSON.parse(stats)
     : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+  logger.info('[storage.loadStats] Parsed stats:', parsedStats);
 
   // Auto-sync with CloudKit on load if available
   if (cloudKitService.isSyncAvailable()) {
@@ -270,7 +272,9 @@ async function checkAndUpdateStreak(stats) {
 
 export async function saveStats(stats, skipCloudSync = false) {
   if (typeof window !== 'undefined') {
+    logger.info('[storage.saveStats] Saving stats:', stats);
     await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
+    logger.info('[storage.saveStats] Stats saved to key:', STORAGE_KEYS.STATS);
 
     // Sync to iCloud and update local stats with merged result
     if (!skipCloudSync && cloudKitService.isSyncAvailable()) {

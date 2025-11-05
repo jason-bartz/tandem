@@ -17,11 +17,11 @@ DROP FUNCTION IF EXISTS public.handle_new_user();
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, avatar_url)
+  INSERT INTO public.users (id, email, username, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name'),
+    NEW.raw_user_meta_data->>'username',
     NEW.raw_user_meta_data->>'avatar_url'
   )
   ON CONFLICT (id) DO NOTHING;

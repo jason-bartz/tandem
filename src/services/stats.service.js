@@ -81,10 +81,17 @@ class StatsService {
           completed: gameResult.completed,
           mistakes: gameResult.mistakes,
           solved: gameResult.solved,
-          time: gameResult.time,
+          time: gameResult.time || 0, // Default to 0 if time is not provided
           won: gameResult.completed,
         });
       }
+
+      console.log('[StatsService.updateStats] Stats updated:', {
+        played: localStats.played,
+        wins: localStats.wins,
+        currentStreak: localStats.currentStreak,
+        bestStreak: localStats.bestStreak,
+      });
 
       // Update server stats only for daily puzzles and only if user has consented AND has leaderboards enabled
       if (!gameResult.isArchive) {
