@@ -525,7 +525,10 @@ export default function PlayingScreen({
             <div
               className="flex-1 overflow-y-auto p-4 sm:p-6 overflow-scroll -webkit-overflow-scrolling-touch"
               ref={contentRef}
-              style={{ WebkitOverflowScrolling: 'touch' }}
+              style={{
+                WebkitOverflowScrolling: 'touch',
+                paddingBottom: isMobilePhone ? '8rem' : '2rem',
+              }}
             >
               <div className="max-w-lg mx-auto">
                 <StatsBar
@@ -582,12 +585,7 @@ export default function PlayingScreen({
             </div>
 
             {/* Fixed Bottom Section - Action Buttons + Keyboard */}
-            <div
-              className="flex-shrink-0 p-4 pb-safe sm:p-6 sm:pb-safe"
-              style={{
-                paddingBottom: isMobilePhone ? 'max(5rem, env(safe-area-inset-bottom))' : undefined,
-              }}
-            >
+            <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
               <div className="max-w-lg mx-auto">
                 {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
                 <div className="flex gap-3 mb-4 relative">
