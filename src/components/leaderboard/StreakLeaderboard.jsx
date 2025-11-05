@@ -27,17 +27,29 @@ export default function StreakLeaderboard({ gameType }) {
 
   async function fetchLeaderboard() {
     try {
-      const response = await fetch(`/api/leaderboard/streak?game=${gameType}&limit=10`, {
+      const url = `/api/leaderboard/streak?game=${gameType}&limit=10`;
+      console.log('[StreakLeaderboard] Fetching from:', url);
+
+      const response = await fetch(url, {
         credentials: 'include', // Include cookies for authentication
       });
       const data = await response.json();
 
+      console.log('[StreakLeaderboard] Response:', {
+        success: data.success,
+        leaderboardCount: data.leaderboard?.length || 0,
+        leaderboard: data.leaderboard,
+        userEntry: data.userEntry,
+      });
+
       if (data.success) {
         setLeaderboard(data.leaderboard || []);
         setUserEntry(data.userEntry);
+      } else {
+        console.error('[StreakLeaderboard] API returned success=false:', data);
       }
     } catch (err) {
-      console.error('Failed to fetch streak leaderboard:', err);
+      console.error('[StreakLeaderboard] Fetch error:', err);
     } finally {
       setLoading(false);
     }
