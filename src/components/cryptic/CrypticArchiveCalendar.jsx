@@ -7,6 +7,7 @@ import CalendarDayCell from '../game/CalendarDayCell';
 import CalendarDatePicker from '../game/CalendarDatePicker';
 import PaywallModal from '@/components/PaywallModal';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { getCompletedCrypticPuzzles } from '@/lib/crypticStorage';
 
 /**
  * CrypticArchiveCalendar Component
@@ -40,7 +41,7 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleData, setPuzzleData] = useState({});
-  const [userStats, setUserStats] = useState(new Map());
+  const [completedPuzzles, setCompletedPuzzles] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef(null);
 
@@ -92,16 +93,17 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
       // Load puzzles for this month using public API
       const puzzlesResponse = await fetch(
         `/api/cryptic/puzzle?startDate=${startDate}&endDate=${endDate}`,
-        { signal: abortControllerRef.current.signal }
+        {
+          signal: abortControllerRef.current.signal,
+          credentials: 'include', // Include cookies for authentication
+        }
       );
 
-      // Load user stats for this month
-      const statsResponse = await fetch(`/api/cryptic/stats`, {
-        signal: abortControllerRef.current.signal,
-      });
+      // Load completed puzzles from local storage
+      const completed = await getCompletedCrypticPuzzles();
+      const completedSet = new Set(completed);
 
       const monthData = {};
-      const statsMap = new Map();
 
       if (puzzlesResponse.ok) {
         const puzzlesData = await puzzlesResponse.json();
@@ -119,17 +121,8 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
         }
       }
 
-      if (statsResponse.ok) {
-        const statsData = await statsResponse.json();
-        if (statsData.stats) {
-          statsData.stats.forEach((stat) => {
-            statsMap.set(stat.puzzle_date, stat);
-          });
-        }
-      }
-
       setPuzzleData(monthData);
-      setUserStats(statsMap);
+      setCompletedPuzzles(completedSet);
     } catch (error) {
       if (error.name !== 'AbortError') {
         console.error('[CrypticArchiveCalendar] Failed to load month data:', error);
@@ -211,8 +204,12 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
     const puzzle = puzzleData[day];
     if (!puzzle) return;
 
-    // Check subscription for archive access
-    if (!hasSubscription) {
+    // Check if this is today's puzzle
+    const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
+
+    // Only require subscription for archive puzzles (not today's puzzle)
+    const isArchivePuzzle = !isToday;
+    if (isArchivePuzzle && !hasSubscription) {
       setShowPaywall(true);
       return;
     }
@@ -258,10 +255,9 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
       // Check if this is a future date
       const isFutureDate = currentDate > today;
 
-      // Check if completed
+      // Check if completed (from local storage)
       const dateStr = puzzle?.date;
-      const stat = dateStr ? userStats.get(dateStr) : null;
-      const isCompleted = stat?.completed || false;
+      const isCompleted = dateStr ? completedPuzzles.has(dateStr) : false;
 
       // Determine status
       let status = 'no_puzzle';
@@ -273,6 +269,11 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
         status = 'no_puzzle';
       }
 
+      // Only lock archive puzzles (not today's puzzle)
+      // Today's puzzle is free for all users
+      const isArchivePuzzle = puzzle && !isToday;
+      const shouldBeLocked = !hasSubscription && isArchivePuzzle;
+
       days.push(
         <CalendarDayCell
           key={day}
@@ -280,7 +281,7 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
           status={status}
           isToday={isToday}
           isCurrentMonth={true}
-          isLocked={!hasSubscription && !!puzzle}
+          isLocked={shouldBeLocked}
           onClick={() => handleDayClick(day)}
           isPastFirstPuzzle={isPastFirstPuzzle}
           isFutureDate={isFutureDate}
