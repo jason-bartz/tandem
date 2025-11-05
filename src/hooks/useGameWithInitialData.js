@@ -42,6 +42,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [isHardMode, setIsHardMode] = useState(false);
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
   const [startTime, setStartTime] = useState(null);
+  const [completionTime, setCompletionTime] = useState(null);
 
   // Only load puzzle if we don't have initial data
   // Following Wordle's approach: client-side fetches puzzle using local timezone
@@ -496,6 +497,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       hintsUsed,
       activeHintIndex,
       unlockedHints,
+      lockedLetters,
     ]
   );
 
@@ -820,6 +822,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     lockedLetters,
     isHardMode,
     hardModeTimeUp,
+    completionTime,
     setIsHardMode,
     setHardModeTimeUp,
     startGame,
