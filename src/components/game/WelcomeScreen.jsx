@@ -201,9 +201,6 @@ export default function WelcomeScreen({
         </div>
 
         <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
-          <h3 className="text-sm uppercase tracking-wider text-gray-text dark:text-gray-300 mb-4 font-semibold">
-            How to Play
-          </h3>
           <div className="space-y-3">
             <div className="flex items-start">
               <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
