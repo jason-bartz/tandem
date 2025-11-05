@@ -315,7 +315,7 @@ export function AuthProvider({ children }) {
           const { error: profileError } = await supabase.from('users').insert({
             id: data.user.id,
             email: data.user.email || result.response.email,
-            full_name: data.user.user_metadata?.full_name || result.response.givenName,
+            username: data.user.user_metadata?.username || result.response.givenName || null,
             avatar_url: data.user.user_metadata?.avatar_url || null,
           });
 

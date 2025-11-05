@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Image from 'next/image';
 import StatCard from './StatCard';
 import StatsSection from './StatsSection';
 import { getStreakMilestone } from '@/lib/streakMilestones';
@@ -19,7 +18,7 @@ import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
  */
 export default function TandemStatsSection({ stats, animationKey }) {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const { theme, highContrast } = useTheme();
+  const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
   // Calculate win rate
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
@@ -38,21 +37,16 @@ export default function TandemStatsSection({ stats, animationKey }) {
         iconDark="/icons/ui/emoji-inter-dark.png"
         themeColor="blue"
       >
-        {/* Top Row: Played + Win Rate */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
-          <StatCard value={animatedPlayed} label="Played" color="blue" />
-          <StatCard value={`${animatedWinRate}%`} label="Win Rate" color="green" />
-        </div>
-
-        {/* Bottom Row: Current Streak + Best Streak */}
-        <div className="grid grid-cols-2 gap-3 mb-3">
+        {/* All Stats in a Row */}
+        <div className="grid grid-cols-4 gap-3 mb-3">
+          <StatCard value={animatedPlayed} label="Played" />
+          <StatCard value={`${animatedWinRate}%`} label="Win Rate" />
           <StatCard
             value={animatedCurrentStreak}
             label="Current Streak"
-            color="yellow"
             emoji={getStreakMilestone(stats.currentStreak)}
           />
-          <StatCard value={animatedBestStreak} label="Best Streak" color="pink" />
+          <StatCard value={animatedBestStreak} label="Best Streak" />
         </div>
 
         {/* Leaderboard Button */}
@@ -61,18 +55,12 @@ export default function TandemStatsSection({ stats, animationKey }) {
             lightTap();
             setShowLeaderboard(true);
           }}
-          className={`w-full py-3 px-4 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center justify-center gap-2 ${
+          className={`w-full py-3 px-4 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
             highContrast
               ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-              : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-sky-700 text-white border-black dark:border-gray-800 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
           }`}
         >
-          <Image
-            src={theme === 'dark' ? '/icons/ui/leaderboard-dark.png' : '/icons/ui/leaderboard.png'}
-            alt=""
-            width={20}
-            height={20}
-          />
           View Leaderboard
         </button>
       </StatsSection>

@@ -1,11 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
 export default function PrivacyPolicy() {
-  const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
   const sections = [
@@ -27,7 +25,7 @@ export default function PrivacyPolicy() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: October 30, 2025
+            <strong>Last Updated</strong>: November 5, 2025
           </p>
         </div>
       ),
@@ -137,22 +135,46 @@ export default function PrivacyPolicy() {
             <h4 className="font-semibold mb-2">7. User Accounts (Web Only)</h4>
             <p className="mb-2">If you create an account on our web platform, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Username (required, for leaderboard display and account identification)</li>
               <li>Email address (for account identification and communication)</li>
-              <li>Full name (optional, for personalization)</li>
+              <li>Display name (optional, for personalization)</li>
+              <li>Avatar/profile photo (optional)</li>
               <li>Password (encrypted and securely stored via Supabase)</li>
-              <li>OAuth provider information (if signing in with Google)</li>
+              <li>OAuth provider information (if signing in with Google or Apple)</li>
               <li>Account creation date and last login time</li>
               <li>Subscription status and tier</li>
             </ul>
             <p className="mt-2 text-xs italic">
               Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords
-              are hashed and never stored in plain text. OAuth authentication is handled by Google
-              and Supabase.
+              are hashed and never stored in plain text. OAuth authentication is handled by third-party providers
+              (Google, Apple) and Supabase.
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">8. Payment Information (Web Only)</h4>
+            <h4 className="font-semibold mb-2">8. Leaderboards (Web Only)</h4>
+            <p className="mb-2">
+              When you create a free account, you are automatically enrolled in our global leaderboards
+              to compete with players worldwide. We collect and publicly display:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Username (publicly visible)</li>
+              <li>Avatar/profile photo (if provided, publicly visible)</li>
+              <li>Puzzle completion times (for daily speed leaderboards)</li>
+              <li>Best streak count (for all-time streak leaderboards)</li>
+              <li>Leaderboard rankings</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Privacy Control: Leaderboards are enabled by default but can be disabled at any time in
+              Settings. When disabled, your scores will not appear on public leaderboards. Your email
+              address and other personal information remain private and are never displayed on leaderboards.
+              Only your chosen username, avatar (if provided), and game performance data are visible to other
+              players.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">9. Payment Information (Web Only)</h4>
             <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Stripe customer ID (for managing subscriptions)</li>

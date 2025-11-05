@@ -478,9 +478,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     )}
 
                     <div className="flex-1">
-                      {user.user_metadata?.full_name && (
+                      {userAvatar?.username && (
                         <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                          Hi {user.user_metadata.full_name}! 👋
+                          Hi {userAvatar.username}! 👋
                         </p>
                       )}
                       <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">

@@ -204,6 +204,18 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
+                Compete on daily and all-time leaderboards
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span
+                className={`text-lg mt-0.5 ${highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
                 Recover your subscription if you switch devices
               </span>
             </div>

@@ -5,7 +5,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * StatsSection - Wrapper for game-specific stats sections
- * Provides consistent styling and layout
+ * Provides consistent styling and layout with solid color background
  *
  * @param {string} title - Section title (e.g., "Tandem Daily", "Daily Cryptic")
  * @param {string} emoji - Emoji to display before title
@@ -17,20 +17,20 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function StatsSection({ title, emoji, icon, iconDark, themeColor, children }) {
   const { theme, highContrast } = useTheme();
 
-  // Define theme-specific colors for header
-  const getHeaderColors = () => {
+  // Define theme-specific colors for entire section (solid color)
+  const getBackgroundColors = () => {
     if (highContrast) {
-      return 'bg-hc-primary border-hc-border';
+      return 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]';
     }
 
     if (themeColor === 'blue') {
-      return 'bg-sky-500 dark:bg-sky-600 border-sky-600 dark:border-sky-700';
+      return 'bg-sky-500 dark:bg-sky-600 border-sky-600 dark:border-sky-700 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]';
     } else if (themeColor === 'purple') {
-      return 'bg-purple-600 dark:bg-purple-700 border-purple-700 dark:border-purple-800';
+      return 'bg-purple-600 dark:bg-purple-700 border-purple-700 dark:border-purple-800 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]';
     }
 
-    // Default fallback (no theme color)
-    return 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700';
+    // Default fallback
+    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
   };
 
   const getTextColor = () => {
@@ -46,26 +46,10 @@ export default function StatsSection({ title, emoji, icon, iconDark, themeColor,
     return 'text-gray-800 dark:text-gray-200';
   };
 
-  // Define theme-specific background colors (entire section body)
-  const getBackgroundColors = () => {
-    if (highContrast) {
-      return 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]';
-    }
-
-    if (themeColor === 'blue') {
-      return 'bg-sky-100 dark:bg-sky-900 border-sky-200 dark:border-sky-800 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
-    } else if (themeColor === 'purple') {
-      return 'bg-purple-100 dark:bg-purple-900 border-purple-200 dark:border-purple-800 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
-    }
-
-    // Default fallback
-    return 'bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]';
-  };
-
   return (
     <div className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${getBackgroundColors()}`}>
       {/* Section Header */}
-      <div className={`px-4 py-3 border-b-[3px] ${getHeaderColors()}`}>
+      <div className={`px-4 py-3`}>
         <h3 className={`text-lg font-bold flex items-center ${getTextColor()}`}>
           {icon && iconDark ? (
             <Image
@@ -83,7 +67,7 @@ export default function StatsSection({ title, emoji, icon, iconDark, themeColor,
       </div>
 
       {/* Section Content */}
-      <div className="p-4">{children}</div>
+      <div className="px-4 pb-4">{children}</div>
     </div>
   );
 }

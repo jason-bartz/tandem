@@ -29,7 +29,6 @@ export default function AuthModal({
   const [mode, setMode] = useState(initialMode);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(initialMessageType === 'error' ? initialMessage : null);
@@ -76,7 +75,6 @@ export default function AuthModal({
 
         // Sign up
         const { error } = await signUp(email, password, {
-          full_name: fullName || username, // Use username as full_name if not provided
           username: username,
         });
 
@@ -89,7 +87,6 @@ export default function AuthModal({
           );
           setMode('login');
           setPassword('');
-          setFullName('');
           setUsername('');
           // Don't close the modal - keep it open for sign in
         }
@@ -188,7 +185,6 @@ export default function AuthModal({
     setSuccessMessage(null);
     setEmail('');
     setPassword('');
-    setFullName('');
     setUsername('');
   };
 
@@ -343,53 +339,32 @@ export default function AuthModal({
         {/* Email/Password Form */}
         <form onSubmit={handleSubmit}>
           {mode === 'signup' && (
-            <>
-              <div className="mb-4">
-                <label
-                  htmlFor="username"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Create Username
-                </label>
-                <input
-                  type="text"
-                  id="username"
-                  value={username}
-                  onChange={(e) => {
-                    // Only allow alphanumeric and underscore
-                    const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                    setUsername(sanitized);
-                  }}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="your_username"
-                  minLength={3}
-                  maxLength={20}
-                  required
-                />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  3-20 characters, letters, numbers, and underscores only
-                </p>
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
-                >
-                  Display Name (Optional)
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                  placeholder="John Doe"
-                />
-                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  This will be shown on your profile
-                </p>
-              </div>
-            </>
+            <div className="mb-4">
+              <label
+                htmlFor="username"
+                className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+              >
+                Username
+              </label>
+              <input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => {
+                  // Only allow alphanumeric and underscore
+                  const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                  setUsername(sanitized);
+                }}
+                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                placeholder="your_username"
+                minLength={3}
+                maxLength={20}
+                required
+              />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                3-20 characters, letters, numbers, and underscores only
+              </p>
+            </div>
           )}
 
           <div className="mb-4">

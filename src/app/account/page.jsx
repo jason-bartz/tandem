@@ -17,7 +17,7 @@ import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 export default function AccountPage() {
   const router = useRouter();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +28,12 @@ export default function AccountPage() {
   const [userAvatar, setUserAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const [loadingAvatar, setLoadingAvatar] = useState(false);
+  const [username, setUsername] = useState('');
+  const [editingUsername, setEditingUsername] = useState(false);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [usernameError, setUsernameError] = useState('');
+  const [usernameSuccess, setUsernameSuccess] = useState('');
+  const [loadingUsername, setLoadingUsername] = useState(false);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -59,7 +65,7 @@ export default function AccountPage() {
     }
   }, [user]);
 
-  // Load user avatar
+  // Load user avatar and username
   useEffect(() => {
     const loadAvatar = async () => {
       if (!user?.id) return;
@@ -68,7 +74,14 @@ export default function AccountPage() {
         setLoadingAvatar(true);
         const profile = await avatarService.getUserProfileWithAvatar(user.id);
         setUserAvatar(profile);
+
+        // Also load username from the profile
+        if (profile?.username) {
+          setUsername(profile.username);
+        }
       } catch (error) {
+        // Fail silently - avatar and username loading is non-critical
+        // eslint-disable-next-line no-console
         console.error('[Account] Failed to load user avatar:', error);
         // Fail silently - avatar is non-critical feature
       } finally {
@@ -91,6 +104,70 @@ export default function AccountPage() {
         .getUserProfileWithAvatar(user.id)
         .then(setUserAvatar)
         .catch((error) => console.error('[Account] Failed to reload avatar:', error));
+    }
+  };
+
+  const handleEditUsername = () => {
+    setUsernameInput(username || '');
+    setEditingUsername(true);
+    setUsernameError('');
+    setUsernameSuccess('');
+    lightTap();
+  };
+
+  const handleCancelEditUsername = () => {
+    setEditingUsername(false);
+    setUsernameInput('');
+    setUsernameError('');
+    setUsernameSuccess('');
+    lightTap();
+  };
+
+  const handleSaveUsername = async () => {
+    setUsernameError('');
+    setUsernameSuccess('');
+
+    // Validate username format
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(usernameInput)) {
+      setUsernameError(
+        'Username must be 3-20 characters and can only contain letters, numbers, and underscores'
+      );
+      return;
+    }
+
+    try {
+      setLoadingUsername(true);
+
+      const response = await fetch('/api/account/username', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: usernameInput }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setUsernameError(data.error || 'Failed to update username');
+        return;
+      }
+
+      // Success
+      setUsername(data.username);
+      setUsernameSuccess('Username updated successfully!');
+      setEditingUsername(false);
+      successHaptic();
+
+      // Clear success message after 3 seconds
+      setTimeout(() => {
+        setUsernameSuccess('');
+      }, 3000);
+    } catch (error) {
+      console.error('[Account] Failed to update username:', error);
+      setUsernameError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoadingUsername(false);
     }
   };
 
@@ -368,14 +445,92 @@ export default function AccountPage() {
               )}
             </div>
 
-            {user?.user_metadata?.full_name && (
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Name</p>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                  {user.user_metadata.full_name}
+            {/* Username Section */}
+            <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  Username
                 </p>
+                {!editingUsername && (
+                  <button
+                    onClick={handleEditUsername}
+                    className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
+                  >
+                    Edit
+                  </button>
+                )}
               </div>
-            )}
+
+              {editingUsername ? (
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    value={usernameInput}
+                    onChange={(e) => {
+                      // Only allow alphanumeric and underscore
+                      const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                      setUsernameInput(sanitized);
+                    }}
+                    className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm"
+                    placeholder="your_username"
+                    minLength={3}
+                    maxLength={20}
+                    disabled={loadingUsername}
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    3-20 characters, letters, numbers, and underscores only
+                  </p>
+
+                  {usernameError && (
+                    <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                      <p className="text-xs text-red-600 dark:text-red-400">{usernameError}</p>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveUsername}
+                      disabled={loadingUsername}
+                      className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                        loadingUsername
+                          ? 'opacity-50 cursor-not-allowed'
+                          : highContrast
+                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      }`}
+                    >
+                      {loadingUsername ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      onClick={handleCancelEditUsername}
+                      disabled={loadingUsername}
+                      className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                        loadingUsername
+                          ? 'opacity-50 cursor-not-allowed'
+                          : highContrast
+                            ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      }`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
+                    {username || 'Not set'}
+                  </p>
+                  {usernameSuccess && (
+                    <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                      <p className="text-xs text-green-600 dark:text-green-400">
+                        {usernameSuccess}
+                      </p>
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
 
             <div>
               <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>

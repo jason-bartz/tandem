@@ -16,18 +16,16 @@ DROP FUNCTION IF EXISTS public.handle_new_user();
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, full_name, username, avatar_url)
+  INSERT INTO public.users (id, email, username, avatar_url)
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', NEW.raw_user_meta_data->>'name', NEW.raw_user_meta_data->>'username'),
     NEW.raw_user_meta_data->>'username',
     NEW.raw_user_meta_data->>'avatar_url'
   )
   ON CONFLICT (id) DO UPDATE SET
     -- Update username if it's being set for the first time
     username = COALESCE(public.users.username, EXCLUDED.username),
-    full_name = COALESCE(EXCLUDED.full_name, public.users.full_name),
     avatar_url = COALESCE(EXCLUDED.avatar_url, public.users.avatar_url);
 
   -- Create default leaderboard preferences (enabled by default)
@@ -53,7 +51,7 @@ GRANT EXECUTE ON FUNCTION public.handle_new_user() TO service_role;
 -- =====================================================
 -- This updated trigger will:
 -- 1. Extract username from user metadata during signup
--- 2. Create user profile with username field populated
+-- 2. Create user profile with only username (no separate full_name)
 -- 3. Automatically create leaderboard preferences (enabled by default)
 -- 4. Handle conflicts gracefully
 -- =====================================================

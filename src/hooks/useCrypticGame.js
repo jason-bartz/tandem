@@ -9,7 +9,7 @@ import {
   loadCrypticPuzzleProgress,
   updateCrypticStatsAfterCompletion,
   clearCrypticGameState,
-  getCrypticStats,
+  loadCrypticStats,
 } from '@/lib/crypticStorage';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import logger from '@/lib/logger';
@@ -132,20 +132,21 @@ export function useCrypticGame() {
 
       setPuzzle(response.puzzle);
 
-      // Restore saved state if it matches this puzzle
+      // Restore saved state if it matches this puzzle AND it's in progress
       if (savedState && savedState.currentPuzzleDate === targetDate) {
-        setUserAnswer(savedState.userAnswer || '');
-        setHintsUsed(savedState.hintsUsed || 0);
-        setUnlockedHints(savedState.unlockedHints || []);
-        setAttempts(savedState.attempts || 0);
-        setElapsedTime(savedState.elapsedTime || 0);
-        setStartTime(savedState.startTime || null);
-
-        // Check if puzzle was completed
+        // Only restore if puzzle is NOT completed - allow replaying completed puzzles
         if (savedProgress && savedProgress.completed) {
-          setIsCorrect(true);
-          setGameState(CRYPTIC_GAME_STATES.COMPLETE);
+          // Puzzle was completed, but allow replay - start fresh
+          resetGame();
+          setGameState(CRYPTIC_GAME_STATES.WELCOME);
         } else {
+          // Puzzle is in progress, restore the saved state
+          setUserAnswer(savedState.userAnswer || '');
+          setHintsUsed(savedState.hintsUsed || 0);
+          setUnlockedHints(savedState.unlockedHints || []);
+          setAttempts(savedState.attempts || 0);
+          setElapsedTime(savedState.elapsedTime || 0);
+          setStartTime(savedState.startTime || null);
           setGameState(CRYPTIC_GAME_STATES.WELCOME);
         }
       } else {
@@ -341,7 +342,7 @@ export function useCrypticGame() {
             });
 
           // Submit streak to leaderboard
-          getCrypticStats()
+          loadCrypticStats()
             .then((stats) => {
               const currentStreak = stats?.currentStreak || 0;
               if (currentStreak > 0) {

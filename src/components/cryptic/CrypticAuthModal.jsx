@@ -13,7 +13,7 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState('welcome'); // welcome, signup, login
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [fullName, setFullName] = useState('');
+  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -28,9 +28,17 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
     setLoading(true);
     setError(null);
 
+    // Validate username format
+    if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+      setError('Username must be 3-20 characters and can only contain letters, numbers, and underscores');
+      setLoading(false);
+      errorHaptic();
+      return;
+    }
+
     try {
       const result = await signUp(email, password, {
-        full_name: fullName,
+        username: username,
       });
 
       if (result.error) {
@@ -156,6 +164,12 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
                   <div className="flex items-start gap-2">
                     <span className="text-green-500 text-lg">✓</span>
                     <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
+                      <strong>Compete on leaderboards</strong> - Daily and all-time rankings
+                    </span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span className="text-green-500 text-lg">✓</span>
+                    <span className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}>
                       <strong>No credit card</strong> - Completely free
                     </span>
                   </div>
@@ -197,21 +211,32 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
                     <label className={`block text-sm font-bold mb-2 ${
                       highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
                     }`}>
-                      Full Name
+                      Username
                     </label>
                     <input
                       type="text"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
+                      value={username}
+                      onChange={(e) => {
+                        // Only allow alphanumeric and underscore
+                        const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                        setUsername(sanitized);
+                      }}
                       className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
                         highContrast
                           ? 'bg-hc-background text-hc-text border-hc-border'
                           : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
                       } focus:outline-none`}
-                      placeholder="John Doe"
+                      placeholder="your_username"
+                      minLength={3}
+                      maxLength={20}
                       required
                       disabled={loading}
                     />
+                    <p className={`mt-1 text-xs ${
+                      highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      3-20 characters, letters, numbers, and underscores only
+                    </p>
                   </div>
                 )}
 
