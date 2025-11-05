@@ -103,113 +103,14 @@ export default function DailyLeaderboard({ gameType }) {
 
   return (
     <div className="p-6">
-      {/* Show simple list if less than 3 players */}
-      {leaderboard.length > 0 && leaderboard.length < 3 && (
+      {/* Traditional row-style leaderboard */}
+      {leaderboard.length > 0 && (
         <div className="space-y-2">
           {leaderboard.map((entry, idx) => (
             <LeaderboardEntry
               key={entry.user_id}
               entry={entry}
               rank={idx + 1}
-              isCurrentUser={user?.id === entry.user_id}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Top 3 Podium */}
-      {leaderboard.length >= 3 && (
-        <div className="flex justify-center items-end gap-4 mb-8 px-4">
-          {/* 2nd Place */}
-          <div className="flex flex-col items-center flex-1 max-w-[120px]">
-            <div className="relative w-16 h-16 mb-2">
-              <Image
-                src={leaderboard[1]?.avatar_url || '/images/avatars/default-profile.png'}
-                alt={leaderboard[1]?.username || 'Player 2'}
-                fill
-                className="object-cover rounded-full border-[3px] border-gray-400"
-                sizes="64px"
-              />
-            </div>
-            <div className="text-3xl mb-1">🥈</div>
-            <p
-              className={`font-bold text-sm text-center truncate w-full ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
-            >
-              {leaderboard[1]?.username || 'Anonymous'}
-            </p>
-            <p
-              className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-gray-600 dark:text-gray-400'}`}
-            >
-              {formatTime(leaderboard[1]?.score)}
-            </p>
-          </div>
-
-          {/* 1st Place - Taller */}
-          <div className="flex flex-col items-center flex-1 max-w-[140px] -mt-6">
-            <div className="relative w-20 h-20 mb-2">
-              <Image
-                src={leaderboard[0]?.avatar_url || '/images/avatars/default-profile.png'}
-                alt={leaderboard[0]?.username || 'Player 1'}
-                fill
-                className="object-cover rounded-full border-[3px] border-yellow-400"
-                sizes="80px"
-              />
-              <div className="absolute -top-2 -right-2 w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center border-[2px] border-black dark:border-gray-600 shadow-lg">
-                <span className="text-lg">👑</span>
-              </div>
-            </div>
-            <div className="text-4xl mb-1">🥇</div>
-            <p
-              className={`font-bold text-base text-center truncate w-full ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
-            >
-              {leaderboard[0]?.username || 'Anonymous'}
-            </p>
-            <p
-              className={`text-sm font-semibold ${highContrast ? 'text-hc-success' : 'text-sky-600 dark:text-sky-400'}`}
-            >
-              {formatTime(leaderboard[0]?.score)}
-            </p>
-          </div>
-
-          {/* 3rd Place */}
-          <div className="flex flex-col items-center flex-1 max-w-[120px]">
-            <div className="relative w-16 h-16 mb-2">
-              <Image
-                src={leaderboard[2]?.avatar_url || '/images/avatars/default-profile.png'}
-                alt={leaderboard[2]?.username || 'Player 3'}
-                fill
-                className="object-cover rounded-full border-[3px] border-orange-600"
-                sizes="64px"
-              />
-            </div>
-            <div className="text-3xl mb-1">🥉</div>
-            <p
-              className={`font-bold text-sm text-center truncate w-full ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
-            >
-              {leaderboard[2]?.username || 'Anonymous'}
-            </p>
-            <p
-              className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-gray-600 dark:text-gray-400'}`}
-            >
-              {formatTime(leaderboard[2]?.score)}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Rest of leaderboard (4-10) */}
-      {leaderboard.length > 3 && (
-        <div className="space-y-2">
-          <h3
-            className={`text-sm font-semibold mb-3 px-2 ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-          >
-            Top 10
-          </h3>
-          {leaderboard.slice(3).map((entry, idx) => (
-            <LeaderboardEntry
-              key={entry.user_id}
-              entry={entry}
-              rank={idx + 4}
               isCurrentUser={user?.id === entry.user_id}
             />
           ))}
