@@ -467,7 +467,7 @@ export default function PlayingScreen({
       </div>
 
       {/* Main game card */}
-      <div className="flex-1 flex flex-col pt-20 pb-safe">
+      <div className="flex-1 flex flex-col pt-24 md:pt-20 pb-safe">
         <div className="max-w-xl w-full h-full mx-auto flex flex-col px-4">
           <div
             ref={puzzleContainerRef}
@@ -489,7 +489,7 @@ export default function PlayingScreen({
                     lightTap();
                     onReturnToWelcome();
                   }}
-                  className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+                  className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-10"
                   title="Back to Home"
                 >
                   <svg
@@ -522,7 +522,11 @@ export default function PlayingScreen({
             </div>
 
             {/* Scrollable Content Area */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6" ref={contentRef}>
+            <div
+              className="flex-1 overflow-y-auto p-4 sm:p-6 overflow-scroll -webkit-overflow-scrolling-touch"
+              ref={contentRef}
+              style={{ WebkitOverflowScrolling: 'touch' }}
+            >
               <div className="max-w-lg mx-auto">
                 <StatsBar
                   time={formatTime(time)}
@@ -581,9 +585,9 @@ export default function PlayingScreen({
             <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
               <div className="max-w-lg mx-auto">
                 {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
-                <div className="flex gap-3 mb-4">
-                  {/* Check Button */}
-                  <button
+                <div className="flex gap-3 mb-4 relative">
+                  {/* Check Button - Shrinks to 0 width when celebration is active */}
+                  <motion.button
                     onClick={() => {
                       lightTap();
                       if (handleKeyboardInput) {
@@ -595,7 +599,7 @@ export default function PlayingScreen({
                       correctAnswers[focusedIndex] ||
                       !answers[focusedIndex]?.trim()
                     }
-                    className="flex-1 px-6 py-3 text-white text-base font-bold rounded-[20px] border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all"
+                    className="px-6 py-3 text-white text-base font-bold rounded-[20px] border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] disabled:bg-gray-300 dark:disabled:bg-gray-700 disabled:cursor-not-allowed disabled:opacity-50 hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none transition-all overflow-hidden whitespace-nowrap"
                     style={
                       focusedIndex !== null &&
                       !correctAnswers[focusedIndex] &&
@@ -603,9 +607,31 @@ export default function PlayingScreen({
                         ? { backgroundColor: '#3B82F6' }
                         : {}
                     }
+                    animate={
+                      showSecondHintCelebration
+                        ? {
+                            width: 0,
+                            paddingLeft: 0,
+                            paddingRight: 0,
+                            marginRight: 0,
+                            opacity: 0,
+                          }
+                        : {
+                            width: 'auto',
+                            flex: 1,
+                            paddingLeft: '1.5rem',
+                            paddingRight: '1.5rem',
+                            marginRight: '0.75rem',
+                            opacity: 1,
+                          }
+                    }
+                    transition={{
+                      duration: 0.3,
+                      ease: 'easeInOut',
+                    }}
                   >
                     Check
-                  </button>
+                  </motion.button>
 
                   {/* Hints Button - Only show in non-hard mode when hints are available */}
                   {!isHardMode && hintsUsed < unlockedHints && solved < 4 && (
@@ -614,25 +640,32 @@ export default function PlayingScreen({
                         lightTap();
                         handleUseHint();
                       }}
-                      className={`flex-1 px-6 py-3 font-bold rounded-[20px] border-[3px] text-base transition-all ${
+                      className={`px-6 py-3 font-bold rounded-[20px] border-[3px] text-base transition-all ${
                         highContrast
                           ? 'bg-hc-warning text-black border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                       } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden`}
                       disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                       aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
-                      // Celebratory animation when second hint appears
+                      // Animated layout when celebrating - expand left to fill full width
+                      layout
                       animate={
-                        showSecondHintCelebration && !reduceMotion
+                        showSecondHintCelebration
                           ? {
-                              scale: [1, 1.05, 0.98, 1.02, 1],
-                              rotate: [0, -2, 2, -1, 0],
+                              flex: 1,
+                              width: '100%',
+                              scale: !reduceMotion ? [1, 1.02, 1] : 1,
                             }
-                          : {}
+                          : {
+                              flex: 1,
+                              width: 'auto',
+                            }
                       }
                       transition={{
-                        duration: 0.6,
-                        ease: [0.34, 1.56, 0.64, 1], // iOS spring curve
+                        layout: { duration: 0.3, ease: 'easeInOut' },
+                        flex: { duration: 0.3, ease: 'easeInOut' },
+                        width: { duration: 0.3, ease: 'easeInOut' },
+                        scale: { duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }, // iOS spring curve
                       }}
                     >
                       {/* Sparkle effect overlay during celebration */}
