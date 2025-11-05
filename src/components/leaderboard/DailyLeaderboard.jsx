@@ -30,7 +30,10 @@ export default function DailyLeaderboard({ gameType }) {
     try {
       const puzzleInfo = getCurrentPuzzleInfo();
       const response = await fetch(
-        `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`
+        `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`,
+        {
+          credentials: 'include', // Include cookies for authentication
+        }
       );
       const data = await response.json();
 
