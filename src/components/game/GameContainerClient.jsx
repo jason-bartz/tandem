@@ -280,8 +280,9 @@ export default function GameContainerClient({ initialPuzzleData }) {
       {/* Content container - centered scrollable layout for all devices */}
       <div className="min-h-screen flex items-center justify-center py-6 px-4">
         <div className="w-full max-w-xl mx-auto relative z-10 my-auto">
+          {/* Welcome screen */}
           {game.gameState === GAME_STATES.WELCOME && (
-            <div key="welcome" className="animate-screen-enter">
+            <div key="welcome">
               <WelcomeScreen
                 onStart={game.startGame}
                 theme={theme}
@@ -292,8 +293,9 @@ export default function GameContainerClient({ initialPuzzleData }) {
             </div>
           )}
 
+          {/* Playing screen - no animation, instant load */}
           {game.gameState === GAME_STATES.PLAYING && (
-            <div key="playing" className="animate-screen-enter">
+            <div key="playing">
               <PlayingScreen
                 puzzle={game.puzzle}
                 answers={game.answers}
