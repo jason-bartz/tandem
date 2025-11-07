@@ -130,8 +130,12 @@ export class LocalStorageProvider extends BaseProvider {
       // Cleanup old events to prevent quota issues
       const cleanedData = this.cleanupOldEvents(data);
 
-      // Create backup before saving
-      await this.createBackup();
+      // Create backup before saving (don't backup if already failing)
+      try {
+        await this.createBackup();
+      } catch (backupError) {
+        console.warn('[LocalStorageProvider] Backup failed, continuing with save:', backupError);
+      }
 
       // Add metadata
       const dataToSave = {
@@ -142,9 +146,13 @@ export class LocalStorageProvider extends BaseProvider {
 
       const serialized = this.serialize(dataToSave);
 
-      // Check storage quota
+      // Check storage quota and proactively clear if needed
       if (!this.useCapacitor) {
-        await this.checkStorageQuota(serialized.length);
+        const canSave = await this.checkStorageQuota(serialized.length);
+        if (!canSave) {
+          // Emergency: clean up other storage items if quota exceeded
+          await this.emergencyStorageCleanup();
+        }
       }
 
       // Save to storage
@@ -169,8 +177,50 @@ export class LocalStorageProvider extends BaseProvider {
         timestamp: dataToSave.timestamp,
       };
     } catch (error) {
-      // Try to restore from backup if save failed
-      await this.restoreFromBackup();
+      console.error('[LocalStorageProvider] Save failed:', error);
+
+      // If quota exceeded, try aggressive cleanup and retry ONCE
+      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+        console.warn('[LocalStorageProvider] Quota exceeded, attempting emergency cleanup...');
+        try {
+          await this.emergencyStorageCleanup();
+
+          // Retry with even more aggressive cleanup
+          const minimalData = this.cleanupOldEvents(data, 50); // Keep only 50 events
+          const dataToSave = {
+            ...minimalData,
+            timestamp: new Date().toISOString(),
+            device: await this.getDeviceInfo(),
+          };
+
+          const serialized = this.serialize(dataToSave);
+
+          if (this.useCapacitor) {
+            await Preferences.set({
+              key: this.storageKey,
+              value: serialized,
+            });
+          } else {
+            localStorage.setItem(this.storageKey, serialized);
+          }
+
+          console.log('[LocalStorageProvider] Emergency save successful');
+          return {
+            success: true,
+            timestamp: dataToSave.timestamp,
+          };
+        } catch (retryError) {
+          console.error('[LocalStorageProvider] Emergency save failed:', retryError);
+          // Don't restore backup if we're out of quota
+          this.handleError(retryError, 'save');
+        }
+      }
+
+      // Try to restore from backup if save failed (but not for quota errors)
+      if (!error.message?.includes('quota') && !error.message?.includes('QuotaExceededError')) {
+        await this.restoreFromBackup();
+      }
+
       this.handleError(error, 'save');
     }
   }
@@ -358,8 +408,8 @@ export class LocalStorageProvider extends BaseProvider {
   /**
    * Cleanup old events to keep storage size manageable
    */
-  cleanupOldEvents(data) {
-    const MAX_EVENTS = 100; // Keep last 100 events
+  cleanupOldEvents(data, maxEvents = 100) {
+    const MAX_EVENTS = maxEvents; // Configurable max events
     const KEEP_DAYS = 90; // Keep events from last 90 days
 
     if (!data.events || data.events.length <= MAX_EVENTS) {
@@ -416,12 +466,93 @@ export class LocalStorageProvider extends BaseProvider {
 
         // Check if we have enough space
         if (usage + dataSize > quota) {
-          throw new Error('Storage quota exceeded');
+          console.error('[LocalStorageProvider] Storage quota would be exceeded');
+          return false;
         }
+
+        return true;
       } catch (error) {
         console.error('[LocalStorageProvider] Failed to check storage quota:', error);
         // Continue anyway - quota check is not critical
+        return true;
       }
+    }
+
+    return true;
+  }
+
+  /**
+   * Emergency storage cleanup - aggressively remove old data
+   */
+  async emergencyStorageCleanup() {
+    console.warn('[LocalStorageProvider] Running emergency storage cleanup...');
+
+    try {
+      // 1. Clean up our own storage keys first
+      const keysToClean = [
+        this.storageKey,
+        this.backupKey,
+        'gameEvents',
+        'tandem_game_data',
+        'tandemStats',
+        'tandem_stats',
+      ];
+
+      for (const key of keysToClean) {
+        try {
+          if (this.useCapacitor) {
+            const result = await Preferences.get({ key });
+            if (result.value) {
+              const data = JSON.parse(result.value);
+              if (data.events && data.events.length > 50) {
+                // Keep only 50 most recent events
+                const cleaned = this.cleanupOldEvents(data, 50);
+                await Preferences.set({ key, value: JSON.stringify(cleaned) });
+                console.log(
+                  `[LocalStorageProvider] Cleaned ${key} from ${data.events.length} to 50 events`
+                );
+              }
+            }
+          } else {
+            const stored = localStorage.getItem(key);
+            if (stored) {
+              try {
+                const data = JSON.parse(stored);
+                if (data.events && data.events.length > 50) {
+                  // Keep only 50 most recent events
+                  const cleaned = this.cleanupOldEvents(data, 50);
+                  localStorage.setItem(key, JSON.stringify(cleaned));
+                  console.log(
+                    `[LocalStorageProvider] Cleaned ${key} from ${data.events.length} to 50 events`
+                  );
+                }
+              } catch (parseError) {
+                // If can't parse, remove the key entirely
+                localStorage.removeItem(key);
+                console.log(`[LocalStorageProvider] Removed corrupted key: ${key}`);
+              }
+            }
+          }
+        } catch (keyError) {
+          console.warn(`[LocalStorageProvider] Failed to clean ${key}:`, keyError);
+        }
+      }
+
+      // 2. Remove backup to free space
+      try {
+        if (this.useCapacitor) {
+          await Preferences.remove({ key: this.backupKey });
+        } else {
+          localStorage.removeItem(this.backupKey);
+        }
+        console.log('[LocalStorageProvider] Removed backup to free space');
+      } catch (e) {
+        // Ignore
+      }
+
+      console.log('[LocalStorageProvider] Emergency cleanup completed');
+    } catch (error) {
+      console.error('[LocalStorageProvider] Emergency cleanup failed:', error);
     }
   }
 
