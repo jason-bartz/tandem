@@ -70,8 +70,14 @@ export default function AdminLayout({ children }) {
         return;
       }
 
+      // Verify token and ensure CSRF token is fetched
       const isValid = await authService.verifyToken(token);
       if (isValid) {
+        // Verify that CSRF token was set
+        const csrfToken = authService.getCSRFToken();
+        if (!csrfToken) {
+          console.warn('CSRF token not set after verification');
+        }
         setIsAuthenticated(true);
       } else {
         localStorage.removeItem('adminToken');
