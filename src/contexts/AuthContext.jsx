@@ -76,10 +76,41 @@ export function AuthProvider({ children }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Sync stats to leaderboard when user signs in
+      if (event === 'SIGNED_IN' && session?.user) {
+        console.log('[AuthProvider] User signed in, syncing stats to leaderboard');
+        try {
+          // Import dynamically to avoid circular dependencies
+          const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
+          const { loadStats } = await import('@/lib/storage');
+          const { loadCrypticStats } = await import('@/lib/crypticStorage');
+          const { migrateCrypticStatsToDatabase } = await import(
+            '@/lib/migrations/crypticStatsMigration'
+          );
+
+          // MIGRATION: Sync local cryptic stats to database (database-first architecture)
+          // This runs once per device and ensures existing stats are preserved
+          migrateCrypticStatsToDatabase(session.user).catch((error) => {
+            console.error('[AuthProvider] Cryptic stats migration failed:', error);
+          });
+
+          // Load current stats (this will now use database as source of truth)
+          const tandemStats = await loadStats();
+          const crypticStats = await loadCrypticStats();
+
+          // Sync to leaderboard (non-blocking, fails silently)
+          syncStatsToLeaderboardOnAuth(tandemStats, crypticStats).catch((error) => {
+            console.error('[AuthProvider] Leaderboard sync failed:', error);
+          });
+        } catch (error) {
+          console.error('[AuthProvider] Failed to sync stats to leaderboard:', error);
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
