@@ -40,8 +40,17 @@ export function createBrowserClient() {
     });
   }
 
-  // On web, use document.cookie
+  // On web, use document.cookie with proper session persistence
   return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
+    auth: {
+      // Enable session persistence following web best practices
+      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      // Use a long session expiry similar to popular web games
+      // Supabase will handle token refresh automatically
+    },
     cookies: {
       get(name) {
         if (typeof document === 'undefined') return undefined;
@@ -52,11 +61,23 @@ export function createBrowserClient() {
       set(name, value, options) {
         if (typeof document === 'undefined') return;
         let cookie = `${name}=${encodeURIComponent(value)}`;
-        if (options?.maxAge) cookie += `; max-age=${options.maxAge}`;
-        if (options?.path) cookie += `; path=${options.path}`;
-        if (options?.domain) cookie += `; domain=${options.domain}`;
-        if (options?.sameSite) cookie += `; samesite=${options.sameSite}`;
-        if (options?.secure) cookie += '; secure';
+
+        // Set long-lived cookies for session persistence (30 days)
+        // This follows best practices for mobile web games
+        const maxAge = options?.maxAge || 2592000; // 30 days in seconds
+        cookie += `; max-age=${maxAge}`;
+
+        // Always set path to root
+        cookie += `; path=${options?.path || '/'}`;
+
+        // Set SameSite=Lax for better security while maintaining functionality
+        cookie += `; samesite=${options?.sameSite || 'Lax'}`;
+
+        // Use secure flag in production
+        if (window.location.protocol === 'https:' || options?.secure) {
+          cookie += '; secure';
+        }
+
         document.cookie = cookie;
       },
       remove(name, options) {

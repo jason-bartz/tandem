@@ -457,6 +457,11 @@ class GameEventStore {
    * Queue event for cloud sync
    */
   async queueForSync(event) {
+    // Skip if no event provided (e.g., bulk persist operations)
+    if (!event) {
+      return;
+    }
+
     // This will be implemented with the sync manager
     // For now, just log
     console.log('[GameEventStore] Event queued for sync:', event.id);
