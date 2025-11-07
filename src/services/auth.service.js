@@ -24,7 +24,7 @@ class AuthService {
       });
 
       const data = await response.json();
-      
+
       if (response.ok && data.success) {
         // Store CSRF token if provided
         if (data.csrfToken) {
@@ -36,7 +36,7 @@ class AuthService {
           user: data.user,
         };
       }
-      
+
       return {
         success: false,
         error: data.error || 'Login failed',
@@ -51,7 +51,7 @@ class AuthService {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_AUTH), {
         headers: {
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -60,10 +60,13 @@ class AuthService {
         // Update CSRF token if provided
         if (data.csrfToken) {
           this.setCSRFToken(data.csrfToken);
+          console.log('CSRF token updated from token verification');
+        } else {
+          console.warn('No CSRF token received from token verification');
         }
         return data.valid === true;
       }
-      
+
       return false;
     } catch (error) {
       console.error('AuthService.verifyToken error:', error);
@@ -98,8 +101,13 @@ class AuthService {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    if (includeCSRF && this.csrfToken) {
-      headers['x-csrf-token'] = this.csrfToken;
+    if (includeCSRF) {
+      if (this.csrfToken) {
+        headers['x-csrf-token'] = this.csrfToken;
+        console.log('Including CSRF token in headers:', this.csrfToken.substring(0, 8) + '...');
+      } else {
+        console.error('CSRF token requested but not available! This will cause request to fail.');
+      }
     }
 
     return headers;
