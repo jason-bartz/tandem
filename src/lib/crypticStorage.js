@@ -357,20 +357,24 @@ export async function hasCrypticPuzzleCompleted(date) {
 }
 
 /**
- * Save cryptic stats locally
+ * Save cryptic stats
  * Platform-agnostic: Works on iOS (Preferences) and Web (localStorage)
+ * DATABASE-FIRST ARCHITECTURE (matches Tandem Daily pattern):
+ * - Authenticated users: Database is source of truth, local storage is cache
+ * - Unauthenticated users: Local storage only
  *
  * @param {Object} stats - Stats object to save
- * @param {boolean} skipCloudSync - If true, skip CloudKit sync
- * @param {boolean} skipDatabaseSync - If true, skip database sync
+ * @param {boolean} skipCloudSync - If true, skip CloudKit sync (default: false)
+ * @param {boolean} skipDatabaseSync - If true, skip database sync (default: false, used only for internal merge operations)
  * @returns {Promise<Object>} The saved stats (may be merged with database/CloudKit)
  */
 export async function saveCrypticStats(stats, skipCloudSync = false, skipDatabaseSync = false) {
   try {
+    logger.info('[CrypticStorage] Saving stats:', stats);
     await setCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS, JSON.stringify(stats));
-    logger.info('[CrypticStorage] Stats saved locally');
+    logger.info('[CrypticStorage] Stats saved to local storage');
 
-    // Sync to database if user is authenticated and not skipping
+    // DATABASE-FIRST: Always sync to database for authenticated users (unless explicitly skipped)
     if (!skipDatabaseSync) {
       const isAuthenticated = await isUserAuthenticated();
       if (isAuthenticated) {
@@ -421,12 +425,27 @@ export async function saveCrypticStats(stats, skipCloudSync = false, skipDatabas
 }
 
 /**
- * Load cryptic stats from local storage
+ * Load cryptic stats
  * Platform-agnostic: Works on iOS (Preferences) and Web (localStorage)
+ * DATABASE-FIRST ARCHITECTURE (matches Tandem Daily pattern):
+ * - Authenticated users: Database is source of truth, local storage is cache
+ * - Unauthenticated users: Local storage only
  *
  * @returns {Promise<Object>} Stats object with default values if not found
  */
 export async function loadCrypticStats() {
+  if (typeof window === 'undefined') {
+    return {
+      totalCompleted: 0,
+      currentStreak: 0,
+      longestStreak: 0,
+      totalHintsUsed: 0,
+      perfectSolves: 0,
+      averageTime: 0,
+      completedPuzzles: {},
+    };
+  }
+
   const defaultStats = {
     totalCompleted: 0,
     currentStreak: 0,
@@ -439,9 +458,11 @@ export async function loadCrypticStats() {
 
   try {
     const saved = await getCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS);
+    logger.info('[CrypticStorage] Raw stats from storage:', saved);
     const localStats = saved ? JSON.parse(saved) : defaultStats;
+    logger.info('[CrypticStorage] Parsed local stats:', localStats);
 
-    // First, try to sync with database if user is authenticated
+    // DATABASE-FIRST: Try to sync with database if user is authenticated
     const isAuthenticated = await isUserAuthenticated();
     if (isAuthenticated) {
       try {
@@ -457,6 +478,23 @@ export async function loadCrypticStats() {
 
           // Save merged stats locally (skip cloud and DB sync to avoid loops)
           await saveCrypticStats(mergedStats, true, true);
+
+          // Sync best streak to leaderboard if stats were merged from database
+          // This ensures users who created accounts see their streaks on leaderboard
+          if (mergedStats.longestStreak > 0) {
+            try {
+              const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
+              // Use longestStreak for sync since we just merged from database
+              syncCurrentStreakToLeaderboard(
+                { currentStreak: mergedStats.longestStreak, bestStreak: mergedStats.longestStreak },
+                'cryptic'
+              ).catch((error) => {
+                logger.error('[CrypticStorage] Failed to sync streak to leaderboard:', error);
+              });
+            } catch (error) {
+              logger.error('[CrypticStorage] Failed to import leaderboard sync:', error);
+            }
+          }
 
           return mergedStats;
         } else {

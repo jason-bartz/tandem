@@ -273,6 +273,23 @@ export async function loadStats() {
 
         // Update parsedStats to return the merged version
         Object.assign(parsedStats, mergedStats);
+
+        // Sync best streak to leaderboard if stats were merged from database
+        // This ensures users who created accounts see their streaks on leaderboard
+        if (mergedStats.bestStreak > 0) {
+          try {
+            const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
+            // Use bestStreak for sync since we just merged from database
+            syncCurrentStreakToLeaderboard(
+              { currentStreak: mergedStats.bestStreak, bestStreak: mergedStats.bestStreak },
+              'tandem'
+            ).catch((error) => {
+              logger.error('[storage.loadStats] Failed to sync streak to leaderboard:', error);
+            });
+          } catch (error) {
+            logger.error('[storage.loadStats] Failed to import leaderboard sync:', error);
+          }
+        }
       } else {
         logger.info('[storage.loadStats] No database stats found, using local stats');
       }
