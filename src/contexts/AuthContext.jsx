@@ -82,34 +82,39 @@ export function AuthProvider({ children }) {
       setLoading(false);
 
       // Sync stats to leaderboard when user signs in
+      // IMPORTANT: Run this completely non-blocking to avoid hanging auth UI
       if (event === 'SIGNED_IN' && session?.user) {
         console.log('[AuthProvider] User signed in, syncing stats to leaderboard');
-        try {
-          // Import dynamically to avoid circular dependencies
-          const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
-          const { loadStats } = await import('@/lib/storage');
-          const { loadCrypticStats } = await import('@/lib/crypticStorage');
-          const { migrateCrypticStatsToDatabase } = await import(
-            '@/lib/migrations/crypticStatsMigration'
-          );
 
-          // MIGRATION: Sync local cryptic stats to database (database-first architecture)
-          // This runs once per device and ensures existing stats are preserved
-          migrateCrypticStatsToDatabase(session.user).catch((error) => {
-            console.error('[AuthProvider] Cryptic stats migration failed:', error);
-          });
+        // Run sync in background without blocking auth flow
+        (async () => {
+          try {
+            // Import dynamically to avoid circular dependencies
+            const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
+            const { loadStats } = await import('@/lib/storage');
+            const { loadCrypticStats } = await import('@/lib/crypticStorage');
+            const { migrateCrypticStatsToDatabase } = await import(
+              '@/lib/migrations/crypticStatsMigration'
+            );
 
-          // Load current stats (this will now use database as source of truth)
-          const tandemStats = await loadStats();
-          const crypticStats = await loadCrypticStats();
+            // MIGRATION: Sync local cryptic stats to database (database-first architecture)
+            // This runs once per device and ensures existing stats are preserved
+            migrateCrypticStatsToDatabase(session.user).catch((error) => {
+              console.error('[AuthProvider] Cryptic stats migration failed:', error);
+            });
 
-          // Sync to leaderboard (non-blocking, fails silently)
-          syncStatsToLeaderboardOnAuth(tandemStats, crypticStats).catch((error) => {
-            console.error('[AuthProvider] Leaderboard sync failed:', error);
-          });
-        } catch (error) {
-          console.error('[AuthProvider] Failed to sync stats to leaderboard:', error);
-        }
+            // Load current stats (this will now use database as source of truth)
+            const tandemStats = await loadStats();
+            const crypticStats = await loadCrypticStats();
+
+            // Sync to leaderboard (non-blocking, fails silently)
+            syncStatsToLeaderboardOnAuth(tandemStats, crypticStats).catch((error) => {
+              console.error('[AuthProvider] Leaderboard sync failed:', error);
+            });
+          } catch (error) {
+            console.error('[AuthProvider] Failed to sync stats to leaderboard:', error);
+          }
+        })();
       }
     });
 

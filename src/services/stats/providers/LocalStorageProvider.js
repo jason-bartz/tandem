@@ -127,6 +127,22 @@ export class LocalStorageProvider extends BaseProvider {
       // Validate data
       this.validateData(data);
 
+      // Proactive cleanup: Check quota before we even start
+      if (!this.useCapacitor) {
+        const estimate = await navigator.storage.estimate();
+        const usage = estimate.usage || 0;
+        const quota = estimate.quota || 0;
+        const percentUsed = (usage / quota) * 100;
+
+        // If over 70%, run emergency cleanup preemptively
+        if (percentUsed > 70) {
+          console.warn(
+            `[LocalStorageProvider] Storage at ${percentUsed.toFixed(2)}% - running preemptive cleanup`
+          );
+          await this.emergencyStorageCleanup();
+        }
+      }
+
       // Cleanup old events to prevent quota issues
       const cleanedData = this.cleanupOldEvents(data);
 
@@ -253,6 +269,15 @@ export class LocalStorageProvider extends BaseProvider {
    */
   async createBackup() {
     try {
+      // Check if we're near quota before attempting backup
+      if (!this.useCapacitor) {
+        const canBackup = await this.checkStorageQuota(0); // Just check, don't add
+        if (!canBackup) {
+          console.warn('[LocalStorageProvider] Skipping backup - quota exceeded');
+          return; // Skip backup if quota exceeded
+        }
+      }
+
       if (this.useCapacitor) {
         const current = await Preferences.get({ key: this.storageKey });
         if (current.value) {
@@ -270,7 +295,21 @@ export class LocalStorageProvider extends BaseProvider {
 
       console.log('[LocalStorageProvider] Backup created');
     } catch (error) {
-      console.error('[LocalStorageProvider] Failed to create backup:', error);
+      // If backup fails with quota error, try to clean up backup file
+      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
+        console.warn('[LocalStorageProvider] Backup failed due to quota, removing old backup');
+        try {
+          if (this.useCapacitor) {
+            await Preferences.remove({ key: this.backupKey });
+          } else {
+            localStorage.removeItem(this.backupKey);
+          }
+        } catch (removeError) {
+          // Ignore
+        }
+      } else {
+        console.error('[LocalStorageProvider] Failed to create backup:', error);
+      }
       // Continue anyway - backup is not critical
     }
   }
