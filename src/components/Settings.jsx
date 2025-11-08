@@ -387,8 +387,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  Download Tandem today for iPhone and iPad. Enjoy a seamless native experience with
-                  the full power of iOS.
+                  Download Tandem Daily for IOS today to enjoy Ad-Free on iPhone and iPad.
                 </p>
 
                 {/* Action Buttons */}
