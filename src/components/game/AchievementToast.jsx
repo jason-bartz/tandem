@@ -49,11 +49,11 @@ export default function AchievementToast() {
       role="alert"
       aria-live="polite"
     >
-      <div className="bg-gradient-to-r from-amber-500 to-orange-500 dark:from-amber-600 dark:to-orange-600 text-white px-6 py-3 rounded-2xl shadow-2xl backdrop-blur-sm flex items-center gap-3 max-w-sm">
-        <span className="text-2xl">{achievement.emoji}</span>
+      <div className="bg-amber-400 text-black px-6 py-4 rounded-2xl border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] flex items-center gap-3 max-w-sm">
+        <span className="text-3xl">{achievement.emoji}</span>
         <div className="flex-1">
-          <div className="font-bold text-sm">Achievement Unlocked!</div>
-          <div className="text-xs opacity-90">{achievement.name}</div>
+          <div className="font-black text-sm uppercase tracking-wide">Achievement Unlocked!</div>
+          <div className="font-bold text-xs mt-0.5">{achievement.name}</div>
         </div>
         <span className="text-3xl">🏆</span>
       </div>
