@@ -22,6 +22,8 @@ import { useUIIcon } from '@/hooks/useUIIcon';
 import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import Settings from '@/components/Settings';
+import { useAuth } from '@/contexts/AuthContext';
+import AuthModal from '@/components/auth/AuthModal';
 
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
@@ -51,11 +53,13 @@ export default function CompleteScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showRevealAnswers, setShowRevealAnswers] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
   const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
+  const { user, loading: authLoading } = useAuth();
 
   // Get the actual puzzle date (from the puzzle object for archive games, or current for today's)
   const puzzleDate = puzzle?.date || getCurrentPuzzleInfo().isoDate;
@@ -468,6 +472,24 @@ export default function CompleteScreen({
               Leaderboard
             </button>
           </div>
+
+          {/* Account CTA for non-logged-in users */}
+          {!user && !authLoading && (
+            <div className="mt-4 text-center">
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                <button
+                  onClick={() => {
+                    lightTap();
+                    setShowAuthModal(true);
+                  }}
+                  className="font-semibold text-accent-blue hover:text-accent-blue/80 dark:text-accent-blue dark:hover:text-accent-blue/80 transition-colors underline decoration-1 underline-offset-2"
+                >
+                  Create a free account
+                </button>{' '}
+                to join the leaderboard
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -497,6 +519,14 @@ export default function CompleteScreen({
         onClose={() => setShowLeaderboard(false)}
         gameType="tandem"
         initialTab="daily"
+      />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signup"
+        onSuccess={() => {
+          setShowAuthModal(false);
+        }}
       />
     </div>
   );

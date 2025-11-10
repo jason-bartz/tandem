@@ -8,11 +8,13 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { playSuccessSound } from '@/lib/sounds';
+import { useAuth } from '@/contexts/AuthContext';
 import CrypticGuideModal from './CrypticGuideModal';
 import CrypticArchiveCalendar from './CrypticArchiveCalendar';
 import Settings from '@/components/Settings';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import AuthModal from '@/components/auth/AuthModal';
 
 export default function CrypticCompleteScreen({
   puzzle: _puzzle,
@@ -30,9 +32,11 @@ export default function CrypticCompleteScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion, theme } = useTheme();
   const getIconPath = useUIIcon();
+  const { user, loading: authLoading } = useAuth();
 
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
@@ -399,6 +403,24 @@ export default function CrypticCompleteScreen({
                 Leaderboard
               </button>
             </div>
+
+            {/* Account CTA for non-logged-in users */}
+            {!user && !authLoading && (
+              <div className="mt-4 text-center">
+                <p className="text-sm text-gray-600 dark:text-gray-400">
+                  <button
+                    onClick={() => {
+                      lightTap();
+                      setShowAuthModal(true);
+                    }}
+                    className="font-semibold text-accent-blue hover:text-accent-blue/80 dark:text-accent-blue dark:hover:text-accent-blue/80 transition-colors underline decoration-1 underline-offset-2"
+                  >
+                    Create a free account
+                  </button>{' '}
+                  to join the leaderboard
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -413,6 +435,14 @@ export default function CrypticCompleteScreen({
         onClose={() => setShowLeaderboard(false)}
         gameType="cryptic"
         initialTab="daily"
+      />
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signup"
+        onSuccess={() => {
+          setShowAuthModal(false);
+        }}
       />
     </div>
   );
