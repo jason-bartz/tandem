@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Capacitor } from '@capacitor/core';
+import { generateRandomUsername } from '@/utils/usernameGenerator';
+import Image from 'next/image';
 
 /**
  * AuthModal - Unified authentication modal
@@ -56,6 +58,13 @@ export default function AuthModal({
       }
     }
   }, [initialMessage, initialMessageType]);
+
+  // Pre-fill username with random name on signup mode
+  useEffect(() => {
+    if (mode === 'signup' && !username) {
+      setUsername(generateRandomUsername());
+    }
+  }, [mode]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -186,6 +195,10 @@ export default function AuthModal({
     setEmail('');
     setPassword('');
     setUsername('');
+  };
+
+  const handleGenerateUsername = () => {
+    setUsername(generateRandomUsername());
   };
 
   if (!isOpen) return null;
@@ -346,21 +359,45 @@ export default function AuthModal({
               >
                 Username
               </label>
-              <input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => {
-                  // Only allow alphanumeric and underscore
-                  const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                  setUsername(sanitized);
-                }}
-                className="w-full px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
-                placeholder="your_username"
-                minLength={3}
-                maxLength={20}
-                required
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="username"
+                  value={username}
+                  onChange={(e) => {
+                    // Only allow alphanumeric and underscore
+                    const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                    setUsername(sanitized);
+                  }}
+                  className="flex-1 px-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                  placeholder="your_username"
+                  minLength={3}
+                  maxLength={20}
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={handleGenerateUsername}
+                  className="w-12 h-12 flex items-center justify-center border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+                  aria-label="Generate random username"
+                  title="Generate random username"
+                >
+                  <Image
+                    src="/icons/ui/dice.png"
+                    alt="Generate"
+                    width={24}
+                    height={24}
+                    className="dark:hidden"
+                  />
+                  <Image
+                    src="/icons/ui/dice-dark.png"
+                    alt="Generate"
+                    width={24}
+                    height={24}
+                    className="hidden dark:block"
+                  />
+                </button>
+              </div>
               <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                 3-20 characters, letters, numbers, and underscores only. Will be visible on public
                 leaderboards and can be changed later.

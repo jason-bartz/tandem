@@ -1,10 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
+import { generateRandomUsername } from '@/utils/usernameGenerator';
+import Image from 'next/image';
 
 /**
  * CrypticAuthModal - Specialized auth modal for Daily Cryptic
@@ -23,7 +25,18 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
   const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
 
+  // Pre-fill username with random name on signup mode
+  useEffect(() => {
+    if (mode === 'signup' && !username) {
+      setUsername(generateRandomUsername());
+    }
+  }, [mode]);
+
   if (!isOpen) return null;
+
+  const handleGenerateUsername = () => {
+    setUsername(generateRandomUsername());
+  };
 
   const handleEmailSignUp = async (e) => {
     e.preventDefault();
@@ -326,25 +339,54 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
                     >
                       Username
                     </label>
-                    <input
-                      type="text"
-                      value={username}
-                      onChange={(e) => {
-                        // Only allow alphanumeric and underscore
-                        const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                        setUsername(sanitized);
-                      }}
-                      className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
-                        highContrast
-                          ? 'bg-hc-background text-hc-text border-hc-border'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
-                      } focus:outline-none`}
-                      placeholder="your_username"
-                      minLength={3}
-                      maxLength={20}
-                      required
-                      disabled={loading}
-                    />
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={username}
+                        onChange={(e) => {
+                          // Only allow alphanumeric and underscore
+                          const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                          setUsername(sanitized);
+                        }}
+                        className={`flex-1 px-4 py-3 rounded-xl border-[3px] font-medium ${
+                          highContrast
+                            ? 'bg-hc-background text-hc-text border-hc-border'
+                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
+                        } focus:outline-none`}
+                        placeholder="your_username"
+                        minLength={3}
+                        maxLength={20}
+                        required
+                        disabled={loading}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleGenerateUsername}
+                        className={`w-12 h-12 flex items-center justify-center rounded-xl border-[3px] transition-colors ${
+                          highContrast
+                            ? 'bg-hc-surface border-hc-border hover:bg-hc-focus'
+                            : 'bg-white dark:bg-gray-700 border-black dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                        }`}
+                        aria-label="Generate random username"
+                        title="Generate random username"
+                        disabled={loading}
+                      >
+                        <Image
+                          src="/icons/ui/dice.png"
+                          alt="Generate"
+                          width={24}
+                          height={24}
+                          className="dark:hidden"
+                        />
+                        <Image
+                          src="/icons/ui/dice-dark.png"
+                          alt="Generate"
+                          width={24}
+                          height={24}
+                          className="hidden dark:block"
+                        />
+                      </button>
+                    </div>
                     <p
                       className={`mt-1 text-xs ${
                         highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
