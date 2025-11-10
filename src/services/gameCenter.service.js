@@ -13,6 +13,9 @@ import {
   getHighestStreakThreshold,
   getHighestWinsThreshold,
   getAllQualifyingAchievements,
+  getNewlyUnlockedCrypticAchievements,
+  getHighestCrypticStreakThreshold,
+  getHighestCrypticWinsThreshold,
 } from '@/lib/achievementChecker';
 import logger from '@/lib/logger';
 import { loadStats } from '@/lib/storage';
@@ -284,6 +287,93 @@ class GameCenterService {
       return newAchievements;
     } catch (error) {
       logger.error('[GameCenter] Error checking achievements:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Check and submit cryptic achievements
+   * Compares current cryptic stats against last submitted values
+   * @param {Object} stats - Current cryptic stats (longestStreak, totalCompleted)
+   * @returns {Promise<Array>} Array of newly unlocked achievement objects
+   */
+  async checkAndSubmitCrypticAchievements(stats) {
+    if (!this.isAvailable()) {
+      logger.info('[GameCenter] Not available, skipping cryptic achievement check');
+      return [];
+    }
+
+    logger.info('[GameCenter] Checking cryptic achievements with stats:', {
+      currentStreak: stats.currentStreak,
+      longestStreak: stats.longestStreak,
+      totalCompleted: stats.totalCompleted,
+    });
+
+    try {
+      // Get last submitted values for cryptic
+      const lastStreakResult = await Preferences.get({
+        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_STREAK,
+      });
+      const lastWinsResult = await Preferences.get({
+        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_WINS,
+      });
+
+      const lastStreak = lastStreakResult.value ? parseInt(lastStreakResult.value, 10) : 0;
+      const lastWins = lastWinsResult.value ? parseInt(lastWinsResult.value, 10) : 0;
+
+      logger.info('[GameCenter] Last submitted cryptic values:', {
+        lastStreak,
+        lastWins,
+      });
+
+      // Check for newly unlocked cryptic achievements
+      const newAchievements = getNewlyUnlockedCrypticAchievements(stats, {
+        streak: lastStreak,
+        wins: lastWins,
+      });
+
+      if (newAchievements.length === 0) {
+        logger.info('[GameCenter] No new cryptic achievements to unlock');
+        return [];
+      }
+
+      logger.info('[GameCenter] Found new cryptic achievements to unlock:', newAchievements.length);
+      logger.info('[GameCenter] New cryptic achievements:', newAchievements);
+
+      // Submit each achievement
+      const achievementIds = newAchievements.map((a) => a.id);
+      await this.submitAchievements(achievementIds);
+
+      // Track submitted cryptic achievements
+      const submittedResult = await Preferences.get({
+        key: STORAGE_KEYS.SUBMITTED_CRYPTIC_ACHIEVEMENTS,
+      });
+      const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
+      const updatedSubmittedList = [...new Set([...submittedAchievements, ...achievementIds])];
+      await Preferences.set({
+        key: STORAGE_KEYS.SUBMITTED_CRYPTIC_ACHIEVEMENTS,
+        value: JSON.stringify(updatedSubmittedList),
+      });
+
+      // Update last submitted cryptic values
+      const newLastStreak = getHighestCrypticStreakThreshold(stats.longestStreak || 0);
+      const newLastWins = getHighestCrypticWinsThreshold(stats.totalCompleted || 0);
+
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_STREAK,
+        value: newLastStreak.toString(),
+      });
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_WINS,
+        value: newLastWins.toString(),
+      });
+
+      // Notify listeners
+      this._notifyAchievementListeners(newAchievements);
+
+      return newAchievements;
+    } catch (error) {
+      logger.error('[GameCenter] Error checking cryptic achievements:', error);
       return [];
     }
   }

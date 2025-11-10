@@ -3,7 +3,12 @@
  * Determines which achievements should be unlocked based on current stats
  */
 
-import { getStreakAchievements, getWinsAchievements } from './achievementDefinitions';
+import {
+  getStreakAchievements,
+  getWinsAchievements,
+  getCrypticStreakAchievements,
+  getCrypticWinsAchievements,
+} from './achievementDefinitions';
 
 /**
  * Check which streak achievements should be unlocked
@@ -190,6 +195,191 @@ export function getAllQualifyingAchievements(stats) {
   const winsAchievements = getWinsAchievements();
   for (const achievement of winsAchievements) {
     if (wins >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'wins',
+      });
+    }
+  }
+
+  return qualifyingAchievements;
+}
+
+/**
+ * Check which cryptic streak achievements should be unlocked
+ * @param {number} bestStreak - The player's best cryptic streak value
+ * @param {number} lastSubmittedStreak - Last streak value submitted to Game Center
+ * @returns {Array} Array of achievement IDs that should be unlocked
+ */
+export function checkCrypticStreakAchievements(bestStreak, lastSubmittedStreak = 0) {
+  const streakAchievements = getCrypticStreakAchievements();
+  const newlyUnlocked = [];
+
+  for (const achievement of streakAchievements) {
+    // Check if player has reached this threshold and it hasn't been submitted yet
+    if (bestStreak >= achievement.threshold && lastSubmittedStreak < achievement.threshold) {
+      newlyUnlocked.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'streak',
+      });
+    }
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Check which cryptic wins achievements should be unlocked
+ * @param {number} totalWins - The player's total cryptic wins count
+ * @param {number} lastSubmittedWins - Last wins value submitted to Game Center
+ * @returns {Array} Array of achievement IDs that should be unlocked
+ */
+export function checkCrypticWinsAchievements(totalWins, lastSubmittedWins = 0) {
+  const winsAchievements = getCrypticWinsAchievements();
+  const newlyUnlocked = [];
+
+  for (const achievement of winsAchievements) {
+    // Check if player has reached this threshold and it hasn't been submitted yet
+    if (totalWins >= achievement.threshold && lastSubmittedWins < achievement.threshold) {
+      newlyUnlocked.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'wins',
+      });
+    }
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Get all newly unlocked cryptic achievements based on current stats
+ * @param {Object} stats - Player cryptic stats object with longestStreak and totalCompleted
+ * @param {Object} lastSubmitted - Last submitted values { streak, wins }
+ * @returns {Array} Array of all newly unlocked achievement IDs
+ */
+export function getNewlyUnlockedCrypticAchievements(stats, lastSubmitted = {}) {
+  const { longestStreak = 0, totalCompleted = 0 } = stats;
+  const { streak: lastStreak = 0, wins: lastWins = 0 } = lastSubmitted;
+
+  const streakAchievements = checkCrypticStreakAchievements(longestStreak, lastStreak);
+  const winsAchievements = checkCrypticWinsAchievements(totalCompleted, lastWins);
+
+  return [...streakAchievements, ...winsAchievements];
+}
+
+/**
+ * Get the highest cryptic streak threshold reached
+ * @param {number} bestStreak - The player's best cryptic streak value
+ * @returns {number} The highest threshold reached
+ */
+export function getHighestCrypticStreakThreshold(bestStreak) {
+  const streakAchievements = getCrypticStreakAchievements();
+  let highest = 0;
+
+  for (const achievement of streakAchievements) {
+    if (bestStreak >= achievement.threshold && achievement.threshold > highest) {
+      highest = achievement.threshold;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Get the highest cryptic wins threshold reached
+ * @param {number} totalWins - The player's total cryptic wins count
+ * @returns {number} The highest threshold reached
+ */
+export function getHighestCrypticWinsThreshold(totalWins) {
+  const winsAchievements = getCrypticWinsAchievements();
+  let highest = 0;
+
+  for (const achievement of winsAchievements) {
+    if (totalWins >= achievement.threshold && achievement.threshold > highest) {
+      highest = achievement.threshold;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Get next cryptic achievement to unlock for streaks
+ * @param {number} currentStreak - The player's current cryptic streak
+ * @returns {Object|null} Next achievement or null if none
+ */
+export function getNextCrypticStreakAchievement(currentStreak) {
+  const streakAchievements = getCrypticStreakAchievements();
+
+  for (const achievement of streakAchievements) {
+    if (currentStreak < achievement.threshold) {
+      return {
+        ...achievement,
+        remaining: achievement.threshold - currentStreak,
+      };
+    }
+  }
+
+  return null; // All achievements unlocked
+}
+
+/**
+ * Get next cryptic achievement to unlock for wins
+ * @param {number} currentWins - The player's current cryptic wins count
+ * @returns {Object|null} Next achievement or null if none
+ */
+export function getNextCrypticWinsAchievement(currentWins) {
+  const winsAchievements = getCrypticWinsAchievements();
+
+  for (const achievement of winsAchievements) {
+    if (currentWins < achievement.threshold) {
+      return {
+        ...achievement,
+        remaining: achievement.threshold - currentWins,
+      };
+    }
+  }
+
+  return null; // All achievements unlocked
+}
+
+/**
+ * Get all cryptic achievements that should be unlocked based on current stats
+ * This is used for retroactive achievement checking (e.g., for existing users)
+ * @param {Object} stats - Player cryptic stats object with longestStreak and totalCompleted
+ * @returns {Array} Array of all achievements that qualify based on current stats
+ */
+export function getAllQualifyingCrypticAchievements(stats) {
+  const { longestStreak = 0, totalCompleted = 0 } = stats;
+  const qualifyingAchievements = [];
+
+  // Check all cryptic streak achievements
+  const streakAchievements = getCrypticStreakAchievements();
+  for (const achievement of streakAchievements) {
+    if (longestStreak >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'streak',
+      });
+    }
+  }
+
+  // Check all cryptic wins achievements
+  const winsAchievements = getCrypticWinsAchievements();
+  for (const achievement of winsAchievements) {
+    if (totalCompleted >= achievement.threshold) {
       qualifyingAchievements.push({
         id: achievement.id,
         name: achievement.name,

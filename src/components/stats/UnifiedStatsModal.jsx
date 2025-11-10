@@ -7,6 +7,7 @@ import useUnifiedStats from '@/hooks/useUnifiedStats';
 import TandemStatsSection from './TandemStatsSection';
 import CrypticStatsSection from './CrypticStatsSection';
 import ShareButton from '../game/ShareButton';
+import AchievementsModal from '../achievements/AchievementsModal';
 
 /**
  * UnifiedStatsModal - Unified statistics modal for both games
@@ -19,6 +20,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
   const [animationKey, setAnimationKey] = useState(0);
+  const [showAchievements, setShowAchievements] = useState(false);
 
   // Load stats for both games
   const { tandemStats, crypticStats, loading, error } = useUnifiedStats(isOpen);
@@ -52,6 +54,15 @@ Play at tandemdaily.com
   const handleClose = () => {
     lightTap();
     onClose();
+  };
+
+  const handleOpenAchievements = () => {
+    lightTap();
+    setShowAchievements(true);
+  };
+
+  const handleCloseAchievements = () => {
+    setShowAchievements(false);
   };
 
   return (
@@ -114,13 +125,29 @@ Play at tandemdaily.com
           </>
         )}
 
-        {/* Share Button */}
+        {/* Action Buttons */}
         {!loading && !error && (
-          <div className="mt-4">
+          <div className="mt-4 space-y-2">
+            {/* Achievements Button */}
+            <button
+              onClick={handleOpenAchievements}
+              className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all flex items-center justify-center ${
+                highContrast
+                  ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+              }`}
+            >
+              View Achievements
+            </button>
+
+            {/* Share Button */}
             <ShareButton shareText={shareableStatsText} className="w-full" />
           </div>
         )}
       </div>
+
+      {/* Achievements Modal */}
+      <AchievementsModal isOpen={showAchievements} onClose={handleCloseAchievements} />
     </div>
   );
 }

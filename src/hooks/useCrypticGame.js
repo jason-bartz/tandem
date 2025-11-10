@@ -303,9 +303,25 @@ export function useCrypticGame() {
           hintsUsed,
           isArchive, // Pass archive status
           isFirstAttemptCompletion // Pass first attempt status
-        ).catch((err) => {
-          logger.error('[useCrypticGame] Failed to update stats', { error: err.message });
-        });
+        )
+          .then(async (updatedStats) => {
+            // Check and submit achievements after stats update
+            if (typeof window !== 'undefined') {
+              try {
+                const gameCenterService = (await import('@/services/gameCenter.service')).default;
+                const achievements =
+                  await gameCenterService.checkAndSubmitCrypticAchievements(updatedStats);
+                logger.info('[useCrypticGame] Achievements checked:', achievements.length);
+              } catch (err) {
+                logger.error('[useCrypticGame] Failed to check achievements', {
+                  error: err.message,
+                });
+              }
+            }
+          })
+          .catch((err) => {
+            logger.error('[useCrypticGame] Failed to update stats', { error: err.message });
+          });
 
         // Save to server (async, don't wait)
         // Convert hint indices to types for backward compatibility

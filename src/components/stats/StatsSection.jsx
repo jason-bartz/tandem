@@ -35,7 +35,7 @@ export default function StatsSection({ title, emoji, icon, iconDark, themeColor,
 
   const getTextColor = () => {
     if (highContrast) {
-      return 'text-white';
+      return 'text-hc-text';
     }
 
     if (themeColor === 'blue' || themeColor === 'purple') {

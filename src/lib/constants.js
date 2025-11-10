@@ -24,8 +24,11 @@ export const STORAGE_KEYS = {
   PENDING_LEADERBOARD: 'tandem_pending_leaderboard',
   LAST_SUBMITTED_STREAK: 'tandem_last_streak',
   LAST_SUBMITTED_WINS: 'tandem_last_wins',
+  LAST_SUBMITTED_CRYPTIC_STREAK: 'tandem_last_cryptic_streak',
+  LAST_SUBMITTED_CRYPTIC_WINS: 'tandem_last_cryptic_wins',
   ACHIEVEMENTS_RETROACTIVE_CHECK_DONE: 'tandem_achievements_retroactive_check',
   SUBMITTED_ACHIEVEMENTS: 'tandem_submitted_achievements',
+  SUBMITTED_CRYPTIC_ACHIEVEMENTS: 'tandem_submitted_cryptic_achievements',
 };
 
 export const API_ENDPOINTS = {

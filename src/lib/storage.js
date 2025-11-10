@@ -217,14 +217,32 @@ async function saveUserStatsToDatabase(stats) {
 
 export async function loadStats() {
   if (typeof window === 'undefined') {
-    return { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+    return {
+      played: 0,
+      wins: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      crypticPlayed: 0,
+      crypticWins: 0,
+      crypticCurrentStreak: 0,
+      crypticBestStreak: 0,
+    };
   }
 
   const stats = await getStorageItem(STORAGE_KEYS.STATS);
   logger.info('[storage.loadStats] Raw stats from storage:', stats);
   const parsedStats = stats
     ? JSON.parse(stats)
-    : { played: 0, wins: 0, currentStreak: 0, bestStreak: 0 };
+    : {
+        played: 0,
+        wins: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        crypticPlayed: 0,
+        crypticWins: 0,
+        crypticCurrentStreak: 0,
+        crypticBestStreak: 0,
+      };
   logger.info('[storage.loadStats] Parsed stats:', parsedStats);
 
   // First, try to sync with database if user is authenticated
@@ -244,6 +262,14 @@ export async function loadStats() {
           bestStreak: Math.max(parsedStats.bestStreak || 0, dbStats.bestStreak || 0),
           currentStreak: 0, // Will be determined below
           lastStreakDate: null, // Will be determined below
+          crypticPlayed: Math.max(parsedStats.crypticPlayed || 0, dbStats.crypticPlayed || 0),
+          crypticWins: Math.max(parsedStats.crypticWins || 0, dbStats.crypticWins || 0),
+          crypticBestStreak: Math.max(
+            parsedStats.crypticBestStreak || 0,
+            dbStats.crypticBestStreak || 0
+          ),
+          crypticCurrentStreak: 0, // Will be determined below
+          lastCrypticStreakDate: null, // Will be determined below
         };
 
         // For current streak, use the one with the most recent date
@@ -264,6 +290,26 @@ export async function loadStats() {
         } else if (localDate) {
           mergedStats.currentStreak = parsedStats.currentStreak || 0;
           mergedStats.lastStreakDate = localDate;
+        }
+
+        // For cryptic current streak, use the one with the most recent date
+        const localCrypticDate = parsedStats.lastCrypticStreakDate;
+        const dbCrypticDate = dbStats.lastCrypticStreakDate;
+
+        if (localCrypticDate && dbCrypticDate) {
+          if (dbCrypticDate >= localCrypticDate) {
+            mergedStats.crypticCurrentStreak = dbStats.crypticCurrentStreak || 0;
+            mergedStats.lastCrypticStreakDate = dbCrypticDate;
+          } else {
+            mergedStats.crypticCurrentStreak = parsedStats.crypticCurrentStreak || 0;
+            mergedStats.lastCrypticStreakDate = localCrypticDate;
+          }
+        } else if (dbCrypticDate) {
+          mergedStats.crypticCurrentStreak = dbStats.crypticCurrentStreak || 0;
+          mergedStats.lastCrypticStreakDate = dbCrypticDate;
+        } else if (localCrypticDate) {
+          mergedStats.crypticCurrentStreak = parsedStats.crypticCurrentStreak || 0;
+          mergedStats.lastCrypticStreakDate = localCrypticDate;
         }
 
         logger.info('[storage.loadStats] Merged stats (local + database):', mergedStats);
@@ -315,6 +361,14 @@ export async function loadStats() {
           bestStreak: Math.max(parsedStats.bestStreak || 0, cloudStats.bestStreak || 0),
           currentStreak: 0, // Will be determined below
           lastStreakDate: null, // Will be determined below
+          crypticPlayed: Math.max(parsedStats.crypticPlayed || 0, cloudStats.crypticPlayed || 0),
+          crypticWins: Math.max(parsedStats.crypticWins || 0, cloudStats.crypticWins || 0),
+          crypticBestStreak: Math.max(
+            parsedStats.crypticBestStreak || 0,
+            cloudStats.crypticBestStreak || 0
+          ),
+          crypticCurrentStreak: 0, // Will be determined below
+          lastCrypticStreakDate: null, // Will be determined below
         };
 
         // For current streak, use the one with the most recent date
@@ -335,6 +389,26 @@ export async function loadStats() {
         } else if (localDate) {
           mergedStats.currentStreak = parsedStats.currentStreak || 0;
           mergedStats.lastStreakDate = localDate;
+        }
+
+        // For cryptic current streak, use the one with the most recent date
+        const localCrypticDate = parsedStats.lastCrypticStreakDate;
+        const cloudCrypticDate = cloudStats.lastCrypticStreakDate;
+
+        if (localCrypticDate && cloudCrypticDate) {
+          if (cloudCrypticDate >= localCrypticDate) {
+            mergedStats.crypticCurrentStreak = cloudStats.crypticCurrentStreak || 0;
+            mergedStats.lastCrypticStreakDate = cloudCrypticDate;
+          } else {
+            mergedStats.crypticCurrentStreak = parsedStats.crypticCurrentStreak || 0;
+            mergedStats.lastCrypticStreakDate = localCrypticDate;
+          }
+        } else if (cloudCrypticDate) {
+          mergedStats.crypticCurrentStreak = cloudStats.crypticCurrentStreak || 0;
+          mergedStats.lastCrypticStreakDate = cloudCrypticDate;
+        } else if (localCrypticDate) {
+          mergedStats.crypticCurrentStreak = parsedStats.crypticCurrentStreak || 0;
+          mergedStats.lastCrypticStreakDate = localCrypticDate;
         }
 
         // Save the merged stats locally (skip cloud sync since we just fetched from cloud)
@@ -868,6 +942,14 @@ export async function restoreFromiCloud() {
         bestStreak: Math.max(stats.bestStreak || 0, localStats.bestStreak || 0),
         currentStreak: stats.currentStreak || localStats.currentStreak || 0,
         lastStreakDate: stats.lastStreakDate || localStats.lastStreakDate,
+        crypticPlayed: Math.max(stats.crypticPlayed || 0, localStats.crypticPlayed || 0),
+        crypticWins: Math.max(stats.crypticWins || 0, localStats.crypticWins || 0),
+        crypticBestStreak: Math.max(
+          stats.crypticBestStreak || 0,
+          localStats.crypticBestStreak || 0
+        ),
+        crypticCurrentStreak: stats.crypticCurrentStreak || localStats.crypticCurrentStreak || 0,
+        lastCrypticStreakDate: stats.lastCrypticStreakDate || localStats.lastCrypticStreakDate,
       };
 
       await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(mergedStats));
@@ -965,5 +1047,13 @@ export function mergeStats(localStats, cloudStats) {
     bestStreak: Math.max(localStats.bestStreak || 0, cloudStats.bestStreak || 0),
     currentStreak: cloudStats.currentStreak || localStats.currentStreak || 0,
     lastStreakDate: cloudStats.lastStreakDate || localStats.lastStreakDate,
+    crypticPlayed: (localStats.crypticPlayed || 0) + (cloudStats.crypticPlayed || 0),
+    crypticWins: (localStats.crypticWins || 0) + (cloudStats.crypticWins || 0),
+    crypticBestStreak: Math.max(
+      localStats.crypticBestStreak || 0,
+      cloudStats.crypticBestStreak || 0
+    ),
+    crypticCurrentStreak: cloudStats.crypticCurrentStreak || localStats.crypticCurrentStreak || 0,
+    lastCrypticStreakDate: cloudStats.lastCrypticStreakDate || localStats.lastCrypticStreakDate,
   };
 }
