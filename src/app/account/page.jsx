@@ -220,6 +220,7 @@ export default function AccountPage() {
 
   const handleDeleteSuccess = async (response) => {
     // Account deleted successfully
+    // eslint-disable-next-line no-console
     console.log('[Account] Deletion successful:', response);
 
     // Show success message if needed
@@ -681,19 +682,61 @@ export default function AccountPage() {
               )}
             </div>
           ) : (
-            <div className="text-center py-6">
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
+            <div className="py-6">
+              <p className="text-gray-600 dark:text-gray-400 mb-4 text-center">
                 You don't have an active subscription
               </p>
+
+              {/* Benefits List */}
+              <div className="space-y-2 mb-6">
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Archive access for all past puzzles (Daily Tandem and Daily Cryptic)
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Sync and save your progress across devices
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">Ad-free experience</p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Access to Hard Mode and future exclusive features
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Support a solo developer to keep building great puzzles
+                  </p>
+                </div>
+
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">Cancel anytime</p>
+                </div>
+              </div>
+
               <button
                 onClick={() => setShowPaywall(true)}
-                className={`py-3 px-6 rounded-2xl border-[3px] font-semibold transition-all ${
+                className={`w-full py-3 px-6 rounded-2xl border-[3px] font-semibold transition-all ${
                   highContrast
                     ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-gradient-to-r from-teal-500 to-sky-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    : 'bg-teal-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 }`}
               >
-                Get Tandem Unlimited
+                Become a Member
               </button>
             </div>
           )}
@@ -817,16 +860,6 @@ export default function AccountPage() {
           >
             Delete Account
           </button>
-        </div>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-white/80 drop-shadow-[2px_2px_0px_rgba(0,0,0,0.5)]">
-            Questions? Contact{' '}
-            <a href="mailto:support@tandemdaily.com" className="underline hover:text-white">
-              support@tandemdaily.com
-            </a>
-          </p>
         </div>
       </div>
 
