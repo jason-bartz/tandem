@@ -339,18 +339,66 @@ class AvatarService {
       const supabase = getSupabaseBrowserClient();
       const { data, error } = await supabase
         .from('users')
-        .select('has_completed_first_time_setup')
+        .select('has_completed_first_time_setup, selected_avatar_id')
         .eq('id', userId)
         .maybeSingle();
 
       if (error) {
         console.error('[AvatarService] Failed to check first-time setup status:', error);
+        // If column doesn't exist (migration not run), fall back to checking if they have an avatar
+        if (error.code === '42703') {
+          console.log(
+            '[AvatarService] has_completed_first_time_setup column does not exist, checking avatar instead'
+          );
+          return await this.hasSelectedAvatar(userId);
+        }
         return false;
       }
 
-      return data?.has_completed_first_time_setup ?? false;
+      // Check the flag first, but fall back to checking if they have an avatar
+      // This handles cases where the flag might not be set but they've already selected an avatar
+      const hasCompletedFlag = data?.has_completed_first_time_setup ?? false;
+      const hasAvatar = !!data?.selected_avatar_id;
+
+      const result = hasCompletedFlag || hasAvatar;
+      console.log('[AvatarService] First-time setup check:', {
+        userId,
+        hasCompletedFlag,
+        hasAvatar,
+        result,
+      });
+
+      return result;
     } catch (error) {
       console.error('[AvatarService] hasCompletedFirstTimeSetup error:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Helper method to check if user has selected an avatar
+   * Used as fallback when has_completed_first_time_setup column doesn't exist
+   *
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>} True if user has an avatar, false otherwise
+   */
+  async hasSelectedAvatar(userId) {
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from('users')
+        .select('selected_avatar_id')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('[AvatarService] Failed to check if user has avatar:', error);
+        return false;
+      }
+
+      return !!data?.selected_avatar_id;
+    } catch (error) {
+      console.error('[AvatarService] hasSelectedAvatar error:', error);
       return false;
     }
   }

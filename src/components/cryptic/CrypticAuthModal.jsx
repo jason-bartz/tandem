@@ -152,10 +152,16 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   return (
-    <LeftSidePanel isOpen={isOpen} onClose={onClose} title={getTitle()} maxWidth="440px">
+    <LeftSidePanel
+      isOpen={isOpen}
+      onClose={onClose}
+      title={getTitle()}
+      maxWidth="440px"
+      contentClassName="px-6 pt-6"
+    >
       {/* Custom Header with Logo and Gradient */}
       <div
-        className={`-mx-6 -mt-6 mb-6 border-b-[3px] p-6 ${
+        className={`-mx-6 -mt-6 mb-6 border-b-[3px] px-6 py-8 ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
             : 'bg-gradient-to-br from-purple-200 to-purple-300 dark:from-purple-900/30 dark:to-purple-900/10 border-gray-300 dark:border-gray-700'
@@ -190,299 +196,299 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
       </div>
 
       {/* Content */}
-      <div className="space-y-6">
-          {mode === 'welcome' ? (
-            <>
-              {/* Benefits */}
-              <div
-                className={`p-4 rounded-2xl border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-green/10 border-accent-green/30'
-                }`}
-              >
-                <div className="space-y-2 text-sm">
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500 text-lg">✓</span>
-                    <span
-                      className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
-                    >
-                      <strong>Free daily puzzles</strong> - New cryptic clue every day
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500 text-lg">✓</span>
-                    <span
-                      className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
-                    >
-                      <strong>Progressive hints</strong> - Learn as you solve
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500 text-lg">✓</span>
-                    <span
-                      className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
-                    >
-                      <strong>Track your progress</strong> - Save your stats
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500 text-lg">✓</span>
-                    <span
-                      className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
-                    >
-                      <strong>Compete on leaderboards</strong> - Daily and all-time rankings
-                    </span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span className="text-green-500 text-lg">✓</span>
-                    <span
-                      className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
-                    >
-                      <strong>No credit card</strong> - Completely free
-                    </span>
-                  </div>
+      <div className="space-y-5 px-4">
+        {mode === 'welcome' ? (
+          <>
+            {/* Benefits */}
+            <div
+              className={`p-5 rounded-2xl border-[3px] ${
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-accent-green/10 border-accent-green/30'
+              }`}
+            >
+              <div className="space-y-3 text-sm">
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-lg">✓</span>
+                  <span
+                    className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                  >
+                    <strong>Free daily puzzles</strong> - New cryptic clue every day
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-lg">✓</span>
+                  <span
+                    className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                  >
+                    <strong>Progressive hints</strong> - Learn as you solve
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-lg">✓</span>
+                  <span
+                    className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                  >
+                    <strong>Track your progress</strong> - Save your stats
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-lg">✓</span>
+                  <span
+                    className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                  >
+                    <strong>Compete on leaderboards</strong> - Daily and all-time rankings
+                  </span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <span className="text-green-500 text-lg">✓</span>
+                  <span
+                    className={highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}
+                  >
+                    <strong>No credit card</strong> - Completely free
+                  </span>
                 </div>
               </div>
+            </div>
 
-              {/* CTA Buttons */}
-              <div className="space-y-3">
-                {isNative ? (
-                  /* Apple Sign-In button for iOS */
-                  <button
-                    onClick={handleAppleSignIn}
-                    disabled={loading}
-                    className={`w-full px-6 py-3 font-bold rounded-[20px] border-[3px] transition-all flex items-center justify-center gap-2 ${
-                      loading ? 'opacity-50 cursor-not-allowed' : ''
-                    } ${
-                      highContrast
-                        ? 'bg-black text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                        : 'bg-black text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-                    }`}
-                  >
-                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                    </svg>
-                    {loading ? 'Signing in...' : 'Sign in with Apple'}
-                  </button>
-                ) : (
-                  /* Email auth buttons for web */
-                  <>
-                    <button
-                      onClick={() => setMode('signup')}
-                      className={`w-full px-6 py-3 font-bold rounded-[20px] border-[3px] transition-all ${
-                        highContrast
-                          ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-                      }`}
-                      style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
-                    >
-                      Create Free Account
-                    </button>
-
-                    <button
-                      onClick={() => setMode('login')}
-                      className={`w-full px-6 py-3 font-bold rounded-[20px] border-[3px] transition-all ${
-                        highContrast
-                          ? 'bg-hc-surface text-hc-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-                      }`}
-                    >
-                      I Already Have an Account
-                    </button>
-                  </>
-                )}
-
-                {/* Error display for Apple Sign-In on iOS */}
-                {isNative && error && (
-                  <div
-                    className={`p-3 rounded-xl border-[2px] ${
-                      highContrast
-                        ? 'bg-hc-error/20 border-hc-error text-hc-text'
-                        : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400'
-                    }`}
-                  >
-                    <p className="text-sm font-medium">{error}</p>
-                  </div>
-                )}
-              </div>
-            </>
-          ) : (
-            <>
-              {/* Email Form */}
-              <form
-                onSubmit={mode === 'signup' ? handleEmailSignUp : handleEmailSignIn}
-                className="space-y-4"
-              >
-                {mode === 'signup' && (
-                  <div>
-                    <label
-                      className={`block text-sm font-bold mb-2 ${
-                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      Username
-                    </label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={username}
-                        onChange={(e) => {
-                          // Only allow alphanumeric and underscore
-                          const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                          setUsername(sanitized);
-                        }}
-                        className={`flex-1 px-4 py-3 rounded-xl border-[3px] font-medium ${
-                          highContrast
-                            ? 'bg-hc-background text-hc-text border-hc-border'
-                            : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
-                        } focus:outline-none`}
-                        placeholder="your_username"
-                        minLength={3}
-                        maxLength={20}
-                        required
-                        disabled={loading}
-                      />
-                      <button
-                        type="button"
-                        onClick={handleGenerateUsername}
-                        className={`w-12 h-12 flex items-center justify-center rounded-xl border-[3px] transition-colors ${
-                          highContrast
-                            ? 'bg-hc-surface border-hc-border hover:bg-hc-focus'
-                            : 'bg-white dark:bg-gray-700 border-black dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
-                        }`}
-                        aria-label="Generate random username"
-                        title="Generate random username"
-                        disabled={loading}
-                      >
-                        <Image
-                          src="/icons/ui/dice.png"
-                          alt="Generate"
-                          width={24}
-                          height={24}
-                          className="dark:hidden"
-                        />
-                        <Image
-                          src="/icons/ui/dice-dark.png"
-                          alt="Generate"
-                          width={24}
-                          height={24}
-                          className="hidden dark:block"
-                        />
-                      </button>
-                    </div>
-                    <p
-                      className={`mt-1 text-xs ${
-                        highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      3-20 characters, letters, numbers, and underscores only
-                    </p>
-                  </div>
-                )}
-
-                <div>
-                  <label
-                    className={`block text-sm font-bold mb-2 ${
-                      highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    Email
-                  </label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
-                      highContrast
-                        ? 'bg-hc-background text-hc-text border-hc-border'
-                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
-                    } focus:outline-none`}
-                    placeholder="your@email.com"
-                    required
-                    disabled={loading}
-                  />
-                </div>
-
-                <div>
-                  <label
-                    className={`block text-sm font-bold mb-2 ${
-                      highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                    }`}
-                  >
-                    Password
-                  </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
-                      highContrast
-                        ? 'bg-hc-background text-hc-text border-hc-border'
-                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
-                    } focus:outline-none`}
-                    placeholder="••••••••"
-                    required
-                    disabled={loading}
-                    minLength={6}
-                  />
-                </div>
-
-                {error && (
-                  <div
-                    className={`p-3 rounded-xl border-[2px] text-sm font-medium ${
-                      highContrast
-                        ? 'bg-hc-error text-white border-hc-border'
-                        : 'bg-red-50 dark:bg-red-900/20 text-red-900 dark:text-red-400 border-red-500'
-                    }`}
-                  >
-                    {error}
-                  </div>
-                )}
-
+            {/* CTA Buttons */}
+            <div className="space-y-4 pt-2 px-2">
+              {isNative ? (
+                /* Apple Sign-In button for iOS */
                 <button
-                  type="submit"
+                  onClick={handleAppleSignIn}
                   disabled={loading}
-                  className={`w-full px-6 py-3 font-bold rounded-[20px] border-[3px] transition-all ${
+                  className={`w-full px-6 py-4 font-bold rounded-[20px] border-[3px] transition-all flex items-center justify-center gap-2 ${
                     loading ? 'opacity-50 cursor-not-allowed' : ''
                   } ${
                     highContrast
-                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      : 'text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                      ? 'bg-black text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-black text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
                   }`}
-                  style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
                 >
-                  {loading ? 'Loading...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
+                  <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                  </svg>
+                  {loading ? 'Signing in...' : 'Sign in with Apple'}
                 </button>
-              </form>
+              ) : (
+                /* Email auth buttons for web */
+                <>
+                  <button
+                    onClick={() => setMode('signup')}
+                    className={`w-full px-6 py-4 font-bold rounded-[20px] border-[3px] transition-all ${
+                      highContrast
+                        ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        : 'text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                    }`}
+                    style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
+                  >
+                    Create Free Account
+                  </button>
 
-              {/* Toggle Mode */}
-              <div className="text-center">
-                <button
-                  onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}
-                  className={`text-sm font-medium ${
-                    highContrast ? 'text-hc-primary' : 'text-accent-blue dark:text-accent-blue'
-                  } hover:underline`}
+                  <button
+                    onClick={() => setMode('login')}
+                    className={`w-full px-6 py-4 font-bold rounded-[20px] border-[3px] transition-all ${
+                      highContrast
+                        ? 'bg-hc-surface text-hc-text border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                    }`}
+                  >
+                    I Already Have an Account
+                  </button>
+                </>
+              )}
+
+              {/* Error display for Apple Sign-In on iOS */}
+              {isNative && error && (
+                <div
+                  className={`p-3 rounded-xl border-[2px] ${
+                    highContrast
+                      ? 'bg-hc-error/20 border-hc-error text-hc-text'
+                      : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400'
+                  }`}
                 >
-                  {mode === 'signup'
-                    ? 'Already have an account? Sign in'
-                    : "Don't have an account? Sign up"}
-                </button>
+                  <p className="text-sm font-medium">{error}</p>
+                </div>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Email Form */}
+            <form
+              onSubmit={mode === 'signup' ? handleEmailSignUp : handleEmailSignIn}
+              className="space-y-4"
+            >
+              {mode === 'signup' && (
+                <div>
+                  <label
+                    className={`block text-sm font-bold mb-2 ${
+                      highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                    }`}
+                  >
+                    Username
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => {
+                        // Only allow alphanumeric and underscore
+                        const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                        setUsername(sanitized);
+                      }}
+                      className={`flex-1 px-4 py-3 rounded-xl border-[3px] font-medium ${
+                        highContrast
+                          ? 'bg-hc-background text-hc-text border-hc-border'
+                          : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
+                      } focus:outline-none`}
+                      placeholder="your_username"
+                      minLength={3}
+                      maxLength={20}
+                      required
+                      disabled={loading}
+                    />
+                    <button
+                      type="button"
+                      onClick={handleGenerateUsername}
+                      className={`w-12 h-12 flex items-center justify-center rounded-xl border-[3px] transition-colors ${
+                        highContrast
+                          ? 'bg-hc-surface border-hc-border hover:bg-hc-focus'
+                          : 'bg-white dark:bg-gray-700 border-black dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+                      }`}
+                      aria-label="Generate random username"
+                      title="Generate random username"
+                      disabled={loading}
+                    >
+                      <Image
+                        src="/icons/ui/dice.png"
+                        alt="Generate"
+                        width={24}
+                        height={24}
+                        className="dark:hidden"
+                      />
+                      <Image
+                        src="/icons/ui/dice-dark.png"
+                        alt="Generate"
+                        width={24}
+                        height={24}
+                        className="hidden dark:block"
+                      />
+                    </button>
+                  </div>
+                  <p
+                    className={`mt-1 text-xs ${
+                      highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                    }`}
+                  >
+                    3-20 characters, letters, numbers, and underscores only
+                  </p>
+                </div>
+              )}
+
+              <div>
+                <label
+                  className={`block text-sm font-bold mb-2 ${
+                    highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                  }`}
+                >
+                  Email
+                </label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
+                    highContrast
+                      ? 'bg-hc-background text-hc-text border-hc-border'
+                      : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
+                  } focus:outline-none`}
+                  placeholder="your@email.com"
+                  required
+                  disabled={loading}
+                />
               </div>
 
-              {/* Back Button */}
-              <div className="text-center">
-                <button
-                  onClick={() => setMode('welcome')}
-                  className={`text-sm font-medium ${
-                    highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-                  } hover:underline`}
+              <div>
+                <label
+                  className={`block text-sm font-bold mb-2 ${
+                    highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                  }`}
                 >
-                  ← Back
-                </button>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={`w-full px-4 py-3 rounded-xl border-[3px] font-medium ${
+                    highContrast
+                      ? 'bg-hc-background text-hc-text border-hc-border'
+                      : 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-black dark:border-gray-600'
+                  } focus:outline-none`}
+                  placeholder="••••••••"
+                  required
+                  disabled={loading}
+                  minLength={6}
+                />
               </div>
-            </>
-          )}
+
+              {error && (
+                <div
+                  className={`p-3 rounded-xl border-[2px] text-sm font-medium ${
+                    highContrast
+                      ? 'bg-hc-error text-white border-hc-border'
+                      : 'bg-red-50 dark:bg-red-900/20 text-red-900 dark:text-red-400 border-red-500'
+                  }`}
+                >
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className={`w-full px-6 py-4 font-bold rounded-[20px] border-[3px] transition-all ${
+                  loading ? 'opacity-50 cursor-not-allowed' : ''
+                } ${
+                  highContrast
+                    ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    : 'text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
+                }`}
+                style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
+              >
+                {loading ? 'Loading...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
+              </button>
+            </form>
+
+            {/* Toggle Mode */}
+            <div className="text-center">
+              <button
+                onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}
+                className={`text-sm font-medium ${
+                  highContrast ? 'text-hc-primary' : 'text-accent-blue dark:text-accent-blue'
+                } hover:underline`}
+              >
+                {mode === 'signup'
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"}
+              </button>
+            </div>
+
+            {/* Back Button */}
+            <div className="text-center">
+              <button
+                onClick={() => setMode('welcome')}
+                className={`text-sm font-medium ${
+                  highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+                } hover:underline`}
+              >
+                ← Back
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </LeftSidePanel>
   );
