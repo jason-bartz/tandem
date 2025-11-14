@@ -45,6 +45,7 @@ export const GAME_STATES = {
   WELCOME: 'welcome',
   PLAYING: 'playing',
   COMPLETE: 'complete',
+  ADMIRE: 'admire', // Viewing a completed puzzle
   ERROR: 'error',
 };
 
