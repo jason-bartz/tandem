@@ -178,6 +178,9 @@ export default function AccountPage() {
       setEditingUsername(false);
       successHaptic();
 
+      // Refresh profile in AuthContext to update sidebar display
+      await refreshProfile();
+
       // Clear success message after 3 seconds
       setTimeout(() => {
         setUsernameSuccess('');
