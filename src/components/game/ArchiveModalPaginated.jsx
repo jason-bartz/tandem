@@ -441,8 +441,8 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         return;
       }
 
-      // Puzzle is accessible - load it by puzzle number
-      onSelectPuzzle(puzzle.number);
+      // Puzzle is accessible - load it by date for proper admire mode detection
+      onSelectPuzzle(puzzle.date);
     },
     [puzzleAccessMap, onSelectPuzzle]
   );
@@ -561,7 +561,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           </button>
         }
       >
-
         {/* Error Message */}
         {error && (
           <div className="mb-4 p-3 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded-lg">

@@ -87,8 +87,12 @@ export function useGame() {
 
       // Check if puzzle was already completed (unless forcing replay)
       if (!forceReplay && date) {
+        console.log('[useGame.loadPuzzle] Checking for completed puzzle:', { date });
         const existingResult = await getPuzzleResult(date);
+        console.log('[useGame.loadPuzzle] Existing result:', existingResult);
+
         if (existingResult && existingResult.won) {
+          console.log('[useGame.loadPuzzle] Entering ADMIRE mode');
           // Enter admire mode to view the completed puzzle
           const response = await puzzleService.getPuzzle(date);
           const puzzleData = response && response.puzzle ? response.puzzle : response;
@@ -99,6 +103,7 @@ export function useGame() {
           setLoading(false);
           return true;
         }
+        console.log('[useGame.loadPuzzle] Not entering admire mode - puzzle not won');
       }
 
       const response = await puzzleService.getPuzzle(date);
