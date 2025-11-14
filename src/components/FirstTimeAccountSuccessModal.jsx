@@ -49,6 +49,9 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
    * @param {string} avatarId - Selected avatar ID
    */
   const handleAvatarSelected = async (avatarId) => {
+    // Close the avatar selection modal first
+    setShowAvatarSelection(false);
+
     if (!avatarId) {
       // User skipped - just close everything immediately
       onClose();
