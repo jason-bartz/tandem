@@ -8,6 +8,7 @@ import { GAME_STATES } from '@/lib/constants';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
+import AdmireScreen from './AdmireScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import logger from '@/lib/logger';
 
@@ -38,14 +39,11 @@ export default function GameContainer() {
   };
 
   const handleSelectPuzzle = async (date) => {
-    // Load the selected puzzle (loadPuzzle handles resetting internally)
-    const success = await game.loadPuzzle(date);
-    if (success) {
-      // Small delay to ensure state updates have propagated
-      setTimeout(() => {
-        game.startGame();
-      }, 100);
-    }
+    // Load the selected puzzle
+    // loadPuzzle will auto-detect if completed and enter admire mode
+    // or if not completed, will set up for fresh play
+    await game.loadPuzzle(date);
+    // Note: Don't auto-start game here - loadPuzzle may enter ADMIRE state
   };
 
   if (game.loading) {
@@ -114,6 +112,17 @@ export default function GameContainer() {
               onUseHint={game.useHint}
               hasCheckedAnswers={game.hasCheckedAnswers}
               onReturnToWelcome={game.resetGame}
+            />
+          )}
+
+          {game.gameState === GAME_STATES.ADMIRE && (
+            <AdmireScreen
+              puzzle={game.puzzle}
+              admireData={game.admireData}
+              onReplay={game.replayFromAdmire}
+              onSelectPuzzle={handleSelectPuzzle}
+              onReturnToWelcome={game.resetGame}
+              theme={theme}
             />
           )}
 

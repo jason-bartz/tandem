@@ -2,8 +2,17 @@ import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
 import statsService from '@/services/stats.service';
-import { sanitizeInputPreserveSpaces, checkAnswerWithPlurals, getCurrentPuzzleInfo } from '@/lib/utils';
-import { savePuzzleProgress, savePuzzleResult, hasPlayedPuzzle } from '@/lib/storage';
+import {
+  sanitizeInputPreserveSpaces,
+  checkAnswerWithPlurals,
+  getCurrentPuzzleInfo,
+} from '@/lib/utils';
+import {
+  savePuzzleProgress,
+  savePuzzleResult,
+  hasPlayedPuzzle,
+  getPuzzleResult,
+} from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import { Capacitor } from '@capacitor/core';
 import notificationService from '@/services/notificationService';
@@ -25,6 +34,7 @@ export function useGame() {
   const [hintedAnswers, setHintedAnswers] = useState([]);
   const [unlockedHints, setUnlockedHints] = useState(1);
   const [activeHintIndex, setActiveHintIndex] = useState(null);
+  const [admireData, setAdmireData] = useState(null); // Stores completion data for admire mode
 
   // Simple load puzzle on mount
   useEffect(() => {
@@ -57,7 +67,7 @@ export function useGame() {
   }, []);
 
   // Load specific puzzle for archive
-  const loadPuzzle = useCallback(async (date = null) => {
+  const loadPuzzle = useCallback(async (date = null, forceReplay = false) => {
     try {
       setLoading(true);
       setError(null);
@@ -74,6 +84,22 @@ export function useGame() {
         puzzleDate = puzzleInfo.isoDate;
       }
       setCurrentPuzzleDate(puzzleDate);
+
+      // Check if puzzle was already completed (unless forcing replay)
+      if (!forceReplay && date) {
+        const existingResult = await getPuzzleResult(date);
+        if (existingResult && existingResult.won) {
+          // Enter admire mode to view the completed puzzle
+          const response = await puzzleService.getPuzzle(date);
+          const puzzleData = response && response.puzzle ? response.puzzle : response;
+
+          setPuzzle({ ...puzzleData, date: response.date || puzzleDate });
+          setAdmireData(existingResult);
+          setGameState(GAME_STATES.ADMIRE);
+          setLoading(false);
+          return true;
+        }
+      }
 
       const response = await puzzleService.getPuzzle(date);
 
@@ -548,6 +574,32 @@ export function useGame() {
     ]
   );
 
+  const replayFromAdmire = useCallback(() => {
+    // Clear admire data and transition to playing state
+    setAdmireData(null);
+    setGameState(GAME_STATES.PLAYING);
+    setAnswers(['', '', '', '']);
+    setCorrectAnswers([false, false, false, false]);
+    setCheckedWrongAnswers([false, false, false, false]);
+    setMistakes(0);
+    setSolved(0);
+    setHintsUsed(0);
+    setHasCheckedAnswers(false);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
+
+    // Save initial progress to mark as attempted
+    if (currentPuzzleDate) {
+      savePuzzleProgress(currentPuzzleDate, {
+        started: true,
+        solved: 0,
+        mistakes: 0,
+        hintsUsed: 0,
+      });
+    }
+  }, [currentPuzzleDate]);
+
   return {
     gameState,
     puzzle,
@@ -564,6 +616,7 @@ export function useGame() {
     unlockedHints,
     activeHintIndex,
     hasCheckedAnswers,
+    admireData,
     startGame,
     updateAnswer,
     checkAnswers,
@@ -572,5 +625,6 @@ export function useGame() {
     resetGame,
     loadPuzzle,
     useHint,
+    replayFromAdmire,
   };
 }

@@ -727,6 +727,22 @@ export async function getTodayResult() {
   return result ? JSON.parse(result) : null;
 }
 
+/**
+ * Get puzzle result for a specific date
+ * O(1) performance - single key lookup
+ * @param {string} date - Date string in format YYYY-MM-DD
+ * @returns {Object|null} Puzzle result with completion data or null
+ */
+export async function getPuzzleResult(date) {
+  if (typeof window === 'undefined') {
+    return null;
+  }
+  const dateObj = new Date(date + 'T00:00:00');
+  const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+  const result = await getStorageItem(key);
+  return result ? JSON.parse(result) : null;
+}
+
 export async function getStoredStats() {
   if (typeof window === 'undefined') {
     return {
