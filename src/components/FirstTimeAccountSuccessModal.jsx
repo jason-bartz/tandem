@@ -31,6 +31,11 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
   const { highContrast } = useTheme();
   const { lightTap, correctAnswer: successHaptic } = useHaptics();
 
+  // Don't render if no userId (not authenticated)
+  if (!userId) {
+    return null;
+  }
+
   /**
    * Handle CTA button click - open avatar selection
    */

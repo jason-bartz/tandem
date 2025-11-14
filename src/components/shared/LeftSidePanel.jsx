@@ -115,58 +115,70 @@ export default function LeftSidePanel({
   }, [isOpen]);
 
   // Swipe to dismiss (touch gestures)
-  const handleTouchStart = useCallback((e) => {
-    if (disableSwipe) return;
-    touchStartX.current = e.touches[0].clientX;
-    touchStartY.current = e.touches[0].clientY;
-    isDragging.current = false;
-  }, [disableSwipe]);
+  const handleTouchStart = useCallback(
+    (e) => {
+      if (disableSwipe) return;
+      touchStartX.current = e.touches[0].clientX;
+      touchStartY.current = e.touches[0].clientY;
+      isDragging.current = false;
+    },
+    [disableSwipe]
+  );
 
-  const handleTouchMove = useCallback((e) => {
-    if (disableSwipe || touchStartX.current === null) return;
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (disableSwipe || touchStartX.current === null) return;
 
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const deltaX = currentX - touchStartX.current;
-    const deltaY = Math.abs(currentY - touchStartY.current);
+      const currentX = e.touches[0].clientX;
+      const currentY = e.touches[0].clientY;
+      const deltaX = currentX - touchStartX.current;
+      const deltaY = Math.abs(currentY - touchStartY.current);
 
-    // Only trigger swipe if horizontal movement is greater than vertical
-    if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY) {
-      isDragging.current = true;
+      // Only trigger swipe if horizontal movement is greater than vertical
+      if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY) {
+        isDragging.current = true;
 
-      // Apply transform for visual feedback (swipe left = negative deltaX)
-      if (deltaX < 0 && panelRef.current) {
-        const translateX = Math.max(deltaX, -400); // Limit drag distance
-        panelRef.current.style.transform = `translateX(${translateX}px)`;
+        // Apply transform for visual feedback (swipe left = negative deltaX)
+        if (deltaX < 0 && panelRef.current) {
+          const translateX = Math.max(deltaX, -400); // Limit drag distance
+          panelRef.current.style.transform = `translateX(${translateX}px)`;
+        }
       }
-    }
-  }, [disableSwipe]);
+    },
+    [disableSwipe]
+  );
 
-  const handleTouchEnd = useCallback((e) => {
-    if (disableSwipe || touchStartX.current === null) return;
+  const handleTouchEnd = useCallback(
+    (e) => {
+      if (disableSwipe || touchStartX.current === null) return;
 
-    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+      const deltaX = e.changedTouches[0].clientX - touchStartX.current;
 
-    if (panelRef.current) {
-      panelRef.current.style.transform = '';
-    }
+      if (panelRef.current) {
+        panelRef.current.style.transform = '';
+      }
 
-    // Close if swiped left more than 100px
-    if (deltaX < -100 && isDragging.current) {
-      onClose();
-    }
+      // Close if swiped left more than 100px
+      if (deltaX < -100 && isDragging.current) {
+        onClose?.();
+      }
 
-    touchStartX.current = null;
-    touchStartY.current = null;
-    isDragging.current = false;
-  }, [disableSwipe, onClose]);
+      touchStartX.current = null;
+      touchStartY.current = null;
+      isDragging.current = false;
+    },
+    [disableSwipe, onClose]
+  );
 
-  const handleBackdropClick = useCallback((e) => {
-    if (disableBackdropClick) return;
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }, [disableBackdropClick, onClose]);
+  const handleBackdropClick = useCallback(
+    (e) => {
+      if (disableBackdropClick) return;
+      if (e.target === e.currentTarget) {
+        onClose?.();
+      }
+    },
+    [disableBackdropClick, onClose]
+  );
 
   if (!isOpen) return null;
 
@@ -209,15 +221,13 @@ export default function LeftSidePanel({
             {title && (
               <h2
                 id="panel-title"
-                className={`text-xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}
+                className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
               >
                 {title}
               </h2>
             )}
 
-            {showCloseButton && (
+            {showCloseButton && onClose && (
               <button
                 onClick={onClose}
                 className={`ml-auto p-2 rounded-full transition-colors ${

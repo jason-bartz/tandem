@@ -150,7 +150,7 @@ export default function CrypticCompleteScreen({
               lightTap();
               onReturnHome();
             }}
-            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-50"
+            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-[100]"
             title="Back to Home"
           >
             <svg

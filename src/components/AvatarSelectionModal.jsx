@@ -121,14 +121,11 @@ export default function AvatarSelectionModal({
 
   /**
    * Close modal without saving
+   * For first-time setup, this only prevents backdrop/X clicks, not programmatic closes
    */
   const handleClose = () => {
-    if (isFirstTime) {
-      // First-time modal requires explicit skip
-      return;
-    }
     lightTap();
-    onClose(null);
+    onClose?.(null);
   };
 
   // Get expanded avatar data
@@ -138,10 +135,11 @@ export default function AvatarSelectionModal({
     <>
       <LeftSidePanel
         isOpen={isOpen}
-        onClose={!isFirstTime ? handleClose : undefined}
+        onClose={handleClose}
         title={isFirstTime ? 'Choose Your Avatar' : 'Change Your Avatar'}
         subtitle="Select an avatar to represent you!"
         maxWidth="650px"
+        disableBackdropClick={isFirstTime}
       >
         {/* Error Message */}
         {error && (
