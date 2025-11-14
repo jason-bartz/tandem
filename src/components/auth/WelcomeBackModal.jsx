@@ -20,7 +20,7 @@ import confetti from 'canvas-confetti';
  */
 export default function WelcomeBackModal({ isOpen, onClose, onSubscribe }) {
   const { highContrast, reduceMotion } = useTheme();
-  const { user } = useAuth();
+  const { userProfile } = useAuth();
   const { isActive } = useSubscription();
   const [celebrated, setCelebrated] = useState(false);
 
@@ -43,8 +43,8 @@ export default function WelcomeBackModal({ isOpen, onClose, onSubscribe }) {
     }
   };
 
-  // Get user's first name if available
-  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || 'there';
+  // Get user's first name from username
+  const firstName = userProfile?.username?.split(' ')[0] || 'there';
 
   return (
     <LeftSidePanel

@@ -19,12 +19,14 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import BottomPanel from '@/components/shared/BottomPanel';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import avatarService from '@/services/avatar.service';
 
 export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
+  const { refreshProfile } = useAuth();
   const [showAvatarSelection, setShowAvatarSelection] = useState(false);
   const { highContrast } = useTheme();
   const { lightTap, correctAnswer: successHaptic } = useHaptics();
@@ -51,6 +53,9 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
     // Avatar was selected
     setShowAvatarSelection(false);
     successHaptic();
+
+    // Refresh profile in AuthContext to update sidebar display
+    await refreshProfile();
 
     // Mark first-time setup as complete
     try {
