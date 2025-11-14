@@ -1,12 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import { CRYPTIC_CONFIG } from '@/lib/constants';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import { playSuccessSound } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import CrypticGuideModal from './CrypticGuideModal';
@@ -24,8 +22,9 @@ export default function CrypticCompleteScreen({
   elapsedTime,
   attempts,
   currentPuzzleDate,
-  onPlayAgain: _onPlayAgain,
+  onPlayAgain,
   onReturnHome,
+  isAdmireMode = false,
 }) {
   const [showShareSuccess, setShowShareSuccess] = useState(false);
   const [showGuide, setShowGuide] = useState(false);
@@ -36,7 +35,6 @@ export default function CrypticCompleteScreen({
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion, theme } = useTheme();
-  const getIconPath = useUIIcon();
   const { user, loading: authLoading } = useAuth();
 
   const formatTime = (seconds) => {
@@ -152,7 +150,7 @@ export default function CrypticCompleteScreen({
               lightTap();
               onReturnHome();
             }}
-            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-50"
             title="Back to Home"
           >
             <svg
@@ -313,7 +311,13 @@ export default function CrypticCompleteScreen({
             <button
               onClick={() => {
                 lightTap();
-                setShowArchive(true);
+                if (isAdmireMode && onPlayAgain) {
+                  // In admire mode, replay the current puzzle
+                  onPlayAgain();
+                } else {
+                  // Otherwise, open archive to select a puzzle
+                  setShowArchive(true);
+                }
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
@@ -321,7 +325,7 @@ export default function CrypticCompleteScreen({
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               }`}
             >
-              Play from Archive
+              {isAdmireMode ? 'Replay Puzzle' : 'Play from Archive'}
             </button>
 
             {/* View Stats and Leaderboard Buttons */}
@@ -378,7 +382,15 @@ export default function CrypticCompleteScreen({
 
       {/* Modals */}
       {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
+      <UnifiedArchiveCalendar
+        isOpen={showArchive}
+        onClose={() => setShowArchive(false)}
+        defaultTab="cryptic"
+        onSelectPuzzle={(date) => {
+          // Redirect to main page with selected Tandem puzzle
+          window.location.href = `/?puzzle=${date}`;
+        }}
+      />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <LeaderboardModal

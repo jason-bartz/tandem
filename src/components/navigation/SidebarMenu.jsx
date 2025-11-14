@@ -395,7 +395,7 @@ export default function SidebarMenu({
                             highContrast ? 'text-hc-text' : 'text-purple-700 dark:text-purple-300'
                           }`}
                         >
-                          Today's Tandem Horoscope ({zodiacData.display}):
+                          Today's Tandem Horoscope:
                         </p>
                         <p
                           className={`text-xs leading-relaxed ${

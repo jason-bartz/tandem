@@ -242,6 +242,7 @@ export const CRYPTIC_GAME_STATES = {
   WELCOME: 'welcome',
   PLAYING: 'playing',
   COMPLETE: 'complete',
+  ADMIRE: 'admire',
   ERROR: 'error',
 };
 

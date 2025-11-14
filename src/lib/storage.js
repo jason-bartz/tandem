@@ -740,7 +740,8 @@ export async function getPuzzleResult(date) {
   const dateObj = new Date(date + 'T00:00:00');
   const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
   const result = await getStorageItem(key);
-  return result ? JSON.parse(result) : null;
+  const parsed = result ? JSON.parse(result) : null;
+  return parsed;
 }
 
 export async function getStoredStats() {

@@ -32,6 +32,7 @@ export function useCrypticGame() {
   const [currentPuzzleDate, setCurrentPuzzleDate] = useState(null);
   const [correctAnswer, setCorrectAnswer] = useState(null);
   const [isArchive, setIsArchive] = useState(false); // Track if this is an archive puzzle
+  const [admireData, setAdmireData] = useState(null); // Store completion data for admire mode
 
   // Timer state
   const [startTime, setStartTime] = useState(null);
@@ -135,11 +136,12 @@ export function useCrypticGame() {
 
       // Restore saved state if it matches this puzzle AND it's in progress
       if (savedState && savedState.currentPuzzleDate === targetDate) {
-        // Only restore if puzzle is NOT completed - allow replaying completed puzzles
+        // Only restore if puzzle is NOT completed - if completed, enter admire mode
         if (savedProgress && savedProgress.completed) {
-          // Puzzle was completed, but allow replay - start fresh
-          resetGame();
-          setGameState(CRYPTIC_GAME_STATES.WELCOME);
+          // Puzzle was completed - enter admire mode to view the completed puzzle
+          logger.info('[useCrypticGame] Entering ADMIRE mode for completed puzzle');
+          setAdmireData(savedProgress);
+          setGameState(CRYPTIC_GAME_STATES.ADMIRE);
         } else {
           // Puzzle is in progress, restore the saved state
           setUserAnswer(savedState.userAnswer || '');
@@ -150,6 +152,11 @@ export function useCrypticGame() {
           setStartTime(savedState.startTime || null);
           setGameState(CRYPTIC_GAME_STATES.WELCOME);
         }
+      } else if (savedProgress && savedProgress.completed) {
+        // Saved progress exists but no game state, and puzzle is completed - enter admire mode
+        logger.info('[useCrypticGame] Entering ADMIRE mode for completed puzzle (no game state)');
+        setAdmireData(savedProgress);
+        setGameState(CRYPTIC_GAME_STATES.ADMIRE);
       } else {
         // Fresh start
         resetGame();
@@ -284,6 +291,7 @@ export function useCrypticGame() {
           timeTaken,
           hintsUsed,
           attempts: newAttempts,
+          answer: result.answer, // Store the answer for admire mode
           completedAt: new Date().toISOString(),
           isDaily: !isArchive, // Track if this was a daily puzzle
           isArchive: isArchive, // Track if this was an archive puzzle
@@ -527,16 +535,46 @@ export function useCrypticGame() {
   }, []);
 
   /**
+   * Replay puzzle from admire mode
+   */
+  const replayFromAdmire = useCallback(() => {
+    // Clear admire data and transition to playing state
+    setAdmireData(null);
+    setGameState(CRYPTIC_GAME_STATES.PLAYING);
+    setUserAnswer('');
+    setHintsUsed(0);
+    setUnlockedHints([]);
+    setIsCorrect(false);
+    setAttempts(0);
+    setStartTime(Date.now());
+    setElapsedTime(0);
+
+    // Save initial progress to mark as attempted
+    if (currentPuzzleDate) {
+      saveCrypticPuzzleProgress(currentPuzzleDate, {
+        started: true,
+        startTime: Date.now(),
+        completed: false,
+        hintsUsed: 0,
+      }).catch((err) => {
+        logger.error('[useCrypticGame] Failed to save initial progress on replay', {
+          error: err.message,
+        });
+      });
+    }
+  }, [currentPuzzleDate]);
+
+  /**
    * Play a different puzzle (from archive)
    */
   const playPuzzle = useCallback(
     async (date) => {
-      const success = await loadPuzzle(date);
-      if (success) {
-        resetGame();
-      }
+      await loadPuzzle(date);
+      // Don't call resetGame() - loadPuzzle already sets the correct state
+      // If the puzzle is completed, it enters ADMIRE mode
+      // If not completed, it enters WELCOME mode
     },
-    [loadPuzzle, resetGame]
+    [loadPuzzle]
   );
 
   return {
@@ -553,6 +591,7 @@ export function useCrypticGame() {
     elapsedTime,
     currentPuzzleDate,
     correctAnswer,
+    admireData,
 
     // Actions
     updateAnswer,
@@ -563,6 +602,7 @@ export function useCrypticGame() {
     startGame,
     resetGame,
     returnToWelcome,
+    replayFromAdmire,
     loadPuzzle,
     playPuzzle,
 

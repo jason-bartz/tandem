@@ -39,7 +39,15 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
 
         {/* Modals */}
         {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-        <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
+        <UnifiedArchiveCalendar
+          isOpen={showArchive}
+          onClose={() => setShowArchive(false)}
+          defaultTab="cryptic"
+          onSelectPuzzle={(date) => {
+            // Redirect to main page with selected Tandem puzzle
+            window.location.href = `/?puzzle=${date}`;
+          }}
+        />
         <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
         <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       </GlobalNavigation>
@@ -47,16 +55,40 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
   }
 
   return (
-    <GlobalNavigation
-      onOpenStats={() => setShowStats(true)}
-      onOpenArchive={() => setShowArchive(true)}
-      onOpenHowToPlay={() => setShowGuide(true)}
-      onOpenSettings={() => setShowSettings(true)}
-    >
-      <div className="min-h-screen flex flex-col items-center justify-center p-4 -mt-16">
-        <div className="max-w-md w-full">
-          {/* Header */}
-          <div className="text-center mb-8">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 -mt-16 relative">
+      <div className="max-w-md w-full">
+        {/* Main Card with extended white area */}
+        <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] overflow-hidden relative">
+          {/* Back arrow button at top left */}
+          <button
+            onClick={() => (window.location.href = '/')}
+            className="absolute left-4 top-4 w-10 h-10 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors z-50"
+            title="Back to Home"
+          >
+            <svg
+              className="w-6 h-6 text-gray-600 dark:text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+
+          {/* Hamburger menu at top right */}
+          <button
+            onClick={() => setShowSettings(true)}
+            className="absolute right-4 top-4 w-10 h-10 flex flex-col items-center justify-center gap-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors z-50"
+            title="Menu"
+          >
+            <span className="w-5 h-0.5 bg-gray-600 dark:bg-gray-300 rounded"></span>
+            <span className="w-5 h-0.5 bg-gray-600 dark:bg-gray-300 rounded"></span>
+            <span className="w-5 h-0.5 bg-gray-600 dark:bg-gray-300 rounded"></span>
+          </button>
+
+          {/* Header inside white card */}
+          <div className="text-center pt-16 pb-8 px-8">
             <div className="mb-4">
               <img
                 src="/images/daily-cryptic-logo.webp"
@@ -76,8 +108,8 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
             </p>
           </div>
 
-          {/* Puzzle Preview */}
-          <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-8 mb-6">
+          {/* Puzzle Preview section */}
+          <div className="p-8 pt-0">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
                 Today&apos;s Clue
@@ -162,24 +194,22 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
               </p>
             </div>
           </div>
-
-          {/* Back to Tandem */}
-          <div className="text-center">
-            <button
-              onClick={() => (window.location.href = '/')}
-              className="text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 font-medium"
-            >
-              ← Back to Tandem
-            </button>
-          </div>
         </div>
       </div>
 
       {/* Modals */}
       {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
+      <UnifiedArchiveCalendar
+        isOpen={showArchive}
+        onClose={() => setShowArchive(false)}
+        defaultTab="cryptic"
+        onSelectPuzzle={(date) => {
+          // Redirect to main page with selected Tandem puzzle
+          window.location.href = `/?puzzle=${date}`;
+        }}
+      />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-    </GlobalNavigation>
+    </div>
   );
 }

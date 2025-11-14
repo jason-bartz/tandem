@@ -10,6 +10,7 @@ import logger from '@/lib/logger';
 import { getStreakMessage } from '@/lib/streakMessages';
 import { playButtonTone } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
+import { loadCrypticPuzzleProgress } from '@/lib/crypticStorage';
 
 const loadingMessages = [
   'Calibrating cryptic coefficients...',
@@ -32,6 +33,13 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
   const [error, setError] = useState(null);
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
   const [isVisible, setIsVisible] = useState(true);
+  const [todayCompleted, setTodayCompleted] = useState(false);
+  // eslint-disable-next-line no-unused-vars
+  const [_messageQueue, setMessageQueue] = useState(() => {
+    // Shuffle all messages initially
+    const shuffled = [...loadingMessages].sort(() => Math.random() - 0.5);
+    return shuffled.slice(1); // Remove first one since we already show it
+  });
 
   useEffect(() => {
     loadPuzzlePreview();
@@ -40,11 +48,22 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
   useEffect(() => {
     if (!loading) return;
 
-    // Rotate through loading messages
+    // Rotate through loading messages without repeating
     const interval = setInterval(() => {
       setIsVisible(false);
       setTimeout(() => {
-        setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
+        setMessageQueue((prevQueue) => {
+          // If queue is empty, shuffle all messages again
+          if (prevQueue.length === 0) {
+            const shuffled = [...loadingMessages].sort(() => Math.random() - 0.5);
+            setLoadingText(shuffled[0]);
+            return shuffled.slice(1);
+          }
+          // Get next message from queue
+          const [nextMessage, ...remaining] = prevQueue;
+          setLoadingText(nextMessage);
+          return remaining;
+        });
         setIsVisible(true);
       }, 300);
     }, 1000);
@@ -60,6 +79,10 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
 
       if (response.success && response.puzzle) {
         setPuzzle(response.puzzle);
+
+        // Check if today's puzzle is completed
+        const progress = await loadCrypticPuzzleProgress(puzzleInfo.isoDate);
+        setTodayCompleted(progress?.completed || false);
       } else {
         setError('No puzzle available today');
       }
@@ -268,7 +291,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
         `}
         style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
       >
-        Play Today&apos;s Puzzle
+        {todayCompleted ? "You solved it!" : "Play Today's Puzzle"}
       </button>
     </div>
   );

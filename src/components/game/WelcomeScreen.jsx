@@ -16,7 +16,7 @@ import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
 import CrypticWelcomeCard from '@/components/cryptic/CrypticWelcomeCard';
 import { getStreakMessage } from '@/lib/streakMessages';
-import { loadStats } from '@/lib/storage';
+import { loadStats, getPuzzleResult } from '@/lib/storage';
 import { loadCrypticStats } from '@/lib/crypticStorage';
 
 export default function WelcomeScreen({
@@ -35,28 +35,34 @@ export default function WelcomeScreen({
   const [showSettings, setShowSettings] = useState(false);
   const { mediumTap, welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
-  const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
   const isNativeApp = Capacitor.isNativePlatform();
 
   // Load stats on mount for streak display
   const [tandemStats, setTandemStats] = useState({ currentStreak: 0 });
   const [crypticStats, setCrypticStats] = useState({ currentStreak: 0 });
+  const [todayCompleted, setTodayCompleted] = useState(false);
 
   useEffect(() => {
-    // Load stats for streak display
+    // Load stats for streak display and check if today's puzzle is completed
     const loadStatsData = async () => {
       try {
         const [tandem, cryptic] = await Promise.all([loadStats(), loadCrypticStats()]);
         setTandemStats(tandem);
         setCrypticStats(cryptic);
+
+        // Check if today's puzzle is completed
+        if (puzzle?.date) {
+          const result = await getPuzzleResult(puzzle.date);
+          setTodayCompleted(result?.won || false);
+        }
       } catch (err) {
         // Silently fail - streak just won't show
         console.error('Failed to load stats for streak display:', err);
       }
     };
     loadStatsData();
-  }, []);
+  }, [puzzle?.date]);
 
   useEffect(() => {
     // Play welcome sound and haptics on iOS after a delay to ensure splash is gone
@@ -95,7 +101,13 @@ export default function WelcomeScreen({
     } catch (e) {
       // Sound might fail on some browsers
     }
-    onStart();
+
+    // If today's puzzle is completed, load it in admire mode
+    if (todayCompleted && puzzle?.date) {
+      onSelectPuzzle(puzzle.date);
+    } else {
+      onStart();
+    }
   };
 
   // Placeholder for premium status check
@@ -197,7 +209,7 @@ export default function WelcomeScreen({
             }
           `}
           >
-            {puzzle ? "Play Today's Tandem" : 'Loading Puzzle...'}
+            {!puzzle ? 'Loading Puzzle...' : todayCompleted ? "You solved it!" : "Play Today's Tandem"}
           </button>
         </div>
 

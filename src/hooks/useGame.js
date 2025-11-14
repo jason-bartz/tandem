@@ -489,6 +489,11 @@ export function useGame() {
     setActiveHintIndex(null);
   }, []);
 
+  const returnToWelcome = useCallback(() => {
+    console.log('[useGame.returnToWelcome] Called, setting state to WELCOME');
+    setGameState(GAME_STATES.WELCOME);
+  }, []);
+
   const useHint = useCallback(
     (targetIndex) => {
       // Check if we can use a hint
@@ -628,6 +633,7 @@ export function useGame() {
     checkSingleAnswer,
     completeGame,
     resetGame,
+    returnToWelcome,
     loadPuzzle,
     useHint,
     replayFromAdmire,
