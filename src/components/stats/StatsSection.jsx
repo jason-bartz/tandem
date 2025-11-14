@@ -10,12 +10,11 @@ import { useTheme } from '@/contexts/ThemeContext';
  * @param {string} title - Section title (e.g., "Daily Tandem", "Daily Cryptic")
  * @param {string} emoji - Emoji to display before title
  * @param {string} icon - Path to icon image
- * @param {string} iconDark - Path to dark mode icon image
  * @param {string} themeColor - Theme color ('blue' for Tandem, 'purple' for Cryptic)
  * @param {React.ReactNode} children - Stat cards to display
  */
-export default function StatsSection({ title, emoji, icon, iconDark, themeColor, children }) {
-  const { theme, highContrast } = useTheme();
+export default function StatsSection({ title, emoji, icon, themeColor, children }) {
+  const { highContrast } = useTheme();
 
   // Define theme-specific colors for entire section (solid color)
   const getBackgroundColors = () => {
@@ -51,14 +50,8 @@ export default function StatsSection({ title, emoji, icon, iconDark, themeColor,
       {/* Section Header */}
       <div className={`px-4 py-3`}>
         <h3 className={`text-lg font-bold flex items-center ${getTextColor()}`}>
-          {icon && iconDark ? (
-            <Image
-              src={theme === 'dark' ? iconDark : icon}
-              alt=""
-              width={24}
-              height={24}
-              className="mr-2"
-            />
+          {icon ? (
+            <Image src={icon} alt="" width={24} height={24} className="mr-2" />
           ) : emoji ? (
             <span className="mr-2">{emoji}</span>
           ) : null}

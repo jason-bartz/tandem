@@ -8,6 +8,8 @@ import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
 import { getStreakMessage } from '@/lib/streakMessages';
+import { playButtonTone } from '@/lib/sounds';
+import { useHaptics } from '@/hooks/useHaptics';
 
 const loadingMessages = [
   'Calibrating cryptic coefficients...',
@@ -24,6 +26,7 @@ const loadingMessages = [
 export default function CrypticWelcomeCard({ currentStreak = 0 }) {
   const router = useRouter();
   const { highContrast, reduceMotion } = useTheme();
+  const { mediumTap } = useHaptics();
   const [puzzle, setPuzzle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -91,6 +94,12 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
   };
 
   const handlePlayClick = () => {
+    try {
+      playButtonTone(); // Use the same button tone as Daily Tandem
+      mediumTap(); // Medium tap for starting the game
+    } catch (e) {
+      // Sound might fail on some browsers
+    }
     router.push('/dailycryptic');
   };
 
@@ -221,20 +230,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
       <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
         <div className="flex items-start">
           <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
-            <Image
-              src="/icons/ui/cryptic.png"
-              alt=""
-              width={24}
-              height={24}
-              className="dark:hidden"
-            />
-            <Image
-              src="/icons/ui/cryptic-dark.png"
-              alt=""
-              width={24}
-              height={24}
-              className="hidden dark:block"
-            />
+            <Image src="/icons/ui/cryptic.png" alt="" width={24} height={24} />
           </div>
           <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
             Decipher the answer through clever wordplay and cryptic clues
@@ -253,20 +249,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
       {/* Streak Display */}
       {currentStreak > 0 && (
         <div className="mb-4 text-center flex items-center justify-center gap-1.5">
-          <Image
-            src="/icons/ui/hardmode.png"
-            alt=""
-            width={12}
-            height={12}
-            className="dark:hidden"
-          />
-          <Image
-            src="/icons/ui/hardmode-dark.png"
-            alt=""
-            width={12}
-            height={12}
-            className="hidden dark:block"
-          />
+          <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
           <p className="text-xs text-gray-500 dark:text-gray-500">
             {getStreakMessage(currentStreak, 'cryptic')}
           </p>
@@ -276,7 +259,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
       {/* Play Button */}
       <button
         onClick={handlePlayClick}
-        className={`w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider
+        className={`w-full h-14 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider
           ${
             highContrast
               ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'

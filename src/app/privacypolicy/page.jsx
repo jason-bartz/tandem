@@ -9,6 +9,7 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 
 export default function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState(null);
@@ -18,6 +19,7 @@ export default function PrivacyPolicy() {
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const sections = [
     {
@@ -26,14 +28,14 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Daily Tandem and Daily Cryptic ("we," "our," or "us"), daily word puzzle games developed by Good
-            Vibes Games. We respect your privacy and are committed to protecting your personal data.
-            This privacy policy explains how we collect, use, and safeguard information when you
-            play our games at tandemdaily.com (the "Service").
+            Welcome to Daily Tandem and Daily Cryptic ("we," "our," or "us"), daily word puzzle
+            games developed by Good Vibes Games. We respect your privacy and are committed to
+            protecting your personal data. This privacy policy explains how we collect, use, and
+            safeguard information when you play our games at tandemdaily.com (the "Service").
           </p>
           <p>
-            By using Daily Tandem or Daily Cryptic, you agree to the collection and use of information in accordance with
-            this policy.
+            By using Daily Tandem or Daily Cryptic, you agree to the collection and use of
+            information in accordance with this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
@@ -159,16 +161,16 @@ export default function PrivacyPolicy() {
             </ul>
             <p className="mt-2 text-xs italic">
               Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords
-              are hashed and never stored in plain text. OAuth authentication is handled by third-party providers
-              (Google, Apple) and Supabase.
+              are hashed and never stored in plain text. OAuth authentication is handled by
+              third-party providers (Google, Apple) and Supabase.
             </p>
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">8. Leaderboards (Web Only)</h4>
             <p className="mb-2">
-              When you create a free account, you are automatically enrolled in our global leaderboards
-              to compete with players worldwide. We collect and publicly display:
+              When you create a free account, you are automatically enrolled in our global
+              leaderboards to compete with players worldwide. We collect and publicly display:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Username (publicly visible)</li>
@@ -178,11 +180,11 @@ export default function PrivacyPolicy() {
               <li>Leaderboard rankings</li>
             </ul>
             <p className="mt-2 text-xs italic">
-              Privacy Control: Leaderboards are enabled by default but can be disabled at any time in
-              Settings. When disabled, your scores will not appear on public leaderboards. Your email
-              address and other personal information remain private and are never displayed on leaderboards.
-              Only your chosen username, avatar (if provided), and game performance data are visible to other
-              players.
+              Privacy Control: Leaderboards are enabled by default but can be disabled at any time
+              in Settings. When disabled, your scores will not appear on public leaderboards. Your
+              email address and other personal information remain private and are never displayed on
+              leaderboards. Only your chosen username, avatar (if provided), and game performance
+              data are visible to other players.
             </p>
           </div>
 
@@ -356,8 +358,8 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Daily Tandem and Daily Cryptic are suitable for all ages. We do not knowingly collect personal information from
-            children under 13. Both games:
+            Daily Tandem and Daily Cryptic are suitable for all ages. We do not knowingly collect
+            personal information from children under 13. Both games:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Do not require account creation to play (iOS and free web access)</li>
@@ -585,14 +587,24 @@ export default function PrivacyPolicy() {
       title: 'Contact Us',
       content: (
         <div className="space-y-3 text-sm">
-          <p>If you have questions or concerns about this privacy policy, please contact us:</p>
+          <p>
+            If you have questions or concerns about this privacy policy, please contact us using our
+            feedback form:
+          </p>
+          <div className="mt-3">
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="inline-block px-4 py-2 bg-[#38b6ff] hover:bg-[#2a9ee0] text-white font-semibold rounded-xl transition-colors"
+            >
+              Contact Support
+            </button>
+          </div>
           <div className="mt-3 space-y-1">
             <p>
               <strong>Good Vibes Games</strong>
             </p>
             <p>Email: support@goodvibesgames.com</p>
             <p>Website: tandemdaily.com</p>
-            <p>For game support: support@goodvibesgames.com</p>
           </div>
         </div>
       ),
@@ -635,151 +647,181 @@ export default function PrivacyPolicy() {
               <div className="relative">
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
-                  <Link
-                    href="/"
-                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-                    aria-label="Back to game"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                    <Link
+                      href="/"
+                      className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                      aria-label="Back to game"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </Link>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Privacy Policy</h1>
-                  <HamburgerMenu
-                    isOpen={isSidebarOpen}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  />
-                </div>
-
-              {/* Summary Card */}
-              <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
-                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                  Tandem Daily Games (Daily Tandem and Daily Cryptic) are designed with privacy in mind:
-                </p>
-                <ul className="text-sm space-y-2">
-                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>No account required for free play</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>Optional web accounts for subscriptions (email + password or Google OAuth)</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>Gameplay scores stored on our servers for leaderboards</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>No ads or third-party trackers</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>No data sales to third parties</span>
-                  </li>
-                  <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
-                    <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    <span>Family-friendly and safe for all ages</span>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 pt-0">
-                {/* Thank you message */}
-                <div className="mb-6 p-4 bg-[#7ed957]/10 border-[3px] border-[#7ed957] rounded-2xl">
-                  <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                    Thank you for playing <strong>Daily Tandem</strong> and <strong>Daily Cryptic</strong>!
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  {sections.map((section) => (
-                    <div
-                      key={section.id}
-                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                    >
-                      <button
-                        onClick={() =>
-                          setActiveSection(activeSection === section.id ? null : section.id)
-                        }
-                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      <svg
+                        className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">
-                          {section.title}
-                        </span>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </Link>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                      Privacy Policy
+                    </h1>
+                    <HamburgerMenu
+                      isOpen={isSidebarOpen}
+                      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    />
+                  </div>
+
+                  {/* Summary Card */}
+                  <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                    <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
+                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                      Tandem Daily Games (Daily Tandem and Daily Cryptic) are designed with privacy
+                      in mind:
+                    </p>
+                    <ul className="text-sm space-y-2">
+                      <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
                         <svg
-                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
                         >
                           <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
                           />
                         </svg>
-                      </button>
-                      {activeSection === section.id && (
-                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
-                          {section.content}
+                        <span>No account required for free play</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>No ads or third-party trackers</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>No data sales to third parties</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>Family-friendly and safe for all ages</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>
+                          Optional web accounts for subscriptions (email + password or Google OAuth)
+                        </span>
+                      </li>
+                      <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>Gameplay scores stored on our servers for leaderboards</span>
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 pt-0">
+                    <div className="space-y-2">
+                      {sections.map((section) => (
+                        <div
+                          key={section.id}
+                          className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
+                        >
+                          <button
+                            onClick={() =>
+                              setActiveSection(activeSection === section.id ? null : section.id)
+                            }
+                            className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            <span className="font-semibold text-gray-800 dark:text-gray-200">
+                              {section.title}
+                            </span>
+                            <svg
+                              className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                          {activeSection === section.id && (
+                            <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                              {section.content}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+
+                    {/* Thank you message */}
+                    <div className="mt-6 p-4 bg-[#7ed957]/10 border-[3px] border-[#7ed957] rounded-2xl">
+                      <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+                        Thank you for playing <strong>Daily Tandem</strong> and{' '}
+                        <strong>Daily Cryptic</strong>!
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                </div>
-              </div>
                 {/* Faux drop shadow */}
                 <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
               </div>
@@ -803,6 +845,7 @@ export default function PrivacyPolicy() {
       <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

@@ -23,7 +23,7 @@ import { validateUsername } from '@/utils/profanityFilter';
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut, refreshProfile } = useAuth();
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -106,12 +106,16 @@ export default function AccountPage() {
     }
   }, [user]);
 
-  const handleAvatarChange = (avatarId) => {
+  const handleAvatarChange = async (avatarId) => {
     setShowAvatarModal(false);
     if (avatarId) {
       // Avatar was selected, reload avatar data
       successHaptic();
-      // Reload avatar
+
+      // Reload avatar in AuthContext (for global state like SidebarMenu)
+      await refreshProfile();
+
+      // Reload avatar for local account page display
       avatarService
         .getUserProfileWithAvatar(user.id)
         .then(setUserAvatar)
@@ -452,7 +456,9 @@ export default function AccountPage() {
                 <div className="p-6 space-y-6">
                   {/* Profile Section */}
                   <section>
-                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                      Profile
+                    </h2>
 
                     {/* Profile Card */}
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-[3px] border-black dark:border-white p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
@@ -466,7 +472,9 @@ export default function AccountPage() {
                                 lightTap();
                               }}
                               className="relative w-20 h-20 rounded-xl overflow-hidden border-[3px] border-purple-500 shadow-[3px_3px_0px_rgba(147,51,234,0.5)] hover:scale-105 transition-transform"
-                              aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
+                              aria-label={
+                                userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
+                              }
                             >
                               <Image
                                 src={
@@ -517,7 +525,9 @@ export default function AccountPage() {
                                 </p>
                                 {usernameError && (
                                   <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                                    <p className="text-xs text-red-600 dark:text-red-400">{usernameError}</p>
+                                    <p className="text-xs text-red-600 dark:text-red-400">
+                                      {usernameError}
+                                    </p>
                                   </div>
                                 )}
                                 <div className="flex gap-2">
@@ -560,7 +570,9 @@ export default function AccountPage() {
                             )}
                             {usernameSuccess && !editingUsername && (
                               <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                                <p className="text-xs text-green-600 dark:text-green-400">{usernameSuccess}</p>
+                                <p className="text-xs text-green-600 dark:text-green-400">
+                                  {usernameSuccess}
+                                </p>
                               </div>
                             )}
                           </div>
@@ -583,21 +595,37 @@ export default function AccountPage() {
                       {/* Account Details */}
                       <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Email</span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">{user?.email || 'Not available'}</span>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Email
+                          </span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">
+                            {user?.email || 'Not available'}
+                          </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Timezone</span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">{userTimezone}</span>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Timezone
+                          </span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">
+                            {userTimezone}
+                          </span>
                         </div>
                         <div className="flex justify-between items-center">
-                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Member Since</span>
-                          <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(user?.created_at)}</span>
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                            Member Since
+                          </span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">
+                            {formatDate(user?.created_at)}
+                          </span>
                         </div>
                         {zodiacData && (
                           <div className="flex justify-between items-center">
-                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Tandem Zodiac Sign</span>
-                            <span className="text-sm text-gray-800 dark:text-gray-200">{zodiacData.display}</span>
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                              Tandem Zodiac Sign
+                            </span>
+                            <span className="text-sm text-gray-800 dark:text-gray-200">
+                              {zodiacData.display}
+                            </span>
                           </div>
                         )}
                       </div>
@@ -625,7 +653,9 @@ export default function AccountPage() {
                   {/* Subscription Section */}
                   <section>
                     <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Subscription</h2>
+                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                        Subscription
+                      </h2>
                       {subscription?.isActive && (
                         <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-green-500 text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
                           ✓ ACTIVE
@@ -642,7 +672,9 @@ export default function AccountPage() {
                         {/* Active Subscription Info */}
                         <div className="space-y-4">
                           <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Current Plan</p>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                              Current Plan
+                            </p>
                             <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
                               {getTierName(subscription.tier || subscription.productId)}
                             </p>
@@ -651,41 +683,60 @@ export default function AccountPage() {
                             </p>
                           </div>
 
-                          {subscription.expiryDate && subscription.expiryDate !== '2099-12-31T00:00:00.000Z' && (
-                            <div className={`p-3 rounded-xl border-2 ${
-                              subscription.cancelAtPeriodEnd
-                                ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
-                                : 'bg-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
-                            }`}>
-                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                {subscription.cancelAtPeriodEnd ? '⚠️ Expires on' : '🔄 Renews on'}
-                              </p>
-                              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                                {formatDate(subscription.expiryDate)}
-                              </p>
-                              {subscription.cancelAtPeriodEnd && (
-                                <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
-                                  Your subscription will not auto-renew
+                          {subscription.expiryDate &&
+                            subscription.expiryDate !== '2099-12-31T00:00:00.000Z' && (
+                              <div
+                                className={`p-3 rounded-xl border-2 ${
+                                  subscription.cancelAtPeriodEnd
+                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
+                                    : 'bg-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
+                                }`}
+                              >
+                                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                  {subscription.cancelAtPeriodEnd
+                                    ? '⚠️ Expires on'
+                                    : '🔄 Renews on'}
                                 </p>
-                              )}
-                            </div>
-                          )}
+                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                                  {formatDate(subscription.expiryDate)}
+                                </p>
+                                {subscription.cancelAtPeriodEnd && (
+                                  <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                    Your subscription will not auto-renew
+                                  </p>
+                                )}
+                              </div>
+                            )}
 
                           {/* Benefits */}
                           <div className="pt-4 border-t-2 border-teal-200 dark:border-teal-800 space-y-2">
-                            <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Your Benefits</p>
+                            <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
+                              Your Benefits
+                            </p>
                             <div className="space-y-2">
                               <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">Unlimited archive access</span>
+                                <span className="text-green-600 dark:text-green-400 text-sm">
+                                  ✓
+                                </span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  Unlimited archive access
+                                </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">Ad-free experience</span>
+                                <span className="text-green-600 dark:text-green-400 text-sm">
+                                  ✓
+                                </span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  Ad-free experience
+                                </span>
                               </div>
                               <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">Hard Mode & exclusive features</span>
+                                <span className="text-green-600 dark:text-green-400 text-sm">
+                                  ✓
+                                </span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  Hard Mode & exclusive features
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -728,10 +779,12 @@ export default function AccountPage() {
                             'Ad-free experience',
                             'Hard Mode & exclusive features',
                             'Support solo developer',
-                            'Cancel anytime'
+                            'Cancel anytime',
                           ].map((benefit, idx) => (
                             <div key={idx} className="flex items-start gap-2">
-                              <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">✓</span>
+                              <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">
+                                ✓
+                              </span>
                               <p className="text-sm text-gray-700 dark:text-gray-300">{benefit}</p>
                             </div>
                           ))}

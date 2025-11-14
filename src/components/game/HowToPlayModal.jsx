@@ -5,33 +5,31 @@ import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function HowToPlayModal({ isOpen, onClose }) {
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
   const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
   const [expandedSection, setExpandedSection] = useState(null);
   const [expandedDevice, setExpandedDevice] = useState(null);
 
-  const tandemIcon = theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png';
+  const tandemIcon = '/icons/ui/tandem.png';
 
   const getHintIcon = (type) => {
-    const isDark = theme === 'dark';
     const icons = {
-      fodder: isDark ? '/icons/ui/fodder-dark.png' : '/icons/ui/fodder.png',
-      indicator: isDark ? '/icons/ui/indicator-dark.png' : '/icons/ui/indicator.png',
-      definition: isDark ? '/icons/ui/definition-dark.png' : '/icons/ui/definition.png',
-      letter: isDark ? '/icons/ui/letter-dark.png' : '/icons/ui/letter.png',
+      fodder: '/icons/ui/fodder.png',
+      indicator: '/icons/ui/indicator.png',
+      definition: '/icons/ui/definition.png',
+      letter: '/icons/ui/letter.png',
     };
     return icons[type];
   };
 
   const getSectionIcon = (type) => {
-    const isDark = theme === 'dark';
     const icons = {
-      intro: isDark ? '/icons/ui/intro-dark.png' : '/icons/ui/intro.png',
-      emoji: isDark ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png',
-      example: isDark ? '/icons/ui/example-dark.png' : '/icons/ui/example.png',
-      devices: isDark ? '/icons/ui/devices-dark.png' : '/icons/ui/devices.png',
-      hints: isDark ? '/icons/ui/hint-dark.png' : '/icons/ui/hint.png',
-      solving: isDark ? '/icons/ui/solving-dark.png' : '/icons/ui/solving.png',
+      intro: '/icons/ui/intro.png',
+      emoji: '/icons/ui/tandem.png',
+      example: '/icons/ui/example.png',
+      devices: '/icons/ui/devices.png',
+      hints: '/icons/ui/hint.png',
+      solving: '/icons/ui/solving.png',
     };
     return icons[type];
   };
@@ -253,13 +251,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           }`}
         >
           <div className="flex items-center justify-center gap-2">
-            <Image
-              src={tandemIcon}
-              alt="Daily Tandem"
-              width={20}
-              height={20}
-              className="w-5 h-5"
-            />
+            <Image src={tandemIcon} alt="Daily Tandem" width={20} height={20} className="w-5 h-5" />
             <span>Daily Tandem</span>
           </div>
         </button>
@@ -635,8 +627,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
                       <span>
-                        <strong>Together:</strong> Both emojis combine to suggest one concept (🐝🦂 =
-                        STING)
+                        <strong>Together:</strong> Both emojis combine to suggest one concept (🐝🦂
+                        = STING)
                       </span>
                     </li>
                     <li className="flex items-start gap-2">
@@ -656,7 +648,9 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                   </ul>
 
                   <div className="mt-4 space-y-3">
-                    <h4 className="font-bold text-gray-900 dark:text-white">Example Emoji Pairs:</h4>
+                    <h4 className="font-bold text-gray-900 dark:text-white">
+                      Example Emoji Pairs:
+                    </h4>
                     <div className="grid sm:grid-cols-2 gap-3">
                       <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
                         <div className="text-2xl mb-1">👑🦁</div>
@@ -787,7 +781,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                         Step 4: Solve
                       </h5>
                       <p className="text-gray-700 dark:text-gray-300 text-sm">
-                        Anagram of &quot;I&apos;m a race&quot; = <strong>AMERICA</strong> (7 letters)
+                        Anagram of &quot;I&apos;m a race&quot; = <strong>AMERICA</strong> (7
+                        letters)
                         <br />
                         Confirmed by emoji hints (American symbols) and definition (nation)
                       </p>
@@ -847,7 +842,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
             {expandedSection === 'devices' && (
               <div className="p-4 space-y-3 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
                 <p className="text-gray-700 dark:text-gray-300 mb-4 text-sm">
-                  These are the techniques used to construct cryptic clues. Click each to learn more:
+                  These are the techniques used to construct cryptic clues. Click each to learn
+                  more:
                 </p>
                 {crypticDevices.map((device) => (
                   <div
@@ -1027,7 +1023,12 @@ export default function HowToPlayModal({ isOpen, onClose }) {
 
                     <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-300 dark:border-purple-700">
                       <div className="flex items-center gap-2 mb-1">
-                        <Image src={getHintIcon('indicator')} alt="Indicator" width={24} height={24} />
+                        <Image
+                          src={getHintIcon('indicator')}
+                          alt="Indicator"
+                          width={24}
+                          height={24}
+                        />
                         <h5 className="font-bold text-gray-900 dark:text-white">
                           Hint 2: Indicator
                         </h5>
@@ -1170,8 +1171,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                     <li className="flex items-start gap-2">
                       <span className="text-purple-600 dark:text-purple-400 font-bold">7.</span>
                       <span className="text-sm">
-                        <strong>Practice regularly:</strong> Cryptic solving is a skill that improves
-                        with daily practice
+                        <strong>Practice regularly:</strong> Cryptic solving is a skill that
+                        improves with daily practice
                       </span>
                     </li>
                   </ul>
@@ -1181,8 +1182,8 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                       🎯 Remember:
                     </h5>
                     <p className="text-sm text-gray-800 dark:text-gray-200">
-                      Every cryptic clue has <strong>both</strong> a definition and wordplay. Once you
-                      solve it, the answer should work for both parts. This &quot;double
+                      Every cryptic clue has <strong>both</strong> a definition and wordplay. Once
+                      you solve it, the answer should work for both parts. This &quot;double
                       definition&quot; nature is what makes cryptics fair and satisfying!
                     </p>
                   </div>

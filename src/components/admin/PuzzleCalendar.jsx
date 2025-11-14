@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import adminService from '@/services/admin.service';
 import { formatDate } from '@/lib/utils';
 import { getHolidaysForMonth } from '@/lib/holidays';
+import AdminPuzzleCalendarSkeleton from '@/components/shared/AdminPuzzleCalendarSkeleton';
 
 export default function PuzzleCalendar({
   onEditPuzzle,
@@ -150,9 +151,7 @@ export default function PuzzleCalendar({
             </button>
 
             {showMonthPicker && (
-              <div
-                className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
-              >
+              <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
                 <div className="grid grid-cols-3 gap-2 mb-4">
                   {[
                     'Jan',
@@ -235,9 +234,7 @@ export default function PuzzleCalendar({
       </div>
 
       {loading ? (
-        <div className="p-4 sm:p-8 text-center text-text-secondary text-sm sm:text-base font-medium">
-          Loading puzzles...
-        </div>
+        <AdminPuzzleCalendarSkeleton />
       ) : (
         <div className="p-3 sm:p-6">
           <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3 mb-2 sm:mb-3">
@@ -365,9 +362,7 @@ export default function PuzzleCalendar({
 
       {selectedPuzzle && (
         <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-3 sm:p-4 z-50">
-          <div
-            className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
-          >
+          <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 max-w-md w-full max-h-[90vh] overflow-y-auto shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
             <h3 className="text-base sm:text-lg font-bold text-text-primary mb-3 sm:mb-4">
               {selectedPuzzle.theme ? 'Puzzle Details' : 'No Puzzle'} -{' '}
               {formatDate(selectedPuzzle.date, 'short')}

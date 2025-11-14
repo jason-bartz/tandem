@@ -17,7 +17,7 @@ export default function DailyLeaderboard({ gameType }) {
   const [userRank, setUserRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const { user } = useAuth();
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
 
   useEffect(() => {
     fetchLeaderboard();
@@ -87,12 +87,7 @@ export default function DailyLeaderboard({ gameType }) {
     return (
       <div className="p-12 text-center">
         <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-          <Image
-            src={theme === 'dark' ? '/icons/ui/medal-dark.png' : '/icons/ui/medal.png'}
-            alt="Medal"
-            width={48}
-            height={48}
-          />
+          <Image src="/icons/ui/medal.png" alt="Medal" width={48} height={48} />
         </div>
         <p
           className={`text-lg font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}

@@ -132,9 +132,7 @@ export default function AvatarSelectionModal({
   };
 
   // Get expanded avatar data
-  const expandedAvatarData = expandedAvatar
-    ? avatars.find((a) => a.id === expandedAvatar)
-    : null;
+  const expandedAvatarData = expandedAvatar ? avatars.find((a) => a.id === expandedAvatar) : null;
 
   return (
     <>
@@ -145,7 +143,6 @@ export default function AvatarSelectionModal({
         subtitle="Select an avatar to represent you!"
         maxWidth="650px"
       >
-
         {/* Error Message */}
         {error && (
           <div
@@ -170,69 +167,54 @@ export default function AvatarSelectionModal({
 
         {/* Avatar Grid */}
         {!loading && avatars.length > 0 && (
-          <div className="grid grid-cols-3 gap-6 p-1">
-              {avatars.map((avatar) => {
-                const isSelected = currentAvatarId === avatar.id;
+          <div className="grid grid-cols-3 gap-3 p-1">
+            {avatars.map((avatar) => {
+              const isSelected = currentAvatarId === avatar.id;
 
-                return (
-                  <button
-                    key={avatar.id}
-                    onClick={() => handleAvatarClick(avatar.id)}
-                    className={`p-6 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.02] ${
-                      isSelected
-                        ? highContrast
-                          ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                          : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[6px_6px_0px_rgba(147,51,234,0.5)]'
-                        : highContrast
-                          ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                          : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.3)]'
-                    }`}
-                    aria-label={`View ${avatar.display_name}`}
-                  >
-                    <div className="flex flex-col items-center">
-                      {/* Avatar Image - Rounded corners */}
-                      <div className="relative w-24 h-24 mb-4 rounded-2xl overflow-hidden">
-                        <Image
-                          src={avatar.image_path}
-                          alt={avatar.display_name}
-                          fill
-                          className="object-cover"
-                          sizes="96px"
-                          priority={avatar.sort_order <= 4}
-                        />
-                      </div>
-
-                      {/* Avatar Name - Apple HIG: Clear hierarchy */}
-                      <h3
-                        className={`font-bold text-lg ${
-                          isSelected
-                            ? highContrast
-                              ? 'text-white'
-                              : 'text-purple-700 dark:text-purple-300'
-                            : 'text-gray-800 dark:text-gray-200'
-                        }`}
-                      >
-                        {avatar.display_name}
-                      </h3>
-
-                      {/* Selection Indicator - Apple HIG: Clear visual feedback */}
-                      {isSelected && (
-                        <div className="mt-3">
-                          <div
-                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border-2 ${
-                              highContrast
-                                ? 'bg-white text-hc-primary border-hc-primary'
-                                : 'bg-purple-500 text-white border-purple-600'
-                            }`}
-                          >
-                            <span className="text-xs font-bold">Current</span>
-                          </div>
-                        </div>
-                      )}
+              return (
+                <button
+                  key={avatar.id}
+                  onClick={() => handleAvatarClick(avatar.id)}
+                  className={`p-3 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.02] aspect-square ${
+                    isSelected
+                      ? highContrast
+                        ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                        : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[6px_6px_0px_rgba(147,51,234,0.5)]'
+                      : highContrast
+                        ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.3)]'
+                  }`}
+                  aria-label={`View ${avatar.display_name}`}
+                >
+                  <div className="flex flex-col items-center justify-center h-full">
+                    {/* Avatar Image - Rounded corners */}
+                    <div className="relative w-20 h-20 mb-1 rounded-2xl overflow-hidden flex-shrink-0">
+                      <Image
+                        src={avatar.image_path}
+                        alt={avatar.display_name}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                        priority={avatar.sort_order <= 4}
+                      />
                     </div>
-                  </button>
-                );
-              })}
+
+                    {/* Avatar Name - Apple HIG: Clear hierarchy */}
+                    <h3
+                      className={`font-bold text-base ${
+                        isSelected
+                          ? highContrast
+                            ? 'text-white'
+                            : 'text-purple-700 dark:text-purple-300'
+                          : 'text-gray-800 dark:text-gray-200'
+                      }`}
+                    >
+                      {avatar.display_name}
+                    </h3>
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -324,9 +306,7 @@ export default function AvatarSelectionModal({
             {/* Full Bio */}
             <div
               className={`text-lg leading-relaxed max-w-md ${
-                highContrast
-                  ? 'text-hc-text'
-                  : 'text-gray-700 dark:text-gray-300'
+                highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
               }`}
             >
               {expandedAvatarData.bio}

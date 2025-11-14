@@ -9,6 +9,7 @@ import TandemStatsSection from './TandemStatsSection';
 import CrypticStatsSection from './CrypticStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
+import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
  * UnifiedStatsModal - Unified statistics left panel for both games
@@ -92,12 +93,7 @@ Play at tandemdaily.com
         }
       >
         {/* Loading State */}
-        {loading && (
-          <div className="text-center py-8">
-            <div className="inline-block w-8 h-8 border-4 border-gray-300 dark:border-gray-600 border-t-accent-blue rounded-full animate-spin"></div>
-            <p className="mt-3 text-gray-600 dark:text-gray-400">Loading stats...</p>
-          </div>
-        )}
+        {loading && <StatsModalSkeleton />}
 
         {/* Error State */}
         {error && !loading && (
