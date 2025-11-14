@@ -451,8 +451,17 @@ export default function UnifiedArchiveCalendar({
   const canGoNext =
     currentYear < todayYear || (currentYear === todayYear && currentMonth < todayMonth);
 
-  // Get title based on active tab
-  const title = activeTab === 'tandem' ? 'Tandem Puzzle Archive' : 'Cryptic Puzzle Archive';
+  // Get title with logo based on active tab
+  const title = (
+    <div className="flex items-center gap-2">
+      <img
+        src={activeTab === 'tandem' ? '/icons/ui/tandem.png' : '/icons/ui/cryptic.png'}
+        alt={activeTab === 'tandem' ? 'Tandem' : 'Cryptic'}
+        className="w-6 h-6"
+      />
+      <span>{activeTab === 'tandem' ? 'Tandem Puzzle Archive' : 'Cryptic Puzzle Archive'}</span>
+    </div>
+  );
 
   return (
     <>
@@ -462,6 +471,11 @@ export default function UnifiedArchiveCalendar({
         title={title}
         maxWidth="480px"
         contentClassName="px-6"
+        headerClassName={
+          activeTab === 'tandem'
+            ? 'bg-accent-blue/30 dark:bg-accent-blue/30'
+            : 'bg-accent-purple/30 dark:bg-accent-purple/30'
+        }
         footer={
           /* Tab Buttons */
           <div className="flex gap-2">
@@ -473,6 +487,7 @@ export default function UnifiedArchiveCalendar({
                 border-[3px]
                 font-semibold
                 transition-all
+                flex items-center justify-center gap-2
                 ${
                   activeTab === 'tandem'
                     ? highContrast
@@ -490,6 +505,7 @@ export default function UnifiedArchiveCalendar({
               aria-label="Tandem Archive"
               aria-pressed={activeTab === 'tandem'}
             >
+              <img src="/icons/ui/tandem.png" alt="" className="w-5 h-5" />
               Tandem
             </button>
             <button
@@ -500,6 +516,7 @@ export default function UnifiedArchiveCalendar({
                 border-[3px]
                 font-semibold
                 transition-all
+                flex items-center justify-center gap-2
                 ${
                   activeTab === 'cryptic'
                     ? highContrast
@@ -517,6 +534,7 @@ export default function UnifiedArchiveCalendar({
               aria-label="Cryptic Archive"
               aria-pressed={activeTab === 'cryptic'}
             >
+              <img src="/icons/ui/cryptic.png" alt="" className="w-5 h-5" />
               Cryptic
             </button>
           </div>

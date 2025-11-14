@@ -8,6 +8,7 @@ import {
   savePuzzleResult,
   updateGameStats,
   hasPlayedPuzzle,
+  getPuzzleResult,
 } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import statsService from '@/services/stats.service';
@@ -43,6 +44,7 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [hardModeTimeUp, setHardModeTimeUp] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [completionTime, setCompletionTime] = useState(null);
+  const [admireData, setAdmireData] = useState(null);
 
   // Only load puzzle if we don't have initial data
   // Following Wordle's approach: client-side fetches puzzle using local timezone
@@ -60,6 +62,7 @@ export function useGameWithInitialData(initialPuzzleData) {
               puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
               date: response.date || response.puzzle.date,
             };
+
             setPuzzle(puzzleWithData);
             setCurrentPuzzleDate(response.date);
             setError(null);
@@ -82,12 +85,14 @@ export function useGameWithInitialData(initialPuzzleData) {
   }, [initialPuzzleData]);
 
   // Load specific puzzle for archive
-  const loadPuzzle = useCallback(async (identifier = null) => {
+  const loadPuzzle = useCallback(async (identifier = null, forceReplay = false) => {
     console.log(
       '[useGameWithInitialData] loadPuzzle called with identifier:',
       identifier,
       'type:',
-      typeof identifier
+      typeof identifier,
+      'forceReplay:',
+      forceReplay
     );
     try {
       setLoading(true);
@@ -96,6 +101,28 @@ export function useGameWithInitialData(initialPuzzleData) {
       const isArchive = identifier !== null;
       setIsArchiveGame(isArchive);
       console.log('[useGameWithInitialData] isArchive:', isArchive);
+
+      // Check if puzzle was already completed (unless forcing replay)
+      if (!forceReplay && identifier) {
+        console.log('[useGameWithInitialData] Checking for completed puzzle:', { date: identifier });
+        const existingResult = await getPuzzleResult(identifier);
+        console.log('[useGameWithInitialData] Existing result:', existingResult);
+
+        if (existingResult && existingResult.won) {
+          console.log('[useGameWithInitialData] Entering ADMIRE mode');
+          // Enter admire mode to view the completed puzzle
+          const response = await puzzleService.getPuzzle(identifier);
+          const puzzleData = response && response.puzzle ? response.puzzle : response;
+
+          setPuzzle({ ...puzzleData, date: response.date || identifier });
+          setCurrentPuzzleDate(response.date || identifier);
+          setAdmireData(existingResult);
+          setGameState(GAME_STATES.ADMIRE);
+          setLoading(false);
+          return true;
+        }
+        console.log('[useGameWithInitialData] Not entering admire mode - puzzle not won');
+      }
 
       // identifier can be a puzzle number, date string, or null for today
       console.log('[useGameWithInitialData] Calling puzzleService.getPuzzle with:', identifier);
@@ -379,7 +406,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           status: won ? 'completed' : 'failed',
           mistakes: mistakes,
           solved: solved,
-          time: 0,
+          time: timeTaken,
           hintsUsed: hintsUsed,
           hintedAnswers: capturedHintedAnswers, // CRITICAL FIX: Include which puzzles had hints
           attempted: true,
@@ -769,14 +796,44 @@ export function useGameWithInitialData(initialPuzzleData) {
   }, []);
 
   const returnToWelcome = useCallback(() => {
+    console.log('[useGameWithInitialData.returnToWelcome] Called, isArchiveGame:', isArchiveGame);
     // If we were playing an archive game, reload today's puzzle
     if (isArchiveGame) {
+      console.log('[useGameWithInitialData.returnToWelcome] Loading today\'s puzzle');
       loadPuzzle(null); // Load today's puzzle
     } else {
       // Just return to welcome screen
+      console.log('[useGameWithInitialData.returnToWelcome] Setting game state to WELCOME');
       setGameState(GAME_STATES.WELCOME);
     }
   }, [isArchiveGame, loadPuzzle]);
+
+  const replayFromAdmire = useCallback(() => {
+    // Clear admire data and transition to playing state
+    setAdmireData(null);
+    setGameState(GAME_STATES.PLAYING);
+    setAnswers(['', '', '', '']);
+    setCorrectAnswers([false, false, false, false]);
+    setCheckedWrongAnswers([false, false, false, false]);
+    setMistakes(0);
+    setSolved(0);
+    setHintsUsed(0);
+    setHasCheckedAnswers(false);
+    setHintedAnswers([]);
+    setUnlockedHints(1);
+    setActiveHintIndex(null);
+    setLockedLetters([null, null, null, null]);
+
+    // Save initial progress to mark as attempted
+    if (currentPuzzleDate) {
+      savePuzzleProgress(currentPuzzleDate, {
+        started: true,
+        solved: 0,
+        mistakes: 0,
+        hintsUsed: 0,
+      });
+    }
+  }, [currentPuzzleDate]);
 
   // Function to end game (used for hard mode timeout)
   const endGame = useCallback((hasWon) => {
@@ -863,6 +920,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     isHardMode,
     hardModeTimeUp,
     completionTime,
+    admireData,
     setIsHardMode,
     setHardModeTimeUp,
     startGame,
@@ -874,6 +932,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     useHint,
     resetGame,
     returnToWelcome,
+    replayFromAdmire,
     endGame,
     handleBackspace,
     handleLetterInput,

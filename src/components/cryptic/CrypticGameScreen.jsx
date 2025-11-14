@@ -512,7 +512,10 @@ export default function CrypticGameScreen({
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         defaultTab="cryptic"
-        onSelectPuzzle={() => {}}
+        onSelectPuzzle={(date) => {
+          // Redirect to main page with selected Tandem puzzle
+          window.location.href = `/?puzzle=${date}`;
+        }}
       />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />

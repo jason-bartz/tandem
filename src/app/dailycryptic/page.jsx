@@ -35,11 +35,21 @@ export default function DailyCrypticPage() {
   useEffect(() => {
     if (!authLoading && !user) {
       setShowAuthModal(true);
-    } else if (user && cryptic.puzzle && cryptic.gameState === CRYPTIC_GAME_STATES.WELCOME) {
-      // Auto-start the game if user is authenticated and puzzle is loaded
-      cryptic.startGame();
+    } else if (
+      user &&
+      cryptic.puzzle &&
+      cryptic.gameState === CRYPTIC_GAME_STATES.WELCOME &&
+      !cryptic.admireData && // Don't auto-start if we have admire data (completed puzzle)
+      !cryptic.loading // Don't auto-start while loading
+    ) {
+      // Auto-start the game immediately to prevent welcome screen flash
+      // Use setTimeout to ensure it happens after render
+      const timer = setTimeout(() => {
+        cryptic.startGame();
+      }, 0);
+      return () => clearTimeout(timer);
     }
-  }, [user, authLoading, cryptic.puzzle, cryptic.gameState]);
+  }, [user, authLoading, cryptic.puzzle, cryptic.gameState, cryptic.admireData, cryptic.loading]);
 
   // Handle successful authentication
   const handleAuthSuccess = () => {
@@ -208,13 +218,20 @@ export default function DailyCrypticPage() {
   return (
     <>
       <div className="min-h-screen bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
+        {/* Welcome screen - should only show briefly before auto-start */}
         {cryptic.gameState === CRYPTIC_GAME_STATES.WELCOME && (
-          <CrypticWelcomeScreen
-            puzzle={cryptic.puzzle}
-            onStart={cryptic.startGame}
-            currentPuzzleDate={cryptic.currentPuzzleDate}
-            loading={cryptic.loading}
-          />
+          <div className="flex items-center justify-center min-h-screen">
+            {cryptic.loading ? (
+              <LoadingSpinner />
+            ) : (
+              <CrypticWelcomeScreen
+                puzzle={cryptic.puzzle}
+                onStart={cryptic.startGame}
+                currentPuzzleDate={cryptic.currentPuzzleDate}
+                loading={cryptic.loading}
+              />
+            )}
+          </div>
         )}
 
         {cryptic.gameState === CRYPTIC_GAME_STATES.PLAYING && (
@@ -247,6 +264,25 @@ export default function DailyCrypticPage() {
                 currentPuzzleDate={cryptic.currentPuzzleDate}
                 onPlayAgain={() => cryptic.loadPuzzle()}
                 onReturnHome={() => (window.location.href = '/')}
+              />
+            </div>
+          </div>
+        )}
+
+        {cryptic.gameState === CRYPTIC_GAME_STATES.ADMIRE && (
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="w-full max-w-2xl">
+              <CrypticCompleteScreen
+                puzzle={cryptic.puzzle}
+                answer={cryptic.admireData?.answer || cryptic.puzzle?.answer}
+                userAnswer={cryptic.admireData?.answer || cryptic.puzzle?.answer}
+                hintsUsed={cryptic.admireData?.hintsUsed || 0}
+                elapsedTime={cryptic.admireData?.timeTaken || 0}
+                attempts={cryptic.admireData?.attempts || 0}
+                currentPuzzleDate={cryptic.currentPuzzleDate}
+                onPlayAgain={() => cryptic.replayFromAdmire()}
+                onReturnHome={() => (window.location.href = '/')}
+                isAdmireMode={true}
               />
             </div>
           </div>

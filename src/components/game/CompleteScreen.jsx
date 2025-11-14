@@ -57,7 +57,6 @@ export default function CompleteScreen({
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
-  const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
   const { user, loading: authLoading } = useAuth();
 
@@ -68,26 +67,6 @@ export default function CompleteScreen({
   // hintedAnswers is an array of puzzle indices that received hints (e.g., [0, 2])
   // We pass this directly to generateShareText which expects an array of indices
   const hintPositions = hintedAnswers || [];
-
-  // Debug logging
-  console.log('[CompleteScreen] Props received:', {
-    hintsUsed,
-    hintedAnswers,
-    won,
-    correctAnswers,
-    isHardMode,
-  });
-
-  console.log('[CompleteScreen] Share text generation:', {
-    puzzleDate,
-    time,
-    mistakes,
-    hintsUsed,
-    hintPositions,
-    solved: won ? 4 : correctAnswers || 0,
-    isHardMode,
-    hardModeTimeUp,
-  });
 
   const shareText = generateShareText(
     puzzleDate,
@@ -101,8 +80,6 @@ export default function CompleteScreen({
     hardModeTimeUp,
     difficultyRating
   );
-
-  console.log('[CompleteScreen] Generated share text:', shareText);
 
   useEffect(() => {
     if (won) {
@@ -180,7 +157,7 @@ export default function CompleteScreen({
             lightTap();
             onReturnToWelcome();
           }}
-          className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-50"
           title="Back to Home"
         >
           <svg

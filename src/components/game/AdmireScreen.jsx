@@ -71,7 +71,7 @@ export default function AdmireScreen({
               lightTap();
               onReturnToWelcome();
             }}
-            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-50"
             title="Back to Home"
           >
             <svg
@@ -111,7 +111,7 @@ export default function AdmireScreen({
               </button>
             )}
 
-            <h1 className="font-bold mb-2 text-gray-800 dark:text-gray-200 text-3xl">
+            <h1 className="font-bold mb-2 text-gray-800 dark:text-gray-200 text-3xl mt-8">
               <span className="inline-block">Completed Puzzle ✓</span>
             </h1>
 
@@ -141,30 +141,29 @@ export default function AdmireScreen({
             )}
 
             {/* Completed Puzzle Display */}
-            <div className="mb-6 space-y-3">
+            <div className="mb-4 space-y-2">
               {puzzle?.puzzles?.map((puzzleItem, index) => (
                 <div
                   key={index}
-                  className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                  className={`rounded-2xl p-3 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
                     highContrast
                       ? 'bg-hc-surface border-hc-border'
                       : 'bg-green-100 dark:bg-green-900/30 border-green-500'
                   }`}
                 >
-                  <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{puzzleItem.emoji1}</span>
                       <span className="text-2xl">{puzzleItem.emoji2}</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-green-600 dark:text-green-400">✓</span>
                       {admireData?.hintedAnswers?.includes(index) && (
                         <span className="text-accent-pink text-sm">💡</span>
                       )}
                     </div>
                   </div>
                   <div
-                    className={`text-lg font-bold text-center ${
+                    className={`text-lg font-bold text-center mt-1 ${
                       highContrast ? 'text-hc-text' : 'text-green-700 dark:text-green-300'
                     }`}
                   >
@@ -249,7 +248,7 @@ export default function AdmireScreen({
                   : 'bg-accent-orange text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
-              🔄 Replay Puzzle
+              Replay Puzzle
             </button>
 
             <button
@@ -263,7 +262,7 @@ export default function AdmireScreen({
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
-              📅 Browse Archive
+              Browse Archive
             </button>
 
             {/* View Stats and Leaderboard Buttons */}
