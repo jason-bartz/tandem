@@ -86,14 +86,14 @@ export default function HintDisplay({
             animate="visible"
             exit="hidden"
             className={`
-              ${isSmallPhone ? 'mt-2' : isMobilePhone ? 'mt-2' : 'mt-2'}
+              ${isSmallPhone ? 'mt-1.5' : isMobilePhone ? 'mt-2' : 'mt-2'}
             `}
           >
             <div
               className={`
                 flex items-start gap-2
-                ${isSmallPhone ? 'px-3 py-2' : isMobilePhone ? 'px-3 py-2' : 'px-4 py-3'}
-                rounded-2xl
+                ${isSmallPhone ? 'px-2.5 py-1.5' : isMobilePhone ? 'px-3 py-2' : 'px-4 py-3'}
+                ${isSmallPhone ? 'rounded-xl' : 'rounded-2xl'}
                 border-[3px]
                 ${
                   highContrast
