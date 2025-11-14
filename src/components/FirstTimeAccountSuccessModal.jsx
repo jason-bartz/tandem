@@ -105,6 +105,9 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
         title="Account Created Successfully!"
         maxHeight="80vh"
         maxWidth="440px"
+        disableSwipe={true}
+        disableBackdropClick={true}
+        disableEscape={true}
       >
         <div className="px-4 pb-6">
           {/* Subheading */}
