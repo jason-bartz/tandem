@@ -341,8 +341,8 @@ export default function UnifiedArchiveCalendar({
         return;
       }
 
-      // Load puzzle
-      onSelectPuzzle(puzzle.number);
+      // Load puzzle - pass date for proper admire mode detection
+      onSelectPuzzle(puzzle.date);
     } else {
       // Cryptic - only require subscription for archive puzzles (not today's puzzle)
       const isArchivePuzzle = !isToday;

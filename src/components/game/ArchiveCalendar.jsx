@@ -249,8 +249,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
       return;
     }
 
-    // Load puzzle
-    onSelectPuzzle(puzzle.number);
+    // Load puzzle - pass date for proper admire mode detection
+    onSelectPuzzle(puzzle.date);
   };
 
   /**
