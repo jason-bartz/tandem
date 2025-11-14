@@ -10,6 +10,7 @@ export default function StatsBar({
   isMobilePhone = false,
   isHardMode = false,
   hardModeTimeLimit = 120,
+  hasActiveHint = false,
 }) {
   const { reduceMotion } = useTheme();
   const [bounceTimer, setBounceTimer] = useState(false);
@@ -62,12 +63,17 @@ export default function StatsBar({
   return (
     <div
       className={`flex justify-between sm:justify-evenly ${
-        isSmallPhone
-          ? 'gap-2 mb-3 p-2'
-          : isMobilePhone
-            ? 'gap-3 mb-4 p-3'
-            : 'gap-4 sm:gap-6 md:gap-8 mb-6 p-4'
-      } ${isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-light-sand dark:bg-gray-800'} rounded-2xl score-display max-w-md mx-auto`}
+        // Reduce spacing when hint is active on mobile
+        hasActiveHint && (isSmallPhone || isMobilePhone)
+          ? isSmallPhone
+            ? 'gap-1 mb-2 p-1.5'
+            : 'gap-2 mb-2 p-2'
+          : isSmallPhone
+            ? 'gap-2 mb-3 p-2'
+            : isMobilePhone
+              ? 'gap-3 mb-4 p-3'
+              : 'gap-4 sm:gap-6 md:gap-8 mb-6 p-4'
+      } ${isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-light-sand dark:bg-gray-800'} rounded-2xl score-display max-w-md mx-auto transition-all duration-300`}
     >
       <div className="text-center flex-1 sm:flex-initial">
         <div
