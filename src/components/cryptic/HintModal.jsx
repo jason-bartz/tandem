@@ -101,6 +101,7 @@ export default function HintModal({
       onClose={onClose}
       title="Use Hints"
       maxHeight="70vh"
+      maxWidth="650px"
       footer={
         <div
           className={`text-center text-sm ${
