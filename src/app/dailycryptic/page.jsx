@@ -43,13 +43,9 @@ export default function DailyCrypticPage() {
       !cryptic.loading // Don't auto-start while loading
     ) {
       // Auto-start the game immediately to prevent welcome screen flash
-      // Use setTimeout to ensure it happens after render
-      const timer = setTimeout(() => {
-        cryptic.startGame();
-      }, 0);
-      return () => clearTimeout(timer);
+      cryptic.startGame();
     }
-  }, [user, authLoading, cryptic.puzzle, cryptic.gameState, cryptic.admireData, cryptic.loading]);
+  }, [user, authLoading, cryptic]);
 
   // Handle successful authentication
   const handleAuthSuccess = () => {
@@ -63,12 +59,15 @@ export default function DailyCrypticPage() {
     if (dateParam && cryptic.loadPuzzle) {
       cryptic.loadPuzzle(dateParam);
     }
-  }, [dateParam]);
+  }, [dateParam, cryptic]);
 
   // Show loading while checking auth and subscription
   if (authLoading || subscriptionLoading || cryptic.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+      >
         <LoadingSpinner />
       </div>
     );
@@ -78,14 +77,13 @@ export default function DailyCrypticPage() {
   if (!user) {
     return (
       <>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
+        <div
+          className="min-h-screen flex items-center justify-center"
+          style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+        >
           <div className="text-center p-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
-              The Daily Cryptic
-            </h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-6">
-              Sign in to play today's cryptic puzzle
-            </p>
+            <h1 className="text-3xl font-bold text-white mb-4">The Daily Cryptic</h1>
+            <p className="text-white/90 mb-6">Sign in to play today's cryptic puzzle</p>
           </div>
         </div>
 
@@ -102,7 +100,10 @@ export default function DailyCrypticPage() {
   // Daily puzzle is free for all (no paywall)
   if (!subscriptionLoading && isArchiveRequest && !hasSubscription) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+      >
         <div className="max-w-md w-full bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-10 text-center">
           <div className="mb-6">
             <img
@@ -183,7 +184,10 @@ export default function DailyCrypticPage() {
   // Error state
   if (cryptic.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+      >
         <ErrorMessage
           title="Unable to Load Puzzle"
           message={cryptic.error}
@@ -196,17 +200,18 @@ export default function DailyCrypticPage() {
   // No puzzle available
   if (!cryptic.puzzle) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div
+        className="min-h-screen flex items-center justify-center p-4"
+        style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+      >
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-            No Puzzle Available
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <h1 className="text-2xl font-bold text-white mb-4">No Puzzle Available</h1>
+          <p className="text-white/90 mb-6">
             There is no puzzle available for today. Check back soon!
           </p>
           <button
             onClick={() => (window.location.href = '/')}
-            className="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+            className="px-6 py-3 bg-white text-purple-600 rounded-lg hover:bg-gray-100 transition-colors font-bold"
           >
             Return to Tandem
           </button>
@@ -217,19 +222,24 @@ export default function DailyCrypticPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
-        {/* Welcome screen - should only show briefly before auto-start */}
+      <div
+        className="min-h-screen"
+        style={{ background: 'linear-gradient(to bottom, #cb6ce6, #a855f7)' }}
+      >
+        {/* Welcome screen - only show when viewing completed puzzle (admire mode with welcome state) or explicitly needed */}
         {cryptic.gameState === CRYPTIC_GAME_STATES.WELCOME && (
           <div className="flex items-center justify-center min-h-screen">
             {cryptic.loading ? (
               <LoadingSpinner />
-            ) : (
+            ) : cryptic.admireData ? (
               <CrypticWelcomeScreen
                 puzzle={cryptic.puzzle}
                 onStart={cryptic.startGame}
                 currentPuzzleDate={cryptic.currentPuzzleDate}
                 loading={cryptic.loading}
               />
+            ) : (
+              <LoadingSpinner />
             )}
           </div>
         )}

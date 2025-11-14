@@ -37,6 +37,7 @@ export default function WelcomeScreen({
   const { highContrast } = useTheme();
   const { isMobilePhone } = useDeviceType();
   const isNativeApp = Capacitor.isNativePlatform();
+  const getIconPath = useUIIcon();
 
   // Load stats on mount for streak display
   const [tandemStats, setTandemStats] = useState({ currentStreak: 0 });
@@ -209,7 +210,11 @@ export default function WelcomeScreen({
             }
           `}
           >
-            {!puzzle ? 'Loading Puzzle...' : todayCompleted ? "You solved it!" : "Play Today's Tandem"}
+            {!puzzle
+              ? 'Loading Puzzle...'
+              : todayCompleted
+                ? 'You solved it!'
+                : "Play Today's Tandem"}
           </button>
         </div>
 

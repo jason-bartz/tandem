@@ -14,8 +14,6 @@ import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import AdmireScreen from './AdmireScreen';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import AnimatedLoadingMessage from '@/components/shared/AnimatedLoadingMessage';
 import WelcomeScreenSkeleton from '@/components/shared/WelcomeScreenSkeleton';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
@@ -228,16 +226,11 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const handleSelectPuzzle = async (date) => {
     // Load the selected puzzle
     // loadPuzzle will auto-detect if completed and enter admire mode
-    // or if not completed, will set up for fresh play
+    // or if not completed, will enter playing mode directly (no welcome screen for archive)
     const success = await game.loadPuzzle(date);
     if (success) {
       // Reset timer when loading a new puzzle
       timer.reset();
-      // Don't auto-start if we entered admire mode or if admireData exists
-      // Only auto-start for incomplete archive puzzles
-      if (game.gameState === GAME_STATES.WELCOME && !game.admireData) {
-        game.startGame();
-      }
     }
   };
 
