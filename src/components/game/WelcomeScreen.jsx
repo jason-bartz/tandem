@@ -110,7 +110,7 @@ export default function WelcomeScreen({
       onOpenHowToPlay={() => setShowHowToPlay(true)}
       onOpenSettings={() => setShowSettings(true)}
     >
-      <div className="animate-fade-in px-2 -mt-16">
+      <div className="animate-fade-in px-2 -mt-[52px]">
         {/* Main welcome card */}
         <div
           className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center mb-6 ${
@@ -179,20 +179,7 @@ export default function WelcomeScreen({
           {/* Streak Display */}
           {tandemStats.currentStreak > 0 && (
             <div className="mb-4 text-center flex items-center justify-center gap-1.5">
-              <Image
-                src="/icons/ui/hardmode.png"
-                alt=""
-                width={12}
-                height={12}
-                className="dark:hidden"
-              />
-              <Image
-                src="/icons/ui/hardmode-dark.png"
-                alt=""
-                width={12}
-                height={12}
-                className="hidden dark:block"
-              />
+              <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
               <p className="text-xs text-gray-500 dark:text-gray-500">
                 {getStreakMessage(tandemStats.currentStreak, 'tandem')}
               </p>
@@ -202,7 +189,7 @@ export default function WelcomeScreen({
           <button
             onClick={handlePlayClick}
             disabled={!puzzle}
-            className={`w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+            className={`w-full h-14 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
             ${
               highContrast
                 ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'

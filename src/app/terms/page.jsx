@@ -9,6 +9,7 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 
 export default function TermsOfUse() {
   const [activeSection, setActiveSection] = useState(null);
@@ -18,6 +19,7 @@ export default function TermsOfUse() {
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const sections = [
     {
@@ -26,9 +28,9 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Daily Tandem or Daily Cryptic ("the Games") at tandemdaily.com or through our iOS app,
-            you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
-            Terms, please do not use the Games.
+            By accessing or playing Daily Tandem or Daily Cryptic ("the Games") at tandemdaily.com
+            or through our iOS app, you agree to be bound by these Terms of Use ("Terms"). If you do
+            not agree to these Terms, please do not use the Games.
           </p>
           <p>
             These Terms apply to all users of the Games, including those who access them through our
@@ -48,14 +50,17 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            We offer two daily word puzzle games provided by Good Vibes Games ("we," "us," or "our") for entertainment purposes:
+            We offer two daily word puzzle games provided by Good Vibes Games ("we," "us," or "our")
+            for entertainment purposes:
           </p>
           <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-3">
             <li>
-              <strong>Daily Tandem</strong>: Decode emoji pairs to guess words related to a daily theme
+              <strong>Daily Tandem</strong>: Decode emoji pairs to guess words related to a daily
+              theme
             </li>
             <li>
-              <strong>Daily Cryptic</strong>: Solve cryptic crossword-style clues with emoji hints and wordplay
+              <strong>Daily Cryptic</strong>: Solve cryptic crossword-style clues with emoji hints
+              and wordplay
             </li>
           </ul>
           <p>Features include:</p>
@@ -115,6 +120,7 @@ export default function TermsOfUse() {
 
           <div>
             <h4 className="font-semibold mb-2">Billing and Renewal</h4>
+            <p className="mb-2">Subscriptions are managed through Stripe (web) and Apple (iOS):</p>
             <p className="mb-2 text-sm">
               <strong>iOS App Store:</strong>
             </p>
@@ -155,8 +161,8 @@ export default function TermsOfUse() {
             <h4 className="font-semibold mb-2">Automatic Enrollment (Web Only)</h4>
             <p>
               When you create a free account on our web platform, you are automatically enrolled in
-              our global leaderboards to compete with players worldwide. Your username, avatar (if provided),
-              and gameplay performance will be publicly visible on leaderboards.
+              our global leaderboards to compete with players worldwide. Your username, avatar (if
+              provided), and gameplay performance will be publicly visible on leaderboards.
             </p>
           </div>
 
@@ -164,8 +170,8 @@ export default function TermsOfUse() {
             <h4 className="font-semibold mb-2">Opt-Out</h4>
             <p>
               You may disable leaderboard participation at any time in Settings. When disabled, your
-              scores will not appear on public leaderboards, though your gameplay statistics will still
-              be tracked privately for your personal use.
+              scores will not appear on public leaderboards, though your gameplay statistics will
+              still be tracked privately for your personal use.
             </p>
           </div>
 
@@ -176,7 +182,9 @@ export default function TermsOfUse() {
               <li>Play fairly without using automated tools, bots, or cheating methods</li>
               <li>Not manipulate scores or game times through technical exploits</li>
               <li>Use appropriate usernames free of offensive or inappropriate content</li>
-              <li>Not impersonate other players or create multiple accounts to manipulate rankings</li>
+              <li>
+                Not impersonate other players or create multiple accounts to manipulate rankings
+              </li>
             </ul>
           </div>
 
@@ -538,7 +546,15 @@ export default function TermsOfUse() {
       title: 'Contact Information',
       content: (
         <div className="space-y-3 text-sm">
-          <p>For questions about these Terms, contact us at:</p>
+          <p>For questions about these Terms, please contact us using our feedback form:</p>
+          <div className="mt-3">
+            <button
+              onClick={() => setShowFeedback(true)}
+              className="inline-block px-4 py-2 bg-[#38b6ff] hover:bg-[#2a9ee0] text-white font-semibold rounded-xl transition-colors"
+            >
+              Contact Support
+            </button>
+          </div>
           <div className="mt-3 space-y-1">
             <p>
               <strong>Good Vibes Games</strong>
@@ -588,108 +604,113 @@ export default function TermsOfUse() {
               <div className="relative">
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
-                  <Link
-                    href="/"
-                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-                    aria-label="Back to game"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                    <Link
+                      href="/"
+                      className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                      aria-label="Back to game"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </Link>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Terms of Use</h1>
-                  <HamburgerMenu
-                    isOpen={isSidebarOpen}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  />
-                </div>
-
-              {/* Summary Card */}
-              <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
-                <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Points</h3>
-                <ul className="text-sm space-y-1">
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span className="text-[#ff66c4]">•</span>
-                    Free to play daily puzzle
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span className="text-[#ff66c4]">•</span>
-                    Optional subscriptions for archive access
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span className="text-[#ff66c4]">•</span>
-                    Suitable for all ages
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span className="text-[#ff66c4]">•</span>
-                    Personal, non-commercial use only
-                  </li>
-                  <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <span className="text-[#ff66c4]">•</span>
-                    Subscriptions managed through Apple
-                  </li>
-                </ul>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 pt-0">
-                {/* Agreement statement */}
-                <div className="mb-6 p-4 bg-[#ff66c4]/10 border-[3px] border-[#ff66c4] rounded-2xl">
-                  <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                    By playing <strong>Daily Tandem</strong> or <strong>Daily Cryptic</strong>, you agree to these terms
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  {sections.map((section) => (
-                    <div
-                      key={section.id}
-                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                    >
-                      <button
-                        onClick={() =>
-                          setActiveSection(activeSection === section.id ? null : section.id)
-                        }
-                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      <svg
+                        className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">
-                          {section.title}
-                        </span>
-                        <svg
-                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </Link>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                      Terms of Use
+                    </h1>
+                    <HamburgerMenu
+                      isOpen={isSidebarOpen}
+                      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    />
+                  </div>
+
+                  {/* Summary Card */}
+                  <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                    <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                      Key Points
+                    </h3>
+                    <ul className="text-sm space-y-1">
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Free to play daily puzzle
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Optional subscriptions for archive access
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Suitable for all ages
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Personal, non-commercial use only
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Subscriptions managed through Apple
+                      </li>
+                    </ul>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 pt-0">
+                    <div className="space-y-2">
+                      {sections.map((section) => (
+                        <div
+                          key={section.id}
+                          className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
                         >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-                      {activeSection === section.id && (
-                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
-                          {section.content}
+                          <button
+                            onClick={() =>
+                              setActiveSection(activeSection === section.id ? null : section.id)
+                            }
+                            className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            <span className="font-semibold text-gray-800 dark:text-gray-200">
+                              {section.title}
+                            </span>
+                            <svg
+                              className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                          {activeSection === section.id && (
+                            <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                              {section.content}
+                            </div>
+                          )}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+
+                    {/* Agreement statement */}
+                    <div className="mt-6 p-4 bg-[#ff66c4]/10 border-[3px] border-[#ff66c4] rounded-2xl">
+                      <p className="text-sm text-center text-gray-700 dark:text-gray-300">
+                        By playing <strong>Daily Tandem</strong> or <strong>Daily Cryptic</strong>,
+                        you agree to these terms
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                </div>
-              </div>
                 {/* Faux drop shadow */}
                 <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
               </div>
@@ -713,6 +734,7 @@ export default function TermsOfUse() {
       <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

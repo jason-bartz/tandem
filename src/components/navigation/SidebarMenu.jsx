@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,7 +8,6 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
-import avatarService from '@/services/avatar.service';
 
 /**
  * SidebarMenu - Sliding sidebar navigation menu
@@ -32,33 +31,11 @@ export default function SidebarMenu({
   onOpenFeedback,
 }) {
   const { highContrast, reduceMotion, isDark, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, userProfile, profileLoading } = useAuth();
   const getIconPath = useUIIcon();
   const { lightTap } = useHaptics();
   const router = useRouter();
   const pathname = usePathname();
-  const [userProfile, setUserProfile] = useState(null);
-
-  // Load user profile with avatar
-  useEffect(() => {
-    const loadProfile = async () => {
-      if (!user?.id) {
-        setUserProfile(null);
-        return;
-      }
-
-      try {
-        const profile = await avatarService.getUserProfileWithAvatar(user.id);
-        setUserProfile(profile);
-      } catch (error) {
-        console.error('[SidebarMenu] Failed to load user profile:', error);
-      }
-    };
-
-    if (isOpen) {
-      loadProfile();
-    }
-  }, [user, isOpen]);
 
   // Close on escape key
   useEffect(() => {
@@ -100,18 +77,48 @@ export default function SidebarMenu({
     setTimeout(openFn, 200);
   };
 
-  // Get username from profile
+  // Get username with optimistic fallbacks
   const getUsername = () => {
     if (!user) return null;
-    return userProfile?.username || null;
+
+    // Try database profile first
+    if (userProfile?.username) {
+      return userProfile.username;
+    }
+
+    // Fallback to auth metadata
+    if (user.user_metadata?.username) {
+      return user.user_metadata.username;
+    }
+
+    // Fallback to email username (before @ sign)
+    if (user.email) {
+      return user.email.split('@')[0];
+    }
+
+    return null;
   };
 
-  // Get user's avatar URL
+  // Get user's avatar URL with optimistic fallbacks
   const getUserAvatar = () => {
     if (!user) return null;
-    // Check for avatar_image_path first (from getUserProfileWithAvatar)
-    // Then fall back to avatar_url for backward compatibility
-    return userProfile?.avatar_image_path || userProfile?.avatar_url || null;
+
+    // Try database profile first (preferred)
+    if (userProfile?.avatar_image_path) {
+      return userProfile.avatar_image_path;
+    }
+
+    // Fallback to legacy avatar_url
+    if (userProfile?.avatar_url) {
+      return userProfile.avatar_url;
+    }
+
+    // Fallback to auth metadata
+    if (user.user_metadata?.avatar_url) {
+      return user.user_metadata.avatar_url;
+    }
+
+    return null;
   };
 
   const username = getUsername();
@@ -315,16 +322,33 @@ export default function SidebarMenu({
                             : 'bg-accent-blue dark:bg-accent-pink border-border-main'
                         }`}
                       >
-                        {userAvatar ? (
+                        {profileLoading && !userAvatar && !username ? (
+                          /* Loading skeleton */
+                          <div className="w-full h-full bg-white/20 animate-pulse" />
+                        ) : userAvatar ? (
+                          /* User's selected avatar */
                           <img
                             src={userAvatar}
                             alt={username || 'User'}
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              // Fallback to default profile image on error
+                              e.target.onerror = null;
+                              e.target.src = '/images/avatars/default-profile.png';
+                            }}
                           />
-                        ) : (
+                        ) : username ? (
+                          /* Username initial as fallback */
                           <span className="text-xl font-bold text-white">
-                            {username ? username.charAt(0).toUpperCase() : 'U'}
+                            {username.charAt(0).toUpperCase()}
                           </span>
+                        ) : (
+                          /* Default profile image as final fallback */
+                          <img
+                            src="/images/avatars/default-profile.png"
+                            alt="Default profile"
+                            className="w-full h-full object-cover"
+                          />
                         )}
                       </div>
 
@@ -332,7 +356,12 @@ export default function SidebarMenu({
                       <div className="flex-1 min-w-0">
                         <p className="text-xs text-text-secondary">Hey</p>
                         <p className="text-base font-bold text-text-primary truncate">
-                          {username || 'Player'}!
+                          {profileLoading && !username ? (
+                            /* Loading skeleton for username */
+                            <span className="inline-block h-4 w-24 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
+                          ) : (
+                            <>{username || 'Player'}!</>
+                          )}
                         </p>
                       </div>
 
@@ -354,26 +383,31 @@ export default function SidebarMenu({
 
                     {/* Daily Horoscope - Integrated in same box */}
                     {zodiacData && horoscope && !horoscopeLoading && (
-                      <div className={`mt-3 pt-3 border-t-2 ${
-                        highContrast
-                          ? 'border-hc-border'
-                          : 'border-purple-200 dark:border-purple-800'
-                      }`}>
-                        <p className={`text-xs font-semibold mb-2 ${
-                          highContrast ? 'text-hc-text' : 'text-purple-700 dark:text-purple-300'
-                        }`}>
+                      <div
+                        className={`mt-3 pt-3 border-t-2 ${
+                          highContrast
+                            ? 'border-hc-border'
+                            : 'border-purple-200 dark:border-purple-800'
+                        }`}
+                      >
+                        <p
+                          className={`text-xs font-semibold mb-2 ${
+                            highContrast ? 'text-hc-text' : 'text-purple-700 dark:text-purple-300'
+                          }`}
+                        >
                           Today's Tandem Horoscope ({zodiacData.display}):
                         </p>
-                        <p className={`text-xs leading-relaxed ${
-                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                        }`}>
+                        <p
+                          className={`text-xs leading-relaxed ${
+                            highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                          }`}
+                        >
                           {horoscope.text}
                         </p>
                       </div>
                     )}
                   </button>
                 )}
-
               </section>
 
               {/* Navigation Section */}
@@ -421,23 +455,19 @@ export default function SidebarMenu({
                 <div className="space-y-2">
                   <GameButton
                     icon="/icons/ui/tandem.png"
-                    darkIcon="/icons/ui/tandem-dark.png"
                     label="Daily Tandem"
                     onClick={() => handleNavigation('/')}
                     isActive={pathname === '/'}
                     gameColor="blue"
                     highContrast={highContrast}
-                    isDark={isDark}
                   />
                   <GameButton
                     icon="/icons/ui/cryptic.png"
-                    darkIcon="/icons/ui/cryptic-dark.png"
                     label="Daily Cryptic"
                     onClick={() => handleNavigation('/dailycryptic')}
                     isActive={pathname === '/dailycryptic'}
                     gameColor="purple"
                     highContrast={highContrast}
-                    isDark={isDark}
                   />
                 </div>
               </section>
@@ -450,10 +480,7 @@ export default function SidebarMenu({
                   label="Privacy Policy"
                   onClick={() => handleNavigation('/privacypolicy')}
                 />
-                <FooterLink
-                  label="Terms of Service"
-                  onClick={() => handleNavigation('/terms')}
-                />
+                <FooterLink label="Terms of Service" onClick={() => handleNavigation('/terms')} />
               </section>
             </div>
           </motion.div>
@@ -485,8 +512,8 @@ function MenuButton({ icon, label, onClick, highContrast }) {
 /**
  * GameButton - Game selection button with active state and custom colors
  */
-function GameButton({ icon, darkIcon, label, onClick, isActive, gameColor, highContrast, isDark }) {
-  const iconSrc = isDark ? darkIcon : icon;
+function GameButton({ icon, label, onClick, isActive, gameColor, highContrast }) {
+  const iconSrc = icon;
 
   // Define colors for each game
   const getGameColors = () => {
@@ -519,8 +546,8 @@ function GameButton({ icon, darkIcon, label, onClick, isActive, gameColor, highC
             ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
             : `border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]`
           : highContrast
-          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-          : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-80 hover:opacity-100'
+            ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+            : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-80 hover:opacity-100'
       }`}
     >
       <img src={iconSrc} alt="" className="w-8 h-8" />

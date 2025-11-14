@@ -3,12 +3,14 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useUIIcon } from '@/hooks/useUIIcon';
 import { FEEDBACK_CATEGORIES } from '@/lib/constants';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 export default function FeedbackPane({ isOpen, onClose }) {
   const { user } = useAuth();
   const { highContrast } = useTheme();
+  const getIconPath = useUIIcon();
   const [formData, setFormData] = useState({
     category: FEEDBACK_CATEGORIES[0].value,
     message: '',
@@ -85,8 +87,8 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
       {/* Sliding Pane */}
       <div
-        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-white dark:bg-bg-surface shadow-2xl transform transition-transform duration-300 ease-in-out z-50 ${
-          isOpen ? 'translate-x-0' : '-translate-x-full'
+        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-white dark:bg-bg-surface shadow-2xl transform transition-all duration-300 ease-in-out z-50 ${
+          isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
         }`}
       >
         <div className="h-full overflow-y-auto">
@@ -105,7 +107,12 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   viewBox="0 0 24 24"
                   stroke="currentColor"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -221,22 +228,27 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       key={category.value}
                       type="button"
                       disabled={!user}
-                      onClick={() =>
-                        setFormData((prev) => ({ ...prev, category: category.value }))
-                      }
-                      className={`w-full text-left px-4 py-3 rounded-xl border-[3px] font-semibold text-sm transition-all ${
+                      onClick={() => setFormData((prev) => ({ ...prev, category: category.value }))}
+                      className={`w-full text-left px-4 py-3 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center gap-3 ${
                         !user
                           ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500'
                           : formData.category === category.value
-                          ? highContrast
-                            ? 'bg-hc-primary border-hc-border text-black'
-                            : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : highContrast
-                          ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
-                          : 'bg-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
+                            ? highContrast
+                              ? 'bg-hc-primary border-hc-border text-black'
+                              : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : highContrast
+                              ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
+                              : 'bg-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
                       }`}
                     >
-                      {category.label}
+                      {category.icon && (
+                        <img
+                          src={getIconPath(category.icon)}
+                          alt=""
+                          className="w-6 h-6 flex-shrink-0"
+                        />
+                      )}
+                      <span>{category.label}</span>
                     </button>
                   ))}
                 </div>
@@ -265,8 +277,8 @@ export default function FeedbackPane({ isOpen, onClose }) {
                     !user
                       ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
                       : highContrast
-                      ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
-                      : 'border-border-main bg-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                        ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
+                        : 'border-border-main bg-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
                   }`}
                   placeholder="Describe your feedback in detail. Include puzzle numbers, steps to reproduce bugs, or specific feature suggestions..."
                   maxLength={2000}
@@ -296,7 +308,9 @@ export default function FeedbackPane({ isOpen, onClose }) {
                     : 'border-border-main bg-gray-50 dark:bg-bg-card'
                 }`}
               >
-                <label className={`flex items-start gap-3 select-none ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+                <label
+                  className={`flex items-start gap-3 select-none ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                >
                   <input
                     type="checkbox"
                     disabled={!user}
@@ -304,8 +318,8 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       !user
                         ? 'cursor-not-allowed'
                         : highContrast
-                        ? 'border-hc-border'
-                        : 'border-gray-400 checked:bg-accent-blue checked:border-accent-blue'
+                          ? 'border-hc-border'
+                          : 'border-gray-400 checked:bg-accent-blue checked:border-accent-blue'
                     }`}
                     checked={formData.allowContact}
                     onChange={(event) =>
@@ -331,8 +345,8 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   highContrast
                     ? 'bg-hc-primary border-hc-border text-black hover:bg-hc-focus focus:ring-hc-focus/30'
                     : user && canSubmit && !submitting
-                    ? 'bg-accent-blue border-border-main text-white shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none focus:ring-accent-blue/30'
-                    : 'bg-gray-300 dark:bg-gray-600 border-border-main text-gray-500 dark:text-gray-400 cursor-not-allowed'
+                      ? 'bg-accent-blue border-border-main text-white shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none focus:ring-accent-blue/30'
+                      : 'bg-gray-300 dark:bg-gray-600 border-border-main text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}
               >
                 {submitting ? (

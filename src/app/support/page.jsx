@@ -11,9 +11,10 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 
 export default function Support() {
-  const { theme } = useTheme();
+  useTheme();
   const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -22,8 +23,9 @@ export default function Support() {
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
-  const tandemIcon = theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png';
+  const tandemIcon = '/icons/ui/tandem.png';
 
   // Daily Tandem sections
   const tandemSections = [
@@ -373,30 +375,46 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">What is Daily Cryptic?</h4>
             <p className="text-sm mb-3">
-              Daily Cryptic is a cryptic crossword-style puzzle game where each clue is a two-part puzzle:
-              a <strong>definition</strong> (straightforward meaning) and <strong>wordplay</strong> (clever
-              construction using cryptic devices).
+              Daily Cryptic is a cryptic crossword-style puzzle game where each clue is a two-part
+              puzzle: a <strong>definition</strong> (straightforward meaning) and{' '}
+              <strong>wordplay</strong> (clever construction using cryptic devices).
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">The Emoji Innovation</h4>
             <p className="text-sm mb-2">
-              Every Daily Cryptic puzzle uses <strong>exactly TWO emojis</strong> at the start of each clue.
-              These emojis can:
+              Every Daily Cryptic puzzle uses <strong>exactly TWO emojis</strong> at the start of
+              each clue. These emojis can:
             </p>
             <ul className="list-disc list-inside text-sm space-y-1 ml-4">
-              <li>Work <strong>together</strong> to represent one concept (🐝🦂 = STING)</li>
-              <li>Each represent <strong>different parts</strong> of the clue (⚡ = indicator, 🏴‍☠️ = definition)</li>
+              <li>
+                Work <strong>together</strong> to represent one concept (🐝🦂 = STING)
+              </li>
+              <li>
+                Each represent <strong>different parts</strong> of the clue (⚡ = indicator, 🏴‍☠️ =
+                definition)
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Daily Puzzle Features</h4>
             <ul className="list-disc list-inside text-sm space-y-1">
-              <li><strong>One puzzle daily</strong> at midnight in your local time</li>
-              <li><strong>4-tier hint system</strong> to help you learn (Fodder, Indicator, Definition, Letter)</li>
-              <li><strong>Archive access</strong> to play previous puzzles</li>
-              <li><strong>Dark mode support</strong> for comfortable solving</li>
-              <li><strong>No time limit</strong> - solve at your own pace</li>
+              <li>
+                <strong>One puzzle daily</strong> at midnight in your local time
+              </li>
+              <li>
+                <strong>4-tier hint system</strong> to help you learn (Fodder, Indicator,
+                Definition, Letter)
+              </li>
+              <li>
+                <strong>Archive access</strong> to play previous puzzles
+              </li>
+              <li>
+                <strong>Dark mode support</strong> for comfortable solving
+              </li>
+              <li>
+                <strong>No time limit</strong> - solve at your own pace
+              </li>
             </ul>
           </div>
         </div>
@@ -418,14 +436,18 @@ export default function Support() {
                   <span className="text-2xl">👑🦁</span>
                   <span className="font-semibold">→ ROYAL, PRIDE, or KING</span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Both together = regal concepts</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Both together = regal concepts
+                </p>
               </div>
               <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-2xl">🐝🦂</span>
                   <span className="font-semibold">→ STING or STINGING</span>
                 </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">Both together = stinging creatures</p>
+                <p className="text-xs text-gray-600 dark:text-gray-400">
+                  Both together = stinging creatures
+                </p>
               </div>
             </div>
           </div>
@@ -457,9 +479,9 @@ export default function Support() {
           </div>
           <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-400">
             <p className="text-sm">
-              <strong>💡 Key Insight:</strong> Look at the rest of the clue for context. The emojis provide
-              fodder (building blocks), indicators (operations), or thematic hints. They never directly show
-              the final answer!
+              <strong>💡 Key Insight:</strong> Look at the rest of the clue for context. The emojis
+              provide fodder (building blocks), indicators (operations), or thematic hints. They
+              never directly show the final answer!
             </p>
           </div>
         </div>
@@ -471,7 +493,8 @@ export default function Support() {
       content: (
         <div className="space-y-4">
           <p className="text-sm mb-3">
-            Cryptic clues use various "devices" or techniques to construct the answer. Here are the most common:
+            Cryptic clues use various "devices" or techniques to construct the answer. Here are the
+            most common:
           </p>
           <div className="space-y-3 text-sm">
             <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
@@ -540,8 +563,8 @@ export default function Support() {
           </div>
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400">
             <p className="text-sm">
-              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine emoji interpretation with 2-3
-              traditional devices. Look for multiple indicator words in the clue!
+              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine emoji interpretation with
+              2-3 traditional devices. Look for multiple indicator words in the clue!
             </p>
           </div>
         </div>
@@ -553,27 +576,29 @@ export default function Support() {
       content: (
         <div className="space-y-4">
           <p className="text-sm mb-3">
-            Daily Cryptic offers a 4-tier progressive hint system. Each hint builds on the previous one:
+            Daily Cryptic offers a 4-tier progressive hint system. Each hint builds on the previous
+            one:
           </p>
           <div className="space-y-3">
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
               <div className="font-semibold mb-1">1. Fodder (Most Detailed)</div>
               <p className="text-sm">
-                Identifies all components: what the emoji pair represents, what each piece of text means,
-                any substitutions needed. Walks you through the raw materials.
+                Identifies all components: what the emoji pair represents, what each piece of text
+                means, any substitutions needed. Walks you through the raw materials.
               </p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
               <div className="font-semibold mb-1">2. Indicator (Operational)</div>
               <p className="text-sm">
-                Points out indicator words and what cryptic operations they signal. Tells you what to DO
-                with the fodder (rearrange? reverse? combine?).
+                Points out indicator words and what cryptic operations they signal. Tells you what
+                to DO with the fodder (rearrange? reverse? combine?).
               </p>
             </div>
             <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300">
               <div className="font-semibold mb-1">3. Definition (Concise)</div>
               <p className="text-sm">
-                Reveals which part of the clue is the straightforward definition - your synonym for the answer.
+                Reveals which part of the clue is the straightforward definition - your synonym for
+                the answer.
               </p>
             </div>
             <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
@@ -595,41 +620,43 @@ export default function Support() {
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">1.</span>
               <div>
-                <span className="font-semibold">Start with the emojis</span> - What do they suggest? They might
-                work together or serve different roles.
+                <span className="font-semibold">Start with the emojis</span> - What do they suggest?
+                They might work together or serve different roles.
               </div>
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">2.</span>
               <div>
-                <span className="font-semibold">Find the definition</span> - Usually at the start or end of the
-                clue, it's a straightforward synonym for the answer.
+                <span className="font-semibold">Find the definition</span> - Usually at the start or
+                end of the clue, it's a straightforward synonym for the answer.
               </div>
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">3.</span>
               <div>
-                <span className="font-semibold">Spot the indicators</span> - Words like "mixed", "back", "in",
-                "loses" tell you what operation to perform.
+                <span className="font-semibold">Spot the indicators</span> - Words like "mixed",
+                "back", "in", "loses" tell you what operation to perform.
               </div>
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">4.</span>
               <div>
-                <span className="font-semibold">Identify the fodder</span> - Which words/letters will you manipulate?
+                <span className="font-semibold">Identify the fodder</span> - Which words/letters
+                will you manipulate?
               </div>
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">5.</span>
               <div>
-                <span className="font-semibold">Use hints progressively</span> - Start with Hint 1, then 2, etc.
-                They build on each other!
+                <span className="font-semibold">Use hints progressively</span> - Start with Hint 1,
+                then 2, etc. They build on each other!
               </div>
             </li>
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">6.</span>
               <div>
-                <span className="font-semibold">Think laterally</span> - Cryptic clues reward creative thinking.
+                <span className="font-semibold">Think laterally</span> - Cryptic clues reward
+                creative thinking.
               </div>
             </li>
           </ul>
@@ -698,10 +725,9 @@ export default function Support() {
             <div>
               <p className="font-medium">Q: How do I delete my account?</p>
               <p>
-                A: You can delete your account directly in the app. Web users: Go to Account page
-                → Danger Zone → Delete Account. iOS users: Go to Settings → Account → Manage
-                Account → Danger Zone → Delete Account. You will be asked to confirm before
-                deletion proceeds.
+                A: You can delete your account directly in the app. Web users: Go to Account page →
+                Danger Zone → Delete Account. iOS users: Go to Settings → Account → Manage Account →
+                Danger Zone → Delete Account. You will be asked to confirm before deletion proceeds.
               </p>
             </div>
             <div>
@@ -717,10 +743,9 @@ export default function Support() {
               <p className="font-medium">Q: Will deleting my account cancel my subscription?</p>
               <p>
                 A: No! Account deletion does NOT cancel your subscription. You must cancel
-                separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web:
-                Cancel via the Stripe billing portal (accessible from Account page → Manage
-                Account). Cancel your subscription BEFORE deleting your account to avoid continued
-                billing.
+                separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web: Cancel
+                via the Stripe billing portal (accessible from Account page → Manage Account).
+                Cancel your subscription BEFORE deleting your account to avoid continued billing.
               </p>
             </div>
             <div>
@@ -742,8 +767,17 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">Get in Touch</h4>
             <p className="text-sm mb-4">
-              We're here to help! If you couldn't find an answer to your question, please reach out:
+              We're here to help! If you couldn't find an answer to your question, please use our
+              feedback form:
             </p>
+            <div className="mb-4">
+              <button
+                onClick={() => setShowFeedback(true)}
+                className="inline-block px-4 py-2 bg-[#38b6ff] hover:bg-[#2a9ee0] text-white font-semibold rounded-xl transition-colors"
+              >
+                Submit Feedback
+              </button>
+            </div>
             <div className="space-y-2 text-sm">
               <p>
                 <strong>Email</strong>: support@goodvibesgames.com
@@ -758,19 +792,6 @@ export default function Support() {
                 <strong>Website</strong>: tandemdaily.com
               </p>
             </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">When Contacting Support</h4>
-            <p className="text-sm mb-2">Please include:</p>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              <li>Which game (Daily Tandem or Daily Cryptic)</li>
-              <li>Platform (iOS app or PWA)</li>
-              <li>Device type and operating system</li>
-              <li>App version (iOS) or browser name and version (PWA)</li>
-              <li>Description of the issue</li>
-              <li>Screenshots if applicable</li>
-              <li>Steps you've already tried</li>
-            </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-2">Join Our Community</h4>
@@ -807,9 +828,10 @@ export default function Support() {
     },
   ];
 
-  const currentSections = activeGame === 'tandem'
-    ? [...tandemSections, ...sharedSections]
-    : [...crypticSections, ...sharedSections];
+  const currentSections =
+    activeGame === 'tandem'
+      ? [...tandemSections, ...sharedSections]
+      : [...crypticSections, ...sharedSections];
 
   // Simulate initial loading
   useEffect(() => {
@@ -833,154 +855,158 @@ export default function Support() {
                 {/* Main content card */}
                 <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
-                  <Link
-                    href="/"
-                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-                    aria-label="Back to game"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
+                  <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                    <Link
+                      href="/"
+                      className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                      aria-label="Back to game"
                     >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </Link>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Support & Help</h1>
-                  <HamburgerMenu
-                    isOpen={isSidebarOpen}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  />
-                </div>
-
-                {/* Game Toggle */}
-                <div className="p-6 pb-4">
-                  <div className="flex gap-2">
-                  <button
-                    onClick={() => {
-                      setActiveGame('tandem');
-                      setActiveSection(null);
-                    }}
-                    className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                      activeGame === 'tandem'
-                        ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Image
-                        src={tandemIcon}
-                        alt="Daily Tandem"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6"
-                      />
-                      <span>Daily Tandem</span>
-                    </div>
-                  </button>
-                  <button
-                    onClick={() => {
-                      setActiveGame('cryptic');
-                      setActiveSection(null);
-                    }}
-                    className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                      activeGame === 'cryptic'
-                        ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
-                    }`}
-                  >
-                    <div className="flex items-center justify-center gap-2">
-                      <Image
-                        src="/icons/ui/cryptic.png"
-                        alt="Daily Cryptic"
-                        width={24}
-                        height={24}
-                        className="w-6 h-6 rounded-lg"
-                      />
-                      <span>Daily Cryptic</span>
-                    </div>
-                  </button>
-                </div>
-              </div>
-
-              {/* Content */}
-              <div className="p-6 pt-0">
-                <div className="space-y-2">
-                  {currentSections.map((section) => (
-                    <div
-                      key={section.id}
-                      className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
-                    >
-                      <button
-                        onClick={() =>
-                          setActiveSection(activeSection === section.id ? null : section.id)
-                        }
-                        className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                      <svg
+                        className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
                       >
-                        <span className="font-semibold text-gray-800 dark:text-gray-200">
-                          {section.title}
-                        </span>
-                        <svg
-                          className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M19 9l-7 7-7-7"
-                          />
-                        </svg>
-                      </button>
-                      {activeSection === section.id && (
-                        <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
-                          {section.content}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 19l-7-7 7-7"
+                        />
+                      </svg>
+                    </Link>
+                    <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                      Support & Help
+                    </h1>
+                    <HamburgerMenu
+                      isOpen={isSidebarOpen}
+                      onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                    />
+                  </div>
 
-                {/* System Requirements */}
-                <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
-                  <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
-                    System Requirements
-                  </h3>
-                  <div className="grid md:grid-cols-2 gap-4 text-sm">
-                    <div>
-                      <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">iOS App</h4>
-                      <ul className="text-gray-600 dark:text-gray-400 space-y-1">
-                        <li>• iPhone or iPad</li>
-                        <li>• iOS 14.0 or later</li>
-                        <li>• 50MB free storage</li>
-                      </ul>
+                  {/* Game Toggle */}
+                  <div className="p-6 pb-4">
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setActiveGame('tandem');
+                          setActiveSection(null);
+                        }}
+                        className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          activeGame === 'tandem'
+                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Image
+                            src={tandemIcon}
+                            alt="Daily Tandem"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                          <span>Daily Tandem</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveGame('cryptic');
+                          setActiveSection(null);
+                        }}
+                        className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          activeGame === 'cryptic'
+                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-2">
+                          <Image
+                            src="/icons/ui/cryptic.png"
+                            alt="Daily Cryptic"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6 rounded-lg"
+                          />
+                          <span>Daily Cryptic</span>
+                        </div>
+                      </button>
                     </div>
-                    <div>
-                      <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">
-                        Web (PWA)
-                      </h4>
-                      <ul className="text-gray-600 dark:text-gray-400 space-y-1">
-                        <li>• Chrome 90+, Safari 14+</li>
-                        <li>• Active internet connection</li>
-                        <li>• JavaScript enabled</li>
-                      </ul>
+                  </div>
+
+                  {/* Content */}
+                  <div className="p-6 pt-0">
+                    <div className="space-y-2">
+                      {currentSections.map((section) => (
+                        <div
+                          key={section.id}
+                          className="border-[3px] border-black dark:border-white rounded-2xl overflow-hidden"
+                        >
+                          <button
+                            onClick={() =>
+                              setActiveSection(activeSection === section.id ? null : section.id)
+                            }
+                            className="w-full px-4 py-3 flex items-center justify-between bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
+                          >
+                            <span className="font-semibold text-gray-800 dark:text-gray-200">
+                              {section.title}
+                            </span>
+                            <svg
+                              className={`h-5 w-5 text-gray-800 dark:text-gray-200 transition-transform ${activeSection === section.id ? 'rotate-180' : ''}`}
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 9l-7 7-7-7"
+                              />
+                            </svg>
+                          </button>
+                          {activeSection === section.id && (
+                            <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                              {section.content}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* System Requirements */}
+                    <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                      <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
+                        System Requirements
+                      </h3>
+                      <div className="grid md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            iOS App
+                          </h4>
+                          <ul className="text-gray-600 dark:text-gray-400 space-y-1">
+                            <li>• iPhone or iPad</li>
+                            <li>• iOS 14.0 or later</li>
+                            <li>• 50MB free storage</li>
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-medium mb-1 text-gray-700 dark:text-gray-300">
+                            Web (PWA)
+                          </h4>
+                          <ul className="text-gray-600 dark:text-gray-400 space-y-1">
+                            <li>• Chrome 90+, Safari 14+</li>
+                            <li>• Active internet connection</li>
+                            <li>• JavaScript enabled</li>
+                          </ul>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
+                {/* Faux drop shadow */}
+                <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
               </div>
-            </div>
-              {/* Faux drop shadow */}
-              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
-            </div>
             )}
           </div>
         </div>
@@ -1001,6 +1027,7 @@ export default function Support() {
       <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

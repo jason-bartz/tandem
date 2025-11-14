@@ -19,7 +19,7 @@ import Image from 'next/image';
  * @param {number} achievement.currentValue - User's current value
  */
 export default function AchievementCard({ achievement }) {
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
 
   const { isUnlocked, progress, name, description, imageFilename, threshold, currentValue } =
     achievement;
@@ -40,7 +40,7 @@ export default function AchievementCard({ achievement }) {
       {!isUnlocked && (
         <div className="absolute inset-0 rounded-2xl bg-black/20 dark:bg-black/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
           <Image
-            src={theme === 'dark' ? '/icons/ui/lock-dark.png' : '/icons/ui/lock.png'}
+            src="/icons/ui/lock.png"
             alt="Locked"
             width={32}
             height={32}

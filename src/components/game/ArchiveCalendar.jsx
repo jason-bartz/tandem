@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import CalendarDayCell from './CalendarDayCell';
 import CalendarDatePicker from './CalendarDatePicker';
 import PaywallModal from '@/components/PaywallModal';
+import CalendarSkeleton from '@/components/shared/CalendarSkeleton';
 import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import subscriptionService from '@/services/subscriptionService';
@@ -476,17 +477,11 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1 mb-6">
-            {isLoading
-              ? // Loading skeleton
-                Array.from({ length: 35 }).map((_, i) => (
-                  <div
-                    key={i}
-                    className="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"
-                  />
-                ))
-              : generateCalendarDays()}
-          </div>
+          {isLoading ? (
+            <CalendarSkeleton />
+          ) : (
+            <div className="grid grid-cols-7 gap-1 mb-6">{generateCalendarDays()}</div>
+          )}
 
           {/* Legend */}
           <div className="flex flex-wrap gap-3 mb-4 text-xs">

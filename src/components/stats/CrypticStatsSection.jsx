@@ -35,12 +35,7 @@ export default function CrypticStatsSection({ stats, animationKey }) {
 
   return (
     <>
-      <StatsSection
-        title="Daily Cryptic"
-        icon="/icons/ui/cryptic.png"
-        iconDark="/icons/ui/cryptic-dark.png"
-        themeColor="purple"
-      >
+      <StatsSection title="Daily Cryptic" icon="/icons/ui/cryptic.png" themeColor="purple">
         {/* All Stats in a Row */}
         <div className="grid grid-cols-4 gap-3 mb-3">
           <StatCard value={animatedCompleted} label="Played" />

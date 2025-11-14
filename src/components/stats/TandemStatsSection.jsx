@@ -31,12 +31,7 @@ export default function TandemStatsSection({ stats, animationKey }) {
 
   return (
     <>
-      <StatsSection
-        title="Daily Tandem"
-        icon="/icons/ui/tandem.png"
-        iconDark="/icons/ui/tandem-dark.png"
-        themeColor="blue"
-      >
+      <StatsSection title="Daily Tandem" icon="/icons/ui/tandem.png" themeColor="blue">
         {/* All Stats in a Row */}
         <div className="grid grid-cols-4 gap-3 mb-3">
           <StatCard value={animatedPlayed} label="Played" />

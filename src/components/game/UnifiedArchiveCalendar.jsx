@@ -7,6 +7,7 @@ import CalendarDayCell from './CalendarDayCell';
 import CalendarDatePicker from './CalendarDatePicker';
 import PaywallModal from '@/components/PaywallModal';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import CalendarSkeleton from '@/components/shared/CalendarSkeleton';
 import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import subscriptionService from '@/services/subscriptionService';
@@ -42,7 +43,12 @@ import { getCompletedCrypticPuzzles } from '@/lib/crypticStorage';
  * @param {Function} props.onSelectPuzzle - Puzzle selection handler for Tandem (puzzleNumber)
  * @param {string} props.defaultTab - Default tab to show ('tandem' or 'cryptic')
  */
-export default function UnifiedArchiveCalendar({ isOpen, onClose, onSelectPuzzle, defaultTab = 'tandem' }) {
+export default function UnifiedArchiveCalendar({
+  isOpen,
+  onClose,
+  onSelectPuzzle,
+  defaultTab = 'tandem',
+}) {
   const router = useRouter();
   const { highContrast } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
@@ -85,7 +91,8 @@ export default function UnifiedArchiveCalendar({ isOpen, onClose, onSelectPuzzle
 
   // Current first puzzle date based on active tab
   const firstPuzzleDate = activeTab === 'tandem' ? firstTandemPuzzleDate : firstCrypticPuzzleDate;
-  const firstPuzzleMonth = activeTab === 'tandem' ? firstTandemPuzzleMonth : firstCrypticPuzzleMonth;
+  const firstPuzzleMonth =
+    activeTab === 'tandem' ? firstTandemPuzzleMonth : firstCrypticPuzzleMonth;
   const firstPuzzleYear = activeTab === 'tandem' ? firstTandemPuzzleYear : firstCrypticPuzzleYear;
 
   // Get today's date in local timezone
@@ -218,29 +225,32 @@ export default function UnifiedArchiveCalendar({ isOpen, onClose, onSelectPuzzle
   /**
    * Load puzzles for the current month based on active tab
    */
-  const loadMonthData = useCallback(async (month, year) => {
-    // Cancel previous request
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-    abortControllerRef.current = new AbortController();
-
-    setIsLoading(true);
-
-    try {
-      let result;
-      if (activeTab === 'tandem') {
-        result = await loadTandemMonthData(month, year);
-      } else {
-        result = await loadCrypticMonthData(month, year);
+  const loadMonthData = useCallback(
+    async (month, year) => {
+      // Cancel previous request
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
       }
+      abortControllerRef.current = new AbortController();
 
-      setPuzzleData(result.monthData);
-      setPuzzleAccessMap(result.accessMap);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [activeTab, loadTandemMonthData, loadCrypticMonthData]);
+      setIsLoading(true);
+
+      try {
+        let result;
+        if (activeTab === 'tandem') {
+          result = await loadTandemMonthData(month, year);
+        } else {
+          result = await loadCrypticMonthData(month, year);
+        }
+
+        setPuzzleData(result.monthData);
+        setPuzzleAccessMap(result.accessMap);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [activeTab, loadTandemMonthData, loadCrypticMonthData]
+  );
 
   // Load data when month/year changes, modal opens, or tab changes
   useEffect(() => {
@@ -512,7 +522,6 @@ export default function UnifiedArchiveCalendar({ isOpen, onClose, onSelectPuzzle
           </div>
         }
       >
-
         {/* Month/Year Navigation */}
         <div className="flex items-center justify-between mb-6 mt-2">
           <button
@@ -606,17 +615,11 @@ export default function UnifiedArchiveCalendar({ isOpen, onClose, onSelectPuzzle
         </div>
 
         {/* Calendar grid */}
-        <div className="grid grid-cols-7 gap-2 mb-8">
-          {isLoading
-            ? // Loading skeleton
-              Array.from({ length: 35 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 animate-pulse"
-                />
-              ))
-            : generateCalendarDays()}
-        </div>
+        {isLoading ? (
+          <CalendarSkeleton />
+        ) : (
+          <div className="grid grid-cols-7 gap-2 mb-8">{generateCalendarDays()}</div>
+        )}
 
         {/* Legend */}
         <div className="flex flex-wrap gap-4 text-xs mb-2">

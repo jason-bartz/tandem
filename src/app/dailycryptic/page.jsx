@@ -107,7 +107,8 @@ export default function DailyCrypticPage() {
           </h1>
 
           <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
-            The daily puzzle is free for all account holders, but the archive is exclusive to Tandem Unlimited subscribers.
+            The daily puzzle is free for all account holders, but the archive is exclusive to Tandem
+            Unlimited subscribers.
           </p>
 
           <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
@@ -118,7 +119,8 @@ export default function DailyCrypticPage() {
               <li className="flex items-start">
                 <span className="text-accent-green text-xl mr-3 flex-shrink-0">✓</span>
                 <span className="text-gray-800 dark:text-gray-200 pt-0.5">
-                  Play all past puzzles in the archive for both Tandem emoji word puzzle and Daily Cryptic
+                  Play all past puzzles in the archive for both Tandem emoji word puzzle and Daily
+                  Cryptic
                 </span>
               </li>
               <li className="flex items-start">
@@ -233,17 +235,21 @@ export default function DailyCrypticPage() {
         )}
 
         {cryptic.gameState === CRYPTIC_GAME_STATES.COMPLETE && (
-          <CrypticCompleteScreen
-            puzzle={cryptic.puzzle}
-            answer={cryptic.correctAnswer}
-            userAnswer={cryptic.userAnswer}
-            hintsUsed={cryptic.hintsUsed}
-            elapsedTime={cryptic.elapsedTime}
-            attempts={cryptic.attempts}
-            currentPuzzleDate={cryptic.currentPuzzleDate}
-            onPlayAgain={() => cryptic.loadPuzzle()}
-            onReturnHome={() => (window.location.href = '/')}
-          />
+          <div className="flex items-center justify-center min-h-screen p-4">
+            <div className="w-full max-w-2xl">
+              <CrypticCompleteScreen
+                puzzle={cryptic.puzzle}
+                answer={cryptic.correctAnswer}
+                userAnswer={cryptic.userAnswer}
+                hintsUsed={cryptic.hintsUsed}
+                elapsedTime={cryptic.elapsedTime}
+                attempts={cryptic.attempts}
+                currentPuzzleDate={cryptic.currentPuzzleDate}
+                onPlayAgain={() => cryptic.loadPuzzle()}
+                onReturnHome={() => (window.location.href = '/')}
+              />
+            </div>
+          </div>
         )}
       </div>
 

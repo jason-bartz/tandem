@@ -9,7 +9,6 @@ import CrypticPuzzleCalendar from '@/components/admin/cryptic/CrypticPuzzleCalen
 import CrypticPuzzleEditor from '@/components/admin/cryptic/CrypticPuzzleEditor';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import authService from '@/services/auth.service';
-import { useTheme } from '@/contexts/ThemeContext';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('tandem');
@@ -20,7 +19,6 @@ export default function AdminDashboard() {
   const [mounted, setMounted] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [feedbackCounts, setFeedbackCounts] = useState(null);
-  const { isDark } = useTheme();
 
   // Cryptic puzzle state
   const [crypticPuzzles, setCrypticPuzzles] = useState([]);
@@ -151,12 +149,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image
-              src={isDark ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png'}
-              alt=""
-              width={20}
-              height={20}
-            />
+            <Image src="/icons/ui/tandem.png" alt="" width={20} height={20} />
             Tandem
           </button>
           <button
@@ -170,12 +163,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image
-              src={isDark ? '/icons/ui/cryptic-dark.png' : '/icons/ui/cryptic.png'}
-              alt=""
-              width={20}
-              height={20}
-            />
+            <Image src="/icons/ui/cryptic.png" alt="" width={20} height={20} />
             Cryptic
           </button>
           <button
@@ -189,12 +177,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image
-              src={isDark ? '/icons/ui/feedback-dark.png' : '/icons/ui/feedback.png'}
-              alt=""
-              width={20}
-              height={20}
-            />
+            <Image src="/icons/ui/feedback.png" alt="" width={20} height={20} />
             Feedback
             {feedbackCounts?.new > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
@@ -213,7 +196,11 @@ export default function AdminDashboard() {
               <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                   <h3 className="text-base sm:text-lg font-bold text-text-primary">
-                    {tandemSubTab === 'calendar' ? 'Daily Tandem Calendar' : tandemSubTab === 'editor' ? 'Puzzle Editor' : 'Theme Tracker'}
+                    {tandemSubTab === 'calendar'
+                      ? 'Daily Tandem Calendar'
+                      : tandemSubTab === 'editor'
+                        ? 'Puzzle Editor'
+                        : 'Theme Tracker'}
                   </h3>
                   <div className="flex items-center space-x-1 sm:space-x-2">
                     <button
@@ -224,12 +211,7 @@ export default function AdminDashboard() {
                           : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20'
                       }`}
                     >
-                      <Image
-                        src={isDark ? '/icons/ui/archive-dark.png' : '/icons/ui/archive.png'}
-                        alt=""
-                        width={16}
-                        height={16}
-                      />
+                      <Image src="/icons/ui/archive.png" alt="" width={16} height={16} />
                       <span className="hidden sm:inline">Calendar</span>
                     </button>
                     <button
@@ -240,12 +222,7 @@ export default function AdminDashboard() {
                           : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-green/20'
                       }`}
                     >
-                      <Image
-                        src={isDark ? '/icons/ui/editor-dark.png' : '/icons/ui/editor.png'}
-                        alt=""
-                        width={16}
-                        height={16}
-                      />
+                      <Image src="/icons/ui/editor.png" alt="" width={16} height={16} />
                       <span className="hidden sm:inline">Editor</span>
                     </button>
                     <button
@@ -256,12 +233,7 @@ export default function AdminDashboard() {
                           : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-pink/20'
                       }`}
                     >
-                      <Image
-                        src={isDark ? '/icons/ui/theme-dark.png' : '/icons/ui/theme.png'}
-                        alt=""
-                        width={16}
-                        height={16}
-                      />
+                      <Image src="/icons/ui/theme.png" alt="" width={16} height={16} />
                       <span className="hidden sm:inline">Themes</span>
                     </button>
                   </div>
@@ -356,9 +328,7 @@ export default function AdminDashboard() {
             )}
           </div>
         )}
-        {activeTab === 'feedback' && (
-          <FeedbackDashboard onCountsChange={setFeedbackCounts} />
-        )}
+        {activeTab === 'feedback' && <FeedbackDashboard onCountsChange={setFeedbackCounts} />}
       </div>
 
       {showBulkImport && (

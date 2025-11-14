@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import adminService from '@/services/admin.service';
 import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS, FEEDBACK_STATUS_OPTIONS } from '@/lib/constants';
+import FeedbackDashboardSkeleton from '@/components/shared/FeedbackDashboardSkeleton';
+import { useUIIcon } from '@/hooks/useUIIcon';
 
 const categoryLookup = FEEDBACK_CATEGORIES.reduce((acc, category) => {
   acc[category.value] = category;
@@ -34,6 +36,7 @@ function formatTimestamp(value) {
 }
 
 export default function FeedbackDashboard({ onCountsChange }) {
+  const getIconPath = useUIIcon();
   const [feedback, setFeedback] = useState([]);
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -49,9 +52,10 @@ export default function FeedbackDashboard({ onCountsChange }) {
   }, [statusFilter]);
 
   const filteredFeedback = useMemo(() => {
-    let filtered = categoryFilter === 'all'
-      ? feedback
-      : feedback.filter((entry) => entry.category === categoryFilter);
+    const filtered =
+      categoryFilter === 'all'
+        ? feedback
+        : feedback.filter((entry) => entry.category === categoryFilter);
 
     // Sort by created date
     const sorted = [...filtered].sort((a, b) => {
@@ -136,7 +140,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
 
   const updateEntryLocally = (updatedEntry) => {
     if (!updatedEntry) return;
-    setFeedback((prev) => prev.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry)));
+    setFeedback((prev) =>
+      prev.map((entry) => (entry.id === updatedEntry.id ? updatedEntry : entry))
+    );
   };
 
   return (
@@ -145,7 +151,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
           <div>
-            <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">Feedback Management</p>
+            <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
+              Feedback Management
+            </p>
             <h2 className="text-2xl font-black text-text-primary">Player Feedback</h2>
           </div>
           {summary && (
@@ -160,7 +168,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
 
         {/* Status Tabs */}
         {summary && (
-          <div className="flex gap-1.5 sm:gap-2 border-b-[3px] border-black dark:border-white pb-1 overflow-x-auto">
+          <div className="flex gap-1.5 sm:gap-2 border-b-[3px] border-black dark:border-white overflow-x-auto">
             {summary.map((item) => {
               const isActive = statusFilter === item.value;
               const colorClasses = {
@@ -178,16 +186,20 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   onClick={() => setStatusFilter(item.value)}
                   className={`relative px-3 sm:px-4 py-2 sm:py-3 border-[3px] border-black dark:border-white font-bold text-xs sm:text-sm transition-all rounded-t-lg whitespace-nowrap ${
                     isActive
-                      ? `${color} text-white border-b-[0px] mb-[-4px] z-10 shadow-none`
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 mb-0'
+                      ? `${color} text-white border-b-[0px] mb-[-3px] z-10 shadow-none`
+                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <span className="hidden sm:inline">{item.label}</span>
                     <span className="sm:hidden">{item.label.split(' ')[0]}</span>
-                    <span className={`min-w-[20px] sm:min-w-[24px] px-1 sm:px-1.5 py-0.5 rounded text-xs font-black ${
-                      isActive ? 'bg-white/20 text-white' : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                    }`}>
+                    <span
+                      className={`min-w-[20px] sm:min-w-[24px] px-1 sm:px-1.5 py-0.5 rounded text-xs font-black ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+                      }`}
+                    >
                       {item.count}
                     </span>
                   </div>
@@ -200,7 +212,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
         {/* Category Filters and Sort */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">Filter:</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">
+              Filter:
+            </span>
             <div className="flex flex-wrap gap-1.5 sm:gap-2">
               <button
                 onClick={() => setCategoryFilter('all')}
@@ -229,7 +243,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
           </div>
 
           <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">Sort:</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">
+              Sort:
+            </span>
             <div className="flex gap-1.5 sm:gap-2">
               <button
                 onClick={() => setSortOrder('newest')}
@@ -258,11 +274,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
         </div>
       </div>
 
-      {loading && (
-        <div className="flex justify-center py-16">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-border-main" />
-        </div>
-      )}
+      {loading && <FeedbackDashboardSkeleton />}
 
       {error && (
         <div className="rounded-xl border-[3px] border-accent-red bg-accent-red/10 dark:bg-accent-red/20 shadow-[4px_4px_0px_rgba(239,68,68,0.4)] p-4">
@@ -278,7 +290,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
       {!loading && !hasFeedback && (
         <div className="rounded-xl border-[3px] border-black dark:border-white bg-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] p-12 text-center">
           <div className="max-w-md mx-auto">
-            <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">No Feedback Found</p>
+            <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
+              No Feedback Found
+            </p>
             <p className="text-xs text-gray-500">No items match the current filters.</p>
           </div>
         </div>
@@ -299,17 +313,28 @@ export default function FeedbackDashboard({ onCountsChange }) {
               {/* Compact Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">
                 <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4">
-                  <span className="px-2 py-1 rounded bg-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200">
+                  <span className="px-2 py-1 rounded bg-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                    {category.icon && (
+                      <img
+                        src={getIconPath(category.icon)}
+                        alt=""
+                        className="w-4 h-4 flex-shrink-0"
+                      />
+                    )}
                     {category.label}
                   </span>
-                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">{formatTimestamp(entry.createdAt)}</span>
+                  <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                    {formatTimestamp(entry.createdAt)}
+                  </span>
                 </div>
                 <select
                   value={entry.status}
                   onChange={(event) => handleStatusChange(entry.id, event.target.value)}
                   disabled={isStatusUpdating}
                   className={`w-full sm:w-auto px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all ${
-                    isStatusUpdating ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-50 dark:hover:bg-gray-600'
+                    isStatusUpdating
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:bg-gray-50 dark:hover:bg-gray-600'
                   }`}
                 >
                   {FEEDBACK_STATUS_OPTIONS.map((option) => (
@@ -325,29 +350,45 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 {/* User Section */}
                 <div className="p-4 sm:p-5 space-y-4">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">User Details</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+                      User Details
+                    </h3>
                     <div className="space-y-2">
                       <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Username</span>
-                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">{entry.username || 'Anonymous'}</span>
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                          Username
+                        </span>
+                        <span className="text-sm font-bold text-gray-900 dark:text-gray-100">
+                          {entry.username || 'Anonymous'}
+                        </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Email</span>
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                          Email
+                        </span>
                         <span className="text-sm text-gray-800 dark:text-gray-200 break-all font-mono">
                           {entry.email || <span className="italic font-sans">Not provided</span>}
                         </span>
                       </div>
                       <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">User ID</span>
-                        <span className="text-xs text-gray-800 dark:text-gray-200 break-all font-mono">{entry.userId}</span>
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                          User ID
+                        </span>
+                        <span className="text-xs text-gray-800 dark:text-gray-200 break-all font-mono">
+                          {entry.userId}
+                        </span>
                       </div>
                       <div className="flex items-center gap-2 pt-1">
-                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">Contact OK:</span>
-                        <span className={`px-2 py-0.5 rounded text-xs font-bold border-[2px] ${
-                          entry.allowContact
-                            ? 'bg-accent-green/10 border-accent-green text-accent-green'
-                            : 'bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-600 dark:text-gray-400'
-                        }`}>
+                        <span className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                          Contact OK:
+                        </span>
+                        <span
+                          className={`px-2 py-0.5 rounded text-xs font-bold border-[2px] ${
+                            entry.allowContact
+                              ? 'bg-accent-green/10 border-accent-green text-accent-green'
+                              : 'bg-gray-100 dark:bg-gray-800 border-gray-400 text-gray-600 dark:text-gray-400'
+                          }`}
+                        >
                           {entry.allowContact ? 'YES' : 'NO'}
                         </span>
                       </div>
@@ -355,9 +396,13 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   </div>
 
                   <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Message</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">
+                      Message
+                    </h3>
                     <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-[2px] border-gray-200 dark:border-gray-700 rounded-lg">
-                      <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">{entry.message}</p>
+                      <p className="text-sm text-gray-800 dark:text-gray-200 whitespace-pre-wrap leading-relaxed">
+                        {entry.message}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -365,7 +410,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 {/* Admin Section */}
                 <div className="p-4 sm:p-5 space-y-4 bg-gray-50/50 dark:bg-gray-900/20">
                   <div>
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Internal Notes</h3>
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">
+                      Internal Notes
+                    </h3>
 
                     {/* Existing Notes */}
                     {Array.isArray(entry.comments) && entry.comments.length > 0 ? (
@@ -376,10 +423,16 @@ export default function FeedbackDashboard({ onCountsChange }) {
                             className="p-3 bg-white dark:bg-gray-800 border-[2px] border-purple-400 dark:border-purple-600 rounded-lg"
                           >
                             <div className="flex items-center justify-between mb-1.5">
-                              <span className="text-xs font-bold text-gray-900 dark:text-gray-100">{comment.author}</span>
-                              <span className="text-[10px] text-gray-500">{formatTimestamp(comment.createdAt)}</span>
+                              <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
+                                {comment.author}
+                              </span>
+                              <span className="text-[10px] text-gray-500">
+                                {formatTimestamp(comment.createdAt)}
+                              </span>
                             </div>
-                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">{comment.message}</p>
+                            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap">
+                              {comment.message}
+                            </p>
                           </div>
                         ))}
                       </div>

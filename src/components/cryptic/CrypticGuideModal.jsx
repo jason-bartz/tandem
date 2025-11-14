@@ -19,30 +19,28 @@ import LeftSidePanel from '@/components/shared/LeftSidePanel';
  * @component
  */
 export default function CrypticGuideModal({ isOpen, onClose }) {
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
   const [expandedSection, setExpandedSection] = useState(null);
   const [expandedDevice, setExpandedDevice] = useState(null);
 
   const getHintIcon = (type) => {
-    const isDark = theme === 'dark';
     const icons = {
-      fodder: isDark ? '/icons/ui/fodder-dark.png' : '/icons/ui/fodder.png',
-      indicator: isDark ? '/icons/ui/indicator-dark.png' : '/icons/ui/indicator.png',
-      definition: isDark ? '/icons/ui/definition-dark.png' : '/icons/ui/definition.png',
-      letter: isDark ? '/icons/ui/letter-dark.png' : '/icons/ui/letter.png',
+      fodder: '/icons/ui/fodder.png',
+      indicator: '/icons/ui/indicator.png',
+      definition: '/icons/ui/definition.png',
+      letter: '/icons/ui/letter.png',
     };
     return icons[type];
   };
 
   const getSectionIcon = (type) => {
-    const isDark = theme === 'dark';
     const icons = {
-      intro: isDark ? '/icons/ui/intro-dark.png' : '/icons/ui/intro.png',
-      emoji: isDark ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png',
-      example: isDark ? '/icons/ui/example-dark.png' : '/icons/ui/example.png',
-      devices: isDark ? '/icons/ui/devices-dark.png' : '/icons/ui/devices.png',
-      hints: isDark ? '/icons/ui/hint-dark.png' : '/icons/ui/hint.png',
-      solving: isDark ? '/icons/ui/solving-dark.png' : '/icons/ui/solving.png',
+      intro: '/icons/ui/intro.png',
+      emoji: '/icons/ui/emoji-inter.png',
+      example: '/icons/ui/example.png',
+      devices: '/icons/ui/devices.png',
+      hints: '/icons/ui/hint.png',
+      solving: '/icons/ui/solving.png',
     };
     return icons[type];
   };
@@ -642,9 +640,7 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                   >
                     <div className="flex items-center gap-2">
                       <span className="text-2xl">{device.icon}</span>
-                      <span className="font-bold text-gray-900 dark:text-white">
-                        {device.name}
-                      </span>
+                      <span className="font-bold text-gray-900 dark:text-white">{device.name}</span>
                     </div>
                     <svg
                       className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
@@ -802,10 +798,13 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
 
                   <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-300 dark:border-purple-700">
                     <div className="flex items-center gap-2 mb-1">
-                      <Image src={getHintIcon('indicator')} alt="Indicator" width={24} height={24} />
-                      <h5 className="font-bold text-gray-900 dark:text-white">
-                        Hint 2: Indicator
-                      </h5>
+                      <Image
+                        src={getHintIcon('indicator')}
+                        alt="Indicator"
+                        width={24}
+                        height={24}
+                      />
+                      <h5 className="font-bold text-gray-900 dark:text-white">Hint 2: Indicator</h5>
                     </div>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
                       Points out the wordplay indicator (anagram, reversal, container, etc.)
@@ -903,8 +902,8 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                   <li className="flex items-start gap-2">
                     <span className="text-purple-600 dark:text-purple-400 font-bold">1.</span>
                     <span>
-                      <strong>Start with the emojis:</strong> Interpret what they represent
-                      together or separately
+                      <strong>Start with the emojis:</strong> Interpret what they represent together
+                      or separately
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
@@ -924,15 +923,14 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                   <li className="flex items-start gap-2">
                     <span className="text-purple-600 dark:text-purple-400 font-bold">4.</span>
                     <span>
-                      <strong>Count letters:</strong> The number in parentheses is the answer
-                      length
+                      <strong>Count letters:</strong> The number in parentheses is the answer length
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-purple-600 dark:text-purple-400 font-bold">5.</span>
                     <span>
-                      <strong>Work backwards:</strong> If you know the definition, think of
-                      synonyms that fit the length
+                      <strong>Work backwards:</strong> If you know the definition, think of synonyms
+                      that fit the length
                     </span>
                   </li>
                   <li className="flex items-start gap-2">

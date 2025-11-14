@@ -24,7 +24,7 @@ export default function HintModal({
   onUnlockHint,
   canUseHint,
 }) {
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
   const [revealingHint, setRevealingHint] = useState(null);
 
   const hintTypeLabels = {
@@ -35,14 +35,13 @@ export default function HintModal({
   };
 
   const getHintIcon = (type) => {
-    const isDark = theme === 'dark';
     const icons = {
-      fodder: isDark ? '/icons/ui/fodder-dark.png' : '/icons/ui/fodder.png',
-      indicator: isDark ? '/icons/ui/indicator-dark.png' : '/icons/ui/indicator.png',
-      definition: isDark ? '/icons/ui/definition-dark.png' : '/icons/ui/definition.png',
-      letter: isDark ? '/icons/ui/letter-dark.png' : '/icons/ui/letter.png',
+      fodder: '/icons/ui/fodder.png',
+      indicator: '/icons/ui/indicator.png',
+      definition: '/icons/ui/definition.png',
+      letter: '/icons/ui/letter.png',
     };
-    return icons[type] || (isDark ? '/icons/ui/fodder-dark.png' : '/icons/ui/fodder.png');
+    return icons[type] || '/icons/ui/fodder.png';
   };
 
   const hintTypeColors = {

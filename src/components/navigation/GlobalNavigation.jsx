@@ -45,16 +45,14 @@ export default function GlobalNavigation({
 
   return (
     <>
-      {/* Hamburger Menu Button - Sticky to top-right */}
-      <div className="sticky top-0 left-0 right-0 z-30 pt-safe pointer-events-none">
-        <div className={`max-w-2xl w-full mx-auto px-4 ${className}`}>
-          <div className="flex justify-end pt-2 pb-1 pr-2">
-            <div className="pointer-events-auto">
-              <HamburgerMenu
-                isOpen={isSidebarOpen}
-                onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              />
-            </div>
+      {/* Hamburger Menu Button - Positioned to overlap content */}
+      <div className="relative z-30 pt-safe">
+        <div className={`max-w-2xl w-full mx-auto px-6 ${className}`}>
+          <div className="flex justify-end pt-2 pr-2">
+            <HamburgerMenu
+              isOpen={isSidebarOpen}
+              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            />
           </div>
         </div>
       </div>
@@ -70,7 +68,10 @@ export default function GlobalNavigation({
         onOpenArchive={onOpenArchive}
         onOpenHowToPlay={onOpenHowToPlay}
         onOpenSettings={onOpenSettings}
-        onOpenFeedback={() => setShowFeedback(true)}
+        onOpenFeedback={() => {
+          setIsSidebarOpen(false);
+          setTimeout(() => setShowFeedback(true), 200);
+        }}
       />
 
       {/* Feedback Pane */}

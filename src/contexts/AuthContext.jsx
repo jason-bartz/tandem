@@ -8,8 +8,11 @@ const AuthContext = createContext({
   user: null,
   session: null,
   loading: true,
+  userProfile: null,
+  profileLoading: false,
   showFirstTimeSetup: false,
   dismissFirstTimeSetup: () => {},
+  refreshProfile: async () => {},
   signUp: async () => {},
   signIn: async () => {},
   signOut: async () => {},
@@ -60,8 +63,53 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [userProfile, setUserProfile] = useState(null);
+  const [profileLoading, setProfileLoading] = useState(false);
   const [showFirstTimeSetup, setShowFirstTimeSetup] = useState(false);
   const supabase = getSupabaseBrowserClient();
+
+  /**
+   * Load user profile with avatar from database
+   * This is called automatically when user signs in and can be called manually to refresh
+   */
+  const loadUserProfile = async (userId) => {
+    if (!userId) {
+      setUserProfile(null);
+      return;
+    }
+
+    try {
+      setProfileLoading(true);
+      const avatarService = (await import('@/services/avatar.service')).default;
+      const profile = await avatarService.getUserProfileWithAvatar(userId);
+      setUserProfile(profile);
+      console.log('[AuthContext] User profile loaded:', {
+        userId,
+        hasUsername: !!profile?.username,
+        hasAvatar: !!profile?.avatar_image_path,
+      });
+    } catch (error) {
+      console.error('[AuthContext] Failed to load user profile:', error);
+      // Set a minimal profile with auth metadata as fallback
+      setUserProfile({
+        id: userId,
+        username: null,
+        avatar_image_path: null,
+      });
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  /**
+   * Refresh user profile
+   * Exposed to components that need to manually refresh profile (e.g., after avatar selection)
+   */
+  const refreshProfile = async () => {
+    if (user?.id) {
+      await loadUserProfile(user.id);
+    }
+  };
 
   useEffect(() => {
     // Auto-cleanup storage if needed (prevent quota issues)
@@ -74,6 +122,11 @@ export function AuthProvider({ children }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Load user profile if session exists
+      if (session?.user) {
+        loadUserProfile(session.user.id);
+      }
     });
 
     // Listen for auth changes
@@ -84,6 +137,14 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
+      // Load profile when user signs in
+      if (session?.user) {
+        loadUserProfile(session.user.id);
+      } else {
+        // Clear profile when user signs out
+        setUserProfile(null);
+      }
+
       // Check if first-time setup is needed when user signs in
       if (event === 'SIGNED_IN' && session?.user) {
         console.log('[AuthProvider] User signed in, checking first-time setup status');
@@ -92,7 +153,9 @@ export function AuthProvider({ children }) {
         (async () => {
           try {
             const avatarService = (await import('@/services/avatar.service')).default;
-            const hasCompletedSetup = await avatarService.hasCompletedFirstTimeSetup(session.user.id);
+            const hasCompletedSetup = await avatarService.hasCompletedFirstTimeSetup(
+              session.user.id
+            );
 
             if (!hasCompletedSetup) {
               console.log('[AuthProvider] User needs to complete first-time setup');
@@ -492,8 +555,11 @@ export function AuthProvider({ children }) {
     user,
     session,
     loading,
+    userProfile,
+    profileLoading,
     showFirstTimeSetup,
     dismissFirstTimeSetup,
+    refreshProfile,
     signUp,
     signIn,
     signOut,

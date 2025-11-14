@@ -12,7 +12,7 @@ import { useTheme } from '@/contexts/ThemeContext';
  * @param {boolean} isStreak - Whether this is a streak leaderboard (vs speed)
  */
 export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak = false }) {
-  const { highContrast, theme } = useTheme();
+  const { highContrast } = useTheme();
 
   return (
     <div
@@ -73,12 +73,7 @@ export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak 
         >
           {isStreak ? (
             <span className="flex items-center gap-1">
-              <Image
-                src={theme === 'dark' ? '/icons/ui/hardmode-dark.png' : '/icons/ui/hardmode.png'}
-                alt=""
-                width={12}
-                height={12}
-              />
+              <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
               {entry.score} day streak
             </span>
           ) : entry.metadata?.hintsUsed > 0 ? (
@@ -103,12 +98,7 @@ export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak 
       >
         {isStreak ? (
           <div className="text-lg flex items-center gap-1">
-            <Image
-              src={theme === 'dark' ? '/icons/ui/hardmode-dark.png' : '/icons/ui/hardmode.png'}
-              alt=""
-              width={16}
-              height={16}
-            />
+            <Image src="/icons/ui/hardmode.png" alt="" width={16} height={16} />
             {entry.score}
           </div>
         ) : (
