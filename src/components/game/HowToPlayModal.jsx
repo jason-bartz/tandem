@@ -10,7 +10,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
   const [expandedSection, setExpandedSection] = useState(null);
   const [expandedDevice, setExpandedDevice] = useState(null);
 
-  const tandemIcon = theme === 'dark' ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png';
+  const tandemIcon = theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png';
 
   const getHintIcon = (type) => {
     const isDark = theme === 'dark';
@@ -27,7 +27,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
     const isDark = theme === 'dark';
     const icons = {
       intro: isDark ? '/icons/ui/intro-dark.png' : '/icons/ui/intro.png',
-      emoji: isDark ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png',
+      emoji: isDark ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png',
       example: isDark ? '/icons/ui/example-dark.png' : '/icons/ui/example.png',
       devices: isDark ? '/icons/ui/devices-dark.png' : '/icons/ui/devices.png',
       hints: isDark ? '/icons/ui/hint-dark.png' : '/icons/ui/hint.png',

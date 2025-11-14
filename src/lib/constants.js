@@ -139,6 +139,43 @@ export const ADMIN_CONFIG = {
   CALENDAR_DAYS_AHEAD: 30,
 };
 
+export const FEEDBACK_CATEGORIES = [
+  {
+    value: 'Bug Report',
+    label: 'Bug Report',
+    description: 'Something is broken or not working as expected',
+  },
+  {
+    value: 'Feature Request',
+    label: 'Feature Request',
+    description: 'Ideas that would make Tandem better',
+  },
+  {
+    value: 'Game Feedback',
+    label: 'Game Feedback',
+    description: 'Thoughts about puzzles, balance, or vibes',
+  },
+  {
+    value: 'Other',
+    label: 'Other',
+    description: 'Anything else you want to share with the team',
+  },
+];
+
+export const FEEDBACK_STATUS = {
+  NEW: 'new',
+  IN_REVIEW: 'in_review',
+  RESOLVED: 'resolved',
+  ARCHIVED: 'archived',
+};
+
+export const FEEDBACK_STATUS_OPTIONS = [
+  { value: FEEDBACK_STATUS.NEW, label: 'New' },
+  { value: FEEDBACK_STATUS.IN_REVIEW, label: 'In Review' },
+  { value: FEEDBACK_STATUS.RESOLVED, label: 'Resolved' },
+  { value: FEEDBACK_STATUS.ARCHIVED, label: 'Archived' },
+];
+
 export const VALIDATION_RULES = {
   ANSWER: {
     MIN_LENGTH: 2,

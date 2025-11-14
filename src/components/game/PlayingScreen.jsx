@@ -11,6 +11,7 @@ import HowToPlayModal from './HowToPlayModal';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
@@ -55,6 +56,7 @@ export default function PlayingScreen({
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [openPaywall, setOpenPaywall] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
@@ -707,7 +709,10 @@ export default function PlayingScreen({
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
+
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

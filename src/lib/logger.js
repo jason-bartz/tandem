@@ -92,17 +92,31 @@ class Logger {
   sanitizeData(data) {
     if (!data) return data;
 
-    const stringified = typeof data === 'string' ? data : JSON.stringify(data);
-    let sanitized = stringified;
+    try {
+      const stringified = typeof data === 'string' ? data : JSON.stringify(data);
+      let sanitized = stringified;
 
-    SENSITIVE_PATTERNS.forEach((pattern) => {
-      sanitized = sanitized.replace(pattern, (match, group1) => {
-        return match.replace(group1, '***REDACTED***');
+      SENSITIVE_PATTERNS.forEach((pattern) => {
+        sanitized = sanitized.replace(pattern, (match, group1) => {
+          return match.replace(group1, '***REDACTED***');
+        });
       });
-    });
 
-    // Return in original format
-    return typeof data === 'string' ? sanitized : JSON.parse(sanitized);
+      // Return in original format
+      if (typeof data === 'string') {
+        return sanitized;
+      }
+
+      try {
+        return JSON.parse(sanitized);
+      } catch (parseError) {
+        // If parsing fails, return the sanitized string
+        return sanitized;
+      }
+    } catch (error) {
+      // If anything fails, return data as-is
+      return data;
+    }
   }
 
   /**

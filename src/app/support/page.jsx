@@ -23,7 +23,7 @@ export default function Support() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
-  const tandemIcon = theme === 'dark' ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png';
+  const tandemIcon = theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png';
 
   // Daily Tandem sections
   const tandemSections = [

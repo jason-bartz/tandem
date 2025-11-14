@@ -443,7 +443,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                     </span>
                   ) : (
                     <span className="flex items-center gap-1 justify-center">
-                      🎯 <span>Assess Difficulty</span>
+                      <span>Assess Difficulty</span>
                     </span>
                   )}
                 </button>

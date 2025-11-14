@@ -8,6 +8,7 @@ import HintModal from './HintModal';
 import CrypticGuideModal from './CrypticGuideModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 import OnScreenKeyboard from '@/components/game/OnScreenKeyboard';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
@@ -522,7 +523,10 @@ export default function CrypticGameScreen({
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowGuide(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
+
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

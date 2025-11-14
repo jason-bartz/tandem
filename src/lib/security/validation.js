@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import logger from '@/lib/logger';
+import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS } from '@/lib/constants';
 
 // Constants for validation
 const MAX_STRING_LENGTH = 1000;
@@ -7,6 +8,7 @@ const MAX_THEME_LENGTH = 50;
 const MAX_ANSWER_LENGTH = 30;
 const MAX_EMOJI_LENGTH = 10;
 const MAX_REQUEST_SIZE = 1024 * 100; // 100KB max request size
+const MAX_FEEDBACK_LENGTH = 2000;
 
 // Regex patterns for validation
 const PATTERNS = {
@@ -170,6 +172,41 @@ export const bulkImportSchema = z.object({
     .min(1, 'At least one puzzle is required')
     .max(365, 'Maximum 365 puzzles can be imported at once'),
 });
+
+const FEEDBACK_TYPE_VALUES = FEEDBACK_CATEGORIES.map((category) => category.value);
+const FEEDBACK_STATUS_VALUES = Object.values(FEEDBACK_STATUS);
+
+export const feedbackSubmissionSchema = z.object({
+  category: z.enum(FEEDBACK_TYPE_VALUES, {
+    errorMap: () => ({ message: 'Invalid feedback category' }),
+  }),
+  message: z
+    .string()
+    .min(10, 'Feedback must be at least 10 characters')
+    .max(MAX_FEEDBACK_LENGTH, `Feedback must be at most ${MAX_FEEDBACK_LENGTH} characters`)
+    .transform((val) => sanitizeString(val, MAX_FEEDBACK_LENGTH)),
+  allowContact: z.boolean().optional().default(false),
+});
+
+export const feedbackAdminUpdateSchema = z
+  .object({
+    id: z.string().uuid('Invalid feedback ID'),
+    status: z
+      .enum(FEEDBACK_STATUS_VALUES, {
+        errorMap: () => ({ message: 'Invalid status value' }),
+      })
+      .optional(),
+    comment: z
+      .string()
+      .min(1, 'Comment cannot be empty')
+      .max(1000, 'Comment must be at most 1000 characters')
+      .transform((val) => sanitizeString(val, 1000))
+      .optional(),
+  })
+  .refine((data) => data.status || data.comment, {
+    message: 'At least one update (status or comment) must be provided',
+    path: ['status'],
+  });
 
 // Request size validation
 export function validateRequestSize(request) {

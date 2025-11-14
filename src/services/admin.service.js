@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from '@/lib/constants';
-import { getApiUrl } from '@/lib/api-helper';
+import { getApiUrl } from '@/lib/api-config';
 import authService from './auth.service';
 import logger from '@/lib/logger';
 
@@ -217,6 +217,62 @@ class AdminService {
     } catch (error) {
       logger.error('AdminService.assessDifficulty error', error);
       return { success: false, error: error.message };
+    }
+  }
+
+  async getFeedback({ status } = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (status) {
+        params.append('status', status);
+      }
+
+      const url = `/api/admin/feedback${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(getApiUrl(url), {
+        headers: this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Get feedback failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getFeedback error', error);
+      throw error;
+    }
+  }
+
+  async updateFeedback(feedbackId, updates) {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/feedback'), {
+        method: 'PATCH',
+        headers: this.getAuthHeaders(true),
+        body: JSON.stringify({ id: feedbackId, ...updates }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Update feedback failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.updateFeedback error', error);
+      throw error;
     }
   }
 }

@@ -202,7 +202,7 @@ export default function LeftSidePanel({
         {/* Header */}
         {(title || showCloseButton) && (
           <div
-            className={`flex items-center justify-between px-6 py-4 border-b ${
+            className={`flex items-center justify-between px-6 py-4 border-b-[3px] ${
               theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
             } ${headerClassName}`}
           >
@@ -261,7 +261,7 @@ export default function LeftSidePanel({
         {/* Footer */}
         {footer && (
           <div
-            className={`px-6 py-4 border-t ${
+            className={`px-6 py-4 border-t-[3px] ${
               theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
             }`}
           >

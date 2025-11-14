@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import subscriptionService from '@/services/subscriptionService';
 import avatarService from '@/services/avatar.service';
@@ -15,12 +14,16 @@ import PaywallModal from '@/components/PaywallModal';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
+import HowToPlayModal from '@/components/game/HowToPlayModal';
+import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 import { validateUsername } from '@/utils/profanityFilter';
 
 export default function AccountPage() {
   const router = useRouter();
   const { user, loading: authLoading, signOut } = useAuth();
-  const { highContrast } = useTheme();
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -38,6 +41,11 @@ export default function AccountPage() {
   const [usernameSuccess, setUsernameSuccess] = useState('');
   const [loadingUsername, setLoadingUsername] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -346,8 +354,55 @@ export default function AccountPage() {
 
   if (authLoading || (loading && user)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-accent-yellow">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-800 border-t-transparent"></div>
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
+            <div className="relative">
+              {/* Skeleton card */}
+              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                {/* Header skeleton */}
+                <div className="flex items-center justify-between p-6 pb-4">
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                  <div className="w-24 h-6 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                  <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
+                </div>
+
+                <div className="p-6 space-y-8">
+                  {/* Profile skeleton */}
+                  <div>
+                    <div className="w-16 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
+                    <div className="flex items-start gap-4 p-4 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-gray-200 dark:border-gray-700">
+                      <div className="w-20 h-20 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+                      <div className="flex-1 space-y-3">
+                        <div className="w-32 h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                        <div className="w-48 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                        <div className="w-40 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Subscription skeleton */}
+                  <div>
+                    <div className="w-32 h-7 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse mb-4"></div>
+                    <div className="p-4 bg-gray-50 dark:bg-gray-900/30 rounded-2xl border-2 border-gray-200 dark:border-gray-700 space-y-3">
+                      <div className="w-full h-5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="w-3/4 h-4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse"></div>
+                      <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse mt-4"></div>
+                    </div>
+                  </div>
+
+                  {/* Actions skeleton */}
+                  <div className="space-y-3">
+                    <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+                    <div className="w-full h-12 bg-gray-200 dark:bg-gray-700 rounded-xl animate-pulse"></div>
+                  </div>
+                </div>
+              </div>
+              {/* Shadow element */}
+              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
@@ -366,7 +421,7 @@ export default function AccountPage() {
               {/* Main content card */}
               <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                 {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-start justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                <div className="flex items-start justify-between p-6 pb-4">
                   <Link
                     href="/"
                     className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
@@ -394,462 +449,326 @@ export default function AccountPage() {
                 </div>
 
                 {/* Content */}
-                <div className="p-6">
-                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
+                <div className="p-6 space-y-6">
+                  {/* Profile Section */}
+                  <section>
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
 
-          <div className="space-y-3">
-            {/* Avatar Section */}
-            <div className="flex flex-col items-center mb-3">
-              {!loadingAvatar ? (
-                <>
-                  <button
-                    onClick={() => {
-                      setShowAvatarModal(true);
-                      lightTap();
-                    }}
-                    className="relative w-16 h-16 rounded-xl overflow-hidden border-[2px] border-purple-500 shadow-[3px_3px_0px_rgba(147,51,234,0.5)] mb-2 hover:scale-105 transition-transform"
-                    aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
-                  >
-                    <Image
-                      src={
-                        userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
-                          ? userAvatar.avatar_image_path
-                          : '/images/avatars/default-profile.png'
-                      }
-                      alt={userAvatar?.avatar_display_name || 'Profile'}
-                      fill
-                      className="object-cover"
-                      sizes="64px"
-                      priority
-                    />
-                  </button>
-                  {userAvatar?.avatar_display_name && (
-                    <p className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-1">
-                      {userAvatar.avatar_display_name}
-                    </p>
-                  )}
-                  <button
-                    onClick={() => {
-                      setShowAvatarModal(true);
-                      lightTap();
-                    }}
-                    className={`text-xs font-medium hover:underline ${
-                      userAvatar?.selected_avatar_id ? 'text-purple-600 dark:text-purple-400' : ''
-                    }`}
-                  >
-                    {userAvatar?.selected_avatar_id ? 'Change Avatar' : ''}
-                  </button>
-                  {!userAvatar?.selected_avatar_id && (
-                    <button
-                      onClick={() => {
-                        setShowAvatarModal(true);
-                        lightTap();
-                      }}
-                      className={`py-1.5 px-3 rounded-lg border-[2px] font-medium text-xs transition-all mt-1 ${
-                        highContrast
-                          ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                      }`}
-                    >
-                      Select Your Avatar
-                    </button>
-                  )}
-                </>
-              ) : (
-                <>
-                  <div className="w-16 h-16 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-2"></div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Loading avatar...</p>
-                </>
-              )}
-            </div>
+                    {/* Profile Card */}
+                    <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-[3px] border-black dark:border-white p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                      <div className="flex items-start gap-4">
+                        {/* Avatar */}
+                        <div className="flex-shrink-0">
+                          {!loadingAvatar ? (
+                            <button
+                              onClick={() => {
+                                setShowAvatarModal(true);
+                                lightTap();
+                              }}
+                              className="relative w-20 h-20 rounded-xl overflow-hidden border-[3px] border-purple-500 shadow-[3px_3px_0px_rgba(147,51,234,0.5)] hover:scale-105 transition-transform"
+                              aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
+                            >
+                              <Image
+                                src={
+                                  userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
+                                    ? userAvatar.avatar_image_path
+                                    : '/images/avatars/default-profile.png'
+                                }
+                                alt={userAvatar?.avatar_display_name || 'Profile'}
+                                fill
+                                className="object-cover"
+                                sizes="80px"
+                                priority
+                              />
+                            </button>
+                          ) : (
+                            <div className="w-20 h-20 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
+                          )}
+                        </div>
 
-            {/* Username Section */}
-            <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-sm text-gray-500 dark:text-gray-400">Username</p>
-                {!editingUsername && (
-                  <button
-                    onClick={handleEditUsername}
-                    className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
-                  >
-                    Edit
-                  </button>
-                )}
-              </div>
+                        {/* Profile Info */}
+                        <div className="flex-1 min-w-0">
+                          {/* Avatar Name */}
+                          {userAvatar?.avatar_display_name && (
+                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
+                              {userAvatar.avatar_display_name}
+                            </h3>
+                          )}
 
-              {editingUsername ? (
-                <div className="space-y-2">
-                  <input
-                    type="text"
-                    value={usernameInput}
-                    onChange={(e) => {
-                      // Only allow alphanumeric and underscore
-                      const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
-                      setUsernameInput(sanitized);
-                    }}
-                    className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm"
-                    placeholder="your_username"
-                    minLength={3}
-                    maxLength={20}
-                    disabled={loadingUsername}
-                  />
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    3-20 characters, letters, numbers, and underscores only
-                  </p>
+                          {/* Username */}
+                          <div className="mb-2">
+                            {editingUsername ? (
+                              <div className="space-y-2">
+                                <input
+                                  type="text"
+                                  value={usernameInput}
+                                  onChange={(e) => {
+                                    const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+                                    setUsernameInput(sanitized);
+                                  }}
+                                  className="w-full px-3 py-2 border-2 border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white text-sm"
+                                  placeholder="your_username"
+                                  minLength={3}
+                                  maxLength={20}
+                                  disabled={loadingUsername}
+                                />
+                                <p className="text-xs text-gray-600 dark:text-gray-400">
+                                  3-20 characters, letters, numbers, and underscores only
+                                </p>
+                                {usernameError && (
+                                  <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+                                    <p className="text-xs text-red-600 dark:text-red-400">{usernameError}</p>
+                                  </div>
+                                )}
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={handleSaveUsername}
+                                    disabled={loadingUsername}
+                                    className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                                      loadingUsername
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'bg-purple-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                                    }`}
+                                  >
+                                    {loadingUsername ? 'Saving...' : 'Save'}
+                                  </button>
+                                  <button
+                                    onClick={handleCancelEditUsername}
+                                    disabled={loadingUsername}
+                                    className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
+                                      loadingUsername
+                                        ? 'opacity-50 cursor-not-allowed'
+                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                                    }`}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                                  @{username || 'not_set'}
+                                </span>
+                                <button
+                                  onClick={handleEditUsername}
+                                  className="text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
+                                >
+                                  Edit
+                                </button>
+                              </div>
+                            )}
+                            {usernameSuccess && !editingUsername && (
+                              <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                <p className="text-xs text-green-600 dark:text-green-400">{usernameSuccess}</p>
+                              </div>
+                            )}
+                          </div>
 
-                  {usernameError && (
-                    <div className="p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      <p className="text-xs text-red-600 dark:text-red-400">{usernameError}</p>
+                          {/* Change Avatar Link */}
+                          {!loadingAvatar && (
+                            <button
+                              onClick={() => {
+                                setShowAvatarModal(true);
+                                lightTap();
+                              }}
+                              className="inline-block text-xs font-medium text-purple-600 dark:text-purple-400 hover:underline"
+                            >
+                              {userAvatar?.selected_avatar_id ? 'Change Avatar' : 'Select Avatar'}
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Account Details */}
+                      <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800 space-y-2">
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Email</span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">{user?.email || 'Not available'}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Timezone</span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">{userTimezone}</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Member Since</span>
+                          <span className="text-sm text-gray-800 dark:text-gray-200">{formatDate(user?.created_at)}</span>
+                        </div>
+                        {zodiacData && (
+                          <div className="flex justify-between items-center">
+                            <span className="text-xs font-medium text-gray-600 dark:text-gray-400">Tandem Zodiac Sign</span>
+                            <span className="text-sm text-gray-800 dark:text-gray-200">{zodiacData.display}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Daily Horoscope */}
+                      {zodiacData && horoscope && (
+                        <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800">
+                          <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
+                            Today&apos;s Horoscope
+                          </p>
+                          {horoscopeLoading ? (
+                            <div className="flex items-center justify-center py-4">
+                              <div className="animate-spin rounded-full h-5 w-5 border-2 border-purple-500 border-t-transparent"></div>
+                            </div>
+                          ) : (
+                            <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 italic">
+                              {horoscope.text}
+                            </p>
+                          )}
+                        </div>
+                      )}
                     </div>
-                  )}
-
-                  <div className="flex gap-2">
-                    <button
-                      onClick={handleSaveUsername}
-                      disabled={loadingUsername}
-                      className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
-                        loadingUsername
-                          ? 'opacity-50 cursor-not-allowed'
-                          : highContrast
-                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      }`}
-                    >
-                      {loadingUsername ? 'Saving...' : 'Save'}
-                    </button>
-                    <button
-                      onClick={handleCancelEditUsername}
-                      disabled={loadingUsername}
-                      className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
-                        loadingUsername
-                          ? 'opacity-50 cursor-not-allowed'
-                          : highContrast
-                            ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      }`}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                    {username || 'Not set'}
-                  </p>
-                  {usernameSuccess && (
-                    <div className="mt-2 p-2 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                      <p className="text-xs text-green-600 dark:text-green-400">
-                        {usernameSuccess}
-                      </p>
-                    </div>
-                  )}
-                </>
-              )}
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {user?.email || 'Not available'}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Account ID</p>
-              <p className="text-sm font-mono text-gray-600 dark:text-gray-400 break-all">
-                {user?.id || 'Not available'}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Timezone</p>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">{userTimezone}</p>
-            </div>
-
-            <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Anniversary</p>
-              <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                {formatDate(user?.created_at)}
-              </p>
-            </div>
-
-            {zodiacData && (
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Tandem Zodiac Sign</p>
-                <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                  {zodiacData.display}
-                </p>
-              </div>
-            )}
-
-            {/* Daily Horoscope */}
-            {zodiacData && (
-              <div className="pt-4 mt-4 pb-2 border-t border-gray-200 dark:border-gray-700">
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
-                  Today&apos;s Tandem Horoscope
-                </p>
-                {horoscopeLoading ? (
-                  <div className="flex items-center justify-center py-4">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-sky-500 border-t-transparent"></div>
-                  </div>
-                ) : horoscope ? (
-                  <div
-                    className={`p-4 rounded-2xl border-2 ${
-                      highContrast
-                        ? 'bg-hc-focus/10 border-hc-border'
-                        : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-800'
-                    }`}
-                  >
-                    <p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300 italic">
-                      {horoscope.text}
-                    </p>
-                  </div>
-                ) : (
-                  <p className="text-sm text-gray-500 dark:text-gray-400 italic">
-                    Horoscope unavailable
-                  </p>
-                )}
-              </div>
-            )}
-          </div>
+                  </section>
 
                   {/* Subscription Section */}
-                  <div className="pt-8 border-t-[3px] border-black dark:border-white">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Subscription</h2>
-            {subscription?.isActive && (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                ACTIVE
-              </span>
-            )}
-          </div>
+                  <section>
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Subscription</h2>
+                      {subscription?.isActive && (
+                        <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-green-500 text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                          ✓ ACTIVE
+                        </span>
+                      )}
+                    </div>
 
-          {loading ? (
-            <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-4 border-sky-500 border-t-transparent mx-auto"></div>
-            </div>
-          ) : subscription?.isActive ? (
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Plan</p>
-                <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                  {getTierName(subscription.tier || subscription.productId)}
-                </p>
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  {getTierDescription(subscription.tier || subscription.productId)}
-                </p>
-              </div>
+                    {loading ? (
+                      <div className="text-center py-8">
+                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent mx-auto"></div>
+                      </div>
+                    ) : subscription?.isActive ? (
+                      <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                        {/* Active Subscription Info */}
+                        <div className="space-y-4">
+                          <div>
+                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Current Plan</p>
+                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                              {getTierName(subscription.tier || subscription.productId)}
+                            </p>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">
+                              {getTierDescription(subscription.tier || subscription.productId)}
+                            </p>
+                          </div>
 
-              {subscription.expiryDate &&
-                subscription.expiryDate !== '2099-12-31T00:00:00.000Z' && (
-                  <div>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {subscription.cancelAtPeriodEnd ? 'Expires on' : 'Renews on'}
-                    </p>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      {formatDate(subscription.expiryDate)}
-                    </p>
-                    {subscription.cancelAtPeriodEnd && (
-                      <p className="text-sm text-orange-600 dark:text-orange-400 mt-1">
-                        Your subscription will not renew
-                      </p>
+                          {subscription.expiryDate && subscription.expiryDate !== '2099-12-31T00:00:00.000Z' && (
+                            <div className={`p-3 rounded-xl border-2 ${
+                              subscription.cancelAtPeriodEnd
+                                ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
+                                : 'bg-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
+                            }`}>
+                              <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                {subscription.cancelAtPeriodEnd ? '⚠️ Expires on' : '🔄 Renews on'}
+                              </p>
+                              <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                                {formatDate(subscription.expiryDate)}
+                              </p>
+                              {subscription.cancelAtPeriodEnd && (
+                                <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                  Your subscription will not auto-renew
+                                </p>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Benefits */}
+                          <div className="pt-4 border-t-2 border-teal-200 dark:border-teal-800 space-y-2">
+                            <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">Your Benefits</p>
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">Unlimited archive access</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">Ad-free experience</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 dark:text-green-400 text-sm">✓</span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">Hard Mode & exclusive features</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Manage Button */}
+                          {isWeb ? (
+                            <button
+                              onClick={handleManageAccount}
+                              className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                            >
+                              Manage Subscription
+                            </button>
+                          ) : (
+                            <p className="text-xs text-gray-600 dark:text-gray-400 text-center pt-2">
+                              Manage via App Store
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-gradient-to-br from-teal-50 to-sky-50 dark:from-teal-900/20 dark:to-sky-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                        <div className="flex items-center justify-center gap-2 mb-4">
+                          <Image
+                            src="/icons/ui/tandem-unlimited.png"
+                            alt="Tandem Unlimited"
+                            width={28}
+                            height={28}
+                            className="object-contain"
+                          />
+                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                            Tandem Unlimited
+                          </h3>
+                        </div>
+
+                        {/* Benefits Grid */}
+                        <div className="grid grid-cols-1 gap-2 mb-6">
+                          {[
+                            'Archive access for all past puzzles',
+                            'Sync progress across devices',
+                            'Ad-free experience',
+                            'Hard Mode & exclusive features',
+                            'Support solo developer',
+                            'Cancel anytime'
+                          ].map((benefit, idx) => (
+                            <div key={idx} className="flex items-start gap-2">
+                              <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">✓</span>
+                              <p className="text-sm text-gray-700 dark:text-gray-300">{benefit}</p>
+                            </div>
+                          ))}
+                        </div>
+
+                        <button
+                          onClick={() => setShowPaywall(true)}
+                          className="w-full py-3.5 px-6 rounded-xl border-[3px] font-bold text-lg transition-all bg-teal-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                        >
+                          Become a Member
+                        </button>
+                      </div>
                     )}
-                  </div>
-                )}
+                  </section>
 
-              {/* Manage Account Button */}
-              {isWeb && (
-                <div className="space-y-3">
-                  <button
-                    onClick={handleManageAccount}
-                    className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-                      highContrast
-                        ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                        : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                    }`}
-                  >
-                    Manage Subscription
-                  </button>
-                  <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                    Access the full Stripe portal to manage your subscription, payment method,
-                    billing history, and cancel if needed
-                  </p>
-                </div>
-              )}
+                  {/* Account Actions Section */}
+                  <section className="space-y-3">
+                    <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                      Account Actions
+                    </h2>
 
-              {!isWeb && (
-                <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                  Manage your subscription through the App Store
-                </p>
-              )}
-            </div>
-          ) : (
-            <div className="py-6">
-              <p className="text-gray-600 dark:text-gray-400 mb-4 text-center">
-                You don't have an active subscription
-              </p>
+                    {/* Sign Out Button */}
+                    <button
+                      onClick={handleSignOut}
+                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                    >
+                      Sign Out
+                    </button>
 
-              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 text-center">
-                Become a Tandem Unlimited Member
-              </h3>
-
-              {/* Benefits List */}
-              <div className="space-y-2 mb-6">
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Archive access for all past puzzles (Daily Tandem and Daily Cryptic)
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Sync and save your progress across devices
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">Ad-free experience</p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Access to Hard Mode and future exclusive features
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Support a solo developer to keep building great puzzles
-                  </p>
-                </div>
-
-                <div className="flex items-start gap-2">
-                  <span className="text-green-500 text-base font-bold mt-0.5">✓</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">Cancel anytime</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => setShowPaywall(true)}
-                className={`w-full py-3 px-6 rounded-2xl border-[3px] font-semibold transition-all ${
-                  highContrast
-                    ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-teal-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                Become a Member
-              </button>
-            </div>
-          )}
-                  </div>
-
-        {/* Benefits Section (if subscribed) */}
-        {subscription?.isActive && (
-                  <div className="pt-6 border-t-[3px] border-black dark:border-white">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
-              Your Benefits
-            </h2>
-
-            <div className="space-y-3 mb-4">
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
-                <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">
-                    Unlimited Archive Access
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Play all past puzzles for both Tandem emoji word puzzle and Daily Cryptic
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
-                <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">
-                    Access to Hard Mode and Future Exclusive Features
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Challenge yourself with time limits and more
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
-                <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">Ad-Free</p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Uninterrupted puzzle experience
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <span className="text-green-500 text-xl font-bold mt-0.5">✓</span>
-                <div>
-                  <p className="font-medium text-gray-800 dark:text-gray-200">
-                    Support a Solo Developer
-                  </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Help keep building great puzzles
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-accent-green/10 border-2 border-accent-green/30 rounded-2xl p-4 text-center">
-              <p className="text-sm text-gray-700 dark:text-gray-300 font-medium">
-                💚 Your subscription keeps the daily puzzle free for everyone to play!
-              </p>
-            </div>
-          </div>
-        )}
-
-                  {/* Sign Out Section */}
-                  <div className="pt-6 border-t-[3px] border-black dark:border-white">
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
-            Account Actions
-          </h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Sign out of your account</p>
-
-          <button
-            onClick={handleSignOut}
-            className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-            }`}
-          >
-            Sign Out
-          </button>
-                  </div>
-
-                  {/* Danger Zone Section */}
-                  <div className="pt-8 border-t-[3px] border-red-500">
-          <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-            Irreversible account actions
-          </p>
-
-          {/* Delete Account Button */}
-          <button
-            onClick={handleDeleteAccount}
-            className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-              highContrast
-                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-            }`}
-          >
-            Delete Account
-          </button>
-                  </div>
+                    {/* Delete Account Button */}
+                    <button
+                      onClick={handleDeleteAccount}
+                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-red-600 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                    >
+                      Delete Account
+                    </button>
+                  </section>
                 </div>
               </div>
 
@@ -860,8 +779,27 @@ export default function AccountPage() {
         </div>
 
         {/* Sidebar Menu */}
-        <SidebarMenu isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
+        <SidebarMenu
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onOpenStats={() => setShowStats(true)}
+          onOpenArchive={() => setShowArchive(true)}
+          onOpenHowToPlay={() => setShowHowToPlay(true)}
+          onOpenSettings={() => setShowSettings(true)}
+          onOpenFeedback={() => setShowFeedback(true)}
+        />
       </div>
+
+      {/* Modals */}
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
+
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
 
       {/* Delete Account Modal */}
       <DeleteAccountModal

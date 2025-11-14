@@ -130,7 +130,6 @@ export default function CharacterBlockGrid({
       isFocused &&
       !isCorrect &&
       answerLength > 8 &&
-      isMobilePhone &&
       activeBlockRef.current &&
       scrollContainerRef.current
     ) {
@@ -141,12 +140,12 @@ export default function CharacterBlockGrid({
         inline: 'center',
       });
     }
-  }, [activeBlockIndex, isFocused, isCorrect, answerLength, isMobilePhone]);
+  }, [activeBlockIndex, isFocused, isCorrect, answerLength]);
 
   // Hide scroll indicator on first scroll
   useEffect(() => {
     const container = scrollContainerRef.current;
-    if (!container || answerLength <= 8 || !isMobilePhone) return;
+    if (!container || answerLength <= 8) return;
 
     const handleScroll = () => {
       setShowScrollIndicator(false);
@@ -157,7 +156,7 @@ export default function CharacterBlockGrid({
     return () => {
       container.removeEventListener('scroll', handleScroll);
     };
-  }, [answerLength, isMobilePhone]);
+  }, [answerLength]);
 
   // Find next available block (skipping locked ones)
   const findNextAvailableBlock = useCallback(
@@ -422,9 +421,9 @@ export default function CharacterBlockGrid({
   };
 
   // Determine if we need horizontal scrolling
-  const needsScroll = answerLength > 8 && isMobilePhone;
+  const needsScroll = answerLength > 8;
 
-  // Debug logging for iOS
+  // Debug logging
   useEffect(() => {
     if (answerLength > 8) {
       console.log('[CharacterBlockGrid] Scroll Debug:', {
@@ -516,7 +515,7 @@ export default function CharacterBlockGrid({
           </AnimatePresence>
         </div>
       ) : (
-        // Normal non-scrollable grid for short words or desktop
+        // Normal non-scrollable grid for short words (8 characters or less)
         <div
           ref={gridRef}
           className={`
