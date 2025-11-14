@@ -1,4 +1,23 @@
 'use client';
+
+/**
+ * Settings Modal
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
+ *
+ * Main settings interface with sections for:
+ * - Account management and avatar
+ * - Subscription and Hard Mode
+ * - iCloud Sync (iOS)
+ * - Notifications (iOS)
+ * - Game Center and Leaderboards (iOS)
+ * - Accessibility preferences
+ *
+ * Nested modals:
+ * - PaywallModal at z-60
+ * - AvatarSelectionModal at z-60
+ *
+ * @component
+ */
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -16,6 +35,7 @@ import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import GameCenterButton from '@/components/GameCenterButton';
 import { STORAGE_KEYS } from '@/lib/constants';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [showPaywall, setShowPaywall] = useState(openPaywall);
@@ -37,8 +57,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     toggleHighContrast,
     reduceMotion,
     toggleReduceMotion,
-    setThemeMode,
-    isAuto,
   } = useTheme();
   const { syncStatus, toggleSync } = useUnifiedSync();
   const { user, signInWithApple } = useAuth();
@@ -328,38 +346,19 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     }
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-fadeIn"
-      onClick={onClose}
-    >
-      <div
-        className="bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar"
-        onClick={(e) => e.stopPropagation()}
+    <>
+      <LeftSidePanel
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Settings"
+        maxWidth="550px"
       >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Settings</h2>
-          <button
-            onClick={onClose}
-            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
-            }`}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-
-        {/* iOS App Promotion Banner - Web Only */}
-        {showAppBanner && !Capacitor.isNativePlatform() && (
-          <div className="mb-6">
+        {/* Content wrapper with padding */}
+        <div className="px-6 py-6">
+          {/* iOS App Promotion Banner - Web Only */}
+          {showAppBanner && !Capacitor.isNativePlatform() && (
+            <div className="mb-6">
             <div
               className={`rounded-2xl border-[3px] p-5 shadow-[4px_4px_0px_rgba(0,0,0,0.3)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] ${
                 highContrast
@@ -387,7 +386,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
-                  Download Tandem Daily for IOS today to enjoy Ad-Free on iPhone and iPad.
+                  Download Tandem Daily Games for iOS today to enjoy Ad-Free on iPhone and iPad.
                 </p>
 
                 {/* Action Buttons */}
@@ -727,7 +726,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           </p>
                         </div>
                         <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                          Affects Tandem Daily: 3-minute time limit • No hints
+                          Affects Daily Tandem: 3-minute time limit • No hints
                         </p>
                       </div>
                       <button
@@ -798,7 +797,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           </span>
                         </div>
                         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                          Affects Tandem Daily: 3-minute time limit • No hints
+                          Affects Daily Tandem: 3-minute time limit • No hints
                         </p>
                       </div>
                       <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed flex-shrink-0">
@@ -1100,61 +1099,14 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
 
             {/* Section Content */}
             <div className="p-5 space-y-4">
-              {/* Theme Mode Selection */}
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200">Theme Mode</p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    {isAuto ? 'Following system' : 'Manual override'}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setThemeMode('auto');
-                      lightTap();
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                      highContrast
-                        ? isAuto
-                          ? 'bg-hc-primary text-white border-2 border-hc-border'
-                          : 'bg-hc-surface text-hc-text border-2 border-hc-border'
-                        : isAuto
-                          ? 'bg-sky-500 text-white'
-                          : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                    }`}
-                  >
-                    Auto
-                  </button>
-                  <button
-                    onClick={() => {
-                      setThemeMode('manual');
-                      lightTap();
-                    }}
-                    className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
-                      highContrast
-                        ? !isAuto
-                          ? 'bg-hc-primary text-white border-2 border-hc-border'
-                          : 'bg-hc-surface text-hc-text border-2 border-hc-border'
-                        : !isAuto
-                          ? 'bg-sky-500 text-white'
-                          : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
-                    }`}
-                  >
-                    Manual
-                  </button>
-                </div>
-              </div>
-
               {/* Theme Toggle */}
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                    {isAuto ? 'Current Appearance' : 'Appearance'}
+                    Appearance
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-400">
                     {theme === 'dark' ? 'Dark mode' : 'Light mode'}
-                    {isAuto && ' (auto)'}
                   </p>
                 </div>
                 <button
@@ -1167,13 +1119,12 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       ? theme === 'dark'
                         ? 'bg-hc-primary border-2 border-hc-border'
                         : 'bg-hc-surface border-2 border-hc-border'
-                      : isAuto
-                        ? 'bg-gray-300 dark:bg-gray-500'
+                      : theme === 'dark'
+                        ? 'bg-sky-500'
                         : 'bg-gray-200 dark:bg-gray-600'
                   }`}
                   role="switch"
                   aria-checked={theme === 'dark'}
-                  disabled={isAuto}
                 >
                   <span
                     className={`${
@@ -1327,20 +1278,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               onClick={async () => {
                 lightTap();
                 if (Capacitor.isNativePlatform()) {
-                  await Browser.open({ url: 'https://tandemdaily.com/privacypolicy' });
-                } else {
-                  window.open('/privacypolicy', '_blank');
-                }
-              }}
-            >
-              Privacy Policy
-            </button>
-            <span className="text-gray-400 dark:text-gray-600">|</span>
-            <button
-              className="text-sky-600 dark:text-sky-400 hover:underline"
-              onClick={async () => {
-                lightTap();
-                if (Capacitor.isNativePlatform()) {
                   await Browser.open({ url: 'https://tandemdaily.com/support' });
                 } else {
                   window.open('/support', '_blank');
@@ -1348,6 +1285,34 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               }}
             >
               Support
+            </button>
+            <span className="text-gray-400 dark:text-gray-600">|</span>
+            <button
+              className="text-sky-600 dark:text-sky-400 hover:underline"
+              onClick={async () => {
+                lightTap();
+                if (Capacitor.isNativePlatform()) {
+                  await Browser.open({ url: 'https://tandemdaily.com/about' });
+                } else {
+                  window.open('/about', '_blank');
+                }
+              }}
+            >
+              About
+            </button>
+            <span className="text-gray-400 dark:text-gray-600">|</span>
+            <button
+              className="text-sky-600 dark:text-sky-400 hover:underline"
+              onClick={async () => {
+                lightTap();
+                if (Capacitor.isNativePlatform()) {
+                  await Browser.open({ url: 'https://tandemdaily.com/privacypolicy' });
+                } else {
+                  window.open('/privacypolicy', '_blank');
+                }
+              }}
+            >
+              Privacy Policy
             </button>
           </div>
 
@@ -1408,21 +1373,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             </div>
           </div>
         </div>
+        </div>
+      </LeftSidePanel>
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className={`w-full py-3 font-semibold rounded-2xl transition-all ${
-            highContrast
-              ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-accent-pink text-white border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-          }`}
-        >
-          Done
-        </button>
-      </div>
-
-      {/* Paywall Modal */}
+      {/* Nested Panel - Paywall Modal at z-60 */}
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
@@ -1431,7 +1385,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         }}
       />
 
-      {/* Avatar Selection Modal */}
+      {/* Nested Panel - Avatar Selection Modal at z-60 */}
       <AvatarSelectionModal
         isOpen={showAvatarModal}
         onClose={handleAvatarChange}
@@ -1439,6 +1393,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         currentAvatarId={userAvatar?.selected_avatar_id}
         isFirstTime={false}
       />
-    </div>
+    </>
   );
 }

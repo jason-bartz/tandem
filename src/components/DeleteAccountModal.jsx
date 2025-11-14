@@ -1,17 +1,18 @@
 'use client';
 
 import { useState } from 'react';
-import { createPortal } from 'react-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 /**
  * DeleteAccountModal
  *
  * Handles account deletion with proper warnings and confirmations
  * Follows Apple HIG for account management and deletion
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
  *
  * Requirements per App Store Guideline 5.1.1(v):
  * - Easy to find (in account settings)
@@ -44,15 +45,6 @@ export default function DeleteAccountModal({
   console.log('[DeleteAccountModal] Platform:', platform, 'isWeb:', isWeb);
 
   const hasActiveSubscription = accountInfo?.hasActiveSubscription || false;
-
-  if (!isOpen) {
-    return null;
-  }
-
-  // Check if we're in a browser environment
-  if (typeof window === 'undefined') {
-    return null;
-  }
 
   const handleClose = () => {
     if (!loading) {
@@ -180,32 +172,94 @@ export default function DeleteAccountModal({
     }
   };
 
-  const modalContent = (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-70 animate-fadeIn"
-      onClick={handleClose}
+  // Determine title and footer based on step
+  const title = step === 1 ? '⚠️ Delete Account' : '🔒 Final Confirmation';
+
+  const footer = (
+    <div className="flex gap-3">
+      {step === 1 ? (
+        <>
+          <button
+            onClick={handleClose}
+            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleProceedToConfirmation}
+            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+              highContrast
+                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Continue
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            onClick={() => {
+              setStep(1);
+              setConfirmationText('');
+              setError(null);
+            }}
+            disabled={loading}
+            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+              loading ? 'opacity-50 cursor-not-allowed' : ''
+            } ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            Back
+          </button>
+          <button
+            onClick={handleDelete}
+            disabled={loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')}
+            className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
+              loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')
+                ? 'opacity-50 cursor-not-allowed'
+                : ''
+            } ${
+              highContrast
+                ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            {loading ? (
+              <div className="flex items-center justify-center gap-2">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                <span>Deleting...</span>
+              </div>
+            ) : (
+              'Delete Account'
+            )}
+          </button>
+        </>
+      )}
+    </div>
+  );
+
+  return (
+    <LeftSidePanel
+      isOpen={isOpen}
+      onClose={handleClose}
+      title={title}
+      maxWidth="480px"
+      footer={footer}
     >
-      <div
-        className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto ${
-          highContrast
-            ? 'bg-hc-surface border-hc-error shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-gray-800 border-red-500 shadow-[6px_6px_0px_rgba(220,38,38,0.5)]'
-        }`}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Step 1: Warning */}
-        {step === 1 && (
-          <>
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-3">⚠️</div>
-              <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
-                Delete Account
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                This action cannot be undone
-              </p>
-            </div>
+      {/* Step 1: Warning */}
+      {step === 1 && (
+        <>
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
+            This action cannot be undone
+          </p>
 
             {/* Active Subscription Warning */}
             {hasActiveSubscription && (
@@ -276,51 +330,22 @@ export default function DeleteAccountModal({
               </div>
             </div>
 
-            {/* Timeline */}
-            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                <span className="font-bold">Deletion Timeline:</span> Your account will be deleted
-                immediately and permanently. You will not be able to recover your data.
-              </p>
-            </div>
+          {/* Timeline */}
+          <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              <span className="font-bold">Deletion Timeline:</span> Your account will be deleted
+              immediately and permanently. You will not be able to recover your data.
+            </p>
+          </div>
+        </>
+      )}
 
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleClose}
-                className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleProceedToConfirmation}
-                className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
-                  highContrast
-                    ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                Continue
-              </button>
-            </div>
-          </>
-        )}
-
-        {/* Step 2: Final Confirmation */}
-        {step === 2 && (
-          <>
-            {/* Header */}
-            <div className="text-center mb-6">
-              <div className="text-5xl mb-3">🔒</div>
-              <h2 className="text-2xl font-bold text-red-600 dark:text-red-400 mb-2">
-                Final Confirmation
-              </h2>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Are you absolutely sure?</p>
-            </div>
+      {/* Step 2: Final Confirmation */}
+      {step === 2 && (
+        <>
+          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
+            Are you absolutely sure?
+          </p>
 
             {/* Account Info */}
             <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
@@ -364,65 +389,19 @@ export default function DeleteAccountModal({
               </div>
             )}
 
-            {/* Error Message */}
-            {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-                <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-              </div>
-            )}
-
-            {/* Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={() => {
-                  setStep(1);
-                  setConfirmationText('');
-                  setError(null);
-                }}
-                disabled={loading}
-                className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
-                  loading ? 'opacity-50 cursor-not-allowed' : ''
-                } ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                Back
-              </button>
-              <button
-                onClick={handleDelete}
-                disabled={loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')}
-                className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
-                  loading || (isWeb && confirmationText.trim().toUpperCase() !== 'DELETE')
-                    ? 'opacity-50 cursor-not-allowed'
-                    : ''
-                } ${
-                  highContrast
-                    ? 'bg-hc-error text-white border-hc-border hover:bg-red-700 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-red-600 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                }`}
-              >
-                {loading ? (
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                    <span>Deleting...</span>
-                  </div>
-                ) : (
-                  'Delete Account'
-                )}
-              </button>
+          {/* Error Message */}
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
+          )}
 
-            {/* Help Text */}
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center mt-4">
-              Need help? Contact support@goodvibesgames.com
-            </p>
-          </>
-        )}
-      </div>
-    </div>
+          {/* Help Text */}
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            Need help? Contact support@goodvibesgames.com
+          </p>
+        </>
+      )}
+    </LeftSidePanel>
   );
-
-  return createPortal(modalContent, document.body);
 }

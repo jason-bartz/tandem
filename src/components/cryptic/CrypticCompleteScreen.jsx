@@ -10,11 +10,12 @@ import { useUIIcon } from '@/hooks/useUIIcon';
 import { playSuccessSound } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import CrypticGuideModal from './CrypticGuideModal';
-import CrypticArchiveCalendar from './CrypticArchiveCalendar';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import Settings from '@/components/Settings';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import AuthModal from '@/components/auth/AuthModal';
+import GlobalNavigation from '@/components/navigation/GlobalNavigation';
 
 export default function CrypticCompleteScreen({
   puzzle: _puzzle,
@@ -61,8 +62,6 @@ export default function CrypticCompleteScreen({
   const handleShare = async () => {
     const puzzleNumber = getPuzzleNumber();
     const shareText = `Daily Cryptic #${puzzleNumber}\n${hintsUsed === 0 ? '✨ Perfect solve!' : `💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`}\n⏱️ ${formatTime(elapsedTime)}\n\nPlay at tandemdaily.com/dailycryptic`;
-
-    setShareMessage(shareText);
 
     try {
       if (navigator.share) {
@@ -132,94 +131,46 @@ export default function CrypticCompleteScreen({
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col p-4 py-8 bg-gradient-to-b from-purple-200 to-purple-300 dark:from-gray-900 dark:to-gray-800">
-      {/* Header with back button and icons */}
-      <div className="max-w-4xl w-full mx-auto mb-6">
-        <div className="flex justify-between items-center mb-4">
-          {/* Back button */}
-          <button
-            onClick={onReturnHome}
-            className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-bg-card text-gray-700 dark:text-gray-300 border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-            }`}
-            title="Back to Tandem"
-          >
-            <span className="text-2xl">‹</span>
-          </button>
-
-          {/* Right side icons */}
-          <div className="flex gap-2">
-            <button
-              onClick={() => {
-                lightTap();
-                setShowStats(true);
-              }}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-              }`}
-              title="Statistics"
-            >
-              <Image src={getIconPath('stats')} alt="Statistics" width={24} height={24} />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowArchive(true);
-              }}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-              }`}
-              title="Archive"
-            >
-              <Image src={getIconPath('archive')} alt="Archive" width={24} height={24} />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowGuide(true);
-              }}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-              }`}
-              title="How to Play"
-            >
-              <Image src={getIconPath('how-to-play')} alt="How to Play" width={24} height={24} />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowSettings(true);
-              }}
-              className={`w-12 h-12 rounded-2xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant p-2 ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-              }`}
-              title="Settings"
-            >
-              <Image src={getIconPath('settings')} alt="Settings" width={24} height={24} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="max-w-4xl w-full mx-auto flex-1">
+    <GlobalNavigation
+      onOpenStats={() => setShowStats(true)}
+      onOpenArchive={() => setShowArchive(true)}
+      onOpenHowToPlay={() => setShowGuide(true)}
+      onOpenSettings={() => setShowSettings(true)}
+    >
+      <div className="animate-fade-in -mt-16">
+        {/* Main completion card */}
         <div
-          className={`rounded-[32px] border-[3px] p-8 md:p-10 shadow-[6px_6px_0px_rgba(0,0,0,1)] text-center ${
+          className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+              ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
           }`}
         >
+          {/* Back arrow button at top left */}
+          <button
+            onClick={() => {
+              lightTap();
+              onReturnHome();
+            }}
+            className="absolute left-4 top-4 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+            title="Back to Home"
+          >
+            <svg
+              className="w-5 h-5 text-gray-600 dark:text-gray-300"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
           {/* Logo */}
           <div className="mb-6">
             <img
@@ -427,7 +378,7 @@ export default function CrypticCompleteScreen({
 
       {/* Modals */}
       {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-      <CrypticArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <LeaderboardModal
@@ -444,6 +395,6 @@ export default function CrypticCompleteScreen({
           setShowAuthModal(false);
         }}
       />
-    </div>
+    </GlobalNavigation>
   );
 }

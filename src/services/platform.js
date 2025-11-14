@@ -389,7 +389,7 @@ class PlatformService {
       if (this.isNative && Share) {
         // Use Capacitor Share plugin on native
         const result = await Share.share({
-          title: data.title || 'Tandem Daily',
+          title: data.title || 'Tandem Daily Games',
           text: data.text,
           url: data.url || 'https://tandemdaily.com',
           dialogTitle: 'Share your results',

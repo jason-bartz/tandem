@@ -7,7 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
  * StatsSection - Wrapper for game-specific stats sections
  * Provides consistent styling and layout with solid color background
  *
- * @param {string} title - Section title (e.g., "Tandem Daily", "Daily Cryptic")
+ * @param {string} title - Section title (e.g., "Daily Tandem", "Daily Cryptic")
  * @param {string} emoji - Emoji to display before title
  * @param {string} icon - Path to icon image
  * @param {string} iconDark - Path to dark mode icon image

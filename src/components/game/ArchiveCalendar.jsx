@@ -356,7 +356,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             <h2 id="archive-title" className="text-2xl font-bold text-gray-800 dark:text-gray-200">
-              Tandem Daily Archive
+              Daily Tandem Archive
             </h2>
             <button
               onClick={onClose}

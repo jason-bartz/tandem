@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 /**
  * CrypticGuideModal - Complete How-To Guide for Daily Cryptic
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
  *
  * Production-ready implementation following:
  * - Apple Human Interface Guidelines (accessibility, clear hierarchy, helpful)
@@ -16,7 +18,7 @@ import { useTheme } from '@/contexts/ThemeContext';
  *
  * @component
  */
-export default function CrypticGuideModal({ onClose }) {
+export default function CrypticGuideModal({ isOpen, onClose }) {
   const { highContrast, theme } = useTheme();
   const [expandedSection, setExpandedSection] = useState(null);
   const [expandedDevice, setExpandedDevice] = useState(null);
@@ -44,28 +46,6 @@ export default function CrypticGuideModal({ onClose }) {
     };
     return icons[type];
   };
-
-  useEffect(() => {
-    // Prevent body scroll when modal is open
-    const originalOverflow = window.getComputedStyle(document.body).overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = originalOverflow;
-    };
-  }, []);
-
-  // Keyboard navigation (Apple HIG: Support keyboard shortcuts)
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape') {
-        onClose();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [onClose]);
 
   const crypticDevices = [
     {
@@ -262,977 +242,728 @@ export default function CrypticGuideModal({ onClose }) {
   ];
 
   return (
-    <div
-      className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="guide-title"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        className={`rounded-[32px] border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,1)] max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}
-      >
-        {/* Header - Sticky */}
-        <div
-          className={`sticky top-0 z-10 border-b-[3px] p-4 sm:p-6 flex items-center justify-between ${
+    <LeftSidePanel
+      isOpen={isOpen}
+      onClose={onClose}
+      title={
+        <div className="flex items-center gap-3">
+          <Image
+            src="/icons/ui/cryptic.png"
+            alt="Daily Cryptic"
+            width={48}
+            height={48}
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl"
+          />
+          <span>How to Play Daily Cryptic</span>
+        </div>
+      }
+      maxWidth="650px"
+      footer={
+        <button
+          onClick={onClose}
+          className={`w-full px-6 py-3 sm:py-4 font-bold text-base sm:text-lg rounded-[20px] border-[3px] transition-all ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700'
+              ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
           }`}
         >
-          <div className="flex items-center gap-3">
-            <Image
-              src="/icons/ui/cryptic.png"
-              alt="Daily Cryptic"
-              width={48}
-              height={48}
-              className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl"
-            />
-            <h2
-              id="guide-title"
-              className={`text-xl sm:text-2xl font-bold ${
-                highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-              }`}
-            >
-              How to Play Daily Cryptic
-            </h2>
-          </div>
+          Got it! Let&apos;s Play
+        </button>
+      }
+    >
+      <div className="space-y-4">
+        {/* Introduction Section */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden ${
+            highContrast
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+          }`}
+        >
           <button
-            onClick={onClose}
-            className={`w-10 h-10 rounded-xl border-[2px] text-xl font-bold transition-all hover:scale-110 active:scale-95 ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600'
-            }`}
-            aria-label="Close guide"
+            onClick={() => setExpandedSection(expandedSection === 'intro' ? null : 'intro')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'intro'}
           >
-            ×
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('intro')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Introduction
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'intro' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
           </button>
-        </div>
 
-        {/* Content - Scrollable */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-          {/* Introduction Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'intro' ? null : 'intro')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'intro'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('intro')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Introduction
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'intro' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
+          {expandedSection === 'intro' && (
+            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  Welcome to The Daily Cryptic
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                  Every cryptic clue is a two-part puzzle combining a <strong>definition</strong>{' '}
+                  (straightforward meaning) and <strong>wordplay</strong> (clever construction).
+                  Daily Cryptic adds a unique twist:
+                  <strong className="text-purple-600 dark:text-purple-400">
+                    {' '}
+                    two emojis at the start of each clue
+                  </strong>{' '}
+                  that can work together or serve different purposes.
+                </p>
 
-            {expandedSection === 'intro' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    Welcome to The Daily Cryptic
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                    Every cryptic clue is a two-part puzzle combining a <strong>definition</strong>{' '}
-                    (straightforward meaning) and <strong>wordplay</strong> (clever construction).
-                    Daily Cryptic adds a unique twist:
-                    <strong className="text-purple-600 dark:text-purple-400">
-                      {' '}
-                      two emojis at the start of each clue
-                    </strong>{' '}
-                    that can work together or serve different purposes.
-                  </p>
-
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-300 dark:border-blue-700">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Definition</h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        A straightforward synonym for the answer, usually at the start or end of the
-                        clue
-                      </p>
-                    </div>
-
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Wordplay</h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        A clever way to build the answer using word games, letter manipulation, and
-                        our emoji innovation
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Emoji Interpretation Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'emoji' ? null : 'emoji')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'emoji'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('emoji')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Emoji Interpretation
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'emoji' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {expandedSection === 'emoji' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div className="p-5 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-400">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    The Emoji Interpretation Layer
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                    <strong>Every Daily Cryptic puzzle uses exactly TWO emojis</strong> at the start
-                    of each clue. These emojis can work together to represent one concept, OR each
-                    can represent different parts of the clue.
-                  </p>
-
-                  <div className="bg-white/50 dark:bg-black/20 rounded-xl p-4 space-y-4">
-                    <div>
-                      <div className="font-semibold text-purple-800 dark:text-purple-200 mb-2">
-                        Pattern 1: Both Emojis Together
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-3">
-                          <div className="text-3xl flex-shrink-0 flex gap-1">
-                            <span>👑</span>
-                            <span>🦁</span>
-                          </div>
-                          <div>
-                            <div className="font-bold text-gray-900 dark:text-white">
-                              → ROYAL, PRIDE, or KING
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Both together = regal concepts
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="text-3xl flex-shrink-0 flex gap-1">
-                            <span>🐝</span>
-                            <span>🦂</span>
-                          </div>
-                          <div>
-                            <div className="font-bold text-gray-900 dark:text-white">
-                              → STING or STINGING
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              Both together = stinging creatures
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="border-t-2 border-purple-300/30 pt-3">
-                      <div className="font-semibold text-purple-800 dark:text-purple-200 mb-2">
-                        Pattern 2: Each Emoji Different Role
-                      </div>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-3">
-                          <div className="text-3xl flex-shrink-0 flex gap-1">
-                            <span>⚡</span>
-                            <span>🏴‍☠️</span>
-                          </div>
-                          <div>
-                            <div className="font-bold text-gray-900 dark:text-white">
-                              → Different purposes
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              ⚡ might = anagram indicator, 🏴‍☠️ might = pirate/definition
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex items-start gap-3">
-                          <div className="text-3xl flex-shrink-0 flex gap-1">
-                            <span>🎓</span>
-                            <span>🔀</span>
-                          </div>
-                          <div>
-                            <div className="font-bold text-gray-900 dark:text-white">
-                              → Different purposes
-                            </div>
-                            <div className="text-sm text-gray-600 dark:text-gray-400">
-                              🎓 might = academic/teacher, 🔀 might = anagram indicator
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-300 dark:border-blue-700">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Definition</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      A straightforward synonym for the answer, usually at the start or end of the
+                      clue
+                    </p>
                   </div>
 
-                  <div className="mt-4 text-sm text-purple-700 dark:text-purple-300">
-                    <strong>Key insight:</strong> Look at the rest of the clue for context. The
-                    emojis provide fodder (building blocks), indicators (operations), or thematic
-                    hints. They never directly show the final answer!
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-bold text-gray-900 dark:text-white mb-3">
-                    Emoji Difficulty Levels
-                  </h4>
-                  <div className="space-y-3">
-                    <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300 dark:border-green-700">
-                      <div className="font-semibold text-green-900 dark:text-green-100 mb-1">
-                        Easy - Direct Association
-                      </div>
-                      <div className="text-sm text-green-800 dark:text-green-200">
-                        🔑🚪 → "DOOR", "ENTRY", "ACCESS" (straightforward combination)
-                      </div>
-                    </div>
-                    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-300 dark:border-yellow-700">
-                      <div className="font-semibold text-yellow-900 dark:text-yellow-100 mb-1">
-                        Medium - One-Step Conceptual
-                      </div>
-                      <div className="text-sm text-yellow-800 dark:text-yellow-200">
-                        🎭🎬 → "DRAMA", "ACT", "SCENE" (theatrical theme)
-                      </div>
-                    </div>
-                    <div className="p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border-2 border-red-300 dark:border-red-700">
-                      <div className="font-semibold text-red-900 dark:text-red-100 mb-1">
-                        Hard - Lateral Thinking
-                      </div>
-                      <div className="text-sm text-red-800 dark:text-red-200">
-                        ⚡💡 → "IDEA", "SPARK", "INSIGHT" (requires creative connection)
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Complete Example Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'example' ? null : 'example')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'example'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('example')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Complete Example
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'example' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {expandedSection === 'example' && (
-              <div className="p-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div className="p-5 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] bg-blue-50 dark:bg-blue-900/20 border-blue-400">
-                  <h3 className="text-lg font-bold mb-3 text-gray-900 dark:text-white">
-                    Complete Example Walkthrough
-                  </h3>
-
-                  <div className="bg-white dark:bg-gray-800 rounded-xl p-4 mb-4 border-2 border-blue-300">
-                    <div className="text-2xl mb-2 font-medium text-gray-900 dark:text-white flex items-start gap-2">
-                      <span className="flex gap-1 flex-shrink-0">
-                        <span>👶</span>
-                        <span>🏫</span>
-                      </span>
-                      <span>Room for kids, yes? Run back to grab second-grader (7)</span>
-                    </div>
-                    <div className="text-lg font-mono font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      Answer: NURSERY
-                    </div>
-                    <div className="text-sm text-gray-600 dark:text-gray-400">
-                      Combining emoji interpretation + reversal + container + selection
-                    </div>
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="border-l-4 border-purple-500 pl-4">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">
-                        1. Emoji Interpretation
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        <span className="inline-flex gap-1">
-                          <span>👶</span>
-                          <span>🏫</span>
-                        </span>{' '}
-                        together suggest <strong>children and education</strong> or concepts related
-                        to NURSERY, YOUTH, KIDS. This provides thematic support and hints at the
-                        answer.
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-blue-500 pl-4">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">
-                        2. Identify the Fodder
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        "yes run" gives us letters to work with → <strong>Y-E-S-R-U-N</strong> (6
-                        letters)
-                        <br />
-                        "second-grader" tells us to take the 2nd letter of "grader" →{' '}
-                        <strong>R</strong>
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-green-500 pl-4">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">
-                        3. Spot the Indicators
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        "back" = reversal indicator (read backward)
-                        <br />
-                        "grab" = container indicator (one thing contains another)
-                        <br />
-                        "second" = selection indicator (take the 2nd letter)
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-orange-500 pl-4">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">
-                        4. Apply the Cryptic Devices
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300 space-y-1">
-                        <strong>Step 1:</strong> Reverse "yes run" → NUR SEY
-                        <br />
-                        <strong>Step 2:</strong> Grab R from "second-grader" and insert it
-                        <br />
-                        <strong>Step 3:</strong> Result = NUR(R)SERY = <strong>NURSERY</strong> (7
-                        letters) ✓
-                      </p>
-                    </div>
-
-                    <div className="border-l-4 border-red-500 pl-4">
-                      <div className="font-bold text-gray-900 dark:text-white mb-1">
-                        5. Find the Definition
-                      </div>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        "Room for kids" is our straightforward definition = NURSERY ✓
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-lg border-2 border-green-400">
-                    <p className="text-sm text-green-900 dark:text-green-100">
-                      <strong>Notice:</strong> This puzzle combines{' '}
-                      <strong>emoji interpretation + reversal + selection + container</strong>.
-                      Multiple devices working together create sophisticated, satisfying solves!
+                  <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Wordplay</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      A clever way to build the answer using word games, letter manipulation, and
+                      our emoji innovation
                     </p>
                   </div>
                 </div>
               </div>
-            )}
-          </div>
-
-          {/* Cryptic Devices Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'devices' ? null : 'devices')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'devices'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('devices')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Cryptic Devices
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'devices' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {expandedSection === 'devices' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                  These are the building blocks of cryptic clues. Most puzzles combine 2-3 devices!
-                  Tap each device to learn more.
-                </p>
-
-                {crypticDevices.map((device) => (
-                  <div
-                    key={device.id}
-                    className={`rounded-2xl border-[3px] overflow-hidden transition-all ${
-                      device.featured
-                        ? 'border-purple-400 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40'
-                        : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700/50'
-                    }`}
-                  >
-                    <button
-                      onClick={() =>
-                        setExpandedDevice(expandedDevice === device.id ? null : device.id)
-                      }
-                      className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-                      aria-expanded={expandedDevice === device.id}
-                    >
-                      <div className="flex items-center gap-3 flex-1">
-                        <span className="text-2xl">{device.icon}</span>
-                        <div className="flex-1">
-                          <div className="font-bold text-gray-900 dark:text-white">
-                            {device.name}
-                          </div>
-                          <div className="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                            {device.description}
-                          </div>
-                        </div>
-                      </div>
-                      <svg
-                        className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                          expandedDevice === device.id ? 'rotate-180' : ''
-                        }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M19 9l-7 7-7-7"
-                        />
-                      </svg>
-                    </button>
-
-                    {expandedDevice === device.id && (
-                      <div className="p-4 pt-0 space-y-3 border-t-2 border-gray-300 dark:border-gray-600">
-                        <div>
-                          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                            How to Spot
-                          </div>
-                          <p className="text-sm text-gray-700 dark:text-gray-300">
-                            {device.howToSpot}
-                          </p>
-                        </div>
-
-                        <div>
-                          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                            Common Indicators
-                          </div>
-                          <p className="text-sm text-gray-700 dark:text-gray-300 italic">
-                            {device.indicators}
-                          </p>
-                        </div>
-
-                        <div>
-                          <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1">
-                            Simple Example
-                          </div>
-                          <p className="text-sm font-mono text-purple-700 dark:text-purple-300">
-                            {device.example}
-                          </p>
-                        </div>
-
-                        {device.fullExample && (
-                          <div className="p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg border-2 border-blue-300">
-                            <div className="text-xs font-bold text-blue-900 dark:text-blue-100 uppercase tracking-wide mb-2">
-                              Complete Puzzle Example
-                            </div>
-                            <div className="text-sm text-blue-900 dark:text-blue-100 mb-1">
-                              <strong>Clue:</strong> {device.fullExample.clue}
-                            </div>
-                            <div className="text-sm text-blue-800 dark:text-blue-200">
-                              <strong>How it works:</strong> {device.fullExample.breakdown}
-                            </div>
-                          </div>
-                        )}
-
-                        {device.tips && (
-                          <div>
-                            <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                              💡 Pro Tips
-                            </div>
-                            <ul className="space-y-1">
-                              {device.tips.map((tip, idx) => (
-                                <li
-                                  key={idx}
-                                  className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2"
-                                >
-                                  <span className="text-purple-600 dark:text-purple-400 flex-shrink-0">
-                                    •
-                                  </span>
-                                  <span>{tip}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-
-                        {device.examples && (
-                          <div>
-                            <div className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
-                              More Examples
-                            </div>
-                            <div className="space-y-2">
-                              {device.examples.map((ex, idx) => (
-                                <div key={idx} className="p-2 bg-white/50 dark:bg-black/20 rounded">
-                                  <div className="flex items-start gap-2">
-                                    <span className="text-xl">{ex.pair}</span>
-                                    <div>
-                                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                                        → {ex.meaning}
-                                      </div>
-                                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                                        {ex.explanation}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                <div className="mt-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-400">
-                  <p className="text-sm text-yellow-900 dark:text-yellow-100">
-                    <strong>💡 Remember:</strong> Most Daily Cryptic puzzles combine emoji
-                    interpretation with 2-3 traditional devices. Look for multiple indicator words
-                    in the clue!
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Hint System Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'hints' ? null : 'hints')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'hints'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('hints')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Hint System
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'hints' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {expandedSection === 'hints' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    Your Progressive Hint System
-                  </h3>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
-                    Hints build on each other - start with Hint 1 and work your way through!
-                  </p>
-
-                  <div className="space-y-3">
-                    {/* Hint 1: Fodder */}
-                    <div className="flex items-start gap-3 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
-                      <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-purple-100 dark:bg-purple-800 rounded-lg">
-                        <Image src={getHintIcon('fodder')} alt="" width={32} height={32} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900 dark:text-white mb-1">
-                          1. Fodder{' '}
-                          <span className="text-xs text-purple-600 dark:text-purple-400 font-normal">
-                            (Most Detailed)
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                          Identifies all the components: what the emoji pair represents, what each
-                          piece of text means, any substitutions needed. This hint walks you through
-                          the raw materials.
-                        </div>
-                        <div className="text-xs italic text-purple-600 dark:text-purple-400 bg-purple-100 dark:bg-purple-900/40 p-2 rounded">
-                          Example: "'🎭🎪' together suggest STAGE (theatrical setting), giving us
-                          the letters S-T-A-G-E to work with. 'Losing finale' tells us we'll remove
-                          the last letter..."
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Hint 2: Indicator */}
-                    <div className="flex items-start gap-3 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
-                      <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-blue-100 dark:bg-blue-800 rounded-lg">
-                        <Image src={getHintIcon('indicator')} alt="" width={32} height={32} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900 dark:text-white mb-1">
-                          2. Indicator{' '}
-                          <span className="text-xs text-blue-600 dark:text-blue-400 font-normal">
-                            (Operational)
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                          Points out the indicator words and what cryptic operations they signal.
-                          Tells you what to DO with the fodder (rearrange it? reverse it? combine
-                          it?).
-                        </div>
-                        <div className="text-xs italic text-blue-600 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/40 p-2 rounded">
-                          Example: "'mixed' signals an anagram - rearrange those letters. 'loses'
-                          means delete the last letter after anagramming."
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Hint 3: Definition */}
-                    <div className="flex items-start gap-3 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300">
-                      <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-green-100 dark:bg-green-800 rounded-lg">
-                        <Image src={getHintIcon('definition')} alt="" width={32} height={32} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900 dark:text-white mb-1">
-                          3. Definition{' '}
-                          <span className="text-xs text-green-600 dark:text-green-400 font-normal">
-                            (Concise)
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                          Reveals which part of the clue is the straightforward definition - your
-                          synonym for the answer. Usually found at the start or end of the clue.
-                        </div>
-                        <div className="text-xs italic text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 p-2 rounded">
-                          Example: "Definition is 'entrance' — another word for a way in"
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Hint 4: Letter */}
-                    <div className="flex items-start gap-3 p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
-                      <div className="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-orange-100 dark:bg-orange-800 rounded-lg">
-                        <Image src={getHintIcon('letter')} alt="" width={32} height={32} />
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-bold text-gray-900 dark:text-white mb-1">
-                          4. First Letter{' '}
-                          <span className="text-xs text-orange-600 dark:text-orange-400 font-normal">
-                            (Final Nudge)
-                          </span>
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300 mb-2">
-                          Gives you the first letter of the answer. This is your last hint before
-                          solving!
-                        </div>
-                        <div className="text-xs italic text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/40 p-2 rounded">
-                          Example: "Starts with G"
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Solving Tips Section */}
-          <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-            }`}
-          >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'strategy' ? null : 'strategy')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'strategy'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('solving')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Solving Tips
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'strategy' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
-
-            {expandedSection === 'strategy' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div className="p-5 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-400">
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-                    Solving Strategy
-                  </h3>
-                  <ul className="space-y-4">
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        1.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Start with the emojis
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          What do the TWO emojis suggest? They might work together or serve
-                          different roles. This is your first interpretation layer.
-                        </div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        2.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Find the definition
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          Usually at the start or end of the clue - a straightforward synonym for
-                          the answer.
-                        </div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        3.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Spot the indicators
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          Words like "mixed", "back", "in", "loses" tell you what operation to
-                          perform.
-                        </div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        4.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Identify the fodder
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          Which words/letters will you manipulate? What substitutions might work?
-                        </div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        5.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Use hints progressively
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          Start with Hint 1 (Fodder), then 2 (Indicator), etc. They build on each
-                          other!
-                        </div>
-                      </div>
-                    </li>
-                    <li className="flex items-start gap-3">
-                      <span className="text-lg font-bold flex-shrink-0 text-gray-600 dark:text-gray-400">
-                        6.
-                      </span>
-                      <div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
-                          Think laterally
-                        </div>
-                        <div className="text-sm text-gray-700 dark:text-gray-300">
-                          Cryptic clues reward creative thinking. What could this word mean in a
-                          different context?
-                        </div>
-                      </div>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
-                  <h4 className="font-bold text-blue-900 dark:text-blue-100 mb-2">Remember</h4>
-                  <ul className="space-y-2 text-sm text-blue-800 dark:text-blue-200">
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">✓</span>
-                      <span>Every word in a cryptic clue has a purpose</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">✓</span>
-                      <span>
-                        The TWO emojis might work together or represent different parts of the clue
-                      </span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">✓</span>
-                      <span>Look for the definition (usually at start or end)</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">✓</span>
-                      <span>There's no penalty for using hints - they're designed to teach!</span>
-                    </li>
-                    <li className="flex items-start gap-2">
-                      <span className="text-blue-600 dark:text-blue-400">✓</span>
-                      <span>The more you play, the better you'll recognize patterns</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Footer - Sticky */}
+        {/* Emoji Interpretation Section */}
         <div
-          className={`sticky bottom-0 border-t-[3px] p-4 sm:p-6 ${
+          className={`rounded-2xl border-[3px] overflow-hidden ${
             highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-700'
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
           }`}
         >
           <button
-            onClick={onClose}
-            className={`w-full px-6 py-3 sm:py-4 font-bold text-base sm:text-lg rounded-[20px] border-[3px] transition-all ${
-              highContrast
-                ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none'
-            }`}
+            onClick={() => setExpandedSection(expandedSection === 'emoji' ? null : 'emoji')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'emoji'}
           >
-            Got it! Let&apos;s Play
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('emoji')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Emoji Interpretation
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'emoji' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
           </button>
+
+          {expandedSection === 'emoji' && (
+            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <div>
+                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700 mb-4">
+                  <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2 text-lg">
+                    🎯 Our Unique Innovation
+                  </h4>
+                  <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
+                    Every Daily Cryptic clue starts with{' '}
+                    <strong>TWO emojis that can work together or independently</strong> to provide
+                    hints, fodder, indicators, or thematic context.
+                  </p>
+                </div>
+
+                <h4 className="font-bold text-gray-900 dark:text-white mb-2">How Emojis Work:</h4>
+                <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
+                    <span>
+                      <strong>Together:</strong> Both emojis combine to suggest one concept (🐝🦂 =
+                      STING)
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
+                    <span>
+                      <strong>Separately:</strong> Each emoji plays a different role (⚡ = anagram
+                      indicator, 🏴‍☠️ = pirate/definition)
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
+                    <span>
+                      <strong>Context matters:</strong> The rest of the clue helps determine their
+                      role
+                    </span>
+                  </li>
+                </ul>
+
+                <div className="mt-4 space-y-3">
+                  <h4 className="font-bold text-gray-900 dark:text-white">Example Emoji Pairs:</h4>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
+                      <div className="text-2xl mb-1">👑🦁</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        ROYAL, PRIDE, KING
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        Both together = regal concepts
+                      </div>
+                    </div>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
+                      <div className="text-2xl mb-1">🐝🦂</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        STING, STINGING
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        Both together = stinging creatures
+                      </div>
+                    </div>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
+                      <div className="text-2xl mb-1">⚡🏴‍☠️</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        Different roles
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        ⚡ = anagram indicator, 🏴‍☠️ = pirate
+                      </div>
+                    </div>
+                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
+                      <div className="text-2xl mb-1">📚🦉</div>
+                      <div className="text-sm font-bold text-gray-900 dark:text-white">
+                        WISE, SCHOLAR, SMART
+                      </div>
+                      <div className="text-xs text-gray-600 dark:text-gray-400">
+                        Both together = wisdom/knowledge
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Example Walkthrough Section */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden ${
+            highContrast
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+          }`}
+        >
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'example' ? null : 'example')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'example'}
+          >
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('example')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Complete Example
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'example' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {expandedSection === 'example' && (
+            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <div>
+                <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl border-2 border-yellow-300 dark:border-yellow-700 mb-4">
+                  <h4 className="font-bold text-gray-900 dark:text-white mb-2">Sample Clue:</h4>
+                  <p className="text-xl text-gray-900 dark:text-white mb-2">
+                    🗽🦅 <em>I&apos;m a race mixed = nation (7)</em>
+                  </p>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      Step 1: Interpret the Emojis
+                    </h5>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      🗽 (Statue of Liberty) + 🦅 (Bald Eagle) = American symbols, suggesting the
+                      answer relates to America
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      Step 2: Find the Definition
+                    </h5>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      &quot;nation&quot; (at the end) = the definition
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      Step 3: Identify the Wordplay
+                    </h5>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      &quot;mixed&quot; = anagram indicator
+                      <br />
+                      &quot;I&apos;m a race&quot; = the fodder to anagram (7 letters)
+                    </p>
+                  </div>
+
+                  <div>
+                    <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
+                      Step 4: Solve
+                    </h5>
+                    <p className="text-gray-700 dark:text-gray-300">
+                      Anagram of &quot;I&apos;m a race&quot; = <strong>AMERICA</strong> (7 letters)
+                      <br />
+                      Confirmed by emoji hints (American symbols) and definition (nation)
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-300 dark:border-green-700">
+                    <p className="text-sm font-bold text-green-900 dark:text-green-100">
+                      ✓ Answer: AMERICA
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Cryptic Devices Section */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden ${
+            highContrast
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+          }`}
+        >
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'devices' ? null : 'devices')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'devices'}
+          >
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('devices')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Cryptic Devices
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'devices' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {expandedSection === 'devices' && (
+            <div className="p-4 space-y-3 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <p className="text-gray-700 dark:text-gray-300 mb-4">
+                These are the techniques used to construct cryptic clues. Click each to learn more:
+              </p>
+              {crypticDevices.map((device) => (
+                <div
+                  key={device.id}
+                  className={`rounded-xl border-[2px] overflow-hidden ${
+                    highContrast
+                      ? 'border-hc-border bg-hc-background'
+                      : 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700'
+                  }`}
+                >
+                  <button
+                    onClick={() =>
+                      setExpandedDevice(expandedDevice === device.id ? null : device.id)
+                    }
+                    className="w-full p-3 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+                    aria-expanded={expandedDevice === device.id}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">{device.icon}</span>
+                      <span className="font-bold text-gray-900 dark:text-white">
+                        {device.name}
+                      </span>
+                    </div>
+                    <svg
+                      className={`w-5 h-5 text-gray-600 dark:text-gray-400 transition-transform ${
+                        expandedDevice === device.id ? 'rotate-180' : ''
+                      }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+
+                  {expandedDevice === device.id && (
+                    <div className="p-3 space-y-3 border-t-2 border-gray-300 dark:border-gray-600">
+                      <div>
+                        <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                          Description:
+                        </h5>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {device.description}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                          How to Spot:
+                        </h5>
+                        <p className="text-sm text-gray-700 dark:text-gray-300">
+                          {device.howToSpot}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                          Common Indicators:
+                        </h5>
+                        <p className="text-sm text-gray-700 dark:text-gray-300 italic">
+                          {device.indicators}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                          Example:
+                        </h5>
+                        <p className="text-sm font-mono bg-blue-50 dark:bg-blue-900/20 p-2 rounded text-gray-900 dark:text-white">
+                          {device.example}
+                        </p>
+                      </div>
+
+                      {device.fullExample && (
+                        <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-300 dark:border-purple-700">
+                          <h5 className="text-sm font-bold text-purple-900 dark:text-purple-100 mb-1">
+                            Full Clue Example:
+                          </h5>
+                          <p className="text-sm text-gray-800 dark:text-gray-200 mb-1">
+                            {device.fullExample.clue}
+                          </p>
+                          <p className="text-xs text-gray-700 dark:text-gray-300">
+                            {device.fullExample.breakdown}
+                          </p>
+                        </div>
+                      )}
+
+                      {device.tips && (
+                        <div>
+                          <h5 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">
+                            Tips:
+                          </h5>
+                          <ul className="space-y-1">
+                            {device.tips.map((tip, idx) => (
+                              <li
+                                key={idx}
+                                className="text-xs text-gray-600 dark:text-gray-400 flex items-start gap-1"
+                              >
+                                <span className="text-purple-600 dark:text-purple-400">•</span>
+                                <span>{tip}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Hints Section */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden ${
+            highContrast
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+          }`}
+        >
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'hints' ? null : 'hints')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'hints'}
+          >
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('hints')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Using Hints
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'hints' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {expandedSection === 'hints' && (
+            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <div>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                  Daily Cryptic provides <strong>four progressive hints</strong> to help you solve
+                  each puzzle. Each hint reveals a different part of the clue&apos;s construction:
+                </p>
+
+                <div className="space-y-3">
+                  <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Image src={getHintIcon('fodder')} alt="Fodder" width={24} height={24} />
+                      <h5 className="font-bold text-gray-900 dark:text-white">Hint 1: Fodder</h5>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Identifies which words or letters in the clue are used to build the answer
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-xl border-2 border-purple-300 dark:border-purple-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Image src={getHintIcon('indicator')} alt="Indicator" width={24} height={24} />
+                      <h5 className="font-bold text-gray-900 dark:text-white">
+                        Hint 2: Indicator
+                      </h5>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Points out the wordplay indicator (anagram, reversal, container, etc.)
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-300 dark:border-green-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Image
+                        src={getHintIcon('definition')}
+                        alt="Definition"
+                        width={24}
+                        height={24}
+                      />
+                      <h5 className="font-bold text-gray-900 dark:text-white">
+                        Hint 3: Definition
+                      </h5>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Reveals which part of the clue is the straightforward definition
+                    </p>
+                  </div>
+
+                  <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-xl border-2 border-yellow-300 dark:border-yellow-700">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Image src={getHintIcon('letter')} alt="Letter" width={24} height={24} />
+                      <h5 className="font-bold text-gray-900 dark:text-white">
+                        Hint 4: First Letter
+                      </h5>
+                    </div>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      Reveals the first letter of the answer as a final push toward the solution
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 p-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    💡 <strong>Tip:</strong> Try to solve without hints first! Using hints will
+                    affect your solve statistics and achievements.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Solving Tips Section */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden ${
+            highContrast
+              ? 'border-hc-border bg-hc-surface'
+              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
+          }`}
+        >
+          <button
+            onClick={() => setExpandedSection(expandedSection === 'solving' ? null : 'solving')}
+            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+            aria-expanded={expandedSection === 'solving'}
+          >
+            <div className="flex items-center gap-3">
+              <Image src={getSectionIcon('solving')} alt="" width={32} height={32} />
+              <span
+                className={`text-lg font-bold ${
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+                }`}
+              >
+                Solving Strategies
+              </span>
+            </div>
+            <svg
+              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
+                expandedSection === 'solving' ? 'rotate-180' : ''
+              }`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M19 9l-7 7-7-7"
+              />
+            </svg>
+          </button>
+
+          {expandedSection === 'solving' && (
+            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
+              <div>
+                <h4 className="font-bold text-gray-900 dark:text-white mb-3">
+                  General Solving Tips:
+                </h4>
+                <ul className="space-y-2 text-gray-700 dark:text-gray-300">
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">1.</span>
+                    <span>
+                      <strong>Start with the emojis:</strong> Interpret what they represent
+                      together or separately
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">2.</span>
+                    <span>
+                      <strong>Identify the definition:</strong> Usually at the start or end of the
+                      clue
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">3.</span>
+                    <span>
+                      <strong>Look for indicators:</strong> Words that signal anagrams, reversals,
+                      containers, etc.
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">4.</span>
+                    <span>
+                      <strong>Count letters:</strong> The number in parentheses is the answer
+                      length
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">5.</span>
+                    <span>
+                      <strong>Work backwards:</strong> If you know the definition, think of
+                      synonyms that fit the length
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">6.</span>
+                    <span>
+                      <strong>Don&apos;t trust surface reading:</strong> The clue is designed to
+                      mislead - look for the hidden wordplay
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">7.</span>
+                    <span>
+                      <strong>Practice regularly:</strong> Cryptic solving is a skill that improves
+                      with daily practice
+                    </span>
+                  </li>
+                </ul>
+
+                <div className="mt-4 p-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
+                  <h5 className="font-bold text-purple-900 dark:text-purple-100 mb-2">
+                    🎯 Remember:
+                  </h5>
+                  <p className="text-sm text-gray-800 dark:text-gray-200">
+                    Every cryptic clue has <strong>both</strong> a definition and wordplay. Once you
+                    solve it, the answer should work for both parts. This &quot;double
+                    definition&quot; nature is what makes cryptics fair and satisfying!
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
@@ -1251,6 +982,6 @@ export default function CrypticGuideModal({ onClose }) {
           animation: fadeIn 0.3s ease-out;
         }
       `}</style>
-    </div>
+    </LeftSidePanel>
   );
 }

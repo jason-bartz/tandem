@@ -1,4 +1,21 @@
 'use client';
+/**
+ * Archive Modal Paginated
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
+ *
+ * Features nested panel:
+ * - PaywallModal at z-60 (when accessing locked puzzles)
+ *
+ * Production-ready Archive Modal with pagination
+ * Follows Apple iOS best practices for performance and UX
+ * - Synchronous subscription checks (never blocks UI)
+ * - Proper loading states and error boundaries
+ * - Eager initialization at app bootstrap
+ * - Optimistic UI updates
+ * - Infinite scroll with intersection observer
+ *
+ * @component
+ */
 import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import subscriptionService from '@/services/subscriptionService';
@@ -8,15 +25,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import Image from 'next/image';
-
-/**
- * Production-ready Archive Modal with pagination
- * Follows Apple iOS best practices for performance and UX
- * - Synchronous subscription checks (never blocks UI)
- * - Proper loading states and error boundaries
- * - Eager initialization at app bootstrap
- * - Optimistic UI updates
- */
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 // Memoized puzzle item component for performance
 const PuzzleItem = memo(
@@ -527,53 +536,31 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, loadPuzzles]);
 
-  if (!isOpen) {
-    return null;
-  }
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter gpu-accelerated"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="archive-modal-title"
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[80vh] overflow-hidden flex flex-col animate-modal-enter gpu-accelerated ${
-          highContrast
-            ? 'bg-hc-background border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <div>
-            <h2
-              id="archive-modal-title"
-              className="text-2xl font-bold text-gray-800 dark:text-gray-200"
-            >
-              Puzzle Archive
-            </h2>
-            {currentPuzzleNumber > 0 && (
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                {currentPuzzleNumber} puzzles available
-              </p>
-            )}
-          </div>
+    <>
+      <LeftSidePanel
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Puzzle Archive"
+        subtitle={currentPuzzleNumber > 0 ? `${currentPuzzleNumber} puzzles available` : undefined}
+        maxWidth="480px"
+        footer={
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
+            className={`w-full py-3 text-white font-semibold text-base sm:text-lg rounded-2xl transition-all border-[3px] ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
             }`}
-            aria-label="Close"
+            style={{
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+            }}
           >
-            ×
+            Close
           </button>
-        </div>
+        }
+      >
 
         {/* Error Message */}
         {error && (
@@ -582,11 +569,13 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           </div>
         )}
 
-        {/* Puzzle List */}
+        {/* Puzzle List - using ref for manual scroll handling */}
         <div
           ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto modal-scrollbar"
+          className="-mx-6 px-6 overflow-y-auto"
           style={{
+            height: 'calc(100vh - 280px)',
+            maxHeight: '600px',
             WebkitOverflowScrolling: 'touch',
             overscrollBehavior: 'contain',
           }}
@@ -646,30 +635,14 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             </div>
           )}
         </div>
+      </LeftSidePanel>
 
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className={`mt-4 w-full py-3 text-white font-semibold rounded-2xl transition-all border-[3px] ${
-            highContrast
-              ? 'bg-hc-primary border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-accent-blue border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-          }`}
-          style={{
-            WebkitTapHighlightColor: 'transparent',
-            touchAction: 'manipulation',
-          }}
-        >
-          Close
-        </button>
-      </div>
-
-      {/* Paywall Modal */}
+      {/* Nested Panel - Paywall Modal at z-60 */}
       <PaywallModal
         isOpen={showPaywall}
         onClose={() => setShowPaywall(false)}
         onPurchaseComplete={handlePurchaseComplete}
       />
-    </div>
+    </>
   );
 }

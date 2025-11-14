@@ -28,6 +28,7 @@ export default function OnScreenKeyboard({
   layout = 'QWERTY',
   isSmallPhone = false,
   isMobilePhone = false,
+  checkButtonColor = '#3B82F6', // Default blue for Daily Tandem
 }) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark } = useTheme();
@@ -98,10 +99,12 @@ export default function OnScreenKeyboard({
 
     let baseClasses = `
       select-none cursor-pointer touch-manipulation font-bold
-      rounded-md flex items-center justify-center
-      transition-[background-color,border-color,transform] duration-150 ease-out
+      rounded-xl border-[3px] border-black dark:border-gray-600
+      flex items-center justify-center
+      shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
+      transition-all duration-150 ease-out
       ${isSpecialKey ? 'text-sm sm:text-base px-1 sm:px-2' : 'text-lg sm:text-xl'}
-      ${isPressed ? 'scale-95' : 'active:scale-95'}
+      ${isPressed ? 'translate-x-[2px] translate-y-[2px] shadow-[1px_1px_0px_rgba(0,0,0,1)]' : 'active:translate-x-[2px] active:translate-y-[2px] active:shadow-[1px_1px_0px_rgba(0,0,0,1)]'}
     `;
 
     if (highContrast) {
@@ -109,10 +112,10 @@ export default function OnScreenKeyboard({
         baseClasses += `
           ${
             isEnterKey
-              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+              ? 'bg-hc-primary text-hc-primary-text border-hc-border'
               : isBackspaceKey
-                ? 'bg-hc-warning text-hc-warning-text border-2 border-hc-border'
-                : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                ? 'bg-hc-warning text-hc-warning-text border-hc-border'
+                : 'bg-hc-surface text-hc-text border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:border-hc-focus }'}
           ${isPressed && 'bg-hc-focus border-hc-focus'}
@@ -121,39 +124,36 @@ export default function OnScreenKeyboard({
         baseClasses += `
           ${
             isEnterKey
-              ? 'bg-hc-primary text-hc-primary-text border-2 border-hc-border'
+              ? 'bg-hc-primary text-hc-primary-text border-hc-border'
               : isBackspaceKey
-                ? 'bg-hc-warning text-hc-text border-2 border-hc-border'
-                : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                ? 'bg-hc-warning text-hc-text border-hc-border'
+                : 'bg-hc-surface text-hc-text border-hc-border'
           }
           ${!disabled && '@media (hover: hover) { hover:bg-hc-focus hover:text-hc-primary-text }'}
           ${isPressed && 'bg-hc-focus text-hc-primary-text'}
         `;
       }
     } else {
+      // Regular styling - neo-brutalist
       if (isDark) {
         baseClasses += `
           ${
-            isEnterKey
-              ? 'bg-gray-600 text-gray-100 border border-gray-500'
-              : isBackspaceKey
-                ? 'bg-gray-600 text-gray-100 border border-gray-500'
-                : 'bg-gray-700 text-gray-200 border border-gray-600'
+            isBackspaceKey
+              ? 'bg-gray-600 text-gray-100'
+              : 'bg-gray-700 text-gray-200'
           }
-          ${!disabled && 'md:hover:bg-gray-600 md:hover:border-gray-500'}
-          ${isPressed && 'bg-gray-600 border-gray-500'}
+          ${!disabled && !isEnterKey && 'md:hover:bg-gray-600'}
+          ${isPressed && !isEnterKey && 'bg-gray-600'}
         `;
       } else {
         baseClasses += `
           ${
-            isEnterKey
-              ? 'bg-gray-400 text-white border border-gray-500'
-              : isBackspaceKey
-                ? 'bg-gray-400 text-white border border-gray-500'
-                : 'bg-gray-200 text-gray-800 border border-gray-300'
+            isBackspaceKey
+              ? 'bg-gray-300 text-gray-800'
+              : 'bg-gray-100 text-gray-800'
           }
-          ${!disabled && 'md:hover:bg-gray-300 md:hover:border-gray-400'}
-          ${isPressed && 'bg-gray-300 border-gray-400'}
+          ${!disabled && !isEnterKey && 'md:hover:bg-gray-200'}
+          ${isPressed && !isEnterKey && 'bg-gray-200'}
         `;
       }
     }
@@ -184,7 +184,21 @@ export default function OnScreenKeyboard({
       );
     }
     if (key === 'ENTER') {
-      return 'Enter';
+      return (
+        <svg
+          className="w-5 h-5 sm:w-6 sm:h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          strokeWidth={3}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      );
     }
     return key;
   };
@@ -249,8 +263,8 @@ export default function OnScreenKeyboard({
 
   return (
     <div
-      className={`w-full max-w-lg mx-auto ${
-        isSmallPhone ? 'px-1 pb-2' : isMobilePhone ? 'px-1.5 pb-2' : 'px-2 pb-3'
+      className={`w-full max-w-md mx-auto ${
+        isSmallPhone ? 'px-2' : isMobilePhone ? 'px-2' : 'px-3'
       }`}
     >
       <div
@@ -283,7 +297,12 @@ export default function OnScreenKeyboard({
                   className={`${getKeyClasses(key)} ${getKeyWidth(key, rowIndex)} ${
                     isSmallPhone ? 'h-9' : isMobilePhone ? 'h-10' : 'h-10 sm:h-11'
                   }`}
-                  aria-label={key === 'BACKSPACE' ? 'Backspace' : key}
+                  style={
+                    key === 'ENTER' && !highContrast
+                      ? { backgroundColor: checkButtonColor, color: 'white' }
+                      : {}
+                  }
+                  aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
                 >
                   {getKeyContent(key)}
                 </button>

@@ -10,7 +10,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
 /**
- * TandemStatsSection - Displays Tandem Daily stats
+ * TandemStatsSection - Displays Daily Tandem stats
  * Reuses existing Tandem stats structure and colors (BLUE theme)
  *
  * @param {Object} stats - Tandem stats object
@@ -32,7 +32,7 @@ export default function TandemStatsSection({ stats, animationKey }) {
   return (
     <>
       <StatsSection
-        title="Tandem Daily"
+        title="Daily Tandem"
         icon="/icons/ui/emoji-inter.png"
         iconDark="/icons/ui/emoji-inter-dark.png"
         themeColor="blue"

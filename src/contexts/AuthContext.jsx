@@ -8,6 +8,8 @@ const AuthContext = createContext({
   user: null,
   session: null,
   loading: true,
+  showFirstTimeSetup: false,
+  dismissFirstTimeSetup: () => {},
   signUp: async () => {},
   signIn: async () => {},
   signOut: async () => {},
@@ -58,6 +60,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showFirstTimeSetup, setShowFirstTimeSetup] = useState(false);
   const supabase = getSupabaseBrowserClient();
 
   useEffect(() => {
@@ -81,9 +84,29 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Sync stats to leaderboard when user signs in
-      // IMPORTANT: Run this completely non-blocking to avoid hanging auth UI
+      // Check if first-time setup is needed when user signs in
       if (event === 'SIGNED_IN' && session?.user) {
+        console.log('[AuthProvider] User signed in, checking first-time setup status');
+
+        // Check if user needs to complete first-time setup
+        (async () => {
+          try {
+            const avatarService = (await import('@/services/avatar.service')).default;
+            const hasCompletedSetup = await avatarService.hasCompletedFirstTimeSetup(session.user.id);
+
+            if (!hasCompletedSetup) {
+              console.log('[AuthProvider] User needs to complete first-time setup');
+              setShowFirstTimeSetup(true);
+            } else {
+              console.log('[AuthProvider] User has already completed first-time setup');
+            }
+          } catch (error) {
+            console.error('[AuthProvider] Failed to check first-time setup status:', error);
+          }
+        })();
+
+        // Sync stats to leaderboard when user signs in
+        // IMPORTANT: Run this completely non-blocking to avoid hanging auth UI
         console.log('[AuthProvider] User signed in, syncing stats to leaderboard');
 
         // Run sync in background without blocking auth flow
@@ -457,10 +480,20 @@ export function AuthProvider({ children }) {
     }
   };
 
+  /**
+   * Dismiss the first-time setup modal
+   * This is called when the user completes or skips the first-time setup
+   */
+  const dismissFirstTimeSetup = () => {
+    setShowFirstTimeSetup(false);
+  };
+
   const value = {
     user,
     session,
     loading,
+    showFirstTimeSetup,
+    dismissFirstTimeSetup,
     signUp,
     signIn,
     signOut,

@@ -1,16 +1,17 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import { CRYPTIC_CONFIG } from '@/lib/constants';
+import { formatDateShort } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import HintModal from './HintModal';
 import CrypticGuideModal from './CrypticGuideModal';
-import CrypticArchiveCalendar from './CrypticArchiveCalendar';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import Settings from '@/components/Settings';
 import OnScreenKeyboard from '@/components/game/OnScreenKeyboard';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import HamburgerMenu from '@/components/navigation/HamburgerMenu';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
 
 export default function CrypticGameScreen({
   puzzle,
@@ -35,8 +36,8 @@ export default function CrypticGameScreen({
   const [showHintModal, setShowHintModal] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { highContrast } = useTheme();
-  const getIconPath = useUIIcon();
   const scrollContainerRef = useRef(null);
   const activeBlockRef = useRef(null);
 
@@ -244,62 +245,11 @@ export default function CrypticGameScreen({
   const answerArray = userAnswer.padEnd(puzzle.length, ' ').split('');
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-gradient-to-b from-purple-200 to-purple-300 dark:from-gray-900 dark:to-gray-800">
-      {/* Header with icons - Fixed to top with safe-area */}
-      <div className="fixed top-0 left-0 right-0 z-10 pt-safe">
-        <div className="max-w-2xl w-full mx-auto px-4">
-          <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
-            <button
-              onClick={() => setShowStats(true)}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Statistics"
-            >
-              <Image src={getIconPath('stats')} alt="Statistics" width={20} height={20} />
-            </button>
-            <button
-              onClick={() => setShowArchive(true)}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Archive"
-            >
-              <Image src={getIconPath('archive')} alt="Archive" width={20} height={20} />
-            </button>
-            <button
-              onClick={() => setShowGuide(true)}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="How to Play"
-            >
-              <Image src={getIconPath('how-to-play')} alt="How to Play" width={20} height={20} />
-            </button>
-            <button
-              onClick={() => setShowSettings(true)}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Settings"
-            >
-              <Image src={getIconPath('settings')} alt="Settings" width={20} height={20} />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content - Game Card with Keyboard */}
-      <div className="flex-1 flex flex-col pt-24 md:pt-20 pb-safe">
-        <div className="max-w-2xl w-full h-full mx-auto flex flex-col px-4">
+    <>
+      <div className="fixed inset-0 flex flex-col" style={{ backgroundColor: '#cb6ce6', zoom: '0.85' }}>
+        {/* Main Content - Game Card */}
+        <div className="flex-1 flex flex-col pt-16 md:pt-12 pb-safe overflow-hidden">
+        <div className="max-w-md w-full h-full mx-auto flex flex-col px-4 pb-[200px]">
           <div
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
               highContrast
@@ -309,37 +259,62 @@ export default function CrypticGameScreen({
           >
             {/* Scrollable Content Area */}
             <div className="flex-1 overflow-y-auto p-4 md:p-6">
-              {/* Header row with back button, time, and attempts */}
-              <div className="flex items-center justify-between mb-6">
+              {/* Header row with back button, title, and menu */}
+              <div className="flex items-center justify-between mb-4 gap-2">
+                {/* Back button */}
                 <button
                   onClick={onBack}
-                  className={`w-10 h-10 rounded-xl border-[3px] flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-instant ${
-                    highContrast
-                      ? 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                      : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                  }`}
+                  className="w-8 h-8 flex-shrink-0 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   title="Back"
                 >
-                  <span className="text-lg">‹</span>
-                </button>
-                <div className="flex items-center gap-2 text-sm">
-                  <div
-                    className={`px-3 py-1.5 rounded-xl border-[2px] ${
-                      highContrast
-                        ? 'bg-hc-surface border-hc-border text-hc-text'
-                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
-                    } font-bold`}
+                  <svg
+                    className={`w-5 h-5 ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-300'}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+
+                {/* Center content - Date */}
+                <div className="flex-1 flex flex-col items-center">
+                  <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}
+                  </span>
+                </div>
+
+                {/* Hamburger menu */}
+                <div className="flex-shrink-0">
+                  <HamburgerMenu
+                    isOpen={isSidebarOpen}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  />
+                </div>
+              </div>
+
+              {/* Stats Bar */}
+              <div className="flex justify-evenly gap-4 mb-6 p-4 bg-purple-50 dark:bg-gray-800 rounded-2xl max-w-md mx-auto">
+                <div className="text-center flex-1">
+                  <div className={`text-xl font-bold ${highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-200'}`}>
                     {formatTime(elapsedTime)}
                   </div>
-                  <div
-                    className={`px-3 py-1.5 rounded-xl border-[2px] ${
-                      highContrast
-                        ? 'bg-hc-surface border-hc-border text-hc-text'
-                        : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white'
-                    } font-bold`}
-                  >
-                    Attempts: {attempts}
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Time
+                  </div>
+                </div>
+                <div className="text-center flex-1">
+                  <div className={`text-xl font-bold ${highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-200'}`}>
+                    {attempts}
+                  </div>
+                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">
+                    Attempts
                   </div>
                 </div>
               </div>
@@ -467,11 +442,11 @@ export default function CrypticGameScreen({
               </div>
             </div>
 
-            {/* Fixed Bottom Section Inside Card - Action Buttons + Keyboard */}
-            <div className="p-4 pb-2 sm:p-6 sm:pb-3">
-              {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
-              <div className="max-w-lg mx-auto">
-                <div className="flex gap-3 mb-4">
+            {/* Fixed Bottom Section Inside Card - Action Buttons Only */}
+            <div className="p-4 pb-3 sm:p-6 sm:pb-4 flex-shrink-0">
+              {/* Action Buttons */}
+              <div className="max-w-2xl mx-auto">
+                <div className="flex gap-3">
                   <button
                     onClick={handleSubmit}
                     disabled={!userAnswer.trim()}
@@ -488,21 +463,25 @@ export default function CrypticGameScreen({
                         : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                     }`}
                   >
-                    Hints ({hintsUsed}/{CRYPTIC_CONFIG.MAX_HINTS})
+                    Hints ({CRYPTIC_CONFIG.MAX_HINTS - hintsUsed})
                   </button>
                 </div>
-
-                {/* On-Screen Keyboard */}
-                <OnScreenKeyboard
-                  onKeyPress={handleKeyPress}
-                  disabled={false}
-                  layout={keyboardLayout}
-                />
               </div>
             </div>
           </div>
         </div>
+
+        {/* Fixed Keyboard at Bottom - Outside Card */}
+        <div className="fixed bottom-0 left-0 right-0 pb-safe pt-3" style={{ backgroundColor: '#cb6ce6' }}>
+          <OnScreenKeyboard
+            onKeyPress={handleKeyPress}
+            disabled={false}
+            layout={keyboardLayout}
+            checkButtonColor="#cb6ce6"
+          />
+        </div>
       </div>
+    </div>
 
       <style jsx>{`
         @keyframes shake {
@@ -524,7 +503,7 @@ export default function CrypticGameScreen({
 
       {/* Modals */}
       {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-      <CrypticArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
       <HintModal
@@ -536,6 +515,14 @@ export default function CrypticGameScreen({
         onUnlockHint={handleUnlockHint}
         canUseHint={canUseHint}
       />
-    </div>
+      <SidebarMenu
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowGuide(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+    </>
   );
 }

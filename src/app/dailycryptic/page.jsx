@@ -8,6 +8,7 @@ import { useCrypticGame } from '@/hooks/useCrypticGame';
 import { CRYPTIC_GAME_STATES } from '@/lib/constants';
 import CrypticGameScreen from '@/components/cryptic/CrypticGameScreen';
 import CrypticCompleteScreen from '@/components/cryptic/CrypticCompleteScreen';
+import CrypticWelcomeScreen from '@/components/cryptic/CrypticWelcomeScreen';
 import CrypticAuthModal from '@/components/cryptic/CrypticAuthModal';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -57,7 +58,7 @@ export default function DailyCrypticPage() {
   // Show loading while checking auth and subscription
   if (authLoading || subscriptionLoading || cryptic.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
         <LoadingSpinner />
       </div>
     );
@@ -67,7 +68,7 @@ export default function DailyCrypticPage() {
   if (!user) {
     return (
       <>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
           <div className="text-center p-8">
             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
               The Daily Cryptic
@@ -91,8 +92,8 @@ export default function DailyCrypticPage() {
   // Daily puzzle is free for all (no paywall)
   if (!subscriptionLoading && isArchiveRequest && !hasSubscription) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4">
-        <div className="max-w-2xl w-full bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-10 text-center">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
+        <div className="max-w-md w-full bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-10 text-center">
           <div className="mb-6">
             <img
               src="/icons/ui/cryptic.png"
@@ -170,7 +171,7 @@ export default function DailyCrypticPage() {
   // Error state
   if (cryptic.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
         <ErrorMessage
           title="Unable to Load Puzzle"
           message={cryptic.error}
@@ -183,7 +184,7 @@ export default function DailyCrypticPage() {
   // No puzzle available
   if (!cryptic.puzzle) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800 p-4">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
             No Puzzle Available
@@ -204,7 +205,16 @@ export default function DailyCrypticPage() {
 
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-purple-100 dark:from-gray-900 dark:to-gray-800">
+      <div className="min-h-screen bg-gradient-to-b from-purple-100 to-purple-200 dark:from-gray-900 dark:to-gray-800">
+        {cryptic.gameState === CRYPTIC_GAME_STATES.WELCOME && (
+          <CrypticWelcomeScreen
+            puzzle={cryptic.puzzle}
+            onStart={cryptic.startGame}
+            currentPuzzleDate={cryptic.currentPuzzleDate}
+            loading={cryptic.loading}
+          />
+        )}
+
         {cryptic.gameState === CRYPTIC_GAME_STATES.PLAYING && (
           <CrypticGameScreen
             puzzle={cryptic.puzzle}

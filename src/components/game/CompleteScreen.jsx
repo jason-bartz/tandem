@@ -12,7 +12,7 @@ import {
 } from '@/lib/utils';
 import { playSuccessSound } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import ArchiveCalendar from './ArchiveCalendar';
+import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
@@ -24,6 +24,7 @@ import { ASSET_VERSION } from '@/lib/constants';
 import Settings from '@/components/Settings';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
+import GlobalNavigation from '@/components/navigation/GlobalNavigation';
 
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
@@ -46,7 +47,6 @@ export default function CompleteScreen({
   hardModeTimeUp = false,
   difficultyRating = null,
 }) {
-  const [showStats, setShowStats] = useState(false);
   const [showPlayerStats, setShowPlayerStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -159,69 +159,15 @@ export default function CompleteScreen({
   }, [won]);
 
   return (
-    <div className="animate-fade-in">
-      {/* Control buttons positioned above the card - Dynamic Island aware */}
-      <div className="flex justify-end gap-2 mb-4 pt-safe-ios px-4 sm:px-0">
-        <button
-          onClick={() => {
-            lightTap();
-            setShowPlayerStats(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Statistics"
-        >
-          <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowArchive(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Archive"
-        >
-          <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowHowToPlay(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="How to Play"
-        >
-          <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setShowSettings(true);
-          }}
-          className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-          }`}
-          title="Settings"
-        >
-          <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
-        </button>
-      </div>
-
-      {/* Main completion card */}
-      <div
+    <GlobalNavigation
+      onOpenStats={() => setShowPlayerStats(true)}
+      onOpenArchive={() => setShowArchive(true)}
+      onOpenHowToPlay={() => setShowHowToPlay(true)}
+      onOpenSettings={() => setShowSettings(true)}
+    >
+      <div className="animate-fade-in -mt-16">
+        {/* Main completion card */}
+        <div
         className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
@@ -447,7 +393,7 @@ export default function CompleteScreen({
             <button
               onClick={() => {
                 lightTap();
-                setShowStats(true);
+                setShowPlayerStats(true);
               }}
               className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
                 highContrast
@@ -492,11 +438,10 @@ export default function CompleteScreen({
           )}
         </div>
       </div>
-
-      {showStats && <UnifiedStatsModal onClose={() => setShowStats(false)} />}
+    </div>
 
       <UnifiedStatsModal isOpen={showPlayerStats} onClose={() => setShowPlayerStats(false)} />
-      <ArchiveCalendar
+      <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={(puzzleNumber) => {
@@ -506,6 +451,7 @@ export default function CompleteScreen({
             onSelectPuzzle(puzzleNumber);
           }, 100);
         }}
+        defaultTab="tandem"
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
@@ -528,6 +474,6 @@ export default function CompleteScreen({
           setShowAuthModal(false);
         }}
       />
-    </div>
+    </GlobalNavigation>
   );
 }

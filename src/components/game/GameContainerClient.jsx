@@ -14,6 +14,8 @@ import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import AnimatedLoadingMessage from '@/components/shared/AnimatedLoadingMessage';
+import WelcomeScreenSkeleton from '@/components/shared/WelcomeScreenSkeleton';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
@@ -235,8 +237,13 @@ export default function GameContainerClient({ initialPuzzleData }) {
   // Show loading while checking onboarding status or loading game
   if (!onboardingChecked || game.loading) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <LoadingSpinner />
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
+            {/* Loading skeleton */}
+            <WelcomeScreenSkeleton />
+          </div>
+        </div>
       </div>
     );
   }
@@ -279,7 +286,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
       {/* Content container - centered scrollable layout for all devices */}
       <div className="min-h-screen flex items-center justify-center py-6 px-4">
-        <div className="w-full max-w-2xl mx-auto relative z-10 my-auto">
+        <div className="w-full max-w-md mx-auto relative z-10 my-auto">
           {/* Welcome screen */}
           {game.gameState === GAME_STATES.WELCOME && (
             <div key="welcome">

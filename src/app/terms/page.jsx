@@ -1,10 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import HamburgerMenu from '@/components/navigation/HamburgerMenu';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
+import LegalPageSkeleton from '@/components/shared/LegalPageSkeleton';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
+import HowToPlayModal from '@/components/game/HowToPlayModal';
+import Settings from '@/components/Settings';
 
 export default function TermsOfUse() {
   const [activeSection, setActiveSection] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showStats, setShowStats] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const sections = [
     {
@@ -13,7 +26,7 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Tandem Daily or Daily Cryptic ("the Games") at tandemdaily.com or through our iOS app,
+            By accessing or playing Daily Tandem or Daily Cryptic ("the Games") at tandemdaily.com or through our iOS app,
             you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
             Terms, please do not use the Games.
           </p>
@@ -39,7 +52,7 @@ export default function TermsOfUse() {
           </p>
           <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-3">
             <li>
-              <strong>Tandem Daily</strong>: Decode emoji pairs to guess words related to a daily theme
+              <strong>Daily Tandem</strong>: Decode emoji pairs to guess words related to a daily theme
             </li>
             <li>
               <strong>Daily Cryptic</strong>: Solve cryptic crossword-style clues with emoji hints and wordplay
@@ -554,38 +567,56 @@ export default function TermsOfUse() {
     },
   ];
 
-  return (
-    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
-      {/* Scrollable content container */}
-      <div className="min-h-screen flex items-center justify-center py-6">
-        <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
-          {/* Back to game link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span className="text-sm font-medium">Back to Game</span>
-          </Link>
+  // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-          {/* Main content card */}
-          <div className="relative">
-            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
-              {/* Header */}
-              <div className="bg-[#ff66c4] border-b-[3px] border-black dark:border-white p-6 text-black">
-                <h1 className="text-3xl font-bold">Terms of Use</h1>
-                <p className="mt-2 text-black/80">Please read these terms carefully</p>
-              </div>
+  return (
+    <>
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+        {/* Scrollable content container */}
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
+            {/* Show skeleton while loading */}
+            {isLoading ? (
+              <LegalPageSkeleton />
+            ) : (
+              <div className="relative">
+                <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                  {/* Header with back button, title, and hamburger menu */}
+                <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                  <Link
+                    href="/"
+                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                    aria-label="Back to game"
+                  >
+                    <svg
+                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </Link>
+                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Terms of Use</h1>
+                  <HamburgerMenu
+                    isOpen={isSidebarOpen}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  />
+                </div>
 
               {/* Summary Card */}
-              <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+              <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                 <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Key Points</h3>
                 <ul className="text-sm space-y-1">
                   <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
@@ -616,7 +647,7 @@ export default function TermsOfUse() {
                 {/* Agreement statement */}
                 <div className="mb-6 p-4 bg-[#ff66c4]/10 border-[3px] border-[#ff66c4] rounded-2xl">
                   <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                    By playing <strong>Tandem Daily</strong> or <strong>Daily Cryptic</strong>, you agree to these terms
+                    By playing <strong>Daily Tandem</strong> or <strong>Daily Cryptic</strong>, you agree to these terms
                   </p>
                 </div>
 
@@ -657,14 +688,31 @@ export default function TermsOfUse() {
                     </div>
                   ))}
                 </div>
+                </div>
               </div>
-            </div>
-            {/* Faux drop shadow */}
-            <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+                {/* Faux drop shadow */}
+                <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+              </div>
+            )}
           </div>
-
         </div>
       </div>
-    </div>
+
+      {/* Sidebar Menu */}
+      <SidebarMenu
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowHowToPlay(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      {/* Modals */}
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+    </>
   );
 }

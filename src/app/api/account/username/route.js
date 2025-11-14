@@ -2,11 +2,13 @@
  * API Route: Update Username
  *
  * Allows authenticated users to update their leaderboard display name (username).
- * Validates username format and ensures uniqueness.
+ * Validates username format, profanity, and ensures uniqueness.
+ * Implements server-side validation as primary security layer.
  */
 
 import { createServerComponentClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import { validateUsernameForAPI } from '@/utils/profanityFilter';
 
 /**
  * GET /api/account/username
@@ -76,16 +78,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 });
     }
 
-    // Validate username format (3-20 chars, alphanumeric + underscore)
-    const usernameRegex = /^[a-zA-Z0-9_]{3,20}$/;
-    if (!usernameRegex.test(username)) {
-      return NextResponse.json(
-        {
-          error:
-            'Username must be 3-20 characters and can only contain letters, numbers, and underscores',
-        },
-        { status: 400 }
-      );
+    // Comprehensive username validation with profanity filter (server-side enforcement)
+    const validation = validateUsernameForAPI(username);
+    if (!validation.success) {
+      return NextResponse.json({ error: validation.error }, { status: validation.statusCode });
     }
 
     // Update username in database

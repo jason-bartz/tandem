@@ -7,21 +7,47 @@ import crypticService from '@/services/cryptic.service';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import logger from '@/lib/logger';
+import { getStreakMessage } from '@/lib/streakMessages';
+
+const loadingMessages = [
+  'Calibrating cryptic coefficients...',
+  'Syncing synonyms...',
+  'Untangling thematic threads...',
+  'Consulting the emoji oracle...',
+  'Brewing fresh vocabulary...',
+];
 
 /**
  * Preview card for Daily Cryptic on the main Tandem welcome screen
  * Shows today's clue preview and links to the full game
  */
-export default function CrypticWelcomeCard() {
+export default function CrypticWelcomeCard({ currentStreak = 0 }) {
   const router = useRouter();
-  const { highContrast } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const [puzzle, setPuzzle] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [loadingText, setLoadingText] = useState(loadingMessages[0]);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     loadPuzzlePreview();
   }, []);
+
+  useEffect(() => {
+    if (!loading) return;
+
+    // Rotate through loading messages
+    const interval = setInterval(() => {
+      setIsVisible(false);
+      setTimeout(() => {
+        setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
+        setIsVisible(true);
+      }, 300);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [loading]);
 
   const loadPuzzlePreview = async () => {
     try {
@@ -71,15 +97,78 @@ export default function CrypticWelcomeCard() {
   if (loading) {
     return (
       <div
-        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
+        className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
       >
-        <div className="flex items-center justify-center h-32">
-          <div className="w-8 h-8 border-4 border-gray-400 dark:border-gray-600 border-t-transparent rounded-full animate-spin" />
+        {/* Loading text centered in card */}
+        <div className="absolute inset-0 flex items-center justify-center z-10">
+          <div
+            className={`transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
+          >
+            <p className="text-base font-bold text-gray-800 dark:text-gray-200 text-center">
+              {loadingText}
+            </p>
+          </div>
         </div>
+
+        {/* Logo skeleton */}
+        <div className="w-20 h-20 mx-auto mb-5">
+          <div
+            className={`w-full h-full bg-gray-200 dark:bg-gray-700 rounded-xl ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+          />
+        </div>
+
+        {/* Title skeleton */}
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <div
+            className={`h-7 w-36 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+          />
+          <div
+            className={`h-4 w-28 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+          />
+        </div>
+
+        {/* Puzzle number skeleton */}
+        <div className="mb-6 flex flex-col items-center gap-2">
+          <div
+            className={`h-6 w-28 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+          />
+          <div
+            className={`h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+          />
+        </div>
+
+        {/* How to play skeleton */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6">
+          <div className="flex items-start">
+            <div
+              className={`w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-xl mr-3 flex-shrink-0 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            />
+            <div
+              className={`h-5 w-3/4 bg-gray-200 dark:bg-gray-700 rounded mt-2.5 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            />
+          </div>
+        </div>
+
+        {/* Clue preview skeleton */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6">
+          <div className="space-y-3">
+            <div
+              className={`h-5 w-3/4 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            />
+            <div
+              className={`h-5 w-2/3 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+            />
+          </div>
+        </div>
+
+        {/* Play button skeleton */}
+        <div
+          className={`h-14 w-full bg-gray-200 dark:bg-gray-700 rounded-[20px] ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        />
       </div>
     );
   }
@@ -128,6 +217,31 @@ export default function CrypticWelcomeCard() {
         <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{formatDate(puzzle.date)}</p>
       </div>
 
+      {/* How to Play Section */}
+      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
+        <div className="flex items-start">
+          <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
+            <Image
+              src="/icons/ui/cryptic.png"
+              alt=""
+              width={24}
+              height={24}
+              className="dark:hidden"
+            />
+            <Image
+              src="/icons/ui/cryptic-dark.png"
+              alt=""
+              width={24}
+              height={24}
+              className="hidden dark:block"
+            />
+          </div>
+          <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
+            Decipher the answer through clever wordplay and cryptic clues
+          </span>
+        </div>
+      </div>
+
       {/* Clue Preview */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
         <p className="text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3 font-semibold">
@@ -135,6 +249,29 @@ export default function CrypticWelcomeCard() {
         </p>
         <p className="text-lg leading-relaxed text-gray-800 dark:text-gray-200">{puzzle.clue}</p>
       </div>
+
+      {/* Streak Display */}
+      {currentStreak > 0 && (
+        <div className="mb-4 text-center flex items-center justify-center gap-1.5">
+          <Image
+            src="/icons/ui/hardmode.png"
+            alt=""
+            width={12}
+            height={12}
+            className="dark:hidden"
+          />
+          <Image
+            src="/icons/ui/hardmode-dark.png"
+            alt=""
+            width={12}
+            height={12}
+            className="hidden dark:block"
+          />
+          <p className="text-xs text-gray-500 dark:text-gray-500">
+            {getStreakMessage(currentStreak, 'cryptic')}
+          </p>
+        </div>
+      )}
 
       {/* Play Button */}
       <button

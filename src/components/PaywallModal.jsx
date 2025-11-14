@@ -1,3 +1,20 @@
+/**
+ * PaywallModal - Subscription Paywall
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
+ *
+ * Complex modal with nested panels:
+ * - AuthModal at z-60 (web authentication)
+ * - PostPurchaseAccountPrompt at z-60 (iOS post-purchase linking)
+ *
+ * Features:
+ * - 3 subscription tiers (Buddy Pass, Best Friends, Soulmates)
+ * - Platform-specific handling (iOS IAP vs Web Stripe)
+ * - Apple Sign In for iOS
+ * - Product loading with retry
+ * - Restore purchases functionality
+ *
+ * @component
+ */
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import subscriptionService, { INIT_STATE } from '@/services/subscriptionService';
@@ -11,6 +28,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import AuthModal from '@/components/auth/AuthModal';
 import PostPurchaseAccountPrompt from '@/components/PostPurchaseAccountPrompt';
 import { ASSET_VERSION } from '@/lib/constants';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [loading, setLoading] = useState(false);
@@ -357,10 +375,6 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     return false;
   };
 
-  if (!isOpen) {
-    return null;
-  }
-
   // Product IDs
   const BUDDY_PASS = 'com.tandemdaily.app.buddypass';
   const BEST_FRIENDS = 'com.tandemdaily.app.bestfriends';
@@ -371,41 +385,30 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const soulmatesActive = isActive(SOULMATES);
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 animate-backdrop-enter gpu-accelerated"
-      onMouseDown={(e) => {
-        // Only close if clicking the backdrop itself
-        if (e.target === e.currentTarget) {
-          onClose();
-        }
-      }}
-    >
-      <div
-        className={`rounded-[32px] border-[3px] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
-        }`}
-        onMouseDown={(e) => e.stopPropagation()}
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header with close button */}
-        <div className="flex justify-end mb-6">
+    <>
+      <LeftSidePanel
+        isOpen={isOpen}
+        onClose={onClose}
+        title="Tandem Unlimited"
+        subtitle="Subscribe to unlock access to all puzzles, Hard Mode, and future features!"
+        maxWidth="520px"
+        footer={
           <button
             onClick={onClose}
-            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
+            className={`w-full py-3 sm:py-4 font-semibold text-base sm:text-lg rounded-2xl transition-all border-[3px] ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-accent-pink text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
             }`}
-            aria-label="Close"
           >
-            ×
+            Done
           </button>
-        </div>
-
-        {/* Logo */}
-        <div className="w-20 h-20 mx-auto mb-4 relative">
+        }
+      >
+        {/* Content wrapper with padding */}
+        <div className="px-6 py-6">
+          {/* Logo */}
+          <div className="w-20 h-20 mx-auto mb-6 relative">
           <Image
             src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
             alt="Tandem Logo"
@@ -415,16 +418,6 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             priority
           />
         </div>
-
-        {/* Title */}
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200 text-center mb-2">
-          Tandem Unlimited
-        </h2>
-
-        {/* Subtitle */}
-        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
-          Subscribe to unlock access to all puzzles, Hard Mode, and future features!
-        </p>
 
         {/* Benefits list */}
         <div
@@ -449,7 +442,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Archive access for all past puzzles (Tandem emoji word puzzle and Daily Cryptic)
+                Archive access for all past puzzles (Daily Tandem and Daily Cryptic)
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -473,7 +466,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Ad-free experience
+                Keep Tandem an Ad-Free experience for everyone
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -497,7 +490,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Cancel anytime
+                Support a solo developer to keep building great puzzles
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -509,7 +502,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Support a solo developer to keep building great puzzles
+                Cancel anytime
               </span>
             </div>
           </div>
@@ -528,7 +521,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
-            💚 Tandem Unlimited members keep the daily puzzle free for everyone to play!
+            Tandem Unlimited members keep the daily puzzle free for everyone to play!
           </p>
         </div>
 
@@ -874,32 +867,19 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         </div>
 
-        {/* Done button */}
-        <div className="mt-6">
-          <button
-            onClick={onClose}
-            className={`w-full py-3 font-semibold rounded-2xl transition-all border-[3px] ${
-              highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-pink text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-            }`}
-          >
-            Done
-          </button>
-        </div>
-
-        {/* Loading overlay */}
-        {loading && (
-          <div className="absolute inset-0 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mx-auto"></div>
-              <p className="mt-4 text-gray-600 dark:text-gray-400">Processing...</p>
+          {/* Loading overlay */}
+          {loading && (
+            <div className="absolute inset-0 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center z-10">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mx-auto"></div>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">Processing...</p>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      </LeftSidePanel>
 
-      {/* Auth Modal for Web Users */}
+      {/* Auth Modal for Web Users - Nested at z-60 */}
       {isWeb && (
         <AuthModal
           isOpen={showAuthModal}
@@ -909,7 +889,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         />
       )}
 
-      {/* Post-Purchase Account Prompt for iOS Anonymous Purchases */}
+      {/* Post-Purchase Account Prompt for iOS Anonymous Purchases - Nested at z-60 */}
       {isIOS && (
         <PostPurchaseAccountPrompt
           isOpen={showPostPurchasePrompt}
@@ -920,6 +900,6 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
