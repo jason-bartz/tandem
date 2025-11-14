@@ -489,83 +489,49 @@ export default function HowToPlayModal({ isOpen, onClose }) {
       {/* Daily Cryptic Content */}
       {activeGame === 'cryptic' && (
         <div className="space-y-4">
-          {/* Introduction Section */}
+          {/* Introduction Section - Always Visible */}
           <div
-            className={`rounded-2xl border-[3px] overflow-hidden ${
+            className={`rounded-2xl border-[3px] p-4 ${
               highContrast
                 ? 'border-hc-border bg-hc-surface'
                 : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
             }`}
           >
-            <button
-              onClick={() => setExpandedSection(expandedSection === 'intro' ? null : 'intro')}
-              className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-              aria-expanded={expandedSection === 'intro'}
-            >
-              <div className="flex items-center gap-3">
-                <Image src={getSectionIcon('intro')} alt="" width={32} height={32} />
-                <span
-                  className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                  }`}
-                >
-                  Introduction
-                </span>
-              </div>
-              <svg
-                className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                  expandedSection === 'intro' ? 'rotate-180' : ''
-                }`}
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
+            <div className="space-y-4">
+              <div>
+                <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
+                  Welcome to The Daily Cryptic
+                </h3>
+                <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
+                  Every cryptic clue is a two-part puzzle combining a <strong>definition</strong>{' '}
+                  (straightforward meaning) and <strong>wordplay</strong> (clever construction).
+                  Daily Cryptic adds a unique twist:
+                  <strong className="text-purple-600 dark:text-purple-400">
+                    {' '}
+                    two emojis at the start of each clue
+                  </strong>{' '}
+                  that can work together or serve different purposes.
+                </p>
 
-            {expandedSection === 'intro' && (
-              <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-                <div>
-                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3">
-                    Welcome to The Daily Cryptic
-                  </h3>
-                  <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
-                    Every cryptic clue is a two-part puzzle combining a <strong>definition</strong>{' '}
-                    (straightforward meaning) and <strong>wordplay</strong> (clever construction).
-                    Daily Cryptic adds a unique twist:
-                    <strong className="text-purple-600 dark:text-purple-400">
-                      {' '}
-                      two emojis at the start of each clue
-                    </strong>{' '}
-                    that can work together or serve different purposes.
-                  </p>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-300 dark:border-blue-700">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Definition</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      A straightforward synonym for the answer, usually at the start or end of the
+                      clue
+                    </p>
+                  </div>
 
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-2xl border-2 border-blue-300 dark:border-blue-700">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Definition</h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        A straightforward synonym for the answer, usually at the start or end of the
-                        clue
-                      </p>
-                    </div>
-
-                    <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Wordplay</h4>
-                      <p className="text-sm text-gray-700 dark:text-gray-300">
-                        A clever way to build the answer using word games, letter manipulation, and
-                        our emoji innovation
-                      </p>
-                    </div>
+                  <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
+                    <h4 className="font-bold text-gray-900 dark:text-white mb-1">Wordplay</h4>
+                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                      A clever way to build the answer using word games, letter manipulation, and
+                      our emoji innovation
+                    </p>
                   </div>
                 </div>
               </div>
-            )}
+            </div>
           </div>
 
           {/* Emoji Interpretation Section */}

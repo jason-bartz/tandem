@@ -467,7 +467,7 @@ export default function AccountPage() {
                     <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-2xl border-[3px] border-black dark:border-white p-4 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                       <div className="flex items-start gap-4">
                         {/* Avatar */}
-                        <div className="flex-shrink-0">
+                        <div className="flex-shrink-0 flex flex-col items-center gap-2">
                           {!loadingAvatar ? (
                             <button
                               onClick={() => {
@@ -495,16 +495,20 @@ export default function AccountPage() {
                           ) : (
                             <div className="w-20 h-20 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse"></div>
                           )}
+                          {/* Avatar Name */}
+                          {userAvatar?.avatar_display_name && (
+                            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">
+                              {userAvatar.avatar_display_name}
+                            </span>
+                          )}
                         </div>
 
                         {/* Profile Info */}
                         <div className="flex-1 min-w-0">
-                          {/* Avatar Name */}
-                          {userAvatar?.avatar_display_name && (
-                            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
-                              {userAvatar.avatar_display_name}
-                            </h3>
-                          )}
+                          {/* Greeting */}
+                          <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
+                            Hey {username || 'there'} 👋
+                          </h3>
 
                           {/* Username */}
                           <div className="mb-2">
