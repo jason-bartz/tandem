@@ -24,13 +24,8 @@ import BottomPanel from '@/components/shared/BottomPanel';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import avatarService from '@/services/avatar.service';
 
-export default function FirstTimeAccountSuccessModal({
-  isOpen,
-  onClose,
-  userId,
-}) {
+export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
   const [showAvatarSelection, setShowAvatarSelection] = useState(false);
-  const [avatarSelected, setAvatarSelected] = useState(false);
   const { highContrast } = useTheme();
   const { lightTap, correctAnswer: successHaptic } = useHaptics();
 
@@ -54,7 +49,6 @@ export default function FirstTimeAccountSuccessModal({
     }
 
     // Avatar was selected
-    setAvatarSelected(true);
     setShowAvatarSelection(false);
     successHaptic();
 
@@ -62,14 +56,13 @@ export default function FirstTimeAccountSuccessModal({
     try {
       await avatarService.markFirstTimeSetupComplete(userId);
     } catch (err) {
+      // Non-critical error - avatar is already saved, continue anyway
       console.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete:', err);
-      // Non-critical error - avatar is already saved
     }
 
-    // Close the success modal
-    setTimeout(() => {
-      onClose();
-    }, 300);
+    // Always close the modal and dismiss the setup flow, even if marking failed
+    // The user has selected their avatar, which is the main goal
+    onClose();
   };
 
   const benefits = [
@@ -101,33 +94,31 @@ export default function FirstTimeAccountSuccessModal({
         isOpen={isOpen && !showAvatarSelection}
         onClose={() => {}} // No close - must select avatar
         title="Account Created Successfully!"
-        maxHeight="85vh"
+        maxHeight="80vh"
         maxWidth="440px"
       >
         <div className="px-4 pb-6">
           {/* Subheading */}
           <p
-            className={`text-center text-sm mb-6 ${
-              highContrast
-                ? 'text-hc-text/80'
-                : 'text-gray-600 dark:text-gray-400'
+            className={`text-center text-sm mb-4 ${
+              highContrast ? 'text-hc-text/80' : 'text-gray-600 dark:text-gray-400'
             }`}
           >
             Your free account includes access to:
           </p>
 
           {/* Benefits Grid */}
-          <div className="grid grid-cols-2 gap-3 mb-8">
+          <div className="grid grid-cols-2 gap-2.5 mb-5">
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className={`p-4 rounded-2xl border-[3px] ${
+                className={`p-3 rounded-2xl border-[3px] ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700'
                 }`}
               >
-                <div className="flex flex-col items-center text-center gap-2">
+                <div className="flex flex-col items-center text-center gap-1.5">
                   <div className="w-8 h-8 flex-shrink-0 relative">
                     <Image
                       src={benefit.iconPath}
@@ -139,18 +130,14 @@ export default function FirstTimeAccountSuccessModal({
                   </div>
                   <h3
                     className={`font-bold text-sm leading-tight ${
-                      highContrast
-                        ? 'text-hc-text'
-                        : 'text-gray-900 dark:text-gray-100'
+                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                     }`}
                   >
                     {benefit.title}
                   </h3>
                   <p
                     className={`text-xs leading-snug ${
-                      highContrast
-                        ? 'text-hc-text/70'
-                        : 'text-gray-600 dark:text-gray-400'
+                      highContrast ? 'text-hc-text/70' : 'text-gray-600 dark:text-gray-400'
                     }`}
                   >
                     {benefit.description}
@@ -162,13 +149,13 @@ export default function FirstTimeAccountSuccessModal({
 
           {/* Avatar Selection Prompt */}
           <div
-            className={`p-5 rounded-2xl border-[3px] mb-6 ${
+            className={`p-4 rounded-2xl border-[3px] mb-5 ${
               highContrast
                 ? 'bg-hc-primary/10 border-hc-primary'
                 : 'bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 border-purple-300 dark:border-purple-600'
             }`}
           >
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 flex-shrink-0 relative rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600">
                 <Image
                   src="/images/avatars/default-profile.png"
@@ -180,19 +167,15 @@ export default function FirstTimeAccountSuccessModal({
               </div>
               <h3
                 className={`font-bold text-base ${
-                  highContrast
-                    ? 'text-hc-text'
-                    : 'text-purple-900 dark:text-purple-200'
+                  highContrast ? 'text-hc-text' : 'text-purple-900 dark:text-purple-200'
                 }`}
               >
                 Choose Your Avatar
               </h3>
             </div>
             <p
-              className={`text-sm leading-relaxed ${
-                highContrast
-                  ? 'text-hc-text/80'
-                  : 'text-purple-800 dark:text-purple-300'
+              className={`text-sm leading-snug ${
+                highContrast ? 'text-hc-text/80' : 'text-purple-800 dark:text-purple-300'
               }`}
             >
               Select an avatar to represent you on leaderboards and throughout the game.
@@ -202,7 +185,7 @@ export default function FirstTimeAccountSuccessModal({
           {/* CTA Button */}
           <button
             onClick={handleSelectAvatar}
-            className={`w-full py-4 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+            className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
               highContrast
                 ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                 : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'

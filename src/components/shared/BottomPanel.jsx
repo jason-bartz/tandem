@@ -120,58 +120,74 @@ export default function BottomPanel({
   }, [isOpen]);
 
   // Swipe to dismiss (touch gestures - swipe down)
-  const handleTouchStart = useCallback((e) => {
-    if (disableSwipe) return;
-    touchStartY.current = e.touches[0].clientY;
-    touchStartX.current = e.touches[0].clientX;
-    isDragging.current = false;
-  }, [disableSwipe]);
+  const handleTouchStart = useCallback(
+    (e) => {
+      if (disableSwipe) return;
+      touchStartY.current = e.touches[0].clientY;
+      touchStartX.current = e.touches[0].clientX;
+      isDragging.current = false;
+    },
+    [disableSwipe]
+  );
 
-  const handleTouchMove = useCallback((e) => {
-    if (disableSwipe || touchStartY.current === null) return;
+  const handleTouchMove = useCallback(
+    (e) => {
+      if (disableSwipe || touchStartY.current === null) return;
 
-    const currentY = e.touches[0].clientY;
-    const currentX = e.touches[0].clientX;
-    const deltaY = currentY - touchStartY.current;
-    const deltaX = Math.abs(currentX - touchStartX.current);
+      const currentY = e.touches[0].clientY;
+      const currentX = e.touches[0].clientX;
+      const deltaY = currentY - touchStartY.current;
+      const deltaX = Math.abs(currentX - touchStartX.current);
 
-    // Only trigger swipe if vertical movement is greater than horizontal
-    if (Math.abs(deltaY) > 10 && Math.abs(deltaY) > deltaX) {
-      isDragging.current = true;
+      // Only trigger swipe if vertical movement is greater than horizontal
+      if (Math.abs(deltaY) > 10 && Math.abs(deltaY) > deltaX) {
+        isDragging.current = true;
 
-      // Apply transform for visual feedback (swipe down = positive deltaY)
-      if (deltaY > 0 && panelRef.current) {
-        const translateY = Math.min(deltaY, 400); // Limit drag distance
-        panelRef.current.style.transform = `translateY(${translateY}px)`;
+        // Apply transform for visual feedback (swipe down = positive deltaY)
+        // IMPORTANT: Preserve the -translate-x-1/2 centering transform when maxWidth is set
+        if (deltaY > 0 && panelRef.current) {
+          const translateY = Math.min(deltaY, 400); // Limit drag distance
+          const hasCentering = panelRef.current.classList.contains('-translate-x-1/2');
+          panelRef.current.style.transform = hasCentering
+            ? `translateX(-50%) translateY(${translateY}px)`
+            : `translateY(${translateY}px)`;
+        }
       }
-    }
-  }, [disableSwipe]);
+    },
+    [disableSwipe]
+  );
 
-  const handleTouchEnd = useCallback((e) => {
-    if (disableSwipe || touchStartY.current === null) return;
+  const handleTouchEnd = useCallback(
+    (e) => {
+      if (disableSwipe || touchStartY.current === null) return;
 
-    const deltaY = e.changedTouches[0].clientY - touchStartY.current;
+      const deltaY = e.changedTouches[0].clientY - touchStartY.current;
 
-    if (panelRef.current) {
-      panelRef.current.style.transform = '';
-    }
+      if (panelRef.current) {
+        panelRef.current.style.transform = '';
+      }
 
-    // Close if swiped down more than 100px
-    if (deltaY > 100 && isDragging.current) {
-      onClose();
-    }
+      // Close if swiped down more than 100px
+      if (deltaY > 100 && isDragging.current) {
+        onClose();
+      }
 
-    touchStartY.current = null;
-    touchStartX.current = null;
-    isDragging.current = false;
-  }, [disableSwipe, onClose]);
+      touchStartY.current = null;
+      touchStartX.current = null;
+      isDragging.current = false;
+    },
+    [disableSwipe, onClose]
+  );
 
-  const handleBackdropClick = useCallback((e) => {
-    if (disableBackdropClick) return;
-    if (e.target === e.currentTarget) {
-      onClose();
-    }
-  }, [disableBackdropClick, onClose]);
+  const handleBackdropClick = useCallback(
+    (e) => {
+      if (disableBackdropClick) return;
+      if (e.target === e.currentTarget) {
+        onClose();
+      }
+    },
+    [disableBackdropClick, onClose]
+  );
 
   if (!isOpen) return null;
 
@@ -208,22 +224,20 @@ export default function BottomPanel({
       >
         {/* Drag Handle */}
         <div className="flex justify-center py-3">
-          <div className={`w-12 h-1.5 rounded-full ${
-            theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
-          }`} />
+          <div
+            className={`w-12 h-1.5 rounded-full ${
+              theme === 'dark' ? 'bg-gray-700' : 'bg-gray-300'
+            }`}
+          />
         </div>
 
         {/* Header */}
         {(title || showCloseButton) && (
-          <div
-            className={`flex items-center justify-between px-6 pb-4 ${headerClassName}`}
-          >
+          <div className={`flex items-center justify-between px-6 pb-4 ${headerClassName}`}>
             {title && (
               <h2
                 id="panel-title"
-                className={`text-xl font-bold ${
-                  theme === 'dark' ? 'text-white' : 'text-gray-900'
-                }`}
+                className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-gray-900'}`}
               >
                 {title}
               </h2>
