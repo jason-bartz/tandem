@@ -120,14 +120,6 @@ export default function AvatarSelectionModal({
   };
 
   /**
-   * Skip avatar selection (first-time only)
-   */
-  const handleSkip = () => {
-    lightTap();
-    onClose(null);
-  };
-
-  /**
    * Close modal without saving
    */
   const handleClose = () => {
@@ -178,7 +170,7 @@ export default function AvatarSelectionModal({
 
         {/* Avatar Grid */}
         {!loading && avatars.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-1">
+          <div className="grid grid-cols-3 gap-6 p-1">
               {avatars.map((avatar) => {
                 const isSelected = currentAvatarId === avatar.id;
 
@@ -212,7 +204,7 @@ export default function AvatarSelectionModal({
 
                       {/* Avatar Name - Apple HIG: Clear hierarchy */}
                       <h3
-                        className={`font-bold text-lg mb-2 ${
+                        className={`font-bold text-lg ${
                           isSelected
                             ? highContrast
                               ? 'text-white'
@@ -222,19 +214,6 @@ export default function AvatarSelectionModal({
                       >
                         {avatar.display_name}
                       </h3>
-
-                      {/* Avatar Bio - Truncated */}
-                      <p
-                        className={`text-xs text-center line-clamp-3 ${
-                          isSelected
-                            ? highContrast
-                              ? 'text-white/90'
-                              : 'text-purple-900 dark:text-purple-200'
-                            : 'text-gray-600 dark:text-gray-400'
-                        }`}
-                      >
-                        {avatar.bio}
-                      </p>
 
                       {/* Selection Indicator - Apple HIG: Clear visual feedback */}
                       {isSelected && (
@@ -246,7 +225,7 @@ export default function AvatarSelectionModal({
                                 : 'bg-purple-500 text-white border-purple-600'
                             }`}
                           >
-                            <span className="text-xs font-bold">✓ Current</span>
+                            <span className="text-xs font-bold">Current</span>
                           </div>
                         </div>
                       )}

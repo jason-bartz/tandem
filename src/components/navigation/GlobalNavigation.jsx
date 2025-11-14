@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import HamburgerMenu from './HamburgerMenu';
 import SidebarMenu from './SidebarMenu';
+import FeedbackPane from '@/components/FeedbackPane';
 
 /**
  * GlobalNavigation - Hamburger menu and sidebar navigation wrapper
@@ -10,7 +11,7 @@ import SidebarMenu from './SidebarMenu';
  * This component provides consistent navigation across all screens with:
  * - Hamburger menu button (top-right corner)
  * - Sliding sidebar menu
- * - Modal integration (stats, archive, how-to-play, settings)
+ * - Modal integration (stats, archive, how-to-play, settings, feedback)
  *
  * Usage:
  * ```jsx
@@ -40,6 +41,7 @@ export default function GlobalNavigation({
   className = '',
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   return (
     <>
@@ -68,7 +70,11 @@ export default function GlobalNavigation({
         onOpenArchive={onOpenArchive}
         onOpenHowToPlay={onOpenHowToPlay}
         onOpenSettings={onOpenSettings}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
+
+      {/* Feedback Pane */}
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }

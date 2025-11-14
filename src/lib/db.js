@@ -1,9 +1,13 @@
-import { PUZZLE_TEMPLATES } from './constants';
+import { PUZZLE_TEMPLATES, FEEDBACK_STATUS } from './constants';
 import { createClient } from 'redis';
 import { getPuzzleNumberForDate, getDateForPuzzleNumber } from './puzzleNumber';
+import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
 let redisClient = null;
+const FEEDBACK_ENTRIES_KEY = 'feedback:entries';
+const FEEDBACK_TIMELINE_KEY = 'feedback:timeline';
+const FEEDBACK_STATUS_VALUES = Object.values(FEEDBACK_STATUS);
 
 async function getRedisClient() {
   if (!redisClient) {
@@ -49,6 +53,10 @@ const inMemoryDB = {
   puzzleStats: {},
   dailyStats: {},
   playerSessions: new Set(),
+  feedback: {
+    entries: {},
+    order: [],
+  },
 };
 
 function getDailyPuzzleFromTemplates(date) {
@@ -716,4 +724,264 @@ export async function updateDailyStats(stat) {
     logger.error('Error updating daily stats', error);
     return false;
   }
+}
+
+function ensureFeedbackStore() {
+  if (!inMemoryDB.feedback) {
+    inMemoryDB.feedback = {
+      entries: {},
+      order: [],
+    };
+  }
+  return inMemoryDB.feedback;
+}
+
+function getEmptyFeedbackCounts() {
+  return FEEDBACK_STATUS_VALUES.reduce(
+    (acc, status) => ({
+      ...acc,
+      [status]: 0,
+    }),
+    {}
+  );
+}
+
+export async function createFeedbackEntry(entry) {
+  const supabase = createServerClient();
+
+  // Log the category being inserted for debugging
+  console.log('[createFeedbackEntry] Inserting category:', entry.category);
+
+  const { data, error } = await supabase
+    .from('feedback')
+    .insert({
+      id: entry.id,
+      user_id: entry.userId,
+      category: entry.category,
+      message: entry.message,
+      email: entry.email,
+      allow_contact: entry.allowContact,
+      platform: entry.platform || 'web',
+      user_agent: entry.userAgent || null,
+      status: entry.status,
+      admin_notes: null,
+    })
+    .select()
+    .single();
+
+  if (error) {
+    logger.error('Failed to create feedback entry in Supabase', error);
+    console.error('[createFeedbackEntry] Full error details:', error);
+    throw new Error(`Failed to create feedback entry: ${error.message}`);
+  }
+
+  return transformFeedbackEntry(data);
+}
+
+// Helper to transform Supabase feedback entry to camelCase
+function transformFeedbackEntry(entry) {
+  if (!entry) return null;
+
+  // Parse comments from JSON or create empty array
+  let comments = [];
+  if (entry.comments) {
+    // If comments field exists and has data, use it
+    comments = Array.isArray(entry.comments) ? entry.comments : [];
+  } else if (entry.admin_notes) {
+    // Fallback: if only admin_notes exists (old format), show as single comment
+    comments = [{
+      id: 'legacy',
+      author: 'Admin',
+      message: entry.admin_notes,
+      createdAt: entry.updated_at || entry.created_at
+    }];
+  }
+
+  return {
+    id: entry.id,
+    userId: entry.user_id,
+    username: entry.username || 'Unknown',
+    email: entry.email,
+    category: entry.category,
+    message: entry.message,
+    allowContact: entry.allow_contact,
+    platform: entry.platform,
+    userAgent: entry.user_agent,
+    status: entry.status,
+    adminNotes: entry.admin_notes,
+    createdAt: entry.created_at,
+    updatedAt: entry.updated_at,
+    comments,
+  };
+}
+
+export async function getFeedbackEntryById(id) {
+  const supabase = createServerClient();
+
+  const { data, error } = await supabase
+    .from('feedback')
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    if (error.code === 'PGRST116') return null; // Not found
+    logger.error('Failed to get feedback entry from Supabase', error);
+    throw new Error('Failed to get feedback entry');
+  }
+
+  // Fetch username separately
+  if (data?.user_id) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('username')
+      .eq('id', data.user_id)
+      .single();
+
+    data.username = userData?.username || null;
+  }
+
+  return transformFeedbackEntry(data);
+}
+
+export async function getFeedbackEntries({ status = null, limit = 100 } = {}) {
+  const supabase = createServerClient();
+
+  let query = supabase
+    .from('feedback')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (status !== null) {
+    query = query.eq('status', status);
+  }
+
+  const { data, error} = await query;
+
+  if (error) {
+    logger.error('Failed to get feedback entries from Supabase', error);
+    throw new Error('Failed to get feedback entries');
+  }
+
+  // Fetch usernames for each feedback entry
+  const entriesWithUsername = await Promise.all((data || []).map(async (entry) => {
+    // Try to fetch username from users table
+    if (entry.user_id) {
+      const { data: userData } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', entry.user_id)
+        .single();
+
+      entry.username = userData?.username || null;
+    }
+    return entry;
+  }));
+
+  return entriesWithUsername.map(transformFeedbackEntry);
+}
+
+export async function updateFeedbackEntry(id, updates = {}) {
+  const supabase = createServerClient();
+
+  if (updates.status && !FEEDBACK_STATUS_VALUES.includes(updates.status)) {
+    throw new Error('Invalid feedback status');
+  }
+
+  // Map camelCase to snake_case for Supabase
+  const dbUpdates = {
+    updated_at: new Date().toISOString(),
+  };
+
+  if (updates.status) dbUpdates.status = updates.status;
+  if (updates.adminNotes !== undefined) dbUpdates.admin_notes = updates.adminNotes;
+
+  const { data, error } = await supabase
+    .from('feedback')
+    .update(dbUpdates)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    logger.error('Failed to update feedback entry in Supabase', error);
+    throw new Error('Failed to update feedback entry');
+  }
+
+  return transformFeedbackEntry(data);
+}
+
+export async function addFeedbackComment(id, comment) {
+  const supabase = createServerClient();
+
+  // Get current entry
+  const { data: entry, error: fetchError } = await supabase
+    .from('feedback')
+    .select('comments')
+    .eq('id', id)
+    .single();
+
+  if (fetchError || !entry) {
+    logger.error('Failed to get feedback entry for comment', fetchError);
+    return null;
+  }
+
+  // Get existing comments or initialize empty array
+  const existingComments = Array.isArray(entry.comments) ? entry.comments : [];
+
+  // Add new comment to array
+  const updatedComments = [...existingComments, comment];
+
+  // Update the comments field
+  const { data, error } = await supabase
+    .from('feedback')
+    .update({
+      comments: updatedComments,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) {
+    logger.error('Failed to add comment to feedback', error);
+    throw new Error('Failed to add comment');
+  }
+
+  // Fetch username separately
+  if (data?.user_id) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('username')
+      .eq('id', data.user_id)
+      .single();
+
+    data.username = userData?.username || null;
+  }
+
+  return transformFeedbackEntry(data);
+}
+
+export async function getFeedbackStatusCounts() {
+  const supabase = createServerClient();
+
+  const { data, error } = await supabase
+    .from('feedback')
+    .select('status');
+
+  if (error) {
+    logger.error('Failed to get feedback status counts from Supabase', error);
+    return getEmptyFeedbackCounts();
+  }
+
+  const counts = getEmptyFeedbackCounts();
+
+  data.forEach((entry) => {
+    if (entry.status && counts[entry.status] !== undefined) {
+      counts[entry.status]++;
+    }
+  });
+
+  return counts;
 }

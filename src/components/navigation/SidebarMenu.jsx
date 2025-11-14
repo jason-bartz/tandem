@@ -7,6 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useHoroscope } from '@/hooks/useHoroscope';
 import avatarService from '@/services/avatar.service';
 
 /**
@@ -28,6 +29,7 @@ export default function SidebarMenu({
   onOpenArchive,
   onOpenHowToPlay,
   onOpenSettings,
+  onOpenFeedback,
 }) {
   const { highContrast, reduceMotion, isDark, toggleTheme } = useTheme();
   const { user } = useAuth();
@@ -115,6 +117,52 @@ export default function SidebarMenu({
   const username = getUsername();
   const userAvatar = getUserAvatar();
   const isGuest = !user;
+
+  // Get zodiac sign and horoscope for logged-in users
+  const getZodiacSign = (dateString) => {
+    if (!dateString) return null;
+    const date = new Date(dateString);
+    const day = date.getDate();
+    const month = date.getMonth() + 1;
+
+    const zodiacSigns = [
+      { sign: 'Capricorn ♑', name: 'Capricorn', emoji: '♑', start: [12, 22], end: [1, 19] },
+      { sign: 'Aquarius ♒', name: 'Aquarius', emoji: '♒', start: [1, 20], end: [2, 18] },
+      { sign: 'Pisces ♓', name: 'Pisces', emoji: '♓', start: [2, 19], end: [3, 20] },
+      { sign: 'Aries ♈', name: 'Aries', emoji: '♈', start: [3, 21], end: [4, 19] },
+      { sign: 'Taurus ♉', name: 'Taurus', emoji: '♉', start: [4, 20], end: [5, 20] },
+      { sign: 'Gemini ♊', name: 'Gemini', emoji: '♊', start: [5, 21], end: [6, 20] },
+      { sign: 'Cancer ♋', name: 'Cancer', emoji: '♋', start: [6, 21], end: [7, 22] },
+      { sign: 'Leo ♌', name: 'Leo', emoji: '♌', start: [7, 23], end: [8, 22] },
+      { sign: 'Virgo ♍', name: 'Virgo', emoji: '♍', start: [8, 23], end: [9, 22] },
+      { sign: 'Libra ♎', name: 'Libra', emoji: '♎', start: [9, 23], end: [10, 22] },
+      { sign: 'Scorpio ♏', name: 'Scorpio', emoji: '♏', start: [10, 23], end: [11, 21] },
+      { sign: 'Sagittarius ♐', name: 'Sagittarius', emoji: '♐', start: [11, 22], end: [12, 21] },
+    ];
+
+    for (const zodiac of zodiacSigns) {
+      const [startMonth, startDay] = zodiac.start;
+      const [endMonth, endDay] = zodiac.end;
+
+      if ((month === startMonth && day >= startDay) || (month === endMonth && day <= endDay)) {
+        return { display: zodiac.sign, name: zodiac.name };
+      }
+    }
+
+    return null;
+  };
+
+  const getUserTimezone = () => {
+    try {
+      return Intl.DateTimeFormat().resolvedOptions().timeZone;
+    } catch {
+      return 'UTC';
+    }
+  };
+
+  const zodiacData = user?.created_at ? getZodiacSign(user.created_at) : null;
+  const userTimezone = getUserTimezone();
+  const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
 
   return (
     <AnimatePresence>
@@ -249,15 +297,16 @@ export default function SidebarMenu({
                   </div>
                 ) : (
                   /* Logged-In User Profile */
-                  <>
-                    <button
-                      onClick={() => handleNavigation('/account')}
-                      className={`w-full p-4 rounded-2xl border-[3px] flex items-center gap-3 transition-all text-left ${
-                        highContrast
-                          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      }`}
-                    >
+                  <button
+                    onClick={() => handleNavigation('/account')}
+                    className={`w-full p-4 rounded-2xl border-[3px] transition-all text-left ${
+                      highContrast
+                        ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    }`}
+                  >
+                    {/* Profile Header */}
+                    <div className="flex items-center gap-3">
                       {/* Profile Picture */}
                       <div
                         className={`w-12 h-12 rounded-xl border-[3px] flex items-center justify-center flex-shrink-0 overflow-hidden ${
@@ -301,24 +350,42 @@ export default function SidebarMenu({
                           d="M9 5l7 7-7 7"
                         />
                       </svg>
-                    </button>
-                  </>
+                    </div>
+
+                    {/* Daily Horoscope - Integrated in same box */}
+                    {zodiacData && horoscope && !horoscopeLoading && (
+                      <div className={`mt-3 pt-3 border-t-2 ${
+                        highContrast
+                          ? 'border-hc-border'
+                          : 'border-purple-200 dark:border-purple-800'
+                      }`}>
+                        <p className={`text-xs font-semibold mb-2 ${
+                          highContrast ? 'text-hc-text' : 'text-purple-700 dark:text-purple-300'
+                        }`}>
+                          Today's Tandem Horoscope ({zodiacData.display}):
+                        </p>
+                        <p className={`text-xs leading-relaxed ${
+                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+                        }`}>
+                          {horoscope.text}
+                        </p>
+                      </div>
+                    )}
+                  </button>
                 )}
 
-                {/* Stats/Leaderboard Link - Always visible */}
-                <div className="mt-2">
+              </section>
+
+              {/* Navigation Section */}
+              <section>
+                <div className="space-y-2">
+                  {/* Stats/Leaderboard Link - Always visible */}
                   <MenuButton
-                    icon={getIconPath('medal')}
+                    icon={getIconPath('leaderboard')}
                     label="Stats & Leaderboard"
                     onClick={() => handleModalOpen(onOpenStats)}
                     highContrast={highContrast}
                   />
-                </div>
-              </section>
-
-              {/* Navigation Section */}
-              <section className="-mt-4">
-                <div className="space-y-2">
                   <MenuButton
                     icon={getIconPath('archive')}
                     label="Puzzle Archive"
@@ -337,6 +404,12 @@ export default function SidebarMenu({
                     onClick={() => handleModalOpen(onOpenSettings)}
                     highContrast={highContrast}
                   />
+                  <MenuButton
+                    icon={getIconPath('feedback')}
+                    label="Feedback"
+                    onClick={() => handleModalOpen(onOpenFeedback)}
+                    highContrast={highContrast}
+                  />
                 </div>
               </section>
 
@@ -347,8 +420,8 @@ export default function SidebarMenu({
                 </h3>
                 <div className="space-y-2">
                   <GameButton
-                    icon="/icons/ui/emoji-inter.png"
-                    darkIcon="/icons/ui/emoji-inter-dark.png"
+                    icon="/icons/ui/tandem.png"
+                    darkIcon="/icons/ui/tandem-dark.png"
                     label="Daily Tandem"
                     onClick={() => handleNavigation('/')}
                     isActive={pathname === '/'}

@@ -33,8 +33,8 @@ export default function TandemStatsSection({ stats, animationKey }) {
     <>
       <StatsSection
         title="Daily Tandem"
-        icon="/icons/ui/emoji-inter.png"
-        iconDark="/icons/ui/emoji-inter-dark.png"
+        icon="/icons/ui/tandem.png"
+        iconDark="/icons/ui/tandem-dark.png"
         themeColor="blue"
       >
         {/* All Stats in a Row */}

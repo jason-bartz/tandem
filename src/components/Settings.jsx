@@ -19,8 +19,6 @@
  * @component
  */
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
 import PaywallModal from '@/components/PaywallModal';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import { Capacitor } from '@capacitor/core';
@@ -45,10 +43,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [showAppBanner, setShowAppBanner] = useState(false);
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
   const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
-  const [signingIn, setSigningIn] = useState(false);
   const [userAvatar, setUserAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
-  const [loadingAvatar, setLoadingAvatar] = useState(false);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic, lightTap } = useHaptics();
   const {
     theme,
@@ -61,10 +57,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const { syncStatus, toggleSync } = useUnifiedSync();
   const { user, signInWithApple } = useAuth();
   const { isActive: isSubscriptionActive, loading: subscriptionLoading } = useSubscription();
-
-  // Detect platform
-  const platform = Capacitor.getPlatform();
-  const isWeb = platform === 'web';
 
   useEffect(() => {
     if (isOpen) {
@@ -149,8 +141,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     if (!user?.id) return;
 
     try {
-      setLoadingAvatar(true);
-
       // Mobile game dev best practice: Load from cache immediately to prevent flash
       const cacheKey = `user_avatar_${user.id}`;
       const cachedData = localStorage.getItem(cacheKey);
@@ -160,7 +150,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           // Check if cache is recent (within 5 minutes)
           if (cached.timestamp && Date.now() - cached.timestamp < 5 * 60 * 1000) {
             setUserAvatar(cached.data);
-            setLoadingAvatar(false); // Set loading to false immediately with cached data
           }
         } catch (e) {
           // Invalid cache, continue with network fetch
@@ -190,8 +179,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     } catch (error) {
       console.error('[Settings] Failed to load user avatar:', error);
       // Fail silently - avatar is non-critical feature
-    } finally {
-      setLoadingAvatar(false);
     }
   };
 
@@ -240,7 +227,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   // Get zodiac sign and horoscope
   const zodiacData = user?.created_at ? getZodiacSign(user.created_at) : null;
   const userTimezone = getUserTimezone();
-  const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
+  useHoroscope(zodiacData?.name, userTimezone);
 
   const handleAvatarChange = (avatarId) => {
     setShowAvatarModal(false);
@@ -256,7 +243,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   };
 
   const handleSignInWithApple = async () => {
-    setSigningIn(true);
     try {
       const result = await signInWithApple();
 
@@ -264,7 +250,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       if (result.error && result.error.message) {
         alert(result.error.message);
         errorHaptic();
-        setSigningIn(false);
         return;
       }
 
@@ -274,7 +259,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         if (result.error) {
           console.error('[Settings] Sign in error (no message):', result.error);
         }
-        setSigningIn(false);
         return;
       }
 
@@ -288,8 +272,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         alert('Failed to sign in with Apple');
       }
       errorHaptic();
-    } finally {
-      setSigningIn(false);
     }
   };
 
@@ -360,30 +342,27 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           {showAppBanner && !Capacitor.isNativePlatform() && (
             <div className="mb-6">
             <div
-              className={`rounded-2xl border-[3px] p-5 shadow-[4px_4px_0px_rgba(0,0,0,0.3)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.3)] ${
+              className={`rounded-2xl border-[3px] p-5 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                 highContrast
                   ? 'bg-hc-primary border-hc-border'
-                  : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
+                  : 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/30 dark:to-blue-900/30 border-black dark:border-white'
               }`}
             >
               {/* Content */}
               <div className="space-y-4">
                 {/* Header */}
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl">📱</span>
-                  <h3
-                    className={`text-lg font-bold ${
-                      highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'
-                    }`}
-                  >
-                    Get the iOS App
-                  </h3>
-                </div>
+                <h3
+                  className={`text-lg font-bold ${
+                    highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'
+                  }`}
+                >
+                  Get the iOS App
+                </h3>
 
                 {/* Message */}
                 <p
                   className={`text-sm ${
-                    highContrast ? 'text-white/95' : 'text-gray-700 dark:text-gray-300'
+                    highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
                   }`}
                 >
                   Download Tandem Daily Games for iOS today to enjoy Ad-Free on iPhone and iPad.
@@ -410,10 +389,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   </a>
                   <button
                     onClick={handleAppBannerDismiss}
-                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[2px] ${
+                    className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] ${
                       highContrast
-                        ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white'
-                        : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
+                        ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                     }`}
                   >
                     Maybe Later
@@ -424,278 +403,22 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           </div>
         )}
 
-        {/* Account Section - iOS and Web */}
-        <div className="mb-8">
-          {/* Section Card */}
-          <div
-            className={`rounded-2xl border-[2px] overflow-hidden ${
-              highContrast
-                ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
-            }`}
-          >
-            {/* Section Header */}
-            <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
-              <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Account</h3>
-            </div>
-
-            {/* Section Content */}
-            <div className="p-5 space-y-3">
-              {user ? (
-                <>
-                  {/* User is signed in */}
-                  <div className="flex items-start gap-3">
-                    {/* Avatar Image - Apple HIG: 48pt avatar with rounded corners */}
-                    {loadingAvatar && !userAvatar ? (
-                      // Skeleton loader - mobile game best practice
-                      <div className="relative w-12 h-12 rounded-xl border-[2px] border-gray-300 dark:border-gray-600 flex-shrink-0 bg-gray-200 dark:bg-gray-700 animate-pulse" />
-                    ) : (
-                      <button
-                        onClick={() => {
-                          setShowAvatarModal(true);
-                          lightTap();
-                        }}
-                        className="relative w-12 h-12 rounded-xl overflow-hidden border-[2px] border-purple-500 dark:border-purple-400 flex-shrink-0 hover:scale-105 transition-transform"
-                        aria-label={
-                          userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'
-                        }
-                      >
-                        <Image
-                          src={
-                            userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
-                              ? userAvatar.avatar_image_path
-                              : '/images/avatars/default-profile.png'
-                          }
-                          alt={userAvatar?.avatar_display_name || 'Profile'}
-                          fill
-                          className="object-cover"
-                          sizes="48px"
-                          priority
-                        />
-                      </button>
-                    )}
-
-                    <div className="flex-1">
-                      {userAvatar?.username && (
-                        <p className="text-base font-semibold text-gray-800 dark:text-gray-100 mb-2">
-                          Hi {userAvatar.username}! 👋
-                        </p>
-                      )}
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-1">
-                        {user.email}
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">Signed in</p>
-                    </div>
-                  </div>
-
-                  {/* Avatar Selection Prompt - Show if no avatar selected */}
-                  {!loadingAvatar && !userAvatar?.selected_avatar_id && (
-                    <div className="mt-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">
-                        Choose Your Avatar!
-                      </p>
-                      <p className="text-xs text-gray-700 dark:text-gray-300 mb-2">
-                        Select a personalized avatar to represent you in Tandem.
-                      </p>
-                      <button
-                        onClick={() => {
-                          setShowAvatarModal(true);
-                          lightTap();
-                        }}
-                        className={`text-xs font-medium px-3 py-1.5 rounded-lg border-[2px] transition-all ${
-                          highContrast
-                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-purple-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                        }`}
-                      >
-                        Select Avatar
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Daily Horoscope - Show if available */}
-                  {zodiacData && horoscope && !horoscopeLoading && (
-                    <div className="mt-3 p-3 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800">
-                      <p className="text-xs font-semibold text-purple-700 dark:text-purple-300 mb-2">
-                        Today's Tandem Horoscope ({zodiacData.display}):
-                      </p>
-                      <p className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed">
-                        {horoscope.text}
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Manage Account Button - Navigate within app for all platforms */}
-                  <Link
-                    href="/account"
-                    onClick={() => {
-                      lightTap();
-                      onClose();
-                    }}
-                    className={`block w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
-                      highContrast
-                        ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                    }`}
-                  >
-                    Manage Your Account
-                  </Link>
-                </>
-              ) : (
-                <>
-                  {/* User is not signed in - Show account benefits and sign in option */}
-                  <div className="space-y-3">
-                    {/* Benefits Card */}
-                    <div
-                      className={`rounded-xl p-4 ${
-                        highContrast
-                          ? 'bg-hc-surface/50'
-                          : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800'
-                      }`}
-                    >
-                      <p
-                        className={`text-sm font-medium mb-3 ${
-                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-                        }`}
-                      >
-                        Create a free account to:
-                      </p>
-                      <div className="space-y-2">
-                        <div className="flex items-start gap-2">
-                          <span
-                            className={`text-sm mt-0.5 ${
-                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
-                            }`}
-                          >
-                            ✓
-                          </span>
-                          <span
-                            className={`text-xs ${
-                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            Access your subscription on all devices
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span
-                            className={`text-sm mt-0.5 ${
-                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
-                            }`}
-                          >
-                            ✓
-                          </span>
-                          <span
-                            className={`text-xs ${
-                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            Sync your progress and stats
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span
-                            className={`text-sm mt-0.5 ${
-                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
-                            }`}
-                          >
-                            ✓
-                          </span>
-                          <span
-                            className={`text-xs ${
-                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            Compete in daily and all-time leaderboards
-                          </span>
-                        </div>
-                        <div className="flex items-start gap-2">
-                          <span
-                            className={`text-sm mt-0.5 ${
-                              highContrast ? 'text-hc-success' : 'text-blue-600 dark:text-blue-400'
-                            }`}
-                          >
-                            ✓
-                          </span>
-                          <span
-                            className={`text-xs ${
-                              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            Recover subscription if you switch devices
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Sign In Button - Different per platform */}
-                    {!isWeb ? (
-                      // iOS: Sign in with Apple button (following Apple HIG)
-                      <button
-                        onClick={handleSignInWithApple}
-                        disabled={signingIn}
-                        className={`w-full p-3 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-2 ${
-                          signingIn
-                            ? 'opacity-50 cursor-not-allowed'
-                            : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                        } ${
-                          highContrast
-                            ? 'bg-black text-white border-hc-border'
-                            : 'bg-black text-white border-black dark:border-gray-600'
-                        }`}
-                      >
-                        {signingIn ? (
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-                        ) : (
-                          <>
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                            </svg>
-                            <span className="font-bold text-sm">Sign in with Apple</span>
-                          </>
-                        )}
-                      </button>
-                    ) : (
-                      // Web: Trigger AuthModal
-                      <button
-                        onClick={() => {
-                          lightTap();
-                          onClose();
-                          // Dispatch custom event to open AuthModal
-                          window.dispatchEvent(
-                            new CustomEvent('authModalOpen', {
-                              detail: { mode: 'login' },
-                            })
-                          );
-                        }}
-                        className={`w-full py-2 px-4 text-center font-medium rounded-xl transition-all border-[2px] ${
-                          highContrast
-                            ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                        }`}
-                      >
-                        Sign In or Create Account
-                      </button>
-                    )}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
-        </div>
-
         {/* Subscription Section - Both iOS and Web */}
         <div className="mb-8">
           {/* Section Card */}
           <div
-            className={`rounded-2xl border-[2px] overflow-hidden ${
+            className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
               highContrast
                 ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                : 'border-black dark:border-white bg-white dark:bg-gray-800'
             }`}
           >
             {/* Section Header */}
-            <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+            <div className={`px-5 py-3 border-b-[3px] ${
+              highContrast
+                ? 'border-hc-border'
+                : 'border-gray-300 dark:border-gray-600'
+            }`}>
               <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">Subscription</h3>
             </div>
 
@@ -708,7 +431,11 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               ) : isSubscriptionActive ? (
                 <div className="space-y-3">
                   {/* Hard Mode Toggle - Only for Premium Users */}
-                  <div className="bg-accent-orange/20 dark:bg-gray-700 rounded-2xl border-[3px] border-accent-orange dark:border-accent-orange p-4">
+                  <div className={`rounded-2xl border-[3px] p-4 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,1)] ${
+                    highContrast
+                      ? 'bg-hc-surface border-hc-border'
+                      : 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-accent-orange dark:border-accent-orange'
+                  }`}>
                     <div className="flex items-center justify-between">
                       <div>
                         <div className="flex items-center gap-2">
@@ -816,14 +543,18 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[2px] overflow-hidden ${
+              className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                 highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                  : 'border-black dark:border-white bg-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
-              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+              <div className={`px-5 py-3 border-b-[3px] ${
+                highContrast
+                  ? 'border-hc-border'
+                  : 'border-gray-300 dark:border-gray-600'
+              }`}>
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
                   iCloud Sync
                 </h3>
@@ -895,10 +626,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           <div className="ml-4 opacity-75">
                             Using:{' '}
                             {syncStatus.provider === 'gameCenter'
-                              ? '🎮 Game Center'
+                              ? 'Game Center'
                               : syncStatus.provider === 'cloudKit'
-                                ? '☁️ iCloud'
-                                : '📱 Local Storage'}
+                                ? 'iCloud'
+                                : 'Local Storage'}
                           </div>
                         )}
                       </div>
@@ -922,14 +653,18 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[2px] overflow-hidden ${
+              className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                 highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                  : 'border-black dark:border-white bg-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
-              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+              <div className={`px-5 py-3 border-b-[3px] ${
+                highContrast
+                  ? 'border-hc-border'
+                  : 'border-gray-300 dark:border-gray-600'
+              }`}>
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
                   Notifications
                 </h3>
@@ -1021,14 +756,18 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           <div className="mb-8">
             {/* Section Card */}
             <div
-              className={`rounded-2xl border-[2px] overflow-hidden ${
+              className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                 highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                  : 'border-black dark:border-white bg-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
-              <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+              <div className={`px-5 py-3 border-b-[3px] ${
+                highContrast
+                  ? 'border-hc-border'
+                  : 'border-gray-300 dark:border-gray-600'
+              }`}>
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
                   Game Center
                 </h3>
@@ -1084,14 +823,18 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         <div className="mb-8">
           {/* Section Card */}
           <div
-            className={`rounded-2xl border-[2px] overflow-hidden ${
+            className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
               highContrast
                 ? 'border-hc-border bg-hc-surface'
-                : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50'
+                : 'border-black dark:border-white bg-white dark:bg-gray-800'
             }`}
           >
             {/* Section Header */}
-            <div className="px-5 py-3 border-b-[2px] border-gray-200 dark:border-gray-700">
+            <div className={`px-5 py-3 border-b-[3px] ${
+              highContrast
+                ? 'border-hc-border'
+                : 'border-gray-300 dark:border-gray-600'
+            }`}>
               <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
                 Accessibility
               </h3>

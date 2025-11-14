@@ -101,7 +101,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
       const isValidDay = dayNumber > 0 && dayNumber <= daysInMonth;
 
       if (!isValidDay) {
-        days.push(<div key={`empty-${i}`} className="min-h-[80px] sm:min-h-[100px] md:h-32" />);
+        days.push(<div key={`empty-${i}`} className="aspect-square min-h-0" />);
       } else {
         const today = isToday(dayNumber);
         const puzzleExists = hasPuzzle(dayNumber);
@@ -113,14 +113,14 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
           <div
             key={dayNumber}
             className={`
-              relative min-h-[80px] sm:min-h-[100px] md:h-32 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all cursor-pointer
-              ${today ? 'border-accent-yellow bg-accent-yellow/20' : 'border-border-main'}
+              relative aspect-square min-h-0 p-1.5 sm:p-2 rounded-lg border-[2px] overflow-hidden transition-all cursor-pointer
+              ${today ? 'border-accent-yellow bg-accent-yellow/20' : 'border-black dark:border-white'}
               ${puzzleExists ? 'bg-accent-green/10' : ''}
               ${holiday && !puzzleExists ? 'bg-accent-orange/10' : ''}
               ${selected ? 'ring-2 ring-purple-600 dark:ring-purple-400' : ''}
               hover:border-accent-yellow hover:translate-y-[-2px]
             `}
-            style={{ boxShadow: 'var(--shadow-small)' }}
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             onClick={() => handleDayClick(dayNumber)}
           >
             <div className="flex justify-between items-start">
@@ -179,8 +179,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
 
   return (
     <div
-      className="bg-bg-surface rounded-lg border-[3px] border-border-main p-3 sm:p-6"
-      style={{ boxShadow: 'var(--shadow-card)' }}
+      className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
     >
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
@@ -202,8 +201,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
 
           {showMonthPicker && (
             <div
-              className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-border-main p-4 z-50 w-72 sm:w-80"
-              style={{ boxShadow: 'var(--shadow-card)' }}
+              className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
             >
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {[
@@ -230,10 +228,10 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
                     }}
                     className={`px-3 py-2 rounded text-sm font-bold border-[2px] transition-transform ${
                       currentMonth.getMonth() === index
-                        ? 'bg-accent-yellow border-border-main text-text-primary'
-                        : 'bg-bg-card border-border-main text-text-secondary hover:bg-accent-yellow/20'
+                        ? 'bg-accent-yellow border-black dark:border-white text-text-primary'
+                        : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20'
                     }`}
-                    style={{ boxShadow: 'var(--shadow-small)' }}
+                    style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
                   >
                     {month}
                   </button>
@@ -250,13 +248,11 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
                   }}
                   min="2024"
                   max="2030"
-                  className="flex-1 px-3 py-2 border-[3px] border-border-main rounded text-center bg-bg-card text-text-primary font-bold"
-                  style={{ boxShadow: 'var(--shadow-small)' }}
+                  className="flex-1 px-3 py-2 border-[3px] border-black dark:border-white rounded text-center bg-bg-card text-text-primary font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
                 />
                 <button
                   onClick={() => setShowMonthPicker(false)}
-                  className="px-4 py-2 bg-accent-green border-[3px] border-border-main rounded text-white font-bold hover:translate-y-[-2px] transition-transform"
-                  style={{ boxShadow: 'var(--shadow-button)' }}
+                  className="px-4 py-2 bg-accent-green border-[3px] border-black dark:border-white rounded text-white font-bold hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
                 >
                   Done
                 </button>
@@ -268,8 +264,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
         <div className="flex items-center space-x-1 sm:space-x-2">
           <button
             onClick={goToToday}
-            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue border-[2px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-1px] transition-transform"
-            style={{ boxShadow: 'var(--shadow-small)' }}
+            className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-accent-blue border-[2px] border-black dark:border-white text-white rounded-lg font-bold hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
           >
             Today
           </button>
@@ -301,39 +296,21 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
       <div className="grid grid-cols-7 gap-1 sm:gap-2 md:gap-3">{renderDays()}</div>
 
       {/* Legend */}
-      <div className="mt-6 pt-4 border-t-[3px] border-border-main">
+      <div className="mt-6 pt-4 border-t-[3px] border-black dark:border-white">
         <div className="flex items-center gap-4 text-xs text-text-secondary font-medium">
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded-full bg-accent-green" />
-            <span>Has puzzle</span>
+            <span className="hidden sm:inline">Has puzzle</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded border-2 border-accent-yellow bg-accent-yellow/20" />
-            <span>Today</span>
+            <span className="hidden sm:inline">Today</span>
           </div>
           <div className="flex items-center gap-1.5">
             <div className="w-3 h-3 rounded border-2 border-purple-600" />
-            <span>Selected</span>
+            <span className="hidden sm:inline">Selected</span>
           </div>
         </div>
-      </div>
-
-      {/* Stats */}
-      <div className="mt-4 pt-4 border-t-[3px] border-border-main">
-        <p className="text-sm text-text-secondary font-medium">
-          Total puzzles this month:{' '}
-          <span className="font-bold text-text-primary">
-            {
-              puzzles.filter((p) => {
-                const puzzleDate = new Date(p.date);
-                return (
-                  puzzleDate.getMonth() === currentMonth.getMonth() &&
-                  puzzleDate.getFullYear() === currentMonth.getFullYear()
-                );
-              }).length
-            }
-          </span>
-        </p>
       </div>
     </div>
   );

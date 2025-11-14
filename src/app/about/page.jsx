@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { generateBreadcrumbs } from '@/lib/seo-config';
-import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 import Image from 'next/image';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
@@ -15,7 +14,6 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 
 export default function AboutPage() {
-  const { theme } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showStats, setShowStats] = useState(false);
@@ -92,19 +90,16 @@ export default function AboutPage() {
                   {/* Founder Message */}
                   <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
                     <p>
-                      I'm Jason, and I created Tandem as a little daily ritual that puts your brain first.
+                      I'm Jason, and I'm the creator of Tandem Daily Games.
                     </p>
                     <p>
-                      We're surrounded by infinite scroll and algorithmic feeds designed to keep us trapped. I wanted to build something different. A peaceful moment where you can actually think, discover, and feel that spark of joy when things click into place.
+                      We're surrounded by infinite scrolling and algorithms designed to keep us trapped. I wanted to build something different. A peaceful moment where you can think, discover, and feel a spark of joy when things click into place.
                     </p>
                     <p>
-                      Tandem is meant to be a companion to your daily puzzle routine. Whether you're already solving Wordle, playing Connections, or you just love that satisfying feeling of cracking something clever, this game offers a fresh challenge that respects your time and intelligence.
+                      These games are meant to be a companion to your daily puzzle routine. Whether you're already solving Wordle or playing Sudoku, these games offer fresh challenges that respect your time and intelligence.
                     </p>
                     <p>
-                      No ads. No pressure. No endless content trying to steal your attention. Just a simple, thoughtful puzzle that rewards curiosity and lets you share those "aha!" moments with friends.
-                    </p>
-                    <p className="pb-4">
-                      So take a breath, decode some emojis, and discover the hidden theme. Your brain will thank you.
+                      This is a passion project. I'm not trying to maximize engagement or monetize your attention. I built Tandem because I love puzzles, and I'm committed to keeping it ad-free forever. No pressure. No endless content trying to steal your attention. Just simple, thoughtful puzzles that reward curiosity and let you share in "aha!" moments with friends.
                     </p>
 
                     {/* Founder Image and Info */}
