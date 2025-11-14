@@ -27,7 +27,7 @@ import avatarService from '@/services/avatar.service';
 
 export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
   const { refreshProfile } = useAuth();
-  const [showAvatarSelection, setShowAvatarSelection] = useState(false);
+  const [showAvatarSelection, setShowAvatarSelection] = useState(true); // Start with avatar selection open
   const { highContrast } = useTheme();
   const { lightTap, correctAnswer: successHaptic } = useHaptics();
 
@@ -45,29 +45,25 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
    */
   const handleAvatarSelected = async (avatarId) => {
     if (!avatarId) {
-      // User skipped - just close avatar modal
-      setShowAvatarSelection(false);
+      // User skipped - just close everything immediately
+      onClose();
       return;
     }
 
-    // Avatar was selected
-    setShowAvatarSelection(false);
+    // Avatar was selected - close immediately to prevent flash
     successHaptic();
+    onClose();
 
-    // Refresh profile in AuthContext to update sidebar display
+    // Refresh profile in AuthContext to update sidebar display (in background)
     await refreshProfile();
 
-    // Mark first-time setup as complete
+    // Mark first-time setup as complete (in background)
     try {
       await avatarService.markFirstTimeSetupComplete(userId);
     } catch (err) {
       // Non-critical error - avatar is already saved, continue anyway
       console.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete:', err);
     }
-
-    // Always close the modal and dismiss the setup flow, even if marking failed
-    // The user has selected their avatar, which is the main goal
-    onClose();
   };
 
   const benefits = [
