@@ -131,12 +131,6 @@ export const THEME_CONFIG = {
   DEFAULT: 'light',
 };
 
-export const THEME_MODE = {
-  AUTO: 'auto',
-  MANUAL: 'manual',
-  DEFAULT: 'auto',
-};
-
 export const ASSET_VERSION = '1.0.1'; // Increment this when assets change to bust cache
 
 export const ADMIN_CONFIG = {

@@ -292,6 +292,68 @@ class AvatarService {
       return false;
     }
   }
+
+  /**
+   * Mark user's first-time setup as complete
+   *
+   * @param {string} userId - User ID
+   * @returns {Promise<void>}
+   * @throws {Error} If update fails
+   */
+  async markFirstTimeSetupComplete(userId) {
+    try {
+      if (!userId) {
+        throw new Error('User ID is required');
+      }
+
+      const supabase = getSupabaseBrowserClient();
+      const { error } = await supabase
+        .from('users')
+        .update({ has_completed_first_time_setup: true })
+        .eq('id', userId);
+
+      if (error) {
+        console.error('[AvatarService] Failed to mark first-time setup complete:', error);
+        throw new Error('Failed to update first-time setup status.');
+      }
+
+      console.log('[AvatarService] First-time setup marked complete for user:', userId);
+    } catch (error) {
+      console.error('[AvatarService] markFirstTimeSetupComplete error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Check if user has completed first-time setup
+   *
+   * @param {string} userId - User ID
+   * @returns {Promise<boolean>} True if setup complete, false otherwise
+   */
+  async hasCompletedFirstTimeSetup(userId) {
+    try {
+      if (!userId) {
+        return false;
+      }
+
+      const supabase = getSupabaseBrowserClient();
+      const { data, error } = await supabase
+        .from('users')
+        .select('has_completed_first_time_setup')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) {
+        console.error('[AvatarService] Failed to check first-time setup status:', error);
+        return false;
+      }
+
+      return data?.has_completed_first_time_setup ?? false;
+    } catch (error) {
+      console.error('[AvatarService] hasCompletedFirstTimeSetup error:', error);
+      return false;
+    }
+  }
 }
 
 // Export singleton instance

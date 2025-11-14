@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { getCurrentPuzzleNumber, getDisplayDate } from '@/lib/puzzleNumber';
 import { playStartSound, playButtonTone } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import ArchiveCalendar from './ArchiveCalendar';
+import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import GlobalNavigation from '@/components/navigation/GlobalNavigation';
@@ -15,6 +15,9 @@ import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
 import CrypticWelcomeCard from '@/components/cryptic/CrypticWelcomeCard';
+import { getStreakMessage } from '@/lib/streakMessages';
+import { loadStats } from '@/lib/storage';
+import { loadCrypticStats } from '@/lib/crypticStorage';
 
 export default function WelcomeScreen({
   onStart,
@@ -35,6 +38,25 @@ export default function WelcomeScreen({
   const getIconPath = useUIIcon();
   const { isMobilePhone } = useDeviceType();
   const isNativeApp = Capacitor.isNativePlatform();
+
+  // Load stats on mount for streak display
+  const [tandemStats, setTandemStats] = useState({ currentStreak: 0 });
+  const [crypticStats, setCrypticStats] = useState({ currentStreak: 0 });
+
+  useEffect(() => {
+    // Load stats for streak display
+    const loadStatsData = async () => {
+      try {
+        const [tandem, cryptic] = await Promise.all([loadStats(), loadCrypticStats()]);
+        setTandemStats(tandem);
+        setCrypticStats(cryptic);
+      } catch (err) {
+        // Silently fail - streak just won't show
+        console.error('Failed to load stats for streak display:', err);
+      }
+    };
+    loadStatsData();
+  }, []);
 
   useEffect(() => {
     // Play welcome sound and haptics on iOS after a delay to ensure splash is gone
@@ -154,6 +176,29 @@ export default function WelcomeScreen({
             </div>
           </div>
 
+          {/* Streak Display */}
+          {tandemStats.currentStreak > 0 && (
+            <div className="mb-4 text-center flex items-center justify-center gap-1.5">
+              <Image
+                src="/icons/ui/hardmode.png"
+                alt=""
+                width={12}
+                height={12}
+                className="dark:hidden"
+              />
+              <Image
+                src="/icons/ui/hardmode-dark.png"
+                alt=""
+                width={12}
+                height={12}
+                className="hidden dark:block"
+              />
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                {getStreakMessage(tandemStats.currentStreak, 'tandem')}
+              </p>
+            </div>
+          )}
+
           <button
             onClick={handlePlayClick}
             disabled={!puzzle}
@@ -171,11 +216,11 @@ export default function WelcomeScreen({
 
         {/* Cryptic Welcome Card */}
         <div className="mb-6">
-          <CrypticWelcomeCard />
+          <CrypticWelcomeCard currentStreak={crypticStats.currentStreak} />
         </div>
 
         <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-        <ArchiveCalendar
+        <UnifiedArchiveCalendar
           isOpen={showArchive}
           onClose={() => setShowArchive(false)}
           onSelectPuzzle={(puzzleNumber) => {
@@ -185,6 +230,7 @@ export default function WelcomeScreen({
               onSelectPuzzle(puzzleNumber);
             }, 100);
           }}
+          defaultTab="tandem"
         />
         <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
         <Settings

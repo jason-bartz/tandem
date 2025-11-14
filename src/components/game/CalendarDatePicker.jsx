@@ -1,5 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useTheme } from '@/contexts/ThemeContext';
 
 /**
@@ -120,7 +121,7 @@ export default function CalendarDatePicker({
     return null;
   }
 
-  return (
+  const picker = (
     <div
       className="fixed inset-0 z-[60] flex items-end justify-center bg-black bg-opacity-50 animate-backdrop-enter"
       onClick={onClose}
@@ -319,4 +320,7 @@ export default function CalendarDatePicker({
       `}</style>
     </div>
   );
+
+  // Render to body using portal to ensure proper z-index stacking
+  return typeof document !== 'undefined' ? createPortal(picker, document.body) : null;
 }

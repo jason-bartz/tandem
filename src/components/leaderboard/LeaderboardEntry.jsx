@@ -44,7 +44,7 @@ export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak 
       {/* Avatar */}
       <div className="relative w-12 h-12 rounded-full overflow-hidden border-[2px] border-gray-200 dark:border-gray-700 flex-shrink-0">
         <Image
-          src={entry.avatar_url || '/images/avatars/default-profile.png'}
+          src={entry.avatar_image_path || entry.avatar_url || '/images/avatars/default-profile.png'}
           alt={entry.username || 'Anonymous'}
           fill
           className="object-cover"

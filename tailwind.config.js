@@ -8,6 +8,9 @@ module.exports = {
   darkMode: 'class',
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['var(--font-plus-jakarta-sans)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+      },
       height: {
         screen: ['100vh', '100dvh'], // Support for dynamic viewport height
         svh: '100svh', // Small viewport height
@@ -51,6 +54,7 @@ module.exports = {
           blue: 'var(--accent-blue)',
           red: 'var(--accent-red)',
           orange: 'var(--accent-orange)',
+          purple: 'var(--accent-purple)',
         },
         // Background colors
         'bg-primary': 'var(--bg-primary)',
@@ -137,6 +141,12 @@ module.exports = {
         'attention-pulse': 'attentionPulse 2s ease-in-out infinite',
         'hover-shine': 'hoverShine 600ms ease-out',
         'success-burst': 'successBurst 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55)',
+
+        // Left panel animations
+        'slide-in-left': 'slideInLeft 300ms cubic-bezier(0.32, 0.72, 0, 1)',
+        'slide-out-left': 'slideOutLeft 250ms cubic-bezier(0.32, 0.72, 0, 1)',
+        'slide-in-right': 'slideInRight 300ms cubic-bezier(0.32, 0.72, 0, 1)',
+        'slide-out-right': 'slideOutRight 250ms cubic-bezier(0.32, 0.72, 0, 1)',
       },
       transitionDuration: {
         instant: '100ms',
@@ -358,6 +368,23 @@ module.exports = {
             opacity: '1',
             transform: 'scale(1)',
           },
+        },
+        // Left panel keyframes
+        slideInLeft: {
+          from: { transform: 'translateX(-100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        slideOutLeft: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(-100%)' },
+        },
+        slideInRight: {
+          from: { transform: 'translateX(100%)' },
+          to: { transform: 'translateX(0)' },
+        },
+        slideOutRight: {
+          from: { transform: 'translateX(0)' },
+          to: { transform: 'translateX(100%)' },
         },
       },
     },

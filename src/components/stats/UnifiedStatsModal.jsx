@@ -4,17 +4,18 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import useUnifiedStats from '@/hooks/useUnifiedStats';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import TandemStatsSection from './TandemStatsSection';
 import CrypticStatsSection from './CrypticStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
 
 /**
- * UnifiedStatsModal - Unified statistics modal for both games
- * Displays Tandem Daily and Daily Cryptic stats in a single modal
+ * UnifiedStatsModal - Unified statistics left panel for both games
+ * Displays Daily Tandem and Daily Cryptic stats in a single panel
  *
- * @param {boolean} isOpen - Whether the modal is open
- * @param {Function} onClose - Callback to close the modal
+ * @param {boolean} isOpen - Whether the panel is open
+ * @param {Function} onClose - Callback to close the panel
  */
 export default function UnifiedStatsModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
@@ -32,15 +33,11 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
     }
   }, [isOpen]);
 
-  if (isOpen === false) {
-    return null;
-  }
-
   // Generate shareable stats text
-  const shareableStatsText = `My Tandem Games Stats 🚲
+  const shareableStatsText = `My Tandem Daily Games Stats 🚲
 ═══════════════════════
 
-🚲 Tandem Daily
+🚲 Daily Tandem
 Played: ${tandemStats.played} | Win Rate: ${tandemStats.played > 0 ? Math.round((tandemStats.wins / tandemStats.played) * 100) : 0}%
 Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '🔥' : ''}
 
@@ -49,7 +46,7 @@ Played: ${crypticStats.totalCompleted} | Best Streak: ${crypticStats.longestStre
 Current Streak: ${crypticStats.currentStreak} ${crypticStats.currentStreak > 0 ? '🔥' : ''}
 
 Play at tandemdaily.com
-#TandemGames`;
+#TandemDailyGames`;
 
   const handleClose = () => {
     lightTap();
@@ -66,30 +63,34 @@ Play at tandemdaily.com
   };
 
   return (
-    <div
-      className="fixed inset-0 bg-black/50 dark:bg-black/70 z-50 flex items-center justify-center p-5 animate-backdrop-enter gpu-accelerated"
-      onClick={handleClose}
-    >
-      <div
-        className="bg-white dark:bg-bg-card rounded-[32px] border-[3px] border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)] p-6 max-w-md w-full max-h-[90vh] overflow-y-auto modal-scrollbar animate-modal-enter gpu-accelerated"
-        onClick={(e) => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-extrabold text-gray-800 dark:text-gray-200">Statistics</h2>
-          <button
-            onClick={handleClose}
-            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
-            }`}
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
+    <>
+      <LeftSidePanel
+        isOpen={isOpen}
+        onClose={handleClose}
+        title="Statistics"
+        maxWidth="480px"
+        contentClassName="px-6 py-4"
+        footer={
+          !loading && !error ? (
+            <div className="space-y-2">
+              {/* Achievements Button */}
+              <button
+                onClick={handleOpenAchievements}
+                className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all flex items-center justify-center ${
+                  highContrast
+                    ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }`}
+              >
+                View Achievements
+              </button>
 
+              {/* Share Button */}
+              <ShareButton shareText={shareableStatsText} className="w-full" />
+            </div>
+          ) : null
+        }
+      >
         {/* Loading State */}
         {loading && (
           <div className="text-center py-8">
@@ -124,30 +125,10 @@ Play at tandemdaily.com
             <CrypticStatsSection stats={crypticStats} animationKey={animationKey} />
           </>
         )}
+      </LeftSidePanel>
 
-        {/* Action Buttons */}
-        {!loading && !error && (
-          <div className="mt-4 space-y-2">
-            {/* Achievements Button */}
-            <button
-              onClick={handleOpenAchievements}
-              className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all flex items-center justify-center ${
-                highContrast
-                  ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-              }`}
-            >
-              View Achievements
-            </button>
-
-            {/* Share Button */}
-            <ShareButton shareText={shareableStatsText} className="w-full" />
-          </div>
-        )}
-      </div>
-
-      {/* Achievements Modal */}
+      {/* Nested Achievements Panel - Opens over stats panel */}
       <AchievementsModal isOpen={showAchievements} onClose={handleCloseAchievements} />
-    </div>
+    </>
   );
 }

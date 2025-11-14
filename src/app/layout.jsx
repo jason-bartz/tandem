@@ -1,23 +1,39 @@
 import './globals.css';
 import '@/styles/ios-optimizations.css';
-import { Inter } from 'next/font/google';
+import localFont from 'next/font/local';
 import Script from 'next/script';
 import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
 import AuthModalManager from '@/components/auth/AuthModalManager';
 import PaywallModalManager from '@/components/PaywallModalManager';
+import FirstTimeSetupManager from '@/components/FirstTimeSetupManager';
 import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
-const inter = Inter({
-  subsets: ['latin'],
+// Plus Jakarta Sans - Variable font for optimal performance
+// Following Apple HIG: Use variable fonts when available for better scaling
+const plusJakartaSans = localFont({
+  src: [
+    {
+      path: '../../public/fonts/PlusJakartaSans-VariableFont_wght.ttf',
+      style: 'normal',
+    },
+    {
+      path: '../../public/fonts/PlusJakartaSans-Italic-VariableFont_wght.ttf',
+      style: 'italic',
+    },
+  ],
+  variable: '--font-plus-jakarta-sans',
   display: 'swap',
   preload: true,
-  fallback: ['system-ui', 'arial'],
+  // Apple HIG: Always provide system fallbacks for accessibility
+  fallback: ['-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+  // Adjust font metrics for better optical alignment (Apple HIG recommendation)
+  adjustFontFallback: 'Arial',
 });
 
 export const metadata = {
@@ -195,7 +211,7 @@ export default function RootLayout({ children }) {
           </>
         )}
       </head>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${plusJakartaSans.className} antialiased`}>
         {/* Load Cordova for iOS app - Required for cordova-plugin-purchase */}
         {process.env.BUILD_TARGET === 'capacitor' && (
           <>
@@ -210,6 +226,7 @@ export default function RootLayout({ children }) {
                 <IOSContainerWrapper>{children}</IOSContainerWrapper>
                 <AuthModalManager />
                 <PaywallModalManager />
+                <FirstTimeSetupManager />
               </SubscriptionProvider>
             </AuthProvider>
           </ThemeProvider>

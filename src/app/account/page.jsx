@@ -13,6 +13,9 @@ import Link from 'next/link';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 import PaywallModal from '@/components/PaywallModal';
 import AvatarSelectionModal from '@/components/AvatarSelectionModal';
+import HamburgerMenu from '@/components/navigation/HamburgerMenu';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
+import { validateUsername } from '@/utils/profanityFilter';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -34,6 +37,7 @@ export default function AccountPage() {
   const [usernameError, setUsernameError] = useState('');
   const [usernameSuccess, setUsernameSuccess] = useState('');
   const [loadingUsername, setLoadingUsername] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
@@ -127,11 +131,10 @@ export default function AccountPage() {
     setUsernameError('');
     setUsernameSuccess('');
 
-    // Validate username format
-    if (!/^[a-zA-Z0-9_]{3,20}$/.test(usernameInput)) {
-      setUsernameError(
-        'Username must be 3-20 characters and can only contain letters, numbers, and underscores'
-      );
+    // Validate username with comprehensive profanity filter
+    const usernameValidation = validateUsername(usernameInput);
+    if (!usernameValidation.valid) {
+      setUsernameError(usernameValidation.error);
       return;
     }
 
@@ -343,8 +346,8 @@ export default function AccountPage() {
 
   if (authLoading || (loading && user)) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-accent-blue">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
+      <div className="min-h-screen flex items-center justify-center bg-accent-yellow">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-gray-800 border-t-transparent"></div>
       </div>
     );
   }
@@ -354,37 +357,49 @@ export default function AccountPage() {
   }
 
   return (
-    <div className="min-h-screen bg-accent-blue py-8 px-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          {/* Back button */}
-          <Link
-            href="/"
-            className={`inline-block px-4 py-2 rounded-xl border-[3px] font-semibold transition-all mb-4 ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-            }`}
-          >
-            ← Back to Game
-          </Link>
-        </div>
+    <>
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+        {/* Scrollable content container */}
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
+            <div className="relative">
+              {/* Main content card */}
+              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                {/* Header with back button, title, and hamburger menu */}
+                <div className="flex items-start justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                  <Link
+                    href="/"
+                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                    aria-label="Back to game"
+                  >
+                    <svg
+                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </Link>
+                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Account</h1>
+                  <HamburgerMenu
+                    isOpen={isSidebarOpen}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  />
+                </div>
 
-        {/* Account Info Card */}
-        <div
-          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-          }`}
-        >
-          <h1 className="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">Account</h1>
-          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
+                {/* Content */}
+                <div className="p-6">
+                  <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">Profile</h2>
 
           <div className="space-y-3">
-            {/* Avatar Section - Apple HIG: 96pt large avatar for profile */}
-            <div className="flex flex-col items-center mb-4">
+            {/* Avatar Section */}
+            <div className="flex flex-col items-center mb-3">
               {!loadingAvatar ? (
                 <>
                   <button
@@ -392,7 +407,7 @@ export default function AccountPage() {
                       setShowAvatarModal(true);
                       lightTap();
                     }}
-                    className="relative w-24 h-24 rounded-2xl overflow-hidden border-[3px] border-purple-500 shadow-[4px_4px_0px_rgba(147,51,234,0.5)] mb-3 hover:scale-105 transition-transform"
+                    className="relative w-16 h-16 rounded-xl overflow-hidden border-[2px] border-purple-500 shadow-[3px_3px_0px_rgba(147,51,234,0.5)] mb-2 hover:scale-105 transition-transform"
                     aria-label={userAvatar?.selected_avatar_id ? 'Change avatar' : 'Select avatar'}
                   >
                     <Image
@@ -404,12 +419,12 @@ export default function AccountPage() {
                       alt={userAvatar?.avatar_display_name || 'Profile'}
                       fill
                       className="object-cover"
-                      sizes="96px"
+                      sizes="64px"
                       priority
                     />
                   </button>
                   {userAvatar?.avatar_display_name && (
-                    <p className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+                    <p className="text-base font-semibold text-gray-800 dark:text-gray-200 mb-1">
                       {userAvatar.avatar_display_name}
                     </p>
                   )}
@@ -418,7 +433,7 @@ export default function AccountPage() {
                       setShowAvatarModal(true);
                       lightTap();
                     }}
-                    className={`text-sm font-medium hover:underline ${
+                    className={`text-xs font-medium hover:underline ${
                       userAvatar?.selected_avatar_id ? 'text-purple-600 dark:text-purple-400' : ''
                     }`}
                   >
@@ -430,10 +445,10 @@ export default function AccountPage() {
                         setShowAvatarModal(true);
                         lightTap();
                       }}
-                      className={`py-2 px-4 rounded-xl border-[2px] font-medium text-sm transition-all mt-2 ${
+                      className={`py-1.5 px-3 rounded-lg border-[2px] font-medium text-xs transition-all mt-1 ${
                         highContrast
-                          ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                          ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                          : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       Select Your Avatar
@@ -442,8 +457,8 @@ export default function AccountPage() {
                 </>
               ) : (
                 <>
-                  <div className="w-24 h-24 rounded-2xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-3"></div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading avatar...</p>
+                  <div className="w-16 h-16 rounded-xl bg-gray-200 dark:bg-gray-700 animate-pulse mb-2"></div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Loading avatar...</p>
                 </>
               )}
             </div>
@@ -570,7 +585,7 @@ export default function AccountPage() {
 
             {/* Daily Horoscope */}
             {zodiacData && (
-              <div className="pt-2 mt-2 border-t border-gray-200 dark:border-gray-700">
+              <div className="pt-4 mt-4 pb-2 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">
                   Today&apos;s Tandem Horoscope
                 </p>
@@ -598,20 +613,9 @@ export default function AccountPage() {
               </div>
             )}
           </div>
-        </div>
 
-        {/* Subscription Card */}
-        <div
-          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-            subscription?.isActive
-              ? highContrast
-                ? 'bg-hc-surface border-hc-success'
-                : 'bg-gradient-to-br from-teal-50 to-sky-50 dark:from-teal-900/30 dark:to-sky-900/30 border-teal-500'
-              : highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-          }`}
-        >
+                  {/* Subscription Section */}
+                  <div className="pt-8 border-t-[3px] border-black dark:border-white">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Subscription</h2>
             {subscription?.isActive && (
@@ -624,7 +628,6 @@ export default function AccountPage() {
           {loading ? (
             <div className="text-center py-8">
               <div className="animate-spin rounded-full h-8 w-8 border-4 border-sky-500 border-t-transparent mx-auto"></div>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">Loading...</p>
             </div>
           ) : subscription?.isActive ? (
             <div className="space-y-4">
@@ -687,6 +690,10 @@ export default function AccountPage() {
                 You don't have an active subscription
               </p>
 
+              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3 text-center">
+                Become a Tandem Unlimited Member
+              </h3>
+
               {/* Benefits List */}
               <div className="space-y-2 mb-6">
                 <div className="flex items-start gap-2">
@@ -740,17 +747,11 @@ export default function AccountPage() {
               </button>
             </div>
           )}
-        </div>
+                  </div>
 
-        {/* Benefits Card (if subscribed) */}
+        {/* Benefits Section (if subscribed) */}
         {subscription?.isActive && (
-          <div
-            className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-              highContrast
-                ? 'bg-hc-surface border-hc-border'
-                : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-            }`}
-          >
+                  <div className="pt-6 border-t-[3px] border-black dark:border-white">
             <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-4">
               Your Benefits
             </h2>
@@ -811,14 +812,8 @@ export default function AccountPage() {
           </div>
         )}
 
-        {/* Sign Out Section */}
-        <div
-          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-          }`}
-        >
+                  {/* Sign Out Section */}
+                  <div className="pt-6 border-t-[3px] border-black dark:border-white">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-2">
             Account Actions
           </h2>
@@ -834,16 +829,10 @@ export default function AccountPage() {
           >
             Sign Out
           </button>
-        </div>
+                  </div>
 
-        {/* Danger Zone - Irreversible Actions */}
-        <div
-          className={`rounded-[32px] border-[3px] p-6 mb-6 shadow-[6px_6px_0px_rgba(0,0,0,1)] ${
-            highContrast
-              ? 'bg-hc-surface border-hc-error'
-              : 'bg-white dark:bg-gray-800 border-red-500'
-          }`}
-        >
+                  {/* Danger Zone Section */}
+                  <div className="pt-8 border-t-[3px] border-red-500">
           <h2 className="text-xl font-bold text-red-600 dark:text-red-400 mb-2">Danger Zone</h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             Irreversible account actions
@@ -860,7 +849,18 @@ export default function AccountPage() {
           >
             Delete Account
           </button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Neo-brutalist shadow element */}
+              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+            </div>
+          </div>
         </div>
+
+        {/* Sidebar Menu */}
+        <SidebarMenu isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
       </div>
 
       {/* Delete Account Modal */}
@@ -887,6 +887,6 @@ export default function AccountPage() {
         currentAvatarId={userAvatar?.selected_avatar_id}
         isFirstTime={false}
       />
-    </div>
+    </>
   );
 }

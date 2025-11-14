@@ -7,10 +7,12 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { generateRandomUsername } from '@/utils/usernameGenerator';
 import Image from 'next/image';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 /**
  * CrypticAuthModal - Specialized auth modal for Daily Cryptic
  * Explains the free daily puzzle access model and encourages sign up
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
  */
 export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
   const [mode, setMode] = useState('welcome'); // welcome, signup, login
@@ -31,8 +33,6 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
       setUsername(generateRandomUsername());
     }
   }, [mode]);
-
-  if (!isOpen) return null;
 
   const handleGenerateUsername = () => {
     setUsername(generateRandomUsername());
@@ -138,75 +138,59 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
     }
   };
 
+  // Get the title and subtitle based on mode
+  const getTitle = () => {
+    if (mode === 'welcome') return 'Play Daily Cryptic';
+    if (mode === 'signup') return 'Create Free Account';
+    return 'Welcome Back';
+  };
+
+  const getSubtitle = () => {
+    if (mode === 'welcome') return 'Create a free account to start solving!';
+    if (mode === 'signup') return 'Get started in seconds';
+    return 'Sign in to continue';
+  };
+
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+    <LeftSidePanel isOpen={isOpen} onClose={onClose} title={getTitle()} maxWidth="440px">
+      {/* Custom Header with Logo and Gradient */}
       <div
-        className={`rounded-[32px] border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,1)] max-w-md w-full overflow-hidden ${
+        className={`-mx-6 -mt-6 mb-6 border-b-[3px] p-6 ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            : 'bg-gradient-to-br from-purple-200 to-purple-300 dark:from-purple-900/30 dark:to-purple-900/10 border-gray-300 dark:border-gray-700'
         }`}
       >
-        {/* Header */}
-        <div
-          className={`border-b-[3px] p-6 ${
-            highContrast
-              ? 'bg-hc-surface border-hc-border'
-              : 'bg-gradient-to-br from-purple-200 to-purple-300 dark:from-purple-900/30 dark:to-purple-900/10 border-gray-300 dark:border-gray-700'
-          }`}
-        >
-          <div className="flex justify-end mb-4">
-            <button
-              onClick={onClose}
-              className={`w-8 h-8 rounded-xl border-[2px] text-lg font-bold transition-all ${
-                highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus'
-                  : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600'
-              }`}
-              aria-label="Close"
-            >
-              ×
-            </button>
-          </div>
-
-          <div className="text-center">
-            <img
-              src="/images/daily-cryptic-logo.webp"
-              alt="Daily Cryptic"
-              className="w-20 h-20 mx-auto mb-4 rounded-xl dark:hidden"
-            />
-            <img
-              src="/images/daily-cryptic-logo-dark.webp"
-              alt="Daily Cryptic"
-              className="w-20 h-20 mx-auto mb-4 rounded-xl hidden dark:block"
-            />
-            <h2
-              className={`text-2xl font-bold mb-2 ${
-                highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-              }`}
-            >
-              {mode === 'welcome'
-                ? 'Play Daily Cryptic'
-                : mode === 'signup'
-                  ? 'Create Free Account'
-                  : 'Welcome Back'}
-            </h2>
-            <p
-              className={`text-sm ${
-                highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
-              }`}
-            >
-              {mode === 'welcome'
-                ? 'Create a free account to start solving!'
-                : mode === 'signup'
-                  ? 'Get started in seconds'
-                  : 'Sign in to continue'}
-            </p>
-          </div>
+        <div className="text-center">
+          <img
+            src="/images/daily-cryptic-logo.webp"
+            alt="Daily Cryptic"
+            className="w-20 h-20 mx-auto mb-4 rounded-xl dark:hidden"
+          />
+          <img
+            src="/images/daily-cryptic-logo-dark.webp"
+            alt="Daily Cryptic"
+            className="w-20 h-20 mx-auto mb-4 rounded-xl hidden dark:block"
+          />
+          <h2
+            className={`text-2xl font-bold mb-2 ${
+              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
+            }`}
+          >
+            {getTitle()}
+          </h2>
+          <p
+            className={`text-sm ${
+              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+            }`}
+          >
+            {getSubtitle()}
+          </p>
         </div>
+      </div>
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
+      {/* Content */}
+      <div className="space-y-6">
           {mode === 'welcome' ? (
             <>
               {/* Benefits */}
@@ -499,8 +483,7 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
               </div>
             </>
           )}
-        </div>
       </div>
-    </div>
+    </LeftSidePanel>
   );
 }

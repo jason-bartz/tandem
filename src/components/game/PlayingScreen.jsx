@@ -9,9 +9,11 @@ import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import ArchiveCalendar from './ArchiveCalendar';
+import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import Settings from '@/components/Settings';
 import OnScreenKeyboard from './OnScreenKeyboard';
+import HamburgerMenu from '@/components/navigation/HamburgerMenu';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
@@ -58,6 +60,7 @@ export default function PlayingScreen({
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showSecondHintCelebration, setShowSecondHintCelebration] = useState(false);
   const [previousUnlockedHints, setPreviousUnlockedHints] = useState(unlockedHints);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
   const getIconPath = useUIIcon();
@@ -403,132 +406,79 @@ export default function PlayingScreen({
   };
 
   return (
-    <div
-      className="min-h-screen flex flex-col animate-slide-up overflow-y-auto"
-      style={{ WebkitOverflowScrolling: 'touch' }}
-    >
-      {/* Hint Earned Toast */}
-      <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
-
-      {/* Control buttons - Sticky to top with safe-area */}
-      <div className="sticky top-0 left-0 right-0 z-10 pt-safe bg-gradient-to-b from-accent-yellow via-accent-yellow to-transparent">
-        <div className="max-w-2xl w-full mx-auto px-4">
-          <div className="flex justify-end gap-2 mb-2 sm:mb-3 pt-4">
-            <button
-              onClick={() => {
-                lightTap();
-                setShowStats(true);
-              }}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Statistics"
-            >
-              <img src={getIconPath('stats')} alt="Statistics" className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowArchive(true);
-              }}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Archive"
-            >
-              <img src={getIconPath('archive')} alt="Archive" className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowHowToPlay(true);
-              }}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="How to Play"
-            >
-              <img src={getIconPath('how-to-play')} alt="How to Play" className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setShowSettings(true);
-              }}
-              className={`w-10 h-10 rounded-2xl border-[3px] flex items-center justify-center transition-all ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : 'bg-white dark:bg-bg-card border-border-main shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-              }`}
-              title="Settings"
-            >
-              <img src={getIconPath('settings')} alt="Settings" className="w-5 h-5" />
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Main game card */}
+    <>
       <div
-        className="flex-1 flex flex-col pb-safe"
-        style={{ paddingBottom: isMobilePhone ? '6rem' : undefined }}
+        className="min-h-screen flex flex-col animate-slide-up overflow-y-auto"
+        style={{ WebkitOverflowScrolling: 'touch', zoom: '0.85' }}
       >
-        <div className="max-w-2xl w-full h-full mx-auto flex flex-col px-4">
+        {/* Hint Earned Toast */}
+        <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
+
+        {/* Main game card */}
+      <div
+        className="flex-1 flex flex-col pb-safe pb-[200px] pt-4"
+      >
+        <div className="max-w-md w-full h-full mx-auto flex flex-col px-4">
           <div
             ref={puzzleContainerRef}
-            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col ${
+            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col relative z-20 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                 : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
-            {/* Header - logo hidden on all devices, content centered */}
+            {/* Header - back button, date, and hamburger menu in one row */}
             <div
-              className={`pt-4 pb-2 px-3 sm:px-5 text-center flex items-center justify-center flex-shrink-0 ${
+              className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
                 highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
               }`}
             >
-              <div className="text-gray-600 dark:text-gray-300 text-sm font-medium flex items-center justify-center gap-2 relative w-full">
-                <button
-                  onClick={() => {
-                    lightTap();
-                    onReturnToWelcome();
-                  }}
-                  className="absolute left-0 w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors z-10"
-                  title="Back to Home"
+              {/* Back button */}
+              <button
+                onClick={() => {
+                  lightTap();
+                  onReturnToWelcome();
+                }}
+                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                title="Back to Home"
+              >
+                <svg
+                  className="w-5 h-5 text-gray-600 dark:text-gray-300"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
-                  <svg
-                    className="w-5 h-5 text-gray-600 dark:text-gray-300"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 19l-7-7 7-7"
-                    />
-                  </svg>
-                </button>
-                <div className="flex flex-col items-center">
-                  <span>Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}</span>
-                  {isHardMode && (
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
-                        <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
-                        HARD MODE
-                      </span>
-                    </div>
-                  )}
-                </div>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+              </button>
+
+              {/* Center content - Date and Hard Mode badge */}
+              <div className="flex-1 flex flex-col items-center">
+                <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                  Daily Puzzle {puzzle?.date ? formatDateShort(puzzle.date) : ''}
+                </span>
+                {isHardMode && (
+                  <div className="flex items-center gap-2 mt-1">
+                    <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
+                      <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
+                      HARD MODE
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Hamburger menu */}
+              <div className="flex-shrink-0">
+                <HamburgerMenu
+                  isOpen={isSidebarOpen}
+                  onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                />
               </div>
             </div>
 
@@ -588,11 +538,11 @@ export default function PlayingScreen({
               </div>
             </div>
 
-            {/* Fixed Bottom Section - Action Buttons + Keyboard */}
-            <div className="flex-shrink-0 p-4 pb-2 sm:p-6 sm:pb-3">
-              <div className="max-w-lg mx-auto">
-                {/* Action Buttons - Above Keyboard - Width constrained to keyboard */}
-                <div className="flex gap-3 mb-4 relative">
+            {/* Fixed Bottom Section - Action Buttons Only */}
+            <div className="flex-shrink-0 p-4 pb-3 sm:p-6 sm:pb-4">
+              <div className="max-w-2xl mx-auto">
+                {/* Action Buttons */}
+                <div className="flex gap-3 mb-2 relative">
                   {/* Check Button - Shrinks to 0 width when celebration is active */}
                   <motion.button
                     onClick={() => {
@@ -697,7 +647,7 @@ export default function PlayingScreen({
                       >
                         {showSecondHintCelebration
                           ? "You've earned a second hint!"
-                          : `Hints (${hintsUsed}/${unlockedHints})`}
+                          : `Hints (${unlockedHints - hintsUsed})`}
                       </motion.span>
                     </motion.button>
                   )}
@@ -708,31 +658,35 @@ export default function PlayingScreen({
                   )}
                 </div>
                 {!isHardMode && unlockedHints === 1 && solved >= 1 && hintsUsed < unlockedHints && (
-                  <p className="text-xs text-center text-gray-500 dark:text-gray-400 mb-3">
+                  <p className="text-xs text-center text-gray-500 dark:text-gray-400">
                     Get 1 more correct answer to unlock another hint!
                   </p>
                 )}
-
-                {/* On-screen keyboard */}
-                <OnScreenKeyboard
-                  onKeyPress={handleKeyboardInput}
-                  disabled={solved === 4}
-                  layout={keyboardLayout}
-                  isSmallPhone={isSmallPhone}
-                  isMobilePhone={isMobilePhone}
-                />
               </div>
             </div>
           </div>
         </div>
       </div>
 
+      {/* Fixed Keyboard at Bottom - Outside Card */}
+      <div className="fixed bottom-0 left-0 right-0 pb-safe bg-bg-primary pt-3 z-10">
+        <OnScreenKeyboard
+          onKeyPress={handleKeyboardInput}
+          disabled={solved === 4}
+          layout={keyboardLayout}
+          isSmallPhone={isSmallPhone}
+          isMobilePhone={isMobilePhone}
+          checkButtonColor="#3B82F6"
+        />
+      </div>
+
       <RulesModal isOpen={showRules} onClose={() => setShowRules(false)} />
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveCalendar
+      <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
         onSelectPuzzle={onSelectPuzzle}
+        defaultTab="tandem"
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings
@@ -743,6 +697,17 @@ export default function PlayingScreen({
         }}
         openPaywall={openPaywall}
       />
-    </div>
+      </div>
+
+      {/* Sidebar Menu */}
+      <SidebarMenu
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowHowToPlay(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+    </>
   );
 }

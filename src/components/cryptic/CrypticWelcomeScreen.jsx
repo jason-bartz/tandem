@@ -3,11 +3,17 @@
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import CrypticGuideModal from './CrypticGuideModal';
-import CrypticArchiveCalendar from './CrypticArchiveCalendar';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
+import GlobalNavigation from '@/components/navigation/GlobalNavigation';
+import Settings from '@/components/Settings';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import CrypticWelcomeScreenSkeleton from '@/components/shared/CrypticWelcomeScreenSkeleton';
 
-export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDate }) {
+export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDate, loading }) {
   const [showGuide, setShowGuide] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showStats, setShowStats] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const { highContrast } = useTheme();
 
   const formatDate = (dateString) => {
@@ -20,10 +26,35 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
     });
   };
 
+  // Show skeleton while loading
+  if (loading || !puzzle) {
+    return (
+      <GlobalNavigation
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowGuide(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      >
+        <CrypticWelcomeScreenSkeleton />
+
+        {/* Modals */}
+        {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
+        <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
+        <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+        <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      </GlobalNavigation>
+    );
+  }
+
   return (
-    <>
-      <div className="min-h-screen flex flex-col items-center justify-center p-4">
-        <div className="max-w-2xl w-full">
+    <GlobalNavigation
+      onOpenStats={() => setShowStats(true)}
+      onOpenArchive={() => setShowArchive(true)}
+      onOpenHowToPlay={() => setShowGuide(true)}
+      onOpenSettings={() => setShowSettings(true)}
+    >
+      <div className="min-h-screen flex flex-col items-center justify-center p-4 -mt-16">
+        <div className="max-w-md w-full">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="mb-4">
@@ -144,11 +175,11 @@ export default function CrypticWelcomeScreen({ puzzle, onStart, currentPuzzleDat
         </div>
       </div>
 
-      {/* Guide Modal */}
+      {/* Modals */}
       {showGuide && <CrypticGuideModal onClose={() => setShowGuide(false)} />}
-
-      {/* Archive Modal */}
-      <CrypticArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
-    </>
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} defaultTab="cryptic" onSelectPuzzle={() => {}} />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+    </GlobalNavigation>
   );
 }

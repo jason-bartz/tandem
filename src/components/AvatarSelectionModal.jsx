@@ -2,8 +2,11 @@
 
 /**
  * Avatar Selection Modal
+ * NOW USES: LeftSidePanel for consistent slide-in behavior
  *
  * Modal for selecting or changing user avatar.
+ * Features nested panel for expanded avatar preview at z-70
+ *
  * Follows Apple Human Interface Guidelines:
  * - Clear visual hierarchy
  * - Consistent spacing (8pt grid)
@@ -19,6 +22,7 @@ import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import avatarService from '@/services/avatar.service';
+import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function AvatarSelectionModal({
   isOpen,
@@ -28,7 +32,6 @@ export default function AvatarSelectionModal({
   isFirstTime = false,
 }) {
   const [avatars, setAvatars] = useState([]);
-  const [selectedAvatar, setSelectedAvatar] = useState(currentAvatarId);
   const [expandedAvatar, setExpandedAvatar] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,7 +43,6 @@ export default function AvatarSelectionModal({
   useEffect(() => {
     if (isOpen) {
       loadAvatars();
-      setSelectedAvatar(currentAvatarId); // Reset selection to current
       setError(null);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -65,35 +67,18 @@ export default function AvatarSelectionModal({
   };
 
   /**
-   * Handle avatar selection
-   * @param {string} avatarId - ID of selected avatar
+   * Handle avatar card click - opens expanded bio
+   * @param {string} avatarId - ID of avatar to view
    */
-  const handleSelect = (avatarId) => {
-    setSelectedAvatar(avatarId);
-    setExpandedAvatar(null); // Collapse any expanded card
+  const handleAvatarClick = (avatarId) => {
+    setExpandedAvatar(avatarId);
     lightTap();
   };
 
   /**
-   * Toggle expanded state for avatar card
-   * @param {string} avatarId - ID of avatar to expand/collapse
+   * Confirm avatar selection and save to database (from expanded view)
    */
-  const toggleExpanded = (avatarId, e) => {
-    e.stopPropagation(); // Don't trigger selection
-    setExpandedAvatar(expandedAvatar === avatarId ? null : avatarId);
-    lightTap();
-  };
-
-  /**
-   * Confirm avatar selection and save to database
-   */
-  const handleConfirm = async () => {
-    if (!selectedAvatar) {
-      setError('Please select an avatar');
-      errorHaptic();
-      return;
-    }
-
+  const handleConfirmFromExpanded = async (avatarId) => {
     if (!userId) {
       setError('User not authenticated');
       errorHaptic();
@@ -105,13 +90,14 @@ export default function AvatarSelectionModal({
       setError(null);
 
       // Save avatar to database
-      await avatarService.updateUserAvatar(userId, selectedAvatar);
+      await avatarService.updateUserAvatar(userId, avatarId);
 
       // Avatar saved successfully
       successHaptic();
 
-      // Close modal and pass selected avatar back
-      onClose(selectedAvatar);
+      // Close both panels and pass selected avatar back
+      setExpandedAvatar(null);
+      onClose(avatarId);
     } catch (err) {
       console.error('[AvatarSelectionModal] Failed to save avatar:', err);
 
@@ -121,7 +107,8 @@ export default function AvatarSelectionModal({
         console.warn('[AvatarSelectionModal] Storage quota warning (non-critical)');
         // Still consider it a success - avatar is saved in database
         successHaptic();
-        onClose(selectedAvatar);
+        setExpandedAvatar(null);
+        onClose(avatarId);
       } else {
         // Actual error with avatar save
         setError(err.message || 'Failed to save avatar. Please try again.');
@@ -152,54 +139,22 @@ export default function AvatarSelectionModal({
     onClose(null);
   };
 
-  if (!isOpen) return null;
+  // Get expanded avatar data
+  const expandedAvatarData = expandedAvatar
+    ? avatars.find((a) => a.id === expandedAvatar)
+    : null;
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-60 animate-fadeIn"
-      onClick={handleClose}
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="avatar-modal-title"
-    >
-      <div
-        className={`rounded-[32px] border-[3px] p-6 max-w-4xl w-full max-h-[90vh] overflow-y-auto modal-scrollbar shadow-[8px_8px_0px_rgba(0,0,0,1)] ${
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-        }`}
-        onClick={(e) => e.stopPropagation()}
+    <>
+      <LeftSidePanel
+        isOpen={isOpen}
+        onClose={!isFirstTime ? handleClose : undefined}
+        title={isFirstTime ? 'Choose Your Avatar' : 'Change Your Avatar'}
+        subtitle="Select an avatar to represent you!"
+        maxWidth="650px"
       >
-        {/* Header - Apple HIG: Clear title with optional close button */}
-        <div className="mb-6 text-center">
-          <div className="flex items-center justify-between mb-2">
-            <div className="w-8" /> {/* Spacer for center alignment */}
-            <h2
-              id="avatar-modal-title"
-              className="text-3xl font-bold text-gray-800 dark:text-gray-200"
-            >
-              {isFirstTime ? 'Choose Your Avatar' : 'Change Your Avatar'}
-            </h2>
-            {!isFirstTime && (
-              <button
-                onClick={handleClose}
-                className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
-                }`}
-                aria-label="Close modal"
-              >
-                ×
-              </button>
-            )}
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
-            Select an avatar to represent you!
-          </p>
-        </div>
 
-        {/* Error Message - Apple HIG: Clear error feedback */}
+        {/* Error Message */}
         {error && (
           <div
             className={`mb-4 p-4 rounded-2xl border-[2px] ${
@@ -213,7 +168,7 @@ export default function AvatarSelectionModal({
           </div>
         )}
 
-        {/* Loading State - Apple HIG: Activity indicator */}
+        {/* Loading State */}
         {loading && (
           <div className="flex flex-col items-center justify-center py-12">
             <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mb-4"></div>
@@ -221,220 +176,85 @@ export default function AvatarSelectionModal({
           </div>
         )}
 
-        {/* Avatar Grid - Apple HIG: 8pt grid system, consistent spacing */}
+        {/* Avatar Grid */}
         {!loading && avatars.length > 0 && (
-          <>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 p-1">
               {avatars.map((avatar) => {
-                const isSelected = selectedAvatar === avatar.id;
+                const isSelected = currentAvatarId === avatar.id;
 
                 return (
-                  <div
+                  <button
                     key={avatar.id}
-                    className={`p-4 rounded-2xl border-[3px] transition-all ${
+                    onClick={() => handleAvatarClick(avatar.id)}
+                    className={`p-6 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.02] ${
                       isSelected
                         ? highContrast
                           ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                           : 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500 shadow-[6px_6px_0px_rgba(147,51,234,0.5)]'
                         : highContrast
                           ? 'bg-hc-surface border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                          : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[4px_4px_0px_rgba(0,0,0,0.3)]'
+                          : 'bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 shadow-[3px_3px_0px_rgba(0,0,0,0.2)] hover:shadow-[5px_5px_0px_rgba(0,0,0,0.3)]'
                     }`}
+                    aria-label={`View ${avatar.display_name}`}
                   >
-                    <button
-                      onClick={() => handleSelect(avatar.id)}
-                      className="w-full text-left"
-                      aria-pressed={isSelected}
-                      aria-label={`Select ${avatar.display_name}`}
-                    >
-                      <div className="flex flex-col items-center">
-                        {/* Avatar Image - Rounded corners */}
-                        <div className="relative w-20 h-20 mb-3 rounded-2xl overflow-hidden">
-                          <Image
-                            src={avatar.image_path}
-                            alt={avatar.display_name}
-                            fill
-                            className="object-cover"
-                            sizes="80px"
-                            priority={avatar.sort_order <= 4}
-                          />
-                        </div>
-
-                        {/* Avatar Name - Apple HIG: Clear hierarchy */}
-                        <h3
-                          className={`font-bold text-lg mb-1 ${
-                            isSelected
-                              ? highContrast
-                                ? 'text-white'
-                                : 'text-purple-700 dark:text-purple-300'
-                              : 'text-gray-800 dark:text-gray-200'
-                          }`}
-                        >
-                          {avatar.display_name}
-                        </h3>
-
-                        {/* Avatar Bio - Truncated */}
-                        <p
-                          className={`text-xs text-center line-clamp-3 ${
-                            isSelected
-                              ? highContrast
-                                ? 'text-white/90'
-                                : 'text-purple-900 dark:text-purple-200'
-                              : 'text-gray-600 dark:text-gray-400'
-                          }`}
-                        >
-                          {avatar.bio}
-                        </p>
-
-                        {/* Selection Indicator - Apple HIG: Clear visual feedback */}
-                        {isSelected && (
-                          <div className="mt-2">
-                            <div
-                              className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
-                                highContrast
-                                  ? 'bg-white text-hc-primary'
-                                  : 'bg-purple-500 text-white'
-                              }`}
-                            >
-                              <span className="text-xs font-bold">✓ Selected</span>
-                            </div>
-                          </div>
-                        )}
+                    <div className="flex flex-col items-center">
+                      {/* Avatar Image - Rounded corners */}
+                      <div className="relative w-24 h-24 mb-4 rounded-2xl overflow-hidden">
+                        <Image
+                          src={avatar.image_path}
+                          alt={avatar.display_name}
+                          fill
+                          className="object-cover"
+                          sizes="96px"
+                          priority={avatar.sort_order <= 4}
+                        />
                       </div>
-                    </button>
 
-                    {/* Expand/Collapse Button */}
-                    <button
-                      onClick={(e) => toggleExpanded(avatar.id, e)}
-                      className={`w-full mt-2 text-xs font-medium ${
-                        isSelected
-                          ? 'text-purple-700 dark:text-purple-300'
-                          : 'text-sky-600 dark:text-sky-400'
-                      } hover:underline`}
-                      aria-label="Show full bio"
-                    >
-                      ▼ Full bio
-                    </button>
-                  </div>
+                      {/* Avatar Name - Apple HIG: Clear hierarchy */}
+                      <h3
+                        className={`font-bold text-lg mb-2 ${
+                          isSelected
+                            ? highContrast
+                              ? 'text-white'
+                              : 'text-purple-700 dark:text-purple-300'
+                            : 'text-gray-800 dark:text-gray-200'
+                        }`}
+                      >
+                        {avatar.display_name}
+                      </h3>
+
+                      {/* Avatar Bio - Truncated */}
+                      <p
+                        className={`text-xs text-center line-clamp-3 ${
+                          isSelected
+                            ? highContrast
+                              ? 'text-white/90'
+                              : 'text-purple-900 dark:text-purple-200'
+                            : 'text-gray-600 dark:text-gray-400'
+                        }`}
+                      >
+                        {avatar.bio}
+                      </p>
+
+                      {/* Selection Indicator - Apple HIG: Clear visual feedback */}
+                      {isSelected && (
+                        <div className="mt-3">
+                          <div
+                            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full border-2 ${
+                              highContrast
+                                ? 'bg-white text-hc-primary border-hc-primary'
+                                : 'bg-purple-500 text-white border-purple-600'
+                            }`}
+                          >
+                            <span className="text-xs font-bold">✓ Current</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </button>
                 );
               })}
-            </div>
-
-            {/* Expanded Avatar Popup Overlay */}
-            {expandedAvatar && (
-              <div
-                className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black bg-opacity-60 animate-fadeIn"
-                onClick={() => setExpandedAvatar(null)}
-                role="dialog"
-                aria-modal="true"
-                aria-labelledby="expanded-avatar-title"
-              >
-                <div
-                  className={`rounded-[32px] border-[3px] p-6 max-w-md w-full shadow-[8px_8px_0px_rgba(0,0,0,1)] animate-scaleIn ${
-                    highContrast
-                      ? 'bg-hc-surface border-hc-border'
-                      : selectedAvatar === expandedAvatar
-                        ? 'bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40 border-purple-500'
-                        : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600'
-                  }`}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {(() => {
-                    const avatar = avatars.find((a) => a.id === expandedAvatar);
-                    if (!avatar) return null;
-                    const isSelected = selectedAvatar === avatar.id;
-
-                    return (
-                      <>
-                        {/* Close button */}
-                        <div className="flex justify-end mb-2">
-                          <button
-                            onClick={() => setExpandedAvatar(null)}
-                            className={`w-8 h-8 rounded-xl border-[2px] text-lg cursor-pointer transition-all flex items-center justify-center ${
-                              highContrast
-                                ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white font-bold shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                                : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
-                            }`}
-                            aria-label="Close"
-                          >
-                            ×
-                          </button>
-                        </div>
-
-                        {/* Avatar content */}
-                        <div className="flex flex-col items-center text-center">
-                          {/* Avatar Image */}
-                          <div className="relative w-32 h-32 mb-4 rounded-2xl overflow-hidden">
-                            <Image
-                              src={avatar.image_path}
-                              alt={avatar.display_name}
-                              fill
-                              className="object-cover"
-                              sizes="128px"
-                            />
-                          </div>
-
-                          {/* Avatar Name */}
-                          <h3
-                            id="expanded-avatar-title"
-                            className={`font-bold text-2xl mb-3 ${
-                              isSelected
-                                ? highContrast
-                                  ? 'text-white'
-                                  : 'text-purple-700 dark:text-purple-300'
-                                : 'text-gray-800 dark:text-gray-200'
-                            }`}
-                          >
-                            {avatar.display_name}
-                          </h3>
-
-                          {/* Full Bio */}
-                          <p
-                            className={`text-sm mb-4 ${
-                              isSelected
-                                ? highContrast
-                                  ? 'text-white/90'
-                                  : 'text-purple-900 dark:text-purple-200'
-                                : 'text-gray-600 dark:text-gray-400'
-                            }`}
-                          >
-                            {avatar.bio}
-                          </p>
-
-                          {/* Selection Indicator or Select Button */}
-                          {isSelected ? (
-                            <div
-                              className={`inline-flex items-center gap-1 px-3 py-2 rounded-full ${
-                                highContrast
-                                  ? 'bg-white text-hc-primary'
-                                  : 'bg-purple-500 text-white'
-                              }`}
-                            >
-                              <span className="text-sm font-bold">✓ Selected</span>
-                            </div>
-                          ) : (
-                            <button
-                              onClick={() => {
-                                handleSelect(avatar.id);
-                                setExpandedAvatar(null);
-                              }}
-                              className={`py-2 px-6 rounded-xl border-[3px] font-semibold transition-all ${
-                                highContrast
-                                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                              }`}
-                            >
-                              Select {avatar.display_name}
-                            </button>
-                          )}
-                        </div>
-                      </>
-                    );
-                  })()}
-                </div>
-              </div>
-            )}
-          </>
+          </div>
         )}
 
         {/* Empty State */}
@@ -453,16 +273,29 @@ export default function AvatarSelectionModal({
             </button>
           </div>
         )}
+      </LeftSidePanel>
 
-        {/* Action Buttons - Apple HIG: Primary and secondary actions */}
-        {!loading && avatars.length > 0 && (
-          <div className="flex gap-3 pt-2">
-            {/* Skip Button (First-time only) - Apple HIG: Secondary action on left */}
-            {isFirstTime && (
+      {/* Nested Panel - Avatar Detail Preview at z-70 */}
+      {expandedAvatarData && (
+        <LeftSidePanel
+          isOpen={!!expandedAvatar}
+          onClose={() => {
+            setExpandedAvatar(null);
+            lightTap();
+          }}
+          title={expandedAvatarData.display_name}
+          maxWidth="500px"
+          zIndex={70}
+          footer={
+            <div className="flex gap-4">
+              {/* Close Button */}
               <button
-                onClick={handleSkip}
+                onClick={() => {
+                  setExpandedAvatar(null);
+                  lightTap();
+                }}
                 disabled={saving}
-                className={`flex-1 py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
+                className={`flex-1 py-4 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
                   saving ? 'opacity-50 cursor-not-allowed' : ''
                 } ${
                   highContrast
@@ -470,34 +303,58 @@ export default function AvatarSelectionModal({
                     : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 }`}
               >
-                Skip for Now
+                Close
               </button>
-            )}
 
-            {/* Confirm Button - Apple HIG: Primary action on right */}
-            <button
-              onClick={handleConfirm}
-              disabled={!selectedAvatar || saving}
-              className={`flex-1 py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all ${
-                !selectedAvatar || saving ? 'opacity-50 cursor-not-allowed' : ''
-              } ${
+              {/* Confirm Button */}
+              <button
+                onClick={() => handleConfirmFromExpanded(expandedAvatarData.id)}
+                disabled={saving}
+                className={`flex-1 py-4 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+                  saving ? 'opacity-50 cursor-not-allowed' : ''
+                } ${
+                  highContrast
+                    ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                }`}
+              >
+                {saving ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+                    Saving...
+                  </span>
+                ) : (
+                  'Confirm'
+                )}
+              </button>
+            </div>
+          }
+        >
+          <div className="flex flex-col items-center text-center px-4 py-6">
+            {/* Avatar Image */}
+            <div className="relative w-48 h-48 mb-8 rounded-3xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,0.2)]">
+              <Image
+                src={expandedAvatarData.image_path}
+                alt={expandedAvatarData.display_name}
+                fill
+                className="object-cover"
+                sizes="192px"
+              />
+            </div>
+
+            {/* Full Bio */}
+            <div
+              className={`text-lg leading-relaxed max-w-md ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  ? 'text-hc-text'
+                  : 'text-gray-700 dark:text-gray-300'
               }`}
             >
-              {saving ? (
-                <span className="flex items-center justify-center gap-2">
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                  Saving...
-                </span>
-              ) : (
-                'Confirm'
-              )}
-            </button>
+              {expandedAvatarData.bio}
+            </div>
           </div>
-        )}
-      </div>
-    </div>
+        </LeftSidePanel>
+      )}
+    </>
   );
 }

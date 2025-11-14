@@ -1,18 +1,31 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 import Image from 'next/image';
+import HamburgerMenu from '@/components/navigation/HamburgerMenu';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
+import SupportPageSkeleton from '@/components/shared/SupportPageSkeleton';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
+import HowToPlayModal from '@/components/game/HowToPlayModal';
+import Settings from '@/components/Settings';
 
 export default function Support() {
   const { theme } = useTheme();
   const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
   const [activeSection, setActiveSection] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showStats, setShowStats] = useState(false);
+  const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const tandemIcon = theme === 'dark' ? '/icons/ui/emoji-inter-dark.png' : '/icons/ui/emoji-inter.png';
 
-  // Tandem Daily sections
+  // Daily Tandem sections
   const tandemSections = [
     {
       id: 'getting-started',
@@ -750,7 +763,7 @@ export default function Support() {
             <h4 className="font-semibold mb-2">When Contacting Support</h4>
             <p className="text-sm mb-2">Please include:</p>
             <ul className="list-disc list-inside text-sm space-y-1">
-              <li>Which game (Tandem Daily or Daily Cryptic)</li>
+              <li>Which game (Daily Tandem or Daily Cryptic)</li>
               <li>Platform (iOS app or PWA)</li>
               <li>Device type and operating system</li>
               <li>App version (iOS) or browser name and version (PWA)</li>
@@ -798,39 +811,58 @@ export default function Support() {
     ? [...tandemSections, ...sharedSections]
     : [...crypticSections, ...sharedSections];
 
-  return (
-    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
-      {/* Scrollable content container */}
-      <div className="min-h-screen flex items-center justify-center py-6">
-        <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
-          {/* Back to game link */}
-          <Link
-            href="/"
-            className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span className="text-sm font-medium">Back to Game</span>
-          </Link>
+  // Simulate initial loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-          {/* Main content card */}
-          <div className="relative">
-            <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
-              {/* Header */}
-              <div className="bg-[#38b6ff] border-b-[3px] border-black dark:border-white p-6 text-black">
-                <h1 className="text-3xl font-bold mb-2">Support & Help</h1>
-                <p className="text-black/80 text-sm mb-4">
-                  Welcome! We're here to help you enjoy your puzzle experience.
-                </p>
+  return (
+    <>
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+        {/* Scrollable content container */}
+        <div className="min-h-screen flex items-center justify-center py-6">
+          <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
+            {/* Show skeleton while loading */}
+            {isLoading ? (
+              <SupportPageSkeleton />
+            ) : (
+              <div className="relative">
+                {/* Main content card */}
+                <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                  {/* Header with back button, title, and hamburger menu */}
+                <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
+                  <Link
+                    href="/"
+                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                    aria-label="Back to game"
+                  >
+                    <svg
+                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
+                    </svg>
+                  </Link>
+                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">Support & Help</h1>
+                  <HamburgerMenu
+                    isOpen={isSidebarOpen}
+                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                  />
+                </div>
 
                 {/* Game Toggle */}
-                <div className="flex gap-2">
+                <div className="p-6 pb-4">
+                  <div className="flex gap-2">
                   <button
                     onClick={() => {
                       setActiveGame('tandem');
@@ -845,12 +877,12 @@ export default function Support() {
                     <div className="flex items-center justify-center gap-2">
                       <Image
                         src={tandemIcon}
-                        alt="Tandem Daily"
+                        alt="Daily Tandem"
                         width={24}
                         height={24}
                         className="w-6 h-6"
                       />
-                      <span>Tandem Daily</span>
+                      <span>Daily Tandem</span>
                     </div>
                   </button>
                   <button
@@ -879,7 +911,7 @@ export default function Support() {
               </div>
 
               {/* Content */}
-              <div className="p-6">
+              <div className="p-6 pt-0">
                 <div className="space-y-2">
                   {currentSections.map((section) => (
                     <div
@@ -946,12 +978,29 @@ export default function Support() {
                 </div>
               </div>
             </div>
-            {/* Faux drop shadow */}
-            <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+              {/* Faux drop shadow */}
+              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+            </div>
+            )}
           </div>
-
         </div>
       </div>
-    </div>
+
+      {/* Sidebar Menu */}
+      <SidebarMenu
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowHowToPlay(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      {/* Modals */}
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+    </>
   );
 }
