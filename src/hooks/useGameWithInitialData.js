@@ -104,7 +104,9 @@ export function useGameWithInitialData(initialPuzzleData) {
 
       // Check if puzzle was already completed (unless forcing replay)
       if (!forceReplay && identifier) {
-        console.log('[useGameWithInitialData] Checking for completed puzzle:', { date: identifier });
+        console.log('[useGameWithInitialData] Checking for completed puzzle:', {
+          date: identifier,
+        });
         const existingResult = await getPuzzleResult(identifier);
         console.log('[useGameWithInitialData] Existing result:', existingResult);
 
@@ -141,7 +143,9 @@ export function useGameWithInitialData(initialPuzzleData) {
         // Update current puzzle date from response
         setCurrentPuzzleDate(response.date);
         setPuzzle(puzzleWithData);
-        setGameState(GAME_STATES.WELCOME);
+        // Archive puzzles should start immediately in PLAYING mode
+        // Today's puzzle shows WELCOME screen
+        setGameState(isArchive ? GAME_STATES.PLAYING : GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
         setCheckedWrongAnswers([false, false, false, false]);
@@ -161,7 +165,9 @@ export function useGameWithInitialData(initialPuzzleData) {
           setCurrentPuzzleDate(response.date);
         }
         setPuzzle(response);
-        setGameState(GAME_STATES.WELCOME);
+        // Archive puzzles should start immediately in PLAYING mode
+        // Today's puzzle shows WELCOME screen
+        setGameState(isArchive ? GAME_STATES.PLAYING : GAME_STATES.WELCOME);
         setAnswers(['', '', '', '']);
         setCorrectAnswers([false, false, false, false]);
         setCheckedWrongAnswers([false, false, false, false]);
@@ -799,7 +805,7 @@ export function useGameWithInitialData(initialPuzzleData) {
     console.log('[useGameWithInitialData.returnToWelcome] Called, isArchiveGame:', isArchiveGame);
     // If we were playing an archive game, reload today's puzzle
     if (isArchiveGame) {
-      console.log('[useGameWithInitialData.returnToWelcome] Loading today\'s puzzle');
+      console.log("[useGameWithInitialData.returnToWelcome] Loading today's puzzle");
       loadPuzzle(null); // Load today's puzzle
     } else {
       // Just return to welcome screen
