@@ -167,7 +167,7 @@ export default function AvatarSelectionModal({
 
         {/* Avatar Grid */}
         {!loading && avatars.length > 0 && (
-          <div className="grid grid-cols-3 gap-3 p-1">
+          <div className="grid grid-cols-3 gap-4 p-2">
             {avatars.map((avatar) => {
               const isSelected = currentAvatarId === avatar.id;
 
@@ -175,7 +175,7 @@ export default function AvatarSelectionModal({
                 <button
                   key={avatar.id}
                   onClick={() => handleAvatarClick(avatar.id)}
-                  className={`p-3 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.02] aspect-square ${
+                  className={`py-5 px-4 rounded-2xl border-[3px] transition-all cursor-pointer hover:scale-[1.02] ${
                     isSelected
                       ? highContrast
                         ? 'bg-hc-primary border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
@@ -186,9 +186,9 @@ export default function AvatarSelectionModal({
                   }`}
                   aria-label={`View ${avatar.display_name}`}
                 >
-                  <div className="flex flex-col items-center justify-center h-full">
-                    {/* Avatar Image - Rounded corners */}
-                    <div className="relative w-20 h-20 mb-1 rounded-2xl overflow-hidden flex-shrink-0">
+                  <div className="flex flex-col items-center justify-center gap-3">
+                    {/* Avatar Image - Rounded corners with border and shadow */}
+                    <div className="relative w-20 h-20 rounded-2xl overflow-hidden flex-shrink-0 border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                       <Image
                         src={avatar.image_path}
                         alt={avatar.display_name}
@@ -276,7 +276,7 @@ export default function AvatarSelectionModal({
                 } ${
                   highContrast
                     ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    : 'bg-purple-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 }`}
               >
                 {saving ? (
@@ -293,7 +293,7 @@ export default function AvatarSelectionModal({
         >
           <div className="flex flex-col items-center text-center px-4 py-6">
             {/* Avatar Image */}
-            <div className="relative w-48 h-48 mb-8 rounded-3xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,0.2)]">
+            <div className="relative w-48 h-48 mb-8 rounded-3xl overflow-hidden border-[3px] border-black dark:border-white shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,1)]">
               <Image
                 src={expandedAvatarData.image_path}
                 alt={expandedAvatarData.display_name}
