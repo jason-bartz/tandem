@@ -1,14 +1,19 @@
+-- Add has_completed_first_time_setup column if it doesn't exist
+ALTER TABLE public.users
+ADD COLUMN IF NOT EXISTS has_completed_first_time_setup BOOLEAN DEFAULT FALSE;
+
 -- Create function to auto-create user profile when new auth user is created
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, created_at, updated_at)
+  INSERT INTO public.users (id, email, username, created_at, updated_at, has_completed_first_time_setup)
   VALUES (
     NEW.id,
     NEW.email,
     COALESCE(NEW.raw_user_meta_data->>'username', NULL),
     NOW(),
-    NOW()
+    NOW(),
+    FALSE
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
