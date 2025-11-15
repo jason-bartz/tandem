@@ -27,7 +27,7 @@ import avatarService from '@/services/avatar.service';
 
 export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
   const { refreshProfile } = useAuth();
-  const [showAvatarSelection, setShowAvatarSelection] = useState(true); // Start with avatar selection open
+  const [showAvatarSelection, setShowAvatarSelection] = useState(false); // Start with welcome screen
   const { highContrast } = useTheme();
   const { lightTap, correctAnswer: successHaptic } = useHaptics();
 
