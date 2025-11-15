@@ -16,7 +16,6 @@ export function getPuzzleNumber(targetDate = null) {
   const start = new Date('2025-08-16');
   const target = targetDate ? new Date(targetDate) : new Date();
 
-  // Calculate difference in days
   const diffTime = target - start;
   const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
@@ -25,7 +24,6 @@ export function getPuzzleNumber(targetDate = null) {
 }
 
 export function getCurrentPuzzleInfo() {
-  // Get current date in user's LOCAL timezone (following Wordle's approach)
   // This ensures puzzles change at midnight in the user's timezone, not at a fixed time
   const now = new Date();
 
@@ -67,7 +65,6 @@ export function getPuzzleInfoForDate(date) {
 }
 
 export function formatDateShort(dateString) {
-  // Convert date string to M/D/YY format
   const date = new Date(dateString + 'T00:00:00');
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -87,28 +84,11 @@ export function generateShareText(
   hardModeTimeUp = false,
   difficultyRating = null
 ) {
-  // Debug logging
-  console.log('[generateShareText] Called with:', {
-    puzzleDate,
-    timeInSeconds,
-    mistakes,
-    hintsUsed: _hintsUsed,
-    hintPositions,
-    hintPositionsType: Array.isArray(hintPositions) ? 'array' : typeof hintPositions,
-    hintPositionsLength: hintPositions?.length,
-    solved,
-    isHardMode,
-    hardModeTimeUp,
-  });
-
-  // Format time as M:SS
   const formattedTime = formatTime(timeInSeconds);
   const formattedDate = formatDateShort(puzzleDate);
 
-  // Build the header
   let shareText = `Daily Puzzle ${formattedDate}\n`;
 
-  // Add hard mode indicator if applicable
   if (isHardMode) {
     if (hardModeTimeUp) {
       shareText += `🔥 HARD MODE - Time's Up!\n`;
@@ -117,21 +97,18 @@ export function generateShareText(
     }
   }
 
-  // Add status instead of theme
   if (solved === 4) {
     shareText += `🔍 Theme Discovered!\n`;
   } else {
     shareText += `❓ Theme Hidden\n`;
   }
 
-  // Add difficulty rating if available
   if (difficultyRating) {
     shareText += `⭐ Difficulty: ${difficultyRating}\n`;
   }
 
   shareText += `━━━━━━━━━━━━\n`;
 
-  // Build the stats line
   shareText += `⏱️ ${formattedTime}`;
   if (isHardMode) {
     shareText += '/2:00';
@@ -139,36 +116,24 @@ export function generateShareText(
   shareText += ` | ❌ ${mistakes}/4`;
   shareText += `\n\n`;
 
-  // Build emoji representation of puzzle completion
-  // Show solved puzzles with 🔷 or 💡 (if hint was used), unsolved with ⬜
-  // In hard mode, use different emoji
   const puzzleEmojis = [];
-  console.log('[generateShareText] Building emoji grid, checking hintPositions:', hintPositions);
 
   for (let i = 0; i < 4; i++) {
     if (i < solved) {
       const hasHint = hintPositions.includes(i);
-      console.log(
-        `[generateShareText] Puzzle ${i}: solved=${i < solved}, hasHint=${hasHint}, hintPositions.includes(${i})=${hasHint}`
-      );
 
       if (hasHint) {
         puzzleEmojis.push('💡');
-        console.log(`[generateShareText] Puzzle ${i}: Adding 💡 (hint used)`);
       } else if (isHardMode && solved === 4) {
-        puzzleEmojis.push('🔥'); // Fire emoji for hard mode completion
-        console.log(`[generateShareText] Puzzle ${i}: Adding 🔥 (hard mode)`);
+        puzzleEmojis.push('🔥');
       } else {
         puzzleEmojis.push('🔷');
-        console.log(`[generateShareText] Puzzle ${i}: Adding 🔷 (no hint)`);
       }
     } else {
       puzzleEmojis.push('⬜');
-      console.log(`[generateShareText] Puzzle ${i}: Adding ⬜ (unsolved)`);
     }
   }
 
-  console.log('[generateShareText] Final emoji array:', puzzleEmojis);
   shareText += puzzleEmojis.join(' ');
 
   shareText += '\n\n#TandemPuzzle';
@@ -231,7 +196,6 @@ export function sanitizeInput(input) {
     .replace(/[^A-Z\s]/g, '');
 }
 
-// Version of sanitizeInput that preserves spaces for position-based input (locked letters)
 export function sanitizeInputPreserveSpaces(input) {
   return input.toUpperCase().replace(/[^A-Z\s]/g, '');
 }
@@ -249,7 +213,6 @@ export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
       return true;
     }
 
-    // Check if user answer is the plural of correct answer
     if (user === correct + 'S') {
       return true;
     }
@@ -257,7 +220,6 @@ export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
       return true;
     }
 
-    // Check if correct answer is the plural of user answer
     if (correct === user + 'S') {
       return true;
     }
@@ -265,7 +227,6 @@ export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
       return true;
     }
 
-    // Handle special cases for words ending in Y (e.g., PIRACY -> PIRACIES)
     if (correct.endsWith('Y') && user === correct.slice(0, -1) + 'IES') {
       return true;
     }
@@ -273,7 +234,6 @@ export function checkAnswerWithPlurals(userAnswer, correctAnswer) {
       return true;
     }
 
-    // Handle words ending in F/FE (e.g., THIEF -> THIEVES, KNIFE -> KNIVES)
     if (correct.endsWith('F') && user === correct.slice(0, -1) + 'VES') {
       return true;
     }
@@ -373,17 +333,13 @@ export function getRandomCongratulation() {
 }
 
 export function getCorrectPositions(userAnswer, correctAnswer) {
-  // Returns an object mapping positions to correct letters
-  // Example: { 0: 'P', 2: 'L' } means position 0 has 'P' and position 2 has 'L'
   if (!userAnswer || !correctAnswer) {
     return null;
   }
 
   const user = userAnswer.trim().toUpperCase();
-  // Handle multiple acceptable answers (comma-separated)
   const acceptableAnswers = correctAnswer.split(',').map((ans) => ans.trim().toUpperCase());
 
-  // Find the best matching answer (one with most position matches)
   let bestMatches = null;
   let maxMatches = 0;
 
@@ -391,7 +347,6 @@ export function getCorrectPositions(userAnswer, correctAnswer) {
     const matches = {};
     let matchCount = 0;
 
-    // Compare position by position
     const minLength = Math.min(user.length, correct.length);
     for (let i = 0; i < minLength; i++) {
       if (user[i] === correct[i] && user[i] !== ' ') {
@@ -400,13 +355,11 @@ export function getCorrectPositions(userAnswer, correctAnswer) {
       }
     }
 
-    // Keep track of the answer with most matches
     if (matchCount > maxMatches) {
       maxMatches = matchCount;
       bestMatches = matches;
     }
   }
 
-  // Return null if no positions match, otherwise return the matches object
   return maxMatches > 0 ? bestMatches : null;
 }

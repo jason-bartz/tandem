@@ -43,12 +43,10 @@ export default function AuthModal({
   const { signUp, signIn, signInWithApple, resetPassword } = useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
 
-  // Update mode when initialMode prop changes
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
 
-  // Update message when initialMessage prop changes
   useEffect(() => {
     if (initialMessage) {
       if (initialMessageType === 'error') {
@@ -184,7 +182,11 @@ export default function AuthModal({
   };
 
   const panelTitle =
-    mode === 'signup' ? 'Create Your Account' : mode === 'reset' ? 'Reset Password' : 'Welcome Back';
+    mode === 'signup'
+      ? 'Create Your Account'
+      : mode === 'reset'
+        ? 'Reset Password'
+        : 'Welcome Back';
 
   return (
     <LeftSidePanel
@@ -279,7 +281,6 @@ export default function AuthModal({
                 id="username"
                 value={username}
                 onChange={(e) => {
-                  // Only allow alphanumeric and underscore
                   const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
                   setUsername(sanitized);
                 }}

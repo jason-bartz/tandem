@@ -12,7 +12,6 @@ export function useDebouncedCallback(callback, delay) {
   const timeoutRef = useRef(null);
   const callbackRef = useRef(callback);
 
-  // Update callback ref when callback changes
   useEffect(() => {
     callbackRef.current = callback;
   }, [callback]);
@@ -107,7 +106,6 @@ export function useLazyValue(computeFn, deps = []) {
   const depsRef = useRef(deps);
   const isComputedRef = useRef(false);
 
-  // Check if deps changed
   const depsChanged =
     deps.length !== depsRef.current.length || deps.some((dep, i) => dep !== depsRef.current[i]);
 

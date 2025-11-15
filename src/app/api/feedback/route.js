@@ -12,6 +12,85 @@ import { createFeedbackEntry } from '@/lib/db';
 import { FEEDBACK_STATUS } from '@/lib/constants';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 import logger from '@/lib/logger';
+import { sendEmail } from '@/lib/email/emailService';
+import { generateFeedbackNotificationEmail } from '@/lib/email/templates/feedbackNotification';
+
+/**
+ * Send feedback notification email to admin
+ * This function is called asynchronously and should not throw errors
+ * @param {Object} feedback - Feedback entry data
+ */
+async function sendFeedbackNotificationEmail(feedback) {
+  try {
+    // Get notification recipient from environment variable
+    const notificationEmail = process.env.FEEDBACK_NOTIFICATION_EMAIL;
+
+    if (!notificationEmail) {
+      logger.warn('FEEDBACK_NOTIFICATION_EMAIL not configured - skipping email notification', {
+        feedbackId: feedback.id,
+      });
+      return;
+    }
+
+    // Validate email address format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(notificationEmail)) {
+      logger.error('Invalid FEEDBACK_NOTIFICATION_EMAIL format', {
+        feedbackId: feedback.id,
+      });
+      return;
+    }
+
+    // Generate email content
+    const htmlContent = generateFeedbackNotificationEmail({
+      category: feedback.category,
+      message: feedback.message,
+      email: feedback.email,
+      username: feedback.username,
+      allowContact: feedback.allowContact,
+      platform: feedback.platform,
+      userAgent: feedback.userAgent,
+      createdAt: feedback.createdAt,
+    });
+
+    // Prepare sender email (use verified domain)
+    // Note: Update this to your verified domain in Resend
+    const fromEmail = process.env.FEEDBACK_FROM_EMAIL || 'notifications@tandemdaily.com';
+
+    // Send email notification
+    const result = await sendEmail({
+      from: `Tandem Feedback <${fromEmail}>`,
+      to: notificationEmail,
+      subject: `New ${feedback.category} - Tandem Feedback`,
+      html: htmlContent,
+      replyTo: feedback.allowContact ? feedback.email : undefined,
+      metadata: {
+        feedbackId: feedback.id,
+        category: feedback.category,
+        platform: feedback.platform,
+      },
+    });
+
+    if (result.success) {
+      logger.info('Feedback notification email sent successfully', {
+        feedbackId: feedback.id,
+        emailId: result.data?.id,
+      });
+    } else {
+      logger.error('Failed to send feedback notification email', {
+        feedbackId: feedback.id,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    // This catch block should never throw - just log the error
+    logger.error('Unexpected error in sendFeedbackNotificationEmail', {
+      feedbackId: feedback?.id,
+      error: error.message,
+      stack: error.stack,
+    });
+  }
+}
 
 export async function POST(request) {
   try {
@@ -20,11 +99,9 @@ export async function POST(request) {
       return rateLimitResponse;
     }
 
-    console.log('[Feedback API] Checking auth...');
     const { user, response } = await requireAuth(request);
-    console.log('[Feedback API] Auth result:', { hasUser: !!user, userId: user?.id });
+
     if (!user) {
-      console.log('[Feedback API] No user, returning auth error response');
       return response;
     }
 
@@ -50,6 +127,16 @@ export async function POST(request) {
     };
 
     const createdEntry = await createFeedbackEntry(entry);
+
+    // Send email notification asynchronously (don't block response)
+    // We intentionally don't await this to avoid delaying the user's response
+    sendFeedbackNotificationEmail(createdEntry).catch((emailError) => {
+      // Log email errors but don't fail the request
+      logger.error('Failed to send feedback notification email', {
+        feedbackId: createdEntry.id,
+        error: emailError.message,
+      });
+    });
 
     return NextResponse.json({ success: true, feedback: createdEntry });
   } catch (error) {

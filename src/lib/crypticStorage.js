@@ -311,7 +311,6 @@ export async function loadCrypticPuzzleProgress(date) {
               return localProgress;
             }
           } else if (cloudProgress) {
-            // Only cloud exists, save locally and return it
             await setCrypticStorageItem(key, JSON.stringify(cloudProgress));
             logger.info('[CrypticStorage] Using cloud progress (only source)', { date });
             return cloudProgress;
@@ -382,7 +381,7 @@ export async function saveCrypticStats(stats, skipCloudSync = false, skipDatabas
           const dbStats = await saveUserCrypticStatsToDatabase(stats);
           if (dbStats) {
             logger.info('[CrypticStorage] Stats synced to database:', dbStats);
-            // Update local storage with merged stats from database
+
             await setCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STATS, JSON.stringify(dbStats));
             return dbStats;
           }
@@ -508,7 +507,6 @@ export async function loadCrypticStats() {
       logger.info('[CrypticStorage] User not authenticated, skipping database sync');
     }
 
-    // Auto-sync with CloudKit on load if available (iOS only)
     if (cloudKitService.isSyncAvailable()) {
       try {
         const cloudStats = await cloudKitService.fetchStats();
@@ -577,18 +575,14 @@ export async function updateCrypticStatsAfterCompletion(
         isArchive: isArchive, // Track if this was an archive puzzle
       };
 
-      // Update total completed
       stats.totalCompleted = Object.keys(stats.completedPuzzles).length;
 
-      // Update perfect solves
       if (hintsUsed === 0) {
         stats.perfectSolves = (stats.perfectSolves || 0) + 1;
       }
 
-      // Update total hints used
       stats.totalHintsUsed = (stats.totalHintsUsed || 0) + hintsUsed;
 
-      // Calculate average time
       const times = Object.values(stats.completedPuzzles)
         .map((p) => p.timeTaken)
         .filter((t) => t && t > 0);
@@ -600,7 +594,6 @@ export async function updateCrypticStatsAfterCompletion(
     // CRITICAL: Only update streak for first-attempt daily puzzle completions
     // This matches Tandem Daily's streak logic
     if (isFirstAttempt && !isArchive) {
-      // Calculate current streak (only from daily puzzles)
       stats.currentStreak = calculateCrypticStreak(stats.completedPuzzles);
       stats.longestStreak = Math.max(stats.longestStreak || 0, stats.currentStreak);
 
@@ -657,7 +650,6 @@ export function calculateCrypticStreak(completedPuzzles) {
     const today = puzzleInfo.isoDate;
     const dates = Object.keys(dailyPuzzles).sort().reverse();
 
-    // Check if today or yesterday is included (streak is alive)
     const todayDate = new Date(today);
     const yesterdayDate = new Date(todayDate);
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -746,7 +738,6 @@ export function mergeCrypticStats(localStats, cloudStats) {
     }
   });
 
-  // Calculate derived stats from merged puzzles
   const totalCompleted = Object.keys(mergedPuzzles).length;
   const perfectSolves = Object.values(mergedPuzzles).filter((p) => p.hintsUsed === 0).length;
   const totalHintsUsed = Object.values(mergedPuzzles).reduce(
@@ -760,7 +751,6 @@ export function mergeCrypticStats(localStats, cloudStats) {
   const averageTime =
     times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
 
-  // Calculate streak from merged puzzles
   const currentStreak = calculateCrypticStreak(mergedPuzzles);
   const longestStreak = Math.max(
     localStats.longestStreak || 0,
@@ -802,7 +792,6 @@ export async function clearAllCrypticStorage() {
     await removeCrypticStorageItem(CRYPTIC_STORAGE_KEYS.STREAK);
     await removeCrypticStorageItem(CRYPTIC_STORAGE_KEYS.LAST_PLAYED_DATE);
 
-    // Clear all puzzle progress keys
     const allKeys = await getCrypticStorageKeys();
     const progressKeys = allKeys.filter((key) =>
       key.startsWith(CRYPTIC_STORAGE_KEYS.PUZZLE_PROGRESS)

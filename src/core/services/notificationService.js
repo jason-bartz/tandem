@@ -54,7 +54,6 @@ class NotificationService {
       const { display } = await LocalNotifications.checkPermissions();
       this.permissionStatus = display;
 
-      // Set up notification listeners
       this.setupListeners();
 
       // Load preferences and reschedule if needed
@@ -70,14 +69,11 @@ class NotificationService {
   }
 
   setupListeners() {
-    // Handle notification received while app is open
     LocalNotifications.addListener('localNotificationReceived', () => {
       // Notification received while app is open
     });
 
-    // Handle notification action (tap)
     LocalNotifications.addListener('localNotificationActionPerformed', () => {
-      // Clear the badge when notification is tapped
       this.clearBadge();
     });
   }
@@ -178,7 +174,6 @@ class NotificationService {
       });
     }
 
-    // Ensure we have at least one slot available
     if (availableSlots.length === 0) {
       availableSlots = timeSlots;
     }
@@ -218,7 +213,7 @@ class NotificationService {
 
     // Get current stats for context
     const stats = await loadStats();
-    // Check if the SCHEDULED date (tomorrow) is a weekend, not today
+
     const isWeekend = this.isWeekend(scheduleDate);
 
     // Get appropriate message based on tomorrow's day
@@ -232,7 +227,6 @@ class NotificationService {
       scheduleDate.setMinutes(scheduleDate.getMinutes() + 30);
     }
 
-    // Check if in quiet hours
     if (await this.isInQuietHours(scheduleDate)) {
       // Reschedule for after quiet hours
       const quietEnd = await this.getNotificationPreference(
@@ -270,13 +264,6 @@ class NotificationService {
     });
 
     // Log scheduling for debugging
-    console.log('[NotificationService] Daily reminder scheduled:', {
-      scheduleDate: scheduleDate.toISOString(),
-      localTime: scheduleDate.toLocaleString(),
-      isWeekend,
-      message: { title: message.title, body: message.body },
-      streak: stats.currentStreak,
-    });
 
     // Store when we last scheduled
     await this.setNotificationPreference('last_daily_reminder_scheduled', new Date().toISOString());
@@ -298,10 +285,8 @@ class NotificationService {
     // Get current stats
     const stats = await loadStats();
 
-    // Only schedule if user has a streak of 3+ days
     if (stats.currentStreak < 3) return;
 
-    // Check if already played today
     if (await hasPlayedToday()) return;
 
     // Get streak saver time
@@ -321,7 +306,6 @@ class NotificationService {
       scheduleDate.setDate(scheduleDate.getDate() + 1);
     }
 
-    // Calculate hours left until midnight ET
     const midnight = new Date();
     midnight.setDate(midnight.getDate() + 1);
     midnight.setHours(0, 0, 0, 0);
@@ -348,14 +332,6 @@ class NotificationService {
           },
         },
       ],
-    });
-
-    console.log('[NotificationService] Streak saver scheduled:', {
-      scheduleDate: scheduleDate.toISOString(),
-      localTime: scheduleDate.toLocaleString(),
-      streak: stats.currentStreak,
-      hoursLeft: Math.floor(hoursLeft),
-      message: { title: message.title, body: message.body },
     });
   }
 
@@ -398,7 +374,6 @@ class NotificationService {
     // Cancel existing weekly summary
     await this.cancelNotification(NOTIFICATION_IDS.WEEKLY_SUMMARY);
 
-    // Check if today is Sunday and it's around 11 AM
     const now = new Date();
     const dayOfWeek = now.getDay();
     const hours = now.getHours();
@@ -436,11 +411,6 @@ class NotificationService {
           },
         },
       ],
-    });
-
-    console.log('[NotificationService] Weekly summary scheduled:', {
-      scheduleDate: scheduleDate.toISOString(),
-      localTime: scheduleDate.toLocaleString(),
     });
   }
 
@@ -497,7 +467,6 @@ class NotificationService {
     const startTotalMinutes = startHours * 60 + startMinutes;
     const endTotalMinutes = endHours * 60 + endMinutes;
 
-    // Handle overnight quiet hours
     if (startTotalMinutes > endTotalMinutes) {
       return currentMinutes >= startTotalMinutes || currentMinutes < endTotalMinutes;
     } else {
@@ -536,7 +505,6 @@ class NotificationService {
     // Cancel all existing notifications
     await this.cancelAllNotifications();
 
-    // Check if notifications are enabled
     const enabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
     if (!enabled) return;
 
@@ -553,7 +521,6 @@ class NotificationService {
     // Cancel today's streak saver since puzzle is done
     await this.cancelNotification(NOTIFICATION_IDS.STREAK_SAVER);
 
-    // Clear badge
     await this.clearBadge();
 
     // Check for milestone
@@ -563,7 +530,6 @@ class NotificationService {
       await this.scheduleMilestoneNotification(stats.currentStreak);
     }
 
-    // Update last play time
     await this.setNotificationPreference(PREFS_KEYS.LAST_PLAY_TIME, new Date().toISOString());
   }
 
@@ -573,21 +539,16 @@ class NotificationService {
 
     await this.initialize();
 
-    // Clear badge
     await this.clearBadge();
-
-    console.log('[NotificationService] App launched, checking notification schedule...');
 
     // CRITICAL FIX: Always reschedule notifications on launch
     // This ensures we have fresh content with correct day-of-week and streak
     const today = getTodayDateString();
     const lastCheck = await this.getNotificationPreference('last_notification_check');
 
-    // Check if we need to reschedule
     const shouldReschedule = lastCheck !== today;
 
     if (shouldReschedule) {
-      console.log('[NotificationService] Date changed, rescheduling all notifications...');
       await this.rescheduleAllNotifications();
       await this.setNotificationPreference('last_notification_check', today);
     } else {
@@ -599,21 +560,17 @@ class NotificationService {
       );
 
       if (!hasDailyReminder) {
-        console.log('[NotificationService] Daily reminder missing, rescheduling...');
         await this.scheduleDailyReminder();
       }
     }
 
-    // Check if it's Sunday and we should send weekly summary
     const now = new Date();
     const dayOfWeek = now.getDay();
     const hours = now.getHours();
 
-    // Check if we've already sent weekly summary today
     const lastWeeklySummary = await this.getNotificationPreference('last_weekly_summary_date');
 
     if (dayOfWeek === 0 && hours >= 10 && lastWeeklySummary !== today) {
-      console.log('[NotificationService] Sending weekly summary...');
       // Send weekly summary with actual stats
       await this.sendWeeklySummaryNow();
       await this.setNotificationPreference('last_weekly_summary_date', today);
@@ -633,11 +590,9 @@ class NotificationService {
     }
   }
 
-  // Settings management
   async updateSettings(settings) {
     if (!this.isNative) return;
 
-    // Update all preferences
     for (const [key, value] of Object.entries(settings)) {
       await this.setNotificationPreference(key, value);
     }

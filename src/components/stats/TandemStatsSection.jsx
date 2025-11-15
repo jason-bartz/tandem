@@ -20,7 +20,7 @@ export default function TandemStatsSection({ stats, animationKey }) {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
-  // Calculate win rate
+
   const winRate = stats.played > 0 ? Math.round((stats.wins / stats.played) * 100) : 0;
 
   // Animated counter values

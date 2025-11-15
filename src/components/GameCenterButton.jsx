@@ -12,7 +12,6 @@ export default function GameCenterButton() {
   const { lightTap } = useHaptics();
 
   useEffect(() => {
-    // Check if Game Center is available
     setIsAvailable(gameCenterService.isAvailable());
   }, []);
 

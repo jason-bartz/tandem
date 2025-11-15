@@ -14,14 +14,12 @@ export function useStreakRecovery() {
     setRecoveryResult(null);
 
     try {
-      console.log('[useStreakRecovery] Starting recovery...');
       const result = await recoverStreak();
       setRecoveryResult({
         success: true,
         stats: result,
         message: `Streak recovered: ${result.currentStreak}`,
       });
-      console.log('[useStreakRecovery] Recovery complete:', result);
     } catch (error) {
       console.error('[useStreakRecovery] Recovery failed:', error);
       setRecoveryResult({

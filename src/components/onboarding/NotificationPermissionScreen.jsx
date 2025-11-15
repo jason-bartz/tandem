@@ -15,7 +15,6 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
     setRequesting(true);
 
     try {
-      // Only request permission on native platform
       if (Capacitor.isNativePlatform()) {
         const granted = await notificationService.requestPermission();
         if (granted) {

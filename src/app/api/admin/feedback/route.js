@@ -79,7 +79,6 @@ export async function PATCH(request) {
     const body = await parseAndValidateJson(request, feedbackAdminUpdateSchema);
     const { id, status, comment } = body;
 
-    // Ensure entry exists
     const existingEntry = await getFeedbackEntryById(id);
     if (!existingEntry) {
       return NextResponse.json({ success: false, error: 'Feedback not found' }, { status: 404 });

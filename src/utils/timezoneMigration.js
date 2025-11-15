@@ -28,7 +28,6 @@ export async function performTimezoneMigration() {
   };
 
   try {
-    // Check if migration has already been completed
     const migrationCompleted = await getStorageItem(MIGRATION_KEY);
     if (migrationCompleted === 'true') {
       migrationResults.needed = false;
@@ -64,7 +63,6 @@ export async function performTimezoneMigration() {
       });
     }
 
-    // Update streak calculation logic to handle both old and new dates
     await migrateStreakData(migrationResults);
 
     // Mark migration as completed
@@ -214,10 +212,8 @@ export async function detectTimezoneChange() {
     const changed = lastTimezone !== currentTimezone;
 
     if (changed) {
-      // Update stored timezone
       await setStorageItem(lastTimezoneKey, currentTimezone);
 
-      // Clear date cache to ensure fresh calculations
       localDateService.clearCache();
     }
 
@@ -234,7 +230,6 @@ export async function detectTimezoneChange() {
   }
 }
 
-// Auto-run migration on module load in production
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
   // Run migration after a short delay to ensure app is initialized
   setTimeout(() => {

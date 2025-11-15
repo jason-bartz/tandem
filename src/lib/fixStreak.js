@@ -24,7 +24,6 @@ export async function recoverStreak() {
       return currentStats;
     }
 
-    // Calculate current streak from history
     let calculatedStreak = 0;
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -34,7 +33,6 @@ export async function recoverStreak() {
       const gameDate = new Date(dateStr + 'T00:00:00');
       const daysDiff = Math.floor((today - gameDate) / (1000 * 60 * 60 * 24));
 
-      // Check if this date is part of current streak
       if (daysDiff === calculatedStreak && history[dateStr].completed) {
         calculatedStreak++;
       } else if (daysDiff > calculatedStreak) {
@@ -47,7 +45,6 @@ export async function recoverStreak() {
       currentStats.currentStreak = calculatedStreak;
       currentStats.lastStreakUpdate = Date.now();
 
-      // Update best streak if needed
       if (calculatedStreak > currentStats.bestStreak) {
         currentStats.bestStreak = calculatedStreak;
       }

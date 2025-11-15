@@ -124,14 +124,12 @@ async function migrateAnonymousStatsToUser(userId) {
     const userStatsKey = getUserStatsKey(userId);
     const anonymousStatsKey = STORAGE_KEYS.STATS;
 
-    // Check if user already has stats (already migrated or has stats from another device)
     const existingUserStats = await getStorageItem(userStatsKey);
     if (existingUserStats) {
       logger.info('[storage.migrate] User already has stats, skipping migration');
       return;
     }
 
-    // Check if there are anonymous stats to migrate
     const anonymousStats = await getStorageItem(anonymousStatsKey);
     if (!anonymousStats) {
       logger.info('[storage.migrate] No anonymous stats to migrate');
@@ -147,7 +145,6 @@ async function migrateAnonymousStatsToUser(userId) {
     // Copy anonymous stats to user-specific key
     await setStorageItem(userStatsKey, anonymousStats);
 
-    // Clear anonymous stats to prevent confusion
     // Note: We don't delete the key entirely in case user signs out
     // Instead, we reset it to default values
     const defaultStats = {
@@ -197,7 +194,6 @@ async function recoverStreakFromHistory(lastPlayedDate) {
     const dailyCompletions = {};
 
     for (const key of keys) {
-      // Only look at puzzle result keys (not progress keys)
       if (
         key.startsWith('tandem_') &&
         !key.includes('progress') &&
@@ -253,15 +249,13 @@ async function recoverStreakFromHistory(lastPlayedDate) {
     // Sort dates in reverse order (most recent first)
     const dates = Object.keys(dailyCompletions).sort().reverse();
 
-    // Calculate streak by walking backwards from the most recent date
     let streak = 0;
     let expectedDate = lastPlayedDate;
 
     for (const date of dates) {
-      // Check if this date matches our expected date
       if (date === expectedDate && dailyCompletions[date]) {
         streak++;
-        // Calculate the previous day
+
         expectedDate = getYesterdayDateString(expectedDate);
       } else if (date < expectedDate) {
         // We've gone past where the streak should be
@@ -475,7 +469,6 @@ export async function loadStats() {
         // Save merged stats locally (skip cloud and DB sync to avoid loops)
         await saveStats(mergedStats, true, true);
 
-        // Update parsedStats to return the merged version
         Object.assign(parsedStats, mergedStats);
 
         // Sync best streak to leaderboard if stats were merged from database
@@ -505,7 +498,6 @@ export async function loadStats() {
     logger.info('[storage.loadStats] User not authenticated, skipping database sync');
   }
 
-  // Auto-sync with CloudKit on load if available (iOS only)
   if (cloudKitService.isSyncAvailable()) {
     try {
       const cloudStats = await cloudKitService.fetchStats();
@@ -572,7 +564,6 @@ export async function loadStats() {
         // Save the merged stats locally (skip cloud sync since we just fetched from cloud)
         await saveStats(mergedStats, true);
 
-        // Update parsedStats to return the merged version
         Object.assign(parsedStats, mergedStats);
       }
     } catch (error) {
@@ -607,7 +598,6 @@ export async function loadStats() {
       parsedStats.lastStreakUpdate = Date.now();
       parsedStats._recoveredAt = new Date().toISOString(); // Audit trail
 
-      // Update best streak if needed
       if (recoveredStreak > parsedStats.bestStreak) {
         parsedStats.bestStreak = recoveredStreak;
       }
@@ -622,7 +612,6 @@ export async function loadStats() {
     await saveStats(parsedStats, true); // Skip cloud sync during migration
   }
 
-  // Check if streak should be reset due to missed days
   // This modifies parsedStats in place, so we return parsedStats after this call
   await checkAndUpdateStreak(parsedStats);
 
@@ -630,7 +619,6 @@ export async function loadStats() {
 }
 
 async function checkAndUpdateStreak(stats) {
-  // Only check if there's an active streak
   if (stats.currentStreak > 0 && stats.lastStreakDate) {
     const today = getTodayDateString();
     const yesterday = getYesterdayDateString(today);
@@ -682,7 +670,7 @@ export async function saveStats(stats, skipCloudSync = false, skipDatabaseSync =
           const dbStats = await saveUserStatsToDatabase(stats);
           if (dbStats) {
             logger.info('[storage.saveStats] Stats synced to database:', dbStats);
-            // Update local storage with merged stats from database (use user-namespaced key)
+
             await setStorageItem(statsKey, JSON.stringify(dbStats));
             return dbStats;
           }
@@ -751,7 +739,6 @@ export async function updateGameStats(
         today = getTodayDateString();
       }
 
-      // Check if we played yesterday (for consecutive days)
       const lastStreakDate = stats.lastStreakDate;
       const yesterday = getYesterdayDateString(today);
 
@@ -769,17 +756,14 @@ export async function updateGameStats(
         stats.currentStreak = 1;
       }
 
-      // Update last streak date and timestamp
       stats.lastStreakDate = today;
       stats.lastStreakUpdate = Date.now(); // Add timestamp to prevent race conditions
 
-      // Update best streak if needed
       if (stats.currentStreak > stats.bestStreak) {
         stats.bestStreak = stats.currentStreak;
       }
     }
   } else {
-    // Only reset streak for daily puzzle losses on first attempt
     if (isFirstAttempt && !isArchiveGame) {
       stats.currentStreak = 0;
       stats.lastStreakDate = puzzleDate || getTodayDateString();
@@ -873,7 +857,7 @@ export async function savePuzzleProgress(date, progress) {
     const progressWithTimestamp = {
       ...existingData,
       ...progress,
-      // Ensure hint data is preserved
+
       hintsUsed: progress.hintsUsed ?? existingData.hintsUsed ?? 0,
       hintedAnswers: progress.hintedAnswers ?? existingData.hintedAnswers ?? [],
       unlockedHints: progress.unlockedHints ?? existingData.unlockedHints ?? 1,
@@ -951,7 +935,6 @@ export async function getWeeklyPuzzleStats() {
   const todayDate = new Date(today + 'T00:00:00');
   const dayOfWeek = todayDate.getDay();
 
-  // Calculate start of week (Sunday)
   const startOfWeek = new Date(todayDate);
   startOfWeek.setDate(todayDate.getDate() - dayOfWeek);
 
@@ -977,7 +960,7 @@ export async function getWeeklyPuzzleStats() {
     if (result) {
       try {
         const parsed = JSON.parse(result);
-        // Only count daily puzzles (not archive puzzles)
+
         const isDaily =
           parsed.isDaily === true || (parsed.isDaily === undefined && parsed.isArchive !== true);
 
@@ -1028,7 +1011,6 @@ export async function getGameHistory() {
   }
 
   for (const key of keys) {
-    // Skip Game Center, subscription, notification, and other non-game storage keys
     // These keys use the tandem_ prefix but are not game history data
     if (
       key.startsWith('tandem_gc_') || // Game Center keys
@@ -1057,7 +1039,6 @@ export async function getGameHistory() {
     if (key.startsWith('tandem_')) {
       const parts = key.split('_');
 
-      // Handle completed/failed games
       // Formats: tandem_YYYY_M_D (anonymous) or tandem_YYYY_M_D_user_{userId} (authenticated)
       if (parts[0] === 'tandem' && parts[1] !== 'progress') {
         // For anonymous: parts = ['tandem', 'YYYY', 'M', 'D']
@@ -1083,7 +1064,6 @@ export async function getGameHistory() {
                 isArchive: parsed.isArchive || false, // Track if it was an archive puzzle
               };
             } catch (error) {
-              // Skip corrupted or non-JSON data for this key
               logger.error(`Failed to parse game result for ${key}`, error);
               continue;
             }
@@ -1091,7 +1071,6 @@ export async function getGameHistory() {
         }
       }
 
-      // Handle in-progress/attempted games
       // Formats: tandem_progress_YYYY_M_D (anonymous) or tandem_progress_YYYY_M_D_user_{userId} (authenticated)
       if (parts[1] === 'progress') {
         // For anonymous: parts = ['tandem', 'progress', 'YYYY', 'M', 'D']
@@ -1105,7 +1084,7 @@ export async function getGameHistory() {
           if (data) {
             try {
               const parsed = JSON.parse(data);
-              // Only mark as attempted if there's no completion record
+
               if (!history[date] || !history[date].status) {
                 history[date] = {
                   ...history[date],
@@ -1117,7 +1096,6 @@ export async function getGameHistory() {
                 };
               }
             } catch (error) {
-              // Skip corrupted or non-JSON data for this key
               logger.error(`Failed to parse game progress for ${key}`, error);
               continue;
             }
@@ -1206,7 +1184,6 @@ export async function restoreFromiCloud() {
         if (result.date) {
           const key = getUserPuzzleKey(result.date, userId);
 
-          // Check if local result exists
           const existingData = await getStorageItem(key);
           if (existingData) {
             const existing = JSON.parse(existingData);

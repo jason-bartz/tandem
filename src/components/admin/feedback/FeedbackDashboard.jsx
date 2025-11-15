@@ -80,12 +80,11 @@ export default function FeedbackDashboard({ onCountsChange }) {
   }, [counts]);
 
   const loadFeedback = async (status) => {
-    console.log('[FeedbackDashboard] Loading feedback with status:', status);
     setLoading(true);
     setError('');
     try {
       const data = await adminService.getFeedback({ status });
-      console.log('[FeedbackDashboard] Received data:', data);
+
       setFeedback(data.feedback || []);
       setCounts(data.counts || null);
       if (onCountsChange) {

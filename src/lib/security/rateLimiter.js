@@ -1,7 +1,6 @@
 import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 
-// Check if KV is available (localhost vs production)
 const isKvAvailable = !!(
   process.env.KV_REST_API_URL &&
   process.env.KV_REST_API_TOKEN &&
@@ -50,7 +49,6 @@ function getApiRateLimitKey(identifier, endpoint) {
  * Check if an identifier is currently locked out
  */
 export async function isLockedOut(identifier) {
-  // Skip KV checks on localhost
   if (!isKvAvailable) {
     return { locked: false };
   }
@@ -100,7 +98,6 @@ export async function isLockedOut(identifier) {
  * Record a failed authentication attempt
  */
 export async function recordFailedAttempt(identifier) {
-  // Skip KV checks on localhost
   if (!isKvAvailable) {
     return { locked: false };
   }
@@ -109,7 +106,6 @@ export async function recordFailedAttempt(identifier) {
     const rateLimitKey = getAuthRateLimitKey(identifier);
     const lockoutKey = getLockoutKey(identifier);
 
-    // Check if already locked out
     const lockoutStatus = await isLockedOut(identifier);
     if (lockoutStatus.locked) {
       return lockoutStatus;
@@ -118,12 +114,10 @@ export async function recordFailedAttempt(identifier) {
     // Get current attempt count
     const attempts = await kv.incr(rateLimitKey);
 
-    // Set expiry on first attempt
     if (attempts === 1) {
       await kv.expire(rateLimitKey, Math.floor(RATE_LIMIT_WINDOW / 1000));
     }
 
-    // Check if exceeded max attempts
     if (attempts >= MAX_ATTEMPTS) {
       // Get current lockout count
       const currentLockout = await kv.get(lockoutKey);
@@ -140,7 +134,6 @@ export async function recordFailedAttempt(identifier) {
 
       const until = Date.now() + lockoutDuration;
 
-      // Set lockout
       await kv.set(
         lockoutKey,
         {
@@ -154,7 +147,6 @@ export async function recordFailedAttempt(identifier) {
         }
       );
 
-      // Clear rate limit counter
       await kv.del(rateLimitKey);
 
       const remainingMinutes = Math.ceil(lockoutDuration / 60000);
@@ -185,7 +177,6 @@ export async function recordFailedAttempt(identifier) {
  * Clear failed attempts on successful authentication
  */
 export async function clearFailedAttempts(identifier) {
-  // Skip KV checks on localhost
   if (!isKvAvailable) {
     return;
   }
@@ -202,7 +193,6 @@ export async function clearFailedAttempts(identifier) {
  * Check API rate limit
  */
 export async function checkApiRateLimit(identifier, endpoint = 'general') {
-  // Skip KV checks on localhost
   if (!isKvAvailable) {
     return { allowed: true };
   }
@@ -218,7 +208,6 @@ export async function checkApiRateLimit(identifier, endpoint = 'general') {
     // Get current request count
     const count = await kv.incr(key);
 
-    // Set expiry on first request
     if (count === 1) {
       await kv.expire(key, windowSeconds);
     }

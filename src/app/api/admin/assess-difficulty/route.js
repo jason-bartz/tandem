@@ -41,7 +41,6 @@ export async function POST(request) {
       }
     }
 
-    // Check if AI service is enabled
     if (!aiService.isEnabled()) {
       return NextResponse.json(
         {

@@ -23,7 +23,6 @@ export default function PuzzleCalendar({
     }
   }, [propCurrentMonth]);
 
-  // Update internal state and notify parent
   const setCurrentMonth = (newMonth) => {
     setCurrentMonthState(newMonth);
     if (onMonthChange) {
@@ -114,7 +113,7 @@ export default function PuzzleCalendar({
     if (!puzzle || !puzzle.puzzles || puzzle.puzzles.length === 0) {
       return false;
     }
-    // Check if all puzzles have non-empty hints
+
     return puzzle.puzzles.every((p) => p.hint && p.hint.trim().length > 0);
   };
 

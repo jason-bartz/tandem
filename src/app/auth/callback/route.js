@@ -18,7 +18,6 @@ const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
  * @route GET /auth/callback
  */
 export async function GET(request) {
-  // Skip in Capacitor builds
   if (isCapacitorBuild) {
     return NextResponse.json({ error: 'Route not available in native app' }, { status: 404 });
   }

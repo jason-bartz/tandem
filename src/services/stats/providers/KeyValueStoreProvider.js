@@ -10,7 +10,7 @@ import { registerPlugin } from '@capacitor/core';
 
 // Register the native plugin for KeyValueStore
 const KeyValueStore = registerPlugin('KeyValueStorePlugin', {
-  web: () => import('./KeyValueStoreProviderWeb').then(m => new m.KeyValueStoreProviderWeb())
+  web: () => import('./KeyValueStoreProviderWeb').then((m) => new m.KeyValueStoreProviderWeb()),
 });
 
 export class KeyValueStoreProvider extends BaseProvider {
@@ -22,7 +22,7 @@ export class KeyValueStoreProvider extends BaseProvider {
       maxKeyLength: 64,
       maxValueSize: 1024 * 64, // 64KB per value
       maxTotalSize: 1024 * 1024, // 1MB total
-      maxKeys: 1024
+      maxKeys: 1024,
     };
 
     // Keys for lightweight data
@@ -37,7 +37,7 @@ export class KeyValueStoreProvider extends BaseProvider {
       theme: 'tandem_theme',
       themeMode: 'tandem_theme_mode',
       syncToken: 'tandem_sync_token',
-      lastSyncTime: 'tandem_last_sync'
+      lastSyncTime: 'tandem_last_sync',
     };
 
     this.changeHandlers = new Set();
@@ -48,18 +48,14 @@ export class KeyValueStoreProvider extends BaseProvider {
    * Initialize KeyValueStore
    */
   async initialize() {
-    console.log('[KeyValueStoreProvider] Initializing...');
-
     try {
       // Check platform
       if (this.getPlatform() !== 'ios') {
-        console.log('[KeyValueStoreProvider] Not available on non-iOS platforms');
         this.available = false;
         this.initialized = false;
         return;
       }
 
-      // Check if KeyValueStore is available
       const available = await this.checkAvailability();
 
       if (available) {
@@ -71,10 +67,7 @@ export class KeyValueStoreProvider extends BaseProvider {
 
         // Perform initial sync
         await this.synchronize();
-
-        console.log('[KeyValueStoreProvider] Initialized successfully');
       } else {
-        console.log('[KeyValueStoreProvider] Not available');
         this.available = false;
         this.initialized = false;
       }
@@ -112,8 +105,6 @@ export class KeyValueStoreProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[KeyValueStoreProvider] Fetching data...');
-
       // Synchronize with iCloud first
       await this.synchronize();
 
@@ -132,7 +123,6 @@ export class KeyValueStoreProvider extends BaseProvider {
       }
 
       if (Object.keys(values).length === 0) {
-        console.log('[KeyValueStoreProvider] No data found');
         return null;
       }
 
@@ -144,15 +134,13 @@ export class KeyValueStoreProvider extends BaseProvider {
         gamesWon: values.gamesWon || 0,
         lastPlayedDate: values.lastPlayedDate,
         lastStreakDate: values.lastStreakDate,
-        winRate: values.gamesPlayed > 0
-          ? (values.gamesWon / values.gamesPlayed) * 100
-          : 0
+        winRate: values.gamesPlayed > 0 ? (values.gamesWon / values.gamesPlayed) * 100 : 0,
       };
 
       const preferences = {
         soundEnabled: values.soundEnabled !== false,
         theme: values.theme || 'light',
-        themeMode: values.themeMode || 'auto'
+        themeMode: values.themeMode || 'auto',
       };
 
       const data = {
@@ -161,15 +149,13 @@ export class KeyValueStoreProvider extends BaseProvider {
         events: [], // KeyValueStore doesn't store events
         timestamp: values.lastSyncTime || new Date().toISOString(),
         version: 2,
-        source: 'keyValueStore'
+        source: 'keyValueStore',
       };
 
       this.lastSyncTime = data.timestamp;
 
       const duration = Date.now() - startTime;
       this.recordFetchTime(duration);
-
-      console.log('[KeyValueStoreProvider] Data fetched successfully');
 
       return data;
     } catch (error) {
@@ -185,8 +171,6 @@ export class KeyValueStoreProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[KeyValueStoreProvider] Saving data...');
-
       // Validate data
       this.validateData(data);
 
@@ -253,16 +237,13 @@ export class KeyValueStoreProvider extends BaseProvider {
       const duration = Date.now() - startTime;
       this.recordSaveTime(duration);
 
-      console.log('[KeyValueStoreProvider] Data saved successfully');
-
       return {
         success: true,
-        timestamp: syncTime
+        timestamp: syncTime,
       };
     } catch (error) {
       this.recordSaveError(error);
 
-      // Check if quota exceeded
       if (this.isQuotaError(error)) {
         console.error('[KeyValueStoreProvider] Quota exceeded, cleaning up...');
         await this.cleanup();
@@ -335,7 +316,6 @@ export class KeyValueStoreProvider extends BaseProvider {
   async synchronize() {
     try {
       await KeyValueStore.synchronize();
-      console.log('[KeyValueStoreProvider] Synchronized with iCloud');
     } catch (error) {
       console.error('[KeyValueStoreProvider] Synchronization failed:', error);
     }
@@ -352,27 +332,24 @@ export class KeyValueStoreProvider extends BaseProvider {
     });
 
     this.isListening = true;
-    console.log('[KeyValueStoreProvider] Started listening for changes');
   }
 
   /**
    * Handle store change event
    */
   handleStoreChange(event) {
-    console.log('[KeyValueStoreProvider] Store changed:', event);
-
     const { changeReason, changedKeys } = event;
 
     switch (changeReason) {
       case 'serverChange':
         // Remote changes detected
-        console.log('[KeyValueStoreProvider] Remote changes detected');
+
         this.mergeRemoteChanges(changedKeys);
         break;
 
       case 'initialSync':
         // Initial sync from iCloud
-        console.log('[KeyValueStoreProvider] Initial sync completed');
+
         this.loadInitialData();
         break;
 
@@ -384,7 +361,7 @@ export class KeyValueStoreProvider extends BaseProvider {
 
       case 'accountChange':
         // iCloud account changed
-        console.log('[KeyValueStoreProvider] Account changed');
+
         this.handleAccountChange();
         break;
     }
@@ -397,8 +374,6 @@ export class KeyValueStoreProvider extends BaseProvider {
    * Merge remote changes
    */
   async mergeRemoteChanges(changedKeys) {
-    console.log('[KeyValueStoreProvider] Merging remote changes for keys:', changedKeys);
-
     // Fetch updated values and notify
     const changes = {};
 
@@ -446,8 +421,6 @@ export class KeyValueStoreProvider extends BaseProvider {
    * Handle account change
    */
   async handleAccountChange() {
-    console.log('[KeyValueStoreProvider] Handling account change');
-
     // Re-initialize
     await this.initialize();
 
@@ -459,14 +432,8 @@ export class KeyValueStoreProvider extends BaseProvider {
    * Clean up to free space
    */
   async cleanup() {
-    console.log('[KeyValueStoreProvider] Cleaning up...');
-
     // Remove non-critical keys
-    const nonCriticalKeys = [
-      this.keys.syncToken,
-      this.keys.theme,
-      this.keys.themeMode
-    ];
+    const nonCriticalKeys = [this.keys.syncToken, this.keys.theme, this.keys.themeMode];
 
     for (const key of nonCriticalKeys) {
       try {
@@ -482,15 +449,12 @@ export class KeyValueStoreProvider extends BaseProvider {
    */
   async clear() {
     try {
-      console.log('[KeyValueStoreProvider] Clearing all data...');
-
       for (const key of Object.values(this.keys)) {
         await KeyValueStore.removeValue({ key });
       }
 
       await this.synchronize();
 
-      console.log('[KeyValueStoreProvider] All data cleared');
       return true;
     } catch (error) {
       console.error('[KeyValueStoreProvider] Failed to clear data:', error);
@@ -509,7 +473,7 @@ export class KeyValueStoreProvider extends BaseProvider {
     let hash = 0;
     for (let i = 0; i < key.length; i++) {
       const char = key.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
+      hash = (hash << 5) - hash + char;
       hash = hash & hash; // Convert to 32bit integer
     }
 
@@ -558,12 +522,12 @@ export class KeyValueStoreProvider extends BaseProvider {
       const info = await KeyValueStore.getStorageInfo();
       return {
         ...info,
-        limits: this.limits
+        limits: this.limits,
       };
     } catch (error) {
       return {
         error: error.message,
-        limits: this.limits
+        limits: this.limits,
       };
     }
   }

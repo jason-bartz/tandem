@@ -33,11 +33,9 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
 
-  // Check if user has seen onboarding (iOS only)
   useEffect(() => {
     async function checkOnboarding() {
       try {
-        // Only show onboarding on native iOS platform
         if (!Capacitor.isNativePlatform()) {
           setShowOnboarding(false);
           setOnboardingChecked(true);
@@ -59,7 +57,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
     checkOnboarding();
   }, []);
 
-  // Initialize subscription service and Game Center on app bootstrap (iOS only)
   // This runs ONCE when the app starts, ensuring subscription state and Game Center are ready
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -70,7 +67,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
           // App continues to work even if subscription init fails
         });
 
-      // Initialize Game Center (silent, non-blocking)
       gameCenterService
         .initialize()
         .then((success) => {
@@ -108,7 +104,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
     }
   }, [game.puzzle?.id, game.puzzle?.date, game.gameState, timer, game]);
 
-  // Handle app lifecycle for timer pause/resume (Native apps)
   useEffect(() => {
     if (!Capacitor.isNativePlatform()) {
       return;
@@ -139,7 +134,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
     };
   }, [game.gameState, timer]);
 
-  // Handle visibility change for timer pause/resume (Web PWA)
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
       return;
@@ -164,14 +158,12 @@ export default function GameContainerClient({ initialPuzzleData }) {
     };
   }, [game.gameState, timer]);
 
-  // Initialize notifications on app launch (iOS only)
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
       notificationService.onAppLaunch().catch((_err) => {});
     }
   }, []);
 
-  // Auto-refresh puzzle at midnight ET for iOS app
   useMidnightRefresh(() => {
     // If not in the middle of playing, reload the puzzle
     if (game.gameState !== GAME_STATES.PLAYING) {
@@ -225,7 +217,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
     }
   };
 
-  // Show loading while checking onboarding status or loading game
   if (!onboardingChecked || game.loading) {
     return (
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
@@ -239,7 +230,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
     );
   }
 
-  // Show onboarding flow if user hasn't seen it yet
   if (showOnboarding) {
     return (
       <div className="fixed inset-0 w-full h-full bg-bg-primary">

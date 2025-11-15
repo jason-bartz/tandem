@@ -95,7 +95,6 @@ export function useHoroscope(sign, timezone = 'UTC') {
 
       setHoroscope(horoscopeData);
 
-      // Update cache
       if (cacheKey) {
         try {
           localStorage.setItem(cacheKey, JSON.stringify(horoscopeData));
@@ -134,11 +133,9 @@ export function useHoroscope(sign, timezone = 'UTC') {
     fetchHoroscope();
   }, [fetchHoroscope]);
 
-  // Set up midnight rotation check
   useEffect(() => {
     if (!sign || !timezone) return;
 
-    // Calculate milliseconds until next midnight in user's timezone
     const getMillisecondsUntilMidnight = () => {
       try {
         const now = new Date();
@@ -157,7 +154,6 @@ export function useHoroscope(sign, timezone = 'UTC') {
         const [, timePart] = userDateStr.split(', ');
         const [hour, minute, second] = timePart.split(':');
 
-        // Calculate seconds until midnight
         const secondsToday = parseInt(hour) * 3600 + parseInt(minute) * 60 + parseInt(second);
         const secondsUntilMidnight = 86400 - secondsToday;
 
@@ -169,7 +165,6 @@ export function useHoroscope(sign, timezone = 'UTC') {
       }
     };
 
-    // Set timeout to refresh at midnight
     const msUntilMidnight = getMillisecondsUntilMidnight();
     const midnightTimer = setTimeout(() => {
       fetchHoroscope();

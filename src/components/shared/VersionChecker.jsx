@@ -11,8 +11,9 @@ export default function VersionChecker() {
   const [versionInfo, setVersionInfo] = useState(null);
 
   useEffect(() => {
-    // Only check version on native platforms
-    if (!platformService.isPlatformNative()) {return;}
+    if (!platformService.isPlatformNative()) {
+      return;
+    }
 
     const checkVersion = async () => {
       try {
@@ -48,13 +49,19 @@ export default function VersionChecker() {
     for (let i = 0; i < 3; i++) {
       const c = currentParts[i] || 0;
       const r = requiredParts[i] || 0;
-      if (c < r) {return true;}
-      if (c > r) {return false;}
+      if (c < r) {
+        return true;
+      }
+      if (c > r) {
+        return false;
+      }
     }
     return false;
   };
 
-  if (!updateRequired) {return null;}
+  if (!updateRequired) {
+    return null;
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
@@ -76,9 +83,7 @@ export default function VersionChecker() {
             </svg>
           </div>
 
-          <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">
-            Update Required
-          </h2>
+          <h2 className="text-2xl font-bold mb-2 text-gray-900 dark:text-white">Update Required</h2>
 
           <p className="text-gray-600 dark:text-gray-300 mb-6">
             A new version of Tandem is available. Please update the app to continue playing.

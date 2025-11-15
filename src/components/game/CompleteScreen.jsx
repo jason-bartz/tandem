@@ -82,7 +82,6 @@ export default function CompleteScreen({
 
   useEffect(() => {
     if (won) {
-      // Set random congratulatory message
       setCongratsMessage(getRandomCongratulation());
 
       // Play success sound and trigger celebration haptics
@@ -130,7 +129,7 @@ export default function CompleteScreen({
         return () => clearInterval(interval);
       }
     }
-    // Only run once when component mounts with won=true
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [won]);
 

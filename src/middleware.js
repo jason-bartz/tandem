@@ -8,7 +8,8 @@ const securityHeaders = {
   'X-Content-Type-Options': 'nosniff',
   'X-XSS-Protection': '1; mode=block',
   'Referrer-Policy': 'strict-origin-when-cross-origin',
-  'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
+  'Permissions-Policy':
+    'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()',
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
   'X-Download-Options': 'noopen',
   'X-Permitted-Cross-Domain-Policies': 'none',
@@ -28,13 +29,12 @@ const adminCSP = {
     "base-uri 'self'",
     "form-action 'self'",
     "frame-ancestors 'none'",
-    "block-all-mixed-content",
-    "upgrade-insecure-requests",
+    'block-all-mixed-content',
+    'upgrade-insecure-requests',
   ].join('; '),
 };
 
 export async function middleware(request) {
-  // Handle CORS preflight requests
   if (request.method === 'OPTIONS') {
     const response = new NextResponse(null, { status: 200 });
     response.headers.set('Access-Control-Allow-Origin', '*');
@@ -43,24 +43,24 @@ export async function middleware(request) {
     response.headers.set('Access-Control-Max-Age', '86400');
     return response;
   }
-  
+
   // Create response
   let response;
-  
+
   // Allow GET requests to rotate-puzzle endpoint for status checks
-  if (request.nextUrl.pathname === '/api/admin/rotate-puzzle' && 
-      request.method === 'GET') {
+  if (request.nextUrl.pathname === '/api/admin/rotate-puzzle' && request.method === 'GET') {
     response = NextResponse.next();
   }
   // Admin route protection with rate limiting
-  else if (request.nextUrl.pathname.startsWith('/api/admin') && 
-      !request.nextUrl.pathname.includes('/api/admin/auth')) {
-    
+  else if (
+    request.nextUrl.pathname.startsWith('/api/admin') &&
+    !request.nextUrl.pathname.includes('/api/admin/auth')
+  ) {
     // Apply rate limiting for admin API routes
     const clientId = getClientIdentifier(request);
     const endpoint = request.method === 'GET' ? 'general' : 'write';
     const rateLimit = await checkApiRateLimit(clientId, endpoint);
-    
+
     if (!rateLimit.allowed) {
       response = NextResponse.json(
         {
@@ -79,7 +79,7 @@ export async function middleware(request) {
       );
     } else {
       const authHeader = request.headers.get('authorization');
-      
+
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         response = NextResponse.json(
           { error: 'Unauthorized - No token provided' },
@@ -92,20 +92,22 @@ export async function middleware(request) {
   } else {
     response = NextResponse.next();
   }
-  
+
   // Add security headers to all responses
   Object.entries(securityHeaders).forEach(([key, value]) => {
     response.headers.set(key, value);
   });
-  
+
   // Add stricter CSP for admin routes
-  if (request.nextUrl.pathname.startsWith('/admin') || 
-      request.nextUrl.pathname.startsWith('/api/admin')) {
+  if (
+    request.nextUrl.pathname.startsWith('/admin') ||
+    request.nextUrl.pathname.startsWith('/api/admin')
+  ) {
     Object.entries(adminCSP).forEach(([key, value]) => {
       response.headers.set(key, value);
     });
   }
-  
+
   // Add CORS headers for API routes (but restrict for admin routes)
   if (request.nextUrl.pathname.startsWith('/api/')) {
     if (request.nextUrl.pathname.startsWith('/api/admin')) {
@@ -136,7 +138,7 @@ export async function middleware(request) {
     response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     response.headers.set('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
   }
-  
+
   return response;
 }
 

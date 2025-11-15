@@ -35,19 +35,11 @@ export default function DailyLeaderboard({ gameType }) {
       const url = getApiUrl(
         `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`
       );
-      console.log('[DailyLeaderboard] Fetching from:', url);
 
       const response = await capacitorFetch(url, {
         method: 'GET',
       });
       const data = await response.json();
-
-      console.log('[DailyLeaderboard] Response:', {
-        success: data.success,
-        leaderboardCount: data.leaderboard?.length || 0,
-        leaderboard: data.leaderboard,
-        userRank: data.userRank,
-      });
 
       if (data.success) {
         setLeaderboard(data.leaderboard || []);

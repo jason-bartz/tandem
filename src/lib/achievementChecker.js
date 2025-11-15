@@ -21,7 +21,6 @@ export function checkStreakAchievements(bestStreak, lastSubmittedStreak = 0) {
   const newlyUnlocked = [];
 
   for (const achievement of streakAchievements) {
-    // Check if player has reached this threshold and it hasn't been submitted yet
     if (bestStreak >= achievement.threshold && lastSubmittedStreak < achievement.threshold) {
       newlyUnlocked.push({
         id: achievement.id,
@@ -47,7 +46,6 @@ export function checkWinsAchievements(totalWins, lastSubmittedWins = 0) {
   const newlyUnlocked = [];
 
   for (const achievement of winsAchievements) {
-    // Check if player has reached this threshold and it hasn't been submitted yet
     if (totalWins >= achievement.threshold && lastSubmittedWins < achievement.threshold) {
       newlyUnlocked.push({
         id: achievement.id,
@@ -219,7 +217,6 @@ export function checkCrypticStreakAchievements(bestStreak, lastSubmittedStreak =
   const newlyUnlocked = [];
 
   for (const achievement of streakAchievements) {
-    // Check if player has reached this threshold and it hasn't been submitted yet
     if (bestStreak >= achievement.threshold && lastSubmittedStreak < achievement.threshold) {
       newlyUnlocked.push({
         id: achievement.id,
@@ -245,7 +242,6 @@ export function checkCrypticWinsAchievements(totalWins, lastSubmittedWins = 0) {
   const newlyUnlocked = [];
 
   for (const achievement of winsAchievements) {
-    // Check if player has reached this threshold and it hasn't been submitted yet
     if (totalWins >= achievement.threshold && lastSubmittedWins < achievement.threshold) {
       newlyUnlocked.push({
         id: achievement.id,

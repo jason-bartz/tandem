@@ -169,17 +169,14 @@ export function getPuzzleRangeForMonth(month, year) {
   const firstDateStr = formatDate(firstDay);
   const lastDateStr = formatDate(lastDay);
 
-  // Check if entire month is before launch
   const lastDayUTC = new Date(lastDateStr + 'T00:00:00Z');
   if (lastDayUTC < LAUNCH_DATE) {
     return null; // Month is entirely before game launch
   }
 
-  // Calculate puzzle numbers
   let startPuzzle;
   let endPuzzle;
 
-  // Handle months that start before launch (e.g., August 2025)
   const firstDayUTC = new Date(firstDateStr + 'T00:00:00Z');
   if (firstDayUTC < LAUNCH_DATE) {
     startPuzzle = 1; // Start from first puzzle
@@ -187,7 +184,6 @@ export function getPuzzleRangeForMonth(month, year) {
     startPuzzle = getPuzzleNumberForDate(firstDateStr);
   }
 
-  // Calculate end puzzle
   endPuzzle = getPuzzleNumberForDate(lastDateStr);
 
   // Cap at current puzzle number (don't include future puzzles)

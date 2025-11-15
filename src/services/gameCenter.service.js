@@ -53,7 +53,6 @@ class GameCenterService {
     }
 
     try {
-      // Check if already authenticated (cached)
       const cachedAuth = await Preferences.get({ key: STORAGE_KEYS.GAME_CENTER_AUTHENTICATED });
       const cachedPlayerId = await Preferences.get({ key: STORAGE_KEYS.GAME_CENTER_PLAYER_ID });
 
@@ -259,7 +258,6 @@ class GameCenterService {
       const achievementIds = newAchievements.map((a) => a.id);
       await this.submitAchievements(achievementIds);
 
-      // Track submitted achievements
       const submittedResult = await Preferences.get({ key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS });
       const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
       const updatedSubmittedList = [...new Set([...submittedAchievements, ...achievementIds])];
@@ -268,7 +266,6 @@ class GameCenterService {
         value: JSON.stringify(updatedSubmittedList),
       });
 
-      // Update last submitted values
       const newLastStreak = getHighestStreakThreshold(stats.bestStreak || 0);
       const newLastWins = getHighestWinsThreshold(stats.wins || 0);
 
@@ -344,7 +341,6 @@ class GameCenterService {
       const achievementIds = newAchievements.map((a) => a.id);
       await this.submitAchievements(achievementIds);
 
-      // Track submitted cryptic achievements
       const submittedResult = await Preferences.get({
         key: STORAGE_KEYS.SUBMITTED_CRYPTIC_ACHIEVEMENTS,
       });
@@ -355,7 +351,6 @@ class GameCenterService {
         value: JSON.stringify(updatedSubmittedList),
       });
 
-      // Update last submitted cryptic values
       const newLastStreak = getHighestCrypticStreakThreshold(stats.longestStreak || 0);
       const newLastWins = getHighestCrypticWinsThreshold(stats.totalCompleted || 0);
 
@@ -476,7 +471,6 @@ class GameCenterService {
     }
 
     try {
-      // Check if we've already done the retroactive check
       const checkDone = await Preferences.get({
         key: STORAGE_KEYS.ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
       });
@@ -544,14 +538,12 @@ class GameCenterService {
         }
       }
 
-      // Update the list of submitted achievements
       const updatedSubmittedList = [...submittedAchievements, ...successfullySubmitted];
       await Preferences.set({
         key: STORAGE_KEYS.SUBMITTED_ACHIEVEMENTS,
         value: JSON.stringify(updatedSubmittedList),
       });
 
-      // Update last submitted values to reflect current state
       const newLastStreak = getHighestStreakThreshold(stats.bestStreak || 0);
       const newLastWins = getHighestWinsThreshold(stats.wins || 0);
 
@@ -608,7 +600,6 @@ class GameCenterService {
           await this.submitAchievement(achievementId);
         }
 
-        // Clear queue
         await Preferences.remove({ key: STORAGE_KEYS.PENDING_ACHIEVEMENTS });
       }
 
@@ -622,7 +613,6 @@ class GameCenterService {
           await this.submitScore(item.id, item.score);
         }
 
-        // Clear queue
         await Preferences.remove({ key: STORAGE_KEYS.PENDING_LEADERBOARD });
       }
     } catch (error) {

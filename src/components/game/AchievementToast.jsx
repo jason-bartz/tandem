@@ -10,10 +10,8 @@ export default function AchievementToast() {
     // Subscribe to achievement unlocks
     const unsubscribe = gameCenterService.onAchievementUnlocked((achievements) => {
       if (achievements && achievements.length > 0) {
-        // Show first achievement (if multiple, queue them)
         showAchievement(achievements[0]);
 
-        // Show subsequent achievements with delay
         achievements.slice(1).forEach((ach, index) => {
           setTimeout(() => showAchievement(ach), (index + 1) * 3500);
         });
@@ -27,10 +25,9 @@ export default function AchievementToast() {
     setAchievement(ach);
     setVisible(true);
 
-    // Auto-hide after 3 seconds
     setTimeout(() => {
       setVisible(false);
-      // Clear achievement after fade out animation
+
       setTimeout(() => setAchievement(null), 300);
     }, 3000);
   };

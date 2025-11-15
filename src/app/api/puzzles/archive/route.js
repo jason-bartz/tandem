@@ -32,7 +32,6 @@ export async function GET(request) {
     // Get current puzzle number from user's timezone
     const currentNumber = getCurrentPuzzleNumber();
 
-    // Check if this is a date-based query (for calendar view)
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
@@ -119,7 +118,6 @@ export async function GET(request) {
 
     const puzzles = await Promise.all(puzzlePromises);
 
-    // Calculate pagination info
     const totalAvailable = currentNumber;
     // hasMore is true if there are older puzzles (startNum > 1)
     const hasMore = startNum > 1;
@@ -127,7 +125,6 @@ export async function GET(request) {
     // Generate ETag for caching
     const etag = `"archive-${startNum}-${endNum}-${limit}-${currentNumber}"`;
 
-    // Check if client has cached version
     const clientEtag = request.headers.get('if-none-match');
     if (clientEtag === etag) {
       return new NextResponse(null, {
@@ -157,7 +154,6 @@ export async function GET(request) {
       },
     });
 
-    // Set caching headers for performance
     response.headers.set('ETag', etag);
     response.headers.set('Cache-Control', 'private, max-age=300'); // 5 minutes
     response.headers.set('Vary', 'Accept-Encoding'); // Support compression

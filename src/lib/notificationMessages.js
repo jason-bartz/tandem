@@ -355,7 +355,7 @@ export function formatMessage(message, data = {}) {
   // Replace placeholders in title and body
   Object.keys(data).forEach((key) => {
     const placeholder = `{${key}}`;
-    // Handle undefined/null values - convert to string to avoid "undefined" text
+
     const value = data[key] !== undefined && data[key] !== null ? String(data[key]) : '';
 
     if (formattedMessage.title) {

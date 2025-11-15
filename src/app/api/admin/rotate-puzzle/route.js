@@ -50,7 +50,6 @@ export async function POST(request) {
       return authResult.error;
     }
 
-    // Clear cache only (no rotation)
     const result = await manualClearCache();
 
     if (result.success) {

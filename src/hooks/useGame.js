@@ -72,11 +72,9 @@ export function useGame() {
       setLoading(true);
       setError(null);
 
-      // Check if this is an archive game (has a specific date)
       const isArchive = date !== null;
       setIsArchiveGame(isArchive);
 
-      // Set the current puzzle date (use ET today if not specified)
       let puzzleDate = date;
       if (!date) {
         const { getCurrentPuzzleInfo } = await import('@/lib/utils');
@@ -85,14 +83,10 @@ export function useGame() {
       }
       setCurrentPuzzleDate(puzzleDate);
 
-      // Check if puzzle was already completed (unless forcing replay)
       if (!forceReplay && date) {
-        console.log('[useGame.loadPuzzle] Checking for completed puzzle:', { date });
         const existingResult = await getPuzzleResult(date);
-        console.log('[useGame.loadPuzzle] Existing result:', existingResult);
 
         if (existingResult && existingResult.won) {
-          console.log('[useGame.loadPuzzle] Entering ADMIRE mode');
           // Enter admire mode to view the completed puzzle
           const response = await puzzleService.getPuzzle(date);
           const puzzleData = response && response.puzzle ? response.puzzle : response;
@@ -103,7 +97,6 @@ export function useGame() {
           setLoading(false);
           return true;
         }
-        console.log('[useGame.loadPuzzle] Not entering admire mode - puzzle not won');
       }
 
       const response = await puzzleService.getPuzzle(date);
@@ -186,7 +179,6 @@ export function useGame() {
         return newAnswers;
       });
 
-      // Clear the wrong status when user starts typing again
       if (checkedWrongAnswers[index]) {
         setCheckedWrongAnswers((prev) => {
           const newCheckedWrong = [...prev];
@@ -203,15 +195,6 @@ export function useGame() {
       // CRITICAL: Capture hintedAnswers at the start before any state changes
       const capturedHintedAnswers = [...hintedAnswers];
 
-      console.log('[useGame.completeGame] Called with:', {
-        won,
-        hintsUsed,
-        hintedAnswers,
-        capturedHintedAnswers,
-        solved,
-        mistakes,
-      });
-
       setGameState(GAME_STATES.COMPLETE);
 
       // Play appropriate sound
@@ -226,20 +209,9 @@ export function useGame() {
       const todayDate = getCurrentPuzzleInfo().isoDate;
       const isArchive = isArchiveGame || (puzzleDateToUse && puzzleDateToUse !== todayDate);
 
-      // Check if this is the first attempt BEFORE saving the result
       const isFirstAttempt = puzzleDateToUse ? !(await hasPlayedPuzzle(puzzleDateToUse)) : true;
 
-      // Update stats BEFORE saving the puzzle result to preserve first attempt status
       try {
-        console.log('[useGame] Calling statsService.updateStats with:', {
-          completed: won,
-          mistakes,
-          solved,
-          hintsUsed,
-          isArchive,
-          puzzleDate: puzzleDateToUse,
-          isFirstAttempt,
-        });
         await statsService.updateStats({
           completed: won,
           mistakes,
@@ -249,7 +221,6 @@ export function useGame() {
           puzzleDate: puzzleDateToUse, // Pass the puzzle date for streak tracking
           isFirstAttempt, // Pass the first attempt flag directly
         });
-        console.log('[useGame] statsService.updateStats completed successfully');
       } catch (err) {
         console.error('[useGame] statsService.updateStats failed:', err);
         console.error('[useGame] Error details:', {
@@ -261,12 +232,6 @@ export function useGame() {
       // Save the final result AFTER updating stats
       // CRITICAL: Use the captured hintedAnswers to ensure we have the correct value
       if (puzzleDateToUse) {
-        console.log('[useGame] Saving puzzle result with capturedHintedAnswers:', {
-          won,
-          hintsUsed,
-          hintedAnswers: capturedHintedAnswers,
-          puzzleDate: puzzleDateToUse,
-        });
         savePuzzleResult(puzzleDateToUse, {
           won,
           mistakes,
@@ -279,7 +244,6 @@ export function useGame() {
         });
       }
 
-      // Handle notifications if the puzzle was won and it's today's puzzle
       if (won && !isArchive && Capacitor.isNativePlatform()) {
         try {
           await notificationService.onPuzzleCompleted();
@@ -316,29 +280,23 @@ export function useGame() {
         newCorrectAnswers[index] = true;
         setCorrectAnswers(newCorrectAnswers);
 
-        // Clear wrong status if it was wrong before
         if (checkedWrongAnswers[index]) {
           const newCheckedWrongAnswers = [...checkedWrongAnswers];
           newCheckedWrongAnswers[index] = false;
           setCheckedWrongAnswers(newCheckedWrongAnswers);
         }
 
-        // Clear active hint if this answer is showing a hint
         if (activeHintIndex === index) {
           setActiveHintIndex(null);
         }
 
-        // Update solved count
         const newSolved = solved + 1;
         setSolved(newSolved);
 
-        // Check if we should unlock second hint (after 2 correct answers)
         if (newSolved >= 2 && unlockedHints === 1) {
           setUnlockedHints(2);
-          console.log('[checkSingleAnswer] Unlocked second hint!');
         }
 
-        // Save progress
         if (currentPuzzleDate) {
           savePuzzleProgress(currentPuzzleDate, {
             started: true,
@@ -350,7 +308,6 @@ export function useGame() {
           });
         }
 
-        // Check if game is complete
         if (newSolved === GAME_CONFIG.PUZZLE_COUNT) {
           completeGame(true);
           return { isCorrect: true, gameComplete: true };
@@ -364,11 +321,9 @@ export function useGame() {
           newCheckedWrongAnswers[index] = true;
           setCheckedWrongAnswers(newCheckedWrongAnswers);
 
-          // Increment mistakes
           const newMistakes = mistakes + 1;
           setMistakes(newMistakes);
 
-          // Save progress
           if (currentPuzzleDate) {
             savePuzzleProgress(currentPuzzleDate, {
               started: true,
@@ -378,7 +333,6 @@ export function useGame() {
             });
           }
 
-          // Check if game is over
           if (newMistakes >= GAME_CONFIG.MAX_MISTAKES) {
             completeGame(false);
             return { isCorrect: false, gameComplete: true };
@@ -427,7 +381,6 @@ export function useGame() {
           newCheckedWrongAnswers[i] = false; // Clear wrong status if now correct
           newSolved++;
         } else {
-          // Only count as a new mistake if this answer wasn't already marked as wrong
           if (!checkedWrongAnswers[i]) {
             newMistakes++;
           }
@@ -441,7 +394,6 @@ export function useGame() {
     setMistakes((prev) => prev + newMistakes);
     setSolved(newSolved);
 
-    // Save progress after checking answers
     if (currentPuzzleDate) {
       savePuzzleProgress(currentPuzzleDate, {
         started: true,
@@ -490,74 +442,48 @@ export function useGame() {
   }, []);
 
   const returnToWelcome = useCallback(() => {
-    console.log('[useGame.returnToWelcome] Called, setting state to WELCOME');
     setGameState(GAME_STATES.WELCOME);
   }, []);
 
   const useHint = useCallback(
     (targetIndex) => {
-      // Check if we can use a hint
       if (!puzzle || !puzzle.puzzles || hintsUsed >= unlockedHints) {
-        console.log('[useHint] Cannot use hint:', {
-          hasPuzzle: !!puzzle,
-          hintsUsed,
-          unlockedHints,
-        });
         return false;
       }
 
-      // Use the provided index or find the first unanswered
       let hintIndex = targetIndex;
 
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        // Find first unanswered puzzle
         hintIndex = correctAnswers.findIndex((correct) => !correct);
         if (hintIndex === -1) {
-          console.log('[useHint] All puzzles already solved');
           return false;
         }
       }
 
-      // Check if this answer already has a hint
       if (hintedAnswers.includes(hintIndex)) {
-        console.log('[useHint] Answer already has hint:', hintIndex);
         return false;
       }
 
-      // Check if puzzle has hint data
       const puzzleHint = puzzle.puzzles[hintIndex].hint;
       if (!puzzleHint) {
-        console.log('[useHint] No hint available for puzzle:', hintIndex);
         // Fallback: Could generate a generic hint or show "No hint available"
         return false;
       }
 
-      // Add this answer to the hinted list
-      console.log(
-        '[useHint] Adding hint for puzzle index:',
-        hintIndex,
-        'Current hintedAnswers:',
-        hintedAnswers
-      );
       setHintedAnswers((prev) => {
         const newHintedAnswers = [...prev, hintIndex];
-        console.log('[useHint] Updated hintedAnswers:', newHintedAnswers);
+
         return newHintedAnswers;
       });
 
-      // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
 
-      // Increment hints used
       setHintsUsed((prev) => prev + 1);
 
-      // Check if we should unlock another hint (after 2 correct answers)
       if (solved >= 2 && unlockedHints === 1) {
         setUnlockedHints(2);
-        console.log('[useHint] Unlocked second hint!');
       }
 
-      // Save progress with hint usage
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,
@@ -585,7 +511,6 @@ export function useGame() {
   );
 
   const replayFromAdmire = useCallback(() => {
-    // Clear admire data and transition to playing state
     setAdmireData(null);
     setGameState(GAME_STATES.PLAYING);
     setAnswers(['', '', '', '']);

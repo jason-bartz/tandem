@@ -5,8 +5,6 @@ import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
 let redisClient = null;
-const FEEDBACK_ENTRIES_KEY = 'feedback:entries';
-const FEEDBACK_TIMELINE_KEY = 'feedback:timeline';
 const FEEDBACK_STATUS_VALUES = Object.values(FEEDBACK_STATUS);
 
 async function getRedisClient() {
@@ -132,7 +130,6 @@ export async function getPuzzleForDate(date) {
       };
     }
 
-    // Ensure hint structure exists for all puzzles
     return ensureHintStructure(puzzle);
   } catch (error) {
     logger.error('Error getting puzzle', error);
@@ -174,7 +171,6 @@ export async function getPuzzle(identifier) {
     // Get puzzle data using existing function
     const puzzle = await getPuzzleForDate(date);
 
-    // Ensure puzzle has both date and number
     if (puzzle) {
       puzzle.puzzleNumber = puzzleNumber;
       puzzle.date = date;
@@ -249,7 +245,7 @@ export function ensureHintStructure(puzzle) {
     puzzles: puzzle.puzzles.map((p) => ({
       emoji: p.emoji,
       answer: p.answer,
-      // Ensure hint field exists and decode any HTML entities
+
       hint: decodeHtmlEntities(p.hint || ''),
     })),
     // Preserve difficulty metadata if present
@@ -260,7 +256,6 @@ export function ensureHintStructure(puzzle) {
 
 export async function setPuzzleForDate(date, puzzle) {
   try {
-    // Ensure puzzle structure includes hints and difficulty if provided
     const puzzleWithMetadata = {
       ...puzzle,
       puzzles: puzzle.puzzles.map((p, index) => ({
@@ -452,7 +447,6 @@ export async function updatePuzzleStats(date, stats) {
     const key = `puzzle_stats:${date}`;
 
     if (redis) {
-      // Increment puzzle-specific stats
       if (stats.played) {
         await redis.hIncrBy(key, 'played', 1);
       }
@@ -476,7 +470,6 @@ export async function updatePuzzleStats(date, stats) {
         await redis.hIncrBy(key, 'shared', 1);
       }
 
-      // Set expiry to 1 year
       await redis.expire(key, 365 * 24 * 60 * 60);
     } else {
       // In-memory fallback
@@ -590,7 +583,6 @@ export async function getPopularPuzzles(limit = 5) {
       const stats = await getPuzzleStats(dateStr);
 
       if (stats && stats.played >= 10) {
-        // Only include puzzles with at least 10 plays
         const puzzle = await getPuzzleForDate(dateStr);
         allStats.push({
           date: dateStr,
@@ -657,14 +649,12 @@ export async function trackUniquePlayer(sessionId) {
     const playerKey = `players:${today}`;
 
     if (redis) {
-      // Check if player is new today
       const isNew = await redis.sAdd(playerKey, sessionId);
       if (isNew) {
         await redis.hIncrBy(dailyKey, 'uniquePlayers', 1);
         await redis.hIncrBy('stats', 'uniquePlayers', 1);
       }
 
-      // Set expiry on player set
       await redis.expire(playerKey, 7 * 24 * 60 * 60); // 7 days
       await redis.expire(dailyKey, 30 * 24 * 60 * 60); // 30 days
     } else {
@@ -726,16 +716,6 @@ export async function updateDailyStats(stat) {
   }
 }
 
-function ensureFeedbackStore() {
-  if (!inMemoryDB.feedback) {
-    inMemoryDB.feedback = {
-      entries: {},
-      order: [],
-    };
-  }
-  return inMemoryDB.feedback;
-}
-
 function getEmptyFeedbackCounts() {
   return FEEDBACK_STATUS_VALUES.reduce(
     (acc, status) => ({
@@ -750,7 +730,6 @@ export async function createFeedbackEntry(entry) {
   const supabase = createServerClient();
 
   // Log the category being inserted for debugging
-  console.log('[createFeedbackEntry] Inserting category:', entry.category);
 
   const { data, error } = await supabase
     .from('feedback')
@@ -789,12 +768,14 @@ function transformFeedbackEntry(entry) {
     comments = Array.isArray(entry.comments) ? entry.comments : [];
   } else if (entry.admin_notes) {
     // Fallback: if only admin_notes exists (old format), show as single comment
-    comments = [{
-      id: 'legacy',
-      author: 'Admin',
-      message: entry.admin_notes,
-      createdAt: entry.updated_at || entry.created_at
-    }];
+    comments = [
+      {
+        id: 'legacy',
+        author: 'Admin',
+        message: entry.admin_notes,
+        createdAt: entry.updated_at || entry.created_at,
+      },
+    ];
   }
 
   return {
@@ -818,11 +799,7 @@ function transformFeedbackEntry(entry) {
 export async function getFeedbackEntryById(id) {
   const supabase = createServerClient();
 
-  const { data, error } = await supabase
-    .from('feedback')
-    .select('*')
-    .eq('id', id)
-    .single();
+  const { data, error } = await supabase.from('feedback').select('*').eq('id', id).single();
 
   if (error) {
     if (error.code === 'PGRST116') return null; // Not found
@@ -857,7 +834,7 @@ export async function getFeedbackEntries({ status = null, limit = 100 } = {}) {
     query = query.eq('status', status);
   }
 
-  const { data, error} = await query;
+  const { data, error } = await query;
 
   if (error) {
     logger.error('Failed to get feedback entries from Supabase', error);
@@ -865,19 +842,21 @@ export async function getFeedbackEntries({ status = null, limit = 100 } = {}) {
   }
 
   // Fetch usernames for each feedback entry
-  const entriesWithUsername = await Promise.all((data || []).map(async (entry) => {
-    // Try to fetch username from users table
-    if (entry.user_id) {
-      const { data: userData } = await supabase
-        .from('users')
-        .select('username')
-        .eq('id', entry.user_id)
-        .single();
+  const entriesWithUsername = await Promise.all(
+    (data || []).map(async (entry) => {
+      // Try to fetch username from users table
+      if (entry.user_id) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('username')
+          .eq('id', entry.user_id)
+          .single();
 
-      entry.username = userData?.username || null;
-    }
-    return entry;
-  }));
+        entry.username = userData?.username || null;
+      }
+      return entry;
+    })
+  );
 
   return entriesWithUsername.map(transformFeedbackEntry);
 }
@@ -933,12 +912,11 @@ export async function addFeedbackComment(id, comment) {
   // Add new comment to array
   const updatedComments = [...existingComments, comment];
 
-  // Update the comments field
   const { data, error } = await supabase
     .from('feedback')
     .update({
       comments: updatedComments,
-      updated_at: new Date().toISOString()
+      updated_at: new Date().toISOString(),
     })
     .eq('id', id)
     .select()
@@ -966,9 +944,7 @@ export async function addFeedbackComment(id, comment) {
 export async function getFeedbackStatusCounts() {
   const supabase = createServerClient();
 
-  const { data, error } = await supabase
-    .from('feedback')
-    .select('status');
+  const { data, error } = await supabase.from('feedback').select('status');
 
   if (error) {
     logger.error('Failed to get feedback status counts from Supabase', error);

@@ -92,15 +92,15 @@ const PROFANITY_LIST = [
  * Maps leetspeak to normal characters
  */
 const LEETSPEAK_MAP = {
-  '0': 'o',
-  '1': 'i',
-  '3': 'e',
-  '4': 'a',
-  '5': 's',
-  '7': 't',
-  '8': 'b',
+  0: 'o',
+  1: 'i',
+  3: 'e',
+  4: 'a',
+  5: 's',
+  7: 't',
+  8: 'b',
   '@': 'a',
-  '$': 's',
+  $: 's',
   '!': 'i',
   '+': 't',
   '()': 'o',
@@ -177,10 +177,8 @@ export function containsProfanity(text) {
       return true;
     }
 
-    // Check if profane word is embedded in the username
     // (e.g., "badwordhere" contains "badword")
     if (normalized.includes(normalizedWord)) {
-      // Only flag if it's a significant portion (> 50%) of the username
       // This prevents false positives like "grass" containing "ass"
       const ratio = normalizedWord.length / normalized.length;
       if (ratio > 0.5) {
@@ -208,8 +206,7 @@ export function validateUsernameContent(username) {
   if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
     return {
       valid: false,
-      reason:
-        'Username must be 3-20 characters and contain only letters, numbers, and underscores',
+      reason: 'Username must be 3-20 characters and contain only letters, numbers, and underscores',
     };
   }
 
@@ -258,7 +255,6 @@ export function sanitizeUsername(username) {
     sanitized = `User${randomNum}`;
   }
 
-  // Ensure length constraints
   if (sanitized.length < 3) {
     sanitized = sanitized + 'User';
   }

@@ -31,7 +31,6 @@ export default function DailyCrypticPage() {
   // Determine if the request is for an archive puzzle (has date param)
   const isArchiveRequest = !!dateParam;
 
-  // Show auth modal if not logged in instead of redirecting
   useEffect(() => {
     if (!authLoading && !user) {
       setShowAuthModal(true);
@@ -42,12 +41,10 @@ export default function DailyCrypticPage() {
       !cryptic.admireData && // Don't auto-start if we have admire data (completed puzzle)
       !cryptic.loading // Don't auto-start while loading
     ) {
-      // Auto-start the game immediately to prevent welcome screen flash
       cryptic.startGame();
     }
   }, [user, authLoading, cryptic]);
 
-  // Handle successful authentication
   const handleAuthSuccess = () => {
     setShowAuthModal(false);
     // Refresh the page or reload puzzle after auth
@@ -61,7 +58,6 @@ export default function DailyCrypticPage() {
     }
   }, [dateParam, cryptic]);
 
-  // Show loading while checking auth and subscription
   if (authLoading || subscriptionLoading || cryptic.loading) {
     return (
       <div
@@ -73,7 +69,6 @@ export default function DailyCrypticPage() {
     );
   }
 
-  // Show auth modal if not authenticated
   if (!user) {
     return (
       <>

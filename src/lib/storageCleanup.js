@@ -46,7 +46,6 @@ export async function cleanupGameEvents() {
     const stored = localStorage.getItem(gameEventsKey);
 
     if (!stored) {
-      console.log('[StorageCleanup] No game events found');
       return { success: true, message: 'No events to clean up' };
     }
 
@@ -64,7 +63,6 @@ export async function cleanupGameEvents() {
     );
     const eventsToKeep = sortedEvents.slice(0, MAX_EVENTS);
 
-    // Update storage
     const updated = {
       ...parsed,
       events: eventsToKeep,
@@ -117,7 +115,6 @@ export async function cleanupGameData() {
       );
       const eventsToKeep = sortedEvents.slice(0, MAX_EVENTS);
 
-      // Update storage
       const updated = {
         ...parsed,
         events: eventsToKeep,
@@ -126,10 +123,6 @@ export async function cleanupGameData() {
 
       localStorage.setItem(key, JSON.stringify(updated));
       cleanedAny = true;
-
-      console.log(
-        `[StorageCleanup] Cleaned ${key}: ${originalEventCount} -> ${eventsToKeep.length} events`
-      );
     }
 
     return {
@@ -149,8 +142,6 @@ export async function cleanupGameData() {
  * Emergency cleanup - run all cleanup functions
  */
 export async function emergencyCleanup() {
-  console.log('[StorageCleanup] Running emergency cleanup...');
-
   const results = {
     gameEvents: await cleanupGameEvents(),
     gameData: await cleanupGameData(),
@@ -158,9 +149,6 @@ export async function emergencyCleanup() {
 
   // Check final usage
   const usage = checkStorageUsage();
-
-  console.log('[StorageCleanup] Emergency cleanup completed');
-  console.log('[StorageCleanup] Final storage usage:', usage.totalMB, 'MB');
 
   return {
     success: true,

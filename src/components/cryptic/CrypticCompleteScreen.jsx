@@ -44,7 +44,6 @@ export default function CrypticCompleteScreen({
   };
 
   const getPuzzleNumber = () => {
-    // Calculate puzzle number based on date
     // Puzzle #1 starts on November 3, 2025
     const startDate = new Date('2025-11-03T00:00:00Z');
     const puzzleDate = new Date(currentPuzzleDate + 'T00:00:00Z');

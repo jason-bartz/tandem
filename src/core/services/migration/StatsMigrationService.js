@@ -11,10 +11,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 // Migration versions
 const MIGRATION_VERSIONS = {
-  LEGACY: 1,        // Original localStorage format
+  LEGACY: 1, // Original localStorage format
   EVENT_SOURCED: 2, // Event-sourced architecture
-  UNIFIED: 3,       // Unified stats with providers
-  CURRENT: 3
+  UNIFIED: 3, // Unified stats with providers
+  CURRENT: 3,
 };
 
 // Migration status
@@ -23,7 +23,7 @@ const MigrationStatus = {
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
   FAILED: 'failed',
-  ROLLED_BACK: 'rolled_back'
+  ROLLED_BACK: 'rolled_back',
 };
 
 export class StatsMigrationService {
@@ -40,14 +40,11 @@ export class StatsMigrationService {
    * Initialize migration service
    */
   async initialize() {
-    console.log('[Migration] Initializing migration service...');
-
     try {
       // Detect current data version
       this.currentVersion = await this.detectDataVersion();
       this.log(`Current data version: ${this.currentVersion}`);
 
-      // Check if migration is needed
       if (this.needsMigration()) {
         this.log('Migration needed');
         return true;
@@ -103,7 +100,7 @@ export class StatsMigrationService {
       'gameStats',
       'game_stats',
       'puzzleResults',
-      'streakData'
+      'streakData',
     ];
 
     for (const key of legacyKeys) {
@@ -140,7 +137,6 @@ export class StatsMigrationService {
     this.dryRun = dryRun;
     this.migrationStatus = MigrationStatus.IN_PROGRESS;
 
-    console.log('[Migration] Starting migration...');
     this.log(`Starting migration from v${this.currentVersion} to v${this.targetVersion}`);
 
     try {
@@ -162,7 +158,6 @@ export class StatsMigrationService {
         throw new Error('Migration verification failed');
       }
 
-      // Update version marker
       if (!dryRun) {
         localStorage.setItem('tandem_data_version', String(this.targetVersion));
       }
@@ -174,7 +169,7 @@ export class StatsMigrationService {
         success: true,
         fromVersion: this.currentVersion,
         toVersion: this.targetVersion,
-        log: this.migrationLog
+        log: this.migrationLog,
       };
     } catch (error) {
       console.error('[Migration] Migration failed:', error);
@@ -201,7 +196,7 @@ export class StatsMigrationService {
       migrations.push({
         version: 2,
         name: 'migrateToEventSourcing',
-        handler: this.migrateToEventSourcing.bind(this)
+        handler: this.migrateToEventSourcing.bind(this),
       });
     }
 
@@ -209,7 +204,7 @@ export class StatsMigrationService {
       migrations.push({
         version: 3,
         name: 'migrateToUnifiedStats',
-        handler: this.migrateToUnifiedStats.bind(this)
+        handler: this.migrateToUnifiedStats.bind(this),
       });
     }
 
@@ -239,7 +234,6 @@ export class StatsMigrationService {
   async migrateToEventSourcing() {
     this.log('Migrating to event sourcing...');
 
-    // Find and load legacy data
     const legacyData = this.detectLegacyData();
     if (!legacyData) {
       this.log('No legacy data found to migrate');
@@ -268,11 +262,11 @@ export class StatsMigrationService {
           gamesWon: data.wins || 0,
           currentStreak: data.currentStreak || 0,
           bestStreak: data.maxStreak || data.bestStreak || 0,
-          lastPlayedDate: data.lastPlayed || data.lastPlayedDate
+          lastPlayedDate: data.lastPlayed || data.lastPlayedDate,
         },
         synthetic: true,
-        sourceKey: key
-      }
+        sourceKey: key,
+      },
     });
 
     // Create synthetic game completed events
@@ -297,8 +291,8 @@ export class StatsMigrationService {
           won: i < gamesWon,
           mistakes: 0,
           time: 0,
-          synthetic: true
-        }
+          synthetic: true,
+        },
       });
     }
 
@@ -314,14 +308,13 @@ export class StatsMigrationService {
         data: {
           streak: data.currentStreak,
           date: data.lastPlayedDate || new Date().toISOString().split('T')[0],
-          synthetic: true
-        }
+          synthetic: true,
+        },
       });
     }
 
     // Save events if not dry run
     if (!this.dryRun) {
-      // Initialize event store if needed
       await gameEventStore.initialize();
 
       // Import events
@@ -330,14 +323,17 @@ export class StatsMigrationService {
         exportDate: migrationTimestamp,
         deviceId: 'migration',
         events,
-        stats: gameEventStore.computeStats(events)
+        stats: gameEventStore.computeStats(events),
       });
 
       // Archive legacy data
-      localStorage.setItem(`${key}_archived`, JSON.stringify({
-        archivedAt: migrationTimestamp,
-        originalData: data
-      }));
+      localStorage.setItem(
+        `${key}_archived`,
+        JSON.stringify({
+          archivedAt: migrationTimestamp,
+          originalData: data,
+        })
+      );
 
       // Remove original key
       localStorage.removeItem(key);
@@ -352,7 +348,6 @@ export class StatsMigrationService {
   async migrateToUnifiedStats() {
     this.log('Migrating to unified stats manager...');
 
-    // Initialize unified stats manager
     if (!this.dryRun) {
       await unifiedStatsManager.initialize();
 
@@ -372,7 +367,7 @@ export class StatsMigrationService {
     const backup = {
       version: this.currentVersion,
       timestamp: new Date().toISOString(),
-      data: {}
+      data: {},
     };
 
     // Backup all relevant localStorage keys
@@ -384,7 +379,7 @@ export class StatsMigrationService {
       'gameStats',
       'game_stats',
       'puzzleResults',
-      'streakData'
+      'streakData',
     ];
 
     for (const key of keysToBackup) {
@@ -413,11 +408,7 @@ export class StatsMigrationService {
     this.log('Rolling back migration...');
 
     try {
-      // Clear current data
-      const currentKeys = [
-        'tandem_data_version',
-        'gameEvents'
-      ];
+      const currentKeys = ['tandem_data_version', 'gameEvents'];
 
       for (const key of currentKeys) {
         localStorage.removeItem(key);
@@ -481,7 +472,7 @@ export class StatsMigrationService {
       targetVersion: this.targetVersion,
       status: this.migrationStatus,
       needsMigration: this.needsMigration(),
-      log: this.migrationLog
+      log: this.migrationLog,
     };
   }
 
@@ -511,7 +502,7 @@ export class StatsMigrationService {
     }
 
     const blob = new Blob([JSON.stringify(this.backupData, null, 2)], {
-      type: 'application/json'
+      type: 'application/json',
     });
 
     const url = URL.createObjectURL(blob);
@@ -521,7 +512,7 @@ export class StatsMigrationService {
       url,
       filename: `tandem_migration_backup_${timestamp}.json`,
       size: blob.size,
-      data: this.backupData
+      data: this.backupData,
     };
   }
 
@@ -553,11 +544,10 @@ export class StatsMigrationService {
     const entry = {
       timestamp: new Date().toISOString(),
       level,
-      message
+      message,
     };
 
     this.migrationLog.push(entry);
-    console.log(`[Migration] [${level.toUpperCase()}] ${message}`);
   }
 
   /**
@@ -569,16 +559,18 @@ export class StatsMigrationService {
         fromVersion: this.currentVersion,
         toVersion: this.targetVersion,
         status: this.migrationStatus,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       },
       log: this.migrationLog,
-      backup: this.backupData ? {
-        available: true,
-        timestamp: this.backupData.timestamp,
-        size: JSON.stringify(this.backupData).length
-      } : {
-        available: false
-      }
+      backup: this.backupData
+        ? {
+            available: true,
+            timestamp: this.backupData.timestamp,
+            size: JSON.stringify(this.backupData).length,
+          }
+        : {
+            available: false,
+          },
     };
   }
 }

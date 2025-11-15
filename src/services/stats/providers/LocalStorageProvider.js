@@ -20,19 +20,14 @@ export class LocalStorageProvider extends BaseProvider {
    * Initialize the provider
    */
   async initialize() {
-    console.log('[LocalStorageProvider] Initializing...');
-
     try {
-      // Check if Capacitor Preferences is available
       if (window.Capacitor && Preferences) {
         this.useCapacitor = true;
-        console.log('[LocalStorageProvider] Using Capacitor Preferences');
       } else {
         // Check localStorage availability
         const testKey = '__localStorage_test__';
         localStorage.setItem(testKey, 'test');
         localStorage.removeItem(testKey);
-        console.log('[LocalStorageProvider] Using browser localStorage');
       }
 
       this.available = true;
@@ -40,8 +35,6 @@ export class LocalStorageProvider extends BaseProvider {
 
       // Migrate old data if needed
       await this.migrateOldData();
-
-      console.log('[LocalStorageProvider] Initialized successfully');
     } catch (error) {
       console.error('[LocalStorageProvider] Initialization failed:', error);
       this.available = false;
@@ -79,8 +72,6 @@ export class LocalStorageProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[LocalStorageProvider] Fetching data...');
-
       let stored;
 
       if (this.useCapacitor) {
@@ -91,7 +82,6 @@ export class LocalStorageProvider extends BaseProvider {
       }
 
       if (!stored) {
-        console.log('[LocalStorageProvider] No data found');
         return null;
       }
 
@@ -103,8 +93,6 @@ export class LocalStorageProvider extends BaseProvider {
 
         const duration = Date.now() - startTime;
         this.recordFetchTime(duration);
-
-        console.log('[LocalStorageProvider] Data fetched successfully');
 
         return data;
       }
@@ -122,8 +110,6 @@ export class LocalStorageProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[LocalStorageProvider] Saving data...');
-
       // Validate data
       this.validateData(data);
 
@@ -186,8 +172,6 @@ export class LocalStorageProvider extends BaseProvider {
       const duration = Date.now() - startTime;
       this.recordSaveTime(duration);
 
-      console.log('[LocalStorageProvider] Data saved successfully');
-
       return {
         success: true,
         timestamp: dataToSave.timestamp,
@@ -220,7 +204,6 @@ export class LocalStorageProvider extends BaseProvider {
             localStorage.setItem(this.storageKey, serialized);
           }
 
-          console.log('[LocalStorageProvider] Emergency save successful');
           return {
             success: true,
             timestamp: dataToSave.timestamp,
@@ -246,8 +229,6 @@ export class LocalStorageProvider extends BaseProvider {
    */
   async clear() {
     try {
-      console.log('[LocalStorageProvider] Clearing data...');
-
       if (this.useCapacitor) {
         await Preferences.remove({ key: this.storageKey });
         await Preferences.remove({ key: this.backupKey });
@@ -256,7 +237,6 @@ export class LocalStorageProvider extends BaseProvider {
         localStorage.removeItem(this.backupKey);
       }
 
-      console.log('[LocalStorageProvider] Data cleared');
       return true;
     } catch (error) {
       console.error('[LocalStorageProvider] Failed to clear data:', error);
@@ -269,7 +249,6 @@ export class LocalStorageProvider extends BaseProvider {
    */
   async createBackup() {
     try {
-      // Check if we're near quota before attempting backup
       if (!this.useCapacitor) {
         const canBackup = await this.checkStorageQuota(0); // Just check, don't add
         if (!canBackup) {
@@ -292,8 +271,6 @@ export class LocalStorageProvider extends BaseProvider {
           localStorage.setItem(this.backupKey, current);
         }
       }
-
-      console.log('[LocalStorageProvider] Backup created');
     } catch (error) {
       // If backup fails with quota error, try to clean up backup file
       if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
@@ -319,8 +296,6 @@ export class LocalStorageProvider extends BaseProvider {
    */
   async restoreFromBackup() {
     try {
-      console.log('[LocalStorageProvider] Restoring from backup...');
-
       if (this.useCapacitor) {
         const backup = await Preferences.get({ key: this.backupKey });
         if (backup.value) {
@@ -336,7 +311,6 @@ export class LocalStorageProvider extends BaseProvider {
         }
       }
 
-      console.log('[LocalStorageProvider] Restored from backup');
       return true;
     } catch (error) {
       console.error('[LocalStorageProvider] Failed to restore from backup:', error);
@@ -363,8 +337,6 @@ export class LocalStorageProvider extends BaseProvider {
         }
 
         if (oldData) {
-          console.log('[LocalStorageProvider] Migrating old data from:', oldKey);
-
           // Parse old data
           const parsed = this.deserialize(oldData);
 
@@ -381,7 +353,6 @@ export class LocalStorageProvider extends BaseProvider {
             localStorage.removeItem(oldKey);
           }
 
-          console.log('[LocalStorageProvider] Migration completed');
           break;
         }
       }
@@ -455,8 +426,6 @@ export class LocalStorageProvider extends BaseProvider {
       return data; // No cleanup needed
     }
 
-    console.log('[LocalStorageProvider] Cleaning up events. Current:', data.events.length);
-
     try {
       // Sort events by timestamp (newest first)
       const sortedEvents = [...data.events].sort(
@@ -471,8 +440,6 @@ export class LocalStorageProvider extends BaseProvider {
 
       // If we still have too many, take only MAX_EVENTS
       const eventsToKeep = recentEvents.slice(0, MAX_EVENTS);
-
-      console.log('[LocalStorageProvider] Kept', eventsToKeep.length, 'events');
 
       return {
         ...data,
@@ -496,14 +463,11 @@ export class LocalStorageProvider extends BaseProvider {
 
         const percentUsed = (usage / quota) * 100;
 
-        console.log(`[LocalStorageProvider] Storage: ${percentUsed.toFixed(2)}% used`);
-
         // Warn if over 80% used
         if (percentUsed > 80) {
           console.warn('[LocalStorageProvider] Storage quota warning: over 80% used');
         }
 
-        // Check if we have enough space
         if (usage + dataSize > quota) {
           console.error('[LocalStorageProvider] Storage quota would be exceeded');
           return false;
@@ -547,9 +511,6 @@ export class LocalStorageProvider extends BaseProvider {
                 // Keep only 50 most recent events
                 const cleaned = this.cleanupOldEvents(data, 50);
                 await Preferences.set({ key, value: JSON.stringify(cleaned) });
-                console.log(
-                  `[LocalStorageProvider] Cleaned ${key} from ${data.events.length} to 50 events`
-                );
               }
             }
           } else {
@@ -561,14 +522,10 @@ export class LocalStorageProvider extends BaseProvider {
                   // Keep only 50 most recent events
                   const cleaned = this.cleanupOldEvents(data, 50);
                   localStorage.setItem(key, JSON.stringify(cleaned));
-                  console.log(
-                    `[LocalStorageProvider] Cleaned ${key} from ${data.events.length} to 50 events`
-                  );
                 }
               } catch (parseError) {
                 // If can't parse, remove the key entirely
                 localStorage.removeItem(key);
-                console.log(`[LocalStorageProvider] Removed corrupted key: ${key}`);
               }
             }
           }
@@ -584,12 +541,9 @@ export class LocalStorageProvider extends BaseProvider {
         } else {
           localStorage.removeItem(this.backupKey);
         }
-        console.log('[LocalStorageProvider] Removed backup to free space');
       } catch (e) {
         // Ignore
       }
-
-      console.log('[LocalStorageProvider] Emergency cleanup completed');
     } catch (error) {
       console.error('[LocalStorageProvider] Emergency cleanup failed:', error);
     }

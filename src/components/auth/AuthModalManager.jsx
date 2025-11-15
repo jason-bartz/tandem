@@ -26,7 +26,6 @@ export default function AuthModalManager() {
   const searchParams = useSearchParams();
   const isWeb = Capacitor.getPlatform() === 'web';
 
-  // Handle URL parameters
   useEffect(() => {
     if (!isWeb) return;
     const authParam = searchParams?.get('auth');
@@ -54,16 +53,13 @@ export default function AuthModalManager() {
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else if (actualError || authError === 'true') {
-      // Handle authentication errors from various sources
       let errorMessage = 'Authentication failed. Please try again.';
 
-      // Handle specific error cases
       if (actualErrorCode === 'otp_expired' || actualError === 'access_denied') {
         errorMessage =
           'Your password reset link has expired or is invalid. Please request a new one.';
         setMode('reset'); // Open in reset mode so user can request a new link
       } else if (actualErrorDescription) {
-        // Use the actual error description if available
         errorMessage = decodeURIComponent(actualErrorDescription.replace(/\+/g, ' '));
       }
 
@@ -86,7 +82,6 @@ export default function AuthModalManager() {
     }
   }, [searchParams, isWeb]);
 
-  // Handle custom events from other components
   useEffect(() => {
     if (!isWeb) return;
 
@@ -102,7 +97,6 @@ export default function AuthModalManager() {
     };
   }, [isWeb]);
 
-  // Only render on web platform
   if (!isWeb) {
     return null;
   }

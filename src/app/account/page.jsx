@@ -181,7 +181,6 @@ export default function AccountPage() {
       // Refresh profile in AuthContext to update sidebar display
       await refreshProfile();
 
-      // Clear success message after 3 seconds
       setTimeout(() => {
         setUsernameSuccess('');
       }, 3000);
@@ -239,9 +238,7 @@ export default function AccountPage() {
   const handleDeleteSuccess = async (response) => {
     // Account deleted successfully
     // eslint-disable-next-line no-console
-    console.log('[Account] Deletion successful:', response);
 
-    // Show success message if needed
     if (response.subscription?.warning) {
       alert(
         `Account deleted successfully.\n\n${response.subscription.warning}\n\n${response.subscription.action}`
@@ -326,7 +323,6 @@ export default function AccountPage() {
   const getTierName = (tier) => {
     if (!tier) return 'Tandem Unlimited';
 
-    // Handle both short names and full iOS bundle IDs
     const tierLower = tier.toLowerCase();
 
     const tiers = {
@@ -344,7 +340,6 @@ export default function AccountPage() {
   const getTierDescription = (tier) => {
     if (!tier) return '';
 
-    // Handle both short names and full iOS bundle IDs
     const tierLower = tier.toLowerCase();
 
     const descriptions = {

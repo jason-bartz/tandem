@@ -51,7 +51,6 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
         ? getCrypticStreakAchievements()
         : getStreakAchievements();
 
-      // Calculate status for each achievement
       const achievementsWithStatus = allAchievements.map((achievement) => {
         // Determine if this is a streak or wins achievement
         const isStreakAchievement = streakAchievements.some((a) => a.id === achievement.id);
@@ -87,7 +86,6 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
         return b.progress - a.progress;
       });
 
-      // Calculate totals
       const unlockedAchievements = achievementsWithStatus.filter((a) => a.isUnlocked);
 
       setAchievementData({

@@ -26,7 +26,6 @@ export async function GET(request) {
       );
     }
 
-    // Calculate date range based on current date in Eastern Time (puzzle release timezone)
     const now = new Date();
     const formatter = new Intl.DateTimeFormat('en-US', {
       timeZone: 'America/New_York',
@@ -112,7 +111,6 @@ export async function GET(request) {
     // Generate ETag for caching
     const etag = `"${page}-${limit}-${sort}-${puzzles.length}"`;
 
-    // Check if client has cached version
     const clientEtag = request.headers.get('if-none-match');
     if (clientEtag === etag) {
       return new NextResponse(null, {
@@ -143,7 +141,6 @@ export async function GET(request) {
       },
     });
 
-    // Set caching headers
     response.headers.set('ETag', etag);
     response.headers.set('Cache-Control', 'private, max-age=300'); // 5 minutes
 

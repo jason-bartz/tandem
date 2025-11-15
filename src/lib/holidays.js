@@ -17,7 +17,7 @@ export const holidays = {
   '08-26': "Women's Equality Day",
   '09-11': 'Patriot Day',
   '10-31': 'Halloween',
-  '11-11': "Veterans Day",
+  '11-11': 'Veterans Day',
   '12-24': 'Christmas Eve',
   '12-25': 'Christmas',
   '12-31': "New Year's Eve",
@@ -38,7 +38,7 @@ export const variableHolidays = {
   '2025-11-27': 'Thanksgiving',
   '2025-11-28': 'Black Friday',
   '2025-12-02': 'Cyber Monday',
-  
+
   // 2026
   '2026-02-16': "Presidents' Day",
   '2026-03-08': 'Daylight Saving',
@@ -56,20 +56,19 @@ export const variableHolidays = {
 
 // Get holiday for a specific date
 export function getHoliday(date) {
-  // Check if date is a string or Date object
   const dateStr = typeof date === 'string' ? date : date.toISOString().split('T')[0];
-  
+
   // Check variable holidays first (full date match)
   if (variableHolidays[dateStr]) {
     return variableHolidays[dateStr];
   }
-  
+
   // Check fixed holidays (month-day match)
   const monthDay = dateStr.substring(5); // Get MM-DD part
   if (holidays[monthDay]) {
     return holidays[monthDay];
   }
-  
+
   return null;
 }
 
@@ -77,7 +76,7 @@ export function getHoliday(date) {
 export function getHolidaysForMonth(year, month) {
   const monthHolidays = {};
   const monthStr = String(month + 1).padStart(2, '0');
-  
+
   // Check fixed holidays
   Object.entries(holidays).forEach(([date, name]) => {
     if (date.startsWith(monthStr)) {
@@ -85,7 +84,7 @@ export function getHolidaysForMonth(year, month) {
       monthHolidays[day] = name;
     }
   });
-  
+
   // Check variable holidays for this specific year-month
   const yearMonth = `${year}-${monthStr}`;
   Object.entries(variableHolidays).forEach(([date, name]) => {
@@ -94,6 +93,6 @@ export function getHolidaysForMonth(year, month) {
       monthHolidays[day] = name;
     }
   });
-  
+
   return monthHolidays;
 }

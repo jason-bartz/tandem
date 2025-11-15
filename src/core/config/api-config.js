@@ -33,7 +33,6 @@ export function getApiBaseUrl() {
 export function getApiUrl(path) {
   const baseUrl = getApiBaseUrl();
 
-  // Ensure path starts with /
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
 
   return `${baseUrl}${normalizedPath}`;
@@ -63,18 +62,9 @@ export async function getAuthHeaders() {
     // Get current session
     const {
       data: { session },
-      error,
     } = await supabase.auth.getSession();
 
     // Debug logging for iOS troubleshooting
-    console.log('[AUTH DEBUG] Session check:', {
-      hasSession: !!session,
-      hasAccessToken: !!session?.access_token,
-      tokenPreview: session?.access_token ? `${session.access_token.substring(0, 20)}...` : null,
-      error: error?.message,
-      platform: Capacitor.getPlatform(),
-      isNative: Capacitor.isNativePlatform(),
-    });
 
     if (session?.access_token) {
       return {
@@ -118,7 +108,6 @@ export async function capacitorFetch(url, options = {}, includeAuth = true) {
         headers: headers,
       };
 
-      // Handle body
       if (options.body) {
         if (typeof options.body === 'string') {
           capOptions.data = JSON.parse(options.body);
@@ -127,25 +116,8 @@ export async function capacitorFetch(url, options = {}, includeAuth = true) {
         }
       }
 
-      console.log('[CapacitorFetch] Using native HTTP:', {
-        url,
-        method: capOptions.method,
-        headers: {
-          ...capOptions.headers,
-          // Hide the actual token in logs
-          Authorization: capOptions.headers.Authorization ? 'Bearer [REDACTED]' : undefined,
-        },
-        hasData: !!capOptions.data,
-      });
-
       // Make request using Capacitor HTTP
       const response = await CapacitorHttp.request(capOptions);
-
-      console.log('[CapacitorFetch] Response received:', {
-        status: response.status,
-        headers: response.headers,
-        hasData: !!response.data,
-      });
 
       // Convert Capacitor response to fetch-like Response object
       return {

@@ -99,32 +99,17 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
   };
 
   const handleAppleSignIn = async () => {
-    console.log('[CrypticAuthModal] Apple Sign-In button clicked');
-    console.log('[CrypticAuthModal] Platform check:', {
-      isNative,
-      platform: typeof window !== 'undefined' ? window.Capacitor?.getPlatform() : 'unknown',
-    });
-
     setLoading(true);
     setError(null);
 
     try {
-      console.log('[CrypticAuthModal] Calling signInWithApple()...');
       const result = await signInWithApple();
-
-      console.log('[CrypticAuthModal] signInWithApple() returned:', {
-        hasUser: !!result?.user,
-        hasSession: !!result?.session,
-        hasError: !!result?.error,
-        errorMessage: result?.error?.message,
-      });
 
       if (result.error) {
         console.error('[CrypticAuthModal] Apple Sign-In error:', result.error);
         setError(result.error.message || 'Failed to sign in with Apple');
         errorHaptic();
       } else {
-        console.log('[CrypticAuthModal] Apple Sign-In successful');
         successHaptic();
         if (onSuccess) onSuccess();
         onClose();
@@ -334,7 +319,6 @@ export default function CrypticAuthModal({ isOpen, onClose, onSuccess }) {
                       type="text"
                       value={username}
                       onChange={(e) => {
-                        // Only allow alphanumeric and underscore
                         const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
                         setUsername(sanitized);
                       }}

@@ -4,20 +4,16 @@ import { Fragment, useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 
 // Dynamically import IOSContainer to avoid SSR issues
-const IOSContainer = dynamic(
-  () => import('./IOSContainer'),
-  {
-    ssr: false,
-    loading: () => <>{/* Loading... */}</>
-  }
-);
+const IOSContainer = dynamic(() => import('./IOSContainer'), {
+  ssr: false,
+  loading: () => <>{/* Loading... */}</>,
+});
 
 export default function IOSContainerWrapper({ children }) {
   const [isIOS, setIsIOS] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Check if running on iOS/Capacitor
     const checkPlatform = async () => {
       if (typeof window !== 'undefined') {
         try {
@@ -41,9 +37,5 @@ export default function IOSContainerWrapper({ children }) {
   // Choose container based on platform
   const Container = isIOS ? IOSContainer : Fragment;
 
-  return (
-    <Container>
-      {children}
-    </Container>
-  );
+  return <Container>{children}</Container>;
 }

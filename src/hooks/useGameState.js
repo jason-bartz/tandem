@@ -51,7 +51,6 @@ export function useGameState() {
 
       // If we have locked letters, check if value is already properly formatted
       if (locked) {
-        // Check if the value already has locked letters in their correct positions
         const hasLockedLettersInPlace = Object.keys(locked).every((pos) => {
           const position = parseInt(pos);
           return value[position]?.toLowerCase() === locked[pos]?.toLowerCase();
@@ -67,7 +66,6 @@ export function useGameState() {
           // Just ensure locked letters are placed correctly
           const chars = value.split('');
 
-          // Ensure the array is long enough
           const maxLockedPos = Math.max(...Object.keys(locked).map(Number));
           while (chars.length <= maxLockedPos) {
             chars.push(' ');

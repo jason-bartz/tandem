@@ -18,7 +18,6 @@ export default function GameContainer() {
   const { theme, toggleTheme, isAuto, currentState } = useTheme();
   const { playSound } = useSound();
 
-  // Auto-refresh puzzle at midnight ET
   useMidnightRefresh(() => {
     logger.info('Midnight detected, refreshing puzzle');
     // If not in the middle of playing, reload the puzzle
@@ -128,12 +127,6 @@ export default function GameContainer() {
 
           {game.gameState === GAME_STATES.COMPLETE &&
             (() => {
-              console.log('[GameContainer] Rendering CompleteScreen with:', {
-                won: game.solved === 4,
-                hintsUsed: game.hintsUsed,
-                hintedAnswers: game.hintedAnswers,
-                solved: game.solved,
-              });
               return (
                 <CompleteScreen
                   won={game.solved === 4}

@@ -11,7 +11,6 @@ export default function ShareButton({ shareText, className = '' }) {
   const { highContrast, reduceMotion } = useTheme();
 
   useEffect(() => {
-    // Check if running on native platform
     setIsNative(platformService.isPlatformNative());
   }, []);
 
@@ -28,7 +27,6 @@ export default function ShareButton({ shareText, className = '' }) {
         await platformService.haptic('medium');
       }
 
-      // Show success feedback if clipboard was used
       if (result.activityType === 'clipboard') {
         setCopied(true);
         setError(false);

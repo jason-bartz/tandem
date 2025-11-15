@@ -32,7 +32,6 @@ export async function POST(request) {
     // Get client identifier for rate limiting
     const clientId = getClientIdentifier(request);
 
-    // Check if client is locked out
     const lockoutStatus = await isLockedOut(clientId);
     if (lockoutStatus.locked) {
       return NextResponse.json(
@@ -51,7 +50,8 @@ export async function POST(request) {
 
     // LOCALHOST ONLY: Bypass for development
     const isLocalhost = request.headers.get('host')?.includes('localhost');
-    const localhostBypass = isLocalhost && username === 'delta_overseer_8688' && password === 'localhost123';
+    const localhostBypass =
+      isLocalhost && username === 'delta_overseer_8688' && password === 'localhost123';
 
     // Check credentials
     const isValidUsername = username === process.env.ADMIN_USERNAME;
@@ -82,7 +82,6 @@ export async function POST(request) {
       );
     }
 
-    // Clear failed attempts on successful login
     await clearFailedAttempts(clientId);
 
     // Log successful login

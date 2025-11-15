@@ -126,7 +126,6 @@ export async function revokeAppleToken(token, tokenTypeHint = 'refresh_token') {
 
     // If we have an authorization code, exchange it for a refresh token first
     if (tokenTypeHint === 'authorization_code') {
-      console.log('[AppleAuth] Exchanging authorization code for refresh token...');
       const exchangeResult = await getRefreshToken(token);
 
       if (!exchangeResult.success) {

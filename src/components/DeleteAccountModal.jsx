@@ -42,8 +42,6 @@ export default function DeleteAccountModal({
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
-  console.log('[DeleteAccountModal] Platform:', platform, 'isWeb:', isWeb);
-
   const hasActiveSubscription = accountInfo?.hasActiveSubscription || false;
 
   const handleClose = () => {
@@ -72,21 +70,12 @@ export default function DeleteAccountModal({
     setError(null);
 
     try {
-      console.log('[DeleteAccount] Starting deletion process');
-
       // Get session token
       const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
       const supabase = getSupabaseBrowserClient();
       const {
         data: { session },
       } = await supabase.auth.getSession();
-
-      console.log('[DeleteAccount] Session check:', {
-        hasSession: !!session,
-        hasAccessToken: !!session?.access_token,
-        tokenLength: session?.access_token?.length,
-        tokenPreview: session?.access_token?.substring(0, 20) + '...',
-      });
 
       if (!session) {
         throw new Error('Not authenticated');
@@ -98,13 +87,6 @@ export default function DeleteAccountModal({
 
       // Call delete API
       const apiUrl = getApiUrl('/api/account/delete');
-      console.log('[DeleteAccount] Calling API with:', {
-        hasAppleToken: !!appleRefreshToken,
-        isWeb,
-        apiUrl,
-        platform: typeof window !== 'undefined' && window.Capacitor ? window.Capacitor.getPlatform() : 'unknown',
-        authHeaderPreview: `Bearer ${session.access_token.substring(0, 20)}...`,
-      });
 
       const response = await capacitorFetch(apiUrl, {
         method: 'DELETE',
@@ -126,19 +108,12 @@ export default function DeleteAccountModal({
         throw fetchError;
       });
 
-      console.log('[DeleteAccount] Response status:', response.status);
-      console.log('[DeleteAccount] Response headers:', {
-        contentType: response.headers.get('content-type'),
-      });
-
       // Get the raw response text first to debug
       const responseText = await response.text();
-      console.log('[DeleteAccount] Raw response text:', responseText);
 
       let data;
       try {
         data = JSON.parse(responseText);
-        console.log('[DeleteAccount] Response data:', data);
       } catch (parseErr) {
         console.error('[DeleteAccount] Failed to parse response:', {
           error: parseErr,
@@ -153,7 +128,6 @@ export default function DeleteAccountModal({
         throw new Error(errorMsg);
       }
 
-      console.log('[DeleteAccount] Deletion successful');
       correctAnswer();
 
       // Call success callback (will sign out and redirect)
@@ -261,74 +235,74 @@ export default function DeleteAccountModal({
             This action cannot be undone
           </p>
 
-            {/* Active Subscription Warning */}
-            {hasActiveSubscription && (
-              <div
-                className={`rounded-2xl p-4 mb-6 border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-error/10 border-hc-error'
-                    : 'bg-orange-50 dark:bg-orange-900/20 border-orange-500'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <span className="text-2xl">💳</span>
-                  <div>
-                    <p className="font-bold text-orange-900 dark:text-orange-200 mb-2">
-                      Important: Active Subscription
-                    </p>
-                    <p className="text-sm text-orange-800 dark:text-orange-300 mb-3">
-                      Deleting your account will NOT cancel your subscription. You will continue to
-                      be charged.
-                    </p>
-                    <p className="text-sm text-orange-900 dark:text-orange-200 font-semibold">
-                      {isWeb ? (
-                        <>Cancel via the Stripe billing portal before deleting your account</>
-                      ) : (
-                        <>
-                          Cancel via iOS Settings → Your Name → Subscriptions before deleting your
-                          account
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* What Will Be Deleted */}
-            <div className="mb-6">
-              <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
-                What will be deleted:
-              </h3>
-              <div className="space-y-2">
-                <div className="flex items-start gap-2">
-                  <span className="text-red-500 mt-1">✗</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Your account credentials and login access
+          {/* Active Subscription Warning */}
+          {hasActiveSubscription && (
+            <div
+              className={`rounded-2xl p-4 mb-6 border-[3px] ${
+                highContrast
+                  ? 'bg-hc-error/10 border-hc-error'
+                  : 'bg-orange-50 dark:bg-orange-900/20 border-orange-500'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <span className="text-2xl">💳</span>
+                <div>
+                  <p className="font-bold text-orange-900 dark:text-orange-200 mb-2">
+                    Important: Active Subscription
+                  </p>
+                  <p className="text-sm text-orange-800 dark:text-orange-300 mb-3">
+                    Deleting your account will NOT cancel your subscription. You will continue to be
+                    charged.
+                  </p>
+                  <p className="text-sm text-orange-900 dark:text-orange-200 font-semibold">
+                    {isWeb ? (
+                      <>Cancel via the Stripe billing portal before deleting your account</>
+                    ) : (
+                      <>
+                        Cancel via iOS Settings → Your Name → Subscriptions before deleting your
+                        account
+                      </>
+                    )}
                   </p>
                 </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-red-500 mt-1">✗</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    All your game statistics and progress
-                  </p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <span className="text-red-500 mt-1">✗</span>
-                  <p className="text-sm text-gray-700 dark:text-gray-300">
-                    Your user preferences and settings
-                  </p>
-                </div>
-                {appleRefreshToken && (
-                  <div className="flex items-start gap-2">
-                    <span className="text-red-500 mt-1">✗</span>
-                    <p className="text-sm text-gray-700 dark:text-gray-300">
-                      Your Sign in with Apple authorization
-                    </p>
-                  </div>
-                )}
               </div>
             </div>
+          )}
+
+          {/* What Will Be Deleted */}
+          <div className="mb-6">
+            <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
+              What will be deleted:
+            </h3>
+            <div className="space-y-2">
+              <div className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Your account credentials and login access
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  All your game statistics and progress
+                </p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-red-500 mt-1">✗</span>
+                <p className="text-sm text-gray-700 dark:text-gray-300">
+                  Your user preferences and settings
+                </p>
+              </div>
+              {appleRefreshToken && (
+                <div className="flex items-start gap-2">
+                  <span className="text-red-500 mt-1">✗</span>
+                  <p className="text-sm text-gray-700 dark:text-gray-300">
+                    Your Sign in with Apple authorization
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
 
           {/* Timeline */}
           <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
@@ -347,47 +321,47 @@ export default function DeleteAccountModal({
             Are you absolutely sure?
           </p>
 
-            {/* Account Info */}
-            <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
-              <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
-                You are about to delete:
-              </p>
-              <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                {accountInfo?.email || 'Your account'}
+          {/* Account Info */}
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700 rounded-2xl border-2 border-gray-200 dark:border-gray-600">
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+              You are about to delete:
+            </p>
+            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
+              {accountInfo?.email || 'Your account'}
+            </p>
+          </div>
+
+          {/* Confirmation Input (Web only) */}
+          {isWeb && (
+            <div className="mb-6">
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Type <span className="text-red-600 dark:text-red-400 font-bold">DELETE</span> to
+                confirm:
+              </label>
+              <input
+                type="text"
+                value={confirmationText}
+                onChange={(e) => setConfirmationText(e.target.value)}
+                placeholder="DELETE"
+                className={`w-full px-4 py-3 rounded-xl border-[3px] font-mono font-bold text-lg ${
+                  highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border focus:border-hc-focus'
+                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-red-500'
+                } focus:outline-none`}
+                autoComplete="off"
+                disabled={loading}
+              />
+            </div>
+          )}
+
+          {/* iOS Confirmation */}
+          {!isWeb && (
+            <div className="mb-6">
+              <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
+                Tap "Delete Account" below to permanently delete your account.
               </p>
             </div>
-
-            {/* Confirmation Input (Web only) */}
-            {isWeb && (
-              <div className="mb-6">
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Type <span className="text-red-600 dark:text-red-400 font-bold">DELETE</span> to
-                  confirm:
-                </label>
-                <input
-                  type="text"
-                  value={confirmationText}
-                  onChange={(e) => setConfirmationText(e.target.value)}
-                  placeholder="DELETE"
-                  className={`w-full px-4 py-3 rounded-xl border-[3px] font-mono font-bold text-lg ${
-                    highContrast
-                      ? 'bg-hc-surface text-hc-text border-hc-border focus:border-hc-focus'
-                      : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-red-500'
-                  } focus:outline-none`}
-                  autoComplete="off"
-                  disabled={loading}
-                />
-              </div>
-            )}
-
-            {/* iOS Confirmation */}
-            {!isWeb && (
-              <div className="mb-6">
-                <p className="text-sm text-gray-700 dark:text-gray-300 text-center">
-                  Tap "Delete Account" below to permanently delete your account.
-                </p>
-              </div>
-            )}
+          )}
 
           {/* Error Message */}
           {error && (

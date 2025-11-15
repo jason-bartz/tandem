@@ -80,7 +80,6 @@ class AIService {
         const puzzle = this.parseResponse(responseText);
         this.validatePuzzle(puzzle);
 
-        // Track successful generation
         this.generationCount++;
         const successInfo = {
           date,
@@ -105,7 +104,6 @@ class AIService {
           fullError: JSON.stringify(error, Object.getOwnPropertyNames(error)),
         });
 
-        // Handle Anthropic API specific errors
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -226,7 +224,6 @@ class AIService {
 
         const hints = this.parseHintsResponse(responseText, puzzles.length);
 
-        // Track successful generation
         this.generationCount++;
         const successInfo = {
           theme,
@@ -250,7 +247,6 @@ class AIService {
           willRetry: attempt < this.maxRetries,
         });
 
-        // Handle Anthropic API specific errors (same as generatePuzzle)
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -556,7 +552,6 @@ Generate creative, clever hints for each answer above.`;
       throw new Error('Must have exactly 4 puzzle pairs');
     }
 
-    // Track all emojis used across the puzzle to prevent repetition
     const allEmojisUsed = new Set();
 
     puzzle.puzzles.forEach((p, index) => {
@@ -569,7 +564,7 @@ Generate creative, clever hints for each answer above.`;
         if (p.hint.length > 60) {
           throw new Error(`Hint ${index + 1} is too long (max 60 characters)`);
         }
-        // Check if hint contains the answer
+
         if (p.hint.toLowerCase().includes(p.answer.toLowerCase())) {
           throw new Error(`Hint ${index + 1} contains the answer`);
         }
@@ -666,7 +661,6 @@ Generate creative, clever hints for each answer above.`;
 
         const assessment = this.parseDifficultyResponse(responseText);
 
-        // Track successful assessment
         const successInfo = {
           theme,
           rating: assessment.rating,
@@ -688,7 +682,6 @@ Generate creative, clever hints for each answer above.`;
           willRetry: attempt < this.maxRetries,
         });
 
-        // Handle rate limiting
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -848,7 +841,12 @@ Analyze the puzzle above and provide your assessment.`;
    * @param {boolean} options.allowMultiWord - Require multi-word phrase (2-3 words)
    * @returns {Promise<Object>} - Generated cryptic puzzle
    */
-  async generateCrypticPuzzle({ difficulty = 3, crypticDevices = [], themeHint = null, allowMultiWord = false }) {
+  async generateCrypticPuzzle({
+    difficulty = 3,
+    crypticDevices = [],
+    themeHint = null,
+    allowMultiWord = false,
+  }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -860,7 +858,12 @@ Analyze the puzzle above and provide your assessment.`;
     // Retry logic for production reliability
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildCrypticPrompt({ difficulty, crypticDevices, themeHint, allowMultiWord });
+        const prompt = this.buildCrypticPrompt({
+          difficulty,
+          crypticDevices,
+          themeHint,
+          allowMultiWord,
+        });
         const genInfo = {
           difficulty,
           crypticDevices,
@@ -906,20 +909,23 @@ Analyze the puzzle above and provide your assessment.`;
         if (allowMultiWord) {
           const isMultiWord = puzzle.answer.includes(' ');
           if (!isMultiWord) {
-            throw new Error('Multi-word requirement not met: AI generated single-word answer when multi-word was required. Retrying...');
+            throw new Error(
+              'Multi-word requirement not met: AI generated single-word answer when multi-word was required. Retrying...'
+            );
           }
           const wordCount = puzzle.answer.split(/\s+/).length;
           if (wordCount < 2) {
-            throw new Error(`Multi-word requirement not met: Answer has only ${wordCount} word. Retrying...`);
+            throw new Error(
+              `Multi-word requirement not met: Answer has only ${wordCount} word. Retrying...`
+            );
           }
           logger.info('[ai.service] Multi-word requirement validated', {
             answer: puzzle.answer,
             wordCount,
-            wordPattern: puzzle.word_pattern
+            wordPattern: puzzle.word_pattern,
           });
         }
 
-        // Track successful generation
         this.generationCount++;
         const successInfo = {
           answer: puzzle.answer,
@@ -944,7 +950,6 @@ Analyze the puzzle above and provide your assessment.`;
           willRetry: attempt < this.maxRetries,
         });
 
-        // Handle Anthropic API specific errors
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -1021,7 +1026,7 @@ Analyze the puzzle above and provide your assessment.`;
     let deviceInstructions = '';
 
     if (crypticDevices && crypticDevices.length > 0) {
-      const deviceList = crypticDevices.map(d => d.replace('_', ' ')).join(', ');
+      const deviceList = crypticDevices.map((d) => d.replace('_', ' ')).join(', ');
       if (crypticDevices.length === 1) {
         deviceInstructions = `REQUIRED CRYPTIC DEVICE: ${deviceList}\nYou MUST use this specific device in your puzzle.`;
       } else {
@@ -1056,13 +1061,17 @@ This is NOT optional - single-word answers will be rejected.`
     };
 
     return `You are creating ONE cryptic crossword puzzle in the style of "Minute Cryptic."
-${allowMultiWord ? `
+${
+  allowMultiWord
+    ? `
 🚨🚨🚨 MANDATORY REQUIREMENT - READ THIS FIRST 🚨🚨🚨
 YOU MUST CREATE A MULTI-WORD ANSWER (2-3 WORDS WITH SPACES)
 Single-word answers are FORBIDDEN and will be REJECTED.
 Examples: "BLUE FEATHERS", "DOWN IN THE DUMPS", "OUT OF SORTS"
 🚨🚨🚨 DO NOT IGNORE THIS - IT IS NON-NEGOTIABLE 🚨🚨🚨
-` : ''}
+`
+    : ''
+}
 🚨 CRITICAL RULES:
 1. Use ONLY common, everyday English words (think Wordle difficulty)
 2. Source fodder must be simple words everyone knows
@@ -1688,13 +1697,19 @@ Example: If answer is ESTIMATE, hints can say "teams tie" but NOT "estimate"
 ═══════════════════════════════════════════════════════════════════
 JSON OUTPUT FORMAT
 ═══════════════════════════════════════════════════════════════════
-${allowMultiWord ? `
+${
+  allowMultiWord
+    ? `
 🚨 FINAL REMINDER: Your answer MUST be multi-word with spaces!
 "BLUE FEATHERS" ✓ | "BLUEFEATHERS" ✗ | "MOONLIGHT" ✗
-` : ''}
+`
+    : ''
+}
 Return ONLY this JSON (no markdown, no explanations after):
 
-${allowMultiWord ? `
+${
+  allowMultiWord
+    ? `
 // MULTI-WORD EXAMPLE:
 {
   "clue": "Blue feathers discarded? (4, 8)",
@@ -1733,7 +1748,8 @@ NOTE: For multi-word answers:
 - Add "word_pattern" field with array of word lengths: [4, 8]
 - Update "length" to total letters (excluding spaces): 12
 - Clue should show pattern: (4, 8) not just (12)
-` : `
+`
+    : `
 // SINGLE-WORD EXAMPLE:
 {
   "clue": "💬 disrupted for 😔 (5)",
@@ -1769,7 +1785,8 @@ NOTE: For multi-word answers:
   "explanation": "MOODS (💬 = talk/chat → moods) disrupted = DOOMS (😔 = gloomy fates)",
   "difficulty_rating": ${difficulty},
   "cryptic_device": "anagram"
-}`}
+}`
+}
 
 HINT WRITING GUIDELINES (CRITICAL):
 - Order hints: Indicator → Fodder → Definition → Letter (matches Minute Cryptic pedagogy)
@@ -1910,17 +1927,22 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
 
     // CRITICAL: Check for "=" in clue (not cryptic style!)
     if (puzzle.clue && puzzle.clue.includes('=')) {
-      errors.push('Clue contains "=" which is not cryptic crossword style. Clues must disguise the wordplay, not reveal it with mathematical notation.');
+      errors.push(
+        'Clue contains "=" which is not cryptic crossword style. Clues must disguise the wordplay, not reveal it with mathematical notation.'
+      );
     }
 
     // CRITICAL: Validate TWO-emoji requirement (Daily Cryptic signature mechanic)
     if (puzzle.clue) {
-      const emojiRegex = /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2})/gu;
+      const emojiRegex =
+        /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2})/gu;
       const emojis = puzzle.clue.match(emojiRegex) || [];
       const emojiCount = emojis.length;
 
       if (emojiCount !== 2) {
-        errors.push(`TWO-EMOJI REQUIREMENT: Must have exactly 2 emojis (found ${emojiCount}). This is the signature Daily Cryptic mechanic.`);
+        errors.push(
+          `TWO-EMOJI REQUIREMENT: Must have exactly 2 emojis (found ${emojiCount}). This is the signature Daily Cryptic mechanic.`
+        );
       }
     }
 
@@ -1936,7 +1958,9 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
     }
 
     if (puzzle.length !== totalLetters) {
-      errors.push(`Length mismatch: length=${puzzle.length} but answer="${puzzle.answer}" has ${totalLetters} letters (excluding spaces)`);
+      errors.push(
+        `Length mismatch: length=${puzzle.length} but answer="${puzzle.answer}" has ${totalLetters} letters (excluding spaces)`
+      );
     }
 
     // Allow spaces in multi-word answers
@@ -1946,17 +1970,21 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
 
     // Validate word_pattern for multi-word answers
     if (puzzle.answer && puzzle.answer.includes(' ')) {
-      const words = puzzle.answer.split(/\s+/).filter(w => w.length > 0);
+      const words = puzzle.answer.split(/\s+/).filter((w) => w.length > 0);
 
       if (!puzzle.word_pattern) {
         errors.push('Multi-word answer requires word_pattern field');
       } else if (puzzle.word_pattern.length !== words.length) {
-        errors.push(`word_pattern length (${puzzle.word_pattern.length}) does not match number of words (${words.length})`);
+        errors.push(
+          `word_pattern length (${puzzle.word_pattern.length}) does not match number of words (${words.length})`
+        );
       } else {
         // Validate each word length
         for (let i = 0; i < words.length; i++) {
           if (words[i].length !== puzzle.word_pattern[i]) {
-            errors.push(`Word ${i + 1} "${words[i]}" has ${words[i].length} letters but pattern specifies ${puzzle.word_pattern[i]}`);
+            errors.push(
+              `Word ${i + 1} "${words[i]}" has ${words[i].length} letters but pattern specifies ${puzzle.word_pattern[i]}`
+            );
           }
           if (words[i].length < 2) {
             errors.push(`Word ${i + 1} "${words[i]}" is too short (min 2 letters per word)`);
@@ -1986,17 +2014,20 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
           const hintLower = hint.text.toLowerCase();
           const answerLower = puzzle.answer.toLowerCase();
 
-          // Check if hint contains the full answer word as a standalone word (not as substring)
           // Use word boundaries to avoid false positives (e.g., "EARLS" in hint when answer is "PEARLS")
           const wordBoundaryRegex = new RegExp(`\\b${answerLower}\\b`, 'i');
           if (wordBoundaryRegex.test(hintLower)) {
-            errors.push(`Hint ${index + 1} (${hint.type}) contains the answer "${puzzle.answer}". Hints should guide, not reveal!`);
+            errors.push(
+              `Hint ${index + 1} (${hint.type}) contains the answer "${puzzle.answer}". Hints should guide, not reveal!`
+            );
           }
 
           // Additional check: if hint spells out the answer letter by letter (e.g., "H-A-L-L-M-A-R-K")
           const spelledOut = puzzle.answer.split('').join('-');
           if (hintLower.includes(spelledOut.toLowerCase())) {
-            errors.push(`Hint ${index + 1} (${hint.type}) spells out the answer. This is too revealing!`);
+            errors.push(
+              `Hint ${index + 1} (${hint.type}) spells out the answer. This is too revealing!`
+            );
           }
         }
       });
@@ -2032,7 +2063,9 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
     // CRITICAL: Validate anagram mechanics (letter-perfect matching)
     if (puzzle.cryptic_device === 'anagram') {
       // Extract fodder word from explanation (e.g., "MOODS (💬🔥) disrupted = DOOMS")
-      const explanationMatch = puzzle.explanation?.match(/^([A-Z]+)\s*(?:\([^)]+\))?\s*(?:scrambled|mixed|disrupted|broken|rearranged)/i);
+      const explanationMatch = puzzle.explanation?.match(
+        /^([A-Z]+)\s*(?:\([^)]+\))?\s*(?:scrambled|mixed|disrupted|broken|rearranged)/i
+      );
       if (explanationMatch) {
         const fodder = explanationMatch[1].toUpperCase();
         const answer = puzzle.answer.toUpperCase();
@@ -2044,7 +2077,7 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
         if (fodderSorted !== answerSorted) {
           errors.push(
             `ANAGRAM VERIFICATION FAILED: "${fodder}" (${fodder.split('').join(',')}) cannot become "${answer}" (${answer.split('').join(',')}). ` +
-            `Letters don't match! Fodder sorted: [${fodderSorted}], Answer sorted: [${answerSorted}]`
+              `Letters don't match! Fodder sorted: [${fodderSorted}], Answer sorted: [${answerSorted}]`
           );
         } else {
           logger.info('Anagram verification passed', { fodder, answer, sorted: fodderSorted });
@@ -2053,7 +2086,7 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
         // Couldn't extract fodder from explanation - warn but don't fail
         logger.warn('Could not extract fodder from anagram explanation for verification', {
           explanation: puzzle.explanation,
-          answer: puzzle.answer
+          answer: puzzle.answer,
         });
       }
     }
@@ -2082,12 +2115,14 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
           `is ${variation}`,
           `are ${variation}`,
           `is a ${variation}`,
-          `are a ${variation}`,
+          `are a ${variation}`
         );
       }
 
       // Check fodder and definition hints (most common violation points)
-      const hintsToCheck = puzzle.hints.filter(h => h.type === 'fodder' || h.type === 'definition');
+      const hintsToCheck = puzzle.hints.filter(
+        (h) => h.type === 'fodder' || h.type === 'definition'
+      );
 
       for (const hint of hintsToCheck) {
         const hintLower = hint.text.toLowerCase();
@@ -2096,9 +2131,9 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
           if (hintLower.includes(pattern)) {
             errors.push(
               `EMOJI=ANSWER VIOLATION DETECTED: ${hint.type} hint directly mentions the answer. ` +
-              `Hint contains "${pattern.split(' ').slice(-1)[0]}" when answer is "${puzzle.answer}". ` +
-              `Emojis must represent fodder/indicators, NOT the answer itself. ` +
-              `Players should NOT be able to guess the answer just by seeing the emojis.`
+                `Hint contains "${pattern.split(' ').slice(-1)[0]}" when answer is "${puzzle.answer}". ` +
+                `Emojis must represent fodder/indicators, NOT the answer itself. ` +
+                `Players should NOT be able to guess the answer just by seeing the emojis.`
             );
             logger.error('Emoji=Answer violation detected', {
               answer: puzzle.answer,
@@ -2177,7 +2212,6 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
         const result = this.parseMiniGridResponse(responseText);
         this.validateMiniGrid(result, wordDatabase);
 
-        // Track successful generation
         this.generationCount++;
         const successInfo = {
           duration,
@@ -2200,7 +2234,6 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
           willRetry: attempt < this.maxRetries,
         });
 
-        // Handle rate limiting
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -2257,7 +2290,7 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
 
     // Format word database by length
     const wordsByLength = {};
-    wordDatabase.forEach(word => {
+    wordDatabase.forEach((word) => {
       const len = word.length;
       if (!wordsByLength[len]) wordsByLength[len] = [];
       wordsByLength[len].push(word);
@@ -2265,7 +2298,6 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
 
     const wordDatabaseSummary = Object.entries(wordsByLength)
       .map(([len, words]) => {
-        // Show more examples for better AI understanding
         const examples = words.slice(0, 15).join(', ');
         return `  ${len} letters: ${words.length} words\n    Examples: ${examples}${words.length > 15 ? ', ...' : ''}`;
       })
@@ -2280,8 +2312,8 @@ GRID ANALYSIS:
 - Existing letters: ${gridState.existingLetters.length > 0 ? gridState.existingLetters.join(', ') : 'None'}
 - Black squares: ${gridState.blackSquares.length} positions
 - Words to fill:
-  Across: ${gridState.acrossWords.map(w => `${w.number} (${w.length} letters, row ${w.row})`).join(', ')}
-  Down: ${gridState.downWords.map(w => `${w.number} (${w.length} letters, col ${w.col})`).join(', ')}
+  Across: ${gridState.acrossWords.map((w) => `${w.number} (${w.length} letters, row ${w.row})`).join(', ')}
+  Down: ${gridState.downWords.map((w) => `${w.number} (${w.length} letters, col ${w.col})`).join(', ')}
 
 AVAILABLE WORD DATABASE (YOU MUST USE ONLY THESE WORDS):
 ${wordDatabaseSummary}
@@ -2379,7 +2411,6 @@ Respond with pure JSON only:`;
     const acrossWords = [];
     const downWords = [];
 
-    // Find existing letters and black squares
     for (let row = 0; row < grid.length; row++) {
       for (let col = 0; col < grid[row].length; col++) {
         const cell = grid[row][col];
@@ -2391,7 +2422,6 @@ Respond with pure JSON only:`;
       }
     }
 
-    // Find word slots (across)
     let wordNumber = 1;
     for (let row = 0; row < grid.length; row++) {
       let wordStart = null;
@@ -2413,7 +2443,6 @@ Respond with pure JSON only:`;
       }
     }
 
-    // Find word slots (down)
     for (let col = 0; col < grid[0].length; col++) {
       let wordStart = null;
       let length = 0;
@@ -2446,9 +2475,11 @@ Respond with pure JSON only:`;
    * Format grid for prompt display
    */
   formatGridForPrompt(grid) {
-    const display = grid.map((row, i) =>
-      `${i}: [${row.map(cell => cell === 'BLACK' ? '█' : (cell || '·')).join(' ')}]`
-    ).join('\n');
+    const display = grid
+      .map(
+        (row, i) => `${i}: [${row.map((cell) => (cell === 'BLACK' ? '█' : cell || '·')).join(' ')}]`
+      )
+      .join('\n');
     return display;
   }
 
@@ -2501,7 +2532,7 @@ Respond with pure JSON only:`;
     } catch (error) {
       logger.error('Failed to parse AI Mini grid response', {
         error: error.message,
-        responsePreview: responseText.substring(0, 500) + (responseText.length > 500 ? '...' : '')
+        responsePreview: responseText.substring(0, 500) + (responseText.length > 500 ? '...' : ''),
       });
       throw new Error('Failed to parse AI Mini grid response. Please try again.');
     }
@@ -2567,18 +2598,18 @@ Respond with pure JSON only:`;
     }
 
     // CRITICAL: Validate all words exist in database
-    const wordSet = new Set(wordDatabase.map(w => w.toUpperCase()));
+    const wordSet = new Set(wordDatabase.map((w) => w.toUpperCase()));
     const invalidWords = [];
 
     // Validate across words
-    result.clues.across.forEach(word => {
+    result.clues.across.forEach((word) => {
       if (!wordSet.has(word.answer.toUpperCase())) {
         invalidWords.push(`ACROSS ${word.number}: "${word.answer}" not in database`);
       }
     });
 
     // Validate down words
-    result.clues.down.forEach(word => {
+    result.clues.down.forEach((word) => {
       if (!wordSet.has(word.answer.toUpperCase())) {
         invalidWords.push(`DOWN ${word.number}: "${word.answer}" not in database`);
       }
@@ -2595,7 +2626,7 @@ Respond with pure JSON only:`;
 
     // Verify all extracted words exist in database
     const gridInvalidWords = [];
-    [...extractedWords.across, ...extractedWords.down].forEach(word => {
+    [...extractedWords.across, ...extractedWords.down].forEach((word) => {
       if (!wordSet.has(word.answer.toUpperCase())) {
         gridInvalidWords.push(`"${word.answer}" at ${word.direction} ${word.row || word.col}`);
       }
@@ -2631,7 +2662,7 @@ Respond with pure JSON only:`;
           continue;
         }
 
-        let startCol = col;
+        const startCol = col;
         let word = '';
         while (col < 5 && grid[row][col] !== 'BLACK') {
           word += grid[row][col];
@@ -2645,7 +2676,7 @@ Respond with pure JSON only:`;
             row,
             startCol,
             length: word.length,
-            direction: 'across'
+            direction: 'across',
           });
         }
       }
@@ -2660,7 +2691,7 @@ Respond with pure JSON only:`;
           continue;
         }
 
-        let startRow = row;
+        const startRow = row;
         let word = '';
         while (row < 5 && grid[row][col] !== 'BLACK') {
           word += grid[row][col];
@@ -2674,7 +2705,7 @@ Respond with pure JSON only:`;
             col,
             startRow,
             length: word.length,
-            direction: 'down'
+            direction: 'down',
           });
         }
       }
@@ -2735,7 +2766,6 @@ Respond with pure JSON only:`;
         const clues = this.parseMiniCluesResponse(responseText);
         this.validateMiniClues(clues, words);
 
-        // Track successful generation
         this.generationCount++;
         const successInfo = {
           duration,
@@ -2758,7 +2788,6 @@ Respond with pure JSON only:`;
           willRetry: attempt < this.maxRetries,
         });
 
-        // Handle rate limiting
         if (error.status === 429) {
           const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
           logger.warn('Rate limit hit, will retry after delay', {
@@ -2810,9 +2839,7 @@ Respond with pure JSON only:`;
    * Build the prompt for Mini clue generation
    */
   buildMiniCluesPrompt({ words }) {
-    const wordsList = words.map(w =>
-      `${w.number}. ${w.answer} (${w.length} letters)`
-    ).join('\n');
+    const wordsList = words.map((w) => `${w.number}. ${w.answer} (${w.length} letters)`).join('\n');
 
     return `You are an expert NYT Mini crossword clue writer. Generate clever, accessible clues for these words.
 
@@ -2914,7 +2941,7 @@ Now generate creative, high-quality clues for all the words above.`;
 
       // Convert array to object keyed by number
       const cluesObj = {};
-      result.clues.forEach(clue => {
+      result.clues.forEach((clue) => {
         cluesObj[clue.number] = clue.clue;
       });
 
@@ -2931,7 +2958,7 @@ Now generate creative, high-quality clues for all the words above.`;
   validateMiniClues(clues, words) {
     const errors = [];
 
-    words.forEach(word => {
+    words.forEach((word) => {
       if (!clues[word.number]) {
         errors.push(`Missing clue for word ${word.number} (${word.answer})`);
       } else {
@@ -2939,7 +2966,7 @@ Now generate creative, high-quality clues for all the words above.`;
         if (typeof clue !== 'string' || clue.length < 3) {
           errors.push(`Invalid clue for word ${word.number}: too short`);
         }
-        // Check if clue accidentally contains the answer
+
         if (clue.toUpperCase().includes(word.answer.toUpperCase())) {
           errors.push(`Clue for ${word.answer} contains the answer word`);
         }

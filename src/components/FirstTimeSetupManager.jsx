@@ -20,7 +20,6 @@ export default function FirstTimeSetupManager() {
     dismissFirstTimeSetup();
   };
 
-  // Only show modal if user is authenticated AND first-time setup is needed
   const shouldShowModal = showFirstTimeSetup && user?.id;
 
   return (

@@ -12,7 +12,6 @@ export function ThemeProvider({ children }) {
   const [reduceMotion, setReduceMotion] = useState(false);
   const [mounted, setMounted] = useState(false);
 
-
   const applyThemeToDOM = useCallback((themeValue, highContrastValue, reduceMotionValue) => {
     if (typeof document === 'undefined') return;
 
@@ -40,7 +39,6 @@ export function ThemeProvider({ children }) {
       document.documentElement.classList.remove('reduce-motion');
     }
 
-    // Update iOS StatusBar
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.StatusBar) {
       window.Capacitor.Plugins.StatusBar.setStyle({
         style: themeValue === THEME_CONFIG.DARK ? 'DARK' : 'LIGHT',
@@ -48,7 +46,6 @@ export function ThemeProvider({ children }) {
     }
   }, []);
 
-  // Initialize theme on mount
   useEffect(() => {
     const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME) || THEME_CONFIG.LIGHT;
     const savedHighContrast = localStorage.getItem(STORAGE_KEYS.HIGH_CONTRAST) === 'true';
@@ -74,7 +71,6 @@ export function ThemeProvider({ children }) {
     applyThemeToDOM(savedTheme, savedHighContrast, savedReduceMotion);
     setMounted(true);
   }, [applyThemeToDOM]);
-
 
   // Listen for app state changes (iOS foreground/background)
   useEffect(() => {

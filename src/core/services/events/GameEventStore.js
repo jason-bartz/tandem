@@ -81,7 +81,6 @@ class GameEventStore {
       this.startEventProcessor();
 
       this.isInitialized = true;
-      console.log('[GameEventStore] Initialized with', this.events.length, 'events');
     } catch (error) {
       console.error('[GameEventStore] Initialization failed:', error);
       throw error;
@@ -145,7 +144,6 @@ class GameEventStore {
         throw new Error(`Invalid value for ${field}: ${event[field]}`);
       }
 
-      // Skip type checking for null/undefined values on non-required fields
       if (
         rules.type &&
         typeof event[field] !== rules.type &&
@@ -263,7 +261,6 @@ class GameEventStore {
 
           stats.lastPlayedDate = event.data.puzzleDate || event.timestamp;
 
-          // Update daily stats
           this.updateDailyStats(stats, event);
           break;
 
@@ -296,7 +293,6 @@ class GameEventStore {
           break;
 
         case EventTypes.STATS_MIGRATED:
-          // Handle migrated stats
           if (event.data.stats) {
             Object.assign(stats, event.data.stats);
           }
@@ -304,7 +300,6 @@ class GameEventStore {
       }
     }
 
-    // Calculate derived stats
     if (stats.gamesPlayed > 0) {
       stats.winRate = (stats.gamesWon / stats.gamesPlayed) * 100;
       stats.averageTime = stats.totalTime / stats.gamesPlayed;
@@ -457,14 +452,12 @@ class GameEventStore {
    * Queue event for cloud sync
    */
   async queueForSync(event) {
-    // Skip if no event provided (e.g., bulk persist operations)
     if (!event) {
       return;
     }
 
     // This will be implemented with the sync manager
     // For now, just log
-    console.log('[GameEventStore] Event queued for sync:', event.id);
   }
 
   /**
@@ -518,31 +511,27 @@ class GameEventStore {
    */
   async processQueuedEvents() {
     // This will be implemented with the sync manager
-    console.log('[GameEventStore] Processing queued events...');
   }
 
   /**
    * Check for streak continuation
    */
-  async checkStreakContinuation(puzzleDate) {
+  async checkStreakContinuation(_puzzleDate) {
     // This will be implemented with the streak manager
-    console.log('[GameEventStore] Checking streak for:', puzzleDate);
   }
 
   /**
    * Check for achievements
    */
-  async checkAchievements(event) {
+  async checkAchievements(_event) {
     // This will be implemented with the achievements manager
-    console.log('[GameEventStore] Checking achievements for:', event.type);
   }
 
   /**
    * Queue failed event for retry
    */
-  async queueForRetry(event) {
+  async queueForRetry(_event) {
     // This will be implemented with the retry manager
-    console.log('[GameEventStore] Queueing for retry:', event.id);
   }
 
   /**
@@ -600,10 +589,7 @@ class GameEventStore {
       return; // No cleanup needed
     }
 
-    console.log('[GameEventStore] Starting cleanup. Current events:', this.events.length);
-
     try {
-      // Calculate stats before cleanup to preserve important data
       const currentStats = this.computeStats();
 
       // Sort events by timestamp (newest first)
@@ -656,8 +642,6 @@ class GameEventStore {
       };
 
       localStorage.setItem('gameEvents', JSON.stringify(stored));
-
-      console.log('[GameEventStore] Cleanup completed. Kept', this.events.length, 'events');
     } catch (error) {
       console.error('[GameEventStore] Cleanup failed:', error);
       // Don't throw - continue with existing events

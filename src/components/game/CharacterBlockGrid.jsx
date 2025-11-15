@@ -4,36 +4,6 @@ import CharacterBlock from './CharacterBlock';
 import { useTheme } from '@/contexts/ThemeContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
-/**
- * CharacterBlockGrid Component
- *
- * Manages a crossword-style grid of character cells for answer input.
- * Cells are contained in a bordered box with single dividing lines between them.
- * Handles keyboard navigation, auto-advance, and cell-level state.
- *
- * Following Apple HIG with:
- * - Smart auto-advance (like iOS verification codes)
- * - Keyboard navigation with arrow keys
- * - Automatic focus management
- * - Proper spacing (8pt grid)
- * - Accessibility support
- *
- * @param {Object} props
- * @param {string} props.value - Current answer value (full string)
- * @param {Function} props.onChange - Callback when value changes (answerIndex, newValue)
- * @param {number} props.answerLength - Total number of characters in answer
- * @param {number} props.answerIndex - Index of this answer in the puzzle
- * @param {boolean} props.isCorrect - Whether entire answer is correct
- * @param {boolean} props.isWrong - Whether entire answer is marked wrong
- * @param {Object|null} props.lockedLetters - Map of position -> letter for locked characters
- * @param {boolean} props.isFocused - Whether this answer row has focus
- * @param {Function} props.onFocus - Callback when grid receives focus
- * @param {Function} props.onKeyboardInput - Callback for keyboard input (key)
- * @param {boolean} props.hasHint - Whether this answer has a hint shown
- * @param {string} props.themeColor - Theme color for active blocks
- * @param {boolean} props.isSmallPhone - Small phone responsive flag
- * @param {boolean} props.isMobilePhone - Mobile phone responsive flag
- */
 export default function CharacterBlockGrid({
   value = '',
   onChange,
@@ -59,11 +29,8 @@ export default function CharacterBlockGrid({
   const wasFocused = useRef(false);
   const activeBlockRef = useRef(null);
 
-  // Initialize activeBlockIndex to first non-locked, empty position when focused
-  // Only run when focus changes, not when value changes
   useEffect(() => {
     if (isFocused && !isCorrect && !wasFocused.current) {
-      // Find first empty non-locked position
       let targetIndex = 0;
       for (let i = 0; i < answerLength; i++) {
         const isLocked = lockedLetters && lockedLetters[i];
@@ -75,27 +42,21 @@ export default function CharacterBlockGrid({
       }
       setActiveBlockIndex(targetIndex);
 
-      // Focus hidden input for keyboard
       if (hiddenInputRef.current) {
         hiddenInputRef.current.focus();
       }
     }
 
-    // Track focus state
     wasFocused.current = isFocused;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFocused, answerLength, lockedLetters, isCorrect]); // Removed 'value' from dependencies to prevent cursor reset
+  }, [isFocused, answerLength, lockedLetters, isCorrect]);
 
-  // Update activeBlockIndex when value changes (for on-screen keyboard input)
-  // This ensures the blue highlight follows the cursor when typing via on-screen keyboard
   useEffect(() => {
     if (!isFocused || isCorrect) return;
 
-    // Find the next empty position after the last filled character
     const paddedValue = (value || '').padEnd(answerLength, ' ');
     let lastFilledIndex = -1;
 
-    // Find the last non-empty, non-locked character
     for (let i = 0; i < answerLength; i++) {
       const isLocked = lockedLetters && lockedLetters[i];
       const hasValue = paddedValue[i] && paddedValue[i] !== ' ';
@@ -104,27 +65,21 @@ export default function CharacterBlockGrid({
       }
     }
 
-    // Set active index to the position after the last filled character
-    // or stay at current position if it's still empty
     let newActiveIndex = lastFilledIndex + 1;
 
-    // Make sure we don't go past the end
     if (newActiveIndex >= answerLength) {
       newActiveIndex = answerLength - 1;
     }
 
-    // Skip locked positions
     while (newActiveIndex < answerLength && lockedLetters && lockedLetters[newActiveIndex]) {
       newActiveIndex++;
     }
 
-    // Only update if the new index is valid and different from current
     if (newActiveIndex < answerLength && newActiveIndex !== activeBlockIndex) {
       setActiveBlockIndex(newActiveIndex);
     }
   }, [value, isFocused, isCorrect, answerLength, lockedLetters, activeBlockIndex]);
 
-  // Auto-scroll active block into view when it changes
   useEffect(() => {
     if (
       isFocused &&
@@ -133,7 +88,6 @@ export default function CharacterBlockGrid({
       activeBlockRef.current &&
       scrollContainerRef.current
     ) {
-      // Smooth scroll the active block into view, centered
       activeBlockRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',
@@ -142,7 +96,6 @@ export default function CharacterBlockGrid({
     }
   }, [activeBlockIndex, isFocused, isCorrect, answerLength]);
 
-  // Hide scroll indicator on first scroll
   useEffect(() => {
     const container = scrollContainerRef.current;
     if (!container || answerLength <= 8) return;
@@ -158,16 +111,13 @@ export default function CharacterBlockGrid({
     };
   }, [answerLength]);
 
-  // Find next available block (skipping locked ones)
   const findNextAvailableBlock = useCallback(
     (currentIndex, direction = 1) => {
       let nextIndex = currentIndex + direction;
 
-      // Boundary check
       if (nextIndex < 0) return 0;
       if (nextIndex >= answerLength) return answerLength - 1;
 
-      // Skip locked blocks
       while (
         nextIndex >= 0 &&
         nextIndex < answerLength &&
@@ -177,7 +127,6 @@ export default function CharacterBlockGrid({
         nextIndex += direction;
       }
 
-      // Ensure we stay in bounds
       if (nextIndex < 0) return currentIndex;
       if (nextIndex >= answerLength) return currentIndex;
 
@@ -186,12 +135,10 @@ export default function CharacterBlockGrid({
     [answerLength, lockedLetters]
   );
 
-  // Handle block focus
   const handleBlockFocus = useCallback(
     (blockIndex) => {
       if (isCorrect) return;
 
-      // Skip locked blocks
       const isLocked = lockedLetters && lockedLetters[blockIndex];
       if (isLocked) return;
 
@@ -210,23 +157,19 @@ export default function CharacterBlockGrid({
     [isCorrect, lockedLetters, onFocus]
   );
 
-  // Handle keyboard input
   const handleKeyDown = useCallback(
     (e) => {
       if (isCorrect) return;
 
       const key = e.key;
 
-      // Handle letter input
       if (/^[a-zA-Z]$/.test(key)) {
         e.preventDefault();
 
-        // Skip locked blocks
         if (lockedLetters && lockedLetters[activeBlockIndex]) {
           return;
         }
 
-        // Update value at current position
         const currentValue = value || '';
         // Pad value to answer length if needed
         const paddedValue = currentValue.padEnd(answerLength, ' ');
@@ -237,19 +180,15 @@ export default function CharacterBlockGrid({
 
         onChange(answerIndex, newValue);
 
-        // Auto-advance to next block only if not at the last position
         if (activeBlockIndex < answerLength - 1) {
           const nextIndex = findNextAvailableBlock(activeBlockIndex, 1);
           if (nextIndex > activeBlockIndex) {
             setActiveBlockIndex(nextIndex);
           }
         }
-      }
-      // Handle backspace
-      else if (key === 'Backspace') {
+      } else if (key === 'Backspace') {
         e.preventDefault();
 
-        // Skip locked blocks
         if (lockedLetters && lockedLetters[activeBlockIndex]) {
           // If on locked block, move back
           const prevIndex = findNextAvailableBlock(activeBlockIndex, -1);
@@ -273,7 +212,6 @@ export default function CharacterBlockGrid({
           const prevIndex = findNextAvailableBlock(activeBlockIndex, -1);
           setActiveBlockIndex(prevIndex);
 
-          // Only delete if the previous position is not locked
           const isPrevLocked = lockedLetters && lockedLetters[prevIndex];
           if (!isPrevLocked && paddedValue[prevIndex] && paddedValue[prevIndex] !== ' ') {
             const chars = paddedValue.split('');
@@ -282,9 +220,7 @@ export default function CharacterBlockGrid({
             onChange(answerIndex, newValue);
           }
         }
-      }
-      // Handle arrow keys for navigation
-      else if (key === 'ArrowLeft') {
+      } else if (key === 'ArrowLeft') {
         e.preventDefault();
         const prevIndex = findNextAvailableBlock(activeBlockIndex, -1);
         if (prevIndex < activeBlockIndex) {
@@ -296,9 +232,7 @@ export default function CharacterBlockGrid({
         if (nextIndex > activeBlockIndex) {
           setActiveBlockIndex(nextIndex);
         }
-      }
-      // Handle up/down arrow keys - pass to parent to navigate between answers
-      else if (key === 'ArrowUp') {
+      } else if (key === 'ArrowUp') {
         e.preventDefault();
         if (onKeyboardInput) {
           onKeyboardInput('ARROW_UP');
@@ -308,9 +242,7 @@ export default function CharacterBlockGrid({
         if (onKeyboardInput) {
           onKeyboardInput('ARROW_DOWN');
         }
-      }
-      // Handle Enter key - submit answer
-      else if (key === 'Enter') {
+      } else if (key === 'Enter') {
         e.preventDefault();
         if (onKeyboardInput) {
           onKeyboardInput('ENTER');
@@ -330,19 +262,16 @@ export default function CharacterBlockGrid({
     ]
   );
 
-  // Handle hidden input changes (for mobile keyboards)
   const handleInputChange = (e) => {
     // Mobile keyboards might use this
     const inputValue = e.target.value;
     if (inputValue && inputValue.length > 0) {
       const lastChar = inputValue[inputValue.length - 1];
       if (/^[a-zA-Z]$/.test(lastChar)) {
-        // Skip locked blocks
         if (lockedLetters && lockedLetters[activeBlockIndex]) {
           return;
         }
 
-        // Update value at current position
         const currentValue = value || '';
         // Pad value to answer length if needed
         const paddedValue = currentValue.padEnd(answerLength, ' ');
@@ -353,7 +282,6 @@ export default function CharacterBlockGrid({
 
         onChange(answerIndex, newValue);
 
-        // Auto-advance to next block only if not at the last position
         if (activeBlockIndex < answerLength - 1) {
           const nextIndex = findNextAvailableBlock(activeBlockIndex, 1);
           if (nextIndex > activeBlockIndex) {
@@ -361,7 +289,7 @@ export default function CharacterBlockGrid({
           }
         }
       }
-      // Clear input after processing
+
       e.target.value = '';
     }
   };
@@ -426,15 +354,6 @@ export default function CharacterBlockGrid({
   // Debug logging
   useEffect(() => {
     if (answerLength > 8) {
-      console.log('[CharacterBlockGrid] Scroll Debug:', {
-        answerLength,
-        isMobilePhone,
-        isSmallPhone,
-        needsScroll,
-        answerIndex,
-        windowWidth: typeof window !== 'undefined' ? window.innerWidth : 'N/A',
-        windowHeight: typeof window !== 'undefined' ? window.innerHeight : 'N/A',
-      });
     }
   }, [answerLength, isMobilePhone, isSmallPhone, needsScroll, answerIndex]);
 

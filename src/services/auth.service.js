@@ -57,10 +57,9 @@ class AuthService {
 
       if (response.ok) {
         const data = await response.json();
-        // Update CSRF token if provided
+
         if (data.csrfToken) {
           this.setCSRFToken(data.csrfToken);
-          console.log('CSRF token updated from token verification');
         } else {
           console.warn('No CSRF token received from token verification');
         }
@@ -104,7 +103,6 @@ class AuthService {
     if (includeCSRF) {
       if (this.csrfToken) {
         headers['x-csrf-token'] = this.csrfToken;
-        console.log('Including CSRF token in headers:', this.csrfToken.substring(0, 8) + '...');
       } else {
         console.error('CSRF token requested but not available! This will cause request to fail.');
       }

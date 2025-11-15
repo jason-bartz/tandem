@@ -126,7 +126,6 @@ class WebSubscriptionService {
         const clearedStatus = { isActive: false };
         this.subscriptionStatus = clearedStatus;
 
-        // Clear cache when not authenticated
         this.clearCache();
         return;
       }
@@ -141,7 +140,6 @@ class WebSubscriptionService {
 
       this.subscriptionStatus = newStatus;
 
-      // Update cache with new data
       this.updateCache(newStatus);
     } catch (error) {
       console.error('[WebSubscriptionService] Failed to load subscription status:', error);
@@ -167,7 +165,6 @@ class WebSubscriptionService {
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
     } catch (error) {
-      // Handle quota exceeded or other storage errors
       console.error('[WebSubscriptionService] Failed to update cache:', error);
     }
   }

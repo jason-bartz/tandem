@@ -65,7 +65,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         loadUserAvatar();
       }
 
-      // Auto-open paywall if requested
       if (openPaywall) {
         setShowPaywall(true);
       }
@@ -74,7 +73,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   }, [isOpen, openPaywall, user]);
 
   const checkAppBannerVisibility = () => {
-    // Only show banner on web version
     if (Capacitor.isNativePlatform()) {
       setShowAppBanner(false);
       return;
@@ -142,7 +140,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       if (cachedData) {
         try {
           const cached = JSON.parse(cachedData);
-          // Check if cache is recent (within 5 minutes)
+
           if (cached.timestamp && Date.now() - cached.timestamp < 5 * 60 * 1000) {
             setUserAvatar(cached.data);
           }

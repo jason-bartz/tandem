@@ -3,7 +3,6 @@ import GameContainerClient from '@/components/game/GameContainerClient';
 // Conditional dynamic based on build target
 const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
 
-// Only force dynamic for web builds, not for iOS static export
 export const dynamic = isCapacitorBuild ? undefined : 'force-dynamic';
 export const revalidate = isCapacitorBuild ? undefined : 0;
 

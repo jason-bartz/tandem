@@ -6,14 +6,12 @@ import logger, { Logger, LogLevel } from '../logger';
 
 describe('Logger', () => {
   let consoleDebugSpy;
-  let consoleInfoSpy;
-  let consoleWarnSpy;
   let consoleErrorSpy;
 
   beforeEach(() => {
     consoleDebugSpy = jest.spyOn(console, 'debug').mockImplementation();
-    consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
-    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation();
+    jest.spyOn(console, 'info').mockImplementation();
+    jest.spyOn(console, 'warn').mockImplementation();
     consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
     localStorage.clear();
   });
@@ -89,7 +87,6 @@ describe('Logger', () => {
       const prodLogger = new Logger();
       prodLogger.error('Test error', new Error('Test'));
 
-      // Check if localStorage was called
       const errorLogs = prodLogger.getErrorLogs();
       expect(Array.isArray(errorLogs)).toBe(true);
 

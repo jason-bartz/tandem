@@ -83,14 +83,9 @@ export function AuthProvider({ children }) {
       const avatarService = (await import('@/services/avatar.service')).default;
       const profile = await avatarService.getUserProfileWithAvatar(userId);
       setUserProfile(profile);
-      console.log('[AuthContext] User profile loaded:', {
-        userId,
-        hasUsername: !!profile?.username,
-        hasAvatar: !!profile?.avatar_image_path,
-      });
     } catch (error) {
       console.error('[AuthContext] Failed to load user profile:', error);
-      // Set a minimal profile with auth metadata as fallback
+
       setUserProfile({
         id: userId,
         username: null,
@@ -112,7 +107,6 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
-    // Auto-cleanup storage if needed (prevent quota issues)
     autoCleanupIfNeeded().catch((error) => {
       console.error('[AuthProvider] Auto cleanup failed:', error);
     });
@@ -141,15 +135,10 @@ export function AuthProvider({ children }) {
       if (session?.user) {
         loadUserProfile(session.user.id);
       } else {
-        // Clear profile when user signs out
         setUserProfile(null);
       }
 
-      // Check if first-time setup is needed when user signs in
       if (event === 'SIGNED_IN' && session?.user) {
-        console.log('[AuthProvider] User signed in, checking first-time setup status');
-
-        // Check if user needs to complete first-time setup
         (async () => {
           try {
             const avatarService = (await import('@/services/avatar.service')).default;
@@ -158,10 +147,8 @@ export function AuthProvider({ children }) {
             );
 
             if (!hasCompletedSetup) {
-              console.log('[AuthProvider] User needs to complete first-time setup');
               setShowFirstTimeSetup(true);
             } else {
-              console.log('[AuthProvider] User has already completed first-time setup');
             }
           } catch (error) {
             console.error('[AuthProvider] Failed to check first-time setup status:', error);
@@ -170,7 +157,6 @@ export function AuthProvider({ children }) {
 
         // Sync stats to leaderboard when user signs in
         // IMPORTANT: Run this completely non-blocking to avoid hanging auth UI
-        console.log('[AuthProvider] User signed in, syncing stats to leaderboard');
 
         // Run sync in background without blocking auth flow
         (async () => {
@@ -355,23 +341,15 @@ export function AuthProvider({ children }) {
    */
   const signInWithApple = async () => {
     try {
-      // Check if we're running in a Capacitor environment
       // Use globalThis to avoid build-time module resolution
       const isCapacitor =
         typeof window !== 'undefined' &&
         window.Capacitor &&
         window.Capacitor.getPlatform() === 'ios';
 
-      console.log('[Auth] signInWithApple() - Platform check:', {
-        hasWindow: typeof window !== 'undefined',
-        hasCapacitor: !!window.Capacitor,
-        platform: window.Capacitor?.getPlatform(),
-        isCapacitor,
-      });
-
       if (!isCapacitor) {
         // On web, use Supabase's Apple OAuth
-        console.log('[Auth] Using web OAuth flow');
+
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'apple',
           options: {
@@ -384,27 +362,16 @@ export function AuthProvider({ children }) {
       }
 
       // On iOS, use native Apple Sign In
-      console.log('[Auth] Using native iOS Apple Sign In');
 
       // Dynamic import to avoid bundling on web builds
       const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
-      console.log('[Auth] SignInWithApple plugin imported');
 
       // Generate raw nonce for Apple Sign In
       // Apple requires the nonce to be SHA-256 hashed, but Supabase needs the raw nonce
       const rawNonce = crypto.randomUUID();
       const hashedNonce = await sha256(rawNonce);
-      console.log('[Auth] Generated nonces:', {
-        rawNonceLength: rawNonce.length,
-        hashedNonceLength: hashedNonce.length,
-      });
 
       // Get Apple credentials
-      console.log('[Auth] Requesting Apple authorization with config:', {
-        clientId: 'com.tandemdaily.app',
-        redirectURI: 'https://tandemdaily.com/auth/callback',
-        scopes: 'email name',
-      });
 
       const result = await SignInWithApple.authorize({
         clientId: 'com.tandemdaily.app', // Your app's bundle ID
@@ -414,17 +381,8 @@ export function AuthProvider({ children }) {
         nonce: hashedNonce, // Pass hashed nonce to Apple
       });
 
-      console.log('[Auth] Apple authorization response received:', {
-        hasResponse: !!result.response,
-        hasIdentityToken: !!result.response?.identityToken,
-        hasAuthorizationCode: !!result.response?.authorizationCode,
-        hasUser: !!result.response?.user,
-        hasEmail: !!result.response?.email,
-      });
-
-      // Use the identity token to authenticate with Supabase
       // IMPORTANT: Pass the raw (unhashed) nonce to Supabase, not the hashed one
-      console.log('[Auth] Authenticating with Supabase using identity token...');
+
       const { data, error } = await supabase.auth.signInWithIdToken({
         provider: 'apple',
         token: result.response.identityToken,
@@ -436,12 +394,6 @@ export function AuthProvider({ children }) {
         throw error;
       }
 
-      console.log('[Auth] Supabase authentication successful:', {
-        hasUser: !!data?.user,
-        hasSession: !!data?.session,
-        userId: data?.user?.id,
-      });
-
       // Store Apple authorization code for account deletion token revocation
       // Per App Store Review Guideline 5.1.1(v), apps using Sign in with Apple
       // must revoke user tokens when deleting accounts
@@ -452,7 +404,6 @@ export function AuthProvider({ children }) {
             key: 'apple_authorization_code',
             value: result.response.authorizationCode,
           });
-          console.log('[Auth] Stored Apple authorization code for account deletion');
         } catch (prefError) {
           console.error('[Auth] Failed to store Apple authorization code:', prefError);
           // Non-critical error - continue with sign in
@@ -493,7 +444,6 @@ export function AuthProvider({ children }) {
         }
       }
 
-      console.log('[Auth] Apple sign-in successful:', { userId: data.user?.id });
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
       console.error('[Auth] Apple sign-in failed:', error);

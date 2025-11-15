@@ -75,7 +75,6 @@ export async function POST(request) {
         }
       }
 
-      // Clear cache
       if (global.puzzleCache) {
         global.puzzleCache = {};
       }

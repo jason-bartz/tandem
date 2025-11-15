@@ -23,7 +23,6 @@ class LocalDateService {
     // Platform detection for debugging
     this.platform = this.detectPlatform();
 
-    // Initialize debug mode from environment or local storage
     this.debugMode = this.initDebugMode();
   }
 
@@ -75,16 +74,11 @@ class LocalDateService {
   /**
    * Log debug information if debug mode is enabled
    * @private
-   * @param {string} method - Method name
-   * @param {object} data - Data to log
+   * @param {string} _method - Method name
+   * @param {object} _data - Data to log
    */
-  log(method, data) {
+  log(_method, _data) {
     if (this.debugMode) {
-      console.log(`[LocalDateService.${method}]`, {
-        platform: this.platform,
-        timestamp: new Date().toISOString(),
-        ...data,
-      });
     }
   }
 

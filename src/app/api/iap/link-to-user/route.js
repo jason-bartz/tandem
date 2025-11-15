@@ -67,7 +67,6 @@ export async function POST(request) {
       tier = 'soulmates';
     }
 
-    // Check if this transaction is already linked to a different user
     const { data: existingSubscription } = await supabase
       .from('subscriptions')
       .select('user_id, tier')
@@ -90,7 +89,6 @@ export async function POST(request) {
       );
     }
 
-    // Calculate expiry date
     let calculatedExpiryDate = expiryDate;
     if (!calculatedExpiryDate) {
       const now = new Date();
