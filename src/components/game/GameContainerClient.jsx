@@ -7,8 +7,6 @@ import { useSound } from '@/hooks/useSound';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useDeviceType } from '@/lib/deviceDetection';
-import { useAuth } from '@/contexts/AuthContext';
-import { useAvatarPrompt } from '@/hooks/useAvatarPrompt';
 import { GAME_STATES, GAME_CONFIG, STORAGE_KEYS } from '@/lib/constants';
 import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
@@ -17,7 +15,6 @@ import AdmireScreen from './AdmireScreen';
 import WelcomeScreenSkeleton from '@/components/shared/WelcomeScreenSkeleton';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
-import AvatarSelectionModal from '@/components/AvatarSelectionModal';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
@@ -33,12 +30,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
   const { isMobilePhone, isSmallPhone } = useDeviceType();
-  const { user } = useAuth();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
-
-  // Avatar prompt for first-time users (with 2-second delay for UX)
-  const { showAvatarPrompt, dismissPrompt, closePrompt } = useAvatarPrompt(user, 2000);
 
   // Check if user has seen onboarding (iOS only)
   useEffect(() => {
@@ -368,25 +361,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
           )}
         </div>
       </div>
-
-      {/* Avatar Selection Modal - Opens directly without intermediary prompt */}
-      {/* Only shown after onboarding completes and game loads */}
-      {onboardingChecked && !showOnboarding && showAvatarPrompt && user && (
-        <AvatarSelectionModal
-          isOpen={showAvatarPrompt}
-          onClose={(avatarId) => {
-            if (avatarId) {
-              // Avatar selected
-              closePrompt();
-            } else {
-              // User closed without selecting
-              dismissPrompt();
-            }
-          }}
-          userId={user.id}
-          isFirstTime={false}
-        />
-      )}
     </div>
   );
 }

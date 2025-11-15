@@ -205,8 +205,10 @@ export default function BottomPanel({
       {/* Panel */}
       <div
         ref={panelRef}
-        className={`absolute bottom-0 animate-slide-in-bottom shadow-2xl rounded-t-3xl ${
-          maxWidth ? 'left-1/2 -translate-x-1/2' : 'left-0 right-0'
+        className={`absolute bottom-0 shadow-2xl rounded-t-3xl ${
+          maxWidth
+            ? 'left-1/2 -translate-x-1/2 animate-slide-in-bottom-centered'
+            : 'left-0 right-0 animate-slide-in-bottom'
         } ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}
         style={{
           maxHeight,
