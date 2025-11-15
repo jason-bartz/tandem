@@ -24,13 +24,11 @@ export async function GET(request) {
     const supabase = await createServerComponentClient();
 
     // Call the database function to get streak leaderboard
-    const { data: leaderboard, error: leaderboardError } = await supabase.rpc(
-      'get_streak_leaderboard',
-      {
-        p_game_type: gameType,
-        p_limit: limit,
-      }
-    );
+    const { data, error: leaderboardError } = await supabase.rpc('get_streak_leaderboard', {
+      p_game_type: gameType,
+      p_limit: limit,
+    });
+    let leaderboard = data;
 
     if (leaderboardError) {
       logger.error('[GET /api/leaderboard/streak] Error fetching leaderboard:', leaderboardError);
