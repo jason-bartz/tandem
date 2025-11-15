@@ -35,6 +35,140 @@ async function setStorageItem(key, value) {
   }
 }
 
+/**
+ * Get user ID from current session
+ * @private
+ * @returns {Promise<string|null>} User ID or null if not authenticated
+ */
+async function getCurrentUserId() {
+  try {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+
+    const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+    const supabase = getSupabaseBrowserClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    return session?.user?.id || null;
+  } catch (error) {
+    logger.error('[storage] Failed to get current user ID', error);
+    return null;
+  }
+}
+
+/**
+ * Get user-specific storage key for stats
+ * This prevents stats collision when multiple users share the same browser/device
+ *
+ * @private
+ * @param {string|null} userId - User ID (null for anonymous users)
+ * @returns {string} Storage key namespaced by user
+ */
+function getUserStatsKey(userId) {
+  if (!userId) {
+    return STORAGE_KEYS.STATS; // Anonymous user: tandem_stats
+  }
+  return `${STORAGE_KEYS.STATS}_user_${userId}`; // Authenticated user: tandem_stats_user_{userId}
+}
+
+/**
+ * Get user-specific storage key for puzzle results
+ * This prevents puzzle result collision when multiple users share the same browser/device
+ *
+ * @private
+ * @param {string} date - Date string (YYYY-MM-DD)
+ * @param {string|null} userId - User ID (null for anonymous users)
+ * @returns {string} Storage key namespaced by user
+ */
+function getUserPuzzleKey(date, userId) {
+  const dateObj = new Date(date + 'T00:00:00');
+  const baseKey = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+
+  if (!userId) {
+    return baseKey; // Anonymous user
+  }
+  return `${baseKey}_user_${userId}`; // Authenticated user
+}
+
+/**
+ * Get user-specific storage key for puzzle progress
+ * This prevents progress collision when multiple users share the same browser/device
+ *
+ * @private
+ * @param {string} date - Date string (YYYY-MM-DD)
+ * @param {string|null} userId - User ID (null for anonymous users)
+ * @returns {string} Storage key namespaced by user
+ */
+function getUserProgressKey(date, userId) {
+  const dateObj = new Date(date + 'T00:00:00');
+  const baseKey = `tandem_progress_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+
+  if (!userId) {
+    return baseKey; // Anonymous user
+  }
+  return `${baseKey}_user_${userId}`; // Authenticated user
+}
+
+/**
+ * Migrate anonymous stats to user-specific storage on first sign-in
+ * This ensures existing stats are preserved when user creates an account
+ *
+ * @private
+ * @param {string} userId - User ID
+ */
+async function migrateAnonymousStatsToUser(userId) {
+  try {
+    const userStatsKey = getUserStatsKey(userId);
+    const anonymousStatsKey = STORAGE_KEYS.STATS;
+
+    // Check if user already has stats (already migrated or has stats from another device)
+    const existingUserStats = await getStorageItem(userStatsKey);
+    if (existingUserStats) {
+      logger.info('[storage.migrate] User already has stats, skipping migration');
+      return;
+    }
+
+    // Check if there are anonymous stats to migrate
+    const anonymousStats = await getStorageItem(anonymousStatsKey);
+    if (!anonymousStats) {
+      logger.info('[storage.migrate] No anonymous stats to migrate');
+      return;
+    }
+
+    logger.info('[storage.migrate] Migrating anonymous stats to user-specific storage', {
+      userId,
+      from: anonymousStatsKey,
+      to: userStatsKey,
+    });
+
+    // Copy anonymous stats to user-specific key
+    await setStorageItem(userStatsKey, anonymousStats);
+
+    // Clear anonymous stats to prevent confusion
+    // Note: We don't delete the key entirely in case user signs out
+    // Instead, we reset it to default values
+    const defaultStats = {
+      played: 0,
+      wins: 0,
+      currentStreak: 0,
+      bestStreak: 0,
+      crypticPlayed: 0,
+      crypticWins: 0,
+      crypticCurrentStreak: 0,
+      crypticBestStreak: 0,
+    };
+    await setStorageItem(anonymousStatsKey, JSON.stringify(defaultStats));
+
+    logger.info('[storage.migrate] Migration complete');
+  } catch (error) {
+    logger.error('[storage.migrate] Failed to migrate anonymous stats', error);
+    // Non-critical error - don't throw
+  }
+}
+
 function getTodayDateString() {
   return localDateService.getCurrentDateString();
 }
@@ -45,6 +179,9 @@ function getYesterdayDateString(todayString) {
 
 async function recoverStreakFromHistory(lastPlayedDate) {
   try {
+    const userId = await getCurrentUserId();
+    const userSuffix = userId ? `_user_${userId}` : '';
+
     // Get all storage keys to check for daily puzzle completions
     const isNative = Capacitor.isNativePlatform();
     let keys = [];
@@ -69,11 +206,23 @@ async function recoverStreakFromHistory(lastPlayedDate) {
         !key.includes('_last_') &&
         !key.includes('_product_') &&
         !key.includes('_subscription_') &&
-        key !== 'tandem_stats' &&
+        !key.startsWith('tandem_stats') &&
         !key.includes('_puzzle_')
       ) {
+        // Filter by user: only process keys that belong to the current user
+        if (userId && !key.endsWith(userSuffix)) {
+          continue; // Skip keys from other users
+        }
+        if (!userId && key.includes('_user_')) {
+          continue; // Skip authenticated user keys when anonymous
+        }
+
         const parts = key.split('_');
-        if (parts.length === 4 && parts[0] === 'tandem') {
+        // Check for both anonymous (length 4) and authenticated (length 6) key formats
+        const hasUserSuffix = parts.length >= 6 && parts[parts.length - 2] === 'user';
+        const isValidLength = parts.length === 4 || hasUserSuffix;
+
+        if (isValidLength && parts[0] === 'tandem') {
           const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
           const data = await getStorageItem(key);
 
@@ -229,8 +378,17 @@ export async function loadStats() {
     };
   }
 
-  const stats = await getStorageItem(STORAGE_KEYS.STATS);
-  logger.info('[storage.loadStats] Raw stats from storage:', stats);
+  // Get current user ID to namespace stats
+  const userId = await getCurrentUserId();
+  const statsKey = getUserStatsKey(userId);
+
+  // If user is authenticated, attempt migration from anonymous stats
+  if (userId) {
+    await migrateAnonymousStatsToUser(userId);
+  }
+
+  const stats = await getStorageItem(statsKey);
+  logger.info('[storage.loadStats] Raw stats from storage:', { statsKey, stats });
   const parsedStats = stats
     ? JSON.parse(stats)
     : {
@@ -508,9 +666,13 @@ async function checkAndUpdateStreak(stats) {
 
 export async function saveStats(stats, skipCloudSync = false, skipDatabaseSync = false) {
   if (typeof window !== 'undefined') {
-    logger.info('[storage.saveStats] Saving stats:', stats);
-    await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(stats));
-    logger.info('[storage.saveStats] Stats saved to key:', STORAGE_KEYS.STATS);
+    // Get current user ID to namespace stats
+    const userId = await getCurrentUserId();
+    const statsKey = getUserStatsKey(userId);
+
+    logger.info('[storage.saveStats] Saving stats:', { statsKey, stats });
+    await setStorageItem(statsKey, JSON.stringify(stats));
+    logger.info('[storage.saveStats] Stats saved to key:', statsKey);
 
     // Sync to database if user is authenticated and not skipping
     if (!skipDatabaseSync) {
@@ -520,8 +682,8 @@ export async function saveStats(stats, skipCloudSync = false, skipDatabaseSync =
           const dbStats = await saveUserStatsToDatabase(stats);
           if (dbStats) {
             logger.info('[storage.saveStats] Stats synced to database:', dbStats);
-            // Update local storage with merged stats from database
-            await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(dbStats));
+            // Update local storage with merged stats from database (use user-namespaced key)
+            await setStorageItem(statsKey, JSON.stringify(dbStats));
             return dbStats;
           }
         } catch (error) {
@@ -540,8 +702,8 @@ export async function saveStats(stats, skipCloudSync = false, skipDatabaseSync =
 
         if (syncResult.success && syncResult.mergedStats) {
           // CloudKit returned merged stats, update local storage with them
-          // Save the merged stats locally (with skipCloudSync to avoid infinite loop)
-          await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(syncResult.mergedStats));
+          // Save the merged stats locally (with skipCloudSync to avoid infinite loop, use user-namespaced key)
+          await setStorageItem(statsKey, JSON.stringify(syncResult.mergedStats));
 
           return syncResult.mergedStats;
         }
@@ -629,17 +791,25 @@ export async function updateGameStats(
   return stats;
 }
 
-export function getTodayKey() {
+export async function getTodayKey() {
   // Use player's local timezone for Wordle-style puzzle rotation
   // Each player gets a new puzzle at their local midnight
-  return localDateService.getTodayStorageKey();
+  const baseKey = localDateService.getTodayStorageKey();
+
+  // Namespace by user ID for multi-account support
+  const userId = await getCurrentUserId();
+  if (!userId) {
+    return baseKey; // Anonymous user
+  }
+  return `${baseKey}_user_${userId}`; // Authenticated user
 }
 
 export async function hasPlayedToday() {
   if (typeof window === 'undefined') {
     return false;
   }
-  const result = await getStorageItem(getTodayKey());
+  const todayKey = await getTodayKey();
+  const result = await getStorageItem(todayKey);
   return result !== null;
 }
 
@@ -647,16 +817,17 @@ export async function hasPlayedPuzzle(date) {
   if (typeof window === 'undefined') {
     return false;
   }
-  const dateObj = new Date(date + 'T00:00:00');
-  const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+  const userId = await getCurrentUserId();
+  const key = getUserPuzzleKey(date, userId);
   const result = await getStorageItem(key);
   return result !== null;
 }
 
 export async function saveTodayResult(result) {
   if (typeof window !== 'undefined') {
+    const todayKey = await getTodayKey();
     await setStorageItem(
-      getTodayKey(),
+      todayKey,
       JSON.stringify({
         ...result,
         timestamp: new Date().toISOString(),
@@ -667,8 +838,8 @@ export async function saveTodayResult(result) {
 
 export async function savePuzzleResult(date, result) {
   if (typeof window !== 'undefined') {
-    const dateObj = new Date(date + 'T00:00:00');
-    const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+    const userId = await getCurrentUserId();
+    const key = getUserPuzzleKey(date, userId);
 
     // Get current puzzle info to determine if this is the daily puzzle
     const todayDate = getTodayDateString();
@@ -693,8 +864,8 @@ export async function savePuzzleResult(date, result) {
 
 export async function savePuzzleProgress(date, progress) {
   if (typeof window !== 'undefined') {
-    const dateObj = new Date(date + 'T00:00:00');
-    const key = `tandem_progress_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+    const userId = await getCurrentUserId();
+    const key = getUserProgressKey(date, userId);
     const existing = await getStorageItem(key);
     const existingData = existing ? JSON.parse(existing) : {};
 
@@ -723,7 +894,8 @@ export async function getTodayResult() {
   if (typeof window === 'undefined') {
     return null;
   }
-  const result = await getStorageItem(getTodayKey());
+  const todayKey = await getTodayKey();
+  const result = await getStorageItem(todayKey);
   return result ? JSON.parse(result) : null;
 }
 
@@ -737,8 +909,8 @@ export async function getPuzzleResult(date) {
   if (typeof window === 'undefined') {
     return null;
   }
-  const dateObj = new Date(date + 'T00:00:00');
-  const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+  const userId = await getCurrentUserId();
+  const key = getUserPuzzleKey(date, userId);
   const result = await getStorageItem(key);
   const parsed = result ? JSON.parse(result) : null;
   return parsed;
@@ -755,7 +927,9 @@ export async function getStoredStats() {
     };
   }
 
-  const stats = await getStorageItem(STORAGE_KEYS.STATS);
+  const userId = await getCurrentUserId();
+  const statsKey = getUserStatsKey(userId);
+  const stats = await getStorageItem(statsKey);
   const parsedStats = stats ? JSON.parse(stats) : {};
 
   return {
@@ -772,6 +946,7 @@ export async function getWeeklyPuzzleStats() {
     return { puzzlesCompleted: 0, bestTime: null, averageTime: null };
   }
 
+  const userId = await getCurrentUserId();
   const today = getTodayDateString();
   const todayDate = new Date(today + 'T00:00:00');
   const dayOfWeek = todayDate.getDay();
@@ -796,8 +971,7 @@ export async function getWeeklyPuzzleStats() {
     const day = String(checkDate.getDate()).padStart(2, '0');
     const dateString = `${year}-${month}-${day}`;
 
-    const dateObj = new Date(dateString + 'T00:00:00');
-    const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+    const key = getUserPuzzleKey(dateString, userId);
 
     const result = await getStorageItem(key);
     if (result) {
@@ -839,6 +1013,9 @@ export async function getGameHistory() {
     return {};
   }
 
+  const userId = await getCurrentUserId();
+  const userSuffix = userId ? `_user_${userId}` : '';
+
   const history = {};
   const isNative = Capacitor.isNativePlatform();
   let keys = [];
@@ -859,7 +1036,7 @@ export async function getGameHistory() {
       key.startsWith('tandem_last_') || // Last submitted stats
       key.startsWith('tandem_product_') || // Subscription product ID
       key.startsWith('tandem_subscription_') || // Subscription status
-      key === 'tandem_stats' || // Global stats
+      key.startsWith('tandem_stats') || // Global stats (includes user-specific)
       key === 'tandem_puzzle_' || // Puzzle cache (not game history)
       key.startsWith('last_') || // Notification timestamps
       key === 'notification_permission' // Notification permission status
@@ -867,57 +1044,83 @@ export async function getGameHistory() {
       continue; // Skip non-game data
     }
 
+    // Filter keys by user: only process keys that belong to the current user
+    // For anonymous users (userId === null), only process keys without user suffix
+    // For authenticated users, only process keys with their user suffix
+    if (userId && !key.endsWith(userSuffix)) {
+      continue; // Skip keys from other users
+    }
+    if (!userId && key.includes('_user_')) {
+      continue; // Skip authenticated user keys when anonymous
+    }
+
     if (key.startsWith('tandem_')) {
       const parts = key.split('_');
 
-      // Handle completed/failed games (format: tandem_YYYY_M_D)
-      if (parts.length === 4 && parts[0] === 'tandem' && parts[1] !== 'progress') {
-        const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
-        const data = await getStorageItem(key);
-        if (data) {
-          try {
-            const parsed = JSON.parse(data);
-            history[date] = {
-              ...history[date],
-              completed: parsed.won || false,
-              failed: parsed.won === false, // Explicitly failed
-              time: parsed.time,
-              mistakes: parsed.mistakes,
-              theme: parsed.theme, // Include the saved theme
-              status: parsed.won ? 'completed' : 'failed',
-              isDaily: parsed.isDaily || false, // Track if it was a daily puzzle
-              isArchive: parsed.isArchive || false, // Track if it was an archive puzzle
-            };
-          } catch (error) {
-            // Skip corrupted or non-JSON data for this key
-            logger.error(`Failed to parse game result for ${key}`, error);
-            continue;
+      // Handle completed/failed games
+      // Formats: tandem_YYYY_M_D (anonymous) or tandem_YYYY_M_D_user_{userId} (authenticated)
+      if (parts[0] === 'tandem' && parts[1] !== 'progress') {
+        // For anonymous: parts = ['tandem', 'YYYY', 'M', 'D']
+        // For authenticated: parts = ['tandem', 'YYYY', 'M', 'D', 'user', '{userId}']
+        const hasUserSuffix = parts.length >= 6 && parts[parts.length - 2] === 'user';
+        const dateEndIndex = hasUserSuffix ? 4 : parts.length;
+
+        if (dateEndIndex >= 4) {
+          const date = `${parts[1]}-${parts[2].padStart(2, '0')}-${parts[3].padStart(2, '0')}`;
+          const data = await getStorageItem(key);
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              history[date] = {
+                ...history[date],
+                completed: parsed.won || false,
+                failed: parsed.won === false, // Explicitly failed
+                time: parsed.time,
+                mistakes: parsed.mistakes,
+                theme: parsed.theme, // Include the saved theme
+                status: parsed.won ? 'completed' : 'failed',
+                isDaily: parsed.isDaily || false, // Track if it was a daily puzzle
+                isArchive: parsed.isArchive || false, // Track if it was an archive puzzle
+              };
+            } catch (error) {
+              // Skip corrupted or non-JSON data for this key
+              logger.error(`Failed to parse game result for ${key}`, error);
+              continue;
+            }
           }
         }
       }
 
-      // Handle in-progress/attempted games (format: tandem_progress_YYYY_M_D)
-      if (parts[1] === 'progress' && parts.length === 5) {
-        const date = `${parts[2]}-${parts[3].padStart(2, '0')}-${parts[4].padStart(2, '0')}`;
-        const data = await getStorageItem(key);
-        if (data) {
-          try {
-            const parsed = JSON.parse(data);
-            // Only mark as attempted if there's no completion record
-            if (!history[date] || !history[date].status) {
-              history[date] = {
-                ...history[date],
-                attempted: true,
-                status: 'attempted',
-                lastPlayed: parsed.lastUpdated,
-                solved: parsed.solved || 0,
-                mistakes: parsed.mistakes || 0,
-              };
+      // Handle in-progress/attempted games
+      // Formats: tandem_progress_YYYY_M_D (anonymous) or tandem_progress_YYYY_M_D_user_{userId} (authenticated)
+      if (parts[1] === 'progress') {
+        // For anonymous: parts = ['tandem', 'progress', 'YYYY', 'M', 'D']
+        // For authenticated: parts = ['tandem', 'progress', 'YYYY', 'M', 'D', 'user', '{userId}']
+        const hasUserSuffix = parts.length >= 7 && parts[parts.length - 2] === 'user';
+        const dateEndIndex = hasUserSuffix ? 5 : parts.length;
+
+        if (dateEndIndex >= 5) {
+          const date = `${parts[2]}-${parts[3].padStart(2, '0')}-${parts[4].padStart(2, '0')}`;
+          const data = await getStorageItem(key);
+          if (data) {
+            try {
+              const parsed = JSON.parse(data);
+              // Only mark as attempted if there's no completion record
+              if (!history[date] || !history[date].status) {
+                history[date] = {
+                  ...history[date],
+                  attempted: true,
+                  status: 'attempted',
+                  lastPlayed: parsed.lastUpdated,
+                  solved: parsed.solved || 0,
+                  mistakes: parsed.mistakes || 0,
+                };
+              }
+            } catch (error) {
+              // Skip corrupted or non-JSON data for this key
+              logger.error(`Failed to parse game progress for ${key}`, error);
+              continue;
             }
-          } catch (error) {
-            // Skip corrupted or non-JSON data for this key
-            logger.error(`Failed to parse game progress for ${key}`, error);
-            continue;
           }
         }
       }
@@ -946,6 +1149,9 @@ export async function restoreFromiCloud() {
       return { success: false, message: 'No iCloud data found' };
     }
 
+    const userId = await getCurrentUserId();
+    const statsKey = getUserStatsKey(userId);
+
     const { stats, preferences, puzzleResults } = syncData.data;
     let restored = 0;
 
@@ -969,7 +1175,8 @@ export async function restoreFromiCloud() {
         lastCrypticStreakDate: stats.lastCrypticStreakDate || localStats.lastCrypticStreakDate,
       };
 
-      await setStorageItem(STORAGE_KEYS.STATS, JSON.stringify(mergedStats));
+      // Use user-namespaced key
+      await setStorageItem(statsKey, JSON.stringify(mergedStats));
 
       // Important: Don't sync back to CloudKit during restore
       // We're pulling FROM CloudKit, not pushing TO it
@@ -997,8 +1204,7 @@ export async function restoreFromiCloud() {
     if (puzzleResults && Array.isArray(puzzleResults)) {
       for (const result of puzzleResults) {
         if (result.date) {
-          const dateObj = new Date(result.date + 'T00:00:00');
-          const key = `tandem_${dateObj.getFullYear()}_${dateObj.getMonth() + 1}_${dateObj.getDate()}`;
+          const key = getUserPuzzleKey(result.date, userId);
 
           // Check if local result exists
           const existingData = await getStorageItem(key);
@@ -1010,7 +1216,7 @@ export async function restoreFromiCloud() {
             }
           }
 
-          // Save CloudKit version
+          // Save CloudKit version (use user-namespaced key)
           await setStorageItem(key, JSON.stringify(result));
           restored++;
         }
