@@ -5,13 +5,13 @@
  *
  * Shown after a user successfully creates an account for the FIRST time.
  * Congratulates them, highlights benefits of a free account, and prompts
- * them to select their avatar (mandatory before continuing).
+ * them to select their avatar (optional - can skip for now).
  *
  * Follows Apple Human Interface Guidelines:
  * - Clear visual hierarchy
  * - Engaging welcome message
  * - Consistent spacing (8pt grid)
- * - Prominent call-to-action
+ * - Prominent call-to-action with optional skip
  *
  * @component
  */
@@ -22,7 +22,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import BottomPanel from '@/components/shared/BottomPanel';
-import AvatarSelectionModal from '@/components/AvatarSelectionModal';
+import AvatarSelectionPane from '@/components/AvatarSelectionPane';
 import avatarService from '@/services/avatar.service';
 
 export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
@@ -42,6 +42,23 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
   const handleSelectAvatar = () => {
     lightTap();
     setShowAvatarSelection(true);
+  };
+
+  /**
+   * Handle skip button click - complete setup without avatar
+   */
+  const handleSkip = async () => {
+    lightTap();
+
+    // Mark first-time setup as complete without selecting avatar
+    try {
+      await avatarService.markFirstTimeSetupComplete(userId);
+    } catch (err) {
+      console.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete:', err);
+    }
+
+    // Close modal
+    onClose();
   };
 
   /**
@@ -101,13 +118,13 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
     <>
       <BottomPanel
         isOpen={isOpen && !showAvatarSelection}
-        onClose={() => {}} // No close - must select avatar
+        onClose={handleSkip}
         title="Account Created Successfully!"
         maxHeight="80vh"
         maxWidth="440px"
-        disableSwipe={true}
-        disableBackdropClick={true}
-        disableEscape={true}
+        disableSwipe={false}
+        disableBackdropClick={false}
+        disableEscape={false}
       >
         <div className="px-4 pb-6">
           {/* Subheading */}
@@ -194,22 +211,37 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
             </p>
           </div>
 
-          {/* CTA Button */}
-          <button
-            onClick={handleSelectAvatar}
-            className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
-              highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-            }`}
-          >
-            Select My Avatar
-          </button>
+          {/* CTA Buttons */}
+          <div className="flex flex-col gap-3">
+            {/* Primary CTA - Select Avatar */}
+            <button
+              onClick={handleSelectAvatar}
+              className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+                highContrast
+                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              }`}
+            >
+              Select My Avatar
+            </button>
+
+            {/* Secondary CTA - Skip */}
+            <button
+              onClick={handleSkip}
+              className={`w-full py-3 px-6 rounded-2xl font-medium text-sm transition-all ${
+                highContrast
+                  ? 'text-hc-text/70 hover:text-hc-text hover:underline'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline'
+              }`}
+            >
+              Skip for now
+            </button>
+          </div>
         </div>
       </BottomPanel>
 
-      {/* Avatar Selection Modal - Opens when CTA is clicked */}
-      <AvatarSelectionModal
+      {/* Avatar Selection Pane - Opens when CTA is clicked */}
+      <AvatarSelectionPane
         isOpen={showAvatarSelection}
         onClose={handleAvatarSelected}
         userId={userId}

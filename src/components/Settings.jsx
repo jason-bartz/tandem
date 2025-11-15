@@ -20,7 +20,7 @@
  */
 import { useState, useEffect } from 'react';
 import PaywallModal from '@/components/PaywallModal';
-import AvatarSelectionModal from '@/components/AvatarSelectionModal';
+import AvatarSelectionPane from '@/components/AvatarSelectionPane';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -70,6 +70,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         setShowPaywall(true);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, openPaywall, user]);
 
   const checkAppBannerVisibility = () => {
@@ -1095,8 +1096,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
         }}
       />
 
-      {/* Nested Panel - Avatar Selection Modal at z-60 */}
-      <AvatarSelectionModal
+      {/* Nested Panel - Avatar Selection Pane at z-60 */}
+      <AvatarSelectionPane
         isOpen={showAvatarModal}
         onClose={handleAvatarChange}
         userId={user?.id}

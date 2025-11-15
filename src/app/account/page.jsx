@@ -11,7 +11,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import Link from 'next/link';
 import DeleteAccountModal from '@/components/DeleteAccountModal';
 import PaywallModal from '@/components/PaywallModal';
-import AvatarSelectionModal from '@/components/AvatarSelectionModal';
+import AvatarSelectionPane from '@/components/AvatarSelectionPane';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -877,8 +877,8 @@ export default function AccountPage() {
         onPurchaseComplete={handlePurchaseComplete}
       />
 
-      {/* Avatar Selection Modal */}
-      <AvatarSelectionModal
+      {/* Avatar Selection Pane */}
+      <AvatarSelectionPane
         isOpen={showAvatarModal}
         onClose={handleAvatarChange}
         userId={user?.id}
