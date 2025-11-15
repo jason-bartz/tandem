@@ -30,14 +30,12 @@ export async function GET(request) {
     const supabase = await createServerComponentClient();
 
     // Call the database function to get leaderboard
-    const { data: leaderboard, error: leaderboardError } = await supabase.rpc(
-      'get_daily_leaderboard',
-      {
-        p_game_type: gameType,
-        p_puzzle_date: date,
-        p_limit: limit,
-      }
-    );
+    const { data, error: leaderboardError } = await supabase.rpc('get_daily_leaderboard', {
+      p_game_type: gameType,
+      p_puzzle_date: date,
+      p_limit: limit,
+    });
+    let leaderboard = data;
 
     if (leaderboardError) {
       logger.error('[GET /api/leaderboard/daily] Error fetching leaderboard:', leaderboardError);
