@@ -8,7 +8,7 @@
  */
 
 import { Resend } from 'resend';
-import { logger } from '../logger.js';
+import logger from '../logger.js';
 
 /**
  * Initialize Resend client with API key from environment variables
