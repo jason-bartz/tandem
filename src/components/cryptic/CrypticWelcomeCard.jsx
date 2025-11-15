@@ -80,7 +80,6 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
       if (response.success && response.puzzle) {
         setPuzzle(response.puzzle);
 
-        // Check if today's puzzle is completed
         const progress = await loadCrypticPuzzleProgress(puzzleInfo.isoDate);
         setTodayCompleted(progress?.completed || false);
       } else {
@@ -98,7 +97,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
 
   const getPuzzleNumber = () => {
     if (!puzzle) return 0;
-    // Calculate puzzle number based on date
+
     // Puzzle #1 starts on November 3, 2025
     const startDate = new Date('2025-11-03T00:00:00Z');
     const puzzleDate = new Date(puzzle.date + 'T00:00:00Z');
@@ -291,7 +290,7 @@ export default function CrypticWelcomeCard({ currentStreak = 0 }) {
         `}
         style={!highContrast ? { backgroundColor: '#cb6ce6' } : {}}
       >
-        {todayCompleted ? "You solved it!" : "Play Today's Puzzle"}
+        {todayCompleted ? 'You solved it!' : "Play Today's Puzzle"}
       </button>
     </div>
   );

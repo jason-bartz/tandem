@@ -54,7 +54,6 @@ export default function OnScreenKeyboard({
       event.stopPropagation();
     }
 
-    // Check if this key is already pressed (prevent duplicate rapid presses)
     if (pressedKeys.has(key)) {
       return;
     }
@@ -71,7 +70,6 @@ export default function OnScreenKeyboard({
     // Call the parent handler
     onKeyPress(key);
 
-    // Clear visual feedback after animation - remove specific key from set
     setTimeout(() => {
       setPressedKeys((prev) => {
         const next = new Set(prev);
@@ -82,7 +80,6 @@ export default function OnScreenKeyboard({
   };
 
   const handleKeyRelease = (key) => {
-    // Ensure pressed state is cleared on pointer/touch release
     // This is especially important for mobile devices
     setPressedKeys((prev) => {
       const next = new Set(prev);
@@ -137,21 +134,13 @@ export default function OnScreenKeyboard({
       // Regular styling - neo-brutalist
       if (isDark) {
         baseClasses += `
-          ${
-            isBackspaceKey
-              ? 'bg-gray-600 text-gray-100'
-              : 'bg-gray-700 text-gray-200'
-          }
+          ${isBackspaceKey ? 'bg-gray-600 text-gray-100' : 'bg-gray-700 text-gray-200'}
           ${!disabled && !isEnterKey && 'md:hover:bg-gray-600'}
           ${isPressed && !isEnterKey && 'bg-gray-600'}
         `;
       } else {
         baseClasses += `
-          ${
-            isBackspaceKey
-              ? 'bg-gray-300 text-gray-800'
-              : 'bg-gray-100 text-gray-800'
-          }
+          ${isBackspaceKey ? 'bg-gray-300 text-gray-800' : 'bg-gray-100 text-gray-800'}
           ${!disabled && !isEnterKey && 'md:hover:bg-gray-200'}
           ${isPressed && !isEnterKey && 'bg-gray-200'}
         `;
@@ -192,11 +181,7 @@ export default function OnScreenKeyboard({
           viewBox="0 0 24 24"
           strokeWidth={3}
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5 13l4 4L19 7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
         </svg>
       );
     }
@@ -211,7 +196,6 @@ export default function OnScreenKeyboard({
 
   const rows = KEYBOARD_LAYOUTS[layout] || KEYBOARD_LAYOUTS.QWERTY;
 
-  // Calculate grid columns based on actual row content
   const getGridConfig = (row, rowIndex) => {
     const letterCount = row.filter((k) => k !== 'ENTER' && k !== 'BACKSPACE').length;
 

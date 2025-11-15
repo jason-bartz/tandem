@@ -145,7 +145,6 @@ export async function POST(request) {
       }
     }
 
-    // Calculate average time from all completed puzzles
     const allTimes = Object.values(mergedPuzzles)
       .map((p) => p.timeTaken)
       .filter((t) => typeof t === 'number' && t > 0);

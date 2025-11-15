@@ -18,7 +18,6 @@ export default function AdminLayout({ children }) {
     pathname === '/admin/login' || pathname === '/admin/debug' || pathname === '/admin/test';
 
   useEffect(() => {
-    // Skip auth check for public pages
     if (isPublicPage) {
       setLoading(false);
       return;
@@ -27,9 +26,7 @@ export default function AdminLayout({ children }) {
     checkAuth();
   }, [pathname, isPublicPage]);
 
-  // Set admin-specific favicon
   useEffect(() => {
-    // Find and update all favicon links
     const faviconLinks = document.querySelectorAll('link[rel*="icon"]');
     const originalFavicons = new Map();
 
@@ -37,7 +34,6 @@ export default function AdminLayout({ children }) {
       // Save original href
       originalFavicons.set(link, link.href);
 
-      // Update to admin favicon
       if (link.rel === 'icon' || link.rel === 'shortcut icon') {
         if (link.sizes === '16x16' || link.getAttribute('sizes') === '16x16') {
           link.href = '/icons/admin-favicon-16x16.png';
@@ -97,7 +93,6 @@ export default function AdminLayout({ children }) {
     return children;
   }
 
-  // Show loading spinner while checking auth
   if (loading || !mounted) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-surface">

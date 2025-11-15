@@ -13,12 +13,6 @@ export function useMidnightRefresh(onMidnight) {
 
       // If the date has changed since last check
       if (currentDateRef.current && currentDateRef.current !== currentDate) {
-        console.log(
-          '[MidnightRefresh] Date changed from',
-          currentDateRef.current,
-          'to',
-          currentDate
-        );
         // Trigger the callback
         if (onMidnight) {
           onMidnight();
@@ -39,7 +33,6 @@ export function useMidnightRefresh(onMidnight) {
     const scheduleNextMidnightCheck = () => {
       const now = new Date();
 
-      // Calculate milliseconds until next local midnight
       const nextMidnight = new Date(now);
       nextMidnight.setHours(24, 0, 1, 0); // 12:00:01 AM next day in local timezone
 

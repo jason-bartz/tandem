@@ -19,14 +19,12 @@ class ErrorHandler {
       return;
     }
 
-    // Handle unhandled promise rejections
     window.addEventListener('unhandledrejection', (event) => {
       logger.error('Unhandled Promise Rejection', event.reason);
       this.handleError(event.reason, 'PROMISE_REJECTION');
       event.preventDefault();
     });
 
-    // Handle global errors
     window.addEventListener('error', (event) => {
       logger.error('Global Error', event.error || event.message);
       this.handleError(event.error || new Error(event.message), 'GLOBAL_ERROR');
@@ -68,7 +66,6 @@ class ErrorHandler {
       }
     });
 
-    // Handle based on severity
     this.handleBySeverity(errorReport);
 
     return errorReport;
@@ -159,7 +156,6 @@ class ErrorHandler {
    * Notify user of error
    */
   notifyUser(message, type = 'error') {
-    // Check if we're in a browser environment
     if (typeof window === 'undefined') {
       return;
     }
@@ -230,7 +226,6 @@ class ErrorHandler {
 // Create singleton instance
 const errorHandler = new ErrorHandler();
 
-// Auto-initialize in browser
 if (typeof window !== 'undefined') {
   errorHandler.initialize();
 }

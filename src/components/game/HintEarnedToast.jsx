@@ -27,10 +27,8 @@ export default function HintEarnedToast({ isSmallPhone = false, isMobilePhone = 
       // Haptic feedback
       lightTap();
 
-      // Show toast
       setVisible(true);
 
-      // Auto-hide after 2.5 seconds (Apple recommended duration)
       setTimeout(() => {
         setVisible(false);
       }, 2500);

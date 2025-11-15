@@ -6,7 +6,6 @@ const FAILED_LOGIN_PREFIX = 'failed_login:';
 const LOG_RETENTION_DAYS = 90;
 const SILENT_MODE = process.env.NODE_ENV === 'production'; // Silent in production, verbose in development
 
-// Check if KV is available (localhost vs production)
 const isKvAvailable = !!(
   process.env.KV_REST_API_URL &&
   process.env.KV_REST_API_TOKEN &&
@@ -17,7 +16,6 @@ const isKvAvailable = !!(
  * Log a failed login attempt
  */
 export async function logFailedLogin(clientId, username, reason) {
-  // Skip KV logging on localhost, just log to console
   if (!isKvAvailable) {
     logger.warn('Failed login attempt (localhost)', { clientId, username, reason });
     return true;
@@ -62,7 +60,6 @@ export async function logFailedLogin(clientId, username, reason) {
  * Log a successful login
  */
 export async function logSuccessfulLogin(clientId, username) {
-  // Skip KV logging on localhost, just log to console
   if (!isKvAvailable) {
     logger.info('Successful login (localhost)', { clientId, username });
     return true;

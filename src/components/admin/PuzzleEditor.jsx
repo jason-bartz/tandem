@@ -39,7 +39,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
       );
       setDifficultyRating(initialPuzzle.difficultyRating || '');
       setDifficultyFactors(initialPuzzle.difficultyFactors || null);
-      // Clear the message when switching puzzles
+
       setMessage('');
     }
   }, [initialPuzzle]);
@@ -148,7 +148,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const handleGenerateWithAI = async () => {
     setGenerating(true);
 
-    // Check if we should generate hints only (theme + all emoji/answer pairs filled, but hints missing)
     const hasTheme = theme.trim().length > 0;
     const allPairsComplete = puzzles.every(
       (p) => p.emoji.trim().length >= 1 && p.answer.trim().length >= 2
@@ -175,7 +174,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         const result = await adminService.generateHints(selectedDate, options);
 
         if (result.success) {
-          // Only update the hints, keep everything else
           const updatedPuzzles = puzzles.map((p, index) => ({
             ...p,
             hint: result.hints[index] || p.hint,

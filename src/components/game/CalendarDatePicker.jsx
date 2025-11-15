@@ -71,7 +71,6 @@ export default function CalendarDatePicker({
     return true;
   };
 
-  // Handle today button click
   const handleToday = () => {
     const today = new Date();
     const month = today.getMonth();
@@ -82,7 +81,6 @@ export default function CalendarDatePicker({
     onClose();
   };
 
-  // Handle done button click
   const handleDone = () => {
     onSelect(selectedMonth, selectedYear);
     onClose();

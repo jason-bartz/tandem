@@ -15,7 +15,7 @@ const MigrationStatus = {
   READY: 'ready',
   IN_PROGRESS: 'in_progress',
   COMPLETED: 'completed',
-  FAILED: 'failed'
+  FAILED: 'failed',
 };
 
 export function MigrationUI({ onComplete, onSkip }) {
@@ -41,7 +41,7 @@ export function MigrationUI({ onComplete, onSkip }) {
         setMigrationLog(status.log);
       } else {
         setStatus(MigrationStatus.NOT_NEEDED);
-        // Auto-complete after 2 seconds
+
         setTimeout(() => {
           onComplete();
         }, 2000);
@@ -79,7 +79,7 @@ export function MigrationUI({ onComplete, onSkip }) {
       // Run migration
       const result = await migrationService.migrate({
         dryRun: false,
-        skipBackup: false
+        skipBackup: false,
       });
 
       clearInterval(progressInterval);
@@ -89,10 +89,8 @@ export function MigrationUI({ onComplete, onSkip }) {
         setStatus(MigrationStatus.COMPLETED);
         setBackupAvailable(true);
 
-        // Initialize unified stats manager
         await unifiedStatsManager.initialize();
 
-        // Auto-complete after 3 seconds
         setTimeout(() => {
           onComplete();
         }, 3000);
@@ -139,7 +137,11 @@ export function MigrationUI({ onComplete, onSkip }) {
   };
 
   const skipMigration = () => {
-    if (window.confirm('Are you sure you want to skip migration? You can migrate later from settings.')) {
+    if (
+      window.confirm(
+        'Are you sure you want to skip migration? You can migrate later from settings.'
+      )
+    ) {
       onSkip();
     }
   };
@@ -170,8 +172,8 @@ export function MigrationUI({ onComplete, onSkip }) {
             <div className="update-icon">🔄</div>
             <h3>Data Update Available</h3>
             <p>
-              We've improved how Tandem stores and syncs your game data.
-              This one-time update will enhance performance and reliability.
+              We've improved how Tandem stores and syncs your game data. This one-time update will
+              enhance performance and reliability.
             </p>
 
             <div className="migration-benefits">
@@ -191,16 +193,10 @@ export function MigrationUI({ onComplete, onSkip }) {
             </div>
 
             <div className="migration-actions">
-              <button
-                className="btn-primary"
-                onClick={startMigration}
-              >
+              <button className="btn-primary" onClick={startMigration}>
                 Update Now
               </button>
-              <button
-                className="btn-secondary"
-                onClick={skipMigration}
-              >
+              <button className="btn-secondary" onClick={skipMigration}>
                 Skip for Now
               </button>
             </div>
@@ -212,10 +208,7 @@ export function MigrationUI({ onComplete, onSkip }) {
               </div>
             )}
 
-            <button
-              className="btn-link"
-              onClick={() => setShowDetails(!showDetails)}
-            >
+            <button className="btn-link" onClick={() => setShowDetails(!showDetails)}>
               {showDetails ? 'Hide' : 'Show'} technical details
             </button>
           </div>
@@ -228,17 +221,12 @@ export function MigrationUI({ onComplete, onSkip }) {
             <h3>Updating your data...</h3>
 
             <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${progress}%` }}
-              />
+              <div className="progress-fill" style={{ width: `${progress}%` }} />
             </div>
 
             <p className="progress-text">{Math.round(progress)}% complete</p>
 
-            {currentStep && (
-              <p className="current-step">{currentStep}</p>
-            )}
+            {currentStep && <p className="current-step">{currentStep}</p>}
 
             <div className="migration-log">
               {migrationLog.slice(-5).map((entry, index) => (
@@ -258,10 +246,7 @@ export function MigrationUI({ onComplete, onSkip }) {
             <p>Your game data has been successfully updated.</p>
 
             {backupAvailable && (
-              <button
-                className="btn-secondary"
-                onClick={exportBackup}
-              >
+              <button className="btn-secondary" onClick={exportBackup}>
                 Download Backup
               </button>
             )}
@@ -283,34 +268,22 @@ export function MigrationUI({ onComplete, onSkip }) {
 
             <div className="migration-actions">
               {backupAvailable && (
-                <button
-                  className="btn-primary"
-                  onClick={rollbackMigration}
-                >
+                <button className="btn-primary" onClick={rollbackMigration}>
                   Restore Previous Data
                 </button>
               )}
 
-              <button
-                className="btn-secondary"
-                onClick={startMigration}
-              >
+              <button className="btn-secondary" onClick={startMigration}>
                 Try Again
               </button>
 
-              <button
-                className="btn-secondary"
-                onClick={skipMigration}
-              >
+              <button className="btn-secondary" onClick={skipMigration}>
                 Skip for Now
               </button>
             </div>
 
             {backupAvailable && (
-              <button
-                className="btn-link"
-                onClick={exportBackup}
-              >
+              <button className="btn-link" onClick={exportBackup}>
                 Download backup file
               </button>
             )}
@@ -324,9 +297,7 @@ export function MigrationUI({ onComplete, onSkip }) {
 
   return (
     <div className="migration-ui">
-      <div className="migration-container">
-        {renderContent()}
-      </div>
+      <div className="migration-container">{renderContent()}</div>
     </div>
   );
 }
@@ -363,20 +334,14 @@ export function MigrationBanner({ onDismiss }) {
     <div className="migration-banner">
       <div className="banner-content">
         <span className="banner-icon">🔄</span>
-        <span className="banner-text">
-          Data update available for improved performance
-        </span>
+        <span className="banner-text">Data update available for improved performance</span>
         <button
           className="banner-action"
-          onClick={() => window.location.href = '/settings/migration'}
+          onClick={() => (window.location.href = '/settings/migration')}
         >
           Update Now
         </button>
-        <button
-          className="banner-dismiss"
-          onClick={handleDismiss}
-          aria-label="Dismiss"
-        >
+        <button className="banner-dismiss" onClick={handleDismiss} aria-label="Dismiss">
           ×
         </button>
       </div>
@@ -429,7 +394,7 @@ export function useMigration() {
     needsMigration,
     startMigration,
     rollback,
-    checkStatus
+    checkStatus,
   };
 }
 

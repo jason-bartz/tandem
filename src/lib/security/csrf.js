@@ -21,7 +21,6 @@ export async function generateCSRFToken() {
   const token = generateToken();
   const cookieStore = await cookies();
 
-  // Set the CSRF token in a secure, httpOnly cookie
   cookieStore.set(CSRF_COOKIE_NAME, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
@@ -45,7 +44,6 @@ export async function getCSRFToken() {
  * Validate a CSRF token from a request
  */
 export async function validateCSRFToken(request) {
-  // Skip CSRF validation for GET requests
   if (request.method === 'GET' || request.method === 'HEAD' || request.method === 'OPTIONS') {
     return true;
   }

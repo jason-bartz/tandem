@@ -25,12 +25,9 @@ export class GameCenterProvider extends BaseProvider {
    * Initialize Game Center
    */
   async initialize() {
-    console.log('[GameCenterProvider] Initializing...');
-
     try {
       // Check platform
       if (this.getPlatform() !== 'ios') {
-        console.log('[GameCenterProvider] Not available on non-iOS platforms');
         this.available = false;
         this.initialized = false;
         return;
@@ -52,10 +49,7 @@ export class GameCenterProvider extends BaseProvider {
 
         // Process any pending operations
         await this.processPendingOperations();
-
-        console.log('[GameCenterProvider] Initialized successfully');
       } else {
-        console.log('[GameCenterProvider] Authentication failed');
         this.available = false;
         this.initialized = false;
       }
@@ -107,13 +101,10 @@ export class GameCenterProvider extends BaseProvider {
         await this.authenticate();
       }
 
-      console.log('[GameCenterProvider] Fetching stats...');
-
       // Perform comprehensive sync
       const result = await EnhancedGameCenter.syncStatsWithGameCenter();
 
       if (!result || !result.stats) {
-        console.log('[GameCenterProvider] No stats found');
         return null;
       }
 
@@ -139,8 +130,6 @@ export class GameCenterProvider extends BaseProvider {
       const duration = Date.now() - startTime;
       this.recordFetchTime(duration);
 
-      console.log('[GameCenterProvider] Stats fetched successfully');
-
       return data;
     } catch (error) {
       this.recordFetchError(error);
@@ -159,8 +148,6 @@ export class GameCenterProvider extends BaseProvider {
         await this.authenticate();
       }
 
-      console.log('[GameCenterProvider] Saving stats...');
-
       // Validate data
       this.validateData(data);
 
@@ -178,12 +165,6 @@ export class GameCenterProvider extends BaseProvider {
           leaderboardID: 'longestStreak', // Use the key, not the full ID
           score: bestStreak,
         });
-
-        console.log(
-          '[GameCenterProvider] Submitting best streak:',
-          bestStreak,
-          'to leaderboard: longestStreak (com.tandemdaily.app.longest_streak)'
-        );
       }
 
       // Note: Other stats (games played, wins, etc.) are synced via CloudKit only
@@ -203,8 +184,6 @@ export class GameCenterProvider extends BaseProvider {
 
       const duration = Date.now() - startTime;
       this.recordSaveTime(duration);
-
-      console.log('[GameCenterProvider] Stats saved successfully');
 
       return {
         success: true,
@@ -336,7 +315,6 @@ export class GameCenterProvider extends BaseProvider {
    */
   queueOperation(type, data) {
     this.pendingOperations.push({ type, data, timestamp: Date.now() });
-    console.log('[GameCenterProvider] Operation queued:', type);
   }
 
   /**
@@ -344,12 +322,6 @@ export class GameCenterProvider extends BaseProvider {
    */
   async processPendingOperations() {
     if (this.pendingOperations.length === 0) return;
-
-    console.log(
-      '[GameCenterProvider] Processing',
-      this.pendingOperations.length,
-      'pending operations'
-    );
 
     const operations = [...this.pendingOperations];
     this.pendingOperations = [];
@@ -411,7 +383,6 @@ export class GameCenterProvider extends BaseProvider {
   setupEventListeners() {
     // Listen for authentication changes
     window.addEventListener('gameCenterAuthenticated', (event) => {
-      console.log('[GameCenterProvider] Authentication status changed:', event.detail);
       this.authenticated = event.detail.authenticated;
 
       if (this.authenticated) {

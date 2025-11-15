@@ -107,7 +107,6 @@ export default function UnifiedArchiveCalendar({
    */
   const loadTandemMonthData = useCallback(async (month, year) => {
     try {
-      // Calculate the puzzle range for the current viewing month
       const puzzleRange = getPuzzleRangeForMonth(month, year);
 
       // If month is entirely before launch or in future, show empty calendar
@@ -141,7 +140,6 @@ export default function UnifiedArchiveCalendar({
           const [y, m, d] = puzzle.date.split('-').map(Number);
           const puzzleDate = new Date(y, m - 1, d); // Create date in local timezone
 
-          // Only include puzzles that fall in the current viewing month (local timezone)
           if (puzzleDate.getMonth() !== month || puzzleDate.getFullYear() !== year) {
             return; // Skip this puzzle
           }
@@ -334,7 +332,6 @@ export default function UnifiedArchiveCalendar({
     const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
     if (activeTab === 'tandem') {
-      // Check if locked
       const isLocked = puzzleAccessMap[day] === true;
       if (isLocked) {
         setShowPaywall(true);
@@ -388,11 +385,9 @@ export default function UnifiedArchiveCalendar({
       const puzzle = puzzleData[day];
       const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
-      // Check if this date is after first puzzle
       const currentDate = new Date(currentYear, currentMonth, day);
       const isPastFirstPuzzle = currentDate >= firstPuzzleDate;
 
-      // Check if this is a future date
       const isFutureDate = currentDate > today;
 
       // Determine status based on active tab
@@ -419,7 +414,6 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
 
-        // Only lock archive puzzles (not today's puzzle)
         const isArchivePuzzle = puzzle && !isToday;
         shouldBeLocked = !hasSubscription && isArchivePuzzle;
       }
@@ -442,12 +436,10 @@ export default function UnifiedArchiveCalendar({
     return days;
   };
 
-  // Check if can navigate to previous month
   const canGoPrevious =
     currentYear > firstPuzzleYear ||
     (currentYear === firstPuzzleYear && currentMonth > firstPuzzleMonth);
 
-  // Check if can navigate to next month
   const canGoNext =
     currentYear < todayYear || (currentYear === todayYear && currentMonth < todayMonth);
 

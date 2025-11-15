@@ -30,7 +30,7 @@ export async function GET(request) {
     const supabase = await createServerComponentClient();
 
     // Call the database function to get leaderboard
-    let { data: leaderboard, error: leaderboardError } = await supabase.rpc(
+    const { data: leaderboard, error: leaderboardError } = await supabase.rpc(
       'get_daily_leaderboard',
       {
         p_game_type: gameType,
@@ -77,6 +77,7 @@ export async function GET(request) {
         // Note: We explicitly remove avatar_url from RPC response as it may have incorrect paths
         // and replace it with the correct avatar_image_path from the avatars table
         leaderboard = leaderboard.map((entry) => {
+          // eslint-disable-next-line no-unused-vars
           const { avatar_url, ...entryWithoutAvatarUrl } = entry;
           return {
             ...entryWithoutAvatarUrl,
@@ -170,7 +171,6 @@ export async function POST(request) {
       );
     }
 
-    // Check if user has leaderboards enabled
     const { data: prefs } = await supabase
       .from('leaderboard_preferences')
       .select('enabled')
@@ -181,7 +181,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Leaderboards disabled for this user' }, { status: 403 });
     }
 
-    // Use the secure submit function (server-side validation)
     const { data: entryId, error: submitError } = await supabase.rpc('submit_leaderboard_score', {
       p_user_id: user.id,
       p_game_type: gameType,

@@ -108,7 +108,6 @@ export default function AvatarSelectionPane({
     } catch (err) {
       console.error('[AvatarSelectionPane] Failed to save avatar:', err);
 
-      // Check if it's a quota error (non-critical for avatar system)
       if (err.message && err.message.includes('quota')) {
         // Avatar was likely saved to DB, just local storage failed
         console.warn('[AvatarSelectionPane] Storage quota warning (non-critical)');

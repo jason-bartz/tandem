@@ -41,7 +41,6 @@ export default function ResetPasswordPage() {
         }
 
         if (session) {
-          console.log('Session established successfully:', session.user?.id);
           setSessionReady(true);
           return;
         }
@@ -53,8 +52,6 @@ export default function ResetPasswordPage() {
         const type = hashParams.get('type');
 
         if (type === 'recovery' && access_token) {
-          console.log('Manually setting session from hash parameters...');
-          // Set the session using the tokens from the URL
           const { data, error } = await supabase.auth.setSession({
             access_token,
             refresh_token,
@@ -67,9 +64,8 @@ export default function ResetPasswordPage() {
           }
 
           if (data.session) {
-            console.log('Session established successfully via manual setup');
             setSessionReady(true);
-            // Clear the hash from URL for security
+
             window.history.replaceState(null, '', window.location.pathname);
           } else {
             setError('Invalid or expired reset link. Please request a new one.');
@@ -129,7 +125,6 @@ export default function ResetPasswordPage() {
       });
 
       if (error) {
-        // Handle specific error cases
         if (error.message?.includes('session') || error.message?.includes('token')) {
           setError('Session expired. Please request a new password reset link.');
           setSessionReady(false);
@@ -153,7 +148,6 @@ export default function ResetPasswordPage() {
     }
   };
 
-  // Show loading while establishing session
   if (!sessionReady && !error) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
@@ -185,7 +179,6 @@ export default function ResetPasswordPage() {
     );
   }
 
-  // Show error state if session setup failed
   if (error && !sessionReady) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">

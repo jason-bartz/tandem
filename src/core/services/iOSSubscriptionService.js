@@ -121,7 +121,6 @@ class SubscriptionService {
       return;
     }
 
-    // Only reset if not ready
     this.initPromise = null;
     this.initState = INIT_STATE.NOT_STARTED;
     this.products = {};
@@ -131,7 +130,6 @@ class SubscriptionService {
   }
 
   async _doInitialize() {
-    // Only initialize on native iOS
     if (!Capacitor.isNativePlatform() || Capacitor.getPlatform() !== 'ios') {
       await this.loadSubscriptionStatus();
       this._notifyStateChange(INIT_STATE.READY);
@@ -152,13 +150,11 @@ class SubscriptionService {
         );
       }
 
-      // Initialize the store with v13 API
       this.store = window.CdvPurchase.store;
 
       // Configure store for v13
       this.store.verbosity = window.CdvPurchase.LogLevel.ERROR;
 
-      // Set validator URL if you have one (optional)
       // this.store.validator = 'https://your-api/validate';
 
       // Register products (v13 syntax)
@@ -181,10 +177,8 @@ class SubscriptionService {
         },
       ]);
 
-      // Set up event handlers for v13
       this.setupEventHandlers();
 
-      // Initialize the store
       await this.store.initialize([window.CdvPurchase.Platform.APPLE_APPSTORE]);
 
       // Wait a moment for products to load
@@ -233,17 +227,14 @@ class SubscriptionService {
     // When a transaction is approved (purchase successful)
     // Store the pending purchase resolver so we can call it when the purchase completes
     this.store.when().approved(async (transaction) => {
-      // Handle success for each product in the transaction
       if (transaction.products && transaction.products.length > 0) {
         const productId = transaction.products[0].id;
 
-        // Handle the purchase success first (persist to storage)
         await this.handlePurchaseSuccess(transaction.products[0], transaction);
 
         // Then finish the transaction
         transaction.finish();
 
-        // Check if we have a pending purchase for this product
         if (this.pendingPurchases && this.pendingPurchases[productId]) {
           const { resolve, timeout } = this.pendingPurchases[productId];
           clearTimeout(timeout);
@@ -265,13 +256,11 @@ class SubscriptionService {
       await this.loadSubscriptionStatus();
     });
 
-    // Handle receipts updated
     this.store.when().receiptUpdated(async (_receipt) => {
       // Receipt updated - refresh subscription status
       await this.loadSubscriptionStatus();
     });
 
-    // Handle product ownership changes
     this.store.when().updated(async () => {
       // Store state updated - refresh subscription status
       if (!this.restoringPurchases) {
@@ -279,7 +268,6 @@ class SubscriptionService {
       }
     });
 
-    // Handle unverified receipts
     this.store.when().unverified(() => {
       // Unverified receipt - log for debugging
       console.warn('[SubscriptionService] Unverified receipt detected');
@@ -287,7 +275,6 @@ class SubscriptionService {
   }
 
   async handlePurchaseSuccess(product, transaction) {
-    // Update persistent storage using Capacitor Preferences (works reliably on iOS)
     const purchaseDate = new Date().toISOString();
 
     // Use Capacitor Preferences for iOS, fallback to localStorage for web
@@ -321,7 +308,6 @@ class SubscriptionService {
       }
     }
 
-    // Calculate expiry date based on product type
     let expiryDate;
     if (product.id === PRODUCTS.SOULMATES_LIFETIME) {
       // Lifetime purchase - set expiry far in future
@@ -349,7 +335,6 @@ class SubscriptionService {
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    // Update subscription status in memory
     await this.loadSubscriptionStatus();
   }
 
@@ -359,12 +344,10 @@ class SubscriptionService {
    */
   async linkPurchaseToAccount(originalTransactionId, productId, expiryDate) {
     if (!originalTransactionId) {
-      console.log('[iOSSubscription] No transaction ID to link');
       return;
     }
 
     try {
-      // Check if user is authenticated
       const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
       const supabase = getSupabaseBrowserClient();
 
@@ -373,14 +356,8 @@ class SubscriptionService {
       } = await supabase.auth.getSession();
 
       if (!session?.user) {
-        console.log('[iOSSubscription] User not authenticated - skipping account linking');
         return;
       }
-
-      console.log('[iOSSubscription] Linking purchase to user account', {
-        userId: session.user.id,
-        productId,
-      });
 
       // Call API to link purchase
       const apiUrl = getApiUrl('/api/iap/link-to-user');
@@ -403,8 +380,7 @@ class SubscriptionService {
         return;
       }
 
-      const data = await response.json();
-      console.log('[iOSSubscription] Successfully linked purchase to account', data);
+      await response.json();
     } catch (error) {
       console.error('[iOSSubscription] Error linking purchase to account', error);
       // Don't throw - linking is optional and shouldn't break the purchase flow
@@ -456,7 +432,6 @@ class SubscriptionService {
             activeProductId = PRODUCTS.BEST_FRIENDS_YEARLY;
           }
         } else {
-          // Only yearly owned
           activeProduct = yearly;
           activeProductId = PRODUCTS.BEST_FRIENDS_YEARLY;
         }
@@ -587,7 +562,6 @@ class SubscriptionService {
       throw new Error('Product cannot be purchased at this time');
     }
 
-    // Set up promise for purchase completion using v13 API
     // The global .approved() handler in setupEventHandlers will resolve this
     return new Promise((resolve, reject) => {
       const timeout = setTimeout(() => {
@@ -610,7 +584,6 @@ class SubscriptionService {
         // Order the offer - v13 returns a promise with error handling
         const orderResult = this.store.order(offer);
 
-        // Handle the order promise (v13 API)
         if (orderResult && orderResult.then) {
           orderResult
             .then((error) => {

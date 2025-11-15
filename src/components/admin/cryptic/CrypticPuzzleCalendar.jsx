@@ -56,7 +56,6 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
     return `${year}-${month}-${dayStr}`;
   };
 
-  // Check if date is today
   const isToday = (day) => {
     const today = new Date();
     return (
@@ -66,7 +65,6 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
     );
   };
 
-  // Check if date has puzzle
   const hasPuzzle = (day) => {
     const dateStr = formatDate(day);
     return puzzleMap.has(dateStr);
@@ -78,13 +76,11 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
     return puzzleMap.get(dateStr);
   };
 
-  // Check if date is selected
   const isSelected = (day) => {
     const dateStr = formatDate(day);
     return selectedDate === dateStr;
   };
 
-  // Handle day click
   const handleDayClick = (day) => {
     const dateStr = formatDate(day);
     onSelectDate?.(dateStr);
@@ -178,9 +174,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
   };
 
   return (
-    <div
-      className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
-    >
+    <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="relative">
@@ -200,9 +194,7 @@ export default function CrypticPuzzleCalendar({ puzzles = [], onSelectDate, sele
           </button>
 
           {showMonthPicker && (
-            <div
-              className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]"
-            >
+            <div className="absolute top-full left-0 mt-2 bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 z-50 w-72 sm:w-80 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
               <div className="grid grid-cols-3 gap-2 mb-4">
                 {[
                   'Jan',

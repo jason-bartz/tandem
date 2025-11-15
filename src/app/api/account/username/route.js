@@ -84,7 +84,6 @@ export async function POST(request) {
       return NextResponse.json({ error: validation.error }, { status: validation.statusCode });
     }
 
-    // Update username in database
     const { data, error } = await supabase
       .from('users')
       .update({ username })
@@ -95,7 +94,6 @@ export async function POST(request) {
     if (error) {
       console.error('[Username API] Failed to update username:', error);
 
-      // Handle unique constraint violation
       if (error.code === '23505') {
         return NextResponse.json(
           { error: 'This username is already taken. Please choose another one.' },
@@ -103,7 +101,6 @@ export async function POST(request) {
         );
       }
 
-      // Handle check constraint violation
       if (error.code === '23514') {
         return NextResponse.json(
           {

@@ -22,7 +22,6 @@ class CloudKitService {
     this.retryDelay = 1000; // 1 second initial delay
     this.lastSyncTime = null;
 
-    // Initialize CloudKit plugin if on iOS
     if (this.isNative && this.isIOS) {
       this.plugin = Capacitor.Plugins.CloudKitSync;
       this.checkiCloudStatus();
@@ -41,7 +40,6 @@ class CloudKitService {
       const result = await this.plugin.checkAccountStatus();
       this.iCloudAvailable = result.available;
 
-      // Check if user has enabled sync in preferences
       const { value } = await Preferences.get({ key: 'cloudkit_sync_enabled' });
       this.syncEnabled = this.iCloudAvailable && (value === null || value === 'true');
 
@@ -113,7 +111,7 @@ class CloudKitService {
         return {
           success: true,
           result,
-          mergedStats: result.mergedStats
+          mergedStats: result.mergedStats,
         };
       }
 

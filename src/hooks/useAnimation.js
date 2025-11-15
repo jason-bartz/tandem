@@ -79,7 +79,6 @@ export function useCounterAnimation(targetValue, options = {}) {
 
   useEffect(() => {
     if (reduceMotion) {
-      // Skip animation, set immediately
       setDisplayValue(targetValue);
       if (onUpdate) onUpdate(targetValue);
       return;

@@ -139,7 +139,6 @@ export default function BottomPanel({
       const deltaY = currentY - touchStartY.current;
       const deltaX = Math.abs(currentX - touchStartX.current);
 
-      // Only trigger swipe if vertical movement is greater than horizontal
       if (Math.abs(deltaY) > 10 && Math.abs(deltaY) > deltaX) {
         isDragging.current = true;
 

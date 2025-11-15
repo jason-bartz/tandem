@@ -34,7 +34,6 @@ export async function GET(request) {
         query.lte('date', endDate);
       }
 
-      // Only show published puzzles (today and earlier)
       query.lte('date', new Date().toISOString().split('T')[0]);
 
       query.order('date', { ascending: false });
@@ -72,10 +71,7 @@ export async function GET(request) {
       if (error.code === 'PGRST116') {
         // No puzzle found
         logger.warn('[API] No cryptic puzzle found for date', { date: targetDate });
-        return NextResponse.json(
-          { error: 'No puzzle available for this date' },
-          { status: 404 }
-        );
+        return NextResponse.json({ error: 'No puzzle available for this date' }, { status: 404 });
       }
 
       logger.error('[API] Error fetching cryptic puzzle', { error });

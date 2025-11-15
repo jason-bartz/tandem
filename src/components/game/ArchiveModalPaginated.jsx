@@ -224,17 +224,15 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         const currentNum = getCurrentPuzzleNumber();
         setCurrentPuzzleNumber(currentNum);
 
-        // Calculate range
         const endNum = loadStart === null ? currentNum : loadStart - 1;
         const calculatedStartNum = Math.max(1, endNum - BATCH_SIZE + 1);
         const cacheKey = `${calculatedStartNum}-${endNum}`;
 
-        // Check if we have cached data for this exact range (don't use ETag on initial load)
         const useCachedData = paginatedCache.puzzles[cacheKey] && !isInitialLoad.current;
 
         // Fetch from new archive endpoint
         const headers = {};
-        // Only send ETag if we're reloading the same range
+
         if (useCachedData && paginatedCache.etag) {
           headers['If-None-Match'] = paginatedCache.etag;
         }
@@ -251,7 +249,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         let data;
         let useCache = false;
 
-        // Handle 304 Not Modified - use cached data
         if (response.status === 304) {
           useCache = true;
         } else if (!response.ok) {
@@ -267,7 +264,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           const gameHistory = await getGameHistory();
           const cachedPuzzles = paginatedCache.puzzles[cacheKey];
 
-          // Update with latest game history
           const refreshedPuzzles = cachedPuzzles.map((puzzle) => {
             const historyData = gameHistory[puzzle.date] || {};
             return {
@@ -283,7 +279,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
             };
           });
 
-          // Update state
           if (append) {
             setPuzzles((prev) => [...prev, ...refreshedPuzzles]);
           } else {
@@ -329,7 +324,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           // Cleanup old cache entries
           cleanupCache();
 
-          // Update state
           if (append) {
             setPuzzles((prev) => [...prev, ...processedPuzzles]);
           } else {
@@ -382,7 +376,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         paginatedCache.puzzleAccessMap[cacheKey] = hasAccess;
       });
 
-      // Update state once with all results
       if (append) {
         setPuzzleAccessMap((prev) => ({ ...prev, ...accessMap }));
       } else {
@@ -392,7 +385,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     [puzzleAccessMap]
   );
 
-  // Set up intersection observer for infinite scroll
   useEffect(() => {
     if (!isOpen) return;
 
@@ -436,7 +428,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       const isLocked = puzzleAccessMap[puzzle.number.toString()] === true;
 
       if (isLocked) {
-        // Show paywall immediately - no waiting
         setShowPaywall(true);
         return;
       }
@@ -447,11 +438,10 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
     [puzzleAccessMap, onSelectPuzzle]
   );
 
-  // Handle purchase complete
   const handlePurchaseComplete = useCallback(async () => {
     // Refresh subscription status via context
     await refreshStatus();
-    // Clear cache and re-check access with new subscription state
+
     paginatedCache.puzzleAccessMap = {};
     checkAccessPermissions(puzzles);
   }, [refreshStatus, puzzles, checkAccessPermissions]);
@@ -481,7 +471,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   // Re-check access when subscription status changes
   useEffect(() => {
     if (puzzles.length > 0 && isOpen) {
-      // Clear cache and re-check access when subscription changes
       paginatedCache.puzzleAccessMap = {};
       checkAccessPermissions(puzzles, false);
     }
@@ -519,7 +508,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
         });
         // Re-check permissions synchronously with current subscription state
         if (puzzles.length > 0) {
-          // Clear cache to ensure fresh check
           paginatedCache.puzzleAccessMap = {};
           checkAccessPermissions(puzzles, false);
         }

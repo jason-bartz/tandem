@@ -134,7 +134,6 @@ export default function LeftSidePanel({
       const deltaX = currentX - touchStartX.current;
       const deltaY = Math.abs(currentY - touchStartY.current);
 
-      // Only trigger swipe if horizontal movement is greater than vertical
       if (Math.abs(deltaX) > 10 && Math.abs(deltaX) > deltaY) {
         isDragging.current = true;
 

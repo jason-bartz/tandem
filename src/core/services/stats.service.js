@@ -67,7 +67,6 @@ class StatsService {
       const isFirstAttempt =
         gameResult.isFirstAttempt !== undefined ? gameResult.isFirstAttempt : true; // Default to true if not provided
 
-      // Update local stats with proper parameters
       const localStats = await updateGameStats(
         gameResult.completed,
         isFirstAttempt,
@@ -86,14 +85,6 @@ class StatsService {
         });
       }
 
-      console.log('[StatsService.updateStats] Stats updated:', {
-        played: localStats.played,
-        wins: localStats.wins,
-        currentStreak: localStats.currentStreak,
-        bestStreak: localStats.bestStreak,
-      });
-
-      // Update server stats only for daily puzzles and only if user has consented AND has leaderboards enabled
       if (!gameResult.isArchive) {
         const hasConsent = await this._hasUserConsent();
         const leaderboardsEnabled = await this._hasLeaderboardsEnabled();
@@ -117,36 +108,15 @@ class StatsService {
         } else {
           // User has not consented or has disabled leaderboards - skip upload
           // eslint-disable-next-line no-console
-          console.log(
-            '[StatsService] Skipping server stats upload - user has not consented or leaderboards disabled'
-          );
         }
       }
 
       // Check and submit Game Center achievements (only for non-archive games)
       if (!gameResult.isArchive && Capacitor.isNativePlatform()) {
         try {
-          console.log('[StatsService] Game Center submission - Current stats:', {
-            currentStreak: localStats.currentStreak,
-            bestStreak: localStats.bestStreak,
-            wins: localStats.wins,
-            played: localStats.played,
-            isFirstAttempt: gameResult.isFirstAttempt,
-            completed: gameResult.completed,
-          });
+          await gameCenterService.checkAndSubmitAchievements(localStats);
 
-          const achievements = await gameCenterService.checkAndSubmitAchievements(localStats);
-          console.log('[StatsService] Achievements checked, newly unlocked:', achievements.length);
-
-          const leaderboardSuccess = await gameCenterService.submitStreakToLeaderboard(
-            localStats.currentStreak
-          );
-          console.log(
-            '[StatsService] Leaderboard submission:',
-            leaderboardSuccess ? 'SUCCESS' : 'FAILED',
-            'with streak:',
-            localStats.currentStreak
-          );
+          await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
         } catch (error) {
           // Log the error for debugging
           console.error('[StatsService] Game Center update failed:', error);

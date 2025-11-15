@@ -1,12 +1,3 @@
-/**
- * Avatar Service
- *
- * Manages user avatar selection and retrieval.
- * Handles all avatar-related database operations with proper error handling.
- *
- * @module services/avatar.service
- */
-
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
 class AvatarService {
@@ -96,13 +87,6 @@ class AvatarService {
         throw new Error('Selected avatar is not available');
       }
 
-      console.log('[AvatarService] Attempting to update user:', {
-        userId,
-        avatarId,
-        avatarName: avatar.display_name,
-      });
-
-      // Check if user exists in users table
       const { data: existingUser, error: userCheckError } = await supabase
         .from('users')
         .select('id, email, selected_avatar_id')
@@ -118,7 +102,6 @@ class AvatarService {
         // Try to create the user first
         const { data: userData } = await supabase.auth.getUser();
         if (userData?.user) {
-          console.log('[AvatarService] Creating user profile...');
           const { error: createError } = await supabase.from('users').insert({
             id: userId,
             email: userData.user.email,
@@ -130,10 +113,8 @@ class AvatarService {
           }
         }
       } else {
-        console.log('[AvatarService] User found:', existingUser);
       }
 
-      // Update user's avatar selection
       const { data, error } = await supabase
         .from('users')
         .update({
@@ -161,12 +142,6 @@ class AvatarService {
         console.error('[AvatarService] No user found to update avatar for:', userId);
         throw new Error('User profile not found. Please try signing in again.');
       }
-
-      console.log('[AvatarService] Avatar updated successfully:', {
-        userId,
-        avatarId,
-        avatarName: avatar.display_name,
-      });
 
       return data;
     } catch (error) {
@@ -264,8 +239,6 @@ class AvatarService {
         throw new Error('Failed to clear avatar selection.');
       }
 
-      console.log('[AvatarService] Avatar cleared successfully:', { userId });
-
       return data;
     } catch (error) {
       console.error('[AvatarService] clearUserAvatar error:', error);
@@ -316,8 +289,6 @@ class AvatarService {
         console.error('[AvatarService] Failed to mark first-time setup complete:', error);
         throw new Error('Failed to update first-time setup status.');
       }
-
-      console.log('[AvatarService] First-time setup marked complete for user:', userId);
     } catch (error) {
       console.error('[AvatarService] markFirstTimeSetupComplete error:', error);
       throw error;
@@ -347,9 +318,6 @@ class AvatarService {
         console.error('[AvatarService] Failed to check first-time setup status:', error);
         // If column doesn't exist (migration not run), fall back to checking if they have an avatar
         if (error.code === '42703') {
-          console.log(
-            '[AvatarService] has_completed_first_time_setup column does not exist, checking avatar instead'
-          );
           return await this.hasSelectedAvatar(userId);
         }
         return false;
@@ -361,12 +329,6 @@ class AvatarService {
       const hasAvatar = !!data?.selected_avatar_id;
 
       const result = hasCompletedFlag || hasAvatar;
-      console.log('[AvatarService] First-time setup check:', {
-        userId,
-        hasCompletedFlag,
-        hasAvatar,
-        result,
-      });
 
       return result;
     } catch (error) {

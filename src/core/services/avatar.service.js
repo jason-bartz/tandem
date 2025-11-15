@@ -1,12 +1,3 @@
-/**
- * Avatar Service
- *
- * Manages user avatar selection and retrieval.
- * Handles all avatar-related database operations with proper error handling.
- *
- * @module services/avatar.service
- */
-
 import logger from '@/utils/helpers/logger';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 
@@ -99,7 +90,6 @@ class AvatarService {
 
       logger.debug('Updating user avatar', { userId, avatarId });
 
-      // Check if user exists in users table
       const { data: existingUser, error: userCheckError } = await supabase
         .from('users')
         .select('id, email, selected_avatar_id')
@@ -128,7 +118,6 @@ class AvatarService {
         }
       }
 
-      // Update user's avatar selection
       const { data, error } = await supabase
         .from('users')
         .update({

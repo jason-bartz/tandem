@@ -11,7 +11,6 @@ export default function IOSContainer({ children }) {
       return;
     }
 
-    // Setup iOS-specific configurations
     const setupIOS = async () => {
       try {
         // Configure status bar
@@ -21,14 +20,13 @@ export default function IOSContainer({ children }) {
         // Add iOS-specific styles
         document.documentElement.classList.add('ios-app');
 
-        // Handle keyboard events
         const handleKeyboardShow = (info) => {
           // Hardware keyboards typically report 0 or very small keyboard heights
-          // Only adjust layout for on-screen keyboards with significant height
+
           const keyboardHeight = info.keyboardHeight || 0;
 
           // If keyboard height is less than 50px, it's likely a hardware keyboard
-          // Skip layout adjustments to prevent screen shift
+
           if (keyboardHeight < 50) {
             return;
           }
@@ -36,18 +34,15 @@ export default function IOSContainer({ children }) {
           document.documentElement.style.setProperty('--keyboard-height', `${keyboardHeight}px`);
           document.documentElement.classList.add('keyboard-visible');
 
-          // Auto-scroll to active input field
           setTimeout(() => {
             const activeElement = document.activeElement;
             if (activeElement && activeElement.tagName === 'INPUT') {
-              // Find the scrollable container
               const scrollContainer = document.querySelector('.scrollable');
               if (scrollContainer) {
                 const inputRect = activeElement.getBoundingClientRect();
                 const containerRect = scrollContainer.getBoundingClientRect();
                 const viewportHeight = window.innerHeight - keyboardHeight;
 
-                // Check if input is below the visible area
                 if (inputRect.bottom > viewportHeight - 100) {
                   const scrollTop = scrollContainer.scrollTop;
                   const inputTop = inputRect.top - containerRect.top + scrollTop;

@@ -49,7 +49,6 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
 
-    // Handle events
     switch (event.type) {
       case 'checkout.session.completed':
         await handleCheckoutCompleted(event.data.object);
@@ -179,22 +178,24 @@ async function handleSubscriptionUpdate(subscription) {
       return;
     }
 
-    // Find user by email in Supabase Auth
-    const { data: { users }, error } = await supabase.auth.admin.listUsers();
+    const {
+      data: { users },
+      error,
+    } = await supabase.auth.admin.listUsers();
 
     if (error) {
       logger.error('Failed to list users', error);
       return;
     }
 
-    const user = users.find(u => u.email === customerEmail);
+    const user = users.find((u) => u.email === customerEmail);
     userId = user?.id;
   }
 
   if (!userId) {
     logger.error('Cannot find user for subscription', {
       subscriptionId: subscription.id,
-      customerEmail
+      customerEmail,
     });
     return;
   }
@@ -308,7 +309,6 @@ async function handlePaymentSucceeded(invoice) {
     subscriptionId: invoice.subscription,
   });
 
-  // Update subscription last renewal
   if (invoice.subscription) {
     const { data: sub } = await supabase
       .from('subscriptions')

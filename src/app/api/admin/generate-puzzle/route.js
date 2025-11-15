@@ -32,7 +32,6 @@ export async function POST(request) {
       return authResult.error;
     }
 
-    // Check if AI generation is enabled
     const aiEnabled = aiService.isEnabled();
     if (!aiEnabled) {
       logger.error(
@@ -107,7 +106,6 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    // Handle Anthropic API specific errors
     if (error.status === 429 || error.message.includes('rate_limit')) {
       logger.error('Anthropic rate limit exceeded', error);
       return NextResponse.json(
@@ -145,7 +143,6 @@ export async function POST(request) {
 
     const message = sanitizeErrorMessage(error);
 
-    // Handle specific error types
     if (error.message.includes('AI generation')) {
       logger.error('AI generation failed', error);
       return NextResponse.json({ success: false, error: message }, { status: 503 });

@@ -1,7 +1,6 @@
 // Audio effects for the game
 let audioContext = null;
 
-// Initialize audio context on user interaction
 export function initAudio() {
   if (!audioContext && typeof window !== 'undefined') {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();

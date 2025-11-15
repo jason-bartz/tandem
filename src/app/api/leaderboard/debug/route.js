@@ -26,7 +26,6 @@ export async function GET() {
       .order('created_at', { ascending: false })
       .limit(10);
 
-    // Check if users table has this user
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('*')

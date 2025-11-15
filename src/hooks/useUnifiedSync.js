@@ -17,14 +17,12 @@ export function useUnifiedSync() {
     syncing: false,
     error: null,
     state: SyncState.IDLE,
-    provider: null
+    provider: null,
   });
 
-  // Initialize and check status on mount
   useEffect(() => {
     const initializeSync = async () => {
       try {
-        // Initialize unified stats manager if not already initialized
         if (!unifiedStatsManager.isInitialized) {
           await unifiedStatsManager.initialize();
         }
@@ -43,17 +41,17 @@ export function useUnifiedSync() {
           syncing: status.syncInProgress,
           error: status.stats?.lastError?.message || null,
           state: status.state,
-          provider: unifiedStatsManager.primary?.name || 'localStorage'
+          provider: unifiedStatsManager.primary?.name || 'localStorage',
         });
 
         // Subscribe to sync state changes
         unifiedStatsManager.on('syncStateChanged', handleSyncStateChange);
       } catch (error) {
         logger.error('Failed to initialize unified sync:', error);
-        setSyncStatus(prev => ({
+        setSyncStatus((prev) => ({
           ...prev,
           available: false,
-          error: error.message
+          error: error.message,
         }));
       }
     };
@@ -70,11 +68,11 @@ export function useUnifiedSync() {
    * Handle sync state changes
    */
   const handleSyncStateChange = (state) => {
-    setSyncStatus(prev => ({
+    setSyncStatus((prev) => ({
       ...prev,
       state,
       syncing: state === SyncState.SYNCING,
-      error: state === SyncState.ERROR ? 'Sync error occurred' : null
+      error: state === SyncState.ERROR ? 'Sync error occurred' : null,
     }));
   };
 
@@ -83,28 +81,26 @@ export function useUnifiedSync() {
    */
   const toggleSync = useCallback(async (enabled) => {
     try {
-      setSyncStatus(prev => ({ ...prev, syncing: true, error: null }));
+      setSyncStatus((prev) => ({ ...prev, syncing: true, error: null }));
 
-      // Update CloudKit sync setting
       await cloudKitService.setSyncEnabled(enabled);
 
-      // Update unified stats manager config
       unifiedStatsManager.updateConfig({ autoSync: enabled });
 
-      setSyncStatus(prev => ({
+      setSyncStatus((prev) => ({
         ...prev,
         enabled,
         syncing: false,
-        error: null
+        error: null,
       }));
 
       return { success: true };
     } catch (error) {
       logger.error('Failed to toggle sync:', error);
-      setSyncStatus(prev => ({
+      setSyncStatus((prev) => ({
         ...prev,
         syncing: false,
-        error: error.message
+        error: error.message,
       }));
       return { success: false, error: error.message };
     }
@@ -117,7 +113,7 @@ export function useUnifiedSync() {
   const performFullSync = useCallback(async () => {
     try {
       logger.info('Starting unified full sync...');
-      setSyncStatus(prev => ({ ...prev, syncing: true, error: null }));
+      setSyncStatus((prev) => ({ ...prev, syncing: true, error: null }));
 
       // Perform unified sync with high priority (user-initiated)
       const result = await unifiedStatsManager.forceSync();
@@ -126,35 +122,35 @@ export function useUnifiedSync() {
         // Also perform CloudKit sync for preferences and puzzle data
         const cloudResult = await cloudKitService.performFullSync();
 
-        setSyncStatus(prev => ({
+        setSyncStatus((prev) => ({
           ...prev,
           syncing: false,
           lastSync: unifiedStatsManager.lastSyncTime,
           error: null,
-          state: SyncState.IDLE
+          state: SyncState.IDLE,
         }));
 
         logger.info('Unified full sync completed successfully', {
           recordsSynced: result.recordsSynced,
           conflicts: result.conflicts,
-          duration: result.duration
+          duration: result.duration,
         });
 
         return {
           success: true,
           ...result,
-          cloudData: cloudResult.data
+          cloudData: cloudResult.data,
         };
       } else {
         throw new Error('Sync failed');
       }
     } catch (error) {
       logger.error('Unified full sync failed:', error);
-      setSyncStatus(prev => ({
+      setSyncStatus((prev) => ({
         ...prev,
         syncing: false,
         error: error.message,
-        state: SyncState.ERROR
+        state: SyncState.ERROR,
       }));
       return { success: false, error: error.message };
     }
@@ -163,21 +159,24 @@ export function useUnifiedSync() {
   /**
    * Sync stats using unified manager
    */
-  const syncStats = useCallback(async (stats) => {
-    if (!syncStatus.enabled) {
-      return { success: false, localOnly: true };
-    }
+  const syncStats = useCallback(
+    async (stats) => {
+      if (!syncStatus.enabled) {
+        return { success: false, localOnly: true };
+      }
 
-    try {
-      // Use unified stats manager for syncing
-      await unifiedStatsManager.sync(SyncPriority.NORMAL, { stats });
+      try {
+        // Use unified stats manager for syncing
+        await unifiedStatsManager.sync(SyncPriority.NORMAL, { stats });
 
-      return { success: true };
-    } catch (error) {
-      logger.error('Failed to sync stats:', error);
-      return { success: false, error: error.message };
-    }
-  }, [syncStatus.enabled]);
+        return { success: true };
+      } catch (error) {
+        logger.error('Failed to sync stats:', error);
+        return { success: false, error: error.message };
+      }
+    },
+    [syncStatus.enabled]
+  );
 
   /**
    * Fetch stats from all providers
@@ -204,14 +203,14 @@ export function useUnifiedSync() {
     const providers = {
       primary: unifiedStatsManager.primary?.name,
       secondary: unifiedStatsManager.secondary?.name,
-      tertiary: unifiedStatsManager.tertiary?.name
+      tertiary: unifiedStatsManager.tertiary?.name,
     };
 
     return {
       ...status,
       providers,
       platform: unifiedStatsManager.getPlatform(),
-      config: unifiedStatsManager.getConfig()
+      config: unifiedStatsManager.getConfig(),
     };
   }, []);
 
@@ -221,7 +220,7 @@ export function useUnifiedSync() {
     performFullSync,
     syncStats,
     fetchStats,
-    getDebugInfo
+    getDebugInfo,
   };
 }
 

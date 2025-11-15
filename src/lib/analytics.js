@@ -27,7 +27,6 @@ export const analyticsConfig = {
   },
 };
 
-// Track page views
 export function trackPageView(url, title) {
   if (typeof window === 'undefined') {
     return;
@@ -54,7 +53,6 @@ export function trackPageView(url, title) {
   });
 }
 
-// Track custom events
 export function trackEvent(eventName, parameters = {}) {
   if (typeof window === 'undefined') {
     return;
@@ -96,7 +94,6 @@ export const GameEvents = {
   PWA_INSTALLED: 'pwa_installed',
 };
 
-// Track game events with enriched data
 export function trackGameEvent(event, additionalData = {}) {
   const baseData = {
     puzzle_number: additionalData.puzzleNumber || null,
@@ -117,7 +114,6 @@ export function trackGameEvent(event, additionalData = {}) {
   // Special handling for key events
   switch (event) {
     case GameEvents.PUZZLE_COMPLETED:
-      // Track completion as a conversion
       if (analyticsConfig.ga4.enabled && window.gtag) {
         window.gtag('event', 'conversion', {
           send_to: `${analyticsConfig.ga4.measurementId}/puzzle_complete`,
@@ -135,7 +131,6 @@ export function trackGameEvent(event, additionalData = {}) {
       break;
 
     case GameEvents.SHARE_COMPLETED:
-      // Track successful shares
       if (analyticsConfig.metaPixel.enabled && window.fbq) {
         window.fbq('track', 'Lead', {
           content_name: 'Game Share',
@@ -146,7 +141,6 @@ export function trackGameEvent(event, additionalData = {}) {
   }
 }
 
-// Track user engagement time
 let engagementStartTime = Date.now();
 let totalEngagementTime = 0;
 
@@ -169,7 +163,6 @@ export function getEngagementTime() {
   return Math.floor((totalEngagementTime + currentSession) / 1000); // Return in seconds
 }
 
-// Track performance metrics
 export function trackPerformance() {
   if (typeof window === 'undefined' || !window.performance) {
     return;
@@ -263,22 +256,18 @@ function logEvent(eventName, data) {
   }
 }
 
-// Initialize analytics on page load
 export function initializeAnalytics() {
   if (typeof window === 'undefined') {
     return;
   }
 
-  // Track initial page view
   trackPageView(window.location.pathname, document.title);
 
-  // Track performance metrics
   trackPerformance();
 
   // Start engagement timer
   startEngagementTimer();
 
-  // Track when user leaves
   window.addEventListener('beforeunload', () => {
     pauseEngagementTimer();
     trackEvent('session_end', {
@@ -287,7 +276,6 @@ export function initializeAnalytics() {
     });
   });
 
-  // Track visibility changes
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) {
       pauseEngagementTimer();
@@ -296,7 +284,6 @@ export function initializeAnalytics() {
     }
   });
 
-  // Track PWA installation
   window.addEventListener('appinstalled', () => {
     trackEvent(GameEvents.PWA_INSTALLED);
   });

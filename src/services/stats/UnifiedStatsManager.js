@@ -75,13 +75,9 @@ class UnifiedStatsManager {
   async initialize() {
     if (this.isInitialized) return;
 
-    console.log('[UnifiedStatsManager] Initializing...');
-
     try {
-      // Initialize event store first
       await gameEventStore.initialize();
 
-      // Initialize providers
       await this.initializeProviders();
 
       // Determine primary and secondary providers
@@ -97,7 +93,6 @@ class UnifiedStatsManager {
       this.subscribeToEvents();
 
       this.isInitialized = true;
-      console.log('[UnifiedStatsManager] Initialized successfully');
 
       // Trigger initial sync
       if (this.config.autoSync) {
@@ -122,11 +117,9 @@ class UnifiedStatsManager {
       keyValueStore: new KeyValueStoreProvider(),
     };
 
-    // Initialize each provider
     const initPromises = Object.entries(this.providers).map(async ([name, provider]) => {
       try {
         await provider.initialize();
-        console.log(`[UnifiedStatsManager] ${name} provider initialized`);
       } catch (error) {
         console.error(`[UnifiedStatsManager] Failed to initialize ${name}:`, error);
         provider.available = false;
@@ -146,35 +139,29 @@ class UnifiedStatsManager {
       // iOS: Game Center primary, CloudKit secondary, KeyValue tertiary
       if (await this.providers.gameCenter.isAvailable()) {
         this.primary = this.providers.gameCenter;
-        console.log('[UnifiedStatsManager] Primary: Game Center');
       }
 
       if (await this.providers.cloudKit.isAvailable()) {
         this.secondary = this.primary ? this.providers.cloudKit : this.providers.gameCenter;
         if (!this.primary) this.primary = this.providers.cloudKit;
-        console.log('[UnifiedStatsManager] Secondary: CloudKit');
       }
 
       if (await this.providers.keyValueStore.isAvailable()) {
         this.tertiary = this.providers.keyValueStore;
-        console.log('[UnifiedStatsManager] Tertiary: KeyValueStore');
       }
     } else {
       // Web/Android: CloudKit primary, localStorage secondary
       if (await this.providers.cloudKit.isAvailable()) {
         this.primary = this.providers.cloudKit;
-        console.log('[UnifiedStatsManager] Primary: CloudKit');
       }
 
       this.secondary = this.providers.localStorage;
       if (!this.primary) this.primary = this.providers.localStorage;
-      console.log('[UnifiedStatsManager] Secondary: LocalStorage');
     }
 
     // Always have localStorage as fallback
     if (!this.primary) {
       this.primary = this.providers.localStorage;
-      console.log('[UnifiedStatsManager] Fallback to LocalStorage');
     }
   }
 
@@ -182,8 +169,6 @@ class UnifiedStatsManager {
    * Load initial data from providers
    */
   async loadInitialData() {
-    console.log('[UnifiedStatsManager] Loading initial data...');
-
     try {
       // Try to load from primary first
       const primaryData = await this.primary.fetch();
@@ -200,8 +185,6 @@ class UnifiedStatsManager {
           await this.processProviderData(secondaryData, 'secondary');
         }
       }
-
-      console.log('[UnifiedStatsManager] Initial data loaded');
     } catch (error) {
       console.error('[UnifiedStatsManager] Failed to load initial data:', error);
       // Continue anyway - we'll work with local data
@@ -211,16 +194,14 @@ class UnifiedStatsManager {
   /**
    * Process data from a provider
    */
-  async processProviderData(data, source) {
+  async processProviderData(data, _source) {
     if (data.events && data.events.length > 0) {
       // Import events into event store
-      const result = await gameEventStore.importEvents(data);
-      console.log(`[UnifiedStatsManager] Imported ${result.imported} events from ${source}`);
+      await gameEventStore.importEvents(data);
     }
 
     if (data.stats) {
       // Validate and potentially merge stats
-      console.log(`[UnifiedStatsManager] Processing stats from ${source}`);
     }
   }
 
@@ -229,7 +210,6 @@ class UnifiedStatsManager {
    */
   async sync(priority = SyncPriority.NORMAL, options = {}) {
     if (this.syncInProgress) {
-      console.log('[UnifiedStatsManager] Sync already in progress, queueing...');
       return this.queueSync(priority, options);
     }
 
@@ -239,8 +219,6 @@ class UnifiedStatsManager {
     const startTime = Date.now();
 
     try {
-      console.log('[UnifiedStatsManager] Starting sync with priority:', priority);
-
       // Record sync start event
       await gameEventStore.createEvent(EventTypes.SYNC_STARTED, {
         syncType: priority === SyncPriority.HIGH ? 'manual' : 'auto',
@@ -256,8 +234,6 @@ class UnifiedStatsManager {
       let resolvedData;
 
       if (conflicts.length > 0) {
-        console.log('[UnifiedStatsManager] Conflicts detected:', conflicts.length);
-
         // Resolve conflicts
         resolvedData = await this.resolveConflicts(sources, conflicts, options);
 
@@ -273,7 +249,6 @@ class UnifiedStatsManager {
       // Save to all providers
       await this.saveToAllProviders(resolvedData, mergedEvents);
 
-      // Update last sync time
       this.lastSyncTime = new Date().toISOString();
 
       // Record sync completion
@@ -286,11 +261,8 @@ class UnifiedStatsManager {
         conflicts: conflicts.length,
       });
 
-      // Update stats
       this.stats.syncSuccesses++;
       this.updateAverageSyncTime(syncDuration);
-
-      console.log(`[UnifiedStatsManager] Sync completed in ${syncDuration}ms`);
 
       this.updateSyncState(SyncState.IDLE);
 
@@ -417,9 +389,6 @@ class UnifiedStatsManager {
    * Resolve conflicts between sources
    */
   async resolveConflicts(sources, conflicts, options = {}) {
-    console.log('[UnifiedStatsManager] Resolving conflicts...');
-
-    // Check if manual resolution is required
     if (options.requireManual || this.config.conflictResolutionStrategy === 'manual') {
       return await this.requestManualResolution(sources, conflicts);
     }
@@ -476,8 +445,6 @@ class UnifiedStatsManager {
    * Apply manual conflict resolution
    */
   async applyManualResolution(resolution) {
-    console.log('[UnifiedStatsManager] Applying manual resolution:', resolution);
-
     // Record the resolution
     await gameEventStore.createEvent(EventTypes.CONFLICT_RESOLVED, {
       conflictType: 'manual',
@@ -509,10 +476,6 @@ class UnifiedStatsManager {
     // Deduplicate and sort
     const merged = gameEventStore.mergeEvents(allEvents, []);
 
-    console.log(
-      `[UnifiedStatsManager] Merged ${merged.length} events from ${Object.keys(sources).length} sources`
-    );
-
     return merged;
   }
 
@@ -533,7 +496,6 @@ class UnifiedStatsManager {
     if (this.getPlatform() === 'ios' && this.providers.gameCenter) {
       const gameCenterData = {
         stats: {
-          // Only send streak data since that's the only leaderboard configured in App Store Connect
           currentStreak: stats.currentStreak || 0,
           lastStreakDate: stats.lastStreakDate,
         },
@@ -549,7 +511,6 @@ class UnifiedStatsManager {
 
     // Save to primary
     if (this.primary) {
-      // Skip if primary is Game Center (we already saved above)
       if (this.primary.name !== 'gameCenter') {
         savePromises.push(
           this.primary.save(saveData).catch((error) => {
@@ -562,7 +523,6 @@ class UnifiedStatsManager {
 
     // Save to secondary
     if (this.secondary && this.secondary !== this.primary) {
-      // Skip if secondary is Game Center (we already saved above)
       if (this.secondary.name !== 'gameCenter') {
         savePromises.push(
           this.secondary.save(saveData).catch((error) => {
@@ -585,8 +545,6 @@ class UnifiedStatsManager {
 
     const results = await Promise.allSettled(savePromises);
 
-    console.log('[UnifiedStatsManager] Save results:', results.length, 'providers updated');
-
     return results;
   }
 
@@ -601,8 +559,6 @@ class UnifiedStatsManager {
       const priorityOrder = { high: 0, normal: 1, low: 2 };
       return priorityOrder[a.priority] - priorityOrder[b.priority];
     });
-
-    console.log('[UnifiedStatsManager] Sync queued, queue size:', this.syncQueue.length);
   }
 
   /**
@@ -614,7 +570,6 @@ class UnifiedStatsManager {
     const next = this.syncQueue.shift();
 
     if (next) {
-      console.log('[UnifiedStatsManager] Processing queued sync:', next.priority);
       await this.sync(next.priority, next.options);
     }
   }
@@ -627,7 +582,6 @@ class UnifiedStatsManager {
 
     if (syncRequest.retryCount <= this.config.maxRetries) {
       this.retryQueue.push(syncRequest);
-      console.log('[UnifiedStatsManager] Queued for retry, attempt:', syncRequest.retryCount);
 
       // Schedule retry
       setTimeout(() => this.processRetryQueue(), this.config.retryInterval);
@@ -645,7 +599,6 @@ class UnifiedStatsManager {
     const retry = this.retryQueue.shift();
 
     if (retry) {
-      console.log('[UnifiedStatsManager] Retrying sync, attempt:', retry.retryCount);
       await this.sync(retry.priority, retry.options);
     }
   }
@@ -688,8 +641,6 @@ class UnifiedStatsManager {
 
     // App lifecycle listeners
     this.listenForAppLifecycle();
-
-    console.log('[UnifiedStatsManager] Sync services started');
   }
 
   /**
@@ -700,8 +651,6 @@ class UnifiedStatsManager {
       clearInterval(this.autoSyncTimer);
       this.autoSyncTimer = null;
     }
-
-    console.log('[UnifiedStatsManager] Sync services stopped');
   }
 
   /**
@@ -710,12 +659,10 @@ class UnifiedStatsManager {
   listenForNetworkChanges() {
     if (window.addEventListener) {
       window.addEventListener('online', () => {
-        console.log('[UnifiedStatsManager] Network online');
         this.sync(SyncPriority.NORMAL);
       });
 
       window.addEventListener('offline', () => {
-        console.log('[UnifiedStatsManager] Network offline');
         this.updateSyncState(SyncState.OFFLINE);
       });
     }
@@ -728,13 +675,11 @@ class UnifiedStatsManager {
     if (window.addEventListener) {
       // App becomes active
       window.addEventListener('resume', () => {
-        console.log('[UnifiedStatsManager] App resumed');
         this.sync(SyncPriority.NORMAL);
       });
 
       // App goes to background
       window.addEventListener('pause', () => {
-        console.log('[UnifiedStatsManager] App paused');
         // Save any pending changes
         this.sync(SyncPriority.HIGH);
       });
@@ -777,10 +722,8 @@ class UnifiedStatsManager {
    * Submit scores to Game Center immediately
    * Note: Only submits current streak since that's the only configured leaderboard
    */
-  async submitToGameCenter(event) {
+  async submitToGameCenter(_event) {
     try {
-      console.log('[UnifiedStatsManager] Submitting streak to Game Center for event:', event.type);
-
       // Compute current stats
       const currentStats = this.getCurrentStats();
 
@@ -794,11 +737,6 @@ class UnifiedStatsManager {
 
       // Submit to Game Center (will update the longest_streak leaderboard with best streak)
       await this.providers.gameCenter.save(gameCenterData);
-
-      console.log(
-        '[UnifiedStatsManager] Game Center best streak submission complete:',
-        Math.max(currentStats.currentStreak, currentStats.bestStreak)
-      );
     } catch (error) {
       console.error('[UnifiedStatsManager] Game Center streak submission failed:', error);
       // Don't throw - we don't want to break the flow if Game Center fails
@@ -848,7 +786,6 @@ class UnifiedStatsManager {
    * Force sync (user-initiated)
    */
   async forceSync() {
-    console.log('[UnifiedStatsManager] Force sync requested');
     return await this.sync(SyncPriority.HIGH, { force: true });
   }
 
@@ -858,7 +795,6 @@ class UnifiedStatsManager {
   async clearAllData() {
     console.warn('[UnifiedStatsManager] Clearing all data...');
 
-    // Clear from all providers
     const clearPromises = Object.values(this.providers).map((provider) =>
       provider.clear().catch((error) => {
         console.error(`Failed to clear ${provider.name}:`, error);
@@ -867,7 +803,6 @@ class UnifiedStatsManager {
 
     await Promise.allSettled(clearPromises);
 
-    // Clear event store
     await gameEventStore.clearAllEvents();
 
     // Reset stats
@@ -941,8 +876,6 @@ class UnifiedStatsManager {
       this.stopSyncServices();
       this.startSyncServices();
     }
-
-    console.log('[UnifiedStatsManager] Config updated:', config);
   }
 
   getConfig() {

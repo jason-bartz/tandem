@@ -7,6 +7,10 @@ const nextConfig = {
   experimental: {
     instrumentationHook: true,
   },
+
+  // IMPORTANT: Disable source maps in production for security
+  productionBrowserSourceMaps: false,
+
   images: {
     domains: ['localhost', 'tandemdaily.com', 'www.tandemdaily.com'],
     unoptimized: isCapacitorBuild,

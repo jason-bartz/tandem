@@ -119,7 +119,6 @@ export function useCrypticGame() {
         isArchive: isArchivePuzzle,
       });
 
-      // Check if there's saved progress for this puzzle
       const savedProgress = await loadCrypticPuzzleProgress(targetDate);
       const savedState = await loadCrypticGameState();
 
@@ -136,7 +135,6 @@ export function useCrypticGame() {
 
       // Restore saved state if it matches this puzzle AND it's in progress
       if (savedState && savedState.currentPuzzleDate === targetDate) {
-        // Only restore if puzzle is NOT completed - if completed, enter admire mode
         if (savedProgress && savedProgress.completed) {
           // Puzzle was completed - enter admire mode to view the completed puzzle
           logger.info('[useCrypticGame] Entering ADMIRE mode for completed puzzle');
@@ -230,7 +228,6 @@ export function useCrypticGame() {
       return false;
     }
 
-    // Increment attempts immediately
     const newAttempts = attempts + 1;
     setAttempts(newAttempts);
 
@@ -239,11 +236,6 @@ export function useCrypticGame() {
       const normalizedUserAnswer = userAnswer.replace(/\s/g, '').toUpperCase();
 
       // Debug logging for iOS
-      console.log('[useCrypticGame] Checking answer:', {
-        date: currentPuzzleDate,
-        userAnswerLength: normalizedUserAnswer.length,
-        puzzleLength: puzzle.length,
-      });
 
       // Call the server-side validation API using capacitorFetch for iOS compatibility
       const response = await capacitorFetch(
@@ -261,21 +253,12 @@ export function useCrypticGame() {
         false // Don't include auth headers - this is a public endpoint
       );
 
-      console.log('[useCrypticGame] Answer check response:', {
-        ok: response.ok,
-        status: response.status,
-      });
-
       if (!response.ok) {
         logger.error('[useCrypticGame] Failed to check answer', { status: response.status });
         return false;
       }
 
       const result = await response.json();
-      console.log('[useCrypticGame] Answer check result:', {
-        correct: result.correct,
-        hasAnswer: !!result.answer,
-      });
 
       if (result.correct) {
         // Correct answer!
@@ -301,7 +284,6 @@ export function useCrypticGame() {
           });
         });
 
-        // Update local stats (fire and forget)
         // CRITICAL: Only count daily puzzles (not archive) for streaks
         // This matches Tandem Daily's streak logic
         const isFirstAttemptCompletion = newAttempts === 1; // First time solving this puzzle
@@ -351,12 +333,6 @@ export function useCrypticGame() {
           });
 
         // Submit to leaderboard if daily puzzle (not archive) and time is valid
-        console.log('[useCrypticGame] Leaderboard submission check:', {
-          isArchive,
-          timeTaken,
-          currentPuzzleDate,
-          willSubmit: !isArchive && timeTaken > 0 && currentPuzzleDate,
-        });
 
         if (!isArchive && timeTaken > 0 && currentPuzzleDate) {
           // Submit daily speed score
@@ -366,7 +342,6 @@ export function useCrypticGame() {
             score: timeTaken,
             metadata: { hintsUsed, attempts: newAttempts },
           };
-          console.log('[useCrypticGame] Submitting to leaderboard:', payload);
 
           capacitorFetch(
             getApiUrl('/api/leaderboard/daily'),
@@ -378,9 +353,7 @@ export function useCrypticGame() {
             true // Include auth headers
           )
             .then((response) => response.json())
-            .then((result) => {
-              console.log('[useCrypticGame] Leaderboard response:', result);
-            })
+            .then((_result) => {})
             .catch((err) => {
               logger.error('[useCrypticGame] Failed to submit to leaderboard', {
                 error: err.message,
@@ -394,8 +367,6 @@ export function useCrypticGame() {
             .then((stats) => {
               const currentStreak = stats?.currentStreak || 0;
               if (currentStreak > 0) {
-                console.log('[useCrypticGame] Submitting streak to leaderboard:', currentStreak);
-
                 return capacitorFetch(
                   getApiUrl('/api/leaderboard/streak'),
                   {
@@ -417,7 +388,6 @@ export function useCrypticGame() {
             })
             .then((result) => {
               if (result) {
-                console.log('[useCrypticGame] Streak leaderboard response:', result);
               }
             })
             .catch((err) => {
@@ -426,7 +396,6 @@ export function useCrypticGame() {
             });
         }
 
-        // Clear saved game state (fire and forget)
         clearCrypticGameState().catch((err) => {
           logger.error('[useCrypticGame] Failed to clear game state', { error: err.message });
         });
@@ -468,7 +437,6 @@ export function useCrypticGame() {
         return null;
       }
 
-      // Check if this hint was already unlocked
       if (unlockedHints.includes(targetIndex)) {
         logger.warn('[useCrypticGame] Hint already unlocked', { index: targetIndex });
         return hint;
@@ -521,7 +489,7 @@ export function useCrypticGame() {
     setElapsedTime(0);
     setCorrectAnswer(null);
     setGameState(CRYPTIC_GAME_STATES.WELCOME);
-    // Clear game state (fire and forget)
+
     clearCrypticGameState().catch((err) => {
       logger.error('[useCrypticGame] Failed to clear game state', { error: err.message });
     });
@@ -538,7 +506,6 @@ export function useCrypticGame() {
    * Replay puzzle from admire mode
    */
   const replayFromAdmire = useCallback(() => {
-    // Clear admire data and transition to playing state
     setAdmireData(null);
     setGameState(CRYPTIC_GAME_STATES.PLAYING);
     setUserAnswer('');

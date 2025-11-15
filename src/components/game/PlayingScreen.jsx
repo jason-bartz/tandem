@@ -91,7 +91,6 @@ export default function PlayingScreen({
 
   // Detect when second hint is unlocked and trigger celebration
   useEffect(() => {
-    // Check if we just unlocked the second hint (transition from 1 to 2)
     if (previousUnlockedHints === 1 && unlockedHints === 2 && hintsUsed < 2) {
       // Trigger celebration animation
       setShowSecondHintCelebration(true);
@@ -107,7 +106,6 @@ export default function PlayingScreen({
       return () => clearTimeout(timer);
     }
 
-    // Update previous value
     setPreviousUnlockedHints(unlockedHints);
   }, [unlockedHints, previousUnlockedHints, hintsUsed, correctAnswer]);
 
@@ -140,7 +138,7 @@ export default function PlayingScreen({
     if (firstEmptyIndex !== -1) {
       setFocusedIndex(firstEmptyIndex);
     }
-    // Only run on mount and when puzzle changes
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [puzzle]);
 
@@ -157,7 +155,6 @@ export default function PlayingScreen({
       const isOurInput = e.target.getAttribute('aria-label')?.startsWith('Answer');
       if (!isOurInput && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) return;
 
-      // Handle Enter, Backspace, and letter keys
       if (e.key === 'Enter') {
         e.preventDefault();
 
@@ -195,7 +192,6 @@ export default function PlayingScreen({
       } else if (e.key === 'Backspace') {
         e.preventDefault();
 
-        // Skip if this field is already correct
         if (correctAnswers[focusedIndex]) {
           return;
         }
@@ -213,7 +209,6 @@ export default function PlayingScreen({
       } else if (/^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
 
-        // Skip if this field is already correct
         if (correctAnswers[focusedIndex]) {
           return;
         }
@@ -261,10 +256,8 @@ export default function PlayingScreen({
   ]);
 
   const handleKeyboardInput = (key) => {
-    // Handle ARROW_UP - move to previous answer
     if (key === 'ARROW_UP') {
       if (focusedIndex > 0) {
-        // Find previous non-correct answer
         let prevIndex = focusedIndex - 1;
         while (prevIndex >= 0 && correctAnswers[prevIndex]) {
           prevIndex--;
@@ -276,10 +269,8 @@ export default function PlayingScreen({
       return;
     }
 
-    // Handle ARROW_DOWN - move to next answer
     if (key === 'ARROW_DOWN') {
       if (focusedIndex < 3) {
-        // Find next non-correct answer
         let nextIndex = focusedIndex + 1;
         while (nextIndex < 4 && correctAnswers[nextIndex]) {
           nextIndex++;
@@ -295,13 +286,12 @@ export default function PlayingScreen({
     if (correctAnswers[focusedIndex]) {
       return;
     }
-    // Handle ENTER key
+
     if (key === 'ENTER') {
       // Check the current answer
       if (onCheckSingleAnswer && answers[focusedIndex].trim()) {
         const result = onCheckSingleAnswer(focusedIndex);
 
-        // Only play individual answer sounds if the game isn't complete
         if (!result.gameComplete) {
           try {
             if (result.isCorrect) {
@@ -331,9 +321,7 @@ export default function PlayingScreen({
       return;
     }
 
-    // Handle BACKSPACE key
     if (key === 'BACKSPACE') {
-      // Skip if this field is already correct
       if (correctAnswers[focusedIndex]) {
         return;
       }
@@ -351,9 +339,7 @@ export default function PlayingScreen({
       return;
     }
 
-    // Handle letter keys
     if (key.length === 1 && /^[A-Z]$/i.test(key)) {
-      // Skip if this field is already correct
       if (correctAnswers[focusedIndex]) {
         return;
       }

@@ -66,14 +66,12 @@ export function useGameLogic(
           setCheckedWrongAnswers(newCheckedWrongAnswers);
         }
 
-        // Clear locked letters for this answer since it's now correct
         setLockedLetters((prev) => {
           const newLocked = [...prev];
           newLocked[index] = null;
           return newLocked;
         });
 
-        // Clear active hint if this answer is showing a hint
         if (activeHintIndex === index) {
           setActiveHintIndex(null);
         }
@@ -81,12 +79,9 @@ export function useGameLogic(
         const newSolved = solved + 1;
         setSolved(newSolved);
 
-        // Check if we should unlock second hint (after 2 correct answers)
         if (newSolved >= 2 && unlockedHints === 1) {
           setUnlockedHints(2);
-          console.log('[checkSingleAnswer] Unlocked second hint!');
 
-          // Dispatch event for HintEarnedToast
           if (typeof window !== 'undefined') {
             window.dispatchEvent(new CustomEvent('hintEarned'));
           }
@@ -133,14 +128,12 @@ export function useGameLogic(
             }
           }
 
-          // Update locked letters state
           setLockedLetters((prev) => {
             const newLocked = [...prev];
             newLocked[index] = lockedPositions;
             return newLocked;
           });
 
-          // Update answer to show only locked letters
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[index] = newAnswer;
@@ -220,7 +213,7 @@ export function useGameLogic(
             newCorrectAnswers[i] = true;
             newCheckedWrongAnswers[i] = false;
             newSolved++;
-            // Clear locked letters for correct answer
+
             newLockedLetters[i] = null;
           } else {
             // Check for letters in correct positions (smart hints)
@@ -261,7 +254,6 @@ export function useGameLogic(
         }
       });
 
-      // Update answers and locked letters state
       setAnswers(newAnswers);
       setLockedLetters(newLockedLetters);
 
@@ -270,12 +262,9 @@ export function useGameLogic(
       setMistakes((prev) => prev + newMistakes);
       setSolved(newSolved);
 
-      // Check if we should unlock second hint (after 2 correct answers)
       if (newSolved >= 2 && unlockedHints === 1) {
         setUnlockedHints(2);
-        console.log('[checkAnswers] Unlocked second hint!');
 
-        // Dispatch event for HintEarnedToast
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('hintEarned'));
         }
@@ -315,66 +304,41 @@ export function useGameLogic(
 
   const useHint = useCallback(
     (targetIndex) => {
-      // Check if we can use a hint
       if (!puzzle || !puzzle.puzzles || hintsUsed >= unlockedHints) {
-        console.log('[useHint] Cannot use hint:', {
-          hasPuzzle: !!puzzle,
-          hintsUsed,
-          unlockedHints,
-        });
         return false;
       }
 
-      // Use the provided targetIndex if valid, otherwise find first unanswered
       let hintIndex = targetIndex;
 
-      // Only fallback to first unanswered if targetIndex is not provided or already correct
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        // Find first unanswered puzzle as fallback
         hintIndex = correctAnswers.findIndex((correct) => !correct);
         if (hintIndex === -1) {
-          console.log('[useHint] All puzzles already solved');
           return false;
         }
       }
 
-      // Check if this answer already has a hint shown
       if (hintedAnswers.includes(hintIndex)) {
-        console.log('[useHint] Answer already has hint shown:', hintIndex);
-        // Allow showing hint again even if already used - just don't consume another hint
-        // Just update the active hint index to show it again
         setActiveHintIndex(hintIndex);
         return true;
       }
 
-      // Check if puzzle has hint data
       const puzzleHint = puzzle.puzzles[hintIndex].hint;
       if (!puzzleHint) {
-        console.log('[useHint] No hint available for puzzle:', hintIndex);
         return false;
       }
 
-      // Add this answer to the hinted list
       setHintedAnswers((prev) => [...prev, hintIndex]);
-
-      // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
-
-      // Increment hints used
       setHintsUsed((prev) => prev + 1);
 
-      // Check if we should unlock another hint (after 2 correct answers)
       if (solved >= 2 && unlockedHints === 1) {
         setUnlockedHints(2);
-        console.log('[useHint] Unlocked second hint!');
 
-        // Dispatch event for HintEarnedToast
         if (typeof window !== 'undefined') {
           window.dispatchEvent(new CustomEvent('hintEarned'));
         }
       }
 
-      // Save progress
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,

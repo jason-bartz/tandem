@@ -15,14 +15,12 @@ import logger from '@/lib/logger';
  * - Cache management
  */
 
-// Track if scheduler is running
 let schedulerRunning = false;
 let maintenanceTask = null;
 
 // Daily maintenance tasks
 async function runDailyMaintenance() {
   try {
-    // Clear old caches
     if (global.puzzleCache) {
       global.puzzleCache = {};
     }
@@ -38,7 +36,6 @@ async function runDailyMaintenance() {
   }
 }
 
-// Initialize the scheduler for maintenance tasks only
 export function initPuzzleScheduler() {
   if (schedulerRunning) {
     return maintenanceTask;
@@ -81,7 +78,6 @@ export function stopPuzzleScheduler() {
 // Manual cache clear function (for admin use)
 export async function manualClearCache() {
   try {
-    // Clear any caches
     if (global.puzzleCache) {
       global.puzzleCache = {};
     }

@@ -173,7 +173,6 @@ class Logger {
   }
 
   debug(message, ...args) {
-    // Only log debug if explicitly enabled or in development
     if (!this.isDevelopment && !this.enableDebugLogs) {
       return;
     }

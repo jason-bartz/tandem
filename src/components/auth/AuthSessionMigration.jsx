@@ -19,24 +19,18 @@ export default function AuthSessionMigration() {
       try {
         const supabase = getSupabaseBrowserClient();
 
-        // Check if user has an active session
-        const { data: { session } } = await supabase.auth.getSession();
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
 
         if (!session) {
-          // Check if there's an old localStorage session
           const oldToken = localStorage.getItem('sb-auth-token');
 
           if (oldToken) {
-            console.log('[AuthSessionMigration] Found old localStorage session, clearing it');
-            // Clear old localStorage auth
             localStorage.removeItem('sb-auth-token');
             localStorage.removeItem('supabase.auth.token');
-
-            // Show message to user (optional - could add a toast here)
-            console.log('[AuthSessionMigration] Please sign in again to continue using leaderboards');
           }
         } else {
-          console.log('[AuthSessionMigration] Active cookie session found');
         }
 
         setMigrated(true);

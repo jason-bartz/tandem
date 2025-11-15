@@ -15,7 +15,6 @@ export async function POST(request) {
       return authResult.error;
     }
 
-    // Check if AI generation is enabled
     if (!aiService.isEnabled()) {
       return NextResponse.json(
         {
@@ -31,16 +30,8 @@ export async function POST(request) {
 
     // Validate required fields
     if (!clue || !answer) {
-      return NextResponse.json(
-        { error: 'Missing required fields: clue, answer' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: clue, answer' }, { status: 400 });
     }
-
-    console.log('[assess-difficulty] Assessing puzzle difficulty:', {
-      answer,
-      admin: authResult.admin.username,
-    });
 
     // Build difficulty assessment prompt
     const prompt = `You are an expert cryptic crossword puzzle creator. Assess the difficulty of this cryptic puzzle on a scale of 1-5.
@@ -97,11 +88,6 @@ Assess this puzzle now.`;
     if (!assessment.difficulty || assessment.difficulty < 1 || assessment.difficulty > 5) {
       throw new Error('Invalid difficulty rating from AI');
     }
-
-    console.log('[assess-difficulty] Assessment complete:', {
-      answer,
-      difficulty: assessment.difficulty,
-    });
 
     return NextResponse.json(
       {

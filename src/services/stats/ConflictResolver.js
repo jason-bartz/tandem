@@ -36,7 +36,7 @@ export class ConflictResolver {
       // Daily/weekly/monthly stats - merge
       dailyStats: 'merge',
       weeklyStats: 'merge',
-      monthlyStats: 'merge'
+      monthlyStats: 'merge',
     };
 
     // Vector clock for distributed consistency
@@ -56,7 +56,7 @@ export class ConflictResolver {
             field,
             value1: stats1[field],
             value2: stats2[field],
-            strategy: this.fieldStrategies[field]
+            strategy: this.fieldStrategies[field],
           });
         }
       }
@@ -109,8 +109,6 @@ export class ConflictResolver {
   resolve(sources, options = {}) {
     const { strategy = 'smart', priorities = {} } = options;
 
-    console.log('[ConflictResolver] Resolving with strategy:', strategy);
-
     switch (strategy) {
       case 'smart':
         return this.smartMerge(sources, priorities);
@@ -135,17 +133,17 @@ export class ConflictResolver {
   /**
    * Smart merge - field-specific resolution
    */
-  smartMerge(sources, priorities) {
+  smartMerge(sources, _priorities) {
     const result = {
       stats: {},
-      events: []
+      events: [],
     };
 
     // Get all unique fields
     const allFields = new Set();
     for (const source of Object.values(sources)) {
       if (source && source.stats) {
-        Object.keys(source.stats).forEach(field => allFields.add(field));
+        Object.keys(source.stats).forEach((field) => allFields.add(field));
       }
     }
 
@@ -187,7 +185,7 @@ export class ConflictResolver {
         values.push({
           source: sourceName,
           value: source.stats[field],
-          timestamp: source.timestamp || new Date().toISOString()
+          timestamp: source.timestamp || new Date().toISOString(),
         });
       }
     }
@@ -198,13 +196,13 @@ export class ConflictResolver {
   /**
    * Resolve a single field based on strategy
    */
-  resolveField(field, values, strategy, sources) {
+  resolveField(field, values, strategy, _sources) {
     switch (strategy) {
       case 'maximum':
-        return Math.max(...values.map(v => Number(v.value) || 0));
+        return Math.max(...values.map((v) => Number(v.value) || 0));
 
       case 'minimum':
-        return Math.min(...values.map(v => Number(v.value) || 0));
+        return Math.min(...values.map((v) => Number(v.value) || 0));
 
       case 'sum':
         return values.reduce((sum, v) => sum + (Number(v.value) || 0), 0);
@@ -222,19 +220,19 @@ export class ConflictResolver {
         // For arrays - combine all unique values
         if (Array.isArray(values[0].value)) {
           const union = new Set();
-          values.forEach(v => {
+          values.forEach((v) => {
             if (Array.isArray(v.value)) {
-              v.value.forEach(item => union.add(JSON.stringify(item)));
+              v.value.forEach((item) => union.add(JSON.stringify(item)));
             }
           });
-          return Array.from(union).map(item => JSON.parse(item));
+          return Array.from(union).map((item) => JSON.parse(item));
         }
         return values[0].value;
 
       case 'merge':
         // For objects - deep merge
         if (typeof values[0].value === 'object' && !Array.isArray(values[0].value)) {
-          return this.deepMerge(...values.map(v => v.value));
+          return this.deepMerge(...values.map((v) => v.value));
         }
         return values[0].value;
 
@@ -295,14 +293,14 @@ export class ConflictResolver {
   highestValueWins(sources) {
     const result = {
       stats: {},
-      events: []
+      events: [],
     };
 
     // For each numeric field, take the highest value
     const allFields = new Set();
     for (const source of Object.values(sources)) {
       if (source && source.stats) {
-        Object.keys(source.stats).forEach(field => allFields.add(field));
+        Object.keys(source.stats).forEach((field) => allFields.add(field));
       }
     }
 
@@ -345,8 +343,7 @@ export class ConflictResolver {
    * Vector clock based merge
    */
   vectorClockMerge(sources) {
-    // Initialize vector clocks if needed
-    for (const [sourceName, source] of Object.entries(sources)) {
+    for (const sourceName of Object.keys(sources)) {
       if (!this.vectorClock.has(sourceName)) {
         this.vectorClock.set(sourceName, 0);
       }
@@ -358,7 +355,7 @@ export class ConflictResolver {
     // Merge in causal order
     const result = {
       stats: {},
-      events: []
+      events: [],
     };
 
     for (const source of ordered) {
@@ -372,7 +369,6 @@ export class ConflictResolver {
         result.events.push(...source.events);
       }
 
-      // Update vector clock
       this.updateVectorClock(source.sourceName);
     }
 
@@ -388,7 +384,7 @@ export class ConflictResolver {
     const sourceArray = Object.entries(sources).map(([name, data]) => ({
       sourceName: name,
       ...data,
-      clock: this.vectorClock.get(name) || 0
+      clock: this.vectorClock.get(name) || 0,
     }));
 
     // Sort by vector clock value
@@ -420,7 +416,6 @@ export class ConflictResolver {
       stats.averageMistakes = 0;
     }
 
-    // Ensure consistency
     stats.gamesWon = Math.min(stats.gamesWon, stats.gamesPlayed);
     stats.currentStreak = Math.min(stats.currentStreak, stats.gamesPlayed);
     stats.bestStreak = Math.max(stats.bestStreak, stats.currentStreak);
@@ -537,7 +532,7 @@ export class ConflictResolver {
           if (fieldConflicts.length > 0) {
             conflicts.push({
               sources: [sourceNames[i], sourceNames[j]],
-              conflicts: fieldConflicts
+              conflicts: fieldConflicts,
             });
           }
         }
@@ -547,7 +542,7 @@ export class ConflictResolver {
     return {
       totalConflicts: conflicts.length,
       conflicts,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 }

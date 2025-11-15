@@ -43,7 +43,6 @@ export async function GET(request) {
     // Get puzzle using unified function
     const puzzle = await getPuzzle(identifier);
 
-    // Ensure puzzle has proper structure
     if (puzzle && !puzzle.puzzles && puzzle.emojiPairs && puzzle.words) {
       // Transform old structure to new structure if needed
       puzzle.puzzles = puzzle.emojiPairs.map((emoji, index) => ({
@@ -54,7 +53,6 @@ export async function GET(request) {
 
     await incrementStats('views');
 
-    // Track unique player via session ID
     const sessionId =
       request.headers.get('x-session-id') ||
       request.headers.get('x-forwarded-for') ||
@@ -112,7 +110,6 @@ export async function POST(request) {
       request.headers.get('x-forwarded-for') ||
       crypto.randomBytes(16).toString('hex');
 
-    // Update global stats
     await incrementStats('played');
     if (validatedData.completed) {
       await incrementStats('completed');
@@ -124,7 +121,6 @@ export async function POST(request) {
       await incrementStats('totalTime');
     }
 
-    // Update puzzle-specific stats
     await updatePuzzleStats(puzzleDate, {
       played: true,
       completed: validatedData.completed,
@@ -134,13 +130,11 @@ export async function POST(request) {
       shared: body.shared || false,
     });
 
-    // Update daily stats
     await updateDailyStats('plays');
     if (validatedData.completed) {
       await updateDailyStats('completions');
     }
 
-    // Track unique player
     await trackUniquePlayer(sessionId);
 
     return NextResponse.json({

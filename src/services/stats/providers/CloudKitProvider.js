@@ -10,7 +10,7 @@ import { registerPlugin } from '@capacitor/core';
 
 // Register the native plugin
 const CloudKitSync = registerPlugin('CloudKitSyncPlugin', {
-  web: () => import('./CloudKitProviderWeb').then(m => new m.CloudKitProviderWeb())
+  web: () => import('./CloudKitProviderWeb').then((m) => new m.CloudKitProviderWeb()),
 });
 
 export class CloudKitProvider extends BaseProvider {
@@ -27,8 +27,6 @@ export class CloudKitProvider extends BaseProvider {
    * Initialize CloudKit
    */
   async initialize() {
-    console.log('[CloudKitProvider] Initializing...');
-
     try {
       // Check account status
       const status = await this.checkAccountStatus();
@@ -40,10 +38,7 @@ export class CloudKitProvider extends BaseProvider {
 
         // Process any queued operations
         await this.processSyncQueue();
-
-        console.log('[CloudKitProvider] Initialized successfully');
       } else {
-        console.log('[CloudKitProvider] iCloud not available:', status.status);
         this.accountStatus = status.status;
         this.available = false;
         this.initialized = true;
@@ -88,8 +83,6 @@ export class CloudKitProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[CloudKitProvider] Fetching data...');
-
       // Check availability
       if (!this.available) {
         const status = await this.checkAccountStatus();
@@ -121,7 +114,7 @@ export class CloudKitProvider extends BaseProvider {
         preferences,
         timestamp: new Date().toISOString(),
         version: 2,
-        source: 'cloudKit'
+        source: 'cloudKit',
       };
 
       this.lastSyncTime = data.timestamp;
@@ -129,13 +122,10 @@ export class CloudKitProvider extends BaseProvider {
       const duration = Date.now() - startTime;
       this.recordFetchTime(duration);
 
-      console.log('[CloudKitProvider] Data fetched successfully');
-
       return data;
     } catch (error) {
       this.recordFetchError(error);
 
-      // Handle specific CloudKit errors
       if (this.isQuotaError(error)) {
         console.error('[CloudKitProvider] CloudKit quota exceeded');
         // Try to clean up old data
@@ -158,8 +148,6 @@ export class CloudKitProvider extends BaseProvider {
     const startTime = Date.now();
 
     try {
-      console.log('[CloudKitProvider] Saving data...');
-
       // Check availability
       if (!this.available) {
         const status = await this.checkAccountStatus();
@@ -201,8 +189,6 @@ export class CloudKitProvider extends BaseProvider {
       const duration = Date.now() - startTime;
       this.recordSaveTime(duration);
 
-      console.log('[CloudKitProvider] Data saved successfully');
-
       this.isSyncing = false;
 
       // Process any queued syncs
@@ -210,7 +196,7 @@ export class CloudKitProvider extends BaseProvider {
 
       return {
         success: true,
-        timestamp: this.lastSyncTime
+        timestamp: this.lastSyncTime,
       };
     } catch (error) {
       this.isSyncing = false;
@@ -229,7 +215,7 @@ export class CloudKitProvider extends BaseProvider {
    * Save events to CloudKit
    */
   async saveEvents(events) {
-    const gameCompletedEvents = events.filter(e => e.type === 'GAME_COMPLETED');
+    const gameCompletedEvents = events.filter((e) => e.type === 'GAME_COMPLETED');
 
     for (const event of gameCompletedEvents) {
       try {
@@ -237,14 +223,14 @@ export class CloudKitProvider extends BaseProvider {
           date: event.data.puzzleDate,
           won: event.data.won,
           mistakes: event.data.mistakes || 0,
-          solved: event.data.won ? 6 : (event.data.wordsGuessed?.length || 0),
+          solved: event.data.won ? 6 : event.data.wordsGuessed?.length || 0,
           hintsUsed: event.data.hintsUsed || 0,
-          timestamp: event.timestamp
+          timestamp: event.timestamp,
         };
 
         await CloudKitSync.syncPuzzleResult({
           date: puzzleResult.date,
-          result: puzzleResult
+          result: puzzleResult,
         });
       } catch (error) {
         console.error('[CloudKitProvider] Failed to save puzzle result:', error);
@@ -267,14 +253,15 @@ export class CloudKitProvider extends BaseProvider {
       totalTime: 0, // CloudKit doesn't store time directly
       totalMistakes: 0, // CloudKit doesn't store total mistakes
       hintsUsed: 0, // CloudKit doesn't store total hints
-      winRate: cloudKitStats.wins && cloudKitStats.played
-        ? (cloudKitStats.wins / cloudKitStats.played) * 100
-        : 0,
+      winRate:
+        cloudKitStats.wins && cloudKitStats.played
+          ? (cloudKitStats.wins / cloudKitStats.played) * 100
+          : 0,
       achievements: [],
       puzzlesCompleted: [],
       dailyStats: {},
       weeklyStats: {},
-      monthlyStats: {}
+      monthlyStats: {},
     };
   }
 
@@ -287,7 +274,7 @@ export class CloudKitProvider extends BaseProvider {
       wins: stats.gamesWon || 0,
       currentStreak: stats.currentStreak || 0,
       bestStreak: stats.bestStreak || 0,
-      lastStreakDate: stats.lastStreakDate || stats.lastPlayedDate
+      lastStreakDate: stats.lastStreakDate || stats.lastPlayedDate,
     };
   }
 
@@ -295,7 +282,7 @@ export class CloudKitProvider extends BaseProvider {
    * Convert puzzle results to events
    */
   convertPuzzleResultsToEvents(puzzleResults) {
-    return puzzleResults.map(result => ({
+    return puzzleResults.map((result) => ({
       id: `cloudkit_${result.date}_${result.timestamp || Date.now()}`,
       type: 'GAME_COMPLETED',
       timestamp: result.timestamp || new Date().toISOString(),
@@ -308,8 +295,8 @@ export class CloudKitProvider extends BaseProvider {
         mistakes: result.mistakes || 0,
         hintsUsed: result.hintsUsed || 0,
         time: 0, // Not stored in CloudKit
-        wordsGuessed: []
-      }
+        wordsGuessed: [],
+      },
     }));
   }
 
@@ -318,9 +305,8 @@ export class CloudKitProvider extends BaseProvider {
    */
   async clear() {
     try {
-      console.log('[CloudKitProvider] Clearing data...');
       await CloudKitSync.clearCloudData();
-      console.log('[CloudKitProvider] Data cleared');
+
       return true;
     } catch (error) {
       console.error('[CloudKitProvider] Failed to clear data:', error);
@@ -335,10 +321,8 @@ export class CloudKitProvider extends BaseProvider {
     this.syncQueue.push({
       data,
       timestamp: Date.now(),
-      retryCount: 0
+      retryCount: 0,
     });
-
-    console.log('[CloudKitProvider] Sync queued, queue size:', this.syncQueue.length);
   }
 
   /**
@@ -380,12 +364,10 @@ export class CloudKitProvider extends BaseProvider {
     const delay = Math.min(5000 * Math.pow(2, this.stats.saveErrors), 60000);
 
     this.retryTimer = setTimeout(() => {
-      this.save(data).catch(error => {
+      this.save(data).catch((error) => {
         console.error('[CloudKitProvider] Retry failed:', error);
       });
     }, delay);
-
-    console.log(`[CloudKitProvider] Retry scheduled in ${delay}ms`);
   }
 
   /**
@@ -393,8 +375,6 @@ export class CloudKitProvider extends BaseProvider {
    */
   async cleanupOldData() {
     try {
-      console.log('[CloudKitProvider] Cleaning up old data...');
-
       // Fetch old puzzle results
       const thirtyDaysAgo = new Date();
       thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -402,11 +382,10 @@ export class CloudKitProvider extends BaseProvider {
       const endDate = thirtyDaysAgo.toISOString().split('T')[0];
 
       const result = await CloudKitSync.fetchPuzzleResults({
-        endDate
+        endDate,
       });
 
       if (result.results && result.results.length > 0) {
-        console.log(`[CloudKitProvider] Found ${result.results.length} old records to clean`);
         // CloudKit doesn't provide direct deletion API in current implementation
         // Would need to enhance native plugin for cleanup
       }
@@ -420,11 +399,7 @@ export class CloudKitProvider extends BaseProvider {
    */
   async performFullSync() {
     try {
-      console.log('[CloudKitProvider] Performing full sync...');
-
       const result = await CloudKitSync.performFullSync();
-
-      console.log('[CloudKitProvider] Full sync completed');
 
       return result;
     } catch (error) {
@@ -441,7 +416,7 @@ export class CloudKitProvider extends BaseProvider {
       ...super.getStatus(),
       accountStatus: this.accountStatus,
       queueSize: this.syncQueue.length,
-      isSyncing: this.isSyncing
+      isSyncing: this.isSyncing,
     };
   }
 
@@ -455,7 +430,6 @@ export class CloudKitProvider extends BaseProvider {
       const status = await this.checkAccountStatus();
 
       if (status.status !== oldStatus) {
-        console.log(`[CloudKitProvider] Account status changed: ${oldStatus} -> ${status.status}`);
         this.accountStatus = status.status;
         this.available = status.available;
 

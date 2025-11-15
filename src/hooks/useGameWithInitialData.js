@@ -46,7 +46,6 @@ export function useGameWithInitialData(initialPuzzleData) {
   const [completionTime, setCompletionTime] = useState(null);
   const [admireData, setAdmireData] = useState(null);
 
-  // Only load puzzle if we don't have initial data
   // Following Wordle's approach: client-side fetches puzzle using local timezone
   useEffect(() => {
     if (!initialPuzzleData) {
@@ -86,32 +85,17 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   // Load specific puzzle for archive
   const loadPuzzle = useCallback(async (identifier = null, forceReplay = false) => {
-    console.log(
-      '[useGameWithInitialData] loadPuzzle called with identifier:',
-      identifier,
-      'type:',
-      typeof identifier,
-      'forceReplay:',
-      forceReplay
-    );
     try {
       setLoading(true);
       setError(null);
 
       const isArchive = identifier !== null;
       setIsArchiveGame(isArchive);
-      console.log('[useGameWithInitialData] isArchive:', isArchive);
 
-      // Check if puzzle was already completed (unless forcing replay)
       if (!forceReplay && identifier) {
-        console.log('[useGameWithInitialData] Checking for completed puzzle:', {
-          date: identifier,
-        });
         const existingResult = await getPuzzleResult(identifier);
-        console.log('[useGameWithInitialData] Existing result:', existingResult);
 
         if (existingResult && existingResult.won) {
-          console.log('[useGameWithInitialData] Entering ADMIRE mode');
           // Enter admire mode to view the completed puzzle
           const response = await puzzleService.getPuzzle(identifier);
           const puzzleData = response && response.puzzle ? response.puzzle : response;
@@ -123,24 +107,20 @@ export function useGameWithInitialData(initialPuzzleData) {
           setLoading(false);
           return true;
         }
-        console.log('[useGameWithInitialData] Not entering admire mode - puzzle not won');
       }
 
       // identifier can be a puzzle number, date string, or null for today
-      console.log('[useGameWithInitialData] Calling puzzleService.getPuzzle with:', identifier);
+
       const response = await puzzleService.getPuzzle(identifier);
-      console.log('[useGameWithInitialData] Response received:', response);
 
       if (response && response.puzzle) {
-        console.log('[useGameWithInitialData] Response has puzzle:', response.puzzle);
         // Add puzzleNumber and date to the puzzle object if it's not there
         const puzzleWithData = {
           ...response.puzzle,
           puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
           date: response.date || response.puzzle.date,
         };
-        console.log('[useGameWithInitialData] Puzzle with data:', puzzleWithData);
-        // Update current puzzle date from response
+
         setCurrentPuzzleDate(response.date);
         setPuzzle(puzzleWithData);
         // Archive puzzles should start immediately in PLAYING mode
@@ -156,11 +136,9 @@ export function useGameWithInitialData(initialPuzzleData) {
         setUnlockedHints(1);
         setActiveHintIndex(null);
         setLockedLetters([null, null, null, null]);
-        console.log('[useGameWithInitialData] Puzzle loaded successfully');
+
         return true;
       } else if (response) {
-        console.log('[useGameWithInitialData] Response but no puzzle property:', response);
-        // Update current puzzle date from response if available
         if (response.date) {
           setCurrentPuzzleDate(response.date);
         }
@@ -259,20 +237,9 @@ export function useGameWithInitialData(initialPuzzleData) {
       // CRITICAL: Capture hintedAnswers at the start before any state changes
       const capturedHintedAnswers = [...hintedAnswers];
 
-      // Calculate completion time for leaderboard
       const endTime = Date.now();
       const timeTaken = startTime ? Math.floor((endTime - startTime) / 1000) : 0; // Time in seconds
       setCompletionTime(timeTaken);
-
-      console.log('[useGameWithInitialData.completeGame] Called with:', {
-        won,
-        hintsUsed,
-        hintedAnswers,
-        capturedHintedAnswers,
-        solved,
-        mistakes,
-        timeTaken,
-      });
 
       setGameState(GAME_STATES.COMPLETE);
       setWon(won);
@@ -283,12 +250,9 @@ export function useGameWithInitialData(initialPuzzleData) {
         playFailureSound();
       }
 
-      // Check if this is the first attempt for this puzzle (both daily and archive)
       const isFirstAttempt = currentPuzzleDate && !(await hasPlayedPuzzle(currentPuzzleDate));
 
-      // Update stats through statsService (includes Game Center submission)
       try {
-        console.log('[useGameWithInitialData] Calling statsService.updateStats');
         await statsService.updateStats({
           completed: won,
           mistakes,
@@ -299,7 +263,6 @@ export function useGameWithInitialData(initialPuzzleData) {
           puzzleDate: currentPuzzleDate,
           isFirstAttempt,
         });
-        console.log('[useGameWithInitialData] statsService.updateStats completed');
       } catch (err) {
         console.error('[useGameWithInitialData] statsService.updateStats failed:', err);
         // Fall back to direct storage update if service fails
@@ -318,12 +281,6 @@ export function useGameWithInitialData(initialPuzzleData) {
         }
 
         // Submit to leaderboard if won and time is valid
-        console.log('[useGameWithInitialData] Leaderboard submission check:', {
-          won,
-          timeTaken,
-          currentPuzzleDate,
-          willSubmit: won && timeTaken > 0 && currentPuzzleDate,
-        });
 
         if (won && timeTaken > 0 && currentPuzzleDate) {
           // Submit daily speed score
@@ -333,7 +290,6 @@ export function useGameWithInitialData(initialPuzzleData) {
             score: timeTaken,
             metadata: { hintsUsed, mistakes, solved },
           };
-          console.log('[useGameWithInitialData] Submitting to leaderboard:', payload);
 
           try {
             const response = await fetch('/api/leaderboard/daily', {
@@ -344,11 +300,6 @@ export function useGameWithInitialData(initialPuzzleData) {
             });
 
             const result = await response.json();
-            console.log('[useGameWithInitialData] Leaderboard response:', {
-              status: response.status,
-              ok: response.ok,
-              result,
-            });
 
             if (!response.ok) {
               console.error('[useGameWithInitialData] Leaderboard submission failed:', result);
@@ -371,11 +322,6 @@ export function useGameWithInitialData(initialPuzzleData) {
               const currentStreak = stats?.currentStreak || 0;
 
               if (currentStreak > 0) {
-                console.log(
-                  '[useGameWithInitialData] Submitting streak to leaderboard:',
-                  currentStreak
-                );
-
                 const streakResponse = await fetch('/api/leaderboard/streak', {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
@@ -386,8 +332,7 @@ export function useGameWithInitialData(initialPuzzleData) {
                   }),
                 });
 
-                const streakResult = await streakResponse.json();
-                console.log('[useGameWithInitialData] Streak leaderboard response:', streakResult);
+                await streakResponse.json();
               }
             } catch (err) {
               console.error('[useGameWithInitialData] Failed to submit streak:', err);
@@ -399,12 +344,6 @@ export function useGameWithInitialData(initialPuzzleData) {
 
       // CRITICAL: Save hintedAnswers with the puzzle result
       if (currentPuzzleDate) {
-        console.log('[useGameWithInitialData] Saving puzzle result with capturedHintedAnswers:', {
-          won,
-          hintsUsed,
-          hintedAnswers: capturedHintedAnswers,
-          puzzleDate: currentPuzzleDate,
-        });
         savePuzzleResult(currentPuzzleDate, {
           won: won,
           completed: won,
@@ -446,12 +385,10 @@ export function useGameWithInitialData(initialPuzzleData) {
           return newCorrect;
         });
 
-        // Clear active hint if this answer is showing a hint
         if (activeHintIndex === index) {
           setActiveHintIndex(null);
         }
 
-        // Clear locked letters for this answer since it's now correct
         setLockedLetters((prev) => {
           const newLocked = [...prev];
           newLocked[index] = null;
@@ -461,10 +398,8 @@ export function useGameWithInitialData(initialPuzzleData) {
         setSolved((prev) => {
           const newSolved = prev + 1;
 
-          // Check if we should unlock second hint (after 2 correct answers)
           if (newSolved >= 2 && unlockedHints === 1) {
             setUnlockedHints(2);
-            console.log('[checkSingleAnswer] Unlocked second hint!');
           }
 
           if (currentPuzzleDate) {
@@ -510,14 +445,12 @@ export function useGameWithInitialData(initialPuzzleData) {
             }
           }
 
-          // Update locked letters state
           setLockedLetters((prev) => {
             const newLocked = [...prev];
             newLocked[index] = lockedPositions;
             return newLocked;
           });
 
-          // Update answer to show only locked letters
           setAnswers((prev) => {
             const newAnswers = [...prev];
             newAnswers[index] = newAnswer;
@@ -595,7 +528,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         if (isCorrect) {
           newCorrectAnswers[index] = true;
           correct++;
-          // Clear locked letters for correct answer
+
           newLockedLetters[index] = null;
         } else {
           incorrect++;
@@ -694,71 +627,43 @@ export function useGameWithInitialData(initialPuzzleData) {
 
   const useHint = useCallback(
     (targetIndex) => {
-      // Check if we can use a hint
       if (!puzzle || !puzzle.puzzles || hintsUsed >= unlockedHints) {
-        console.log('[useHint] Cannot use hint:', {
-          hasPuzzle: !!puzzle,
-          hintsUsed,
-          unlockedHints,
-        });
         return false;
       }
 
-      // Use the provided targetIndex if valid, otherwise find first unanswered
       let hintIndex = targetIndex;
 
-      // Only fallback to first unanswered if targetIndex is not provided or already correct
       if (hintIndex === undefined || hintIndex === null || correctAnswers[hintIndex]) {
-        // Find first unanswered puzzle as fallback
         hintIndex = correctAnswers.findIndex((correct) => !correct);
         if (hintIndex === -1) {
-          console.log('[useHint] All puzzles already solved');
           return false;
         }
       }
 
-      // Check if this answer already has a hint shown
       if (hintedAnswers.includes(hintIndex)) {
-        console.log('[useHint] Answer already has hint shown:', hintIndex);
-        // Allow showing hint again even if already used - just don't consume another hint
-        // Just update the active hint index to show it again
         setActiveHintIndex(hintIndex);
         return true;
       }
 
-      // Check if puzzle has hint data
       const puzzleHint = puzzle.puzzles[hintIndex].hint;
       if (!puzzleHint) {
-        console.log('[useHint] No hint available for puzzle:', hintIndex);
         return false;
       }
 
-      // Add this answer to the hinted list
-      console.log(
-        '[useHint] Adding hint for puzzle index:',
-        hintIndex,
-        'Current hintedAnswers:',
-        hintedAnswers
-      );
       setHintedAnswers((prev) => {
         const newHintedAnswers = [...prev, hintIndex];
-        console.log('[useHint] Updated hintedAnswers:', newHintedAnswers);
+
         return newHintedAnswers;
       });
 
-      // Set the active hint index to show the hint
       setActiveHintIndex(hintIndex);
 
-      // Increment hints used
       setHintsUsed((prev) => prev + 1);
 
-      // Check if we should unlock another hint (after 2 correct answers)
       if (solved >= 2 && unlockedHints === 1) {
         setUnlockedHints(2);
-        console.log('[useHint] Unlocked second hint!');
       }
 
-      // Save progress
       if (currentPuzzleDate) {
         savePuzzleProgress(currentPuzzleDate, {
           started: true,
@@ -802,20 +707,17 @@ export function useGameWithInitialData(initialPuzzleData) {
   }, []);
 
   const returnToWelcome = useCallback(() => {
-    console.log('[useGameWithInitialData.returnToWelcome] Called, isArchiveGame:', isArchiveGame);
     // If we were playing an archive game, reload today's puzzle
     if (isArchiveGame) {
-      console.log("[useGameWithInitialData.returnToWelcome] Loading today's puzzle");
       loadPuzzle(null); // Load today's puzzle
     } else {
       // Just return to welcome screen
-      console.log('[useGameWithInitialData.returnToWelcome] Setting game state to WELCOME');
+
       setGameState(GAME_STATES.WELCOME);
     }
   }, [isArchiveGame, loadPuzzle]);
 
   const replayFromAdmire = useCallback(() => {
-    // Clear admire data and transition to playing state
     setAdmireData(null);
     setGameState(GAME_STATES.PLAYING);
     setAnswers(['', '', '', '']);
@@ -862,7 +764,6 @@ export function useGameWithInitialData(initialPuzzleData) {
         return;
       }
 
-      // Find the last non-locked, non-space character
       for (let i = currentValue.length - 1; i >= 0; i--) {
         if (!locked[i] && currentValue[i] !== ' ') {
           // Remove this character
@@ -891,7 +792,6 @@ export function useGameWithInitialData(initialPuzzleData) {
         return;
       }
 
-      // Find the first unlocked position
       for (let i = 0; i < maxLength; i++) {
         if (!locked[i] && (!currentValue[i] || currentValue[i] === ' ')) {
           // This position is unlocked and empty, fill it

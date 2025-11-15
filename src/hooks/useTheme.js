@@ -8,14 +8,12 @@ export function useTheme() {
   const [highContrast, setHighContrast] = useState(false);
 
   const applyTheme = useCallback((themeToApply, isHighContrast = false) => {
-    // Update state
     setTheme(themeToApply);
     setHighContrast(isHighContrast);
 
     // Apply to DOM
     document.documentElement.setAttribute('data-theme', themeToApply);
 
-    // Handle dark mode class
     if (themeToApply === THEME_CONFIG.DARK) {
       document.documentElement.classList.add('dark');
     } else {
@@ -94,7 +92,6 @@ export function useTheme() {
     }
   }, [applyTheme, detectSystemTheme]);
 
-  // Update iOS StatusBar when theme changes
   useEffect(() => {
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.StatusBar) {
       window.Capacitor.Plugins.StatusBar.setStyle({
@@ -132,11 +129,9 @@ export function useTheme() {
     localStorage.setItem(STORAGE_KEYS.THEME_MODE, THEME_MODE.MANUAL);
     localStorage.setItem(STORAGE_KEYS.THEME, newTheme);
 
-    // Update state and apply theme
     setThemeMode(THEME_MODE.MANUAL);
     applyTheme(newTheme, highContrast);
 
-    // Update status bar if on iOS
     if (typeof window !== 'undefined' && window.Capacitor?.Plugins?.StatusBar) {
       window.Capacitor.Plugins.StatusBar.setStyle({
         style: newTheme === THEME_CONFIG.DARK ? 'DARK' : 'LIGHT',

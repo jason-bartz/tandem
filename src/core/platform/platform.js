@@ -12,7 +12,6 @@ class PlatformService {
     this.isIOS = Capacitor.getPlatform() === 'ios';
     this.isWeb = Capacitor.getPlatform() === 'web';
 
-    // Set API URL based on platform
     this.apiUrl = this.isNative
       ? 'https://www.tandemdaily.com'
       : process.env.NEXT_PUBLIC_API_URL || '';
@@ -63,7 +62,6 @@ class PlatformService {
       // Don't calculate number from date - let API handle it
     }
 
-    // Check if we need to clear yesterday's cache for today's puzzle
     if (!identifier && this.isNative) {
       await this.clearYesterdayCache();
     }
@@ -89,7 +87,7 @@ class PlatformService {
         const response = await CapacitorHttp.get({
           url: `https://www.tandemdaily.com/api/puzzle?${queryParam}`,
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
           responseType: 'json',
         });
@@ -101,9 +99,7 @@ class PlatformService {
 
         // Defensive parsing: CapacitorHttp may return string or object
         try {
-          data = typeof response.data === 'string'
-            ? JSON.parse(response.data)
-            : response.data;
+          data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
         } catch (parseError) {
           logger.error('Failed to parse puzzle response', parseError);
           throw new Error('Invalid response format from server');
@@ -165,14 +161,12 @@ class PlatformService {
         const response = await CapacitorHttp.get({
           url: `https://www.tandemdaily.com/api/stats`,
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
           responseType: 'json',
         });
         // Defensive parsing: CapacitorHttp may return string or object
-        stats = typeof response.data === 'string'
-          ? JSON.parse(response.data)
-          : response.data;
+        stats = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
         const res = await fetch(url);
         if (!res.ok) {
@@ -233,15 +227,13 @@ class PlatformService {
           url: `https://www.tandemdaily.com/api/stats`,
           headers: {
             'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            Accept: 'application/json',
           },
           data: stats,
           responseType: 'json',
         });
         // Defensive parsing: CapacitorHttp may return string or object
-        return typeof response.data === 'string'
-          ? JSON.parse(response.data)
-          : response.data;
+        return typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
       } else {
         const res = await fetch(url, {
           method: 'POST',
@@ -350,7 +342,6 @@ class PlatformService {
     }
   }
 
-  // Clear yesterday's cache to ensure fresh puzzle load
   async clearYesterdayCache() {
     if (!this.isNative) {
       return;
@@ -363,7 +354,6 @@ class PlatformService {
 
       const todayKey = `${this.CACHE_PREFIX}${today}`;
 
-      // Check if cached puzzle is for yesterday
       const { value: cachedToday } = await Preferences.get({ key: todayKey });
       if (cachedToday) {
         const cached = JSON.parse(cachedToday);
@@ -582,7 +572,6 @@ class PlatformService {
     return `${this.apiUrl}${path}`;
   }
 
-  // Check if device is online
   isOnline() {
     return navigator.onLine;
   }

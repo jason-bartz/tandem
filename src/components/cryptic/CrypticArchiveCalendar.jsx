@@ -205,10 +205,8 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
     const puzzle = puzzleData[day];
     if (!puzzle) return;
 
-    // Check if this is today's puzzle
     const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
-    // Only require subscription for archive puzzles (not today's puzzle)
     const isArchivePuzzle = !isToday;
     if (isArchivePuzzle && !hasSubscription) {
       setShowPaywall(true);
@@ -249,14 +247,11 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
       const puzzle = puzzleData[day];
       const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
-      // Check if this date is after first puzzle
       const currentDate = new Date(currentYear, currentMonth, day);
       const isPastFirstPuzzle = currentDate >= firstPuzzleDate;
 
-      // Check if this is a future date
       const isFutureDate = currentDate > today;
 
-      // Check if completed (from local storage)
       const dateStr = puzzle?.date;
       const isCompleted = dateStr ? completedPuzzles.has(dateStr) : false;
 
@@ -270,7 +265,6 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
         status = 'no_puzzle';
       }
 
-      // Only lock archive puzzles (not today's puzzle)
       // Today's puzzle is free for all users
       const isArchivePuzzle = puzzle && !isToday;
       const shouldBeLocked = !hasSubscription && isArchivePuzzle;
@@ -293,12 +287,10 @@ export default function CrypticArchiveCalendar({ isOpen, onClose }) {
     return days;
   };
 
-  // Check if can navigate to previous month
   const canGoPrevious =
     currentYear > firstPuzzleYear ||
     (currentYear === firstPuzzleYear && currentMonth > firstPuzzleMonth);
 
-  // Check if can navigate to next month
   const canGoNext =
     currentYear < todayYear || (currentYear === todayYear && currentMonth < todayMonth);
 

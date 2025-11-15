@@ -14,7 +14,6 @@ export default function PaywallModalManager() {
   const [isOpen, setIsOpen] = useState(false);
   const isWeb = Capacitor.getPlatform() === 'web';
 
-  // Handle custom events from other components
   useEffect(() => {
     if (!isWeb) return;
 
@@ -28,7 +27,6 @@ export default function PaywallModalManager() {
     };
   }, [isWeb]);
 
-  // Only render on web platform
   if (!isWeb) {
     return null;
   }

@@ -70,7 +70,17 @@ export async function POST(request) {
     const supabase = createServerClient();
 
     const body = await request.json();
-    const { date, clue, answer, length, word_pattern, hints, explanation, difficulty_rating, cryptic_device } = body;
+    const {
+      date,
+      clue,
+      answer,
+      length,
+      word_pattern,
+      hints,
+      explanation,
+      difficulty_rating,
+      cryptic_device,
+    } = body;
 
     // Validate required fields
     if (!date || !clue || !answer || !length || !hints || !explanation) {
@@ -89,7 +99,9 @@ export async function POST(request) {
     const totalLetters = answer.replace(/\s/g, '').length;
     if (totalLetters !== length) {
       return NextResponse.json(
-        { error: `Answer length (${totalLetters} letters) does not match specified length (${length})` },
+        {
+          error: `Answer length (${totalLetters} letters) does not match specified length (${length})`,
+        },
         { status: 400 }
       );
     }
@@ -99,14 +111,18 @@ export async function POST(request) {
       const words = answer.trim().split(/\s+/);
       if (words.length !== word_pattern.length) {
         return NextResponse.json(
-          { error: `Word pattern length (${word_pattern.length}) does not match actual word count (${words.length})` },
+          {
+            error: `Word pattern length (${word_pattern.length}) does not match actual word count (${words.length})`,
+          },
           { status: 400 }
         );
       }
       for (let i = 0; i < words.length; i++) {
         if (words[i].length !== word_pattern[i]) {
           return NextResponse.json(
-            { error: `Word ${i + 1} has ${words[i].length} letters but pattern specifies ${word_pattern[i]}` },
+            {
+              error: `Word ${i + 1} has ${words[i].length} letters but pattern specifies ${word_pattern[i]}`,
+            },
             { status: 400 }
           );
         }
@@ -125,7 +141,6 @@ export async function POST(request) {
       cryptic_device,
     };
 
-    // Only include word_pattern if provided (database will auto-calculate if not)
     if (word_pattern) {
       insertData.word_pattern = word_pattern;
     }
@@ -193,21 +208,24 @@ export async function PUT(request) {
       const words = updateFields.answer.trim().split(/\s+/);
       if (words.length !== updateFields.word_pattern.length) {
         return NextResponse.json(
-          { error: `Word pattern length (${updateFields.word_pattern.length}) does not match actual word count (${words.length})` },
+          {
+            error: `Word pattern length (${updateFields.word_pattern.length}) does not match actual word count (${words.length})`,
+          },
           { status: 400 }
         );
       }
       for (let i = 0; i < words.length; i++) {
         if (words[i].length !== updateFields.word_pattern[i]) {
           return NextResponse.json(
-            { error: `Word ${i + 1} has ${words[i].length} letters but pattern specifies ${updateFields.word_pattern[i]}` },
+            {
+              error: `Word ${i + 1} has ${words[i].length} letters but pattern specifies ${updateFields.word_pattern[i]}`,
+            },
             { status: 400 }
           );
         }
       }
     }
 
-    // Update puzzle
     const { data: puzzle, error } = await supabase
       .from('cryptic_puzzles')
       .update(updateFields)

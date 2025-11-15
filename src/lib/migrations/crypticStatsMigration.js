@@ -60,7 +60,6 @@ async function markMigrationCompleted() {
  */
 export async function migrateCrypticStatsToDatabase(_user) {
   try {
-    // Check if migration already completed
     const alreadyMigrated = await hasMigrationCompleted();
     if (alreadyMigrated) {
       logger.info('[CrypticMigration] Migration already completed for this device');

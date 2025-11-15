@@ -52,7 +52,6 @@ export default function WelcomeScreen({
         setTandemStats(tandem);
         setCrypticStats(cryptic);
 
-        // Check if today's puzzle is completed
         if (puzzle?.date) {
           const result = await getPuzzleResult(puzzle.date);
           setTodayCompleted(result?.won || false);
@@ -82,7 +81,6 @@ export default function WelcomeScreen({
     }
   }, [welcomeMelody]);
 
-  // Handle Enter key to start the daily puzzle
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'Enter') {

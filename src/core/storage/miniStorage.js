@@ -372,10 +372,7 @@ export async function saveMiniStats(stats, skipCloudSync = false, skipDatabaseSy
         const syncResult = await cloudKitService.syncMiniStats(stats);
 
         if (syncResult.success && syncResult.mergedStats) {
-          await setMiniStorageItem(
-            MINI_STORAGE_KEYS.STATS,
-            JSON.stringify(syncResult.mergedStats)
-          );
+          await setMiniStorageItem(MINI_STORAGE_KEYS.STATS, JSON.stringify(syncResult.mergedStats));
           logger.info('[MiniStorage] Stats synced and merged with CloudKit');
           return syncResult.mergedStats;
         }
@@ -429,7 +426,9 @@ export async function loadMiniStats() {
           // Sync to leaderboard if applicable
           if (mergedStats.longestStreak > 0) {
             try {
-              const { syncCurrentStreakToLeaderboard } = await import('@/shared/leaderboard/lib/leaderboardSync');
+              const { syncCurrentStreakToLeaderboard } = await import(
+                '@/shared/leaderboard/lib/leaderboardSync'
+              );
               syncCurrentStreakToLeaderboard(
                 {
                   currentStreak: mergedStats.longestStreak,
@@ -455,7 +454,6 @@ export async function loadMiniStats() {
       logger.info('[MiniStorage] User not authenticated, skipping database sync');
     }
 
-    // Auto-sync with CloudKit on load if available (iOS only)
     if (cloudKitService.isSyncAvailable()) {
       try {
         const cloudStats = await cloudKitService.fetchMiniStats();
@@ -532,19 +530,15 @@ export async function updateMiniStatsAfterCompletion(
         isArchive: isArchive,
       };
 
-      // Update total completed
       stats.totalCompleted = Object.keys(stats.completedPuzzles).length;
 
-      // Update perfect solves (no checks/reveals)
       if (checksUsed === 0 && revealsUsed === 0) {
         stats.perfectSolves = (stats.perfectSolves || 0) + 1;
       }
 
-      // Update total checks and reveals used
       stats.totalChecksUsed = (stats.totalChecksUsed || 0) + checksUsed;
       stats.totalRevealsUsed = (stats.totalRevealsUsed || 0) + revealsUsed;
 
-      // Calculate average time
       const times = Object.values(stats.completedPuzzles)
         .map((p) => p.timeTaken)
         .filter((t) => t && t > 0);
@@ -552,7 +546,6 @@ export async function updateMiniStatsAfterCompletion(
         stats.averageTime = Math.round(times.reduce((a, b) => a + b, 0) / times.length);
       }
 
-      // Update best time
       if (timeTaken && timeTaken > 0) {
         if (!stats.bestTime || timeTaken < stats.bestTime) {
           stats.bestTime = timeTaken;
@@ -560,7 +553,6 @@ export async function updateMiniStatsAfterCompletion(
       }
     }
 
-    // Only update streak for first-attempt daily puzzle completions
     if (isFirstAttempt && !isArchive) {
       stats.currentStreak = calculateMiniStreak(stats.completedPuzzles);
       stats.longestStreak = Math.max(stats.longestStreak || 0, stats.currentStreak);
@@ -612,7 +604,6 @@ export function calculateMiniStreak(completedPuzzles) {
     const today = puzzleInfo.isoDate;
     const dates = Object.keys(dailyPuzzles).sort().reverse();
 
-    // Check if today or yesterday is included (streak is alive)
     const todayDate = new Date(today);
     const yesterdayDate = new Date(todayDate);
     yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -696,7 +687,6 @@ export function mergeMiniStats(localStats, cloudStats) {
     }
   });
 
-  // Calculate derived stats from merged puzzles
   const totalCompleted = Object.keys(mergedPuzzles).length;
   const perfectSolves = Object.values(mergedPuzzles).filter(
     (p) => (p.checksUsed || 0) === 0 && (p.revealsUsed || 0) === 0
@@ -717,7 +707,6 @@ export function mergeMiniStats(localStats, cloudStats) {
     times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
   const bestTime = times.length > 0 ? Math.min(...times) : null;
 
-  // Calculate streak from merged puzzles
   const currentStreak = calculateMiniStreak(mergedPuzzles);
   const longestStreak = Math.max(
     localStats.longestStreak || 0,
@@ -758,11 +747,8 @@ export async function clearAllMiniStorage() {
     await removeMiniStorageItem(MINI_STORAGE_KEYS.CURRENT_GAME);
     await removeMiniStorageItem(MINI_STORAGE_KEYS.STATS);
 
-    // Clear all puzzle progress keys
     const allKeys = await getMiniStorageKeys();
-    const progressKeys = allKeys.filter((key) =>
-      key.startsWith(MINI_STORAGE_KEYS.PUZZLE_PROGRESS)
-    );
+    const progressKeys = allKeys.filter((key) => key.startsWith(MINI_STORAGE_KEYS.PUZZLE_PROGRESS));
 
     for (const key of progressKeys) {
       await removeMiniStorageItem(key);

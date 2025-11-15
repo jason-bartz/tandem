@@ -64,7 +64,6 @@ export default function CrypticGameScreen({
 
       const correct = await checkAnswer();
       if (!correct) {
-        // Show incorrect feedback
         setShowIncorrectMessage(true);
         setTimeout(() => {
           setShowIncorrectMessage(false);
@@ -79,7 +78,6 @@ export default function CrypticGameScreen({
     setActiveIndex(index);
   };
 
-  // Initialize scroll position to show beginning of word
   useEffect(() => {
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
@@ -150,14 +148,12 @@ export default function CrypticGameScreen({
 
     window.addEventListener('keyboardLayoutChanged', handleLayoutChange);
 
-    // Handle physical keyboard input (desktop)
     const handlePhysicalKeyboard = (e) => {
       // Ignore if typing in input/textarea (shouldn't happen, but safety check)
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
         return;
       }
 
-      // Handle Enter key
       if (e.key === 'Enter') {
         e.preventDefault();
         if (userAnswer.trim()) {
@@ -166,14 +162,12 @@ export default function CrypticGameScreen({
         return;
       }
 
-      // Handle Backspace
       if (e.key === 'Backspace') {
         e.preventDefault();
         handleKeyPress('BACKSPACE');
         return;
       }
 
-      // Handle Arrow Keys
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
         if (activeIndex > 0) {
@@ -192,7 +186,6 @@ export default function CrypticGameScreen({
         return;
       }
 
-      // Handle letter keys (A-Z)
       if (e.key.length === 1 && /^[a-zA-Z]$/.test(e.key)) {
         e.preventDefault();
         handleKeyPress(e.key.toUpperCase());
@@ -228,10 +221,8 @@ export default function CrypticGameScreen({
     };
   }, [userAnswer, activeIndex, puzzle.length, handleKeyPress, handleSubmit]);
 
-  // Auto-scroll active block into view when it changes (only for long words)
   useEffect(() => {
     if (puzzle.length > 8 && activeBlockRef.current && scrollContainerRef.current) {
-      // Smooth scroll the active block into view, centered (like main game)
       activeBlockRef.current.scrollIntoView({
         behavior: 'smooth',
         block: 'nearest',

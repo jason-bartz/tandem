@@ -90,7 +90,6 @@ export function SubscriptionProvider({ children }) {
 
       setSubscription(clearedState);
 
-      // Clear cache on sign out
       try {
         localStorage.removeItem(CACHE_KEY);
       } catch (error) {
@@ -101,7 +100,6 @@ export function SubscriptionProvider({ children }) {
     }
 
     try {
-      // Initialize subscription service if needed
       await subscriptionService.initialize();
 
       // Get current subscription status
@@ -115,7 +113,6 @@ export function SubscriptionProvider({ children }) {
         loading: false,
       };
 
-      // Update context state
       setSubscription(newState);
 
       // Cache for next load (serialize Date objects)
@@ -126,7 +123,6 @@ export function SubscriptionProvider({ children }) {
         };
         localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
       } catch (error) {
-        // Handle quota exceeded or other storage errors
         console.error('[SubscriptionContext] Failed to cache subscription:', error);
       }
     } catch (error) {

@@ -42,7 +42,6 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Database error', isActive: false }, { status: 500 });
     }
 
-    // Check if subscription is valid
     const isActive = subscription && subscription.status === 'active';
     const isExpired =
       subscription && subscription.current_period_end

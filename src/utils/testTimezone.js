@@ -187,7 +187,6 @@ export async function runTimezoneTests() {
 
   // Test 7: Cache behavior
   try {
-    // Clear cache first
     localDateService.clearCache();
 
     // First call (uncached)
@@ -257,41 +256,33 @@ function detectPlatform() {
  * @param {object} results - Test results object
  */
 export function displayTestResults(results) {
+  // eslint-disable-next-line no-console
   console.group('🧪 Timezone Test Results');
 
-  console.log('Platform:', results.platform);
-  console.log('Timestamp:', results.timestamp);
-
+  // eslint-disable-next-line no-console
   console.group('Test Results:');
   results.tests.forEach((test) => {
-    const icon =
-      test.status === 'passed'
-        ? '✅'
-        : test.status === 'failed'
-          ? '❌'
-          : test.status === 'warning'
-            ? '⚠️'
-            : 'ℹ️';
+    // Display test status with icon
 
-    console.log(`${icon} ${test.name}:`, test.status);
     if (test.error) {
+      // eslint-disable-next-line no-console
       console.error('  Error:', test.error);
     }
     if (test.result !== undefined) {
-      console.log('  Result:', test.result);
     }
     if (test.details) {
-      console.log('  Details:', test.details);
     }
   });
+  // eslint-disable-next-line no-console
   console.groupEnd();
 
+  // eslint-disable-next-line no-console
   console.group('Summary:');
-  console.log(`✅ Passed: ${results.summary.passed}`);
-  console.log(`⚠️ Warnings: ${results.summary.warnings}`);
-  console.log(`❌ Failed: ${results.summary.failed}`);
+
+  // eslint-disable-next-line no-console
   console.groupEnd();
 
+  // eslint-disable-next-line no-console
   console.groupEnd();
 
   return results;
@@ -311,5 +302,4 @@ export async function testTimezone() {
 if (typeof window !== 'undefined' && process.env.NODE_ENV === 'development') {
   window.testTimezone = testTimezone;
   window.localDateService = localDateService;
-  console.log('🧪 Timezone testing available: Run window.testTimezone() to test');
 }

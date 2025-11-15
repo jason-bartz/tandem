@@ -62,7 +62,6 @@ export function createBrowserClient() {
         if (typeof document === 'undefined') return;
         let cookie = `${name}=${encodeURIComponent(value)}`;
 
-        // Set long-lived cookies for session persistence (30 days)
         // This follows best practices for mobile web games
         const maxAge = options?.maxAge || 2592000; // 30 days in seconds
         cookie += `; max-age=${maxAge}`;
@@ -70,7 +69,6 @@ export function createBrowserClient() {
         // Always set path to root
         cookie += `; path=${options?.path || '/'}`;
 
-        // Set SameSite=Lax for better security while maintaining functionality
         cookie += `; samesite=${options?.sameSite || 'Lax'}`;
 
         // Use secure flag in production

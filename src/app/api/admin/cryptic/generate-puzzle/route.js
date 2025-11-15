@@ -15,10 +15,7 @@ export async function POST(request) {
       return authResult.error;
     }
 
-    // Check if AI generation is enabled
-    console.log('[generate-puzzle] Checking AI service availability...');
     const enabled = aiService.isEnabled();
-    console.log('[generate-puzzle] AI service enabled:', enabled);
 
     if (!enabled) {
       console.error('[generate-puzzle] AI service is not enabled');
@@ -32,18 +29,11 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const {
-      difficulty = 3,
-      crypticDevices = [],
-      themeHint = null,
-    } = body;
+    const { difficulty = 3, crypticDevices = [], themeHint = null } = body;
 
     // Validate difficulty
     if (difficulty < 1 || difficulty > 5) {
-      return NextResponse.json(
-        { error: 'Difficulty must be between 1 and 5' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Difficulty must be between 1 and 5' }, { status: 400 });
     }
 
     // Validate cryptic devices if provided
@@ -60,14 +50,11 @@ export async function POST(request) {
     ];
 
     if (crypticDevices && !Array.isArray(crypticDevices)) {
-      return NextResponse.json(
-        { error: 'crypticDevices must be an array' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'crypticDevices must be an array' }, { status: 400 });
     }
 
     // Validate each device
-    const invalidDevices = crypticDevices.filter(d => !validDevices.includes(d));
+    const invalidDevices = crypticDevices.filter((d) => !validDevices.includes(d));
     if (invalidDevices.length > 0) {
       return NextResponse.json(
         {
@@ -77,24 +64,11 @@ export async function POST(request) {
       );
     }
 
-    console.log('[generate-puzzle] Generating cryptic puzzle with AI:', {
-      difficulty,
-      crypticDevices,
-      hasThemeHint: !!themeHint,
-      admin: authResult.admin.username,
-    });
-
     // Generate puzzle using AI - pass all selected devices
     const puzzle = await aiService.generateCrypticPuzzle({
       difficulty,
       crypticDevices,
       themeHint,
-    });
-
-    console.log('[generate-puzzle] Successfully generated puzzle:', {
-      answer: puzzle.answer,
-      device: puzzle.cryptic_device,
-      difficulty: puzzle.difficulty_rating,
     });
 
     return NextResponse.json({ puzzle }, { status: 200 });

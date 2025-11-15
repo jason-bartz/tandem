@@ -50,7 +50,6 @@ export function isSmallPhone() {
  * @returns {object} Device detection state
  */
 export function useDeviceType() {
-  // Initialize with detection to prevent layout flash
   const [deviceType, setDeviceType] = useState(() => {
     if (typeof window === 'undefined') {
       return {

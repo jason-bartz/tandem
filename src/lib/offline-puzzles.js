@@ -2,23 +2,293 @@
 // These are generated deterministically based on date
 
 const emojiCategories = {
-  animals: ['🐶', '🐱', '🐭', '🐹', '🐰', '🦊', '🐻', '🐼', '🐨', '🐯', '🦁', '🐮', '🐷', '🐸', '🐵', '🐔', '🐧', '🐦', '🦆', '🦅'],
-  food: ['🍎', '🍊', '🍋', '🍌', '🍉', '🍇', '🍓', '🍈', '🍒', '🍑', '🥝', '🥥', '🥑', '🍆', '🥔', '🥕', '🌽', '🌶', '🥒', '🥬'],
-  activities: ['⚽', '🏀', '🏈', '⚾', '🎾', '🏐', '🏉', '🎱', '🏓', '🏸', '🏒', '🏑', '🥍', '🏏', '🥅', '⛳', '🏹', '🎣', '🥊', '🥋'],
-  nature: ['🌸', '💮', '🏵', '🌹', '🥀', '🌺', '🌻', '🌼', '🌷', '🌱', '🌲', '🌳', '🌴', '🌵', '🌿', '☘', '🍀', '🍁', '🍂', '🍃'],
-  objects: ['⌚', '📱', '💻', '⌨', '🖥', '🖨', '🖱', '🖲', '🕹', '🗜', '💾', '💿', '📀', '📼', '📷', '📸', '📹', '🎥', '📽', '🎞'],
-  travel: ['🚗', '🚕', '🚙', '🚌', '🚎', '🏎', '🚓', '🚑', '🚒', '🚐', '🚚', '🚛', '🚜', '🛴', '🚲', '🛵', '🏍', '🚨', '🚔', '🚍'],
-  weather: ['☀', '🌤', '⛅', '🌥', '☁', '🌦', '🌧', '⛈', '🌩', '🌨', '❄', '☃', '⛄', '🌬', '💨', '💧', '💦', '☔', '☂', '🌊']
+  animals: [
+    '🐶',
+    '🐱',
+    '🐭',
+    '🐹',
+    '🐰',
+    '🦊',
+    '🐻',
+    '🐼',
+    '🐨',
+    '🐯',
+    '🦁',
+    '🐮',
+    '🐷',
+    '🐸',
+    '🐵',
+    '🐔',
+    '🐧',
+    '🐦',
+    '🦆',
+    '🦅',
+  ],
+  food: [
+    '🍎',
+    '🍊',
+    '🍋',
+    '🍌',
+    '🍉',
+    '🍇',
+    '🍓',
+    '🍈',
+    '🍒',
+    '🍑',
+    '🥝',
+    '🥥',
+    '🥑',
+    '🍆',
+    '🥔',
+    '🥕',
+    '🌽',
+    '🌶',
+    '🥒',
+    '🥬',
+  ],
+  activities: [
+    '⚽',
+    '🏀',
+    '🏈',
+    '⚾',
+    '🎾',
+    '🏐',
+    '🏉',
+    '🎱',
+    '🏓',
+    '🏸',
+    '🏒',
+    '🏑',
+    '🥍',
+    '🏏',
+    '🥅',
+    '⛳',
+    '🏹',
+    '🎣',
+    '🥊',
+    '🥋',
+  ],
+  nature: [
+    '🌸',
+    '💮',
+    '🏵',
+    '🌹',
+    '🥀',
+    '🌺',
+    '🌻',
+    '🌼',
+    '🌷',
+    '🌱',
+    '🌲',
+    '🌳',
+    '🌴',
+    '🌵',
+    '🌿',
+    '☘',
+    '🍀',
+    '🍁',
+    '🍂',
+    '🍃',
+  ],
+  objects: [
+    '⌚',
+    '📱',
+    '💻',
+    '⌨',
+    '🖥',
+    '🖨',
+    '🖱',
+    '🖲',
+    '🕹',
+    '🗜',
+    '💾',
+    '💿',
+    '📀',
+    '📼',
+    '📷',
+    '📸',
+    '📹',
+    '🎥',
+    '📽',
+    '🎞',
+  ],
+  travel: [
+    '🚗',
+    '🚕',
+    '🚙',
+    '🚌',
+    '🚎',
+    '🏎',
+    '🚓',
+    '🚑',
+    '🚒',
+    '🚐',
+    '🚚',
+    '🚛',
+    '🚜',
+    '🛴',
+    '🚲',
+    '🛵',
+    '🏍',
+    '🚨',
+    '🚔',
+    '🚍',
+  ],
+  weather: [
+    '☀',
+    '🌤',
+    '⛅',
+    '🌥',
+    '☁',
+    '🌦',
+    '🌧',
+    '⛈',
+    '🌩',
+    '🌨',
+    '❄',
+    '☃',
+    '⛄',
+    '🌬',
+    '💨',
+    '💧',
+    '💦',
+    '☔',
+    '☂',
+    '🌊',
+  ],
 };
 
 const wordCategories = {
-  animals: ['DOG', 'CAT', 'MOUSE', 'HAMSTER', 'RABBIT', 'FOX', 'BEAR', 'PANDA', 'KOALA', 'TIGER', 'LION', 'COW', 'PIG', 'FROG', 'MONKEY', 'CHICKEN', 'PENGUIN', 'BIRD', 'DUCK', 'EAGLE'],
-  food: ['APPLE', 'ORANGE', 'LEMON', 'BANANA', 'WATERMELON', 'GRAPES', 'STRAWBERRY', 'MELON', 'CHERRY', 'PEACH', 'KIWI', 'COCONUT', 'AVOCADO', 'EGGPLANT', 'POTATO', 'CARROT', 'CORN', 'PEPPER', 'CUCUMBER', 'LETTUCE'],
-  activities: ['SOCCER', 'BASKETBALL', 'FOOTBALL', 'BASEBALL', 'TENNIS', 'VOLLEYBALL', 'RUGBY', 'POOL', 'PINGPONG', 'BADMINTON', 'HOCKEY', 'CRICKET', 'LACROSSE', 'GOLF', 'ARCHERY', 'FISHING', 'BOXING', 'KARATE'],
-  nature: ['FLOWER', 'ROSE', 'TULIP', 'SUNFLOWER', 'DAISY', 'PLANT', 'TREE', 'PALM', 'CACTUS', 'HERB', 'CLOVER', 'SHAMROCK', 'MAPLE', 'LEAF', 'AUTUMN'],
-  objects: ['WATCH', 'PHONE', 'LAPTOP', 'KEYBOARD', 'COMPUTER', 'PRINTER', 'MOUSE', 'JOYSTICK', 'DISK', 'CASSETTE', 'CAMERA', 'VIDEO', 'FILM', 'PROJECTOR'],
-  travel: ['CAR', 'TAXI', 'BUS', 'RACING', 'POLICE', 'AMBULANCE', 'FIRETRUCK', 'VAN', 'TRUCK', 'TRACTOR', 'SCOOTER', 'BICYCLE', 'MOTORCYCLE', 'SIREN', 'TRAIN'],
-  weather: ['SUN', 'CLOUDY', 'OVERCAST', 'RAIN', 'STORM', 'THUNDER', 'SNOW', 'SNOWMAN', 'WIND', 'HURRICANE', 'DROP', 'WATER', 'UMBRELLA', 'OCEAN']
+  animals: [
+    'DOG',
+    'CAT',
+    'MOUSE',
+    'HAMSTER',
+    'RABBIT',
+    'FOX',
+    'BEAR',
+    'PANDA',
+    'KOALA',
+    'TIGER',
+    'LION',
+    'COW',
+    'PIG',
+    'FROG',
+    'MONKEY',
+    'CHICKEN',
+    'PENGUIN',
+    'BIRD',
+    'DUCK',
+    'EAGLE',
+  ],
+  food: [
+    'APPLE',
+    'ORANGE',
+    'LEMON',
+    'BANANA',
+    'WATERMELON',
+    'GRAPES',
+    'STRAWBERRY',
+    'MELON',
+    'CHERRY',
+    'PEACH',
+    'KIWI',
+    'COCONUT',
+    'AVOCADO',
+    'EGGPLANT',
+    'POTATO',
+    'CARROT',
+    'CORN',
+    'PEPPER',
+    'CUCUMBER',
+    'LETTUCE',
+  ],
+  activities: [
+    'SOCCER',
+    'BASKETBALL',
+    'FOOTBALL',
+    'BASEBALL',
+    'TENNIS',
+    'VOLLEYBALL',
+    'RUGBY',
+    'POOL',
+    'PINGPONG',
+    'BADMINTON',
+    'HOCKEY',
+    'CRICKET',
+    'LACROSSE',
+    'GOLF',
+    'ARCHERY',
+    'FISHING',
+    'BOXING',
+    'KARATE',
+  ],
+  nature: [
+    'FLOWER',
+    'ROSE',
+    'TULIP',
+    'SUNFLOWER',
+    'DAISY',
+    'PLANT',
+    'TREE',
+    'PALM',
+    'CACTUS',
+    'HERB',
+    'CLOVER',
+    'SHAMROCK',
+    'MAPLE',
+    'LEAF',
+    'AUTUMN',
+  ],
+  objects: [
+    'WATCH',
+    'PHONE',
+    'LAPTOP',
+    'KEYBOARD',
+    'COMPUTER',
+    'PRINTER',
+    'MOUSE',
+    'JOYSTICK',
+    'DISK',
+    'CASSETTE',
+    'CAMERA',
+    'VIDEO',
+    'FILM',
+    'PROJECTOR',
+  ],
+  travel: [
+    'CAR',
+    'TAXI',
+    'BUS',
+    'RACING',
+    'POLICE',
+    'AMBULANCE',
+    'FIRETRUCK',
+    'VAN',
+    'TRUCK',
+    'TRACTOR',
+    'SCOOTER',
+    'BICYCLE',
+    'MOTORCYCLE',
+    'SIREN',
+    'TRAIN',
+  ],
+  weather: [
+    'SUN',
+    'CLOUDY',
+    'OVERCAST',
+    'RAIN',
+    'STORM',
+    'THUNDER',
+    'SNOW',
+    'SNOWMAN',
+    'WIND',
+    'HURRICANE',
+    'DROP',
+    'WATER',
+    'UMBRELLA',
+    'OCEAN',
+  ],
 };
 
 const themes = [
@@ -41,7 +311,7 @@ const themes = [
   'Art Gallery',
   'Zoo Visit',
   'Library',
-  'Picnic Time'
+  'Picnic Time',
 ];
 
 // Seeded random number generator for deterministic puzzle generation
@@ -55,7 +325,7 @@ function hashDate(dateStr) {
   let hash = 0;
   for (let i = 0; i < dateStr.length; i++) {
     const char = dateStr.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return Math.abs(hash);
@@ -102,7 +372,7 @@ function generateOfflinePuzzle(date) {
     clues.push({
       emoji,
       word,
-      letters: word.split('')
+      letters: word.split(''),
     });
   }
 
@@ -112,8 +382,8 @@ function generateOfflinePuzzle(date) {
       theme,
       clues,
       difficulty: random(3) + 1, // 1-3 difficulty
-      category
-    }
+      category,
+    },
   };
 }
 
@@ -135,11 +405,11 @@ export function getOfflinePuzzle(date) {
           { emoji: '🌸', word: 'FLOWER', letters: ['F', 'L', 'O', 'W', 'E', 'R'] },
           { emoji: '🌳', word: 'TREE', letters: ['T', 'R', 'E', 'E'] },
           { emoji: '🌿', word: 'PLANT', letters: ['P', 'L', 'A', 'N', 'T'] },
-          { emoji: '🍃', word: 'LEAF', letters: ['L', 'E', 'A', 'F'] }
+          { emoji: '🍃', word: 'LEAF', letters: ['L', 'E', 'A', 'F'] },
         ],
         difficulty: 1,
-        category: 'nature'
-      }
+        category: 'nature',
+      },
     };
   }
 }
@@ -159,8 +429,7 @@ export function generateOfflinePuzzleSet(startDate, days = 7) {
   return puzzles;
 }
 
-// Check if a date has an offline puzzle available
-export function hasOfflinePuzzle(date) {
+export function hasOfflinePuzzle(_date) {
   // We can always generate a puzzle for any date
   return true;
 }
@@ -175,7 +444,6 @@ export function getCachedOfflinePuzzle(date) {
   return offlineCache[date];
 }
 
-// Clear offline cache
 export function clearOfflineCache() {
   offlineCache = {};
 }
@@ -185,5 +453,5 @@ export default {
   generateOfflinePuzzleSet,
   hasOfflinePuzzle,
   getCachedOfflinePuzzle,
-  clearOfflineCache
+  clearOfflineCache,
 };

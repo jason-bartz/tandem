@@ -19,7 +19,7 @@ export class BaseProvider {
       fetchErrors: 0,
       saveErrors: 0,
       averageFetchTime: 0,
-      averageSaveTime: 0
+      averageSaveTime: 0,
     };
   }
 
@@ -51,7 +51,7 @@ export class BaseProvider {
    * Save data to the provider
    * Must be implemented by subclasses
    */
-  async save(data) {
+  async save(_data) {
     throw new Error('save() must be implemented by subclass');
   }
 
@@ -68,7 +68,7 @@ export class BaseProvider {
    * Delete specific records
    * Optional - subclasses can override
    */
-  async delete(ids) {
+  async delete(_ids) {
     console.warn(`[${this.name}] Delete not implemented`);
     return false;
   }
@@ -83,7 +83,7 @@ export class BaseProvider {
       initialized: this.initialized,
       lastError: this.lastError,
       lastSyncTime: this.lastSyncTime,
-      stats: { ...this.stats }
+      stats: { ...this.stats },
     };
   }
 
@@ -113,7 +113,7 @@ export class BaseProvider {
     this.lastError = {
       type: 'fetch',
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -125,7 +125,7 @@ export class BaseProvider {
     this.lastError = {
       type: 'save',
       error: error.message,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   }
 
@@ -236,12 +236,10 @@ export class BaseProvider {
       'Failed to fetch',
       'Network request failed',
       'ERR_NETWORK',
-      'ERR_INTERNET_DISCONNECTED'
+      'ERR_INTERNET_DISCONNECTED',
     ];
 
-    return networkErrors.some(msg =>
-      error.message?.includes(msg) || error.code === msg
-    );
+    return networkErrors.some((msg) => error.message?.includes(msg) || error.code === msg);
   }
 
   /**
@@ -254,13 +252,11 @@ export class BaseProvider {
       'Invalid credentials',
       'Token expired',
       'AUTH_ERROR',
-      '401'
+      '401',
     ];
 
-    return authErrors.some(msg =>
-      error.message?.includes(msg) ||
-      error.code === msg ||
-      error.status === 401
+    return authErrors.some(
+      (msg) => error.message?.includes(msg) || error.code === msg || error.status === 401
     );
   }
 
@@ -273,13 +269,11 @@ export class BaseProvider {
       'Quota exceeded',
       'Storage quota',
       'QUOTA_EXCEEDED',
-      '507'
+      '507',
     ];
 
-    return quotaErrors.some(msg =>
-      error.message?.includes(msg) ||
-      error.code === msg ||
-      error.status === 507
+    return quotaErrors.some(
+      (msg) => error.message?.includes(msg) || error.code === msg || error.status === 507
     );
   }
 
@@ -311,12 +305,9 @@ export class BaseProvider {
           throw error;
         }
 
-        // Calculate backoff delay
         const delay = Math.min(1000 * Math.pow(2, i), 10000);
 
-        console.log(`[${this.name}] Retry ${i + 1}/${maxRetries} after ${delay}ms`);
-
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise((resolve) => setTimeout(resolve, delay));
       }
     }
 

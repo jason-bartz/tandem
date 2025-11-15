@@ -6,15 +6,14 @@ async function getTodaysPuzzle() {
   try {
     const currentInfo = getCurrentPuzzleInfo();
     const puzzle = await getPuzzleForDate(currentInfo.isoDate);
-    
-    // Ensure puzzle has proper structure
+
     if (puzzle && !puzzle.puzzles && puzzle.emojiPairs && puzzle.words) {
       puzzle.puzzles = puzzle.emojiPairs.map((emoji, index) => ({
         emoji: emoji,
-        answer: puzzle.words[index] || puzzle.correctAnswers[index]
+        answer: puzzle.words[index] || puzzle.correctAnswers[index],
       }));
     }
-    
+
     return {
       success: true,
       date: currentInfo.isoDate,
@@ -30,6 +29,6 @@ async function getTodaysPuzzle() {
 
 export default async function HomePage() {
   const initialPuzzleData = await getTodaysPuzzle();
-  
+
   return <GameContainerClient initialPuzzleData={initialPuzzleData} />;
 }

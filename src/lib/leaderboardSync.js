@@ -115,7 +115,6 @@ export async function syncStatsToLeaderboardOnAuth(tandemStats, crypticStats = n
  */
 export async function syncCurrentStreakToLeaderboard(stats, gameType = 'tandem') {
   try {
-    // Only submit current streak if it equals best streak (i.e., it just improved)
     if (!stats || stats.currentStreak !== stats.bestStreak || stats.bestStreak <= 0) {
       return false;
     }

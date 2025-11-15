@@ -26,7 +26,6 @@ export function useTimezoneInit() {
     debugInfo: null,
   });
 
-  // Initialize timezone on mount
   useEffect(() => {
     let mounted = true;
     let visibilityHandler = null;
@@ -36,7 +35,6 @@ export function useTimezoneInit() {
       try {
         if (!mounted) return;
 
-        // Set initial loading state
         setTimezoneState((prev) => ({ ...prev, loading: true }));
 
         // Get current timezone info
@@ -57,7 +55,6 @@ export function useTimezoneInit() {
 
         if (!mounted) return;
 
-        // Update state with results
         setTimezoneState({
           initialized: true,
           loading: false,
@@ -103,13 +100,11 @@ export function useTimezoneInit() {
       }
     };
 
-    // Handle app resume/focus to detect timezone changes
     const handleAppResume = () => {
       detectTimezoneChange().then((result) => {
         if (result.changed) {
           logger.log('Timezone change detected on app resume', result);
 
-          // Clear cache and reinitialize
           localDateService.clearCache();
           initializeTimezone();
 
@@ -123,7 +118,6 @@ export function useTimezoneInit() {
       });
     };
 
-    // Set up event listeners for app lifecycle
     if (typeof document !== 'undefined') {
       visibilityHandler = () => {
         if (document.visibilityState === 'visible') {
@@ -139,7 +133,6 @@ export function useTimezoneInit() {
       window.addEventListener('focus', focusHandler);
     }
 
-    // Initialize on mount
     initializeTimezone();
 
     // Cleanup
@@ -242,7 +235,6 @@ function sendTimezonetelemetry(data) {
 
     // Log in development
     if (process.env.NODE_ENV === 'development') {
-      console.log('[Timezone Telemetry]', data);
     }
   } catch (error) {
     // Silent fail for telemetry
@@ -260,7 +252,6 @@ export function withTimezoneInit(Component) {
     const timezone = useTimezoneInit();
 
     if (!timezone.isReady) {
-      // Show loading state while initializing
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
@@ -272,7 +263,6 @@ export function withTimezoneInit(Component) {
     }
 
     if (timezone.error) {
-      // Show error state if initialization failed
       return (
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center text-red-600">
