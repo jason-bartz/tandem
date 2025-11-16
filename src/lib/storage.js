@@ -31,7 +31,102 @@ async function setStorageItem(key, value) {
   if (isNative) {
     await Preferences.set({ key, value });
   } else {
-    localStorage.setItem(key, value);
+    try {
+      localStorage.setItem(key, value);
+    } catch (error) {
+      // Handle quota exceeded errors
+      if (error.name === 'QuotaExceededError') {
+        logger.error('[storage.setStorageItem] Quota exceeded, attempting cleanup', {
+          key,
+          valueSize: value.length,
+        });
+
+        // If this is a stats key, try to recover by cleaning up old data
+        if (key.includes('tandemStats') || key.includes('tandem_stats')) {
+          try {
+            // Clear old non-critical data first
+            await cleanupOldProgressData();
+
+            // Retry the save
+            localStorage.setItem(key, value);
+            logger.info('[storage.setStorageItem] Successfully saved after cleanup');
+            return;
+          } catch (retryError) {
+            logger.error('[storage.setStorageItem] Failed even after cleanup', retryError);
+            // Last resort: try to save minimal stats
+            if (key.includes('tandemStats') || key.includes('tandem_stats')) {
+              try {
+                const parsedValue = JSON.parse(value);
+                const minimalStats = {
+                  played: parsedValue.played || 0,
+                  wins: parsedValue.wins || 0,
+                  currentStreak: parsedValue.currentStreak || 0,
+                  bestStreak: parsedValue.bestStreak || 0,
+                  lastStreakDate: parsedValue.lastStreakDate || null,
+                  crypticPlayed: parsedValue.crypticPlayed || 0,
+                  crypticWins: parsedValue.crypticWins || 0,
+                  crypticCurrentStreak: parsedValue.crypticCurrentStreak || 0,
+                  crypticBestStreak: parsedValue.crypticBestStreak || 0,
+                  lastCrypticStreakDate: parsedValue.lastCrypticStreakDate || null,
+                };
+                localStorage.setItem(key, JSON.stringify(minimalStats));
+                logger.info('[storage.setStorageItem] Saved minimal stats as fallback');
+              } catch (minimalError) {
+                logger.error(
+                  '[storage.setStorageItem] Cannot save even minimal stats',
+                  minimalError
+                );
+                throw error; // Re-throw original error
+              }
+            } else {
+              throw error;
+            }
+          }
+        } else {
+          throw error;
+        }
+      } else {
+        throw error;
+      }
+    }
+  }
+}
+
+/**
+ * Clean up old progress data to free up storage space
+ * @private
+ */
+async function cleanupOldProgressData() {
+  try {
+    const keys = Object.keys(localStorage);
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - 90); // Keep last 90 days
+
+    let cleanedCount = 0;
+
+    for (const key of keys) {
+      // Clean up old progress data (but keep puzzle results)
+      if (key.startsWith('tandem_progress_')) {
+        const parts = key.split('_');
+        if (parts.length >= 5) {
+          const year = parseInt(parts[2]);
+          const month = parseInt(parts[3]);
+          const day = parseInt(parts[4]);
+
+          const date = new Date(year, month - 1, day);
+          if (date < cutoffDate) {
+            localStorage.removeItem(key);
+            cleanedCount++;
+          }
+        }
+      }
+    }
+
+    logger.info(`[storage.cleanup] Removed ${cleanedCount} old progress entries`);
+    return cleanedCount;
+  } catch (error) {
+    logger.error('[storage.cleanup] Failed to cleanup old data', error);
+    return 0;
   }
 }
 
