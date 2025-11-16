@@ -214,7 +214,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
 
   const handleAIGenerate = async (options) => {
     setAiLoading(true);
-    setAiError(null);
 
     try {
       const response = await fetch('/api/admin/cryptic/generate-puzzle', {
@@ -250,7 +249,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
       setShowPreview(true); // Auto-show preview after generation
     } catch (error) {
       console.error('AI generation error:', error);
-      setAiError(error.message);
       throw error; // Re-throw so the AI generator can display the error
     } finally {
       setAiLoading(false);
