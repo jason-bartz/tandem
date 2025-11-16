@@ -4,13 +4,28 @@ import { getApiUrl } from '@/lib/api-helper';
 class AuthService {
   constructor() {
     this.csrfToken = null;
+    // Try to restore CSRF token from sessionStorage on init
+    if (typeof window !== 'undefined') {
+      const storedToken = sessionStorage.getItem('csrfToken');
+      if (storedToken) {
+        this.csrfToken = storedToken;
+      }
+    }
   }
 
   setCSRFToken(token) {
     this.csrfToken = token;
+    // Persist to sessionStorage for page refreshes
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('csrfToken', token);
+    }
   }
 
   getCSRFToken() {
+    // If token is not in memory, try to restore from sessionStorage
+    if (!this.csrfToken && typeof window !== 'undefined') {
+      this.csrfToken = sessionStorage.getItem('csrfToken');
+    }
     return this.csrfToken;
   }
   async login(username, password) {
@@ -76,6 +91,9 @@ class AuthService {
   logout() {
     localStorage.removeItem('adminToken');
     this.csrfToken = null;
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('csrfToken');
+    }
   }
 
   getToken() {
