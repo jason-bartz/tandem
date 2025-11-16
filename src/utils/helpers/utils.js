@@ -87,9 +87,9 @@ export function generateShareText(
   // Debug logging
 
   const formattedTime = formatTime(timeInSeconds);
-  const formattedDate = formatDateShort(puzzleDate);
+  const puzzleNumber = getPuzzleNumber(puzzleDate);
 
-  let shareText = `Daily Puzzle ${formattedDate}\n`;
+  let shareText = `Daily Tandem #${puzzleNumber}\n`;
 
   // Add hard mode indicator if applicable
   if (isHardMode) {
@@ -111,8 +111,6 @@ export function generateShareText(
   if (difficultyRating) {
     shareText += `⭐ Difficulty: ${difficultyRating}\n`;
   }
-
-  shareText += `━━━━━━━━━━━━\n`;
 
   shareText += `⏱️ ${formattedTime}`;
   if (isHardMode) {
@@ -142,12 +140,7 @@ export function generateShareText(
     }
   }
 
-  shareText += puzzleEmojis.join(' ');
-
-  shareText += '\n\n#TandemPuzzle';
-  if (isHardMode) {
-    shareText += ' #HardMode';
-  }
+  shareText += puzzleEmojis.join('');
 
   return shareText;
 }

@@ -341,6 +341,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
                 theme={theme}
                 toggleTheme={toggleTheme}
                 hintsUsed={game.hintsUsed}
+                hintedAnswers={game.hintedAnswers}
                 onSelectPuzzle={handleSelectPuzzle}
                 onReturnToWelcome={game.returnToWelcome}
                 isHardMode={game.isHardMode}
