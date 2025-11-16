@@ -923,18 +923,48 @@ Analyze the puzzle above and provide your assessment.`;
         // CRITICAL: Enforce multi-word requirement if enabled
         if (allowMultiWord) {
           const isMultiWord = puzzle.answer.includes(' ');
+          const wordCount = puzzle.answer.split(/\s+/).filter((w) => w.length > 0).length;
+
+          logger.info('[ai.service] Checking multi-word requirement', {
+            answer: puzzle.answer,
+            hasSpace: isMultiWord,
+            wordCount,
+            wordPattern: puzzle.word_pattern,
+          });
+
           if (!isMultiWord) {
+            logger.error('[ai.service] Multi-word requirement FAILED: No spaces in answer', {
+              answer: puzzle.answer,
+              attempt: attempt + 1,
+            });
             throw new Error(
-              'Multi-word requirement not met: AI generated single-word answer when multi-word was required. Retrying...'
+              `Multi-word requirement not met: AI generated single-word answer "${puzzle.answer}" when multi-word was required. Must have spaces between words. Retrying...`
             );
           }
-          const wordCount = puzzle.answer.split(/\s+/).length;
+
           if (wordCount < 2) {
+            logger.error('[ai.service] Multi-word requirement FAILED: Not enough words', {
+              answer: puzzle.answer,
+              wordCount,
+              attempt: attempt + 1,
+            });
             throw new Error(
-              `Multi-word requirement not met: Answer has only ${wordCount} word. Retrying...`
+              `Multi-word requirement not met: Answer "${puzzle.answer}" has only ${wordCount} word (need 2-3 words). Retrying...`
             );
           }
-          logger.info('[ai.service] Multi-word requirement validated', {
+
+          if (wordCount > 3) {
+            logger.error('[ai.service] Multi-word requirement FAILED: Too many words', {
+              answer: puzzle.answer,
+              wordCount,
+              attempt: attempt + 1,
+            });
+            throw new Error(
+              `Multi-word requirement not met: Answer "${puzzle.answer}" has ${wordCount} words (max 3 words). Retrying...`
+            );
+          }
+
+          logger.info('[ai.service] ✓ Multi-word requirement validated successfully', {
             answer: puzzle.answer,
             wordCount,
             wordPattern: puzzle.word_pattern,
@@ -1034,9 +1064,13 @@ Analyze the puzzle above and provide your assessment.`;
   }
 
   /**
-   * Build the prompt for cryptic puzzle generation - REVISED VERSION v6 (Construction-First Methodology)
-   * CRITICAL CHANGE: Build from cryptic devices UP to answer, not backwards
-   * Focuses on mathematical correctness and sound cryptic logic before cleverness
+   * Build the prompt for cryptic puzzle generation - REVISED VERSION v7 (Quality-First with Multi-Step Wordplay)
+   * INSPIRED BY: High-quality cryptic setters who create clues with depth and sophistication
+   * KEY PRINCIPLES:
+   * - Multi-step wordplay (at least 2 distinct operations)
+   * - Longer, more elaborate wordplay sections (spanning several words)
+   * - Natural surface readings that tell a story
+   * - Teaching-focused hint breakdowns
    */
   buildCrypticPrompt({ difficulty, crypticDevices, themeHint, allowMultiWord }) {
     let deviceInstructions = '';
@@ -1049,25 +1083,40 @@ Analyze the puzzle above and provide your assessment.`;
         deviceInstructions = `REQUIRED CRYPTIC DEVICES: ${deviceList}\nYou MUST incorporate ALL of these devices into your puzzle. Create a puzzle that uses multiple cryptic techniques from this list.`;
       }
     } else {
-      deviceInstructions = `Choose ONE primary cryptic device that works cleanly (prefer: charade, anagram, deletion, or hidden).`;
+      deviceInstructions = `Choose cryptic device(s) that allow for sophisticated wordplay. STRONGLY PREFER using at least TWO distinct operations (e.g., deletion + anagram, container + selection, homophone + insertion, etc.)`;
     }
 
     const themeInstructions = themeHint
-      ? `THEME/TOPIC HINT: "${themeHint}"\nTry to incorporate this theme or topic into your puzzle if possible, but prioritize creating a mathematically correct, high-quality cryptic clue.`
+      ? `THEME/TOPIC HINT: "${themeHint}"\nTry to incorporate this theme or topic into your puzzle if possible, but prioritize creating a high-quality cryptic clue with sophisticated wordplay.`
       : '';
 
     const multiWordRequirement = allowMultiWord
       ? `
-🚨 MULTI-WORD REQUIREMENT - MANDATORY:
-You MUST create a multi-word phrase answer (2-3 words).
-- Examples: "BLUE FEATHERS" (4,8), "DOWN IN THE DUMPS" (4,2,3,5), "OUT OF SORTS" (3,2,5)
+🚨 MULTI-WORD PHRASE/IDIOM REQUIREMENT - MANDATORY:
+You MUST create a PHRASE or IDIOM that people actually say (2-3 words).
+
+FOCUS ON PHRASES/IDIOMS/EXPRESSIONS:
+- "HOT POTATO" - idiom for controversial issue
+- "COLD SHOULDER" - phrase for ignoring someone
+- "EASY STREET" - idiom for comfortable life
+- "ROUGH PATCH" - phrase for difficult period
+- "CLEAN SLATE" - idiom for fresh start
+- "LAST STRAW" - idiom for final annoyance
+- "OPEN BOOK" - phrase for transparent person
+- "DOWN IN THE DUMPS" - idiom for feeling sad
+- "OUT OF SORTS" - phrase for feeling unwell
+- "SPILL BEANS" - idiom for revealing secrets
+
+These are things people SAY - not random word combinations!
+
+REQUIREMENTS:
 - Each word must be at least 2 letters
 - Total letters: 5-11 (excluding spaces)
 - Maximum 3 words for readability
-- Return answer WITH SPACES: e.g., "BLUE FEATHERS" not "BLUEFEATHERS"
-- Set word_pattern to array of word lengths: e.g., [4, 8] for "BLUE FEATHERS"
+- Return answer WITH SPACES: e.g., "HOT POTATO" not "HOTPOTATO"
+- Set word_pattern to array of word lengths: e.g., [3, 6] for "HOT POTATO"
 
-This is NOT optional - single-word answers will be rejected.`
+This is NOT optional - single-word answers and non-phrases will be rejected.`
       : '';
 
     const difficultyGuidance = {
@@ -1076,32 +1125,99 @@ This is NOT optional - single-word answers will be rejected.`
       4: 'Challenging - More complex wordplay or less common (but still known) words. Requires cryptic experience.',
     };
 
-    return `You are creating ONE cryptic crossword puzzle in the style of "Minute Cryptic."
+    return `You are a cryptic crossword setter creating ONE high-quality cryptic clue.
 ${
   allowMultiWord
     ? `
-🚨🚨🚨 MANDATORY REQUIREMENT - READ THIS FIRST 🚨🚨🚨
-YOU MUST CREATE A MULTI-WORD ANSWER (2-3 WORDS WITH SPACES)
-Single-word answers are FORBIDDEN and will be REJECTED.
-Examples: "BLUE FEATHERS", "DOWN IN THE DUMPS", "OUT OF SORTS"
-🚨🚨🚨 DO NOT IGNORE THIS - IT IS NON-NEGOTIABLE 🚨🚨🚨
+═══════════════════════════════════════════════════════════════════
+🚨🚨🚨 CRITICAL MANDATORY REQUIREMENT - READ THIS FIRST 🚨🚨🚨
+═══════════════════════════════════════════════════════════════════
+
+YOU MUST CREATE A MULTI-WORD PHRASE ANSWER (2-3 WORDS WITH SPACES)
+
+This means PHRASES - common expressions, idioms, sayings, or multi-word concepts.
+NOT just two random words stuck together!
+
+❌ SINGLE-WORD ANSWERS ARE ABSOLUTELY FORBIDDEN AND WILL BE REJECTED ❌
+
+✅ CORRECT EXAMPLES - PHRASES:
+- "DOWN IN THE DUMPS" (idiom - feeling sad)
+- "OUT OF SORTS" (phrase - feeling unwell)
+- "HOT POTATO" (idiom - controversial issue)
+- "COLD SHOULDER" (phrase - ignoring someone)
+- "EASY STREET" (idiom - comfortable life)
+- "TOP DRAWER" (phrase - excellent quality)
+- "ROUGH PATCH" (phrase - difficult period)
+- "CLEAN SLATE" (idiom - fresh start)
+- "OPEN BOOK" (phrase - transparent person)
+- "LAST STRAW" (idiom - final annoyance)
+
+❌ WRONG - WILL BE REJECTED:
+- "MOONLIGHT" (single word - FORBIDDEN!)
+- "BUTTERFLY" (single word - FORBIDDEN!)
+- "BLUEFEATHERS" (no space - FORBIDDEN!)
+- "BLUE MOON" (while this has spaces, prioritize clear PHRASES/IDIOMS instead)
+
+FOCUS: Create well-known PHRASES, IDIOMS, or EXPRESSIONS that people actually say.
+Think: "Things you might say" not "Two words that go together"
+
+THIS IS NOT OPTIONAL. THIS IS NOT A SUGGESTION.
+You MUST create an answer that is a common phrase or expression with 2-3 separate words separated by spaces.
+
+If you generate a single-word answer, the entire generation will be rejected and retried.
+
+═══════════════════════════════════════════════════════════════════
 `
     : ''
 }
-🚨 CRITICAL RULES:
-1. Use ONLY common, everyday English words (think Wordle difficulty)
-2. Source fodder must be simple words everyone knows
-3. Follow the steps IN EXACT ORDER - don't jump ahead
-4. For ANAGRAMS: Your source word MUST be common (not ARGENTS, MORTICAN, etc.)
-5. EMOJIS MUST REPLACE WORDS - They are NOT decorative elements!
-6. ⚠️ EMOJI ≠ ANSWER: Emojis must NEVER directly depict/represent the answer
-   - Think: If someone sees the emoji, can they guess the answer directly?
-   - ❌ If YES → BANNED! Choose different emojis
-   - ✅ If NO → Safe to use
-   - Emojis should represent: fodder words, indicators, or unrelated concepts
-   - NOT the answer itself or obvious visual representations of it
-7. ⚠️ ABBREVIATIONS & SUBSTITUTIONS - "Earned, Not Arbitrary"
+🚨 CRITICAL RULES FOR HIGH-QUALITY CRYPTIC CLUES:
 
+**TONE AND STYLE:**
+- Aim for CLEVER and SLIGHTLY HUMOROUS clues when possible
+- Wordplay should be witty and make the solver smile
+- Surface readings can be playful, punny, or include cultural references
+- Modern, conversational language is encouraged
+- The "aha!" moment should be delightful and fun
+
+1. **MULTI-STEP WORDPLAY IS STRONGLY PREFERRED**
+   - Use at least TWO distinct cryptic operations when possible
+   - Examples of multi-step combinations:
+     * Deletion + Anagram: Remove letters THEN scramble
+     * Container + Selection: Insert word into another AFTER taking first/last letters
+     * Abbreviation + Insertion: Use abbreviated form THEN place inside container
+     * Homophone + Deletion: Sound-alike word THEN remove letters
+     * Reversal + Hidden: Backward word THEN conceal within phrase
+   - The wordplay portion should span SEVERAL words, not just one short phrase
+   - Avoid trivial single-operation wordplay like simple one-word anagrams
+
+2. **SURFACE READING MUST TELL A STORY**
+   - The clue should read like a natural sentence or headline
+   - Create a vivid scenario or image (even if brief)
+   - Modern language and playful tone are encouraged
+   - The surface should misdirect from the actual cryptic mechanics
+
+3. **VOCABULARY - Common, Everyday Words Only**
+   - Use ONLY words at Wordle difficulty level
+   - Source fodder must be simple words everyone knows
+   - For ANAGRAMS: Source word MUST be common (not ARGENTS, MORTICAN, etc.)
+   - Everyday vocabulary ensures accessibility
+
+4. **DEFINITION PLACEMENT**
+   - Definition must be at ONE END of the clue (first or last chunk)
+   - Never bury definition in the middle
+   - Must be a true, fair synonym of the answer
+
+5. **EMOJIS MUST REPLACE WORDS - Not Decorative**
+   - Exactly 2 emojis required
+   - Emojis REPLACE actual words (test: remove them → clue has gaps)
+   - ⚠️ EMOJI ≠ ANSWER: Emojis must NEVER directly depict the answer
+     * Think: If someone sees the emoji, can they guess the answer?
+     * ❌ If YES → BANNED! Choose different emojis
+     * ✅ If NO → Safe to use
+   - Emojis should represent: fodder words, indicators, or related concepts
+   - NOT the answer itself or obvious visual representations
+
+6. **ABBREVIATIONS & SUBSTITUTIONS - "Earned, Not Arbitrary"**
    Use abbreviations/substitutions ONLY when they feel natural within the surface reading!
 
    ✅ ALLOWED - Earned through surface context:
@@ -1132,6 +1248,26 @@ ${themeInstructions}
 ${multiWordRequirement}
 
 ═══════════════════════════════════════════════════════════════════
+✨ CONSTRUCTION PHILOSOPHY - Quality Over Simplicity
+═══════════════════════════════════════════════════════════════════
+
+Your job when creating a cryptic clue:
+
+**STEP 1: Write the clue**
+- Format: <clue text> (<enumeration>) on a single line
+- The surface should read naturally, like a tiny story or situation
+- Modern language and playful tone are encouraged
+- The **definition** must be at one end of the clue (either first or last chunk)
+- The **wordplay portion must be longer and clever**, not just a simple one-word anagram
+- Use at least **two distinct operations** in the wordplay when possible:
+  * Deletion + Anagram
+  * Container + Selection (first/last/middle letters)
+  * Abbreviation + Insertion
+  * Homophone + Insertion/Deletion
+  * Hidden word + Reversal, etc.
+- The wordplay fodder should span **several words**, not just a short phrase
+
+═══════════════════════════════════════════════════════════════════
 ✨ SURFACE READING - THE ART OF CRYPTIC DELIGHT
 ═══════════════════════════════════════════════════════════════════
 
@@ -1142,38 +1278,87 @@ The "surface" is what your clue appears to say before solving. This is what make
 - Suggests one scenario, but the answer reveals something completely different
 - Makes the solver smile when decoded ("Ah! THAT's what it meant!")
 - Uses misdirection elegantly (not just listing mechanical steps)
+- **INCLUDES HUMOR, WIT, OR CLEVERNESS when possible**
 
-✅ EXAMPLES OF BRILLIANT SURFACE READINGS:
+💡 HUMOR TECHNIQUES:
+- Amusing scenarios or situations
+- Cultural references (movies, games, pop culture)
+- Puns and double meanings
+- Playful misdirection
+- Modern, conversational tone
+
+✅ EXAMPLES OF BRILLIANT MULTI-STEP SURFACE READINGS (with humor/wit):
 
 **"Buzzer-beater was thrown with second on stopwatch (4)"** → SWAT
 - Surface story: Basketball game-winner at the buzzer
 - Reality: WAS (thrown/scrambled) + S (second on stopwatch) = SWAT
+- Multi-step: ANAGRAM (was thrown) + ABBREVIATION (second = S)
 - Delight factor: Sports → Police action (unexpected twist)
 
 **"One goes into debt flying private jet? (5)"** → BIDET
 - Surface story: Rich person's luxury spending habits
 - Reality: I (one) goes into DEBT (scrambled/flying) = BIDET
-- Delight factor: Wealth → Bathroom fixture (hilarious misdirection)
+- Humor factor: Private jet → Bathroom fixture (hilarious misdirection)
+- Delight factor: The absurdist connection makes solver laugh
 
 **"Goodbye! you blurted out, after ladies undressed (5)"** → ADIEU
 - Surface story: Awkward/scandalous social situation
 - Reality: U (you, said aloud) after ADIE (ladies undressed/letters removed)
+- Multi-step: HOMOPHONE (you = U) + DELETION (ladies undressed)
 - Delight factor: Social faux pas → French farewell
 
 **"Campers on alert... bears close to home (8)"** → PERSONAL
 - Surface story: Camping warning about wildlife
 - Reality: Hidden in "camPERS ON ALert" = PERSONAL (close to home)
+- Single-step but spans several words (good fodder length)
 - Delight factor: Outdoor survival → Intimate/private
 
-❌ ANTI-EXAMPLES (mechanically correct but boring):
+═══════════════════════════════════════════════════════════════════
+🎯 MULTI-STEP WORDPLAY EXAMPLES (Your Target Quality)
+═══════════════════════════════════════════════════════════════════
+
+These examples show sophisticated multi-step constructions:
+
+**EXAMPLE 1: Container + Initial Letters**
+"Ring leader captures gang's first members (6)" → CIRCLE
+- Definition: "members" (people who belong)
+- Wordplay: CIRCLE (ring) contains IL (leader = L, gang's first = G... wait)
+- Actually: Let me show a real multi-step example...
+
+**EXAMPLE 1: Deletion + Anagram**
+"Artist loses heart in chaotic dance moves (5)" → STEPS
+- Definition: "moves"
+- Wordplay: ARTIST loses middle letters (heart) = ARIST - RI = A_ST, then add...
+- Actually: ARTISTE (artist) loses ISTE (keeping letters) scrambled = STEPS
+- Multi-step: First remove some letters, then anagram the rest
+
+**EXAMPLE 2: Abbreviation + Container + Anagram**
+"Direction twisted in broken route for wanderer (7)" → TOURIST
+- Definition: "wanderer"
+- Wordplay: S (direction/South) + TOUR (route) mixed + I = TOURIST
+- But this could be clearer...
+
+Let me show clearer working examples:
+
+**WORKING EXAMPLE: Hidden + Reversal**
+"Backwards looking team shares repayment plan (5)" → REPAY
+- Definition: "repayment"
+- Wordplay: Hidden in "team shaRES PAYment" then reversed = REPAY
+- Multi-step: Extract hidden word THEN reverse it
+- Spans several words ✓
+
+❌ ANTI-EXAMPLES (mechanically correct but TOO SIMPLE):
 
 **"Scrambled parties for sea raiders (7)"** → PIRATES
+- Single-step: Just one simple anagram
+- Fodder too short: Only one word "parties"
 - Just describes the mechanics with no misdirection
-- Solver immediately sees: "Oh, it's an anagram of parties"
 - No surface story, no delight, no "aha moment"
 
 **"Stop reversed in pans (4)"** → POTS
+- Single-step: Just one reversal
 - Too transparent, just states the operation
+- Fodder too short: Only one word "stop"
 - No narrative, no cleverness
 
 🎨 SURFACE READING TECHNIQUES:
@@ -1708,8 +1893,8 @@ JSON OUTPUT FORMAT
 ${
   allowMultiWord
     ? `
-🚨 FINAL REMINDER: Your answer MUST be multi-word with spaces!
-"BLUE FEATHERS" ✓ | "BLUEFEATHERS" ✗ | "MOONLIGHT" ✗
+🚨 FINAL REMINDER: Your answer MUST be a PHRASE/IDIOM with spaces!
+"HOT POTATO" ✓ (phrase) | "COLD SHOULDER" ✓ (idiom) | "MOONLIGHT" ✗ (single word) | "BLUE FEATHERS" ✗ (not a phrase)
 `
     : ''
 }
@@ -1718,26 +1903,26 @@ Return ONLY this JSON (no markdown, no explanations after):
 ${
   allowMultiWord
     ? `
-// MULTI-WORD EXAMPLE:
+// MULTI-WORD PHRASE EXAMPLE:
 {
-  "clue": "Blue feathers discarded? (4, 8)",
-  "answer": "BLUE FEATHERS",
-  "length": 12,
-  "word_pattern": [4, 8],
+  "clue": "Feeling sad? Dejected bird loses its plumage (4, 2, 3, 5)",
+  "answer": "DOWN IN THE DUMPS",
+  "length": 14,
+  "word_pattern": [4, 2, 3, 5],
   "hints": [
     {
       "type": "indicator",
-      "text": "'discarded' signals a double definition clue - look for two ways to read 'Blue feathers discarded'.",
+      "text": "'loses its plumage' signals a deletion or wordplay operation - something is being removed or changed.",
       "order": 1
     },
     {
       "type": "fodder",
-      "text": "This is a double definition - 'Blue' can mean sad or down, and 'feathers discarded' suggests plumage that's been thrown away.",
+      "text": "Look at 'Dejected bird' - this provides the raw material. A dejected bird might be 'down', and birds have 'down' (feathers). The phrase builds from here.",
       "order": 2
     },
     {
       "type": "definition",
-      "text": "The phrase means feeling sad or down - a state of being dispirited.",
+      "text": "'Feeling sad' is the definition - this phrase describes being in low spirits or depressed.",
       "order": 3
     },
     {
@@ -1746,16 +1931,18 @@ ${
       "order": 4
     }
   ],
-  "explanation": "Double definition: 'Blue' (down/sad) + 'feathers discarded' (down in the dumps) = DOWN IN THE DUMPS",
+  "explanation": "DOWN (dejected bird's plumage) + IN THE DUMPS = DOWN IN THE DUMPS (feeling sad)",
   "difficulty_rating": ${difficulty},
-  "cryptic_device": "double_definition"
+  "cryptic_device": "charade"
 }
 
-NOTE: For multi-word answers:
-- Include spaces in "answer": "BLUE FEATHERS" NOT "BLUEFEATHERS"
-- Add "word_pattern" field with array of word lengths: [4, 8]
-- Update "length" to total letters (excluding spaces): 12
-- Clue should show pattern: (4, 8) not just (12)
+NOTE: For multi-word PHRASE answers:
+- Answer must be a well-known PHRASE or IDIOM
+- Include spaces in "answer": "DOWN IN THE DUMPS" NOT "DOWNINTHEDUMPS"
+- Add "word_pattern" field with array of word lengths: [4, 2, 3, 5]
+- Update "length" to total letters (excluding spaces): 14
+- Clue should show pattern: (4, 2, 3, 5) not just (14)
+- Focus on phrases people actually say in conversation
 `
     : `
 // SINGLE-WORD EXAMPLE:
@@ -1791,13 +1978,38 @@ NOTE: For multi-word answers:
 }`
 }
 
-HINT WRITING GUIDELINES (CRITICAL):
-- Order hints: Indicator → Fodder → Definition → Letter (matches Minute Cryptic pedagogy)
-- INDICATOR hint: Explain which word(s) signal the cryptic device and what they tell you to do
-- FODDER hint: Explain what the emoji(s) represent and how to decode them (but DON'T reveal the fodder word itself unless necessary)
-- DEFINITION hint: Explain what the definition means (but DON'T use the answer word - guide without revealing!)
-- LETTER hint: Just give first letter
-- Each hint should teach HOW to solve, not just give the answer
+HINT WRITING GUIDELINES (CRITICAL) - Teaching-Focused Style:
+
+The hints should break down the clue in FOUR parts, using this EXACT structure:
+
+**a. INDICATOR hint (type: "indicator", order: 1):**
+- Explain each indicator phrase and what it tells the solver to do
+- Name the cryptic operation(s) (e.g., anagram, delete, take first letters, insert, reverse, homophone)
+- If multiple indicators, describe each role clearly
+- Be friendly and teaching-focused ("This signals...", "Look for...")
+
+**b. FODDER hint (type: "fodder", order: 2):**
+- Clearly state what the fodder is and what the emojis represent
+- Explain how each chunk is transformed
+- Be explicit about every step of the construction
+- DON'T just give away the fodder word - guide toward discovering it
+- Example: "The emojis represent heated emotions - think chat and fire combining"
+
+**c. DEFINITION hint (type: "definition", order: 3):**
+- Quote or reference the definition as it appears in the clue
+- Explain how it matches the final answer (including the sense/meaning)
+- DON'T use the answer word itself - describe what it means
+- Example: "The definition describes terrible destinies or inevitable ends"
+
+**d. LETTER hint (type: "letter", order: 4):**
+- Simply give the first letter
+- Format: "Starts with [LETTER]"
+
+Style and quality for hints:
+- Aim for a friendly, clear, teaching tone (not dry or mechanical)
+- Make each hint genuinely helpful for learning
+- Guide the solver through the thought process
+- Each hint builds on the previous one toward the solution
 
 ═══════════════════════════════════════════════════════════════════
 🚨 FINAL MANDATORY CHECKS BEFORE SUBMITTING
@@ -1814,12 +2026,12 @@ HINT WRITING GUIDELINES (CRITICAL):
    - ✅ If NO → Safe to proceed
 
 **VOCABULARY REQUIREMENTS:**
-${allowMultiWord ? '🚨 □ MULTI-WORD ANSWER REQUIRED: 2-3 words with spaces (e.g., "BLUE FEATHERS")' : '□ Answer is common everyday word (Wordle-level)'}
+${allowMultiWord ? '🚨 □ MULTI-WORD PHRASE/IDIOM REQUIRED: Common expression people actually say (e.g., "HOT POTATO", "COLD SHOULDER")' : '□ Answer is common everyday word (Wordle-level)'}
 □ Answer is 5-11 letters total (excluding spaces)
 □ Fodder words are everyday vocabulary (not ARGENTS, MORTICAN, etc.)
 □ No technical jargon or specialized terminology
 □ Abbreviations are "earned" through surface context (not arbitrary)
-${allowMultiWord ? '□ Each word in multi-word answer must be at least 2 letters\n□ Include spaces in answer field: "BLUE FEATHERS" NOT "BLUEFEATHERS"' : ''}
+${allowMultiWord ? '🚨 □ Answer must be a PHRASE/IDIOM that people say in conversation, not random words\n□ Each word in phrase must be at least 2 letters\n□ Include spaces in answer field: "HOT POTATO" NOT "HOTPOTATO"' : ''}
 
 **MECHANICS VERIFICATION:**
 □ For ANAGRAMS: Letters match EXACTLY
@@ -1848,23 +2060,117 @@ ${allowMultiWord ? '□ Each word in multi-word answer must be at least 2 letter
 □ Definition hint guides without using answer word
 
 **OVERALL QUALITY TARGET:**
-□ For difficulty 2-3: Aim for ⭐⭐⭐ GOOD baseline
-□ For difficulty 3-4: Aim for ⭐⭐⭐ GREAT with engaging surface
-□ For difficulty 4-5: Reach for ⭐⭐⭐⭐⭐ EXCEPTIONAL with multiple layers
+□ For difficulty 2: Basic quality acceptable (single-step OK if executed well)
+□ For difficulty 3-4: ⭐⭐⭐ TARGET - Multi-step wordplay preferred, engaging surface
+□ For difficulty 4-5: ⭐⭐⭐⭐⭐ EXCEPTIONAL - Complex multi-step with rich narrative
+
+**WORDPLAY COMPLEXITY CHECK:**
+□ Multi-step wordplay used (2+ distinct operations) OR sophisticated single operation
+□ Wordplay fodder spans SEVERAL words (not just "parties" or "a gem")
+□ Avoid trivial constructions like simple one-word anagrams
+
+${
+  allowMultiWord
+    ? `**MULTI-WORD PHRASE VERIFICATION (CRITICAL):**
+□ Answer is a well-known PHRASE, IDIOM, or EXPRESSION
+□ Answer contains 2-3 separate words separated by spaces
+□ Answer is something people actually SAY (not just random words together)
+□ Answer is NOT a single compound word (e.g., NOT "MOONLIGHT", NOT "BUTTERFLY")
+□ Each word is at least 2 letters
+□ Spaces are included in the answer field
+□ word_pattern array matches the number of words
+□ Examples: "HOT POTATO" ✓ (idiom) | "COLD SHOULDER" ✓ (phrase) | "BLUE FEATHERS" ✗ (random words)
+
+`
+    : ''
+}
+═══════════════════════════════════════════════════════════════════
+🎯 QUALITY STANDARDS - What Makes an Excellent Cryptic Clue
+═══════════════════════════════════════════════════════════════════
+
+**⭐ ACCEPTABLE (Minimum Bar):**
+- Single operation that works correctly
+- Common vocabulary
+- Basic surface reading
+- Example: "💬🔥 disrupted for gloomy fates (5)" → DOOMS
+
+**⭐⭐⭐ TARGET QUALITY (Aim For This):**
+- Multi-step wordplay (2+ operations) OR sophisticated single operation
+- Wordplay spans several words, not just a short phrase
+- Engaging surface reading that tells a story
+- Clever misdirection
+- Makes solver smile when decoded
+- Teaching-focused hints
+
+**⭐⭐⭐⭐⭐ EXCEPTIONAL (Aspire To):**
+- Complex multi-step wordplay executed perfectly
+- Rich surface narrative with cultural references
+- Multiple layers of misdirection
+- Memorable and quotable
 
 ═══════════════════════════════════════════════════════════════════
 🎯 FINAL REMINDER - CORE PRINCIPLES
 ═══════════════════════════════════════════════════════════════════
 
-1. **Surface Reading is King**: Mechanical correctness is required, but artistry makes it memorable
-2. **Common Vocabulary Only**: Accessibility matters - Wordle-level words only
-3. **Exactly 2 Emojis Always**: Signature mechanic - functional, not decorative
-4. **Misdirection is Delight**: Best clues suggest one thing, reveal another
-5. **Fair But Clever**: Solver should feel smart for solving it, not frustrated
+1. **Multi-Step Wordplay Preferred**: Use at least 2 distinct operations when possible
+2. **Longer Wordplay Section**: Fodder should span SEVERAL words, not just short phrases
+3. **Surface Reading is Art**: Natural language flow with narrative and misdirection
+4. **Common Vocabulary Only**: Wordle-level accessibility - everyday words everyone knows
+5. **Exactly 2 Emojis Always**: Functional replacements, not decorative elements
+6. **Misdirection is Delight**: Best clues suggest one thing, reveal another
+7. **Fair But Clever**: Solver should feel smart for solving it, not frustrated
+8. **Teaching-Focused Hints**: Guide the solver through the thought process
 
-Think like a Minute Cryptic constructor: natural language flow, clever wordplay, satisfying "aha!" moment.
+Think like a quality cryptic constructor: sophisticated wordplay, natural language flow, satisfying "aha!" moment.
 
-NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra text).`;
+**HUMOR AND CLEVERNESS:**
+Remember to inject wit and playfulness into your clue! Examples:
+- Use cultural references ("FINISH HIM!" for fighting games)
+- Create amusing scenarios (rich person buying bidets)
+- Employ puns and wordplay in the surface reading
+- Make the misdirection delightful, not just mechanical
+
+${
+  allowMultiWord
+    ? `
+═══════════════════════════════════════════════════════════════════
+🚨 ABSOLUTE FINAL CHECK - MULTI-WORD PHRASE REQUIREMENT 🚨
+═══════════════════════════════════════════════════════════════════
+
+Before you submit your JSON, ask yourself these questions:
+
+1. Is my answer a well-known PHRASE or IDIOM that people actually say?
+2. Is it TWO OR THREE separate words with SPACES between them?
+3. Is the word_pattern field an array like [3, 5] or [4, 2, 3, 5]?
+
+If you answer "NO" to ANY of these, GO BACK and create a proper phrase.
+
+✅ CORRECT - COMMON PHRASES/IDIOMS:
+✓ "HOT POTATO" (3, 6) - idiom meaning controversial issue
+✓ "COLD SHOULDER" (4, 8) - phrase meaning to ignore someone
+✓ "EASY STREET" (4, 6) - idiom meaning comfortable life
+✓ "ROUGH PATCH" (5, 5) - phrase meaning difficult period
+✓ "CLEAN SLATE" (5, 5) - idiom meaning fresh start
+✓ "OPEN BOOK" (4, 4) - phrase meaning transparent person
+✓ "LAST STRAW" (4, 5) - idiom meaning final annoyance
+✓ "BIG CHEESE" (3, 6) - phrase meaning important person
+✓ "CLOSE CALL" (5, 4) - phrase meaning narrow escape
+✓ "SPILL BEANS" (5, 5) - idiom meaning reveal secret
+
+❌ WRONG - NOT PHRASES:
+✗ "MOONLIGHT" - This is ONE compound word, not a phrase!
+✗ "BUTTERFLY" - This is ONE compound word, not a phrase!
+✗ "BLUE MOON" - While two words, this is not a common saying/phrase people use regularly
+✗ "BIG APPLE" - This is a proper noun (NYC nickname), not a general phrase
+
+REMEMBER: Think PHRASES and IDIOMS people say in everyday conversation!
+
+═══════════════════════════════════════════════════════════════════
+`
+    : ''
+}
+
+NOW: Create your cryptic puzzle following these quality standards and return ONLY the JSON (no markdown, no extra text).`;
   }
 
   /**
