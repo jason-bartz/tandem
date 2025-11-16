@@ -17,16 +17,39 @@ import Image from 'next/image';
  * @param {number} achievement.points - Points awarded for this achievement
  * @param {number} achievement.threshold - Threshold to unlock
  * @param {number} achievement.currentValue - User's current value
+ * @param {number} index - Index in the list for stagger animation
  */
-export default function AchievementCard({ achievement }) {
-  const { highContrast } = useTheme();
+export default function AchievementCard({ achievement, index = 0 }) {
+  const { highContrast, reduceMotion } = useTheme();
 
   const { isUnlocked, progress, name, description, imageFilename, threshold, currentValue } =
     achievement;
 
+  // Calculate stagger delay for cascade effect (50ms per item)
+  const getDelayClass = () => {
+    if (reduceMotion) return '';
+    const delay = index * 50;
+    if (delay === 0) return 'delay-0';
+    if (delay <= 50) return 'delay-50';
+    if (delay <= 75) return 'delay-75';
+    if (delay <= 100) return 'delay-100';
+    if (delay <= 150) return 'delay-150';
+    if (delay <= 200) return 'delay-200';
+    if (delay <= 250) return 'delay-250';
+    if (delay <= 300) return 'delay-300';
+    if (delay <= 400) return 'delay-400';
+    if (delay <= 500) return 'delay-500';
+    if (delay <= 600) return 'delay-600';
+    if (delay <= 700) return 'delay-700';
+    return 'delay-800';
+  };
+
+  const delayClass = getDelayClass();
+  const animationClass = reduceMotion ? '' : 'animate-fade-in-up';
+
   return (
     <div
-      className={`relative rounded-2xl border-[3px] p-4 transition-all ${
+      className={`relative rounded-2xl border-[3px] p-4 transition-all ${animationClass} ${delayClass} ${
         isUnlocked
           ? highContrast
             ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
@@ -133,10 +156,13 @@ export default function AchievementCard({ achievement }) {
                 }`}
               >
                 <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    highContrast ? 'bg-hc-primary' : 'bg-accent-blue'
-                  }`}
-                  style={{ width: `${progress}%` }}
+                  className={`h-full rounded-full ${
+                    reduceMotion ? 'transition-all duration-500' : 'animate-progress-fill'
+                  } ${highContrast ? 'bg-hc-primary' : 'bg-accent-blue'}`}
+                  style={{
+                    width: reduceMotion ? `${progress}%` : undefined,
+                    '--target-width': `${progress}%`,
+                  }}
                 />
               </div>
             </div>

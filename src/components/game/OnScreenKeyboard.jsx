@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playKeyPressSound } from '@/lib/sounds';
@@ -31,9 +32,11 @@ export default function OnScreenKeyboard({
   checkButtonColor = '#3B82F6', // Default blue for Daily Tandem
 }) {
   const { lightTap } = useHaptics();
-  const { highContrast, isDark } = useTheme();
+  const { highContrast, isDark, reduceMotion } = useTheme();
   const [pressedKeys, setPressedKeys] = useState(new Set());
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const [isVisible, setIsVisible] = useState(reduceMotion); // Immediately visible if reduce motion is on
 
   // Load sound preference from localStorage
   useEffect(() => {
@@ -44,6 +47,28 @@ export default function OnScreenKeyboard({
       }
     }
   }, []);
+
+  // Show keyboard after screen slide animation completes (350ms)
+  useEffect(() => {
+    if (!reduceMotion && !isVisible) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 350); // Wait for screen slide-up to complete
+      return () => clearTimeout(timer);
+    }
+  }, [isVisible, reduceMotion]);
+
+  // Mark as animated after the cascade animation completes
+  useEffect(() => {
+    if (!hasAnimated) {
+      // Calculate total animation time (350ms screen slide + 3 rows * 30ms base delay + last key delay + animation duration)
+      const totalTime = reduceMotion ? 0 : 1150;
+      const timer = setTimeout(() => {
+        setHasAnimated(true);
+      }, totalTime);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAnimated, reduceMotion]);
 
   const handleKeyPress = (key, event) => {
     if (disabled) return;
@@ -196,6 +221,36 @@ export default function OnScreenKeyboard({
 
   const rows = KEYBOARD_LAYOUTS[layout] || KEYBOARD_LAYOUTS.QWERTY;
 
+  // Calculate waterfall cascade delay for each key
+  const getKeyDelay = (rowIndex, keyIndex) => {
+    if (reduceMotion) return 0;
+    // Add 350ms base delay to wait for screen slide-up animation to complete
+    // Then add staggered delays for waterfall effect
+    const screenSlideDelay = 350;
+    const rowDelay = rowIndex * 30;
+    const keyDelay = keyIndex * 25;
+    return (screenSlideDelay + rowDelay + keyDelay) / 1000; // Convert to seconds for framer-motion
+  };
+
+  // Animation variants for keyboard keys following Apple HIG
+  const keyVariants = {
+    initial: {
+      scale: 0.7,
+      opacity: 0,
+      y: 10,
+    },
+    animate: (custom) => ({
+      scale: 1,
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: custom.delay,
+        duration: reduceMotion ? 0 : 0.3,
+        ease: [0.25, 0.1, 0.25, 1], // Apple's ease-in-out curve
+      },
+    }),
+  };
+
   const getGridConfig = (row, rowIndex) => {
     const letterCount = row.filter((k) => k !== 'ENTER' && k !== 'BACKSPACE').length;
 
@@ -250,6 +305,7 @@ export default function OnScreenKeyboard({
       className={`w-full max-w-md mx-auto ${
         isSmallPhone ? 'px-2' : isMobilePhone ? 'px-2' : 'px-3'
       }`}
+      style={{ visibility: isVisible ? 'visible' : 'hidden' }}
     >
       <div
         className={
@@ -268,11 +324,15 @@ export default function OnScreenKeyboard({
                 gridTemplateColumns: gridConfig.style,
               }}
             >
-              {row.map((key) => (
-                <button
+              {row.map((key, keyIndex) => (
+                <motion.button
                   key={key}
                   type="button"
                   disabled={disabled}
+                  variants={keyVariants}
+                  initial={!hasAnimated ? 'initial' : false}
+                  animate="animate"
+                  custom={{ delay: getKeyDelay(rowIndex, keyIndex) }}
                   onPointerDown={(e) => handleKeyPress(key, e)}
                   onPointerUp={() => handleKeyRelease(key)}
                   onPointerLeave={() => handleKeyRelease(key)}
@@ -289,7 +349,7 @@ export default function OnScreenKeyboard({
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
                 >
                   {getKeyContent(key)}
-                </button>
+                </motion.button>
               ))}
             </div>
           );

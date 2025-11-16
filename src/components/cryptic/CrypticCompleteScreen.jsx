@@ -216,7 +216,7 @@ export default function CrypticCompleteScreen({
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-1 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
@@ -238,7 +238,7 @@ export default function CrypticCompleteScreen({
               </div>
             </div>
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-2 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : hintsUsed === 0
@@ -266,7 +266,7 @@ export default function CrypticCompleteScreen({
               </div>
             </div>
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-3 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
@@ -293,7 +293,7 @@ export default function CrypticCompleteScreen({
           <div className="space-y-3 mb-6">
             <button
               onClick={handleShare}
-              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
+              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-200 ${
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                   : 'bg-accent-purple text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
@@ -318,7 +318,7 @@ export default function CrypticCompleteScreen({
                   setShowArchive(true);
                 }
               }}
-              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
+              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-300 ${
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
@@ -328,7 +328,7 @@ export default function CrypticCompleteScreen({
             </button>
 
             {/* View Stats and Leaderboard Buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 animate-fade-in-up delay-400">
               <button
                 onClick={() => {
                   lightTap();

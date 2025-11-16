@@ -9,7 +9,13 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['var(--font-plus-jakarta-sans)', '-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
+        sans: [
+          'var(--font-plus-jakarta-sans)',
+          '-apple-system',
+          'BlinkMacSystemFont',
+          'system-ui',
+          'sans-serif',
+        ],
       },
       height: {
         screen: ['100vh', '100dvh'], // Support for dynamic viewport height
@@ -147,6 +153,9 @@ module.exports = {
         'slide-out-left': 'slideOutLeft 250ms cubic-bezier(0.32, 0.72, 0, 1)',
         'slide-in-right': 'slideInRight 300ms cubic-bezier(0.32, 0.72, 0, 1)',
         'slide-out-right': 'slideOutRight 250ms cubic-bezier(0.32, 0.72, 0, 1)',
+
+        // Slide down from top (for stats bar, notifications, etc.)
+        'slide-down': 'slideDownFromTop 400ms cubic-bezier(0.25, 0.1, 0.25, 1)',
       },
       transitionDuration: {
         instant: '100ms',
@@ -164,6 +173,40 @@ module.exports = {
         'spring-soft': 'cubic-bezier(0.5, 1.2, 0.5, 1)',
         'spring-bouncy': 'cubic-bezier(0.68, -0.55, 0.265, 1.55)',
         sharp: 'cubic-bezier(0.4, 0, 0.6, 1)',
+      },
+      // Animation delay utilities for stagger effects
+      // IMPORTANT: Use 'delay-*' classes with animations (these apply animation-delay)
+      // Tailwind's default delay-* applies transition-delay, so we override with animationDelay
+      animationDelay: {
+        0: '0ms',
+        50: '50ms',
+        75: '75ms',
+        100: '100ms',
+        150: '150ms',
+        200: '200ms',
+        250: '250ms',
+        300: '300ms',
+        400: '400ms',
+        500: '500ms',
+        600: '600ms',
+        700: '700ms',
+        800: '800ms',
+      },
+      // Keep transitionDelay for actual transitions
+      transitionDelay: {
+        0: '0ms',
+        50: '50ms',
+        75: '75ms',
+        100: '100ms',
+        150: '150ms',
+        200: '200ms',
+        250: '250ms',
+        300: '300ms',
+        400: '400ms',
+        500: '500ms',
+        600: '600ms',
+        700: '700ms',
+        800: '800ms',
       },
       keyframes: {
         fadeIn: {
@@ -385,6 +428,17 @@ module.exports = {
         slideOutRight: {
           from: { transform: 'translateX(0)' },
           to: { transform: 'translateX(100%)' },
+        },
+        // Slide down from top
+        slideDownFromTop: {
+          from: {
+            opacity: '0',
+            transform: 'translateY(-20px)',
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0)',
+          },
         },
       },
     },

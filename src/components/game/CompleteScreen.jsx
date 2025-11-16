@@ -348,13 +348,17 @@ export default function CompleteScreen({
           </div>
 
           <div className="space-y-3 mb-6">
-            {won && <ShareButton shareText={shareText} />}
+            {won && (
+              <div className="animate-fade-in-up delay-200">
+                <ShareButton shareText={shareText} />
+              </div>
+            )}
             <button
               onClick={() => {
                 lightTap();
                 setShowArchive(true);
               }}
-              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
+              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-300 ${
                 highContrast
                   ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
@@ -364,7 +368,7 @@ export default function CompleteScreen({
             </button>
 
             {/* View Stats and Leaderboard Buttons */}
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-3 animate-fade-in-up delay-400">
               <button
                 onClick={() => {
                   lightTap();
