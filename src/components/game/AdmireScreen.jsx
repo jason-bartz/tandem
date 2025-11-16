@@ -112,7 +112,7 @@ export default function AdmireScreen({
             )}
 
             <h1 className="font-bold mb-2 text-gray-800 dark:text-gray-200 text-3xl mt-8">
-              <span className="inline-block">Completed Puzzle ✓</span>
+              <span className="inline-block">Completed Puzzle</span>
             </h1>
 
             <p className="text-gray-600 dark:text-gray-400 mb-6">
@@ -145,29 +145,35 @@ export default function AdmireScreen({
               {puzzle?.puzzles?.map((puzzleItem, index) => (
                 <div
                   key={index}
-                  className={`rounded-2xl p-3 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                  className={`rounded-2xl px-4 py-3 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
                     highContrast
                       ? 'bg-hc-surface border-hc-border'
                       : 'bg-green-100 dark:bg-green-900/30 border-green-500'
                   }`}
                 >
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3">
                       <span className="text-2xl">{puzzleItem.emoji1}</span>
                       <span className="text-2xl">{puzzleItem.emoji2}</span>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div
+                      className={`flex-1 text-lg font-bold text-center ${
+                        highContrast ? 'text-hc-text' : 'text-green-700 dark:text-green-300'
+                      }`}
+                    >
+                      {puzzleItem.answer}
+                    </div>
+                    <div className="flex items-center gap-2 min-w-[24px]">
                       {admireData?.hintedAnswers?.includes(index) && (
-                        <span className="text-accent-pink text-sm">💡</span>
+                        <Image
+                          src="/icons/ui/hint.png"
+                          alt="Hint used"
+                          width={20}
+                          height={20}
+                          className="opacity-70"
+                        />
                       )}
                     </div>
-                  </div>
-                  <div
-                    className={`text-lg font-bold text-center mt-1 ${
-                      highContrast ? 'text-hc-text' : 'text-green-700 dark:text-green-300'
-                    }`}
-                  >
-                    {puzzleItem.answer}
                   </div>
                 </div>
               ))}
@@ -227,8 +233,15 @@ export default function AdmireScreen({
 
             {/* Hints indicator */}
             {admireData?.hintsUsed > 0 && (
-              <div className="text-sm text-gray-600 dark:text-gray-400 mb-6">
-                💡 {admireData.hintsUsed} hint{admireData.hintsUsed > 1 ? 's' : ''} used
+              <div className="text-sm text-gray-600 dark:text-gray-400 mb-6 flex items-center justify-center gap-1.5">
+                <Image
+                  src="/icons/ui/hint.png"
+                  alt="Hint"
+                  width={16}
+                  height={16}
+                  className="opacity-70"
+                />
+                {admireData.hintsUsed} hint{admireData.hintsUsed > 1 ? 's' : ''} used
               </div>
             )}
           </div>
