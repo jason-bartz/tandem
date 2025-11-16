@@ -103,6 +103,7 @@ export default function ShareButton({ shareText, className = '' }) {
               : 'bg-accent-green text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
           }
           ${showSuccessBurst && !reduceMotion ? 'share-success' : ''}
+          ${!copied && !error && !reduceMotion ? 'animate-attention-pulse' : ''}
           ${className}
         `}
         aria-label="Share results"

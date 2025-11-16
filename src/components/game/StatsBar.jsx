@@ -73,7 +73,7 @@ export default function StatsBar({
             : isMobilePhone
               ? 'gap-3 mb-4 p-3'
               : 'gap-4 sm:gap-6 md:gap-8 mb-6 p-4'
-      } ${isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-light-sand dark:bg-gray-800'} rounded-2xl score-display max-w-md mx-auto transition-all duration-300`}
+      } ${isHardMode ? 'bg-gradient-to-r from-red-50 to-orange-50 dark:from-gray-800 dark:to-gray-800 border-2 border-red-200 dark:border-red-800' : 'bg-light-sand dark:bg-gray-800'} rounded-2xl score-display max-w-md mx-auto transition-all duration-300 ${reduceMotion ? '' : 'animate-slide-down'}`}
     >
       <div className="text-center flex-1 sm:flex-initial">
         <div

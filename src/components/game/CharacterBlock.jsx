@@ -1,5 +1,5 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -49,6 +49,18 @@ export default function CharacterBlock({
   const { highContrast, reduceMotion } = useTheme();
   const previousIsCorrect = useRef(isCorrect);
   const blockRef = useRef(null);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  // Mark as animated after entry animation completes
+  useEffect(() => {
+    if (!hasAnimated) {
+      const animationDuration = reduceMotion ? 0 : entryDelay + 300;
+      const timer = setTimeout(() => {
+        setHasAnimated(true);
+      }, animationDuration);
+      return () => clearTimeout(timer);
+    }
+  }, [hasAnimated, entryDelay, reduceMotion]);
 
   // Trigger celebration when answer becomes correct
   useEffect(() => {
@@ -82,10 +94,10 @@ export default function CharacterBlock({
     return 'text-lg sm:text-xl'; // 18pt / 20pt
   };
 
-  // Animation variants
+  // Animation variants following Apple HIG
   const variants = {
     initial: {
-      scale: 0.8,
+      scale: 0.6,
       opacity: 0,
     },
     animate: {
@@ -93,8 +105,8 @@ export default function CharacterBlock({
       opacity: 1,
       transition: {
         delay: reduceMotion ? 0 : entryDelay / 1000,
-        duration: reduceMotion ? 0 : 0.3,
-        ease: [0.34, 1.56, 0.64, 1], // iOS spring curve
+        duration: reduceMotion ? 0 : 0.35,
+        ease: [0.25, 0.1, 0.25, 1], // Apple's ease-in-out curve
       },
     },
     correct: {
@@ -161,7 +173,7 @@ export default function CharacterBlock({
     <motion.div
       ref={blockRef}
       variants={variants}
-      initial={false} // Don't use initial animation on mount if already correct/wrong
+      initial={!hasAnimated ? 'initial' : false} // Only animate on initial render
       animate={
         isCorrect && !reduceMotion ? 'correct' : isWrong && !reduceMotion ? 'wrong' : 'animate'
       }

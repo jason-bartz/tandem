@@ -121,10 +121,10 @@ export default function WelcomeScreen({
       onOpenHowToPlay={() => setShowHowToPlay(true)}
       onOpenSettings={() => setShowSettings(true)}
     >
-      <div className="animate-fade-in px-2 -mt-[52px]">
+      <div className="px-2 -mt-[52px]">
         {/* Main welcome card */}
         <div
-          className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center mb-6 ${
+          className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center mb-6 animate-fade-in-up delay-0 ${
             highContrast
               ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
               : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
@@ -132,7 +132,7 @@ export default function WelcomeScreen({
         >
           {/* Logo - Hide on native mobile app to save space, but show on web version */}
           {(!isMobilePhone || !isNativeApp) && (
-            <div className="w-24 h-24 mx-auto mb-5 relative">
+            <div className="w-24 h-24 mx-auto mb-5 relative animate-scale-fade-in delay-0">
               <Image
                 src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
                 alt="Tandem Logo"
@@ -145,20 +145,20 @@ export default function WelcomeScreen({
           )}
 
           {/* Title and Subtitle */}
-          <div className="mb-4">
+          <div className="mb-4 animate-fade-in-up delay-100">
             <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200">Daily Tandem</h1>
             <p className="text-sm text-gray-500 dark:text-gray-400">Emoji Word Puzzle</p>
           </div>
 
           {/* Puzzle number and date */}
-          <div className="mb-6">
+          <div className="mb-6 animate-fade-in-up delay-200">
             <div className="text-xl font-bold text-gray-800 dark:text-gray-200 mb-1">
               Puzzle #{puzzleNumber}
             </div>
             <div className="text-sm text-gray-500 dark:text-gray-400">{displayDate}</div>
           </div>
 
-          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
+          <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left animate-fade-in-up delay-300">
             <div className="space-y-3">
               <div className="flex items-start">
                 <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
@@ -187,20 +187,22 @@ export default function WelcomeScreen({
             </div>
           </div>
 
-          {/* Streak Display */}
-          {tandemStats.currentStreak > 0 && (
-            <div className="mb-4 text-center flex items-center justify-center gap-1.5">
-              <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
-              <p className="text-xs text-gray-500 dark:text-gray-500">
-                {getStreakMessage(tandemStats.currentStreak, 'tandem')}
-              </p>
-            </div>
-          )}
+          {/* Streak Display - Always reserve space to prevent layout shift */}
+          <div className="mb-4 text-center flex items-center justify-center gap-1.5 min-h-[16px] animate-fade-in-up delay-400">
+            {tandemStats.currentStreak > 0 && (
+              <>
+                <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
+                <p className="text-xs text-gray-500 dark:text-gray-500">
+                  {getStreakMessage(tandemStats.currentStreak, 'tandem')}
+                </p>
+              </>
+            )}
+          </div>
 
           <button
             onClick={handlePlayClick}
             disabled={!puzzle}
-            className={`w-full h-14 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+            className={`w-full h-14 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none animate-fade-in-up delay-500
             ${
               highContrast
                 ? 'bg-hc-primary border-[3px] border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
@@ -217,7 +219,7 @@ export default function WelcomeScreen({
         </div>
 
         {/* Cryptic Welcome Card */}
-        <div className="mb-6">
+        <div className="mb-6 animate-fade-in-up delay-600">
           <CrypticWelcomeCard currentStreak={crypticStats.currentStreak} />
         </div>
 

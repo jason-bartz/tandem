@@ -153,8 +153,8 @@ export default function AchievementsModal({ isOpen, onClose }) {
                 No achievements in this category yet.
               </div>
             ) : (
-              displayData.allAchievements.map((achievement) => (
-                <AchievementCard key={achievement.id} achievement={achievement} />
+              displayData.allAchievements.map((achievement, index) => (
+                <AchievementCard key={achievement.id} achievement={achievement} index={index} />
               ))
             )}
           </div>

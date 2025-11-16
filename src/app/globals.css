@@ -728,6 +728,7 @@ body {
 
 .animate-fade-in-up {
   animation: fadeInUp 300ms cubic-bezier(0, 0, 0.58, 1);
+  animation-fill-mode: backwards; /* Prevents layout shift by starting in initial state */
 }
 
 /* Scale fade in */
@@ -744,26 +745,88 @@ body {
 
 .animate-scale-fade-in {
   animation: scaleFadeIn 300ms cubic-bezier(0, 0, 0.58, 1);
+  animation-fill-mode: backwards; /* Prevents layout shift by starting in initial state */
 }
 
 /* Stagger delays for list items */
 .stagger-1 {
   animation-delay: 50ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
 }
 .stagger-2 {
   animation-delay: 100ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
 }
 .stagger-3 {
   animation-delay: 150ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
 }
 .stagger-4 {
   animation-delay: 200ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
 }
 .stagger-5 {
   animation-delay: 250ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
 }
 .stagger-6 {
   animation-delay: 300ms;
+  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+}
+
+/* Apply animation-delay to Tailwind's delay-* utilities when used with animations */
+/* This ensures delay-* works with both transitions AND animations */
+[class*='animate-'].delay-0 {
+  animation-delay: 0ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-50 {
+  animation-delay: 50ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-75 {
+  animation-delay: 75ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-100 {
+  animation-delay: 100ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-150 {
+  animation-delay: 150ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-200 {
+  animation-delay: 200ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-250 {
+  animation-delay: 250ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-300 {
+  animation-delay: 300ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-400 {
+  animation-delay: 400ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-500 {
+  animation-delay: 500ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-600 {
+  animation-delay: 600ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-700 {
+  animation-delay: 700ms !important;
+  animation-fill-mode: backwards;
+}
+[class*='animate-'].delay-800 {
+  animation-delay: 800ms !important;
+  animation-fill-mode: backwards;
 }
 
 /* ============================================
