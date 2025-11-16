@@ -58,7 +58,7 @@ export default function CrypticCompleteScreen({
 
   const handleShare = async () => {
     const puzzleNumber = getPuzzleNumber();
-    const shareText = `Daily Cryptic #${puzzleNumber}\n${hintsUsed === 0 ? '✨ Perfect solve!' : `💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`}\n⏱️ ${formatTime(elapsedTime)}\n\nPlay at tandemdaily.com/dailycryptic`;
+    const shareText = `Daily Cryptic #${puzzleNumber}\n${hintsUsed === 0 ? '✨ Perfect solve!' : `💡 ${hintsUsed} hint${hintsUsed > 1 ? 's' : ''} used`}\n⏱️ ${formatTime(elapsedTime)}`;
 
     try {
       if (navigator.share) {
