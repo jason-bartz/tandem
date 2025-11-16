@@ -47,45 +47,6 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
 
   const crypticDevices = [
     {
-      id: 'emoji',
-      name: 'Emoji Interpretation',
-      icon: '🎯',
-      featured: true,
-      description: 'TWO emojis that can work together or independently in the clue',
-      howToSpot: 'Always the first step - look at the emoji pair at the start of the clue',
-      indicators: 'No specific indicators - interpret based on context',
-      example: '🎭🎪 → STAGE (both represent theatrical settings)',
-      tips: [
-        'Emojis can work TOGETHER to suggest one concept (🐝🦂 = STING)',
-        'OR each emoji can represent DIFFERENT parts (⚡ = indicator, 🏴‍☠️ = definition)',
-        'The emoji pair provides fodder, indicators, or thematic hints',
-        'Context from the rest of the clue helps determine their role',
-        'Difficulty varies: direct associations (easy) to lateral thinking (hard)',
-      ],
-      examples: [
-        {
-          pair: '👑🦁',
-          meaning: 'ROYAL, PRIDE, or KING',
-          explanation: 'Both together = regal concepts',
-        },
-        {
-          pair: '🐝🦂',
-          meaning: 'STING or STINGING',
-          explanation: 'Both together = stinging creatures',
-        },
-        {
-          pair: '⚡🏴‍☠️',
-          meaning: 'Different roles',
-          explanation: '⚡ = anagram indicator, 🏴‍☠️ = pirate/definition',
-        },
-        {
-          pair: '📚🦉',
-          meaning: 'WISE, SCHOLAR, or SMART',
-          explanation: 'Both together = wisdom/knowledge',
-        },
-      ],
-    },
-    {
       id: 'charade',
       name: 'Charade',
       icon: '➕',
@@ -318,13 +279,8 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                 </h3>
                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed mb-4">
                   Every cryptic clue is a two-part puzzle combining a <strong>definition</strong>{' '}
-                  (straightforward meaning) and <strong>wordplay</strong> (clever construction).
-                  Daily Cryptic adds a unique twist:
-                  <strong className="text-purple-600 dark:text-purple-400">
-                    {' '}
-                    two emojis at the start of each clue
-                  </strong>{' '}
-                  that can work together or serve different purposes.
+                  (straightforward meaning) and <strong>wordplay</strong> (clever construction)
+                  using various cryptic devices.
                 </p>
 
                 <div className="grid sm:grid-cols-2 gap-4">
@@ -339,134 +295,8 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                   <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700">
                     <h4 className="font-bold text-gray-900 dark:text-white mb-1">Wordplay</h4>
                     <p className="text-sm text-gray-700 dark:text-gray-300">
-                      A clever way to build the answer using word games, letter manipulation, and
-                      our emoji innovation
+                      A clever way to build the answer using word games and letter manipulation
                     </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Emoji Interpretation Section */}
-        <div
-          className={`rounded-2xl border-[3px] overflow-hidden ${
-            highContrast
-              ? 'border-hc-border bg-hc-surface'
-              : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800'
-          }`}
-        >
-          <button
-            onClick={() => setExpandedSection(expandedSection === 'emoji' ? null : 'emoji')}
-            className="w-full p-4 flex items-center justify-between text-left hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            aria-expanded={expandedSection === 'emoji'}
-          >
-            <div className="flex items-center gap-3">
-              <Image src={getSectionIcon('emoji')} alt="" width={32} height={32} />
-              <span
-                className={`text-lg font-bold ${
-                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
-                }`}
-              >
-                Emoji Interpretation
-              </span>
-            </div>
-            <svg
-              className={`w-6 h-6 text-gray-600 dark:text-gray-400 transition-transform ${
-                expandedSection === 'emoji' ? 'rotate-180' : ''
-              }`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </button>
-
-          {expandedSection === 'emoji' && (
-            <div className="p-4 space-y-4 animate-fadeIn border-t-2 border-gray-300 dark:border-gray-600">
-              <div>
-                <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-2xl border-2 border-purple-300 dark:border-purple-700 mb-4">
-                  <h4 className="font-bold text-purple-900 dark:text-purple-100 mb-2 text-lg">
-                    🎯 Our Unique Innovation
-                  </h4>
-                  <p className="text-gray-800 dark:text-gray-200 leading-relaxed">
-                    Every Daily Cryptic clue starts with{' '}
-                    <strong>TWO emojis that can work together or independently</strong> to provide
-                    hints, fodder, indicators, or thematic context.
-                  </p>
-                </div>
-
-                <h4 className="font-bold text-gray-900 dark:text-white mb-2">How Emojis Work:</h4>
-                <ul className="space-y-2 text-gray-700 dark:text-gray-300">
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
-                    <span>
-                      <strong>Together:</strong> Both emojis combine to suggest one concept (🐝🦂 =
-                      STING)
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
-                    <span>
-                      <strong>Separately:</strong> Each emoji plays a different role (⚡ = anagram
-                      indicator, 🏴‍☠️ = pirate/definition)
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">•</span>
-                    <span>
-                      <strong>Context matters:</strong> The rest of the clue helps determine their
-                      role
-                    </span>
-                  </li>
-                </ul>
-
-                <div className="mt-4 space-y-3">
-                  <h4 className="font-bold text-gray-900 dark:text-white">Example Emoji Pairs:</h4>
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
-                      <div className="text-2xl mb-1">👑🦁</div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                        ROYAL, PRIDE, KING
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        Both together = regal concepts
-                      </div>
-                    </div>
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
-                      <div className="text-2xl mb-1">🐝🦂</div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                        STING, STINGING
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        Both together = stinging creatures
-                      </div>
-                    </div>
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
-                      <div className="text-2xl mb-1">⚡🏴‍☠️</div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                        Different roles
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        ⚡ = anagram indicator, 🏴‍☠️ = pirate
-                      </div>
-                    </div>
-                    <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border-2 border-blue-300 dark:border-blue-700">
-                      <div className="text-2xl mb-1">📚🦉</div>
-                      <div className="text-sm font-bold text-gray-900 dark:text-white">
-                        WISE, SCHOLAR, SMART
-                      </div>
-                      <div className="text-xs text-gray-600 dark:text-gray-400">
-                        Both together = wisdom/knowledge
-                      </div>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -520,55 +350,45 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                 <div className="p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-2xl border-2 border-yellow-300 dark:border-yellow-700 mb-4">
                   <h4 className="font-bold text-gray-900 dark:text-white mb-2">Sample Clue:</h4>
                   <p className="text-xl text-gray-900 dark:text-white mb-2">
-                    🗽🦅 <em>I&apos;m a race mixed = nation (7)</em>
+                    <em>Moods disrupted for gloomy fates (5)</em>
                   </p>
                 </div>
 
                 <div className="space-y-3">
                   <div>
                     <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      Step 1: Interpret the Emojis
+                      Step 1: Find the Definition
                     </h5>
                     <p className="text-gray-700 dark:text-gray-300">
-                      🗽 (Statue of Liberty) + 🦅 (Bald Eagle) = American symbols, suggesting the
-                      answer relates to America
+                      &quot;gloomy fates&quot; (at the end) = the definition
                     </p>
                   </div>
 
                   <div>
                     <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      Step 2: Find the Definition
+                      Step 2: Identify the Wordplay
                     </h5>
                     <p className="text-gray-700 dark:text-gray-300">
-                      &quot;nation&quot; (at the end) = the definition
-                    </p>
-                  </div>
-
-                  <div>
-                    <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      Step 3: Identify the Wordplay
-                    </h5>
-                    <p className="text-gray-700 dark:text-gray-300">
-                      &quot;mixed&quot; = anagram indicator
+                      &quot;disrupted&quot; = anagram indicator
                       <br />
-                      &quot;I&apos;m a race&quot; = the fodder to anagram (7 letters)
+                      &quot;Moods&quot; = the fodder to anagram (5 letters)
                     </p>
                   </div>
 
                   <div>
                     <h5 className="font-bold text-purple-600 dark:text-purple-400 mb-1">
-                      Step 4: Solve
+                      Step 3: Solve
                     </h5>
                     <p className="text-gray-700 dark:text-gray-300">
-                      Anagram of &quot;I&apos;m a race&quot; = <strong>AMERICA</strong> (7 letters)
+                      Anagram of &quot;MOODS&quot; = <strong>DOOMS</strong> (5 letters)
                       <br />
-                      Confirmed by emoji hints (American symbols) and definition (nation)
+                      Confirmed by definition (gloomy fates)
                     </p>
                   </div>
 
                   <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-xl border-2 border-green-300 dark:border-green-700">
                     <p className="text-sm font-bold text-green-900 dark:text-green-100">
-                      ✓ Answer: AMERICA
+                      ✓ Answer: DOOMS
                     </p>
                   </div>
                 </div>
@@ -902,46 +722,39 @@ export default function CrypticGuideModal({ isOpen, onClose }) {
                   <li className="flex items-start gap-2">
                     <span className="text-purple-600 dark:text-purple-400 font-bold">1.</span>
                     <span>
-                      <strong>Start with the emojis:</strong> Interpret what they represent together
-                      or separately
-                    </span>
-                  </li>
-                  <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">2.</span>
-                    <span>
                       <strong>Identify the definition:</strong> Usually at the start or end of the
                       clue
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">3.</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">2.</span>
                     <span>
                       <strong>Look for indicators:</strong> Words that signal anagrams, reversals,
                       containers, etc.
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">4.</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">3.</span>
                     <span>
                       <strong>Count letters:</strong> The number in parentheses is the answer length
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">5.</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">4.</span>
                     <span>
                       <strong>Work backwards:</strong> If you know the definition, think of synonyms
                       that fit the length
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">6.</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">5.</span>
                     <span>
                       <strong>Don&apos;t trust surface reading:</strong> The clue is designed to
                       mislead - look for the hidden wordplay
                     </span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-purple-600 dark:text-purple-400 font-bold">7.</span>
+                    <span className="text-purple-600 dark:text-purple-400 font-bold">6.</span>
                     <span>
                       <strong>Practice regularly:</strong> Cryptic solving is a skill that improves
                       with daily practice

@@ -381,19 +381,22 @@ export default function Support() {
             </p>
           </div>
           <div>
-            <h4 className="font-semibold mb-2">The Emoji Innovation</h4>
-            <p className="text-sm mb-2">
-              Every Daily Cryptic puzzle uses <strong>exactly TWO emojis</strong> at the start of
-              each clue. These emojis can:
-            </p>
+            <h4 className="font-semibold mb-2">Cryptic Devices</h4>
+            <p className="text-sm mb-2">Puzzles use various cryptic construction techniques:</p>
             <ul className="list-disc list-inside text-sm space-y-1 ml-4">
               <li>
-                Work <strong>together</strong> to represent one concept (🐝🦂 = STING)
+                <strong>Anagrams</strong> - letters rearranged (MOODS = DOOMS)
               </li>
               <li>
-                Each represent <strong>different parts</strong> of the clue (⚡ = indicator, 🏴‍☠️ =
-                definition)
+                <strong>Containers</strong> - words inside words
               </li>
+              <li>
+                <strong>Reversals</strong> - reading backwards
+              </li>
+              <li>
+                <strong>Homophones</strong> - sounds-like clues
+              </li>
+              <li>And more classic cryptic techniques</li>
             </ul>
           </div>
           <div>
@@ -416,73 +419,6 @@ export default function Support() {
                 <strong>No time limit</strong> - solve at your own pace
               </li>
             </ul>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'emoji-mechanics',
-      title: 'Understanding Emoji Clues',
-      content: (
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-2">Pattern 1: Both Emojis Together</h4>
-            <p className="text-sm mb-2">
-              Sometimes both emojis combine to represent one word or concept:
-            </p>
-            <div className="space-y-2 text-sm">
-              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">👑🦁</span>
-                  <span className="font-semibold">→ ROYAL, PRIDE, or KING</span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Both together = regal concepts
-                </p>
-              </div>
-              <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">🐝🦂</span>
-                  <span className="font-semibold">→ STING or STINGING</span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  Both together = stinging creatures
-                </p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Pattern 2: Each Emoji Different Role</h4>
-            <p className="text-sm mb-2">
-              Sometimes each emoji serves a different purpose in the clue:
-            </p>
-            <div className="space-y-2 text-sm">
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">⚡🏴‍☠️</span>
-                  <span className="font-semibold">→ Different purposes</span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  ⚡ might = anagram indicator, 🏴‍☠️ might = pirate/definition
-                </p>
-              </div>
-              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-2xl">🎓🔀</span>
-                  <span className="font-semibold">→ Different purposes</span>
-                </div>
-                <p className="text-xs text-gray-600 dark:text-gray-400">
-                  🎓 might = academic/teacher, 🔀 might = anagram indicator
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-2 border-yellow-400">
-            <p className="text-sm">
-              <strong>💡 Key Insight:</strong> Look at the rest of the clue for context. The emojis
-              provide fodder (building blocks), indicators (operations), or thematic hints. They
-              never directly show the final answer!
-            </p>
           </div>
         </div>
       ),
@@ -563,8 +499,8 @@ export default function Support() {
           </div>
           <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400">
             <p className="text-sm">
-              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine emoji interpretation with
-              2-3 traditional devices. Look for multiple indicator words in the clue!
+              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine 2-3 different cryptic
+              devices. Look for multiple indicator words in the clue!
             </p>
           </div>
         </div>
@@ -583,8 +519,8 @@ export default function Support() {
             <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
               <div className="font-semibold mb-1">1. Fodder (Most Detailed)</div>
               <p className="text-sm">
-                Identifies all components: what the emoji pair represents, what each piece of text
-                means, any substitutions needed. Walks you through the raw materials.
+                Identifies all components of the clue: which words provide the letters, what each
+                piece of text means, any substitutions needed. Walks you through the raw materials.
               </p>
             </div>
             <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
@@ -620,40 +556,33 @@ export default function Support() {
             <li className="flex items-start gap-2">
               <span className="font-bold text-purple-600 dark:text-purple-400">1.</span>
               <div>
-                <span className="font-semibold">Start with the emojis</span> - What do they suggest?
-                They might work together or serve different roles.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">2.</span>
-              <div>
                 <span className="font-semibold">Find the definition</span> - Usually at the start or
                 end of the clue, it's a straightforward synonym for the answer.
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">3.</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">2.</span>
               <div>
                 <span className="font-semibold">Spot the indicators</span> - Words like "mixed",
                 "back", "in", "loses" tell you what operation to perform.
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">4.</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">3.</span>
               <div>
                 <span className="font-semibold">Identify the fodder</span> - Which words/letters
                 will you manipulate?
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">5.</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">4.</span>
               <div>
                 <span className="font-semibold">Use hints progressively</span> - Start with Hint 1,
                 then 2, etc. They build on each other!
               </div>
             </li>
             <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">6.</span>
+              <span className="font-bold text-purple-600 dark:text-purple-400">5.</span>
               <div>
                 <span className="font-semibold">Think laterally</span> - Cryptic clues reward
                 creative thinking.
@@ -664,7 +593,7 @@ export default function Support() {
             <p className="text-sm font-semibold mb-2">Remember:</p>
             <ul className="space-y-1 text-sm">
               <li>✓ Every word in a cryptic clue has a purpose</li>
-              <li>✓ Emojis might work together or represent different parts</li>
+              <li>✓ The clue has both a definition and wordplay</li>
               <li>✓ There's no penalty for using hints - they're designed to teach!</li>
               <li>✓ The more you play, the better you'll recognize patterns</li>
             </ul>
