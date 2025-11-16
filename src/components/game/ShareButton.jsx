@@ -18,7 +18,6 @@ export default function ShareButton({ shareText, className = '' }) {
     try {
       // Use platform service for sharing
       const result = await platformService.share({
-        title: 'Daily Tandem',
         text: shareText,
       });
 
