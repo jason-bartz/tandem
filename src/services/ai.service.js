@@ -1078,21 +1078,22 @@ Analyze the puzzle above and provide your assessment.`;
     if (crypticDevices && crypticDevices.length > 0) {
       const deviceList = crypticDevices.map((d) => d.replace('_', ' ')).join(', ');
       if (crypticDevices.length === 1) {
-        deviceInstructions = `REQUIRED CRYPTIC DEVICE: ${deviceList}\nYou MUST use this specific device in your puzzle.`;
+        deviceInstructions = `\nREQUIRED CRYPTIC DEVICE: ${deviceList}\nYou MUST use this specific device in your puzzle.\n`;
       } else {
-        deviceInstructions = `REQUIRED CRYPTIC DEVICES: ${deviceList}\nYou MUST incorporate ALL of these devices into your puzzle. Create a puzzle that uses multiple cryptic techniques from this list.`;
+        deviceInstructions = `\nREQUIRED CRYPTIC DEVICES: ${deviceList}\nYou MUST incorporate these devices into your puzzle.\n`;
       }
-    } else {
-      deviceInstructions = `Choose cryptic device(s) that allow for sophisticated wordplay. STRONGLY PREFER using at least TWO distinct operations (e.g., deletion + anagram, container + selection, homophone + insertion, etc.)`;
     }
 
     const themeInstructions = themeHint
-      ? `THEME/TOPIC HINT: "${themeHint}"\nTry to incorporate this theme or topic into your puzzle if possible, but prioritize creating a high-quality cryptic clue with sophisticated wordplay.`
+      ? `\nTHEME/TOPIC HINT: "${themeHint}"\nTry to incorporate this theme or topic into your puzzle if possible.\n`
       : '';
 
     const multiWordRequirement = allowMultiWord
       ? `
-🚨 MULTI-WORD PHRASE/IDIOM REQUIREMENT - MANDATORY:
+═══════════════════════════════════════════════════════════════════
+🚨 MULTI-WORD PHRASE/IDIOM REQUIREMENT - MANDATORY 🚨
+═══════════════════════════════════════════════════════════════════
+
 You MUST create a PHRASE or IDIOM that people actually say (2-3 words).
 
 FOCUS ON PHRASES/IDIOMS/EXPRESSIONS:
@@ -1105,7 +1106,7 @@ FOCUS ON PHRASES/IDIOMS/EXPRESSIONS:
 - "OPEN BOOK" - phrase for transparent person
 - "DOWN IN THE DUMPS" - idiom for feeling sad
 - "OUT OF SORTS" - phrase for feeling unwell
-- "SPILL BEANS" - idiom for revealing secrets
+- "TOP DRAWER" - phrase for excellent quality
 
 These are things people SAY - not random word combinations!
 
@@ -1116,7 +1117,10 @@ REQUIREMENTS:
 - Return answer WITH SPACES: e.g., "HOT POTATO" not "HOTPOTATO"
 - Set word_pattern to array of word lengths: e.g., [3, 6] for "HOT POTATO"
 
-This is NOT optional - single-word answers and non-phrases will be rejected.`
+❌ SINGLE-WORD ANSWERS WILL BE REJECTED ❌
+
+═══════════════════════════════════════════════════════════════════
+`
       : '';
 
     const difficultyGuidance = {
@@ -1125,785 +1129,188 @@ This is NOT optional - single-word answers and non-phrases will be rejected.`
       4: 'Challenging - More complex wordplay or less common (but still known) words. Requires cryptic experience.',
     };
 
-    return `You are a cryptic crossword setter creating ONE high-quality cryptic clue.
-${
-  allowMultiWord
-    ? `
-═══════════════════════════════════════════════════════════════════
-🚨🚨🚨 CRITICAL MANDATORY REQUIREMENT - READ THIS FIRST 🚨🚨🚨
-═══════════════════════════════════════════════════════════════════
+    return `# DAILY CRYPTIC PUZZLE GENERATOR PROMPT
 
-YOU MUST CREATE A MULTI-WORD PHRASE ANSWER (2-3 WORDS WITH SPACES)
+## YOUR TASK:
 
-This means PHRASES - common expressions, idioms, sayings, or multi-word concepts.
-NOT just two random words stuck together!
+Create ONE cryptic crossword clue using classic cryptic construction techniques.
+${multiWordRequirement}
+${deviceInstructions}
+${themeInstructions}
 
-❌ SINGLE-WORD ANSWERS ARE ABSOLUTELY FORBIDDEN AND WILL BE REJECTED ❌
+## DIFFICULTY LEVEL:
 
-✅ CORRECT EXAMPLES - PHRASES:
-- "DOWN IN THE DUMPS" (idiom - feeling sad)
-- "OUT OF SORTS" (phrase - feeling unwell)
-- "HOT POTATO" (idiom - controversial issue)
-- "COLD SHOULDER" (phrase - ignoring someone)
-- "EASY STREET" (idiom - comfortable life)
-- "TOP DRAWER" (phrase - excellent quality)
-- "ROUGH PATCH" (phrase - difficult period)
-- "CLEAN SLATE" (idiom - fresh start)
-- "OPEN BOOK" (phrase - transparent person)
-- "LAST STRAW" (idiom - final annoyance)
+Target difficulty: ${difficulty}/5 - ${difficultyGuidance[difficulty] || difficultyGuidance[3]}
 
-❌ WRONG - WILL BE REJECTED:
-- "MOONLIGHT" (single word - FORBIDDEN!)
-- "BUTTERFLY" (single word - FORBIDDEN!)
-- "BLUEFEATHERS" (no space - FORBIDDEN!)
-- "BLUE MOON" (while this has spaces, prioritize clear PHRASES/IDIOMS instead)
+## CRYPTIC CLUE STRUCTURE
 
-FOCUS: Create well-known PHRASES, IDIOMS, or EXPRESSIONS that people actually say.
-Think: "Things you might say" not "Two words that go together"
+Every cryptic clue has two parts:
 
-THIS IS NOT OPTIONAL. THIS IS NOT A SUGGESTION.
-You MUST create an answer that is a common phrase or expression with 2-3 separate words separated by spaces.
+1. **Definition** - A straightforward synonym for the answer (usually at the start or end)
+2. **Wordplay** - A clever way to construct the answer using cryptic devices
 
-If you generate a single-word answer, the entire generation will be rejected and retried.
+## CRYPTIC DEVICES:
 
-═══════════════════════════════════════════════════════════════════
-`
-    : ''
-}
-🚨 CRITICAL RULES FOR HIGH-QUALITY CRYPTIC CLUES:
+### Anagram
 
-**TONE AND STYLE:**
-- Aim for CLEVER and SLIGHTLY HUMOROUS clues when possible
-- Wordplay should be witty and make the solver smile
-- Surface readings can be playful, punny, or include cultural references
-- Modern, conversational language is encouraged
-- The "aha!" moment should be delightful and fun
+Letters rearranged to form a new word
 
-1. **MULTI-STEP WORDPLAY IS STRONGLY PREFERRED**
-   - Use at least TWO distinct cryptic operations when possible
-   - Examples of multi-step combinations:
-     * Deletion + Anagram: Remove letters THEN scramble
-     * Container + Selection: Insert word into another AFTER taking first/last letters
-     * Abbreviation + Insertion: Use abbreviated form THEN place inside container
-     * Homophone + Deletion: Sound-alike word THEN remove letters
-     * Reversal + Hidden: Backward word THEN conceal within phrase
-   - The wordplay portion should span SEVERAL words, not just one short phrase
-   - Avoid trivial single-operation wordplay like simple one-word anagrams
+- **Indicators:** mixed, confused, disturbed, scrambled, wild, broken, dancing, crazy, messy, off, drunk, poor, bad, strange, wrong
+- **Example:** "Moods disrupted for gloomy fates (5)" = DOOMS (MOODS anagrammed)
 
-2. **SURFACE READING MUST TELL A STORY**
-   - The clue should read like a natural sentence or headline
-   - Create a vivid scenario or image (even if brief)
-   - Modern language and playful tone are encouraged
-   - The surface should misdirect from the actual cryptic mechanics
+### Reversal
 
-3. **VOCABULARY - Common, Everyday Words Only**
-   - Use ONLY words at Wordle difficulty level
-   - Source fodder must be simple words everyone knows
-   - For ANAGRAMS: Source word MUST be common (not ARGENTS, MORTICAN, etc.)
-   - Everyday vocabulary ensures accessibility
+Read a word or letters backward
 
-4. **DEFINITION PLACEMENT**
+- **Indicators:** back, returned, reversed, around, reflected, retreating, mirror, rolling, twist
+- **Example:** "Stop reversed in pans (4)" = POTS (STOP backwards)
+
+### Container
+
+One word placed inside another word
+
+- **Indicators:** in, into, within, holding, containing, around, about, grabs, captures, embracing, wearing, interrupted
+- **Example:** "Sting gets Ray wandering (8)" = STRAYING (ST(RAY)ING)
+
+### Deletion
+
+Remove specific letters from a word
+
+- **Indicators:** without, loses, drops, missing, lacking, headless (first), endless (last), heartless (middle), curtailed
+- **Example:** "Demons losing direction = monster (5)" = FIEND (FIENDS - S)
+
+### Homophone
+
+A word that sounds like another word
+
+- **Indicators:** sounds like, heard, spoken, said, audibly, aloud, vocal, listening, by ear, reported, mentioned
+- **Example:** "Chews sounds like selects (7)" = CHOOSES (sounds like CHEWS)
+
+### Hidden Word
+
+The answer is hiding inside consecutive letters
+
+- **Indicators:** in, within, part of, some of, held by, inside, concealed, buried, partially
+- **Example:** "Part of grand river crossing (5)" = RIVER (hidden in "gRAND RIVEr")
+
+### Charade
+
+Two or more parts joined together to make the answer
+
+- **Indicators:** with, and, before, after, following, by, next to, leading
+- **Example:** "Sea with shore is beach (8)" = SEASHORE (SEA + SHORE)
+
+### Double Definition
+
+Two different definitions of the same word
+
+- **Indicators:** None - just two definitions
+- **Example:** "Bow vessel front (3,4)" = BOW SHIP ("bow" = bend forward, "ship" = vessel, "front" = bow of ship)
+
+### Selection (Initial Letters)
+
+Pick specific letters from words
+
+- **Indicators:** starts, heads, opens, begins, initially, at first, primarily, ends, tails, last, middle, heart
+- **Example:** "Solar Eclipse Now Tonight = message (4)" = SENT (first letters)
+
+---
+
+## CONSTRUCTION GUIDELINES:
+
+1. **Definition Placement**
    - Definition must be at ONE END of the clue (first or last chunk)
    - Never bury definition in the middle
    - Must be a true, fair synonym of the answer
 
-5. **EMOJIS MUST REPLACE WORDS - Not Decorative**
-   - Exactly 2 emojis required
-   - Emojis REPLACE actual words (test: remove them → clue has gaps)
-   - ⚠️ EMOJI ≠ ANSWER: Emojis must NEVER directly depict the answer
-     * Think: If someone sees the emoji, can they guess the answer?
-     * ❌ If YES → BANNED! Choose different emojis
-     * ✅ If NO → Safe to use
-   - Emojis should represent: fodder words, indicators, or related concepts
-   - NOT the answer itself or obvious visual representations
+2. **Vocabulary - Common, Everyday Words Only**
+   - Use ONLY words at Wordle difficulty level
+   - Source fodder must be simple words everyone knows
+   - For ANAGRAMS: Source word MUST be common (not obscure or made-up words)
+   - Everyday vocabulary ensures accessibility
 
-6. **ABBREVIATIONS & SUBSTITUTIONS - "Earned, Not Arbitrary"**
-   Use abbreviations/substitutions ONLY when they feel natural within the surface reading!
+3. **Surface Reading**
+   - The clue should read like a natural sentence or headline
+   - Create a clear scenario or narrative
+   - The surface should provide elegant misdirection
 
-   ✅ ALLOWED - Earned through surface context:
-   - "club" → C (playing cards, Roman numeral - if surface mentions cards/clubs)
-   - "one" → I or A (Roman numeral, article - universally known)
-   - "department" → DEPT (standard abbreviation)
-   - "$0.01" → CENT, PENNY (natural way to read the symbol)
-   - "direction" → N/S/E/W (if surface is about navigation/geography)
-   - "note" → A-G (musical notes - if surface is music-themed)
-   - Common acronyms: USA, TV, PC, CEO, FBI, NYC, etc.
+4. **Clarity and Fairness**
+   - The definition should be a true synonym of the answer
+   - The wordplay should lead unambiguously to the answer
+   - Include the answer length in parentheses at the end
 
-   ⚠️ USE CAREFULLY - Valid but must be contextual:
-   - "saint" → S, ST (only if surface mentions religion/saints)
-   - "river" → R (only if surface is about geography/water)
-   - "left/right" → L/R (only if surface is about directions)
+5. **Abbreviations (Use Sparingly)**
+   - Common abbreviations are acceptable when they feel natural
+   - Examples: N/S/E/W for directions, C/D/M for Roman numerals, standard acronyms (USA, TV, PC, etc.)
+   - Avoid obscure or arbitrary abbreviations
 
-   ❌ AVOID - Arbitrary or forced:
-   - Random letter assignments with no surface logic
-   - Abbreviations that break the natural reading flow
-   - Obscure jargon requiring specialized knowledge
-   - Multiple obscure abbreviations in one clue
+---
 
-   🎯 KEY PRINCIPLE: If the substitution feels "earned" through the surface reading's context, it's valid!
+## COMPLETE WORKING EXAMPLES:
 
-TARGET DIFFICULTY: ${difficulty}/5 - ${difficultyGuidance[difficulty] || difficultyGuidance[3]}
-${deviceInstructions}
-${themeInstructions}
-${multiWordRequirement}
+### ANAGRAM Example:
 
-═══════════════════════════════════════════════════════════════════
-✨ CONSTRUCTION PHILOSOPHY - Quality Over Simplicity
-═══════════════════════════════════════════════════════════════════
+**Clue:** "Scrambled parties for sea raiders (7)"
 
-Your job when creating a cryptic clue:
-
-**STEP 1: Write the clue**
-- Format: <clue text> (<enumeration>) on a single line
-- The surface should read naturally, like a tiny story or situation
-- Modern language and playful tone are encouraged
-- The **definition** must be at one end of the clue (either first or last chunk)
-- The **wordplay portion must be longer and clever**, not just a simple one-word anagram
-- Use at least **two distinct operations** in the wordplay when possible:
-  * Deletion + Anagram
-  * Container + Selection (first/last/middle letters)
-  * Abbreviation + Insertion
-  * Homophone + Insertion/Deletion
-  * Hidden word + Reversal, etc.
-- The wordplay fodder should span **several words**, not just a short phrase
-
-═══════════════════════════════════════════════════════════════════
-✨ SURFACE READING - THE ART OF CRYPTIC DELIGHT
-═══════════════════════════════════════════════════════════════════
-
-The "surface" is what your clue appears to say before solving. This is what makes cryptic crosswords delightful!
-
-🎯 GOAL: Create a natural, coherent sentence that:
-- Reads like real English (headline, phrase, or conversational snippet)
-- Suggests one scenario, but the answer reveals something completely different
-- Makes the solver smile when decoded ("Ah! THAT's what it meant!")
-- Uses misdirection elegantly (not just listing mechanical steps)
-- **INCLUDES HUMOR, WIT, OR CLEVERNESS when possible**
-
-💡 HUMOR TECHNIQUES:
-- Amusing scenarios or situations
-- Cultural references (movies, games, pop culture)
-- Puns and double meanings
-- Playful misdirection
-- Modern, conversational tone
-
-✅ EXAMPLES OF BRILLIANT MULTI-STEP SURFACE READINGS (with humor/wit):
-
-**"Buzzer-beater was thrown with second on stopwatch (4)"** → SWAT
-- Surface story: Basketball game-winner at the buzzer
-- Reality: WAS (thrown/scrambled) + S (second on stopwatch) = SWAT
-- Multi-step: ANAGRAM (was thrown) + ABBREVIATION (second = S)
-- Delight factor: Sports → Police action (unexpected twist)
-
-**"One goes into debt flying private jet? (5)"** → BIDET
-- Surface story: Rich person's luxury spending habits
-- Reality: I (one) goes into DEBT (scrambled/flying) = BIDET
-- Humor factor: Private jet → Bathroom fixture (hilarious misdirection)
-- Delight factor: The absurdist connection makes solver laugh
-
-**"Goodbye! you blurted out, after ladies undressed (5)"** → ADIEU
-- Surface story: Awkward/scandalous social situation
-- Reality: U (you, said aloud) after ADIE (ladies undressed/letters removed)
-- Multi-step: HOMOPHONE (you = U) + DELETION (ladies undressed)
-- Delight factor: Social faux pas → French farewell
-
-**"Campers on alert... bears close to home (8)"** → PERSONAL
-- Surface story: Camping warning about wildlife
-- Reality: Hidden in "camPERS ON ALert" = PERSONAL (close to home)
-- Single-step but spans several words (good fodder length)
-- Delight factor: Outdoor survival → Intimate/private
-
-═══════════════════════════════════════════════════════════════════
-🎯 MULTI-STEP WORDPLAY EXAMPLES (Your Target Quality)
-═══════════════════════════════════════════════════════════════════
-
-These examples show sophisticated multi-step constructions:
-
-**EXAMPLE 1: Container + Initial Letters**
-"Ring leader captures gang's first members (6)" → CIRCLE
-- Definition: "members" (people who belong)
-- Wordplay: CIRCLE (ring) contains IL (leader = L, gang's first = G... wait)
-- Actually: Let me show a real multi-step example...
-
-**EXAMPLE 1: Deletion + Anagram**
-"Artist loses heart in chaotic dance moves (5)" → STEPS
-- Definition: "moves"
-- Wordplay: ARTIST loses middle letters (heart) = ARIST - RI = A_ST, then add...
-- Actually: ARTISTE (artist) loses ISTE (keeping letters) scrambled = STEPS
-- Multi-step: First remove some letters, then anagram the rest
-
-**EXAMPLE 2: Abbreviation + Container + Anagram**
-"Direction twisted in broken route for wanderer (7)" → TOURIST
-- Definition: "wanderer"
-- Wordplay: S (direction/South) + TOUR (route) mixed + I = TOURIST
-- But this could be clearer...
-
-Let me show clearer working examples:
-
-**WORKING EXAMPLE: Hidden + Reversal**
-"Backwards looking team shares repayment plan (5)" → REPAY
-- Definition: "repayment"
-- Wordplay: Hidden in "team shaRES PAYment" then reversed = REPAY
-- Multi-step: Extract hidden word THEN reverse it
-- Spans several words ✓
-
-❌ ANTI-EXAMPLES (mechanically correct but TOO SIMPLE):
-
-**"Scrambled parties for sea raiders (7)"** → PIRATES
-- Single-step: Just one simple anagram
-- Fodder too short: Only one word "parties"
-- Just describes the mechanics with no misdirection
-- No surface story, no delight, no "aha moment"
-
-**"Stop reversed in pans (4)"** → POTS
-- Single-step: Just one reversal
-- Too transparent, just states the operation
-- Fodder too short: Only one word "stop"
-- No narrative, no cleverness
-
-🎨 SURFACE READING TECHNIQUES:
-
-1. **Tell a micro-story**: "Song at night club leaves Lucy transfixed by mirrorball"
-2. **Use cultural references**: "FINISH HIM!" (Mortal Kombat) for FIGHTING
-3. **Create scenarios**: "Seductive, romantic guy dumped after 'mid' sex"
-4. **Employ misdirection**: "$0.02?" suggests money, but means ADVICE
-5. **Build atmosphere**: "Deadly agent playing phone tag" (spy thriller feel)
-
-💡 REMEMBER: Mechanical correctness is required, but artistry makes it memorable!
-
-═══════════════════════════════════════════════════════════════════
-🎯 EMOJI USAGE PHILOSOPHY - FUNCTIONAL, NOT DECORATIVE
-═══════════════════════════════════════════════════════════════════
-
-⚠️ CRITICAL EMOJI RULES - EXACTLY 2 EMOJIS REQUIRED:
-- You MUST use EXACTLY 2 emojis in your clue
-- Emojis must REPLACE actual words in the clue (not decorate it)
-- Test: Remove emojis → clue should have GAPS (missing words)
-- Emojis can be used individually OR paired (your choice based on utility)
-
-✅ CORRECT USAGE - Emojis REPLACE words:
-- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
-  * 💬🔥 REPLACES "moods" (the fodder being scrambled)
-  * Remove emojis: "_____ disrupted for gloomy fates" → HAS GAP ✓
-  * MOODS scrambled = DOOMS
-
-- "🍟 Trim potato 🪓 with permission (6)" → PERMIT
-  * 🍟 REPLACES "French" (FRY/FRENCH connection)
-  * 🪓 REPLACES "strip" (cutting/chopping indicator)
-  * Remove emojis: "____ Trim potato ____ with permission" → HAS GAPS ✓
-  * FR (from FRY/French) + EMIT (hidden in "Trim potato") = PERMIT? No, this needs work...
-
-Let me show BETTER example:
-- "🛑 🔄 in pans (4)" → POTS
-  * 🛑 REPLACES "stop" (the fodder word)
-  * 🔄 REPLACES "reversed" (the indicator)
-  * Remove emojis: "____ ____ in pans" → HAS GAPS ✓
-  * STOP reversed = POTS
-
-❌ WRONG USAGE - Emojis are decorative:
-- "🍟🥔 Thin slice? Trim potato strip with permission (6)"
-  * Remove emojis: "Thin slice? Trim potato strip with permission" → NO GAPS!
-  * The clue works fine without emojis → DECORATIVE → WRONG
-  * 🍟🥔 are just thematic decoration suggesting "potato theme"
-
-═══════════════════════════════════════════════════════════════════
-HOW TO USE YOUR 2 EMOJIS
-═══════════════════════════════════════════════════════════════════
-
-OPTION A: Both emojis paired together = ONE word
-- "🐝🦂 gets Ray wandering (8)" → STRAYING
-  * 🐝🦂 together REPLACE "sting" (bee + scorpion = stinging creatures)
-  * Remove: "_____ gets Ray wandering" → HAS GAP ✓
-  * ST(RAY)ING = STRAYING
-
-OPTION B: Each emoji represents DIFFERENT words
-- "Parties ⚡ for 🏴‍☠️ (7)" → PIRATES
-  * ⚡ REPLACES "energized" or similar indicator (anagram)
-  * 🏴‍☠️ REPLACES "sea raiders" (definition)
-  * Remove: "Parties _____ for _____ (7)" → HAS GAPS ✓
-  * PARTIES scrambled = PIRATES
-
-OPTION C: Individual emojis with different functions
-- "🎉 mixed for dire outcomes (5)" → DOOMS
-  * 🎉 REPLACES "party" → no wait, that's PARTY (5 letters)
-
-Better example:
-- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
-  * 💬🔥 paired = "moods" (chat + fire = heated moods)
-  * Remove: "_____ disrupted for gloomy fates" → HAS GAP ✓
-  * MOODS disrupted = DOOMS
-
-═══════════════════════════════════════════════════════════════════
-EMOJI SELECTION - Principles Over Prescriptive Lists
-═══════════════════════════════════════════════════════════════════
-
-Choose emojis CREATIVELY based on your specific clue. Don't limit yourself to preset lists!
-
-🎯 **EMOJI SELECTION PRINCIPLES:**
-
-1. **Visual/Conceptual Clarity**: Emoji should clearly suggest the intended word
-2. **Functional Replacement**: Must actually replace a word (not just decorate)
-3. **Not-Too-Obvious**: Should require slight decoding, but be fair
-4. **Answer Independence**: NEVER use emojis that directly depict the answer
-
-⚠️ CRITICAL TEST: "Does this emoji visually show/depict the answer?"
-- ❌ If YES → Don't use it! Choose something else
-- ✅ If NO → Safe to use
-
-**INDICATOR EMOJIS** (signal the cryptic device):
-
-*Anagram indicators (chaos, mixing, energy):*
-⚡ = energized, charged, electric → anagram
-💫 = dizzy, scrambled, confused → anagram
-🌪️ = whirlwind, tornado, mixed up → anagram
-🎲 = dice, random, shuffled → anagram
-🎰 = slot machine, mixed, jumbled → anagram
-🃏 = joker, wild, chaotic → anagram
-🔀 = shuffle (use sparingly - too obvious)
-🌀 = spiral, swirled, twisted → anagram
-
-*Reversal indicators (backwards, rotation):*
-🔄 = reversed, back, circular → reversal
-↩️ = return, back, reversed → reversal
-🔃 = clockwise/counterclockwise → reversal
-⤴️⤵️ = up/down, flipped → reversal
-🪞 = mirror, reflected → reversal
-
-*Container indicators (wrapping, holding):*
-📦 = box, contains, holds → container
-🎁 = wrapped, gift, enclosed → container
-🗄️ = filing, stored within → container
-🧰 = toolbox, carries → container
-🫙 = jar, holds → container
-
-*Deletion indicators (cutting, removing):*
-✂️ = scissors, cut, snipped → deletion
-🔪 = knife, sliced, trimmed → deletion
-❌ = crossed out, deleted → deletion
-🚫 = prohibited, without, minus → deletion
-🪓 = axe, chopped, split → deletion/charade
-
-*Homophone indicators (sound, hearing):*
-🔊 = volume, sounds like, heard → homophone
-👂 = ear, listening, sounds → homophone
-📢 = announcement, spoken → homophone
-🗣️ = speaking, said aloud → homophone
-
-**FODDER EMOJIS** (words being manipulated):
-
-*Common single-emoji fodder:*
-🛑 = STOP, HALT, END
-🎉 = PARTY, CELEBRATION
-🎪 = CIRCUS, TENT, RING
-🌸 = FLOWER, BLOOM, ROSE
-⭐ = STAR, STELLAR
-🌙 = MOON, LUNAR, NIGHT
-☀️ = SUN, SOLAR, DAY
-🎵 = NOTE, MUSIC, SONG
-🏃 = RUN, RUNNER, RACE
-💰 = MONEY, GOLD, CASH
-
-*Paired-emoji fodder (2 emojis = 1 word):*
-💬🔥 = MOODS (chat + fire = heated emotions)
-🐝🦂 = STING (bee + scorpion = stinging creatures)
-🎪🏃 = CIRCUS RUN → could represent MASTER (ringmaster)
-🌸🌺 = FLOWER (multiple flowers)
-🃏🎲 = CHEATER (cards + dice = gambling/cheating)
-👹🧛 = DEMONS (devil + vampire = evil beings)
-🎉🥳 = PARTIES (party + celebration)
-
-*Creative pairing principles:*
-- Combine related concepts (🐝🦂 both sting)
-- Use category + example (🎪🏃 = circus performer)
-- Build compound meaning (💬🔥 = heated conversation)
-
-**DEFINITION EMOJIS** (can hint at answer meaning):
-Use with caution - should not make answer too obvious!
-
-🏴‍☠️ = PIRATE, RAIDER (specific enough)
-🌊 = STREAM, RIVER, OCEAN, FLOW (multiple interpretations - good)
-🏫 = SCHOOL, CLASS, TEACHER (contextual)
-🍲 = POT, STEW, COOK (cooking-related)
-⚖️ = JUSTICE, BALANCE, LEGAL
-
-💡 **EMOJI SELECTION STRATEGY:**
-
-PREFER: Emojis for FODDER and INDICATORS (not definitions)
-- Keeps answer non-obvious
-- Forces solver to work through cryptic mechanics
-- More satisfying solve experience
-
-EXAMPLE GOOD USAGE:
-- "💬🔥 disrupted for gloomy fates (5)" → DOOMS
-  * 💬🔥 = MOODS (fodder)
-  * "disrupted" = anagram indicator (text)
-  * "gloomy fates" = definition (text)
-  * Answer not guessable from emojis alone ✓
-
-EXAMPLE BAD USAGE:
-- "💬🔥 disrupted for 😱💀 (5)" → DOOMS
-  * 😱💀 directly suggests DOOMS (scary + death)
-  * Answer is guessable without solving cryptic ✗
-
-═══════════════════════════════════════════════════════════════════
-CONSTRUCTION APPROACH - Outcome-Focused, Not Mechanical
-═══════════════════════════════════════════════════════════════════
-
-🎯 **THINK HOLISTICALLY, NOT STEP-BY-STEP**
-
-Instead of following rigid steps, focus on achieving these three outcomes simultaneously:
-
-**OUTCOME 1: Natural Surface Reading**
-- Clue reads like a complete, real-world sentence
-- Has narrative flow or tells a micro-story
-- Employs clever misdirection (surface suggests X, answer is Y)
-- Makes solver smile when decoded
-
-**OUTCOME 2: Clean Cryptic Mechanics**
-- Device works mathematically/phonetically perfectly
-- Letter counts match exactly (for anagrams, containers, charades)
-- Indicators are standard and recognizable
-- Definition is accurate and fair
-
-**OUTCOME 3: Common, Accessible Vocabulary**
-- Answer is Wordle-level familiar
-- Fodder words are everyday language
-- Avoid technical jargon, specialized terms, or obscure words
-- Both answer and components should feel earned, not arbitrary
-
-═══════════════════════════════════════════════════════════════════
-
-🛠️ **FLEXIBLE CONSTRUCTION WORKFLOW** (adapt as needed):
-
-**Option A: Answer-First Approach**
-1. Pick a common answer word (5-11 letters)
-2. Choose a cryptic device that naturally fits it
-3. Design the wordplay mechanics
-4. Craft a surface reading that disguises the mechanics
-5. Replace 2 words with emojis
-6. Verify all three outcomes ✓
-
-**Option B: Device-First Approach**
-1. Choose your cryptic device
-2. Select common fodder that works well
-3. Calculate what answer emerges
-4. Verify answer is common/valid
-5. Craft engaging surface reading around it
-6. Replace 2 words with emojis
-7. Verify all three outcomes ✓
-
-**Option C: Surface-First Approach (Advanced)**
-1. Think of a clever surface reading scenario
-2. Identify what cryptic device could work within it
-3. Engineer the mechanics to fit the narrative
-4. Verify answer emerges correctly
-5. Replace 2 words with emojis
-6. Verify all three outcomes ✓
-
-═══════════════════════════════════════════════════════════════════
-
-📋 **CRITICAL VERIFICATION CHECKLIST** (regardless of approach):
-
-**Vocabulary Check:**
-□ Answer is common, Wordle-level familiar (5-11 letters)
-□ Fodder words are everyday language (not ARGENTS, MORTICAN, etc.)
-□ No technical jargon, foreign words, or obscure terms
-
-**Mechanics Check:**
-□ For ANAGRAMS: Letters match EXACTLY
-   - Write out both words letter-by-letter and compare:
-   - MOODS = M,O,O,D,S vs DOOMS = D,O,O,M,S ✓ (same letters)
-   - AGENTS = A,G,E,N,T,S vs STAGES = S,T,A,G,E,S ✗ (different!)
-□ For CONTAINERS: Length math works (outer + inner = answer)
-□ For CHARADES: Parts combine to make answer
-□ For REVERSALS: Backward spelling is exact
-□ For HIDDEN: Letters appear consecutively
-□ For HOMOPHONES: Pronunciation is genuinely identical
-
-**Surface Reading Check:**
-□ Reads as natural, complete sentence
-□ Has narrative or thematic coherence
-□ Employs misdirection (not just mechanical description)
-□ Would make solver smile/say "aha!" when solved
-
-**Emoji Check:**
-□ EXACTLY 2 emojis used
-□ Emojis REPLACE specific words (test: remove them → gaps!)
-□ Emojis are decodable but not obvious
-□ Emojis DON'T directly depict the answer
-
-**Definition Check:**
-□ Definition is accurate synonym or description
-□ Positioned at start OR end of clue (not middle)
-□ Fair and dictionary-valid
-
-═══════════════════════════════════════════════════════════════════
-
-💡 **REMEMBER:**
-- Artistry > Mechanical correctness (but both are required!)
-- Surface reading is what makes cryptics delightful
-- Common vocabulary ensures accessibility
-- Emojis add visual interest but shouldn't give away answer
-
-═══════════════════════════════════════════════════════════════════
-COMPLETE EXAMPLES - From Good to Great
-═══════════════════════════════════════════════════════════════════
-
-**EXAMPLE 1: Basic Anagram** (Mechanically Correct, But Uninspired)
-
-"💬🔥 disrupted for gloomy fates (5)" → DOOMS
-
-Analysis:
 - Device: Anagram
-- 💬🔥 = MOODS (fodder - chat + fire = emotional states)
-- "disrupted" = anagram indicator
-- "gloomy fates" = definition
-- Mechanics: MOODS (M-O-O-D-S) scrambled = DOOMS (D-O-O-M-S) ✓
-- Emoji test: Remove → "_____ disrupted for gloomy fates" (has gap) ✓
+- "scrambled" = indicator
+- "parties" = fodder
+- "sea raiders" = definition
+- Mechanics: PARTIES scrambled = PIRATES
 
-What's missing: No surface story, no misdirection, just states the mechanics
+### CONTAINER Example:
 
-═══════════════════════════════════════════════════════════════════
+**Clue:** "Sting gets Ray wandering (8)"
 
-**EXAMPLE 2: Enhanced Anagram** (Better Surface Reading)
-
-"Deadly 💀 🎲 tag? (8)" → PATHOGEN
-
-Analysis:
-- Device: Anagram
-- 💀 = PHONE (skull represents death/calling)... wait, that doesn't work
-- Let me reconsider: "💀🎲 playing phone tag? (8)" → PATHOGEN
-
-Better version:
-"Deadly agent 💫 📞🏷️ (8)" → PATHOGEN
-- 💫 = "playing" (anagram indicator - scrambled/mixed)
-- 📞🏷️ = "phone tag" (fodder)
-- "Deadly agent" = PATHOGEN (definition)
-- Surface: Spy thriller imagery, but answer is biological!
-- Mechanics: PHONETAG (P-H-O-N-E-T-A-G) scrambled = PATHOGEN ✓
-
-═══════════════════════════════════════════════════════════════════
-
-**EXAMPLE 3: Sophisticated Container** (Multi-layered Misdirection)
-
-"🐝🦂 gets Ray wandering (8)" → STRAYING
-
-Analysis:
 - Device: Container
-- 🐝🦂 = STING (bee + scorpion = creatures that sting)
-- "gets" = contains (container indicator)
-- "Ray" = RAY (proper name suggests person, actually a light ray!)
-- "wandering" = STRAYING (definition)
-- Surface: Sounds like Ray is a person who wanders/gets lost
-- Reality: STING wraps around RAY → ST(RAY)ING = STRAYING
-- Mechanics: 5 letters (STING) + 3 (RAY) = 8 (STRAYING) ✓
-- Emoji test: Remove → "_____ gets Ray wandering" (has gap) ✓
+- "sting" = outer word
+- "gets" = contains indicator
+- "Ray" = inner word
+- "wandering" = definition
+- Mechanics: ST(RAY)ING = STRAYING
 
-Why this works: Clever use of "Ray" as both a name AND a common word
+### REVERSAL Example:
 
-═══════════════════════════════════════════════════════════════════
+**Clue:** "Stop reversed in pans (4)"
 
-**EXAMPLE 4: Playful Reversal** (Simple But Effective)
-
-"🛑 🔄 in kitchen vessels (4)" → POTS
-
-Analysis:
 - Device: Reversal
-- 🛑 = STOP (fodder)
-- 🔄 = turned/reversed (reversal indicator)
-- "kitchen vessels" = POTS (definition - more interesting than just "pans")
-- Mechanics: STOP reversed = POTS ✓
-- Surface: Minimal but functional
+- "stop" = fodder
+- "reversed" = indicator
+- "pans" = definition
+- Mechanics: STOP reversed = POTS
 
-Better surface version:
-"🛑 🔄 for cooking gear (4)" → POTS
-- Reads more naturally
-- "cooking gear" is specific but not too obvious
+---
 
-═══════════════════════════════════════════════════════════════════
+## FINAL CHECKLIST:
 
-**EXAMPLE 5: Hidden Word** (Narrative Surface)
+1. **Definition is accurate:**
+   - Must be a true synonym of the answer
 
-"Campers on alert 🐻 personal belongings (8)" → PERSONAL
+2. **Wordplay is fair:**
+   - Indicators are standard and clear
+   - Letter counts match
+   - Construction follows established rules
 
-Analysis:
-- Device: Hidden word
-- Surface: Camping scenario, bears threatening belongings
-- 🐻 = "bears" (hidden word indicator - "bears" as in "carries/contains")
-- Actually, let's use 2 emojis properly:
+3. **Cryptic mechanics are perfect:**
+   - Anagram: same letters rearranged
+   - Container: letter counts match
+   - Reversal: actually spells backwards
+   - Homophone: actually sounds alike
 
-Revised: "🏕️⚠️ alert bears personal items (8)" → PERSONAL
-- 🏕️⚠️ = "Campers on" (but that's the fodder, not indicator...)
+4. **Clue structure is clear:**
+   - Definition + Wordplay (or Wordplay + Definition)
+   - Answer length in parentheses
+   - No ambiguity in construction
 
-Better: "Alert 🏕️ 🐻 personal stuff (8)" → PERSONAL
-- "Alert campers" contains hidden word
-- 🐻 = "bears" (indicator)
-- Hidden in "camPERS ON ALert" = PERSONAL
-- "personal stuff" = definition
+---
 
-Actually, this is complex. Let me show a clearer hidden word:
-
-"Dozen, 💭🔝 (6)" → ZENITH
-- 💭 = "I think" (from the phrase)
-- 🔝 = "top" (definition)
-- Hidden in "doZEN, I THink" = ZENITH
-- Surface: Simple but works
-
-═══════════════════════════════════════════════════════════════════
-VALID COMMON ANAGRAM SOURCES (Use ONLY these types!)
-═══════════════════════════════════════════════════════════════════
-
-ALWAYS use common English words that people use every day:
-
-5-letter sources: AGENT, HEART, EARTH, BREAD, TEAMS, MASTER, LISTEN, PHONE
-6-letter sources: LISTEN, MASTER, GARDEN, PLANET, SILENT, AGENTS, FRIEND
-7-letter sources: KITCHEN, GARDENS, STRANGE, CHAPTER, MONSTER
-8-letter sources: ROMANTIC, PATHOGEN (phone tag), ESTIMATE (teams tie)
-
-Test your anagram source:
-✓ Would it appear in Wordle?
-✓ Do people say it in normal conversation?
-✓ Would a 10-year-old know this word?
-
-If NO to any of these → choose a different source word!
-
-═══════════════════════════════════════════════════════════════════
-MULTI-DEVICE CLUES (Advanced - Difficulty 4-5)
-═══════════════════════════════════════════════════════════════════
-
-For higher difficulty, combine multiple cryptic devices in one clue:
-
-**EXAMPLE: Deletion + Anagram**
-"Every other 🏠🐕 💫 for cattle (4)" → HERD
-- "Every other" = deletion indicator (take alternating letters)
-- 🏠🐕 = HOMEBRED (house + dog bred at home)
-- 💫 = "mixed" (anagram indicator)
-- Take every other letter from HOMEBRED: H_M_B_E_ → HMBE? No...
-- Actually: H-O-M-E-B-R-E-D, every prime (2,3,5,7) = O-M-B-E → rearranged...
-
-Let me show a clearer multi-device:
-
-**EXAMPLE: Container + Anagram**
-"💫 debt traps 💰 jet (5)" → BIDET
-- Device: Anagram + Container
-- 💫 = "mixed" (anagram indicator)
-- "debt" = DEBT (to be scrambled)
-- "traps" = contains (container indicator)
-- 💰 = "one" → I (Roman numeral)
-- "jet" = BIDET (definition - water jet)
-- Mechanics: DEBT scrambled (flying) = BDET... contains I = BIDET? No...
-- Actually: I goes INTO (trapped by) DEBT scrambled = BIDET
-- Proper: "One trapped by 💫 debt jet? (5)" → BIDET
-
-⚠️ **Note on Multi-Device Clues:**
-- Only use for difficulty 4-5
-- All mechanics must work perfectly
-- Surface reading becomes even more important
-- Each device must contribute to the answer
-- Don't force complexity - simple elegance > complicated mess
-
-═══════════════════════════════════════════════════════════════════
-QUALITY BENCHMARKS - Good vs. Great Clues
-═══════════════════════════════════════════════════════════════════
-
-**⭐ GOOD CLUE (Acceptable - Difficulty 2-3):**
-- Mechanics work correctly ✓
-- Uses common vocabulary ✓
-- Has basic surface reading
-- Straightforward, transparent
-- Example: "💬🔥 disrupted for gloomy fates (5)" → DOOMS
-
-**⭐⭐⭐ GREAT CLUE (Target - Difficulty 3-4):**
-- Mechanics work perfectly ✓
-- Uses common, accessible vocabulary ✓
-- Engaging surface reading with narrative ✓
-- Clever misdirection ✓
-- Makes solver smile ("aha!") ✓
-- Example: "Deadly agent 💫 📞🏷️ (8)" → PATHOGEN
-  * Surface suggests spy thriller
-  * Answer is biological agent
-  * "Phone tag" is colloquial phrase
-  * Delight factor when decoded
-
-**⭐⭐⭐⭐⭐ EXCEPTIONAL CLUE (Aspire To - Difficulty 4-5):**
-- All "Great" qualities PLUS:
-- Multi-layered misdirection
-- Cultural reference or wordplay
-- Surface tells complete micro-story
-- Multiple possible interpretations before solving
-- Memorable, quotable
-- Example from Minute Cryptic: "Goodbye! you blurted out, after ladies undressed (5)" → ADIEU
-  * Surface: Scandalous social situation
-  * Multiple devices working together
-  * Homophone (U sounds like YOU) + deletion (ladies undressed)
-  * Unforgettable imagery
-
-🎯 **TARGET QUALITY LEVEL:**
-- Aim for ⭐⭐⭐ GREAT as baseline
-- Difficulty 2-3: Can be simpler (⭐ GOOD is acceptable)
-- Difficulty 4-5: Reach for ⭐⭐⭐⭐⭐ EXCEPTIONAL
-- Remember: A simple, elegant clue > a forced complex one
-
-═══════════════════════════════════════════════════════════════════
-DEVICE QUICK REFERENCE
-═══════════════════════════════════════════════════════════════════
-
-CHARADE: Join words | Indicators: with, and, by, before, after
-Build: Pick 2 common words, verify they join to make a real word
-Example: SUN + RISE = SUNRISE, CAR + PET = CARPET
-
-ANAGRAM: Scramble letters | Indicators: mixed, jumbled, broken, playing, disrupted
-Build: Pick COMMON source word, find what common words it anagrams to
-Example: TEAMS TIE → ESTIMATE, LISTEN → SILENT
-
-DELETION: Remove letters | Indicators: without, loses, drops, cut, headless
-Build: Pick common word, remove specific letter(s), verify remainder is a word
-Example: HOMEBRED (removing alternates) → HERD
-
-HIDDEN: Word in phrase | Indicators: in, within, bears, features of, absorbed
-Build: Create natural phrase that CONTAINS your target word
-Example: "camPERS ON ALert" contains PERSONAL
-
-═══════════════════════════════════════════════════════════════════
-FINAL INSTRUCTIONS
-═══════════════════════════════════════════════════════════════════
-
-Now complete Steps 1-6 above. Then format as JSON.
-
-🚨 BEFORE YOU SUBMIT - VERIFY:
-1. All fodder words are COMMON (in everyday vocabulary)
-2. Answer is COMMON (would appear in Wordle)
-3. Letter counts are CORRECT
-4. For anagrams: source word is NOT obscure or made-up
-5. Exactly 2 emojis
-6. Explanation is ONE clear sentence
-7. HINTS DO NOT CONTAIN THE ANSWER WORD - guide without revealing!
-
-CRITICAL: Check each hint carefully:
-- Fodder hint: Describe components, DON'T say the answer word
-- Indicator hint: Explain the operation, DON'T say the answer word
-- Definition hint: Point to the definition, DON'T say the answer word
-- Letter hint: Only give first letter
-
-Example: If answer is ESTIMATE, hints can say "teams tie" but NOT "estimate"
-
-═══════════════════════════════════════════════════════════════════
-JSON OUTPUT FORMAT
-═══════════════════════════════════════════════════════════════════
+## OUTPUT FORMAT:
 ${
   allowMultiWord
     ? `
-🚨 FINAL REMINDER: Your answer MUST be a PHRASE/IDIOM with spaces!
-"HOT POTATO" ✓ (phrase) | "COLD SHOULDER" ✓ (idiom) | "MOONLIGHT" ✗ (single word) | "BLUE FEATHERS" ✗ (not a phrase)
-`
-    : ''
-}
-Return ONLY this JSON (no markdown, no explanations after):
+**MULTI-WORD PHRASE EXAMPLE:**
 
-${
-  allowMultiWord
-    ? `
-// MULTI-WORD PHRASE EXAMPLE:
+\`\`\`json
 {
   "clue": "Feeling sad? Dejected bird loses its plumage (4, 2, 3, 5)",
   "answer": "DOWN IN THE DUMPS",
@@ -1911,266 +1318,70 @@ ${
   "word_pattern": [4, 2, 3, 5],
   "hints": [
     {
-      "type": "indicator",
-      "text": "'loses its plumage' signals a deletion or wordplay operation - something is being removed or changed.",
-      "order": 1
+      "type": "fodder",
+      "text": "The word 'dejected bird' provides components we need. A dejected bird might be 'down', and birds have 'down' (feathers)."
     },
     {
-      "type": "fodder",
-      "text": "Look at 'Dejected bird' - this provides the raw material. A dejected bird might be 'down', and birds have 'down' (feathers). The phrase builds from here.",
-      "order": 2
+      "type": "indicator",
+      "text": "'loses its plumage' signals a wordplay operation - something is being removed or combined."
     },
     {
       "type": "definition",
-      "text": "'Feeling sad' is the definition - this phrase describes being in low spirits or depressed.",
-      "order": 3
+      "text": "'Feeling sad' is the definition - this phrase describes being in low spirits or depressed."
     },
     {
       "type": "letter",
-      "text": "Starts with D",
-      "order": 4
+      "text": "Starts with D"
     }
   ],
   "explanation": "DOWN (dejected bird's plumage) + IN THE DUMPS = DOWN IN THE DUMPS (feeling sad)",
   "difficulty_rating": ${difficulty},
   "cryptic_device": "charade"
 }
+\`\`\`
 
-NOTE: For multi-word PHRASE answers:
-- Answer must be a well-known PHRASE or IDIOM
+**NOTE:** For multi-word PHRASE answers:
+- Answer must be a well-known PHRASE or IDIOM that people actually say
 - Include spaces in "answer": "DOWN IN THE DUMPS" NOT "DOWNINTHEDUMPS"
 - Add "word_pattern" field with array of word lengths: [4, 2, 3, 5]
 - Update "length" to total letters (excluding spaces): 14
 - Clue should show pattern: (4, 2, 3, 5) not just (14)
-- Focus on phrases people actually say in conversation
 `
     : `
-// SINGLE-WORD EXAMPLE:
+**SINGLE-WORD EXAMPLE:**
+
+\`\`\`json
 {
-  "clue": "💬🔥 disrupted for gloomy fates (5)",
+  "clue": "Moods disrupted for gloomy fates (5)",
   "answer": "DOOMS",
   "length": 5,
   "hints": [
     {
-      "type": "indicator",
-      "text": "'disrupted' signals anagram - it tells you to rearrange the letters of a neighboring word.",
-      "order": 1
+      "type": "fodder",
+      "text": "The word 'moods' provides the letters we need to work with."
     },
     {
-      "type": "fodder",
-      "text": "💬🔥 represent heated emotions - think chat and fire combining. This gives you the letters to work with (the word that gets disrupted).",
-      "order": 2
+      "type": "indicator",
+      "text": "'Disrupted' signals an anagram - letters need to be rearranged."
     },
     {
       "type": "definition",
-      "text": "Definition is 'gloomy fates' - terrible destinies or inevitable ends. This tells you what the answer means.",
-      "order": 3
+      "text": "'Gloomy fates' describes terrible destinies or inevitable ends."
     },
     {
       "type": "letter",
-      "text": "Starts with D",
-      "order": 4
+      "text": "Starts with D"
     }
   ],
-  "explanation": "MOODS (💬🔥) disrupted = DOOMS",
+  "explanation": "MOODS disrupted = DOOMS (gloomy fates)",
   "difficulty_rating": ${difficulty},
   "cryptic_device": "anagram"
-}`
 }
-
-HINT WRITING GUIDELINES (CRITICAL) - Teaching-Focused Style:
-
-The hints should break down the clue in FOUR parts, using this EXACT structure:
-
-**a. INDICATOR hint (type: "indicator", order: 1):**
-- Explain each indicator phrase and what it tells the solver to do
-- Name the cryptic operation(s) (e.g., anagram, delete, take first letters, insert, reverse, homophone)
-- If multiple indicators, describe each role clearly
-- Be friendly and teaching-focused ("This signals...", "Look for...")
-
-**b. FODDER hint (type: "fodder", order: 2):**
-- Clearly state what the fodder is and what the emojis represent
-- Explain how each chunk is transformed
-- Be explicit about every step of the construction
-- DON'T just give away the fodder word - guide toward discovering it
-- Example: "The emojis represent heated emotions - think chat and fire combining"
-
-**c. DEFINITION hint (type: "definition", order: 3):**
-- Quote or reference the definition as it appears in the clue
-- Explain how it matches the final answer (including the sense/meaning)
-- DON'T use the answer word itself - describe what it means
-- Example: "The definition describes terrible destinies or inevitable ends"
-
-**d. LETTER hint (type: "letter", order: 4):**
-- Simply give the first letter
-- Format: "Starts with [LETTER]"
-
-Style and quality for hints:
-- Aim for a friendly, clear, teaching tone (not dry or mechanical)
-- Make each hint genuinely helpful for learning
-- Guide the solver through the thought process
-- Each hint builds on the previous one toward the solution
-
-═══════════════════════════════════════════════════════════════════
-🚨 FINAL MANDATORY CHECKS BEFORE SUBMITTING
-═══════════════════════════════════════════════════════════════════
-
-**EMOJI REQUIREMENTS:**
-□ EXACTLY 2 emojis in clue (count: 1... 2... stop!)
-□ Remove emojis → clue has OBVIOUS GAPS (not "still works fine")
-□ Emojis REPLACE specific words (fodder/indicator, NOT answer)
-□ NO EMOJI = ANSWER VIOLATION
-   - Look at your answer, then look at BOTH emojis
-   - Question: "Does this emoji visually depict my answer?"
-   - ❌ If YES → INVALID! Choose different emojis!
-   - ✅ If NO → Safe to proceed
-
-**VOCABULARY REQUIREMENTS:**
-${allowMultiWord ? '🚨 □ MULTI-WORD PHRASE/IDIOM REQUIRED: Common expression people actually say (e.g., "HOT POTATO", "COLD SHOULDER")' : '□ Answer is common everyday word (Wordle-level)'}
-□ Answer is 5-11 letters total (excluding spaces)
-□ Fodder words are everyday vocabulary (not ARGENTS, MORTICAN, etc.)
-□ No technical jargon or specialized terminology
-□ Abbreviations are "earned" through surface context (not arbitrary)
-${allowMultiWord ? '🚨 □ Answer must be a PHRASE/IDIOM that people say in conversation, not random words\n□ Each word in phrase must be at least 2 letters\n□ Include spaces in answer field: "HOT POTATO" NOT "HOTPOTATO"' : ''}
-
-**MECHANICS VERIFICATION:**
-□ For ANAGRAMS: Letters match EXACTLY
-   - Write out BOTH words letter-by-letter:
-   - Fodder: M-O-O-D-S vs Answer: D-O-O-M-S ✓ (same letters)
-   - Fodder: A-G-E-N-T-S vs Answer: S-T-A-G-E-S ✗ (AGENTS has N, STAGES doesn't!)
-□ For CONTAINERS: outer word wraps inner word perfectly
-   - Length math: outer + inner = answer length
-□ For REVERSALS: fodder backwards = answer (letter-perfect)
-□ For CHARADES: parts combine to form answer exactly
-□ For HIDDEN: consecutive letters spell answer
-□ For HOMOPHONES: pronunciation is genuinely identical
-
-**SURFACE READING QUALITY:**
-□ Clue reads as natural, complete sentence
-□ Has narrative coherence or tells a micro-story
-□ Employs misdirection (surface context ≠ answer context)
-□ Would make solver say "aha!" when decoded
-□ NOT just a mechanical description of the cryptic device
-
-**HINT QUALITY:**
-□ Hints ordered: Indicator → Fodder → Definition → Letter
-□ Hints teach HOW to solve (not just reveal answer)
-□ NO hint reveals the answer word directly
-□ Fodder hint explains emoji meaning clearly
-□ Definition hint guides without using answer word
-
-**OVERALL QUALITY TARGET:**
-□ For difficulty 2: Basic quality acceptable (single-step OK if executed well)
-□ For difficulty 3-4: ⭐⭐⭐ TARGET - Multi-step wordplay preferred, engaging surface
-□ For difficulty 4-5: ⭐⭐⭐⭐⭐ EXCEPTIONAL - Complex multi-step with rich narrative
-
-**WORDPLAY COMPLEXITY CHECK:**
-□ Multi-step wordplay used (2+ distinct operations) OR sophisticated single operation
-□ Wordplay fodder spans SEVERAL words (not just "parties" or "a gem")
-□ Avoid trivial constructions like simple one-word anagrams
-
-${
-  allowMultiWord
-    ? `**MULTI-WORD PHRASE VERIFICATION (CRITICAL):**
-□ Answer is a well-known PHRASE, IDIOM, or EXPRESSION
-□ Answer contains 2-3 separate words separated by spaces
-□ Answer is something people actually SAY (not just random words together)
-□ Answer is NOT a single compound word (e.g., NOT "MOONLIGHT", NOT "BUTTERFLY")
-□ Each word is at least 2 letters
-□ Spaces are included in the answer field
-□ word_pattern array matches the number of words
-□ Examples: "HOT POTATO" ✓ (idiom) | "COLD SHOULDER" ✓ (phrase) | "BLUE FEATHERS" ✗ (random words)
-
+\`\`\`
 `
-    : ''
-}
-═══════════════════════════════════════════════════════════════════
-🎯 QUALITY STANDARDS - What Makes an Excellent Cryptic Clue
-═══════════════════════════════════════════════════════════════════
-
-**⭐ ACCEPTABLE (Minimum Bar):**
-- Single operation that works correctly
-- Common vocabulary
-- Basic surface reading
-- Example: "💬🔥 disrupted for gloomy fates (5)" → DOOMS
-
-**⭐⭐⭐ TARGET QUALITY (Aim For This):**
-- Multi-step wordplay (2+ operations) OR sophisticated single operation
-- Wordplay spans several words, not just a short phrase
-- Engaging surface reading that tells a story
-- Clever misdirection
-- Makes solver smile when decoded
-- Teaching-focused hints
-
-**⭐⭐⭐⭐⭐ EXCEPTIONAL (Aspire To):**
-- Complex multi-step wordplay executed perfectly
-- Rich surface narrative with cultural references
-- Multiple layers of misdirection
-- Memorable and quotable
-
-═══════════════════════════════════════════════════════════════════
-🎯 FINAL REMINDER - CORE PRINCIPLES
-═══════════════════════════════════════════════════════════════════
-
-1. **Multi-Step Wordplay Preferred**: Use at least 2 distinct operations when possible
-2. **Longer Wordplay Section**: Fodder should span SEVERAL words, not just short phrases
-3. **Surface Reading is Art**: Natural language flow with narrative and misdirection
-4. **Common Vocabulary Only**: Wordle-level accessibility - everyday words everyone knows
-5. **Exactly 2 Emojis Always**: Functional replacements, not decorative elements
-6. **Misdirection is Delight**: Best clues suggest one thing, reveal another
-7. **Fair But Clever**: Solver should feel smart for solving it, not frustrated
-8. **Teaching-Focused Hints**: Guide the solver through the thought process
-
-Think like a quality cryptic constructor: sophisticated wordplay, natural language flow, satisfying "aha!" moment.
-
-**HUMOR AND CLEVERNESS:**
-Remember to inject wit and playfulness into your clue! Examples:
-- Use cultural references ("FINISH HIM!" for fighting games)
-- Create amusing scenarios (rich person buying bidets)
-- Employ puns and wordplay in the surface reading
-- Make the misdirection delightful, not just mechanical
-
-${
-  allowMultiWord
-    ? `
-═══════════════════════════════════════════════════════════════════
-🚨 ABSOLUTE FINAL CHECK - MULTI-WORD PHRASE REQUIREMENT 🚨
-═══════════════════════════════════════════════════════════════════
-
-Before you submit your JSON, ask yourself these questions:
-
-1. Is my answer a well-known PHRASE or IDIOM that people actually say?
-2. Is it TWO OR THREE separate words with SPACES between them?
-3. Is the word_pattern field an array like [3, 5] or [4, 2, 3, 5]?
-
-If you answer "NO" to ANY of these, GO BACK and create a proper phrase.
-
-✅ CORRECT - COMMON PHRASES/IDIOMS:
-✓ "HOT POTATO" (3, 6) - idiom meaning controversial issue
-✓ "COLD SHOULDER" (4, 8) - phrase meaning to ignore someone
-✓ "EASY STREET" (4, 6) - idiom meaning comfortable life
-✓ "ROUGH PATCH" (5, 5) - phrase meaning difficult period
-✓ "CLEAN SLATE" (5, 5) - idiom meaning fresh start
-✓ "OPEN BOOK" (4, 4) - phrase meaning transparent person
-✓ "LAST STRAW" (4, 5) - idiom meaning final annoyance
-✓ "BIG CHEESE" (3, 6) - phrase meaning important person
-✓ "CLOSE CALL" (5, 4) - phrase meaning narrow escape
-✓ "SPILL BEANS" (5, 5) - idiom meaning reveal secret
-
-❌ WRONG - NOT PHRASES:
-✗ "MOONLIGHT" - This is ONE compound word, not a phrase!
-✗ "BUTTERFLY" - This is ONE compound word, not a phrase!
-✗ "BLUE MOON" - While two words, this is not a common saying/phrase people use regularly
-✗ "BIG APPLE" - This is a proper noun (NYC nickname), not a general phrase
-
-REMEMBER: Think PHRASES and IDIOMS people say in everyday conversation!
-
-═══════════════════════════════════════════════════════════════════
-`
-    : ''
 }
 
-NOW: Create your cryptic puzzle following these quality standards and return ONLY the JSON (no markdown, no extra text).`;
+Return ONLY the JSON. No additional explanation.`;
   }
 
   /**
@@ -2272,68 +1483,47 @@ NOW: Create your cryptic puzzle following these quality standards and return ONL
           `word_pattern length (${puzzle.word_pattern.length}) does not match number of words (${words.length})`
         );
       } else {
-        // Validate each word length
+        // Verify each word length matches pattern
         for (let i = 0; i < words.length; i++) {
           if (words[i].length !== puzzle.word_pattern[i]) {
             errors.push(
-              `Word ${i + 1} "${words[i]}" has ${words[i].length} letters but pattern specifies ${puzzle.word_pattern[i]}`
+              `Word ${i + 1} ("${words[i]}") has length ${words[i].length} but word_pattern says ${puzzle.word_pattern[i]}`
             );
-          }
-          if (words[i].length < 2) {
-            errors.push(`Word ${i + 1} "${words[i]}" is too short (min 2 letters per word)`);
           }
         }
       }
-
-      if (words.length > 3) {
-        errors.push('Multi-word answers should have max 3 words for readability');
-      }
     }
 
+    if (!puzzle.explanation) {
+      errors.push('Explanation is required');
+    }
+
+    // Validate hints
     if (!Array.isArray(puzzle.hints) || puzzle.hints.length !== 4) {
       errors.push('Must have exactly 4 hints');
     } else {
       const requiredTypes = ['fodder', 'indicator', 'definition', 'letter'];
+      const hintTypes = puzzle.hints.map((h) => h.type);
+
+      requiredTypes.forEach((type) => {
+        if (!hintTypes.includes(type)) {
+          errors.push(`Missing required hint type: ${type}`);
+        }
+      });
+
       puzzle.hints.forEach((hint, index) => {
-        if (!hint.type || !requiredTypes.includes(hint.type)) {
-          errors.push(`Hint ${index + 1} has invalid type: ${hint.type}`);
-        }
         if (!hint.text || hint.text.trim().length === 0) {
-          errors.push(`Hint ${index + 1} text is empty`);
-        }
-
-        // CRITICAL: Check that hints don't reveal the answer (except for 'letter' hint which gives first letter)
-        if (hint.type !== 'letter' && puzzle.answer) {
-          const hintLower = hint.text.toLowerCase();
-          const answerLower = puzzle.answer.toLowerCase();
-
-          // Use word boundaries to avoid false positives (e.g., "EARLS" in hint when answer is "PEARLS")
-          const wordBoundaryRegex = new RegExp(`\\b${answerLower}\\b`, 'i');
-          if (wordBoundaryRegex.test(hintLower)) {
-            errors.push(
-              `Hint ${index + 1} (${hint.type}) contains the answer "${puzzle.answer}". Hints should guide, not reveal!`
-            );
-          }
-
-          // Additional check: if hint spells out the answer letter by letter (e.g., "H-A-L-L-M-A-R-K")
-          const spelledOut = puzzle.answer.split('').join('-');
-          if (hintLower.includes(spelledOut.toLowerCase())) {
-            errors.push(
-              `Hint ${index + 1} (${hint.type}) spells out the answer. This is too revealing!`
-            );
-          }
+          errors.push(`Hint ${index + 1} (${hint.type}) has no text`);
         }
       });
     }
 
-    if (!puzzle.explanation || puzzle.explanation.length < 10) {
-      errors.push('Explanation is missing or too short');
+    // Validate difficulty rating
+    if (!puzzle.difficulty_rating || puzzle.difficulty_rating < 1 || puzzle.difficulty_rating > 5) {
+      errors.push('Difficulty rating must be between 1 and 5');
     }
 
-    if (!puzzle.cryptic_device) {
-      errors.push('Cryptic device is missing');
-    }
-
+    // Validate cryptic device
     const validDevices = [
       'charade',
       'container',
@@ -2345,152 +1535,13 @@ NOW: Create your cryptic puzzle following these quality standards and return ONL
       'double_definition',
       'initial_letters',
     ];
-    if (puzzle.cryptic_device && !validDevices.includes(puzzle.cryptic_device)) {
+    if (!puzzle.cryptic_device || !validDevices.includes(puzzle.cryptic_device)) {
       errors.push(`Invalid cryptic device: ${puzzle.cryptic_device}`);
     }
 
-    if (puzzle.difficulty_rating < 1 || puzzle.difficulty_rating > 5) {
-      errors.push('Difficulty rating must be between 1 and 5');
-    }
-
-    // CRITICAL: Validate anagram mechanics (letter-perfect matching)
-    if (puzzle.cryptic_device === 'anagram') {
-      // Extract fodder word from explanation (e.g., "MOODS (💬🔥) disrupted = DOOMS")
-      const explanationMatch = puzzle.explanation?.match(
-        /^([A-Z]+)\s*(?:\([^)]+\))?\s*(?:scrambled|mixed|disrupted|broken|rearranged)/i
-      );
-      if (explanationMatch) {
-        const fodder = explanationMatch[1].toUpperCase();
-        const answer = puzzle.answer.toUpperCase();
-
-        // Sort letters to compare
-        const fodderSorted = fodder.split('').sort().join('');
-        const answerSorted = answer.split('').sort().join('');
-
-        if (fodderSorted !== answerSorted) {
-          errors.push(
-            `ANAGRAM VERIFICATION FAILED: "${fodder}" (${fodder.split('').join(',')}) cannot become "${answer}" (${answer.split('').join(',')}). ` +
-              `Letters don't match! Fodder sorted: [${fodderSorted}], Answer sorted: [${answerSorted}]`
-          );
-        } else {
-          logger.info('Anagram verification passed', { fodder, answer, sorted: fodderSorted });
-        }
-      } else {
-        // Couldn't extract fodder from explanation - warn but don't fail
-        logger.warn('Could not extract fodder from anagram explanation for verification', {
-          explanation: puzzle.explanation,
-          answer: puzzle.answer,
-        });
-      }
-    }
-
-    // CRITICAL: Check for emoji=answer violations
-    // Heuristic check - looks for hints that describe the answer word directly
-    if (puzzle.hints && Array.isArray(puzzle.hints)) {
-      const answerLower = puzzle.answer.toLowerCase();
-
-      // Check for common singular/plural variations
-      const answerVariations = new Set([answerLower]);
-      if (answerLower.endsWith('s')) {
-        answerVariations.add(answerLower.slice(0, -1)); // SPEARS → SPEAR
-      } else {
-        answerVariations.add(answerLower + 's'); // SPEAR → SPEARS
-      }
-
-      // Common patterns where hints explicitly mention the answer
-      const suspiciousPatterns = [];
-      for (const variation of answerVariations) {
-        suspiciousPatterns.push(
-          `represents ${variation}`,
-          `means ${variation}`,
-          `shows ${variation}`,
-          `depicts ${variation}`,
-          `is ${variation}`,
-          `are ${variation}`,
-          `is a ${variation}`,
-          `are a ${variation}`
-        );
-      }
-
-      // Check fodder and definition hints (most common violation points)
-      const hintsToCheck = puzzle.hints.filter(
-        (h) => h.type === 'fodder' || h.type === 'definition'
-      );
-
-      for (const hint of hintsToCheck) {
-        const hintLower = hint.text.toLowerCase();
-
-        for (const pattern of suspiciousPatterns) {
-          if (hintLower.includes(pattern)) {
-            errors.push(
-              `EMOJI=ANSWER VIOLATION DETECTED: ${hint.type} hint directly mentions the answer. ` +
-                `Hint contains "${pattern.split(' ').slice(-1)[0]}" when answer is "${puzzle.answer}". ` +
-                `Emojis must represent fodder/indicators, NOT the answer itself. ` +
-                `Players should NOT be able to guess the answer just by seeing the emojis.`
-            );
-            logger.error('Emoji=Answer violation detected', {
-              answer: puzzle.answer,
-              hintType: hint.type,
-              hintText: hint.text,
-              matchedPattern: pattern,
-            });
-            break;
-          }
-        }
-      }
-    }
-
     if (errors.length > 0) {
-      const errorMsg = 'Invalid cryptic puzzle: ' + errors.join(', ');
-      logger.error('Cryptic puzzle validation failed', { errors, puzzle });
-      throw new Error(errorMsg);
+      throw new Error(`Puzzle validation failed: ${errors.join(', ')}`);
     }
-
-    logger.info('Cryptic puzzle validation passed', {
-      answer: puzzle.answer,
-      length: puzzle.length,
-      device: puzzle.cryptic_device,
-    });
-  }
-
-  /**
-   * Check if AI generation is available
-   */
-  isEnabled() {
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-    const enabled = this.enabled && !!apiKey;
-
-    if (!enabled) {
-      const diagnostics = {
-        hasApiKey: !!apiKey,
-        apiKeyLength: apiKey?.length,
-        apiKeyPrefix: apiKey?.substring(0, 10),
-        enabledFlag: this.enabled,
-        aiGenerationEnabled: process.env.AI_GENERATION_ENABLED,
-        nodeEnv: process.env.NODE_ENV,
-        envKeys: Object.keys(process.env).filter(
-          (k) => k.includes('AI') || k.includes('ANTHROPIC')
-        ),
-      };
-
-      console.error('[ai.service] ✗ AI generation check FAILED:', diagnostics);
-
-      // Provide actionable error message
-      if (!apiKey) {
-        console.error('[ai.service] MISSING: ANTHROPIC_API_KEY environment variable not set');
-        console.error(
-          '[ai.service] ACTION: Set ANTHROPIC_API_KEY in .env.local and restart server'
-        );
-      } else if (this.enabled === false) {
-        console.error('[ai.service] DISABLED: AI_GENERATION_ENABLED is set to false');
-        console.error('[ai.service] ACTION: Set AI_GENERATION_ENABLED=true in .env.local');
-      }
-
-      logger.warn('AI generation check failed', diagnostics);
-    } else {
-    }
-
-    return enabled;
   }
 }
 
