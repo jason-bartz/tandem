@@ -44,7 +44,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [showDeviceGuide, setShowDeviceGuide] = useState(false);
-  const [emojiCount, setEmojiCount] = useState(0);
   const [enableMultiWord, setEnableMultiWord] = useState(false);
 
   // Load puzzle data if editing
@@ -63,8 +62,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
         difficulty_rating: puzzle.difficulty_rating || 3,
         cryptic_device: puzzle.cryptic_device || 'charade',
       });
-      // Count emojis in loaded clue
-      setEmojiCount(countEmojis(puzzle.clue));
     } else if (date) {
       setFormData((prev) => ({ ...prev, date }));
     }
@@ -89,21 +86,8 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
     }
   }, [formData.answer, enableMultiWord]);
 
-  // Helper: Count emojis in text (production-ready regex)
-  const countEmojis = (text) => {
-    if (!text) return 0;
-    const emojiRegex =
-      /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2})/gu;
-    const emojis = text.match(emojiRegex) || [];
-    return emojis.length;
-  };
-
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
-
-    if (field === 'clue') {
-      setEmojiCount(countEmojis(value));
-    }
 
     if (errors[field]) {
       setErrors((prev) => {
@@ -124,7 +108,7 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
   const getHintPlaceholder = (type) => {
     switch (type) {
       case 'fodder':
-        return "'🎭🎪' together suggest STAGE (theatrical setting), giving us the letters S-T-A-G-E to work with...";
+        return "The word 'moods' provides the letters we need to work with...";
       case 'indicator':
         return "'mixed' signals an anagram - we need to rearrange those letters. 'loses' means deletion...";
       case 'definition':
@@ -140,7 +124,7 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
   const getHintGuidance = (type) => {
     switch (type) {
       case 'fodder':
-        return 'Most detailed (2-3 sentences). Explain what emoji pair represents + all text components.';
+        return 'Most detailed (2-3 sentences). Explain which words/letters are used to build the answer.';
       case 'indicator':
         return 'Moderately detailed (1-2 sentences). Identify all indicator words and operations.';
       case 'definition':
@@ -158,12 +142,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
     if (!formData.date) newErrors.date = 'Date is required';
     if (!formData.clue) {
       newErrors.clue = 'Clue is required';
-    } else {
-      // CRITICAL: Validate TWO-emoji requirement (Daily Cryptic signature mechanic)
-      const currentEmojiCount = countEmojis(formData.clue);
-      if (currentEmojiCount !== 2) {
-        newErrors.clue = `Must have exactly 2 emojis (found ${currentEmojiCount}). This is the signature Daily Cryptic mechanic - emojis must work together.`;
-      }
     }
 
     if (!formData.answer) {
@@ -334,35 +312,17 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
             {errors.date && <p className="mt-1 text-sm text-accent-red font-bold">{errors.date}</p>}
           </div>
 
-          {/* Clue with Emoji Count (Apple HIG: Clear feedback) */}
+          {/* Clue */}
           <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-text-primary">
-                Clue (with TWO emojis) *
-              </label>
-              <span
-                className={`text-xs font-bold px-2 py-1 rounded ${
-                  emojiCount === 2
-                    ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300'
-                    : 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300'
-                }`}
-              >
-                {emojiCount === 2 ? '✓ ' : ''}
-                {emojiCount} emoji{emojiCount !== 1 ? 's' : ''}
-              </span>
-            </div>
+            <label className="block text-sm font-bold text-text-primary mb-2">Clue *</label>
             <input
               type="text"
               value={formData.clue}
               onChange={(e) => handleChange('clue', e.target.value)}
-              placeholder="e.g., 👶🏫 Room for kids, yes? Run back to grab second-grader (7)"
-              className={`w-full px-4 py-2 border-[3px] rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 transition-colors ${
-                emojiCount === 2
-                  ? 'border-green-500 focus:ring-green-500'
-                  : 'border-border-main focus:ring-purple-500'
-              }`}
+              placeholder="e.g., Moods disrupted for gloomy fates (5)"
+              className="w-full px-4 py-2 border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-purple-500"
               style={{ boxShadow: 'var(--shadow-small)' }}
-              aria-label="Cryptic clue with two emojis"
+              aria-label="Cryptic clue"
               aria-describedby="clue-hint"
             />
             {errors.clue && (
@@ -370,14 +330,9 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
                 {errors.clue}
               </p>
             )}
-            <div id="clue-hint" className="mt-2 space-y-1">
-              <p className="text-xs text-text-secondary font-medium">
-                💡 Use EXACTLY 2 emojis that work together (e.g., 🎭🎪 = stage, 👑🦁 = royal)
-              </p>
-              <p className="text-xs text-text-secondary font-medium">
-                Include the answer length in parentheses at the end
-              </p>
-            </div>
+            <p id="clue-hint" className="mt-2 text-xs text-text-secondary font-medium">
+              💡 Include the answer length in parentheses at the end
+            </p>
           </div>
 
           {/* Multi-Word Toggle */}
@@ -572,10 +527,6 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
                 className="text-xs space-y-2 text-purple-800 dark:text-purple-200 mt-3"
               >
                 <div>
-                  <strong>Emoji Interpretation:</strong> 2 emojis work together (🎭🎪 = STAGE, 👑🦁
-                  = ROYAL)
-                </div>
-                <div>
                   <strong>Charade:</strong> Parts joined (CAR + PET = CARPET) | Indicators: with,
                   and, by
                 </div>
@@ -604,6 +555,9 @@ export default function CrypticPuzzleEditor({ puzzle, date, onSave, onCancel, lo
                 </div>
                 <div>
                   <strong>Selection:</strong> Pick specific letters (first, last, middle)
+                </div>
+                <div>
+                  <strong>Double Definition:</strong> Two meanings of the same word
                 </div>
                 <hr className="border-purple-300 dark:border-purple-700 my-2" />
                 <div className="text-purple-900 dark:text-purple-100 font-bold">

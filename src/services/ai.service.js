@@ -1933,20 +1933,6 @@ NOW: Create your cryptic puzzle and return ONLY the JSON (no markdown, no extra 
       );
     }
 
-    // CRITICAL: Validate TWO-emoji requirement (Daily Cryptic signature mechanic)
-    if (puzzle.clue) {
-      const emojiRegex =
-        /(\p{Emoji_Presentation}|\p{Emoji}\uFE0F|\p{Emoji_Modifier_Base}\p{Emoji_Modifier}?|\p{Regional_Indicator}{2})/gu;
-      const emojis = puzzle.clue.match(emojiRegex) || [];
-      const emojiCount = emojis.length;
-
-      if (emojiCount !== 2) {
-        errors.push(
-          `TWO-EMOJI REQUIREMENT: Must have exactly 2 emojis (found ${emojiCount}). This is the signature Daily Cryptic mechanic.`
-        );
-      }
-    }
-
     // Validate answer length (excluding spaces for multi-word)
     const totalLetters = puzzle.answer ? puzzle.answer.replace(/\s/g, '').length : 0;
 
