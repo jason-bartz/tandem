@@ -1098,30 +1098,36 @@ Analyze the puzzle above and provide your assessment.`;
 🚨 MULTI-WORD PHRASE/IDIOM REQUIREMENT - MANDATORY 🚨
 ═══════════════════════════════════════════════════════════════════
 
+⚠️ CRITICAL: The answer MUST contain SPACES between words ⚠️
+
 You MUST create a PHRASE or IDIOM that people actually say (2-3 words).
 
-FOCUS ON PHRASES/IDIOMS/EXPRESSIONS:
-- "HOT POTATO" - idiom for controversial issue
-- "COLD SHOULDER" - phrase for ignoring someone
-- "EASY STREET" - idiom for comfortable life
-- "ROUGH PATCH" - phrase for difficult period
-- "CLEAN SLATE" - idiom for fresh start
-- "LAST STRAW" - idiom for final annoyance
-- "OPEN BOOK" - phrase for transparent person
-- "DOWN IN THE DUMPS" - idiom for feeling sad
-- "OUT OF SORTS" - phrase for feeling unwell
-- "TOP DRAWER" - phrase for excellent quality
+ACCEPTABLE MULTI-WORD PHRASES/IDIOMS:
+✓ "HOT POTATO" - idiom for controversial issue (3,6 letters)
+✓ "COLD SHOULDER" - phrase for ignoring someone (4,8 letters)
+✓ "EASY STREET" - idiom for comfortable life (4,6 letters)
+✓ "ROUGH PATCH" - phrase for difficult period (5,5 letters)
+✓ "CLEAN SLATE" - idiom for fresh start (5,5 letters)
+✓ "LAST STRAW" - idiom for final annoyance (4,5 letters)
+✓ "OPEN BOOK" - phrase for transparent person (4,4 letters)
+✓ "TOP DRAWER" - phrase for excellent quality (3,6 letters)
 
-These are things people SAY - not random word combinations!
+These are REAL PHRASES people say - not random word combinations!
 
-REQUIREMENTS:
-- Each word must be at least 2 letters
-- Total letters: 5-11 (excluding spaces)
-- Maximum 3 words for readability
-- Return answer WITH SPACES: e.g., "HOT POTATO" not "HOTPOTATO"
-- Set word_pattern to array of word lengths: e.g., [3, 6] for "HOT POTATO"
+MANDATORY REQUIREMENTS (ALL MUST BE MET):
+✓ Answer MUST have SPACES between words (e.g., "HOT POTATO")
+✓ Must be 2-3 words (not 1 word, not 4+ words)
+✓ Each word must be at least 2 letters long
+✓ Total letters: 5-11 (excluding spaces)
+✓ Must be a well-known phrase/idiom/expression
+✓ Set word_pattern to array: e.g., [3, 6] for "HOT POTATO"
 
-❌ SINGLE-WORD ANSWERS WILL BE REJECTED ❌
+❌ THESE WILL BE REJECTED - DO NOT GENERATE:
+✗ "FORCE" - single word (REJECTED!)
+✗ "POTATO" - single word (REJECTED!)
+✗ "SHOULDER" - single word (REJECTED!)
+✗ "HOTPOTATO" - no spaces (REJECTED!)
+✗ "A B C D" - too many words (REJECTED!)
 
 ═══════════════════════════════════════════════════════════════════
 `
@@ -1168,6 +1174,8 @@ Read a word or letters backward
 
 - **Indicators:** back, returned, reversed, around, reflected, retreating, mirror, rolling, twist
 - **Example:** "Stop reversed in pans (4)" = POTS (STOP backwards)
+- **CRITICAL:** The backwards word must EXACTLY spell the answer or part of the answer
+- **Verify your reversal:** If reversing "FOO" you get "OOF" - check this letter by letter!
 
 ### Container
 
@@ -1278,10 +1286,11 @@ Pick specific letters from words
 **Clue:** "Stop reversed in pans (4)"
 
 - Device: Reversal
-- "stop" = fodder
-- "reversed" = indicator
+- "stop" = fodder (the word to reverse)
+- "reversed" = indicator (signals reversal)
 - "pans" = definition
-- Mechanics: STOP reversed = POTS
+- Mechanics: STOP reversed = POTS (S-T-O-P becomes P-O-T-S)
+- VERIFY: Write out both words letter by letter to confirm reversal works!
 
 ---
 
@@ -1296,15 +1305,29 @@ Pick specific letters from words
    - Construction follows established rules
 
 3. **Cryptic mechanics are perfect:**
-   - Anagram: same letters rearranged
-   - Container: letter counts match
-   - Reversal: actually spells backwards
-   - Homophone: actually sounds alike
+   - Anagram: same letters rearranged (verify letter by letter)
+   - Container: letter counts match (count carefully)
+   - Reversal: actually spells backwards (write it out: ABC → CBA)
+   - Homophone: actually sounds alike (say both words aloud)
+   - **CRITICAL FOR REVERSAL:** Write out the reversal letter-by-letter to verify it works
+     Example: STOP → POTS (S-T-O-P → P-O-T-S) ✓
+     NOT: "fuel backwards" → "something that doesn't actually work" ✗
 
 4. **Clue structure is clear:**
    - Definition + Wordplay (or Wordplay + Definition)
    - Answer length in parentheses
    - No ambiguity in construction
+
+5. **Explanation is concise and clear:**
+   - Format: "WORDPLAY OPERATION = ANSWER"
+   - ONE sentence maximum
+   - Show the mechanics simply
+   - Example: "STOP (reversed) = POTS"
+   - Example: "MOODS (anagrammed) = DOOMS"
+   - Example: "ST(RAY)ING = STRAYING"
+   - DO NOT ramble or provide multiple attempts
+   - DO NOT use phrases like "Actually:" or "Better:"
+   - Just state the ONE correct solution clearly
 
 ---
 
@@ -1338,7 +1361,7 @@ ${
       "text": "Starts with D"
     }
   ],
-  "explanation": "DOWN (dejected bird's plumage) + IN THE DUMPS = DOWN IN THE DUMPS (feeling sad)",
+  "explanation": "DOWN (bird's plumage/dejected) + IN THE DUMPS (discarded) = DOWN IN THE DUMPS",
   "difficulty_rating": ${difficulty},
   "cryptic_device": "charade"
 }
@@ -1377,7 +1400,7 @@ ${
       "text": "Starts with D"
     }
   ],
-  "explanation": "MOODS disrupted = DOOMS (gloomy fates)",
+  "explanation": "MOODS (disrupted/anagrammed) = DOOMS",
   "difficulty_rating": ${difficulty},
   "cryptic_device": "anagram"
 }
