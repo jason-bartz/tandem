@@ -1258,64 +1258,168 @@ Pick specific letters from words
 
 ---
 
-## COMPLETE WORKING EXAMPLES:
+## ⚠️ CRITICAL: MANDATORY VERIFICATION REQUIREMENTS ⚠️
 
-### ANAGRAM Example:
+Before submitting your clue, you MUST verify the mathematics letter-by-letter:
 
-**Clue:** "Scrambled parties for sea raiders (7)"
+### 1. Letter Count Verification
+- Count source letters: "PHONE TAG" = 8 letters (excluding spaces)
+- Count answer letters: "PATHOGEN" = 8 letters
+- They MUST match exactly ✓
 
-- Device: Anagram
-- "scrambled" = indicator
-- "parties" = fodder
-- "sea raiders" = definition
-- Mechanics: PARTIES scrambled = PIRATES
+### 2. Anagram Verification
+- Write out source: P-H-O-N-E-T-A-G
+- Write out answer: P-A-T-H-O-G-E-N
+- Verify same letters appear: A(1), E(1), G(1), H(1), N(1), O(1), P(1), T(1) ✓
+- Check: every letter in source appears in answer, and vice versa
 
-### CONTAINER Example:
+### 3. Reversal Verification
+- Write forward: S-T-O-P (4 letters)
+- Write backward: P-O-T-S (4 letters)
+- Verify both spell real words ✓
+- Example of WRONG: "COIL reversed" does NOT equal "ELECTRIC"
 
-**Clue:** "Sting gets Ray wandering (8)"
+### 4. Container Verification
+- Outer word letters: Count them
+- Inner word letters: Count them
+- Combined length: Outer + Inner must equal answer length
+- Example: ST + RAY + ING = 8 letters → STRAYING = 8 letters ✓
 
-- Device: Container
-- "sting" = outer word
-- "gets" = contains indicator
-- "Ray" = inner word
-- "wandering" = definition
-- Mechanics: ST(RAY)ING = STRAYING
+### 5. Hidden Word Verification
+- Write source phrase: "campers on alert"
+- Identify consecutive letters: camPERS ON ALert
+- Extract: P-E-R-S-O-N-A-L (8 letters)
+- Verify answer matches exactly ✓
 
-### REVERSAL Example:
+### 6. Selection Verification (Initial/Odd/Even Letters)
+- Write out full source phrase
+- Mark positions: **F**ood **A**rriving **U**nusually **L**ate **T**oday
+- Extract marked letters: F-A-U-L-T
+- Verify spelling matches answer ✓
 
-**Clue:** "Stop reversed in pans (4)"
+**🚨 DO NOT SUBMIT A CLUE UNLESS YOU HAVE VERIFIED THE MATHEMATICS LETTER-BY-LETTER! 🚨**
 
-- Device: Reversal
-- "stop" = fodder (the word to reverse)
-- "reversed" = indicator (signals reversal)
-- "pans" = definition
-- Mechanics: STOP reversed = POTS (S-T-O-P becomes P-O-T-S)
-- VERIFY: Write out both words letter by letter to confirm reversal works!
+If your verification fails, START OVER with different fodder. Never submit broken wordplay.
 
 ---
 
-## FINAL CHECKLIST:
+## VERIFIED QUALITY EXAMPLES (Study These Carefully):
 
-1. **Definition is accurate:**
+### Example 1: INITIAL LETTERS (Selection Device)
+
+**Clue:** "Server's mistake leads to food arriving unusually late today (5)"
+**Answer:** FAULT
+
+- Definition: "Server's mistake"
+- Indicator: "leads to" (signals initial letters)
+- Fodder: "food arriving unusually late today"
+- Mechanics: **F**ood **A**rriving **U**nusually **L**ate **T**oday = FAULT
+- **VERIFICATION STEPS:**
+  - Write out phrase: food arriving unusually late today
+  - Take first letter of each word: F-A-U-L-T
+  - Count: 5 letters ✓
+  - Verify answer: FAULT = 5 letters ✓
+  - Check spelling: F-A-U-L-T matches exactly ✓
+
+### Example 2: ODD LETTER SELECTION
+
+**Clue:** "Slim odds of solving that (6)"
+**Answer:** SLIGHT
+
+- Definition: "Slim"
+- Indicator: "odds of" (select odd-position letters)
+- Fodder: "solving that"
+- Mechanics: **S**o**L**v**I**n**G** t**H**a**T** = SLIGHT
+- **VERIFICATION STEPS:**
+  - Write out phrase without space: SOLVINGTHAT (11 letters)
+  - Number positions: S(1) O(2) L(3) V(4) I(5) N(6) G(7) T(8) H(9) A(10) T(11)
+  - Take odd positions: 1,3,5,7,9,11 = S-L-I-G-H-T
+  - Count: 6 letters ✓
+  - Verify answer: SLIGHT = 6 letters ✓
+  - Check spelling: S-L-I-G-H-T matches exactly ✓
+
+### Example 3: ANAGRAM
+
+**Clue:** "Deadly agent playing phone tag (8)"
+**Answer:** PATHOGEN
+
+- Definition: "Deadly agent"
+- Indicator: "playing" (anagram)
+- Fodder: "phone tag"
+- Mechanics: PHONE TAG (rearranged) = PATHOGEN
+- **VERIFICATION STEPS:**
+  - Write out source: PHONE TAG (no space) = P-H-O-N-E-T-A-G (8 letters)
+  - Write out answer: P-A-T-H-O-G-E-N (8 letters)
+  - Count matches: 8 = 8 ✓
+  - Verify same letters:
+    - Source has: A(1), E(1), G(1), H(1), N(1), O(1), P(1), T(1)
+    - Answer has: A(1), E(1), G(1), H(1), N(1), O(1), P(1), T(1)
+  - Perfect match ✓
+
+### Example 4: HIDDEN WORD
+
+**Clue:** "Campers on alert... bears close to home (8)"
+**Answer:** PERSONAL
+
+- Definition: "close to home"
+- Indicator: "bears" (hidden word indicator)
+- Fodder: "Campers on alert"
+- Mechanics: cam**PERS ON AL**ert = PERSONAL
+- **VERIFICATION STEPS:**
+  - Write out phrase: campers on alert
+  - Look for consecutive letters: camPERS ON ALert
+  - Extract: P-E-R-S-O-N-A-L (8 letters)
+  - Verify answer: PERSONAL = 8 letters ✓
+  - Check: letters are consecutive in source ✓
+  - Perfect match ✓
+
+### Example 5: MULTI-STEP (Selection + Deletion)
+
+**Clue:** "Lead guitarist fills all but the first bass section? (5)"
+**Answer:** GILLS
+
+- Definition: "bass section" (fish gills, not music - note the ?)
+- Indicators: "Lead" (first letter) + "all but the first" (deletion)
+- Fodder: "guitarist" + "fills"
+- Mechanics: **G**uitarist + (F)ILLS = G + ILLS = GILLS
+- **VERIFICATION STEPS:**
+  - Take first letter of "guitarist": G
+  - Take "fills" without first letter: (F)ILLS = ILLS (4 letters)
+  - Combine: G + ILLS = GILLS (5 letters)
+  - Verify answer: GILLS = 5 letters ✓
+  - Check spelling: G-I-L-L-S matches exactly ✓
+  - Surface misdirection: "bass" = fish, not music ✓
+
+**KEY TAKEAWAY:** Notice how every example shows step-by-step verification. This is MANDATORY for your clue!
+
+---
+
+## FINAL CHECKLIST (Before Submitting):
+
+1. **VERIFICATION COMPLETED:**
+   - ✓ I have performed letter-by-letter verification (as shown above)
+   - ✓ My fodder letters exactly match my answer letters
+   - ✓ Letter counts are correct for all components
+   - ✓ If anagram: I listed out all letters and confirmed they match
+   - ✓ If reversal: I wrote it forwards and backwards to verify
+   - ✓ If container: I counted outer + inner = answer length
+   - ✓ If hidden: I confirmed letters are consecutive in source
+   - **DO NOT PROCEED if any verification step failed**
+
+2. **Definition is accurate:**
    - Must be a true synonym of the answer
+   - Placed at ONE END of the clue (not buried in middle)
 
-2. **Wordplay is fair:**
+3. **Wordplay is fair:**
    - Indicators are standard and clear
-   - Letter counts match
+   - Letter counts match (verified above)
    - Construction follows established rules
-
-3. **Cryptic mechanics are perfect:**
-   - Anagram: same letters rearranged (verify letter by letter)
-   - Container: letter counts match (count carefully)
-   - Reversal: actually spells backwards (write it out: ABC → CBA)
-   - Homophone: actually sounds alike (say both words aloud)
-   - **CRITICAL FOR REVERSAL:** Write out the reversal letter-by-letter to verify it works
-     Example: STOP → POTS (S-T-O-P → P-O-T-S) ✓
-     NOT: "fuel backwards" → "something that doesn't actually work" ✗
+   - Uses common vocabulary (Wordle-level words)
 
 4. **Clue structure is clear:**
    - Definition + Wordplay (or Wordplay + Definition)
-   - Answer length in parentheses
+   - Answer length in parentheses at end: (5) or (3,4) for multi-word
+   - Natural surface reading (reads like a sentence)
    - No ambiguity in construction
 
 5. **Explanation is concise and clear:**
@@ -1323,10 +1427,10 @@ Pick specific letters from words
    - ONE sentence maximum
    - Show the mechanics simply
    - Example: "STOP (reversed) = POTS"
-   - Example: "MOODS (anagrammed) = DOOMS"
-   - Example: "ST(RAY)ING = STRAYING"
+   - Example: "PHONE TAG (anagrammed) = PATHOGEN"
+   - Example: "**G**uitarist + (F)ILLS = GILLS"
    - DO NOT ramble or provide multiple attempts
-   - DO NOT use phrases like "Actually:" or "Better:"
+   - DO NOT use phrases like "Actually:" or "Better:" or "Clean answer:"
    - Just state the ONE correct solution clearly
 
 ---
