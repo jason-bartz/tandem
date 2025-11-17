@@ -11,6 +11,10 @@ class AIService {
     this.generationCount = 0; // Track for analytics
   }
 
+  isEnabled() {
+    return this.enabled && !!process.env.ANTHROPIC_API_KEY;
+  }
+
   getClient() {
     if (!this.client && this.enabled) {
       const apiKey = process.env.ANTHROPIC_API_KEY;
