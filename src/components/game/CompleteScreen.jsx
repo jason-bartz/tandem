@@ -221,12 +221,12 @@ export default function CompleteScreen({
 
             {puzzleTheme && (
               <div
-                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : won
-                      ? 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-accent-yellow'
-                      : 'bg-gray-100 dark:bg-gray-800 border-gray-300 dark:border-gray-700'
+                      ? 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-black dark:border-gray-600'
+                      : 'bg-gray-100 dark:bg-gray-800 border-black dark:border-gray-600'
                 }`}
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">
@@ -248,12 +248,12 @@ export default function CompleteScreen({
 
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-1 ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] animate-scale-fade-in stagger-1 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
                     : isHardMode
-                      ? 'bg-accent-red/20 dark:bg-red-900/50 border-accent-red'
-                      : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
+                      ? 'bg-accent-red/20 dark:bg-red-900/50 border-black dark:border-gray-600'
+                      : 'bg-accent-blue/20 dark:bg-sky-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div
@@ -270,10 +270,10 @@ export default function CompleteScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-2 ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] animate-scale-fade-in stagger-2 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
+                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div
@@ -286,10 +286,10 @@ export default function CompleteScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center animate-scale-fade-in stagger-3 ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
+                    : 'bg-accent-pink/20 dark:bg-pink-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div

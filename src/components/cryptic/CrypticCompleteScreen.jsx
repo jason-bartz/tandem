@@ -216,10 +216,10 @@ export default function CrypticCompleteScreen({
           {/* Stats Grid */}
           <div className="grid grid-cols-3 gap-4 mb-8">
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-1 ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] animate-scale-fade-in stagger-1 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
+                  : 'bg-accent-blue/20 dark:bg-sky-900/50 border-black dark:border-gray-600'
               }`}
             >
               <div
@@ -238,12 +238,12 @@ export default function CrypticCompleteScreen({
               </div>
             </div>
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-2 ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] animate-scale-fade-in stagger-2 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
                   : hintsUsed === 0
-                    ? 'bg-accent-yellow/20 dark:bg-yellow-900/50 border-accent-yellow'
-                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
+                    ? 'bg-accent-yellow/20 dark:bg-yellow-900/50 border-black dark:border-gray-600'
+                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-black dark:border-gray-600'
               }`}
             >
               <div
@@ -266,10 +266,10 @@ export default function CrypticCompleteScreen({
               </div>
             </div>
             <div
-              className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] animate-scale-fade-in stagger-3 ${
+              className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] animate-scale-fade-in stagger-3 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
+                  : 'bg-accent-pink/20 dark:bg-pink-900/50 border-black dark:border-gray-600'
               }`}
             >
               <div
