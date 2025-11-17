@@ -123,10 +123,10 @@ export default function AdmireScreen({
             {/* Theme Display */}
             {(admireData?.theme || puzzle?.theme) && (
               <div
-                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                className={`rounded-2xl p-5 mb-6 relative overflow-hidden border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-accent-yellow'
+                    : 'bg-accent-yellow/20 dark:bg-yellow-900/40 border-black dark:border-gray-600'
                 }`}
               >
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Theme:</p>
@@ -145,10 +145,10 @@ export default function AdmireScreen({
               {puzzle?.puzzles?.map((puzzleItem, index) => (
                 <div
                   key={index}
-                  className={`rounded-2xl px-4 py-3 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                  className={`rounded-2xl px-4 py-3 border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
                     highContrast
                       ? 'bg-hc-surface border-hc-border'
-                      : 'bg-green-100 dark:bg-green-900/30 border-green-500'
+                      : 'bg-green-100 dark:bg-green-900/30 border-black dark:border-gray-600'
                   }`}
                 >
                   <div className="flex items-center justify-between gap-3">
@@ -182,10 +182,10 @@ export default function AdmireScreen({
             {/* Stats Grid */}
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-blue/20 dark:bg-sky-900/50 border-accent-blue'
+                    : 'bg-accent-blue/20 dark:bg-sky-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div
@@ -198,10 +198,10 @@ export default function AdmireScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Time</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-accent-orange'
+                    : 'bg-accent-orange/20 dark:bg-orange-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div
@@ -214,10 +214,10 @@ export default function AdmireScreen({
                 <div className="text-xs text-gray-600 dark:text-gray-400 mt-1">Mistakes</div>
               </div>
               <div
-                className={`rounded-2xl p-4 text-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] flex flex-col items-center justify-center ${
+                className={`rounded-2xl p-4 text-center border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center ${
                   highContrast
                     ? 'bg-hc-surface border-hc-border'
-                    : 'bg-accent-pink/20 dark:bg-pink-900/50 border-accent-pink'
+                    : 'bg-accent-pink/20 dark:bg-pink-900/50 border-black dark:border-gray-600'
                 }`}
               >
                 <div
