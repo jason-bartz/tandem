@@ -2,7 +2,7 @@
  * Daily Mini - Share Text Generator
  *
  * Generates shareable text for completed Mini crossword puzzles
- * Format: Puzzle number, time, performance stats, link
+ * Format: Puzzle number and time
  */
 
 import { formatMiniTime, getMiniPuzzleInfoForDate } from './miniUtils';
@@ -15,15 +15,11 @@ import { formatMiniTime, getMiniPuzzleInfoForDate } from './miniUtils';
  * @param {number} puzzle.number - Puzzle number
  * @param {Object} stats - Completion stats
  * @param {number} stats.timeTaken - Time in seconds
- * @param {number} stats.checksUsed - Number of check actions
- * @param {number} stats.revealsUsed - Number of reveal actions
- * @param {number} stats.mistakes - Number of mistakes
- * @param {boolean} stats.perfectSolve - Whether it was a perfect solve
- * @returns {string} Formatted share text
+ * @returns {string} Formatted share text (puzzle number and time)
  */
 export function generateMiniShareText(puzzle, stats) {
   const { number, date } = puzzle || {};
-  const { timeTaken, checksUsed = 0, revealsUsed = 0, mistakes = 0, perfectSolve = false } = stats || {};
+  const { timeTaken } = stats || {};
 
   // Get puzzle number if not provided
   const puzzleNumber = number || getMiniPuzzleInfoForDate(date)?.number || '?';
@@ -38,33 +34,7 @@ export function generateMiniShareText(puzzle, stats) {
   lines.push(`Daily Mini #${puzzleNumber}`);
 
   // Time line with clock emoji
-  lines.push(`${timeStr} ⏱`);
-
-  // Performance indicators
-  if (perfectSolve) {
-    lines.push('Perfect solve!');
-  } else {
-    // Show mistakes if any
-    if (mistakes > 0) {
-      lines.push(`${mistakes} mistake${mistakes > 1 ? 's' : ''}`);
-    }
-
-    // Show checks if any
-    if (checksUsed > 0) {
-      lines.push(`${checksUsed} check${checksUsed > 1 ? 's' : ''}`);
-    }
-
-    // Show reveals if any
-    if (revealsUsed > 0) {
-      lines.push(`${revealsUsed} reveal${revealsUsed > 1 ? 's' : ''}`);
-    }
-  }
-
-  // Add blank line before link
-  lines.push('');
-
-  // Add link
-  lines.push('Play at tandemgame.com');
+  lines.push(`⏰ ${timeStr}`);
 
   return lines.join('\n');
 }
@@ -80,7 +50,13 @@ export function generateMiniShareText(puzzle, stats) {
  */
 export function generateMiniShareTextWithGrid(puzzle, stats, solveOrder = null) {
   const { number, date } = puzzle || {};
-  const { timeTaken, checksUsed = 0, revealsUsed = 0, mistakes = 0, perfectSolve = false } = stats || {};
+  const {
+    timeTaken,
+    checksUsed = 0,
+    revealsUsed = 0,
+    mistakes = 0,
+    perfectSolve = false,
+  } = stats || {};
 
   // Get puzzle number if not provided
   const puzzleNumber = number || getMiniPuzzleInfoForDate(date)?.number || '?';
@@ -300,10 +276,9 @@ export function validateShareText(shareText) {
 
   // Check for required elements
   const hasTitle = shareText.includes('Daily Mini #');
-  const hasTime = shareText.includes('⏱');
-  const hasLink = shareText.includes('tandemgame.com');
+  const hasTime = shareText.includes('⏰');
 
-  return hasTitle && hasTime && hasLink;
+  return hasTitle && hasTime;
 }
 
 export default {
