@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react';
 import { loadStats } from '@/lib/storage';
 import { loadCrypticStats } from '@/lib/crypticStorage';
+import { loadMiniStats } from '@/lib/miniStorage';
 import logger from '@/lib/logger';
 
 /**
- * useUnifiedStats - Load stats for both games
+ * useUnifiedStats - Load stats for all three games
  * Handles async loading, error states, and CloudKit sync
  *
  * @param {boolean} isOpen - Whether the modal is open (triggers reload)
- * @returns {Object} Stats and loading states for both games
+ * @returns {Object} Stats and loading states for all games
  */
 export function useUnifiedStats(isOpen) {
   const [tandemStats, setTandemStats] = useState({
@@ -28,6 +29,18 @@ export function useUnifiedStats(isOpen) {
     completedPuzzles: {},
   });
 
+  const [miniStats, setMiniStats] = useState({
+    totalCompleted: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    averageTime: 0,
+    bestTime: 0,
+    perfectSolves: 0,
+    totalChecks: 0,
+    totalReveals: 0,
+    completedPuzzles: {},
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,15 +55,21 @@ export function useUnifiedStats(isOpen) {
     setError(null);
 
     try {
-      // Load stats in parallel (both functions are async)
-      const [tandem, cryptic] = await Promise.all([loadStats(), loadCrypticStats()]);
+      // Load stats in parallel for all three games
+      const [tandem, cryptic, mini] = await Promise.all([
+        loadStats(),
+        loadCrypticStats(),
+        loadMiniStats(),
+      ]);
 
       setTandemStats(tandem);
       setCrypticStats(cryptic);
+      setMiniStats(mini);
 
       logger.info('[useUnifiedStats] Stats loaded successfully', {
         tandemPlayed: tandem.played,
         crypticCompleted: cryptic.totalCompleted,
+        miniCompleted: mini.totalCompleted,
       });
     } catch (err) {
       logger.error('[useUnifiedStats] Failed to load stats', { error: err.message });
@@ -63,6 +82,7 @@ export function useUnifiedStats(isOpen) {
   return {
     tandemStats,
     crypticStats,
+    miniStats,
     loading,
     error,
     reload: loadAllStats,

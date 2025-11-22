@@ -16,24 +16,38 @@ const LOADING_MESSAGES = [
 
 export default function AnimatedLoadingMessage() {
   const { reduceMotion } = useTheme();
-  const [currentMessage, setCurrentMessage] = useState('');
   const [messages, setMessages] = useState([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     // Shuffle messages on mount for random order
     const shuffled = [...LOADING_MESSAGES].sort(() => Math.random() - 0.5);
     setMessages(shuffled);
-    setCurrentMessage(shuffled[0]);
+    setCurrentIndex(0);
   }, []);
 
   useEffect(() => {
     if (messages.length === 0 || reduceMotion) return;
 
-    let currentIndex = 0;
     const interval = setInterval(() => {
-      currentIndex = (currentIndex + 1) % messages.length;
-      setCurrentMessage(messages[currentIndex]);
-    }, 1000); // Change message every 1 second
+      // Fade out
+      setIsVisible(false);
+      setTimeout(() => {
+        // Change to next message in shuffled order
+        setCurrentIndex((prevIndex) => {
+          const nextIndex = (prevIndex + 1) % messages.length;
+          // If we've cycled through all messages, reshuffle
+          if (nextIndex === 0) {
+            const reshuffled = [...messages].sort(() => Math.random() - 0.5);
+            setMessages(reshuffled);
+          }
+          return nextIndex;
+        });
+        // Fade back in
+        setIsVisible(true);
+      }, 300); // Wait 300ms for fade out
+    }, 2000); // Change message every 2 seconds
 
     return () => clearInterval(interval);
   }, [messages, reduceMotion]);
@@ -41,12 +55,11 @@ export default function AnimatedLoadingMessage() {
   return (
     <div className="text-center">
       <p
-        className={`text-lg text-gray-700 dark:text-gray-300 font-medium ${
-          !reduceMotion ? 'animate-loading-slide' : ''
+        className={`text-lg text-gray-700 dark:text-gray-300 font-medium transition-opacity duration-300 ${
+          isVisible ? 'opacity-100' : 'opacity-0'
         }`}
-        key={currentMessage}
       >
-        {currentMessage}
+        {messages[currentIndex] || ''}
       </p>
     </div>
   );

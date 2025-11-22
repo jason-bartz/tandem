@@ -15,9 +15,11 @@ import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import { Capacitor } from '@capacitor/core';
 import CrypticWelcomeCard from '@/components/cryptic/CrypticWelcomeCard';
+import MiniWelcomeCard from '@/components/mini/MiniWelcomeCard';
 import { getStreakMessage } from '@/lib/streakMessages';
 import { loadStats, getPuzzleResult } from '@/lib/storage';
 import { loadCrypticStats } from '@/lib/crypticStorage';
+import { loadMiniStats } from '@/lib/miniStorage';
 
 export default function WelcomeScreen({
   onStart,
@@ -42,15 +44,21 @@ export default function WelcomeScreen({
   // Load stats on mount for streak display
   const [tandemStats, setTandemStats] = useState({ currentStreak: 0 });
   const [crypticStats, setCrypticStats] = useState({ currentStreak: 0 });
+  const [miniStats, setMiniStats] = useState({ currentStreak: 0 });
   const [todayCompleted, setTodayCompleted] = useState(false);
 
   useEffect(() => {
     // Load stats for streak display and check if today's puzzle is completed
     const loadStatsData = async () => {
       try {
-        const [tandem, cryptic] = await Promise.all([loadStats(), loadCrypticStats()]);
+        const [tandem, cryptic, mini] = await Promise.all([
+          loadStats(),
+          loadCrypticStats(),
+          loadMiniStats(),
+        ]);
         setTandemStats(tandem);
         setCrypticStats(cryptic);
+        setMiniStats(mini);
 
         if (puzzle?.date) {
           const result = await getPuzzleResult(puzzle.date);
@@ -221,6 +229,11 @@ export default function WelcomeScreen({
         {/* Cryptic Welcome Card */}
         <div className="mb-6 animate-fade-in-up delay-600">
           <CrypticWelcomeCard currentStreak={crypticStats.currentStreak} />
+        </div>
+
+        {/* Mini Welcome Card */}
+        <div className="mb-6 animate-fade-in-up delay-700">
+          <MiniWelcomeCard currentStreak={miniStats.currentStreak} />
         </div>
 
         <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />

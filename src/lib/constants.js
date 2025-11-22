@@ -39,6 +39,7 @@ export const API_ENDPOINTS = {
   STATS: '/api/stats',
   USER_STATS: '/api/user-stats',
   USER_CRYPTIC_STATS: '/api/user-cryptic-stats',
+  USER_MINI_STATS: '/api/user-mini-stats',
 };
 
 export const GAME_STATES = {
@@ -264,4 +265,37 @@ export const CRYPTIC_DEVICES = {
   HIDDEN: 'hidden',
   DOUBLE_DEFINITION: 'double_definition',
   INITIAL_LETTERS: 'initial_letters',
+};
+
+export const MINI_CONFIG = {
+  GRID_SIZE: 5,
+  GAME_ROUTE: '/dailymini',
+  // Access control:
+  // - Daily puzzle: Free for all account holders
+  // - Archive: Last 4 days free (today + 3 back), older requires Tandem Unlimited subscription
+  FREE_ARCHIVE_DAYS: 4,
+};
+
+export const MINI_STORAGE_KEYS = {
+  CURRENT_GAME: 'mini_current_game',
+  STATS: 'mini_stats',
+  COMPLETED_PUZZLES: 'mini_completed',
+  PUZZLE_PROGRESS: 'mini_puzzle_progress_',
+  STREAK: 'mini_streak',
+  LAST_PLAYED_DATE: 'mini_last_played_date',
+};
+
+export const MINI_GAME_STATES = {
+  WELCOME: 'welcome',
+  START: 'start', // Timer gate screen
+  PLAYING: 'playing',
+  COMPLETE: 'complete',
+  ADMIRE: 'admire',
+  ERROR: 'error',
+};
+
+export const MINI_API_ENDPOINTS = {
+  PUZZLE: '/api/mini/puzzle',
+  STATS: '/api/mini/stats',
+  ADMIN_PUZZLES: '/api/admin/mini/puzzles',
 };

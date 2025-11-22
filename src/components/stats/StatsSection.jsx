@@ -26,6 +26,8 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
       return 'bg-sky-500 dark:bg-sky-600 border-sky-600 dark:border-sky-700 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]';
     } else if (themeColor === 'purple') {
       return 'bg-purple-600 dark:bg-purple-700 border-purple-700 dark:border-purple-800 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]';
+    } else if (themeColor === 'yellow') {
+      return 'bg-yellow-500 dark:bg-yellow-600 border-yellow-600 dark:border-yellow-700 shadow-[4px_4px_0px_rgba(0,0,0,0.2)]';
     }
 
     // Default fallback
@@ -39,6 +41,8 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
 
     if (themeColor === 'blue' || themeColor === 'purple') {
       return 'text-white';
+    } else if (themeColor === 'yellow') {
+      return 'text-gray-900 dark:text-gray-900';
     }
 
     // Default fallback

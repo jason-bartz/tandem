@@ -1,16 +1,26 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
-export default function HowToPlayModal({ isOpen, onClose }) {
+export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' }) {
   const { highContrast } = useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
+  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem', 'cryptic', or 'mini'
   const [expandedSection, setExpandedSection] = useState(null);
   const [expandedDevice, setExpandedDevice] = useState(null);
 
+  // Reset to default tab when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveGame(defaultTab);
+      setExpandedSection(null);
+      setExpandedDevice(null);
+    }
+  }, [isOpen, defaultTab]);
+
   const tandemIcon = '/icons/ui/tandem.png';
+  const miniIcon = '/icons/ui/mini.png';
 
   const getHintIcon = (type) => {
     const icons = {
@@ -276,6 +286,29 @@ export default function HowToPlayModal({ isOpen, onClose }) {
               className="w-5 h-5 rounded-lg"
             />
             <span>Daily Cryptic</span>
+          </div>
+        </button>
+        <button
+          onClick={() => {
+            setActiveGame('mini');
+            setExpandedSection(null);
+            setExpandedDevice(null);
+          }}
+          className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+            activeGame === 'mini'
+              ? 'bg-[#FFEB3B] text-gray-900 border-[#FFEB3B] shadow-[3px_3px_0px_rgba(0,0,0,0.3)]'
+              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600'
+          }`}
+        >
+          <div className="flex items-center justify-center gap-2">
+            <Image
+              src={miniIcon}
+              alt="Daily Mini"
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
+            <span>Daily Mini</span>
           </div>
         </button>
       </div>
@@ -1156,6 +1189,93 @@ export default function HowToPlayModal({ isOpen, onClose }) {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Daily Mini Content */}
+      {activeGame === 'mini' && (
+        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">The Basics</h3>
+            <p className="text-sm mb-2">
+              Daily Mini is a classic 5×5 mini crossword puzzle. Fill in the grid using the across and down clues.
+            </p>
+            <p className="text-sm">
+              A new puzzle is released daily. Perfect for a quick mental workout!
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">How to Play</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[120px]">Click a cell:</span>
+                <span>Select where to type your answer</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[120px]">Double-click:</span>
+                <span>Change direction between across and down</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[120px]">Type letters:</span>
+                <span>Fill in your answer - the cursor automatically advances</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="font-semibold min-w-[120px]">Use arrows:</span>
+                <span>Navigate between clues with the arrow buttons</span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-warning text-black border-hc-border'
+                : 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-500'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              Check & Reveal
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
+              Need help? Use the menu button to access check and reveal options:
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-black' : ''}`}>
+              <li>• <strong>Check Square/Word/Puzzle:</strong> Verify your answers</li>
+              <li>• <strong>Reveal Square/Word/Puzzle:</strong> Show the solution</li>
+              <li>• <strong>Auto-Check:</strong> Automatically check as you type</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Tips for Success</h3>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
+                <span>Start with clues you're confident about to get crossing letters</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
+                <span>Use crossing answers to help solve challenging clues</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
+                <span>Think about word length and letter patterns</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
+                <span>Your time is tracked - challenge yourself to improve!</span>
+              </li>
+            </ul>
+          </div>
+
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new mini crossword is released daily at midnight. Come back tomorrow!
+            </p>
           </div>
         </div>
       )}

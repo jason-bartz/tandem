@@ -41,49 +41,52 @@ async function setStorageItem(key, value) {
           valueSize: value.length,
         });
 
-        // If this is a stats key, try to recover by cleaning up old data
-        if (key.includes('tandemStats') || key.includes('tandem_stats')) {
-          try {
-            // Clear old non-critical data first
-            await cleanupOldProgressData();
+        // Try to recover by cleaning up old data
+        try {
+          // Clear old non-critical data first
+          await cleanupOldProgressData();
 
-            // Retry the save
-            localStorage.setItem(key, value);
-            logger.info('[storage.setStorageItem] Successfully saved after cleanup');
-            return;
-          } catch (retryError) {
-            logger.error('[storage.setStorageItem] Failed even after cleanup', retryError);
-            // Last resort: try to save minimal stats
-            if (key.includes('tandemStats') || key.includes('tandem_stats')) {
-              try {
-                const parsedValue = JSON.parse(value);
-                const minimalStats = {
-                  played: parsedValue.played || 0,
-                  wins: parsedValue.wins || 0,
-                  currentStreak: parsedValue.currentStreak || 0,
-                  bestStreak: parsedValue.bestStreak || 0,
-                  lastStreakDate: parsedValue.lastStreakDate || null,
-                  crypticPlayed: parsedValue.crypticPlayed || 0,
-                  crypticWins: parsedValue.crypticWins || 0,
-                  crypticCurrentStreak: parsedValue.crypticCurrentStreak || 0,
-                  crypticBestStreak: parsedValue.crypticBestStreak || 0,
-                  lastCrypticStreakDate: parsedValue.lastCrypticStreakDate || null,
-                };
-                localStorage.setItem(key, JSON.stringify(minimalStats));
-                logger.info('[storage.setStorageItem] Saved minimal stats as fallback');
-              } catch (minimalError) {
-                logger.error(
-                  '[storage.setStorageItem] Cannot save even minimal stats',
-                  minimalError
-                );
-                throw error; // Re-throw original error
-              }
-            } else {
-              throw error;
+          // Retry the save
+          localStorage.setItem(key, value);
+          logger.info('[storage.setStorageItem] Successfully saved after cleanup');
+          return;
+        } catch (retryError) {
+          logger.error('[storage.setStorageItem] Failed even after cleanup', retryError);
+
+          // Last resort for stats: try to save minimal stats
+          if (key.includes('tandemStats') || key.includes('tandem_stats')) {
+            try {
+              const parsedValue = JSON.parse(value);
+              const minimalStats = {
+                played: parsedValue.played || 0,
+                wins: parsedValue.wins || 0,
+                currentStreak: parsedValue.currentStreak || 0,
+                bestStreak: parsedValue.bestStreak || 0,
+                lastStreakDate: parsedValue.lastStreakDate || null,
+                crypticPlayed: parsedValue.crypticPlayed || 0,
+                crypticWins: parsedValue.crypticWins || 0,
+                crypticCurrentStreak: parsedValue.crypticCurrentStreak || 0,
+                crypticBestStreak: parsedValue.crypticBestStreak || 0,
+                lastCrypticStreakDate: parsedValue.lastCrypticStreakDate || null,
+              };
+              localStorage.setItem(key, JSON.stringify(minimalStats));
+              logger.info('[storage.setStorageItem] Saved minimal stats as fallback');
+              return;
+            } catch (minimalError) {
+              logger.error(
+                '[storage.setStorageItem] Cannot save even minimal stats',
+                minimalError
+              );
             }
           }
-        } else {
-          throw error;
+
+          // For progress data, just skip saving and log error
+          if (key.includes('tandem_progress_')) {
+            logger.warn('[storage.setStorageItem] Skipping progress save due to quota - data will not persist');
+            return;
+          }
+
+          throw error; // Re-throw original error for other types
         }
       } else {
         throw error;

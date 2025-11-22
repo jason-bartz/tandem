@@ -22,7 +22,7 @@ import { useState, useEffect } from 'react';
 import PaywallModal from '@/components/PaywallModal';
 import AvatarSelectionPane from '@/components/AvatarSelectionPane';
 import { Capacitor } from '@capacitor/core';
-import { Browser } from '@capacitor/browser';
+// import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -327,7 +327,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   </p>
 
                   {/* Action Buttons */}
-                  <div className="flex items-center gap-3 pt-1">
+                  <div className="flex items-center justify-center gap-3 pt-1">
                     <a
                       href="https://apps.apple.com/us/app/tandem-daily-word-puzzle/id6753114083"
                       target="_blank"
@@ -347,13 +347,13 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </a>
                     <button
                       onClick={handleAppBannerDismiss}
-                      className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] ${
+                      className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] whitespace-nowrap ${
                         highContrast
                           ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
-                      Maybe Later
+                      Skip
                     </button>
                   </div>
                 </div>
@@ -391,56 +391,57 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 ) : isSubscriptionActive ? (
                   <div className="space-y-3">
                     {/* Hard Mode Toggle - Only for Premium Users */}
-                    <div
-                      className={`rounded-2xl border-[3px] p-4 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] ${
-                        highContrast
-                          ? 'bg-hc-surface border-hc-border'
-                          : 'bg-gradient-to-br from-orange-50 to-red-50 dark:from-orange-900/20 dark:to-red-900/20 border-accent-orange dark:border-orange-700'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <img
-                              src={
-                                theme === 'dark'
-                                  ? '/icons/ui/hardmode-dark.png'
-                                  : '/icons/ui/hardmode.png'
-                              }
-                              alt="Hard Mode"
-                              className="w-5 h-5"
-                            />
-                            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                              Hard Mode
-                            </p>
-                          </div>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                            Affects Daily Tandem: 3-minute time limit • No hints
-                          </p>
-                        </div>
-                        <button
-                          onClick={handleHardModeToggle}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    <div className="flex flex-col items-center">
+                      <button
+                        onClick={handleHardModeToggle}
+                        className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                          highContrast
+                            ? hardModeEnabled
+                              ? 'bg-hc-primary'
+                              : 'bg-hc-surface'
+                            : hardModeEnabled
+                              ? 'bg-gradient-to-r from-red-500 to-orange-500'
+                              : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                        role="switch"
+                        aria-checked={hardModeEnabled}
+                      >
+                        <span
+                          className={`${
+                            hardModeEnabled ? 'translate-x-14' : 'translate-x-1'
+                          } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
                             highContrast
-                              ? hardModeEnabled
-                                ? 'bg-hc-primary border-2 border-hc-border'
-                                : 'bg-hc-surface border-2 border-hc-border'
+                              ? 'bg-hc-background'
                               : hardModeEnabled
-                                ? 'bg-red-500'
-                                : 'bg-gray-200 dark:bg-gray-600'
+                                ? 'bg-orange-600'
+                                : 'bg-white dark:bg-gray-600'
                           }`}
-                          role="switch"
-                          aria-checked={hardModeEnabled}
                         >
-                          <span
-                            className={`${
-                              hardModeEnabled ? 'translate-x-6' : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full ${
-                              highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                            } transition-transform`}
+                          <img
+                            src={
+                              theme === 'dark'
+                                ? '/icons/ui/hardmode-dark.png'
+                                : '/icons/ui/hardmode.png'
+                            }
+                            alt="Hard Mode"
+                            className="w-6 h-6"
                           />
-                        </button>
-                      </div>
+                        </span>
+                      </button>
+                      <p className={`text-sm font-medium mt-2 text-center ${
+                        highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-700 dark:text-gray-200'
+                      }`}>
+                        Hard Mode
+                      </p>
+                      <p className={`text-xs mt-1 text-center ${
+                        highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        3-min limit • No hints
+                      </p>
                     </div>
                   </div>
                 ) : (
@@ -465,34 +466,29 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     )}
 
                     {/* Hard Mode - Disabled for non-subscribers */}
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl border-[3px] border-gray-300 dark:border-gray-700 p-4 opacity-60">
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <img
-                              src={
-                                theme === 'dark'
-                                  ? '/icons/ui/hardmode-dark.png'
-                                  : '/icons/ui/hardmode.png'
-                              }
-                              alt="Hard Mode"
-                              className="w-5 h-5 opacity-50 flex-shrink-0"
-                            />
-                            <p className="text-sm font-semibold text-gray-500 dark:text-gray-500 flex-shrink-0">
-                              Hard Mode
-                            </p>
-                            <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">
-                              Tandem Unlimited
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                            Affects Daily Tandem: 3-minute time limit • No hints
-                          </p>
-                        </div>
-                        <div className="relative inline-flex h-6 w-11 items-center rounded-full bg-gray-200 dark:bg-gray-700 cursor-not-allowed flex-shrink-0">
-                          <span className="translate-x-1 inline-block h-4 w-4 transform rounded-full bg-gray-300 dark:bg-gray-600 transition-transform" />
-                        </div>
+                    <div className="flex flex-col items-center opacity-60 cursor-not-allowed">
+                      <div className="relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
+                        <span className="translate-x-1 inline-block h-11 w-11 transform rounded-full border-[3px] border-gray-400 dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] bg-white dark:bg-gray-600 flex items-center justify-center">
+                          <img
+                            src={
+                              theme === 'dark'
+                                ? '/icons/ui/hardmode-dark.png'
+                                : '/icons/ui/hardmode.png'
+                            }
+                            alt="Hard Mode"
+                            className="w-6 h-6 opacity-50"
+                          />
+                        </span>
                       </div>
+                      <p className="text-sm font-medium mt-2 text-center text-gray-500 dark:text-gray-500">
+                        Hard Mode
+                      </p>
+                      <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full mt-1">
+                        Tandem Unlimited
+                      </span>
+                      <p className="text-xs mt-1 text-center text-gray-400 dark:text-gray-500">
+                        3-min limit • No hints
+                      </p>
                     </div>
                   </div>
                 )}
@@ -535,40 +531,54 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   ) : (
                     <>
                       {/* Sync Toggle */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Sync with iCloud
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Keep your stats and progress synced across devices
-                          </p>
-                        </div>
+                      <div className="flex flex-col items-center">
                         <button
                           onClick={async () => {
                             await toggleSync(!syncStatus.enabled);
                             lightTap();
                           }}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
                             highContrast
                               ? syncStatus.enabled
-                                ? 'bg-hc-primary border-2 border-hc-border'
-                                : 'bg-hc-surface border-2 border-hc-border'
+                                ? 'bg-hc-primary'
+                                : 'bg-hc-surface'
                               : syncStatus.enabled
-                                ? 'bg-sky-500'
-                                : 'bg-gray-200 dark:bg-gray-600'
+                                ? 'bg-gradient-to-r from-sky-400 to-blue-500'
+                                : 'bg-gray-200 dark:bg-gray-700'
                           }`}
                           role="switch"
                           aria-checked={syncStatus.enabled}
                         >
                           <span
                             className={`${
-                              syncStatus.enabled ? 'translate-x-6' : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full ${
-                              highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                            } transition-transform`}
-                          />
+                              syncStatus.enabled ? 'translate-x-14' : 'translate-x-1'
+                            } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                              highContrast
+                                ? 'bg-hc-background'
+                                : syncStatus.enabled
+                                  ? 'bg-blue-600'
+                                  : 'bg-white dark:bg-gray-600'
+                            }`}
+                          >
+                            <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />
+                            </svg>
+                          </span>
                         </button>
+                        <p className={`text-sm font-medium mt-2 text-center ${
+                          highContrast
+                            ? 'text-hc-text'
+                            : 'text-gray-700 dark:text-gray-200'
+                        }`}>
+                          iCloud Sync
+                        </p>
+                        <p className={`text-xs mt-1 text-center px-4 ${
+                          highContrast
+                            ? 'text-hc-text'
+                            : 'text-gray-500 dark:text-gray-400'
+                        }`}>
+                          Syncs stats across devices
+                        </p>
                       </div>
 
                       {/* Last Sync Time & Provider */}
@@ -658,52 +668,62 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       </button>
                     </div>
                   ) : notificationSettings ? (
-                    <div className="space-y-4">
+                    <div className="flex flex-col items-center">
                       {/* Single Master Toggle - Following Apple HIG */}
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Daily Notifications
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400">
-                            Daily reminder to maintain your streak
-                          </p>
-                        </div>
-                        <button
-                          onClick={async () => {
-                            const newValue = !notificationSettings.notificationsEnabled;
-                            setNotificationSettings((prev) => ({
-                              ...prev,
-                              notificationsEnabled: newValue,
-                            }));
-                            await notificationService.updateSettings({
-                              notifications_enabled: newValue,
-                            });
-                            playHaptic('light');
-                          }}
-                          className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      <button
+                        onClick={async () => {
+                          const newValue = !notificationSettings.notificationsEnabled;
+                          setNotificationSettings((prev) => ({
+                            ...prev,
+                            notificationsEnabled: newValue,
+                          }));
+                          await notificationService.updateSettings({
+                            notifications_enabled: newValue,
+                          });
+                          playHaptic('light');
+                        }}
+                        className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                          highContrast
+                            ? notificationSettings.notificationsEnabled
+                              ? 'bg-hc-primary'
+                              : 'bg-hc-surface'
+                            : notificationSettings.notificationsEnabled
+                              ? 'bg-gradient-to-r from-amber-400 to-orange-500'
+                              : 'bg-gray-200 dark:bg-gray-700'
+                        }`}
+                        role="switch"
+                        aria-checked={notificationSettings.notificationsEnabled}
+                      >
+                        <span
+                          className={`${
+                            notificationSettings.notificationsEnabled ? 'translate-x-14' : 'translate-x-1'
+                          } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
                             highContrast
-                              ? notificationSettings.notificationsEnabled
-                                ? 'bg-hc-primary border-2 border-hc-border'
-                                : 'bg-hc-surface border-2 border-hc-border'
+                              ? 'bg-hc-background'
                               : notificationSettings.notificationsEnabled
-                                ? 'bg-sky-500'
-                                : 'bg-gray-200 dark:bg-gray-600'
+                                ? 'bg-orange-600'
+                                : 'bg-white dark:bg-gray-600'
                           }`}
-                          role="switch"
-                          aria-checked={notificationSettings.notificationsEnabled}
                         >
-                          <span
-                            className={`${
-                              notificationSettings.notificationsEnabled
-                                ? 'translate-x-6'
-                                : 'translate-x-1'
-                            } inline-block h-4 w-4 transform rounded-full ${
-                              highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                            } transition-transform`}
-                          />
-                        </button>
-                      </div>
+                          <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
+                          </svg>
+                        </span>
+                      </button>
+                      <p className={`text-sm font-medium mt-2 text-center ${
+                        highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-700 dark:text-gray-200'
+                      }`}>
+                        Notifications
+                      </p>
+                      <p className={`text-xs mt-1 text-center px-4 ${
+                        highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-500 dark:text-gray-400'
+                      }`}>
+                        Daily streak reminders
+                      </p>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center py-4">
@@ -746,37 +766,51 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                   <div className="border-t border-gray-200 dark:border-gray-700"></div>
 
                   {/* Leaderboards Toggle */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Upload Scores to Leaderboards
-                      </p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">
-                        Share your scores with the global community
-                      </p>
-                    </div>
+                  <div className="flex flex-col items-center">
                     <button
                       onClick={handleLeaderboardToggle}
-                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                      className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
                         highContrast
                           ? leaderboardsEnabled
-                            ? 'bg-hc-primary border-2 border-hc-border'
-                            : 'bg-hc-surface border-2 border-hc-border'
+                            ? 'bg-hc-primary'
+                            : 'bg-hc-surface'
                           : leaderboardsEnabled
-                            ? 'bg-sky-500'
-                            : 'bg-gray-200 dark:bg-gray-600'
+                            ? 'bg-gradient-to-r from-emerald-400 to-green-500'
+                            : 'bg-gray-200 dark:bg-gray-700'
                       }`}
                       role="switch"
                       aria-checked={leaderboardsEnabled}
                     >
                       <span
                         className={`${
-                          leaderboardsEnabled ? 'translate-x-6' : 'translate-x-1'
-                        } inline-block h-4 w-4 transform rounded-full ${
-                          highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                        } transition-transform`}
-                      />
+                          leaderboardsEnabled ? 'translate-x-14' : 'translate-x-1'
+                        } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                          highContrast
+                            ? 'bg-hc-background'
+                            : leaderboardsEnabled
+                              ? 'bg-green-600'
+                              : 'bg-white dark:bg-gray-600'
+                        }`}
+                      >
+                        <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
+                        </svg>
+                      </span>
                     </button>
+                    <p className={`text-sm font-medium mt-2 text-center ${
+                      highContrast
+                        ? 'text-hc-text'
+                        : 'text-gray-700 dark:text-gray-200'
+                    }`}>
+                      Leaderboards
+                    </p>
+                    <p className={`text-xs mt-1 text-center px-4 ${
+                      highContrast
+                        ? 'text-hc-text'
+                        : 'text-gray-500 dark:text-gray-400'
+                    }`}>
+                      Share scores globally
+                    </p>
                   </div>
                 </div>
               </div>
@@ -805,165 +839,185 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               </div>
 
               {/* Section Content */}
-              <div className="p-5 space-y-4">
+              <div className="p-5">
+                <div className="grid grid-cols-2 gap-4">
                 {/* Theme Toggle */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Appearance
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      {theme === 'dark' ? 'Dark mode' : 'Light mode'}
-                    </p>
-                  </div>
+                <div className="flex flex-col items-center">
                   <button
                     onClick={() => {
                       toggleTheme();
                       lightTap();
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
                       highContrast
                         ? theme === 'dark'
-                          ? 'bg-hc-primary border-2 border-hc-border'
-                          : 'bg-hc-surface border-2 border-hc-border'
+                          ? 'bg-hc-primary'
+                          : 'bg-hc-surface'
                         : theme === 'dark'
-                          ? 'bg-sky-500'
-                          : 'bg-gray-200 dark:bg-gray-600'
+                          ? 'bg-gradient-to-r from-indigo-500 to-purple-600'
+                          : 'bg-gradient-to-r from-amber-400 to-yellow-500'
                     }`}
                     role="switch"
                     aria-checked={theme === 'dark'}
                   >
                     <span
                       className={`${
-                        theme === 'dark' ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full ${
-                        highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                      } transition-transform`}
-                    />
+                        theme === 'dark' ? 'translate-x-14' : 'translate-x-1'
+                      } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                        highContrast
+                          ? 'bg-hc-background'
+                          : theme === 'dark'
+                            ? 'bg-purple-700'
+                            : 'bg-yellow-600'
+                      }`}
+                    >
+                      <img
+                        src={theme === 'dark' ? '/icons/ui/dark-mode.png' : '/icons/ui/light-mode.png'}
+                        alt={theme === 'dark' ? 'Dark mode' : 'Light mode'}
+                        className="w-6 h-6"
+                      />
+                    </span>
                   </button>
+                  <p className={`text-sm font-medium mt-2 text-center ${
+                    highContrast
+                      ? 'text-hc-text'
+                      : 'text-gray-700 dark:text-gray-200'
+                  }`}>
+                    Appearance
+                  </p>
                 </div>
 
                 {/* High Contrast Toggle */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Color Blind Friendly Mode
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      High contrast with patterns for accessibility
-                    </p>
-                  </div>
+                <div className="flex flex-col items-center">
                   <button
                     onClick={() => {
                       toggleHighContrast();
                       lightTap();
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
                       highContrast
-                        ? highContrast
-                          ? 'bg-hc-primary border-2 border-hc-border'
-                          : 'bg-hc-surface border-2 border-hc-border'
-                        : 'bg-gray-200 dark:bg-gray-600'
+                        ? 'bg-hc-primary border-hc-border'
+                        : 'bg-gradient-to-r from-green-400 to-teal-500 border-black dark:border-gray-600'
                     }`}
                     role="switch"
                     aria-checked={highContrast}
                   >
                     <span
                       className={`${
-                        highContrast ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full ${
-                        highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                      } transition-transform`}
-                    />
+                        highContrast ? 'translate-x-14' : 'translate-x-1'
+                      } inline-block h-11 w-11 transform rounded-full border-[3px] shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                        highContrast
+                          ? 'bg-hc-background border-hc-border'
+                          : 'bg-teal-600 border-black dark:border-gray-600'
+                      }`}
+                    >
+                      <img
+                        src="/icons/ui/eye.png"
+                        alt="High Contrast"
+                        className="w-6 h-6"
+                      />
+                    </span>
                   </button>
+                  <p className={`text-sm font-medium mt-2 text-center ${
+                    highContrast
+                      ? 'text-hc-text'
+                      : 'text-gray-700 dark:text-gray-200'
+                  }`}>
+                    High Contrast
+                  </p>
                 </div>
 
                 {/* Reduce Motion Toggle */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Reduce Motion
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Minimizes animations and motion effects
-                    </p>
-                  </div>
+                <div className="flex flex-col items-center">
                   <button
                     onClick={() => {
                       toggleReduceMotion();
                       lightTap();
                     }}
-                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
                       highContrast
                         ? reduceMotion
-                          ? 'bg-hc-primary border-2 border-hc-border'
-                          : 'bg-hc-surface border-2 border-hc-border'
+                          ? 'bg-hc-primary'
+                          : 'bg-hc-surface'
                         : reduceMotion
-                          ? 'bg-sky-500'
-                          : 'bg-gray-200 dark:bg-gray-600'
+                          ? 'bg-gradient-to-r from-purple-400 to-pink-500'
+                          : 'bg-gray-200 dark:bg-gray-700'
                     }`}
                     role="switch"
                     aria-checked={reduceMotion}
                   >
                     <span
                       className={`${
-                        reduceMotion ? 'translate-x-6' : 'translate-x-1'
-                      } inline-block h-4 w-4 transform rounded-full ${
-                        highContrast ? 'bg-hc-background border border-hc-border' : 'bg-white'
-                      } transition-transform`}
-                    />
+                        reduceMotion ? 'translate-x-14' : 'translate-x-1'
+                      } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                        highContrast
+                          ? 'bg-hc-background'
+                          : reduceMotion
+                            ? 'bg-pink-600'
+                            : 'bg-white dark:bg-gray-600'
+                      }`}
+                    >
+                      <img
+                        src="/icons/ui/motion.png"
+                        alt="Motion"
+                        className="w-6 h-6"
+                      />
+                    </span>
                   </button>
+                  <p className={`text-sm font-medium mt-2 text-center ${
+                    highContrast
+                      ? 'text-hc-text'
+                      : 'text-gray-700 dark:text-gray-200'
+                  }`}>
+                    Motion
+                  </p>
+                </div>
                 </div>
 
                 {/* Keyboard Layout Selection */}
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm font-medium text-gray-700 dark:text-gray-200">
-                      Keyboard Layout
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">
-                      Choose your preferred keyboard layout
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
+                <div className="flex flex-col mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                    Keyboard Layout
+                  </p>
+                  <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTY')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
                         highContrast
                           ? keyboardLayout === 'QWERTY'
-                            ? 'bg-hc-primary text-white border-2 border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTY'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTY
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTZ')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
                         highContrast
                           ? keyboardLayout === 'QWERTZ'
-                            ? 'bg-hc-primary text-white border-2 border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTZ'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTZ
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('AZERTY')}
-                      className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all ${
+                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
                         highContrast
                           ? keyboardLayout === 'AZERTY'
-                            ? 'bg-hc-primary text-white border-2 border-hc-border'
-                            : 'bg-hc-surface text-hc-text border-2 border-hc-border'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'AZERTY'
-                            ? 'bg-sky-500 text-white'
-                            : 'bg-gray-200 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       AZERTY
@@ -974,114 +1028,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             </div>
           </div>
 
-          {/* Copyright and Links */}
-          <div className="mb-4 text-center">
-            <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
-              © 2025 Good Vibes Games
-            </p>
-
-            {/* Text Links */}
-            <div className="flex items-center justify-center gap-3 text-xs mb-3">
-              <button
-                className="text-sky-600 dark:text-sky-400 hover:underline"
-                onClick={async () => {
-                  lightTap();
-                  if (Capacitor.isNativePlatform()) {
-                    await Browser.open({ url: 'https://tandemdaily.com/support' });
-                  } else {
-                    window.open('/support', '_blank');
-                  }
-                }}
-              >
-                Support
-              </button>
-              <span className="text-gray-400 dark:text-gray-600">|</span>
-              <button
-                className="text-sky-600 dark:text-sky-400 hover:underline"
-                onClick={async () => {
-                  lightTap();
-                  if (Capacitor.isNativePlatform()) {
-                    await Browser.open({ url: 'https://tandemdaily.com/about' });
-                  } else {
-                    window.open('/about', '_blank');
-                  }
-                }}
-              >
-                About
-              </button>
-              <span className="text-gray-400 dark:text-gray-600">|</span>
-              <button
-                className="text-sky-600 dark:text-sky-400 hover:underline"
-                onClick={async () => {
-                  lightTap();
-                  if (Capacitor.isNativePlatform()) {
-                    await Browser.open({ url: 'https://tandemdaily.com/privacypolicy' });
-                  } else {
-                    window.open('/privacypolicy', '_blank');
-                  }
-                }}
-              >
-                Privacy Policy
-              </button>
-            </div>
-
-            {/* Social Media Section */}
-            <div>
-              <p className="text-xs text-gray-600 dark:text-gray-400 text-center mb-2">
-                Connect with us and watch daily puzzle breakdown videos
-              </p>
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  onClick={async () => {
-                    lightTap();
-                    if (Capacitor.isNativePlatform()) {
-                      await Browser.open({ url: 'https://www.tiktok.com/@tandem.daily' });
-                    } else {
-                      window.open('https://www.tiktok.com/@tandem.daily', '_blank');
-                    }
-                  }}
-                  className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  aria-label="Follow us on TikTok"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1-.1z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={async () => {
-                    lightTap();
-                    if (Capacitor.isNativePlatform()) {
-                      await Browser.open({ url: 'https://instagram.com/tandem.daily' });
-                    } else {
-                      window.open('https://instagram.com/tandem.daily', '_blank');
-                    }
-                  }}
-                  className="text-gray-600 dark:text-gray-400 hover:text-pink-500 dark:hover:text-pink-400 transition-colors"
-                  aria-label="Follow us on Instagram"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-                  </svg>
-                </button>
-                <button
-                  onClick={async () => {
-                    lightTap();
-                    if (Capacitor.isNativePlatform()) {
-                      await Browser.open({ url: 'https://twitter.com/tandem_daily' });
-                    } else {
-                      window.open('https://twitter.com/tandem_daily', '_blank');
-                    }
-                  }}
-                  className="text-gray-600 dark:text-gray-400 hover:text-sky-500 dark:hover:text-sky-400 transition-colors"
-                  aria-label="Follow us on X (Twitter)"
-                >
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
         </div>
       </LeftSidePanel>
 

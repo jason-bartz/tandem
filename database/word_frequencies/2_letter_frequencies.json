@@ -1,0 +1,414 @@
+[
+  {
+    "word": "IN",
+    "frequency": 100
+  },
+  {
+    "word": "HE",
+    "frequency": 98
+  },
+  {
+    "word": "AT",
+    "frequency": 98
+  },
+  {
+    "word": "TO",
+    "frequency": 98
+  },
+  {
+    "word": "IT",
+    "frequency": 98
+  },
+  {
+    "word": "AN",
+    "frequency": 98
+  },
+  {
+    "word": "AS",
+    "frequency": 98
+  },
+  {
+    "word": "ON",
+    "frequency": 98
+  },
+  {
+    "word": "OR",
+    "frequency": 98
+  },
+  {
+    "word": "IS",
+    "frequency": 98
+  },
+  {
+    "word": "OF",
+    "frequency": 97
+  },
+  {
+    "word": "ME",
+    "frequency": 96
+  },
+  {
+    "word": "WE",
+    "frequency": 96
+  },
+  {
+    "word": "NO",
+    "frequency": 96
+  },
+  {
+    "word": "BE",
+    "frequency": 96
+  },
+  {
+    "word": "SO",
+    "frequency": 96
+  },
+  {
+    "word": "DO",
+    "frequency": 96
+  },
+  {
+    "word": "AM",
+    "frequency": 96
+  },
+  {
+    "word": "GO",
+    "frequency": 95
+  },
+  {
+    "word": "IF",
+    "frequency": 95
+  },
+  {
+    "word": "US",
+    "frequency": 95
+  },
+  {
+    "word": "UP",
+    "frequency": 95
+  },
+  {
+    "word": "MY",
+    "frequency": 87
+  },
+  {
+    "word": "BY",
+    "frequency": 87
+  },
+  {
+    "word": "ER",
+    "frequency": 15
+  },
+  {
+    "word": "ED",
+    "frequency": 15
+  },
+  {
+    "word": "RE",
+    "frequency": 14
+  },
+  {
+    "word": "EN",
+    "frequency": 12
+  },
+  {
+    "word": "ES",
+    "frequency": 12
+  },
+  {
+    "word": "TI",
+    "frequency": 11
+  },
+  {
+    "word": "UN",
+    "frequency": 11
+  },
+  {
+    "word": "HA",
+    "frequency": 11
+  },
+  {
+    "word": "AR",
+    "frequency": 11
+  },
+  {
+    "word": "AL",
+    "frequency": 11
+  },
+  {
+    "word": "ET",
+    "frequency": 11
+  },
+  {
+    "word": "NE",
+    "frequency": 10
+  },
+  {
+    "word": "EH",
+    "frequency": 10
+  },
+  {
+    "word": "TA",
+    "frequency": 10
+  },
+  {
+    "word": "DE",
+    "frequency": 10
+  },
+  {
+    "word": "EL",
+    "frequency": 10
+  },
+  {
+    "word": "EM",
+    "frequency": 10
+  },
+  {
+    "word": "EF",
+    "frequency": 9
+  },
+  {
+    "word": "NA",
+    "frequency": 9
+  },
+  {
+    "word": "YE",
+    "frequency": 9
+  },
+  {
+    "word": "PE",
+    "frequency": 9
+  },
+  {
+    "word": "AH",
+    "frequency": 9
+  },
+  {
+    "word": "OS",
+    "frequency": 9
+  },
+  {
+    "word": "HO",
+    "frequency": 9
+  },
+  {
+    "word": "OH",
+    "frequency": 9
+  },
+  {
+    "word": "SI",
+    "frequency": 9
+  },
+  {
+    "word": "HI",
+    "frequency": 9
+  },
+  {
+    "word": "AD",
+    "frequency": 9
+  },
+  {
+    "word": "DA",
+    "frequency": 9
+  },
+  {
+    "word": "LA",
+    "frequency": 9
+  },
+  {
+    "word": "UT",
+    "frequency": 9
+  },
+  {
+    "word": "OD",
+    "frequency": 9
+  },
+  {
+    "word": "LO",
+    "frequency": 9
+  },
+  {
+    "word": "ID",
+    "frequency": 9
+  },
+  {
+    "word": "LI",
+    "frequency": 9
+  },
+  {
+    "word": "MA",
+    "frequency": 9
+  },
+  {
+    "word": "AW",
+    "frequency": 9
+  },
+  {
+    "word": "FA",
+    "frequency": 9
+  },
+  {
+    "word": "AG",
+    "frequency": 9
+  },
+  {
+    "word": "AY",
+    "frequency": 9
+  },
+  {
+    "word": "YA",
+    "frequency": 9
+  },
+  {
+    "word": "PA",
+    "frequency": 9
+  },
+  {
+    "word": "MO",
+    "frequency": 9
+  },
+  {
+    "word": "OM",
+    "frequency": 9
+  },
+  {
+    "word": "OW",
+    "frequency": 9
+  },
+  {
+    "word": "WO",
+    "frequency": 9
+  },
+  {
+    "word": "NU",
+    "frequency": 9
+  },
+  {
+    "word": "OY",
+    "frequency": 9
+  },
+  {
+    "word": "YO",
+    "frequency": 9
+  },
+  {
+    "word": "AB",
+    "frequency": 9
+  },
+  {
+    "word": "BA",
+    "frequency": 9
+  },
+  {
+    "word": "OP",
+    "frequency": 9
+  },
+  {
+    "word": "PO",
+    "frequency": 9
+  },
+  {
+    "word": "MI",
+    "frequency": 9
+  },
+  {
+    "word": "KA",
+    "frequency": 9
+  },
+  {
+    "word": "PI",
+    "frequency": 9
+  },
+  {
+    "word": "UH",
+    "frequency": 9
+  },
+  {
+    "word": "BO",
+    "frequency": 9
+  },
+  {
+    "word": "OK",
+    "frequency": 8
+  },
+  {
+    "word": "BI",
+    "frequency": 8
+  },
+  {
+    "word": "KI",
+    "frequency": 8
+  },
+  {
+    "word": "MU",
+    "frequency": 8
+  },
+  {
+    "word": "UM",
+    "frequency": 8
+  },
+  {
+    "word": "EX",
+    "frequency": 6
+  },
+  {
+    "word": "JO",
+    "frequency": 6
+  },
+  {
+    "word": "AX",
+    "frequency": 5
+  },
+  {
+    "word": "ZA",
+    "frequency": 5
+  },
+  {
+    "word": "OX",
+    "frequency": 5
+  },
+  {
+    "word": "XI",
+    "frequency": 5
+  },
+  {
+    "word": "XU",
+    "frequency": 4
+  },
+  {
+    "word": "AE",
+    "frequency": 3
+  },
+  {
+    "word": "OE",
+    "frequency": 2
+  },
+  {
+    "word": "AA",
+    "frequency": 2
+  },
+  {
+    "word": "AI",
+    "frequency": 2
+  },
+  {
+    "word": "OI",
+    "frequency": 2
+  },
+  {
+    "word": "SH",
+    "frequency": 1
+  },
+  {
+    "word": "HM",
+    "frequency": 1
+  },
+  {
+    "word": "QI",
+    "frequency": 0
+  },
+  {
+    "word": "MM",
+    "frequency": 0
+  }
+]
