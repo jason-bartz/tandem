@@ -14,15 +14,16 @@ import subscriptionService from '@/services/subscriptionService';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedCrypticPuzzles } from '@/lib/crypticStorage';
+import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 
 /**
  * UnifiedArchiveCalendar Component
  *
- * Unified calendar-based puzzle archive interface with tabs for both Tandem and Cryptic puzzles.
+ * Unified calendar-based puzzle archive interface with tabs for Tandem, Cryptic, and Mini puzzles.
  * Shows month view with color-coded status dots for each puzzle.
  *
  * Features:
- * - Tabs to switch between Tandem (blue) and Cryptic (purple) archives
+ * - Tabs to switch between Tandem (blue), Cryptic (purple), and Mini (yellow) archives
  * - Full month visible without scrolling
  * - Color-coded status indicators (green/yellow/red/grey dots)
  * - Month/year navigation with iOS-style picker
@@ -41,7 +42,7 @@ import { getCompletedCrypticPuzzles } from '@/lib/crypticStorage';
  * @param {boolean} props.isOpen - Whether modal is visible
  * @param {Function} props.onClose - Close handler
  * @param {Function} props.onSelectPuzzle - Puzzle selection handler for Tandem (puzzleNumber)
- * @param {string} props.defaultTab - Default tab to show ('tandem' or 'cryptic')
+ * @param {string} props.defaultTab - Default tab to show ('tandem', 'cryptic', or 'mini')
  */
 export default function UnifiedArchiveCalendar({
   isOpen,
@@ -60,6 +61,7 @@ export default function UnifiedArchiveCalendar({
   const [puzzleData, setPuzzleData] = useState({});
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
   const [completedCrypticPuzzles, setCompletedCrypticPuzzles] = useState(new Set());
+  const [completedMiniPuzzles, setCompletedMiniPuzzles] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef(null);
 
@@ -89,11 +91,29 @@ export default function UnifiedArchiveCalendar({
   const firstCrypticPuzzleMonth = 10;
   const firstCrypticPuzzleYear = 2025;
 
+  const firstMiniPuzzleDate = new Date(2025, 10, 21); // November 21, 2025
+  const firstMiniPuzzleMonth = 10;
+  const firstMiniPuzzleYear = 2025;
+
   // Current first puzzle date based on active tab
-  const firstPuzzleDate = activeTab === 'tandem' ? firstTandemPuzzleDate : firstCrypticPuzzleDate;
+  const firstPuzzleDate =
+    activeTab === 'tandem'
+      ? firstTandemPuzzleDate
+      : activeTab === 'cryptic'
+        ? firstCrypticPuzzleDate
+        : firstMiniPuzzleDate;
   const firstPuzzleMonth =
-    activeTab === 'tandem' ? firstTandemPuzzleMonth : firstCrypticPuzzleMonth;
-  const firstPuzzleYear = activeTab === 'tandem' ? firstTandemPuzzleYear : firstCrypticPuzzleYear;
+    activeTab === 'tandem'
+      ? firstTandemPuzzleMonth
+      : activeTab === 'cryptic'
+        ? firstCrypticPuzzleMonth
+        : firstMiniPuzzleMonth;
+  const firstPuzzleYear =
+    activeTab === 'tandem'
+      ? firstTandemPuzzleYear
+      : activeTab === 'cryptic'
+        ? firstCrypticPuzzleYear
+        : firstMiniPuzzleYear;
 
   // Get today's date in local timezone
   const today = new Date();
@@ -221,6 +241,52 @@ export default function UnifiedArchiveCalendar({
   }, []);
 
   /**
+   * Load puzzles for the current month - Mini puzzles
+   */
+  const loadMiniMonthData = useCallback(async (month, year) => {
+    try {
+      const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+      // Load puzzles for this month using public API
+      const puzzlesResponse = await fetch(`/api/mini/puzzle?startDate=${startDate}&endDate=${endDate}`, {
+        signal: abortControllerRef.current?.signal,
+        credentials: 'include',
+      });
+
+      // Load completed puzzles from local storage
+      const completed = await getCompletedMiniPuzzles();
+      const completedSet = new Set(completed);
+      setCompletedMiniPuzzles(completedSet);
+
+      const monthData = {};
+
+      if (puzzlesResponse.ok) {
+        const puzzlesData = await puzzlesResponse.json();
+        if (puzzlesData.success && puzzlesData.puzzles) {
+          puzzlesData.puzzles.forEach((puzzle) => {
+            const puzzleDate = new Date(puzzle.date + 'T00:00:00'); // Parse in local timezone
+            if (puzzleDate.getMonth() === month && puzzleDate.getFullYear() === year) {
+              const day = puzzleDate.getDate();
+              monthData[day] = {
+                id: puzzle.id,
+                date: puzzle.date,
+              };
+            }
+          });
+        }
+      }
+
+      return { monthData, accessMap: {} };
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('[UnifiedArchiveCalendar] Failed to load Mini month data:', error);
+      }
+      return { monthData: {}, accessMap: {} };
+    }
+  }, []);
+
+  /**
    * Load puzzles for the current month based on active tab
    */
   const loadMonthData = useCallback(
@@ -237,8 +303,10 @@ export default function UnifiedArchiveCalendar({
         let result;
         if (activeTab === 'tandem') {
           result = await loadTandemMonthData(month, year);
-        } else {
+        } else if (activeTab === 'cryptic') {
           result = await loadCrypticMonthData(month, year);
+        } else {
+          result = await loadMiniMonthData(month, year);
         }
 
         setPuzzleData(result.monthData);
@@ -247,7 +315,7 @@ export default function UnifiedArchiveCalendar({
         setIsLoading(false);
       }
     },
-    [activeTab, loadTandemMonthData, loadCrypticMonthData]
+    [activeTab, loadTandemMonthData, loadCrypticMonthData, loadMiniMonthData]
   );
 
   // Load data when month/year changes, modal opens, or tab changes
@@ -340,7 +408,7 @@ export default function UnifiedArchiveCalendar({
 
       // Load puzzle - pass date for proper admire mode detection
       onSelectPuzzle(puzzle.date);
-    } else {
+    } else if (activeTab === 'cryptic') {
       // Cryptic - only require subscription for archive puzzles (not today's puzzle)
       const isArchivePuzzle = !isToday;
       if (isArchivePuzzle && !hasSubscription) {
@@ -351,6 +419,17 @@ export default function UnifiedArchiveCalendar({
       // Navigate to the cryptic game with the selected date
       onClose?.();
       router.push(`/dailycryptic?date=${puzzle.date}`);
+    } else {
+      // Mini - only require subscription for archive puzzles (not today's puzzle)
+      const isArchivePuzzle = !isToday;
+      if (isArchivePuzzle && !hasSubscription) {
+        setShowPaywall(true);
+        return;
+      }
+
+      // Navigate to the mini game with the selected date
+      onClose?.();
+      router.push(`/dailymini?date=${puzzle.date}`);
     }
   };
 
@@ -401,10 +480,25 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
         shouldBeLocked = puzzleAccessMap[day] === true;
-      } else {
+      } else if (activeTab === 'cryptic') {
         // Cryptic
         const dateStr = puzzle?.date;
         const isCompleted = dateStr ? completedCrypticPuzzles.has(dateStr) : false;
+
+        if (puzzle && isCompleted) {
+          status = 'completed';
+        } else if (puzzle && !isFutureDate) {
+          status = 'not_played';
+        } else if (!isPastFirstPuzzle || isFutureDate) {
+          status = 'no_puzzle';
+        }
+
+        const isArchivePuzzle = puzzle && !isToday;
+        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+      } else {
+        // Mini
+        const dateStr = puzzle?.date;
+        const isCompleted = dateStr ? completedMiniPuzzles.has(dateStr) : false;
 
         if (puzzle && isCompleted) {
           status = 'completed';
@@ -447,11 +541,23 @@ export default function UnifiedArchiveCalendar({
   const title = (
     <div className="flex items-center gap-2">
       <img
-        src={activeTab === 'tandem' ? '/icons/ui/tandem.png' : '/icons/ui/cryptic.png'}
-        alt={activeTab === 'tandem' ? 'Tandem' : 'Cryptic'}
+        src={
+          activeTab === 'tandem'
+            ? '/icons/ui/tandem.png'
+            : activeTab === 'cryptic'
+              ? '/icons/ui/cryptic.png'
+              : '/icons/ui/mini.png'
+        }
+        alt={activeTab === 'tandem' ? 'Tandem' : activeTab === 'cryptic' ? 'Cryptic' : 'Mini'}
         className="w-6 h-6"
       />
-      <span>{activeTab === 'tandem' ? 'Tandem Puzzle Archive' : 'Cryptic Puzzle Archive'}</span>
+      <span>
+        {activeTab === 'tandem'
+          ? 'Tandem Puzzle Archive'
+          : activeTab === 'cryptic'
+            ? 'Cryptic Puzzle Archive'
+            : 'Mini Puzzle Archive'}
+      </span>
     </div>
   );
 
@@ -466,7 +572,9 @@ export default function UnifiedArchiveCalendar({
         headerClassName={
           activeTab === 'tandem'
             ? 'bg-accent-blue/30 dark:bg-accent-blue/30'
-            : 'bg-accent-purple/30 dark:bg-accent-purple/30'
+            : activeTab === 'cryptic'
+              ? 'bg-accent-purple/30 dark:bg-accent-purple/30'
+              : 'bg-accent-yellow/30 dark:bg-accent-yellow/30'
         }
         footer={
           /* Tab Buttons */
@@ -528,6 +636,35 @@ export default function UnifiedArchiveCalendar({
             >
               <img src="/icons/ui/cryptic.png" alt="" className="w-5 h-5" />
               Cryptic
+            </button>
+            <button
+              onClick={() => setActiveTab('mini')}
+              className={`
+                flex-1 py-3 px-4
+                rounded-2xl
+                border-[3px]
+                font-semibold
+                transition-all
+                flex items-center justify-center gap-2
+                ${
+                  activeTab === 'mini'
+                    ? highContrast
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : highContrast
+                      ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 hover:bg-accent-yellow/90 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }
+              `}
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+              aria-label="Mini Archive"
+              aria-pressed={activeTab === 'mini'}
+            >
+              <img src="/icons/ui/mini.png" alt="" className="w-5 h-5" />
+              Mini
             </button>
           </div>
         }

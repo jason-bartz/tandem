@@ -15,7 +15,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 
 export default function Support() {
   useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'cryptic'
+  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'cryptic', or 'mini'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -603,6 +603,311 @@ export default function Support() {
     },
   ];
 
+  // Daily Mini sections
+  const miniSections = [
+    {
+      id: 'mini-intro',
+      title: 'Introduction to Daily Mini',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">What is Daily Mini?</h4>
+            <p className="text-sm mb-3">
+              Daily Mini is a quick 5×5 crossword puzzle designed to be solved in just a few
+              minutes. It's perfect for a quick brain teaser during your coffee break!
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How to Play</h4>
+            <ol className="list-decimal list-inside text-sm space-y-1">
+              <li>
+                <strong>Select a cell</strong> - Tap any white square to begin typing
+              </li>
+              <li>
+                <strong>Switch directions</strong> - Tap the same cell again to toggle between
+                Across and Down
+              </li>
+              <li>
+                <strong>Read the clue</strong> - The current clue appears in the bar above the
+                keyboard
+              </li>
+              <li>
+                <strong>Type your answer</strong> - Use the on-screen keyboard or your physical
+                keyboard
+              </li>
+              <li>
+                <strong>Navigate with arrows</strong> - Use arrow keys or swipe to move between
+                cells
+              </li>
+              <li>
+                <strong>Check your work</strong> - Use the check feature to verify squares, words,
+                or the whole puzzle
+              </li>
+              <li>
+                <strong>Complete the puzzle</strong> - Fill in all squares correctly to finish!
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Game Features</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Daily Puzzles</strong>: One new 5×5 crossword every day at midnight
+              </li>
+              <li>
+                <strong>Timer</strong>: Track your solving time (starts when you begin playing)
+              </li>
+              <li>
+                <strong>Check & Reveal</strong>: Verify your answers or get help when stuck
+              </li>
+              <li>
+                <strong>Auto-Check</strong>: Automatically highlight incorrect letters as you type
+              </li>
+              <li>
+                <strong>Stats Tracking</strong>: Monitor your average time, streaks, and perfect
+                solves
+              </li>
+              <li>
+                <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
+              </li>
+              <li>
+                <strong>Dark Mode</strong>: Comfortable solving in any lighting
+              </li>
+              <li>
+                <strong>Keyboard Support</strong>: Full physical keyboard shortcuts for desktop
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'mini-features',
+      title: 'Check & Reveal Features',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Check Options</h4>
+            <p className="text-sm mb-3">
+              Use the list icon on the keyboard to access check and reveal options:
+            </p>
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+                <p className="font-semibold mb-1">Check Square</p>
+                <p>
+                  Verify if the currently selected cell is correct. Incorrect letters will be
+                  cleared.
+                </p>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+                <p className="font-semibold mb-1">Check Word</p>
+                <p>
+                  Verify all letters in the current word (Across or Down). Incorrect letters will
+                  be cleared.
+                </p>
+              </div>
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
+                <p className="font-semibold mb-1">Check Puzzle</p>
+                <p>
+                  Verify the entire puzzle. All incorrect letters will be cleared, and correct
+                  ones will turn green.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Reveal Options</h4>
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
+                <p className="font-semibold mb-1">Reveal Square</p>
+                <p>Show the correct letter for the currently selected cell.</p>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
+                <p className="font-semibold mb-1">Reveal Word</p>
+                <p>Show all correct letters for the current word (Across or Down).</p>
+              </div>
+              <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
+                <p className="font-semibold mb-1">Reveal Puzzle</p>
+                <p>Show the complete solution for the entire puzzle.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Auto-Check Mode</h4>
+            <p className="text-sm">
+              Enable Auto-Check in settings to automatically highlight incorrect letters as you
+              type. This provides immediate feedback and helps you catch mistakes early.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'mini-faq',
+      title: 'Frequently Asked Questions',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-1">Access & Subscription</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Q: Do I need an account to play Daily Mini?</p>
+                <p>
+                  A: Yes! Daily Mini requires a free account to play. You can sign in with Apple or
+                  create an account with email.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Is Daily Mini free?</p>
+                <p>
+                  A: Yes! Today's puzzle and the last 3 days are always free with a free account.
+                  Tandem Unlimited subscriptions unlock the entire archive.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: When do new puzzles become available?</p>
+                <p>A: A new puzzle is released daily at midnight in your local timezone.</p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Can I play previous puzzles?</p>
+                <p>
+                  A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
+                  a Tandem Unlimited subscription.
+                </p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-1">Gameplay</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Q: Is there a time limit?</p>
+                <p>
+                  A: No! The timer tracks your solving time, but you can take as long as you need
+                  to complete the puzzle.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: How do I switch between Across and Down?</p>
+                <p>
+                  A: Tap the same cell again to toggle direction, or use arrow keys to move in
+                  different directions.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What counts as a perfect solve?</p>
+                <p>
+                  A: A perfect solve means completing the puzzle without using any checks or
+                  reveals. Your stats track perfect solves separately.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Can I pause the timer?</p>
+                <p>
+                  A: The timer pauses automatically if you navigate away from the game or switch
+                  apps. It resumes when you return.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'mini-stats',
+      title: 'Statistics & Streaks',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Tracked Statistics</h4>
+            <p className="text-sm mb-3">Daily Mini tracks your performance with these metrics:</p>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Total Completed</strong>: Number of puzzles you've finished
+              </li>
+              <li>
+                <strong>Current Streak</strong>: Consecutive days with completed puzzles
+              </li>
+              <li>
+                <strong>Longest Streak</strong>: Your best streak ever
+              </li>
+              <li>
+                <strong>Average Time</strong>: Your mean solving time across all puzzles
+              </li>
+              <li>
+                <strong>Best Time</strong>: Your fastest solve
+              </li>
+              <li>
+                <strong>Perfect Solves</strong>: Puzzles completed without checks or reveals
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How Streaks Work</h4>
+            <div className="space-y-2 text-sm">
+              <p>
+                <strong>Building a Streak</strong>: Complete the daily puzzle each day to maintain
+                your streak. You must complete the puzzle on the same calendar day it's released
+                (in your local timezone).
+              </p>
+              <p>
+                <strong>Breaking a Streak</strong>: Missing a day will reset your current streak to
+                zero, but your longest streak record is preserved.
+              </p>
+              <p>
+                <strong>Archive Puzzles</strong>: Playing older puzzles from the archive does not
+                count toward your daily streak.
+              </p>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'mini-troubleshooting',
+      title: 'Troubleshooting',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Common Issues and Solutions</h4>
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">Problem: Keyboard doesn't appear on mobile</p>
+                <p className="italic">Solution: Tap directly on a cell in the crossword grid.</p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Can't switch between Across and Down</p>
+                <p className="italic">
+                  Solution: Tap the same cell again to toggle direction, or use arrow keys.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Timer isn't starting</p>
+                <p className="italic">
+                  Solution: Make sure you tap the "Start" button on the start screen before the
+                  timer begins.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Stats not updating</p>
+                <p className="italic">
+                  Solution: Ensure you're signed in. Stats are only saved for authenticated users.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Can't access older puzzles</p>
+                <p className="italic">
+                  Solution: Puzzles older than 4 days require a Tandem Unlimited subscription.
+                  Check your subscription status in Settings.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   // Shared sections (platforms, account, contact)
   const sharedSections = [
     {
@@ -760,7 +1065,9 @@ export default function Support() {
   const currentSections =
     activeGame === 'tandem'
       ? [...tandemSections, ...sharedSections]
-      : [...crypticSections, ...sharedSections];
+      : activeGame === 'cryptic'
+        ? [...crypticSections, ...sharedSections]
+        : [...miniSections, ...sharedSections];
 
   // Simulate initial loading
   useEffect(() => {
@@ -815,27 +1122,27 @@ export default function Support() {
 
                   {/* Game Toggle */}
                   <div className="p-6 pb-4">
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => {
                           setActiveGame('tandem');
                           setActiveSection(null);
                         }}
-                        className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'tandem'
                             ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
                           <Image
                             src={tandemIcon}
                             alt="Daily Tandem"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
                           />
-                          <span>Daily Tandem</span>
+                          <span className="hidden sm:inline">Tandem</span>
                         </div>
                       </button>
                       <button
@@ -843,21 +1150,43 @@ export default function Support() {
                           setActiveGame('cryptic');
                           setActiveSection(null);
                         }}
-                        className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'cryptic'
                             ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-2">
+                        <div className="flex items-center justify-center gap-1.5">
                           <Image
                             src="/icons/ui/cryptic.png"
                             alt="Daily Cryptic"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6 rounded-lg"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 rounded-lg"
                           />
-                          <span>Daily Cryptic</span>
+                          <span className="hidden sm:inline">Cryptic</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveGame('mini');
+                          setActiveSection(null);
+                        }}
+                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          activeGame === 'mini'
+                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Image
+                            src="/icons/ui/mini.png"
+                            alt="Daily Mini"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5 rounded-lg"
+                          />
+                          <span className="hidden sm:inline">Mini</span>
                         </div>
                       </button>
                     </div>

@@ -7,6 +7,8 @@ import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
 import CrypticPuzzleCalendar from '@/components/admin/cryptic/CrypticPuzzleCalendar';
 import CrypticPuzzleEditor from '@/components/admin/cryptic/CrypticPuzzleEditor';
+import MiniPuzzleCalendar from '@/components/admin/mini/MiniPuzzleCalendar';
+import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import authService from '@/services/auth.service';
 
@@ -27,6 +29,13 @@ export default function AdminDashboard() {
   const [editingCrypticPuzzle, setEditingCrypticPuzzle] = useState(null);
   const [showCrypticEditor, setShowCrypticEditor] = useState(false);
 
+  // Mini puzzle state
+  const [miniPuzzles, setMiniPuzzles] = useState([]);
+  const [miniLoading, setMiniLoading] = useState(false);
+  const [selectedMiniDate, setSelectedMiniDate] = useState(null);
+  const [editingMiniPuzzle, setEditingMiniPuzzle] = useState(null);
+  const [showMiniEditor, setShowMiniEditor] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -35,6 +44,13 @@ export default function AdminDashboard() {
   useEffect(() => {
     if (activeTab === 'cryptic' && mounted) {
       loadCrypticPuzzles();
+    }
+  }, [activeTab, mounted, refreshKey]);
+
+  // Load mini puzzles when mini tab is active
+  useEffect(() => {
+    if (activeTab === 'mini' && mounted) {
+      loadMiniPuzzles();
     }
   }, [activeTab, mounted, refreshKey]);
 
@@ -117,6 +133,86 @@ export default function AdminDashboard() {
     setShowCrypticEditor(true);
   };
 
+  // Mini puzzle functions
+  const loadMiniPuzzles = async () => {
+    setMiniLoading(true);
+    try {
+      const response = await fetch('/api/admin/mini/puzzles?limit=365', {
+        headers: authService.getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setMiniPuzzles(data.puzzles || []);
+      }
+    } catch (error) {
+      console.error('Error loading mini puzzles:', error);
+    } finally {
+      setMiniLoading(false);
+    }
+  };
+
+  const handleSaveMiniPuzzle = async (puzzleData) => {
+    setMiniLoading(true);
+    try {
+      const isEdit = !!editingMiniPuzzle;
+      const url = '/api/admin/mini/puzzles';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body = isEdit ? { ...puzzleData, id: editingMiniPuzzle.id } : puzzleData;
+
+      const response = await fetch(url, {
+        method,
+        headers: authService.getAuthHeaders(true),
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        await loadMiniPuzzles();
+        setShowMiniEditor(false);
+        setEditingMiniPuzzle(null);
+        setSelectedMiniDate(null);
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error || 'Failed to save puzzle'}`);
+      }
+    } catch (error) {
+      console.error('Error saving mini puzzle:', error);
+      alert('Failed to save puzzle. Please try again.');
+    } finally {
+      setMiniLoading(false);
+    }
+  };
+
+  const handleDeleteMiniPuzzle = async (puzzleId) => {
+    if (!confirm('Are you sure you want to delete this puzzle?')) return;
+
+    try {
+      const response = await fetch(`/api/admin/mini/puzzles?id=${puzzleId}`, {
+        method: 'DELETE',
+        headers: authService.getAuthHeaders(true),
+      });
+
+      if (response.ok) {
+        await loadMiniPuzzles();
+        setShowMiniEditor(false);
+        setEditingMiniPuzzle(null);
+      }
+    } catch (error) {
+      console.error('Error deleting mini puzzle:', error);
+      alert('Failed to delete puzzle. Please try again.');
+    }
+  };
+
+  const handleSelectMiniDate = (date) => {
+    setSelectedMiniDate(date);
+    const existingPuzzle = miniPuzzles.find((p) => p.date === date);
+    if (existingPuzzle) {
+      setEditingMiniPuzzle(existingPuzzle);
+    } else {
+      setEditingMiniPuzzle(null);
+    }
+    setShowMiniEditor(true);
+  };
+
   return (
     <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
       <div className="mb-6">
@@ -165,6 +261,20 @@ export default function AdminDashboard() {
           >
             <Image src="/icons/ui/cryptic.png" alt="" width={20} height={20} />
             Cryptic
+          </button>
+          <button
+            onClick={() => setActiveTab('mini')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'mini'
+                  ? 'border-accent-yellow text-text-primary bg-accent-yellow/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/icons/ui/mini.png" alt="" width={20} height={20} />
+            Mini
           </button>
           <button
             onClick={() => setActiveTab('feedback')}
@@ -323,6 +433,61 @@ export default function AdminDashboard() {
                     setSelectedCrypticDate(null);
                   }}
                   loading={crypticLoading}
+                />
+              </div>
+            )}
+          </div>
+        )}
+        {activeTab === 'mini' && (
+          <div className="space-y-6">
+            {!showMiniEditor ? (
+              <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-text-primary">Daily Mini Calendar</h3>
+                  <button
+                    onClick={() => {
+                      const today = new Date().toISOString().split('T')[0];
+                      handleSelectMiniDate(today);
+                    }}
+                    className="px-4 py-2 bg-accent-yellow text-gray-900 border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                  >
+                    New
+                  </button>
+                </div>
+                {miniLoading ? (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-yellow"></div>
+                  </div>
+                ) : (
+                  <MiniPuzzleCalendar
+                    puzzles={miniPuzzles}
+                    selectedDate={selectedMiniDate}
+                    onSelectDate={handleSelectMiniDate}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {editingMiniPuzzle && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => handleDeleteMiniPuzzle(editingMiniPuzzle.id)}
+                      className="px-4 py-2 bg-accent-red text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    >
+                      Delete Puzzle
+                    </button>
+                  </div>
+                )}
+                <MiniPuzzleEditor
+                  puzzle={editingMiniPuzzle}
+                  date={selectedMiniDate}
+                  onSave={handleSaveMiniPuzzle}
+                  onCancel={() => {
+                    setShowMiniEditor(false);
+                    setEditingMiniPuzzle(null);
+                    setSelectedMiniDate(null);
+                  }}
+                  loading={miniLoading}
                 />
               </div>
             )}

@@ -1565,6 +1565,210 @@ Return ONLY the JSON. No additional explanation.`;
   }
 
   /**
+   * Generate crossword clues for Daily Mini puzzles
+   * @param {Array} words - Array of {word, direction, row, col} objects
+   * @returns {Promise<Array>} - Array of generated clues
+   */
+  async generateCrosswordClues(words) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // Retry logic for production reliability
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildCrosswordCluesPrompt(words);
+        const genInfo = {
+          wordCount: words.length,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Generating crossword clues with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 1024,
+          temperature: 0.8, // Moderate creativity for variety
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        const responseInfo = {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        };
+
+        logger.info('AI crossword clues response received', responseInfo);
+
+        const clues = this.parseCrosswordCluesResponse(responseText, words.length);
+
+        this.generationCount++;
+        const successInfo = {
+          clueCount: clues.length,
+          duration,
+          totalGenerations: this.generationCount,
+        };
+
+        logger.info('Crossword clues generated successfully', successInfo);
+
+        return clues;
+      } catch (error) {
+        lastError = error;
+
+        // Enhanced error logging
+        logger.error('AI crossword clues generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        // Don't retry on authentication errors
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
+          throw error;
+        }
+
+        // Service overloaded - retry with longer backoff
+        if (error.status === 529) {
+          logger.warn('Service overloaded, will retry with longer delay', { attempt: attempt + 1 });
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+            continue;
+          }
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        // Brief delay before retry (exponential backoff)
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    // All retries failed
+    logger.error('AI crossword clues generation failed after all retries', {
+      attempts: this.maxRetries + 1,
+      error: lastError,
+    });
+    throw new Error(
+      `AI crossword clues generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build the prompt for crossword clue generation
+   */
+  buildCrosswordCluesPrompt(words) {
+    const wordsList = words.map((w, i) => `${i + 1}. ${w.word} (${w.direction})`).join('\n');
+
+    return `You are generating crossword-style clues for a Daily Mini crossword puzzle.
+
+WORDS TO CLUE:
+${wordsList}
+
+CLUE REQUIREMENTS:
+Each clue MUST be concise, crossword-style (3-10 words ideal, max 80 characters):
+- Focus on the WORD ITSELF - provide a definition, synonym, or description
+- Use NYT crossword style: clever wordplay, puns, cultural references when appropriate
+- Vary difficulty - mix straightforward definitions with clever misdirection
+- Make clues engaging and fun to solve
+- DO NOT use the answer word in the clue
+- DO NOT reference the word's position in the grid
+
+CLUE STYLE EXAMPLES:
+- CARDS → "Deck components"
+- HOUSE → "Dwelling or legislative body"
+- STOVE → "Where things heat up in the kitchen"
+- PIANO → "Instrument with 88 keys"
+- BREAD → "Dough after baking"
+- RIVER → "Amazon or Nile"
+- MUSIC → "Universal language"
+
+RESPONSE FORMAT (JSON array only, no explanation):
+["clue for word 1", "clue for word 2", "clue for word 3", ...]
+
+Generate creative, clever clues for each word above. Return ONLY the JSON array.`;
+  }
+
+  /**
+   * Parse AI crossword clues response
+   */
+  parseCrosswordCluesResponse(responseText, expectedCount) {
+    try {
+      // Try to extract JSON array from the response
+      const jsonMatch = responseText.match(/\[[\s\S]*\]/);
+      if (!jsonMatch) {
+        throw new Error('No JSON array found in response');
+      }
+
+      const clues = JSON.parse(jsonMatch[0]);
+
+      if (!Array.isArray(clues)) {
+        throw new Error('Response is not an array');
+      }
+
+      if (clues.length !== expectedCount) {
+        throw new Error(`Expected ${expectedCount} clues, got ${clues.length}`);
+      }
+
+      // Validate each clue
+      clues.forEach((clue, index) => {
+        if (typeof clue !== 'string' || clue.trim().length === 0) {
+          throw new Error(`Clue ${index + 1} is empty or invalid`);
+        }
+        if (clue.length > 80) {
+          throw new Error(`Clue ${index + 1} is too long (max 80 characters): "${clue}"`);
+        }
+      });
+
+      return clues.map((c) => c.trim());
+    } catch (error) {
+      logger.error('Failed to parse AI crossword clues response', { error, responseText });
+      throw new Error('Failed to parse AI crossword clues response. Please try again.');
+    }
+  }
+
+  /**
    * Validate cryptic puzzle structure
    */
   validateCrypticPuzzle(puzzle) {

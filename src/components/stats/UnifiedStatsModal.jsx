@@ -7,13 +7,14 @@ import useUnifiedStats from '@/hooks/useUnifiedStats';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import TandemStatsSection from './TandemStatsSection';
 import CrypticStatsSection from './CrypticStatsSection';
+import MiniStatsSection from './MiniStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
- * UnifiedStatsModal - Unified statistics left panel for both games
- * Displays Daily Tandem and Daily Cryptic stats in a single panel
+ * UnifiedStatsModal - Unified statistics left panel for all games
+ * Displays Daily Tandem, Daily Cryptic, and Daily Mini stats in a single panel
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -24,8 +25,8 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const [animationKey, setAnimationKey] = useState(0);
   const [showAchievements, setShowAchievements] = useState(false);
 
-  // Load stats for both games
-  const { tandemStats, crypticStats, loading, error } = useUnifiedStats(isOpen);
+  // Load stats for all three games
+  const { tandemStats, crypticStats, miniStats, loading, error } = useUnifiedStats(isOpen);
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -45,6 +46,10 @@ Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '
 🧩 Daily Cryptic
 Played: ${crypticStats.totalCompleted} | Best Streak: ${crypticStats.longestStreak || 0}
 Current Streak: ${crypticStats.currentStreak} ${crypticStats.currentStreak > 0 ? '🔥' : ''}
+
+📝 Daily Mini
+Played: ${miniStats.totalCompleted} | Best Streak: ${miniStats.longestStreak || 0}
+Current Streak: ${miniStats.currentStreak} ${miniStats.currentStreak > 0 ? '🔥' : ''}
 
 Play at tandemdaily.com
 #TandemDailyGames`;
@@ -119,6 +124,7 @@ Play at tandemdaily.com
           <>
             <TandemStatsSection stats={tandemStats} animationKey={animationKey} />
             <CrypticStatsSection stats={crypticStats} animationKey={animationKey} />
+            <MiniStatsSection stats={miniStats} animationKey={animationKey} />
           </>
         )}
       </LeftSidePanel>
