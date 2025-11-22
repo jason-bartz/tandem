@@ -610,6 +610,27 @@ export async function updateCrypticStatsAfterCompletion(
       totalCompleted: stats.totalCompleted,
     });
 
+    // Sync streak to leaderboard if this was a new best
+    if (
+      isFirstAttempt &&
+      !isArchive &&
+      stats.currentStreak === stats.longestStreak &&
+      stats.longestStreak > 0
+    ) {
+      try {
+        const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
+        // Map longestStreak to bestStreak for leaderboard sync
+        syncCurrentStreakToLeaderboard(
+          { currentStreak: stats.currentStreak, bestStreak: stats.longestStreak },
+          'cryptic'
+        ).catch((error) => {
+          logger.error('[CrypticStorage] Failed to sync streak to leaderboard:', error);
+        });
+      } catch (error) {
+        logger.error('[CrypticStorage] Failed to import leaderboard sync:', error);
+      }
+    }
+
     return stats;
   } catch (error) {
     logger.error('[CrypticStorage] Failed to update stats', { error: error.message });
