@@ -9,17 +9,17 @@ const KEYBOARD_LAYOUTS = {
   QWERTY: [
     ['Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['ENTER', 'Z', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['ENTER', 'Z', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   QWERTZ: [
     ['Q', 'W', 'E', 'R', 'T', 'Z', 'U', 'I', 'O', 'P'],
     ['A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L'],
-    ['ENTER', 'Y', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
+    ['ENTER', 'Y', 'X', 'C', 'V', 'B', 'N', 'M', 'BACKSPACE'],
   ],
   AZERTY: [
     ['A', 'Z', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P'],
     ['Q', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'M'],
-    ['ENTER', 'W', 'C', 'V', 'B', 'N', 'BACKSPACE'],
+    ['ENTER', 'W', 'X', 'C', 'V', 'B', 'N', 'BACKSPACE'],
   ],
 };
 
@@ -283,14 +283,14 @@ export default function OnScreenKeyboard({
 
     // Bottom row - Now perfectly symmetric with ENTER (3) and BACKSPACE (3)
     if (rowIndex === 2) {
-      // After removing X:
-      // AZERTY: ENTER (3) + 5 letters (10) + BACKSPACE (3) = 16 cols
-      // QWERTY/QWERTZ: ENTER (3) + 6 letters (12) + BACKSPACE (3) = 18 cols
+      // With X key included:
+      // QWERTY/QWERTZ: ENTER (3) + 7 letters (14) + BACKSPACE (3) = 20 cols
+      // AZERTY: ENTER (3) + 6 letters (12) + BACKSPACE (3) = 18 cols
       const totalCols = 3 + letterCount * 2 + 3;
       return {
         className: `grid-cols-${totalCols}`,
         style: `repeat(${totalCols}, minmax(0, 1fr))`,
-        padding: '', // No padding needed - now perfectly centered
+        padding: '', // No padding needed - perfectly centered
       };
     }
 
@@ -344,7 +344,11 @@ export default function OnScreenKeyboard({
                   }`}
                   style={
                     key === 'ENTER' && !highContrast
-                      ? { backgroundColor: checkButtonColor, color: '#1F2937', borderColor: '#000000' }
+                      ? {
+                          backgroundColor: checkButtonColor,
+                          color: '#1F2937',
+                          borderColor: '#000000',
+                        }
                       : {}
                   }
                   aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
