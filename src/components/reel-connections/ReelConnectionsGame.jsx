@@ -278,10 +278,22 @@ const ReelConnectionsGame = () => {
   useEffect(() => {
     if ((gameWon || gameOver) && endTime && startTime && !statsRecorded) {
       const timeMs = endTime - startTime;
-      recordGame(gameWon, timeMs, mistakes);
+      // Pass the puzzle date (archiveDate for archive puzzles, or puzzle.date for today's puzzle)
+      const puzzleDate = archiveDate || puzzle?.date;
+      recordGame(gameWon, timeMs, mistakes, puzzleDate);
       setStatsRecorded(true);
     }
-  }, [gameWon, gameOver, endTime, startTime, mistakes, statsRecorded, recordGame]);
+  }, [
+    gameWon,
+    gameOver,
+    endTime,
+    startTime,
+    mistakes,
+    statsRecorded,
+    recordGame,
+    archiveDate,
+    puzzle?.date,
+  ]);
 
   // Submit to leaderboard when game ends (for authenticated users)
   useEffect(() => {
