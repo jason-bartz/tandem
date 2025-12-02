@@ -48,22 +48,34 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
   const todayMonth = today.getMonth();
   const todayYear = today.getFullYear();
 
-  // Load completed puzzles from localStorage
+  // Load completed puzzles from localStorage when modal opens
   useEffect(() => {
+    // Only load when modal is opening, not closing
+    if (!isOpen) return;
     if (typeof window === 'undefined') return;
 
-    try {
-      const stored = window.localStorage.getItem(STORAGE_KEY);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
-          const completed = new Set(parsed.gameHistory.filter((g) => g.won).map((g) => g.date));
-          setCompletedDates(completed);
+    // Small delay to ensure any pending stats saves have completed
+    const timer = setTimeout(() => {
+      try {
+        const stored = window.localStorage.getItem(STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
+            const completed = new Set(parsed.gameHistory.filter((g) => g.won).map((g) => g.date));
+            setCompletedDates(completed);
+          } else {
+            setCompletedDates(new Set());
+          }
+        } else {
+          setCompletedDates(new Set());
         }
+      } catch (error) {
+        console.error('Error loading Reel Connections history:', error);
+        setCompletedDates(new Set());
       }
-    } catch (error) {
-      console.error('Error loading Reel Connections history:', error);
-    }
+    }, 50);
+
+    return () => clearTimeout(timer);
   }, [isOpen]);
 
   // Load puzzles for the current month
