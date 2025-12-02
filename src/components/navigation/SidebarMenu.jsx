@@ -440,12 +440,6 @@ export default function SidebarMenu({
                     onClick={() => handleModalOpen(onOpenSettings)}
                     highContrast={highContrast}
                   />
-                  <MenuButton
-                    icon={getIconPath('feedback')}
-                    label="Feedback"
-                    onClick={() => handleModalOpen(onOpenFeedback)}
-                    highContrast={highContrast}
-                  />
                 </div>
               </section>
 
@@ -495,6 +489,7 @@ export default function SidebarMenu({
 
               {/* Footer Links */}
               <section className="pt-4 border-t-[3px] border-border-main space-y-1">
+                <FooterLink label="Feedback" onClick={() => handleModalOpen(onOpenFeedback)} />
                 <FooterLink label="Support" onClick={() => handleNavigation('/support')} />
                 <FooterLink label="About" onClick={() => handleNavigation('/about')} />
                 <FooterLink

@@ -1216,6 +1216,18 @@ body {
 }
 
 /* Marquee animation for scrolling text */
+@-webkit-keyframes marquee {
+  0% {
+    -webkit-transform: translateX(0%);
+    transform: translateX(0%);
+  }
+
+  100% {
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+  }
+}
+
 @keyframes marquee {
   0% {
     transform: translateX(0%);
@@ -1233,6 +1245,10 @@ body {
 .animate-marquee {
   display: inline-block;
   animation: marquee 8s linear infinite;
+  -webkit-animation: marquee 8s linear infinite;
+  will-change: transform;
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
 }
 
 /* Cinematic Design Utility Classes */
