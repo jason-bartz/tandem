@@ -76,57 +76,45 @@ export function useReelConnectionsStats() {
     const storageKey = getStorageKey(userId);
     currentStorageKeyRef.current = storageKey;
 
-    // If user changed, reload stats from appropriate storage
-    if (prevUserIdRef.current !== userId) {
-      prevUserIdRef.current = userId;
+    // Check if we need to reload (first load or user changed)
+    const userChanged = prevUserIdRef.current !== userId;
+    const needsLoad = !isLoaded || userChanged;
 
-      try {
-        const stored = window.localStorage.getItem(storageKey);
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          setStats({ ...DEFAULT_STATS, ...parsed });
-        } else {
-          // If user just logged in and has no user-specific stats,
-          // check if there are anonymous stats to migrate
-          if (userId) {
-            const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
-            if (anonymousStats) {
-              const parsed = JSON.parse(anonymousStats);
-              setStats({ ...DEFAULT_STATS, ...parsed });
-              // Save to user-specific key
-              window.localStorage.setItem(storageKey, anonymousStats);
-              // Clear anonymous stats to prevent confusion
-              window.localStorage.removeItem(STORAGE_KEY);
-            } else {
-              setStats(DEFAULT_STATS);
-            }
-          } else {
-            setStats(DEFAULT_STATS);
-          }
-        }
-      } catch (error) {
-        console.error('[ReelConnectionsStats] Error loading stats:', error);
-        setStats(DEFAULT_STATS);
-      }
-      setIsLoaded(true);
-    }
-  }, [user?.id]);
+    if (!needsLoad) return;
 
-  // Initial load for unauthenticated users
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    if (isLoaded) return;
+    prevUserIdRef.current = userId;
 
     try {
-      const storageKey = getStorageKey(user?.id);
-      currentStorageKeyRef.current = storageKey;
       const stored = window.localStorage.getItem(storageKey);
       if (stored) {
         const parsed = JSON.parse(stored);
         setStats({ ...DEFAULT_STATS, ...parsed });
+      } else if (userId) {
+        // User is logged in but no user-specific stats exist
+        // Try to migrate from anonymous stats
+        const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+        if (anonymousStats) {
+          const parsed = JSON.parse(anonymousStats);
+          setStats({ ...DEFAULT_STATS, ...parsed });
+          // Save to user-specific key
+          window.localStorage.setItem(storageKey, anonymousStats);
+          // Note: Don't clear anonymous stats - keep them for leaderboard sync
+        } else {
+          setStats(DEFAULT_STATS);
+        }
+      } else {
+        // Anonymous user - load from default key
+        const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+        if (anonymousStats) {
+          const parsed = JSON.parse(anonymousStats);
+          setStats({ ...DEFAULT_STATS, ...parsed });
+        } else {
+          setStats(DEFAULT_STATS);
+        }
       }
     } catch (error) {
       console.error('[ReelConnectionsStats] Error loading stats:', error);
+      setStats(DEFAULT_STATS);
     }
     setIsLoaded(true);
   }, [user?.id, isLoaded]);
