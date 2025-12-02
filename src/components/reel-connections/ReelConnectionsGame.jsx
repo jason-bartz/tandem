@@ -611,7 +611,7 @@ const ReelConnectionsGame = () => {
     return `${m}:${s.toString().padStart(2, '0')}`;
   };
 
-  const handleShare = () => {
+  const handleShare = async () => {
     const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
     // Use archive date if in archive mode, otherwise use today's date
     const dateStr = archiveDate
@@ -628,9 +628,28 @@ const ReelConnectionsGame = () => {
 
     const shareText = `Reel Connections ${dateStr}\nYou won!\n${mistakeEmojis}\nTime: ${timeStr}`;
 
-    navigator.clipboard.writeText(shareText).then(() => {
+    // Try native share first (works on iOS Safari and mobile browsers)
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          text: shareText,
+        });
+        return; // User shared or cancelled - either way, we're done
+      } catch (err) {
+        // User cancelled or share failed - fall back to clipboard
+        if (err.name === 'AbortError') {
+          return; // User cancelled, don't show clipboard fallback
+        }
+      }
+    }
+
+    // Fallback to clipboard for desktop browsers
+    try {
+      await navigator.clipboard.writeText(shareText);
       alert('Results copied to clipboard!');
-    });
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
   };
 
   const isSelected = (movie) => selectedMovies.some((m) => m.imdbId === movie.imdbId);
