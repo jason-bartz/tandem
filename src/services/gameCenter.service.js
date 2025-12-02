@@ -13,12 +13,18 @@ import {
   getHighestStreakThreshold,
   getHighestWinsThreshold,
   getAllQualifyingAchievements,
-  getNewlyUnlockedCrypticAchievements,
-  getHighestCrypticStreakThreshold,
-  getHighestCrypticWinsThreshold,
+  getNewlyUnlockedMiniAchievements,
+  getHighestMiniStreakThreshold,
+  getHighestMiniWinsThreshold,
+  getAllQualifyingMiniAchievements,
+  getNewlyUnlockedReelAchievements,
+  getHighestReelStreakThreshold,
+  getHighestReelWinsThreshold,
+  getAllQualifyingReelAchievements,
 } from '@/lib/achievementChecker';
 import logger from '@/lib/logger';
 import { loadStats } from '@/lib/storage';
+import { loadMiniStats } from '@/lib/miniStorage';
 
 // Use our custom EnhancedGameCenterPlugin instead of third-party plugin
 const GameConnect = registerPlugin('EnhancedGameCenterPlugin');
@@ -86,6 +92,9 @@ class GameCenterService {
 
         // Check for retroactive achievements (for existing users)
         await this.checkRetroactiveAchievements();
+
+        // Check for retroactive Mini and Reel achievements
+        await this.checkRetroactiveMiniAndReelAchievements();
 
         return true;
       }
@@ -289,87 +298,236 @@ class GameCenterService {
   }
 
   /**
-   * Check and submit cryptic achievements
-   * Compares current cryptic stats against last submitted values
-   * @param {Object} stats - Current cryptic stats (longestStreak, totalCompleted)
+   * Check and submit Mini achievements
+   * Compares current mini stats against last submitted values
+   * @param {Object} stats - Current mini stats (longestStreak, totalCompleted)
+   * @param {boolean} isRetroactive - If true, suppress notifications (for existing users)
    * @returns {Promise<Array>} Array of newly unlocked achievement objects
    */
-  async checkAndSubmitCrypticAchievements(stats) {
-    if (!this.isAvailable()) {
-      logger.info('[GameCenter] Not available, skipping cryptic achievement check');
-      return [];
-    }
-
-    logger.info('[GameCenter] Checking cryptic achievements with stats:', {
-      currentStreak: stats.currentStreak,
+  async checkAndSubmitMiniAchievements(stats, isRetroactive = false) {
+    logger.info('[GameCenter] Checking mini achievements with stats:', {
       longestStreak: stats.longestStreak,
       totalCompleted: stats.totalCompleted,
+      isRetroactive,
     });
 
     try {
-      // Get last submitted values for cryptic
+      // Get last submitted values for mini
       const lastStreakResult = await Preferences.get({
-        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_STREAK,
+        key: STORAGE_KEYS.LAST_SUBMITTED_MINI_STREAK,
       });
       const lastWinsResult = await Preferences.get({
-        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_WINS,
+        key: STORAGE_KEYS.LAST_SUBMITTED_MINI_WINS,
       });
 
       const lastStreak = lastStreakResult.value ? parseInt(lastStreakResult.value, 10) : 0;
       const lastWins = lastWinsResult.value ? parseInt(lastWinsResult.value, 10) : 0;
 
-      logger.info('[GameCenter] Last submitted cryptic values:', {
+      logger.info('[GameCenter] Last submitted mini values:', {
         lastStreak,
         lastWins,
       });
 
-      // Check for newly unlocked cryptic achievements
-      const newAchievements = getNewlyUnlockedCrypticAchievements(stats, {
+      // Check for newly unlocked mini achievements
+      const newAchievements = getNewlyUnlockedMiniAchievements(stats, {
         streak: lastStreak,
         wins: lastWins,
       });
 
       if (newAchievements.length === 0) {
-        logger.info('[GameCenter] No new cryptic achievements to unlock');
+        logger.info('[GameCenter] No new mini achievements to unlock');
         return [];
       }
 
-      logger.info('[GameCenter] Found new cryptic achievements to unlock:', newAchievements.length);
-      logger.info('[GameCenter] New cryptic achievements:', newAchievements);
+      logger.info('[GameCenter] Found new mini achievements to unlock:', newAchievements.length);
 
-      // Submit each achievement
-      const achievementIds = newAchievements.map((a) => a.id);
-      await this.submitAchievements(achievementIds);
+      // Submit to Game Center if available (iOS only)
+      if (this.isAvailable()) {
+        const achievementIds = newAchievements.map((a) => a.id);
+        await this.submitAchievements(achievementIds);
+      }
 
+      // Track submitted achievements locally
       const submittedResult = await Preferences.get({
-        key: STORAGE_KEYS.SUBMITTED_CRYPTIC_ACHIEVEMENTS,
+        key: STORAGE_KEYS.SUBMITTED_MINI_ACHIEVEMENTS,
       });
       const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
+      const achievementIds = newAchievements.map((a) => a.id);
       const updatedSubmittedList = [...new Set([...submittedAchievements, ...achievementIds])];
       await Preferences.set({
-        key: STORAGE_KEYS.SUBMITTED_CRYPTIC_ACHIEVEMENTS,
+        key: STORAGE_KEYS.SUBMITTED_MINI_ACHIEVEMENTS,
         value: JSON.stringify(updatedSubmittedList),
       });
 
-      const newLastStreak = getHighestCrypticStreakThreshold(stats.longestStreak || 0);
-      const newLastWins = getHighestCrypticWinsThreshold(stats.totalCompleted || 0);
+      const newLastStreak = getHighestMiniStreakThreshold(stats.longestStreak || 0);
+      const newLastWins = getHighestMiniWinsThreshold(stats.totalCompleted || 0);
 
       await Preferences.set({
-        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_STREAK,
+        key: STORAGE_KEYS.LAST_SUBMITTED_MINI_STREAK,
         value: newLastStreak.toString(),
       });
       await Preferences.set({
-        key: STORAGE_KEYS.LAST_SUBMITTED_CRYPTIC_WINS,
+        key: STORAGE_KEYS.LAST_SUBMITTED_MINI_WINS,
         value: newLastWins.toString(),
       });
 
-      // Notify listeners
-      this._notifyAchievementListeners(newAchievements);
+      // Notify listeners (but not for retroactive unlocks)
+      if (!isRetroactive) {
+        this._notifyAchievementListeners(newAchievements);
+      }
 
       return newAchievements;
     } catch (error) {
-      logger.error('[GameCenter] Error checking cryptic achievements:', error);
+      logger.error('[GameCenter] Error checking mini achievements:', error);
       return [];
+    }
+  }
+
+  /**
+   * Check and submit Reel Connections achievements
+   * Compares current reel stats against last submitted values
+   * @param {Object} stats - Current reel stats (bestStreak, gamesWon)
+   * @param {boolean} isRetroactive - If true, suppress notifications (for existing users)
+   * @returns {Promise<Array>} Array of newly unlocked achievement objects
+   */
+  async checkAndSubmitReelAchievements(stats, isRetroactive = false) {
+    logger.info('[GameCenter] Checking reel achievements with stats:', {
+      bestStreak: stats.bestStreak,
+      gamesWon: stats.gamesWon,
+      isRetroactive,
+    });
+
+    try {
+      // Get last submitted values for reel
+      const lastStreakResult = await Preferences.get({
+        key: STORAGE_KEYS.LAST_SUBMITTED_REEL_STREAK,
+      });
+      const lastWinsResult = await Preferences.get({
+        key: STORAGE_KEYS.LAST_SUBMITTED_REEL_WINS,
+      });
+
+      const lastStreak = lastStreakResult.value ? parseInt(lastStreakResult.value, 10) : 0;
+      const lastWins = lastWinsResult.value ? parseInt(lastWinsResult.value, 10) : 0;
+
+      logger.info('[GameCenter] Last submitted reel values:', {
+        lastStreak,
+        lastWins,
+      });
+
+      // Check for newly unlocked reel achievements
+      const newAchievements = getNewlyUnlockedReelAchievements(stats, {
+        streak: lastStreak,
+        wins: lastWins,
+      });
+
+      if (newAchievements.length === 0) {
+        logger.info('[GameCenter] No new reel achievements to unlock');
+        return [];
+      }
+
+      logger.info('[GameCenter] Found new reel achievements to unlock:', newAchievements.length);
+
+      // Submit to Game Center if available (iOS only)
+      if (this.isAvailable()) {
+        const achievementIds = newAchievements.map((a) => a.id);
+        await this.submitAchievements(achievementIds);
+      }
+
+      // Track submitted achievements locally
+      const submittedResult = await Preferences.get({
+        key: STORAGE_KEYS.SUBMITTED_REEL_ACHIEVEMENTS,
+      });
+      const submittedAchievements = submittedResult.value ? JSON.parse(submittedResult.value) : [];
+      const achievementIds = newAchievements.map((a) => a.id);
+      const updatedSubmittedList = [...new Set([...submittedAchievements, ...achievementIds])];
+      await Preferences.set({
+        key: STORAGE_KEYS.SUBMITTED_REEL_ACHIEVEMENTS,
+        value: JSON.stringify(updatedSubmittedList),
+      });
+
+      const newLastStreak = getHighestReelStreakThreshold(stats.bestStreak || 0);
+      const newLastWins = getHighestReelWinsThreshold(stats.gamesWon || 0);
+
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_REEL_STREAK,
+        value: newLastStreak.toString(),
+      });
+      await Preferences.set({
+        key: STORAGE_KEYS.LAST_SUBMITTED_REEL_WINS,
+        value: newLastWins.toString(),
+      });
+
+      // Notify listeners (but not for retroactive unlocks)
+      if (!isRetroactive) {
+        this._notifyAchievementListeners(newAchievements);
+      }
+
+      return newAchievements;
+    } catch (error) {
+      logger.error('[GameCenter] Error checking reel achievements:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Check retroactive achievements for Mini and Reel (for existing users)
+   * Called on app initialization to unlock earned achievements without notifications
+   */
+  async checkRetroactiveMiniAndReelAchievements() {
+    logger.info('[GameCenter] Checking retroactive mini and reel achievements');
+
+    try {
+      // Check Mini achievements
+      const miniCheckDone = await Preferences.get({
+        key: STORAGE_KEYS.MINI_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+      });
+      if (miniCheckDone.value !== 'true') {
+        const miniStats = await loadMiniStats();
+        if (miniStats.totalCompleted > 0 || miniStats.longestStreak > 0) {
+          const qualifyingMini = getAllQualifyingMiniAchievements(miniStats);
+          if (qualifyingMini.length > 0) {
+            logger.info(
+              `[GameCenter] Found ${qualifyingMini.length} retroactive mini achievements`
+            );
+            await this.checkAndSubmitMiniAchievements(miniStats, true);
+          }
+        }
+        await Preferences.set({
+          key: STORAGE_KEYS.MINI_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+          value: 'true',
+        });
+      }
+
+      // Check Reel achievements
+      const reelCheckDone = await Preferences.get({
+        key: STORAGE_KEYS.REEL_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+      });
+      if (reelCheckDone.value !== 'true') {
+        // Load reel stats from localStorage
+        if (typeof window !== 'undefined') {
+          const reelStored = window.localStorage.getItem('reel-connections-stats');
+          if (reelStored) {
+            const reelStats = JSON.parse(reelStored);
+            if (reelStats.gamesWon > 0 || reelStats.bestStreak > 0) {
+              const qualifyingReel = getAllQualifyingReelAchievements(reelStats);
+              if (qualifyingReel.length > 0) {
+                logger.info(
+                  `[GameCenter] Found ${qualifyingReel.length} retroactive reel achievements`
+                );
+                await this.checkAndSubmitReelAchievements(reelStats, true);
+              }
+            }
+          }
+        }
+        await Preferences.set({
+          key: STORAGE_KEYS.REEL_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE,
+          value: 'true',
+        });
+      }
+
+      logger.info('[GameCenter] Retroactive mini and reel achievement check complete');
+    } catch (error) {
+      logger.error('[GameCenter] Error checking retroactive mini/reel achievements:', error);
     }
   }
 

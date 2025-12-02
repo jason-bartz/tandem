@@ -201,11 +201,26 @@ export function useReelConnectionsStats() {
           syncStreakToLeaderboard(newStats);
         }
 
+        // Check for achievement unlocks
+        checkAchievements(newStats);
+
         return newStats;
       });
     },
     [stats.gameHistory, getTodayDateString]
   );
+
+  /**
+   * Check for achievement unlocks (non-blocking)
+   */
+  const checkAchievements = async (updatedStats) => {
+    try {
+      const gameCenterService = (await import('@/services/gameCenter.service')).default;
+      await gameCenterService.checkAndSubmitReelAchievements(updatedStats);
+    } catch (error) {
+      console.error('[ReelConnectionsStats] Failed to check achievements:', error);
+    }
+  };
 
   /**
    * Sync streak to leaderboard (non-blocking)
