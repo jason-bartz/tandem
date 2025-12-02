@@ -19,7 +19,6 @@ import { useAuth } from '@/contexts/AuthContext';
 
 const ReelConnectionsGame = () => {
   const [selectedMovies, setSelectedMovies] = useState([]);
-  const [selectionOrder, setSelectionOrder] = useState(new Map()); // Track selection order
   const [solvedGroups, setSolvedGroups] = useState([]);
   const [mistakes, setMistakes] = useState(0);
   const [gameWon, setGameWon] = useState(false);
@@ -437,7 +436,6 @@ const ReelConnectionsGame = () => {
       // Reset game state for new puzzle
       if (isRefresh || specificDate) {
         setSelectedMovies([]);
-        setSelectionOrder(new Map());
         setSolvedGroups([]);
         setMistakes(0);
         setGameWon(false);
@@ -498,16 +496,9 @@ const ReelConnectionsGame = () => {
     if (isSelected(movie)) {
       // Deselect
       setSelectedMovies(selectedMovies.filter((m) => m.imdbId !== movie.imdbId));
-      const newOrder = new Map(selectionOrder);
-      newOrder.delete(movie.imdbId);
-      setSelectionOrder(newOrder);
     } else {
       if (selectedMovies.length < 4) {
-        const newSelected = [...selectedMovies, movie];
-        setSelectedMovies(newSelected);
-        const newOrder = new Map(selectionOrder);
-        newOrder.set(movie.imdbId, newSelected.length);
-        setSelectionOrder(newOrder);
+        setSelectedMovies([...selectedMovies, movie]);
       }
     }
   };
@@ -528,7 +519,6 @@ const ReelConnectionsGame = () => {
       const newSolvedGroups = [...solvedGroups, group];
       setSolvedGroups(newSolvedGroups);
       setSelectedMovies([]);
-      setSelectionOrder(new Map());
 
       // Remove solved movies from the grid
       setMovies(movies.filter((m) => m.groupId !== groupId));
@@ -548,7 +538,6 @@ const ReelConnectionsGame = () => {
       setShakeGrid(true);
       setTimeout(() => setShakeGrid(false), 500);
       setSelectedMovies([]);
-      setSelectionOrder(new Map());
 
       if (newMistakes >= 4) {
         setGameOver(true);
@@ -565,12 +554,10 @@ const ReelConnectionsGame = () => {
 
   const handleDeselect = () => {
     setSelectedMovies([]);
-    setSelectionOrder(new Map());
   };
 
   const resetGame = () => {
     setSelectedMovies([]);
-    setSelectionOrder(new Map());
     setSolvedGroups([]);
     setMistakes(0);
     setGameWon(false);
@@ -1134,7 +1121,9 @@ const ReelConnectionsGame = () => {
             >
               {movies.map((movie) => {
                 const selected = isSelected(movie);
-                const orderNumber = selectionOrder.get(movie.imdbId);
+                const orderNumber = selected
+                  ? selectedMovies.findIndex((m) => m.imdbId === movie.imdbId) + 1
+                  : null;
                 return (
                   <div key={movie.imdbId} className="flex flex-col relative">
                     <button
