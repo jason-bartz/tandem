@@ -1846,26 +1846,38 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
 
     return `You are generating movies for a Reel Connections puzzle game (similar to NYT Connections but with movies).
 
-CONNECTION/THEME: "${connection}"
+USER'S CONNECTION IDEA: "${connection}"
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
 
 REQUIREMENTS:
-1. Generate EXACTLY 4 movies that share the connection "${connection}"
-2. Each movie MUST be a real, well-known film that exists in movie databases like IMDB/OMDb
-3. Movies MUST have theatrical posters available (no obscure films without posters)
-4. The connection should be interesting but not too obscure - players should have an "aha!" moment
-5. Prefer movies from 1990-present for better poster availability, but classics are fine
-6. Avoid movies with very similar titles that could be confused
+1. FIRST, refine and improve the user's connection text:
+   - Use proper Title Case (e.g., "Movies That Take Place In New York")
+   - Expand abbreviations (e.g., "ny" → "New York", "rom com" → "Romantic Comedy")
+   - Make it more descriptive and polished (e.g., "Sandra Bullock movies" → "Films Starring Sandra Bullock")
+   - Keep the same meaning but make it publication-ready
+2. Generate EXACTLY 4 movies that share this refined connection
+3. Each movie MUST be a real, well-known film that exists in movie databases like IMDB/OMDb
+4. Movies MUST have theatrical posters available (no obscure films without posters)
+5. The connection should be interesting but not too obscure - players should have an "aha!" moment
+6. Prefer movies from 1990-present for better poster availability, but classics are fine
+7. Avoid movies with very similar titles that could be confused
+
+CONNECTION REFINEMENT EXAMPLES:
+- "movies that take place in ny" → "Movies Set In New York City"
+- "Sandra Bullock movies" → "Films Starring Sandra Bullock"
+- "tom hanks" → "Tom Hanks Filmography"
+- "movies with dogs" → "Films Featuring Dogs"
+- "80s action" → "1980s Action Films"
 
 EXAMPLES OF GOOD CONNECTIONS:
 - "Movies with colors in the title" → The Green Mile, Blue Velvet, Scarlet Street, The Color Purple
 - "Movies set in space" → Gravity, Interstellar, Alien, 2001: A Space Odyssey
-- "Movies with food in the title" → Pulp Fiction (just kidding), Chocolat, Fried Green Tomatoes, Ratatouille
+- "Movies with food in the title" → Chocolat, Fried Green Tomatoes, Ratatouille, The Breakfast Club
 
 RESPONSE FORMAT (JSON only):
 {
-  "connection": "The exact connection/theme",
+  "connection": "The REFINED/IMPROVED connection text (properly formatted)",
   "movies": ["Movie Title 1", "Movie Title 2", "Movie Title 3", "Movie Title 4"]
 }
 
