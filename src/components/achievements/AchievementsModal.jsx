@@ -10,7 +10,7 @@ import AchievementsModalSkeleton from '@/components/shared/AchievementsModalSkel
 
 /**
  * AchievementsModal - Display all achievements left panel with filtering
- * Shows user's achievement progress with tabs for Daily Tandem/Daily Cryptic
+ * Shows user's achievement progress with tabs for Daily Tandem, Daily Mini, and Reel Connections
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -20,23 +20,48 @@ export default function AchievementsModal({ isOpen, onClose }) {
   const { lightTap } = useHaptics();
   const [activeTab, setActiveTab] = useState('tandem');
 
-  // Load achievement status for both game modes
+  // Load achievement status for all game modes
   const tandemStatus = useAchievementStatus(isOpen, 'tandem');
-  const crypticStatus = useAchievementStatus(isOpen, 'cryptic');
+  const miniStatus = useAchievementStatus(isOpen, 'mini');
+  const reelStatus = useAchievementStatus(isOpen, 'reel');
 
   // Get data based on active tab
   const getDisplayData = () => {
     switch (activeTab) {
-      case 'cryptic':
-        return crypticStatus.achievementData;
+      case 'mini':
+        return miniStatus.achievementData;
+      case 'reel':
+        return reelStatus.achievementData;
       default:
         return tandemStatus.achievementData;
     }
   };
 
+  const getLoadingStatus = () => {
+    switch (activeTab) {
+      case 'mini':
+        return miniStatus.loading;
+      case 'reel':
+        return reelStatus.loading;
+      default:
+        return tandemStatus.loading;
+    }
+  };
+
+  const getErrorStatus = () => {
+    switch (activeTab) {
+      case 'mini':
+        return miniStatus.error;
+      case 'reel':
+        return reelStatus.error;
+      default:
+        return tandemStatus.error;
+    }
+  };
+
   const displayData = getDisplayData();
-  const loading = activeTab === 'tandem' ? tandemStatus.loading : crypticStatus.loading;
-  const error = activeTab === 'tandem' ? tandemStatus.error : crypticStatus.error;
+  const loading = getLoadingStatus();
+  const error = getErrorStatus();
 
   const handleClose = () => {
     lightTap();
@@ -118,7 +143,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTabChange('tandem')}
-              className={`flex-1 py-2 px-4 rounded-xl border-[2px] font-bold text-sm transition-all ${
+              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
@@ -128,21 +153,35 @@ export default function AchievementsModal({ isOpen, onClose }) {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
-              Daily Tandem ({tandemStatus.achievementData.totalCount})
+              Tandem ({tandemStatus.achievementData.totalCount})
             </button>
             <button
-              onClick={() => handleTabChange('cryptic')}
-              className={`flex-1 py-2 px-4 rounded-xl border-[2px] font-bold text-sm transition-all whitespace-nowrap ${
-                activeTab === 'cryptic'
+              onClick={() => handleTabChange('mini')}
+              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
+                activeTab === 'mini'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-purple-600 text-white border-purple-600 shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
+                    : 'bg-accent-yellow text-black border-accent-yellow shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-200 border-gray-400 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
-              Daily Cryptic ({crypticStatus.achievementData.totalCount})
+              Mini ({miniStatus.achievementData.totalCount})
+            </button>
+            <button
+              onClick={() => handleTabChange('reel')}
+              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
+                activeTab === 'reel'
+                  ? highContrast
+                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-red-500 text-white border-red-500 shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
+                  : highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              Reel ({reelStatus.achievementData.totalCount})
             </button>
           </div>
 

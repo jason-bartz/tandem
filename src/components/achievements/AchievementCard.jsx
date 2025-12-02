@@ -1,19 +1,17 @@
 'use client';
 
 import { useTheme } from '@/contexts/ThemeContext';
-import Image from 'next/image';
 
 /**
  * AchievementCard - Display individual achievement with locked/unlocked state
- * Shows achievement image, name, description, and progress
+ * Shows achievement emoji, name, description, and progress
  *
  * @param {Object} achievement - Achievement data object
  * @param {boolean} achievement.isUnlocked - Whether user has unlocked this achievement
  * @param {number} achievement.progress - Progress percentage (0-100)
  * @param {string} achievement.name - Achievement name
  * @param {string} achievement.description - Achievement description
- * @param {string} achievement.emoji - Achievement emoji
- * @param {string} achievement.imageFilename - Image filename in public/images/achievements
+ * @param {string} achievement.emoji - Achievement emoji displayed as the badge
  * @param {number} achievement.points - Points awarded for this achievement
  * @param {number} achievement.threshold - Threshold to unlock
  * @param {number} achievement.currentValue - User's current value
@@ -22,8 +20,7 @@ import Image from 'next/image';
 export default function AchievementCard({ achievement, index = 0 }) {
   const { highContrast, reduceMotion } = useTheme();
 
-  const { isUnlocked, progress, name, description, imageFilename, threshold, currentValue } =
-    achievement;
+  const { isUnlocked, progress, name, description, emoji, threshold, currentValue } = achievement;
 
   // Calculate stagger delay for cascade effect (50ms per item)
   const getDelayClass = () => {
@@ -62,42 +59,29 @@ export default function AchievementCard({ achievement, index = 0 }) {
       {/* Locked Overlay */}
       {!isUnlocked && (
         <div className="absolute inset-0 rounded-2xl bg-black/20 dark:bg-black/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
-          <Image
-            src="/icons/ui/lock.png"
-            alt="Locked"
-            width={32}
-            height={32}
-            className="opacity-60"
-          />
+          <span className="text-2xl opacity-60">🔒</span>
         </div>
       )}
 
       <div className="flex items-start gap-4">
-        {/* Achievement Image */}
+        {/* Achievement Emoji */}
         <div className="flex-shrink-0">
           <div
-            className={`relative w-16 h-16 rounded-xl border-[2px] overflow-hidden ${
+            className={`relative w-16 h-16 rounded-xl border-[2px] flex items-center justify-center ${
               isUnlocked
                 ? highContrast
-                  ? 'border-hc-border'
-                  : 'border-border-main'
-                : 'border-gray-300 dark:border-gray-600 opacity-50'
+                  ? 'border-hc-border bg-hc-surface'
+                  : 'border-border-main bg-gradient-to-br from-amber-100 to-amber-200 dark:from-amber-900/30 dark:to-amber-800/30'
+                : 'border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 opacity-50'
             }`}
           >
-            <Image
-              src={
-                achievement.gameMode === 'cryptic'
-                  ? `/images/cryptic%20achievements/${imageFilename}`
-                  : `/images/achievements/${imageFilename}`
-              }
-              alt={name}
-              fill
-              className={`object-cover ${!isUnlocked ? 'grayscale' : ''}`}
-              sizes="64px"
-              onError={(e) => {
-                console.error(`Failed to load image: ${e.currentTarget.src}`);
-              }}
-            />
+            <span
+              className={`text-3xl ${!isUnlocked ? 'grayscale opacity-50' : ''}`}
+              role="img"
+              aria-label={name}
+            >
+              {emoji}
+            </span>
           </div>
         </div>
 

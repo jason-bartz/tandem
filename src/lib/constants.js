@@ -17,18 +17,25 @@ export const STORAGE_KEYS = {
   HARD_MODE: 'tandemHardMode',
   HAS_SEEN_ONBOARDING: 'tandem_has_seen_onboarding',
   LEADERBOARDS_ENABLED: 'tandem_leaderboards_enabled',
-  // Game Center
+  // Game Center - Tandem
   GAME_CENTER_AUTHENTICATED: 'tandem_gc_authenticated',
   GAME_CENTER_PLAYER_ID: 'tandem_gc_player_id',
   PENDING_ACHIEVEMENTS: 'tandem_pending_achievements',
   PENDING_LEADERBOARD: 'tandem_pending_leaderboard',
   LAST_SUBMITTED_STREAK: 'tandem_last_streak',
   LAST_SUBMITTED_WINS: 'tandem_last_wins',
-  LAST_SUBMITTED_CRYPTIC_STREAK: 'tandem_last_cryptic_streak',
-  LAST_SUBMITTED_CRYPTIC_WINS: 'tandem_last_cryptic_wins',
   ACHIEVEMENTS_RETROACTIVE_CHECK_DONE: 'tandem_achievements_retroactive_check',
   SUBMITTED_ACHIEVEMENTS: 'tandem_submitted_achievements',
-  SUBMITTED_CRYPTIC_ACHIEVEMENTS: 'tandem_submitted_cryptic_achievements',
+  // Mini Achievements
+  LAST_SUBMITTED_MINI_STREAK: 'tandem_last_mini_streak',
+  LAST_SUBMITTED_MINI_WINS: 'tandem_last_mini_wins',
+  MINI_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE: 'tandem_mini_achievements_retroactive_check',
+  SUBMITTED_MINI_ACHIEVEMENTS: 'tandem_submitted_mini_achievements',
+  // Reel Connections Achievements
+  LAST_SUBMITTED_REEL_STREAK: 'tandem_last_reel_streak',
+  LAST_SUBMITTED_REEL_WINS: 'tandem_last_reel_wins',
+  REEL_ACHIEVEMENTS_RETROACTIVE_CHECK_DONE: 'tandem_reel_achievements_retroactive_check',
+  SUBMITTED_REEL_ACHIEVEMENTS: 'tandem_submitted_reel_achievements',
 };
 
 export const API_ENDPOINTS = {

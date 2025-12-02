@@ -203,7 +203,7 @@ export const WINS_ACHIEVEMENTS = [
     id: 'com.tandemdaily.app.first_win',
     name: 'First Win',
     description: 'Solve your first puzzle',
-    emoji: '🎉',
+    emoji: '🥇',
     threshold: 1,
     points: 5,
   },
@@ -219,7 +219,7 @@ export const WINS_ACHIEVEMENTS = [
     id: 'com.tandemdaily.app.puzzle_pal',
     name: 'Puzzle Pal',
     description: 'Solve 25 puzzles',
-    emoji: '🧩',
+    emoji: '👯',
     threshold: 25,
     points: 25,
   },
@@ -266,190 +266,190 @@ export const WINS_ACHIEVEMENTS = [
 ];
 
 /**
- * Cryptic Streak-Based Achievements (23 total)
- * Tracks player's best cryptic streak (consecutive days solving cryptic puzzles)
+ * Daily Mini Streak-Based Achievements (23 total)
+ * Tracks player's best mini crossword streak
  */
-export const CRYPTIC_STREAK_ACHIEVEMENTS = [
+export const MINI_STREAK_ACHIEVEMENTS = [
   {
-    id: 'com.tandemdaily.app.cryptic_first_pedal',
+    id: 'com.tandemdaily.app.mini_first_pedal',
     name: 'First Pedal',
-    description: 'Maintain a 3-day cryptic streak',
+    description: 'Maintain a 3-day mini streak',
     emoji: '🔥',
     threshold: 3,
     points: 5,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_finding_rhythm',
+    id: 'com.tandemdaily.app.mini_finding_rhythm',
     name: 'Finding Rhythm',
-    description: 'Maintain a 5-day cryptic streak',
+    description: 'Maintain a 5-day mini streak',
     emoji: '⭐',
     threshold: 5,
     points: 5,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_picking_up_speed',
+    id: 'com.tandemdaily.app.mini_picking_up_speed',
     name: 'Picking Up Speed',
-    description: 'Maintain a 7-day cryptic streak',
+    description: 'Maintain a 7-day mini streak',
     emoji: '💪',
     threshold: 7,
     points: 10,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_steady_cadence',
+    id: 'com.tandemdaily.app.mini_steady_cadence',
     name: 'Steady Cadence',
-    description: 'Maintain a 10-day cryptic streak',
+    description: 'Maintain a 10-day mini streak',
     emoji: '🎯',
     threshold: 10,
     points: 10,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_cruising_along',
+    id: 'com.tandemdaily.app.mini_cruising_along',
     name: 'Cruising Along',
-    description: 'Maintain a 15-day cryptic streak',
+    description: 'Maintain a 15-day mini streak',
     emoji: '🚴',
     threshold: 15,
     points: 15,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_rolling_hills',
+    id: 'com.tandemdaily.app.mini_rolling_hills',
     name: 'Rolling Hills',
-    description: 'Maintain a 20-day cryptic streak',
+    description: 'Maintain a 20-day mini streak',
     emoji: '⛰️',
     threshold: 20,
     points: 15,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_coast_to_coast',
+    id: 'com.tandemdaily.app.mini_coast_to_coast',
     name: 'Coast to Coast',
-    description: 'Maintain a 25-day cryptic streak',
+    description: 'Maintain a 25-day mini streak',
     emoji: '🌊',
     threshold: 25,
     points: 20,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_monthly_rider',
+    id: 'com.tandemdaily.app.mini_monthly_rider',
     name: 'Monthly Rider',
-    description: 'Maintain a 30-day cryptic streak',
+    description: 'Maintain a 30-day mini streak',
     emoji: '🏆',
     threshold: 30,
     points: 25,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_swift_cyclist',
+    id: 'com.tandemdaily.app.mini_swift_cyclist',
     name: 'Swift Cyclist',
-    description: 'Maintain a 40-day cryptic streak',
+    description: 'Maintain a 40-day mini streak',
     emoji: '⚡',
     threshold: 40,
     points: 25,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_starlight_ride',
+    id: 'com.tandemdaily.app.mini_starlight_ride',
     name: 'Starlight Ride',
-    description: 'Maintain a 50-day cryptic streak',
+    description: 'Maintain a 50-day mini streak',
     emoji: '🌟',
     threshold: 50,
     points: 30,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_seaside_route',
+    id: 'com.tandemdaily.app.mini_seaside_route',
     name: 'Seaside Route',
-    description: 'Maintain a 60-day cryptic streak',
+    description: 'Maintain a 60-day mini streak',
     emoji: '🏖️',
     threshold: 60,
     points: 30,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_summit_seeker',
+    id: 'com.tandemdaily.app.mini_summit_seeker',
     name: 'Summit Seeker',
-    description: 'Maintain a 75-day cryptic streak',
+    description: 'Maintain a 75-day mini streak',
     emoji: '🗻',
     threshold: 75,
     points: 40,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_cross_country',
+    id: 'com.tandemdaily.app.mini_cross_country',
     name: 'Cross Country',
-    description: 'Maintain a 90-day cryptic streak',
+    description: 'Maintain a 90-day mini streak',
     emoji: '🎖️',
     threshold: 90,
     points: 40,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_century_ride',
+    id: 'com.tandemdaily.app.mini_century_ride',
     name: 'Century Ride',
-    description: 'Maintain a 100-day cryptic streak',
+    description: 'Maintain a 100-day mini streak',
     emoji: '💯',
     threshold: 100,
     points: 50,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_mountain_pass',
+    id: 'com.tandemdaily.app.mini_mountain_pass',
     name: 'Mountain Pass',
-    description: 'Maintain a 125-day cryptic streak',
+    description: 'Maintain a 125-day mini streak',
     emoji: '🦅',
     threshold: 125,
     points: 60,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_pathfinder',
+    id: 'com.tandemdaily.app.mini_pathfinder',
     name: 'Pathfinder',
-    description: 'Maintain a 150-day cryptic streak',
+    description: 'Maintain a 150-day mini streak',
     emoji: '🧭',
     threshold: 150,
     points: 60,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_coastal_cruiser',
+    id: 'com.tandemdaily.app.mini_coastal_cruiser',
     name: 'Coastal Cruiser',
-    description: 'Maintain a 175-day cryptic streak',
+    description: 'Maintain a 175-day mini streak',
     emoji: '🌊',
     threshold: 175,
     points: 75,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_horizon_chaser',
+    id: 'com.tandemdaily.app.mini_horizon_chaser',
     name: 'Horizon Chaser',
-    description: 'Maintain a 200-day cryptic streak',
+    description: 'Maintain a 200-day mini streak',
     emoji: '🌅',
     threshold: 200,
     points: 75,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_grand_tour',
+    id: 'com.tandemdaily.app.mini_grand_tour',
     name: 'Grand Tour',
-    description: 'Maintain a 250-day cryptic streak',
+    description: 'Maintain a 250-day mini streak',
     emoji: '🌍',
     threshold: 250,
     points: 80,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_world_traveler',
+    id: 'com.tandemdaily.app.mini_world_traveler',
     name: 'World Traveler',
-    description: 'Maintain a 300-day cryptic streak',
+    description: 'Maintain a 300-day mini streak',
     emoji: '🌎',
     threshold: 300,
     points: 100,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_round_the_sun',
+    id: 'com.tandemdaily.app.mini_round_the_sun',
     name: 'Round the Sun',
-    description: 'Maintain a 365-day cryptic streak',
+    description: 'Maintain a 365-day mini streak',
     emoji: '☀️',
     threshold: 365,
     points: 100,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_infinite_road',
+    id: 'com.tandemdaily.app.mini_infinite_road',
     name: 'Infinite Road',
-    description: 'Maintain a 500-day cryptic streak',
+    description: 'Maintain a 500-day mini streak',
     emoji: '🛤️',
     threshold: 500,
     points: 100,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_legendary_journey',
+    id: 'com.tandemdaily.app.mini_legendary_journey',
     name: 'Legendary Journey',
-    description: 'Maintain a 1000-day cryptic streak',
+    description: 'Maintain a 1000-day mini streak',
     emoji: '🌟🏆🔥',
     threshold: 1000,
     points: 100,
@@ -457,71 +457,333 @@ export const CRYPTIC_STREAK_ACHIEVEMENTS = [
 ];
 
 /**
- * Cryptic Total Wins Achievements (8 total)
- * Tracks total number of cryptic puzzles solved
+ * Daily Mini Total Wins Achievements (8 total)
+ * Tracks total number of mini crossword puzzles solved
  */
-export const CRYPTIC_WINS_ACHIEVEMENTS = [
+export const MINI_WINS_ACHIEVEMENTS = [
   {
-    id: 'com.tandemdaily.app.cryptic_first_win',
+    id: 'com.tandemdaily.app.mini_first_win',
     name: 'First Win',
-    description: 'Solve your first cryptic puzzle',
-    emoji: '🎉',
+    description: 'Solve your first mini puzzle',
+    emoji: '🥇',
     threshold: 1,
     points: 5,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_getting_hang',
+    id: 'com.tandemdaily.app.mini_getting_hang',
     name: 'Getting the Hang of It',
-    description: 'Solve 10 cryptic puzzles',
+    description: 'Solve 10 mini puzzles',
     emoji: '👍',
     threshold: 10,
     points: 10,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_puzzle_pal',
+    id: 'com.tandemdaily.app.mini_puzzle_pal',
     name: 'Puzzle Pal',
-    description: 'Solve 25 cryptic puzzles',
-    emoji: '🧩',
+    description: 'Solve 25 mini puzzles',
+    emoji: '👯',
     threshold: 25,
     points: 25,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_clever_cookie',
+    id: 'com.tandemdaily.app.mini_clever_cookie',
     name: 'Clever Cookie',
-    description: 'Solve 50 cryptic puzzles',
+    description: 'Solve 50 mini puzzles',
     emoji: '🍪',
     threshold: 50,
     points: 30,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_brainy_buddy',
+    id: 'com.tandemdaily.app.mini_brainy_buddy',
     name: 'Brainy Buddy',
-    description: 'Solve 100 cryptic puzzles',
+    description: 'Solve 100 mini puzzles',
     emoji: '🧠',
     threshold: 100,
     points: 50,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_puzzle_whiz',
+    id: 'com.tandemdaily.app.mini_puzzle_whiz',
     name: 'Puzzle Whiz',
-    description: 'Solve 250 cryptic puzzles',
+    description: 'Solve 250 mini puzzles',
     emoji: '⚡',
     threshold: 250,
     points: 75,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_word_wizard',
+    id: 'com.tandemdaily.app.mini_word_wizard',
     name: 'Word Wizard',
-    description: 'Solve 500 cryptic puzzles',
+    description: 'Solve 500 mini puzzles',
     emoji: '🪄',
     threshold: 500,
     points: 100,
   },
   {
-    id: 'com.tandemdaily.app.cryptic_puzzle_king',
+    id: 'com.tandemdaily.app.mini_puzzle_king',
     name: 'Puzzle King',
-    description: 'Solve 1000 cryptic puzzles',
+    description: 'Solve 1000 mini puzzles',
     emoji: '👑',
+    threshold: 1000,
+    points: 100,
+  },
+];
+
+/**
+ * Reel Connections Streak-Based Achievements (23 total)
+ * Movie-themed achievement names for the connections game
+ */
+export const REEL_STREAK_ACHIEVEMENTS = [
+  {
+    id: 'com.tandemdaily.app.reel_opening_credits',
+    name: 'Opening Credits',
+    description: 'Maintain a 3-day Reel streak',
+    emoji: '🎬',
+    threshold: 3,
+    points: 5,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_scene_setter',
+    name: 'Scene Setter',
+    description: 'Maintain a 5-day Reel streak',
+    emoji: '🎥',
+    threshold: 5,
+    points: 5,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_rising_action',
+    name: 'Rising Action',
+    description: 'Maintain a 7-day Reel streak',
+    emoji: '📈',
+    threshold: 7,
+    points: 10,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_plot_twist',
+    name: 'Plot Twist',
+    description: 'Maintain a 10-day Reel streak',
+    emoji: '🔄',
+    threshold: 10,
+    points: 10,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_montage_master',
+    name: 'Montage Master',
+    description: 'Maintain a 15-day Reel streak',
+    emoji: '🎞️',
+    threshold: 15,
+    points: 15,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_screen_star',
+    name: 'Screen Star',
+    description: 'Maintain a 20-day Reel streak',
+    emoji: '⭐',
+    threshold: 20,
+    points: 15,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_box_office_hit',
+    name: 'Box Office Hit',
+    description: 'Maintain a 25-day Reel streak',
+    emoji: '🎟️',
+    threshold: 25,
+    points: 20,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_feature_film',
+    name: 'Feature Film',
+    description: 'Maintain a 30-day Reel streak',
+    emoji: '🎦',
+    threshold: 30,
+    points: 25,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_blockbuster',
+    name: 'Blockbuster',
+    description: 'Maintain a 40-day Reel streak',
+    emoji: '💥',
+    threshold: 40,
+    points: 25,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_cult_classic',
+    name: 'Cult Classic',
+    description: 'Maintain a 50-day Reel streak',
+    emoji: '🎭',
+    threshold: 50,
+    points: 30,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_silver_screen',
+    name: 'Silver Screen',
+    description: 'Maintain a 60-day Reel streak',
+    emoji: '🖥️',
+    threshold: 60,
+    points: 30,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_studio_legend',
+    name: 'Studio Legend',
+    description: 'Maintain a 75-day Reel streak',
+    emoji: '🏛️',
+    threshold: 75,
+    points: 40,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_award_winner',
+    name: 'Award Winner',
+    description: 'Maintain a 90-day Reel streak',
+    emoji: '🏆',
+    threshold: 90,
+    points: 40,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_century_cinema',
+    name: 'Century of Cinema',
+    description: 'Maintain a 100-day Reel streak',
+    emoji: '💯',
+    threshold: 100,
+    points: 50,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_directors_cut',
+    name: "Director's Cut",
+    description: 'Maintain a 125-day Reel streak',
+    emoji: '🎬',
+    threshold: 125,
+    points: 60,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_film_festival',
+    name: 'Film Festival',
+    description: 'Maintain a 150-day Reel streak',
+    emoji: '🎪',
+    threshold: 150,
+    points: 60,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_golden_age',
+    name: 'Golden Age',
+    description: 'Maintain a 175-day Reel streak',
+    emoji: '✨',
+    threshold: 175,
+    points: 75,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_cinema_royalty',
+    name: 'Cinema Royalty',
+    description: 'Maintain a 200-day Reel streak',
+    emoji: '👑',
+    threshold: 200,
+    points: 75,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_world_premiere',
+    name: 'World Premiere',
+    description: 'Maintain a 250-day Reel streak',
+    emoji: '🌍',
+    threshold: 250,
+    points: 80,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_hall_of_fame',
+    name: 'Hall of Fame',
+    description: 'Maintain a 300-day Reel streak',
+    emoji: '🎖️',
+    threshold: 300,
+    points: 100,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_timeless_classic',
+    name: 'Timeless Classic',
+    description: 'Maintain a 365-day Reel streak',
+    emoji: '⏳',
+    threshold: 365,
+    points: 100,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_eternal_screening',
+    name: 'Eternal Screening',
+    description: 'Maintain a 500-day Reel streak',
+    emoji: '♾️',
+    threshold: 500,
+    points: 100,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_legendary_producer',
+    name: 'Legendary Producer',
+    description: 'Maintain a 1000-day Reel streak',
+    emoji: '🌟🎬🏆',
+    threshold: 1000,
+    points: 100,
+  },
+];
+
+/**
+ * Reel Connections Total Wins Achievements (8 total)
+ * Movie-themed achievement names for total games won
+ */
+export const REEL_WINS_ACHIEVEMENTS = [
+  {
+    id: 'com.tandemdaily.app.reel_first_take',
+    name: 'First Take',
+    description: 'Win your first Reel game',
+    emoji: '🎬',
+    threshold: 1,
+    points: 5,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_supporting_role',
+    name: 'Supporting Role',
+    description: 'Win 10 Reel games',
+    emoji: '🎭',
+    threshold: 10,
+    points: 10,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_leading_role',
+    name: 'Leading Role',
+    description: 'Win 25 Reel games',
+    emoji: '🌟',
+    threshold: 25,
+    points: 25,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_movie_buff',
+    name: 'Movie Buff',
+    description: 'Win 50 Reel games',
+    emoji: '🎥',
+    threshold: 50,
+    points: 30,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_cinephile',
+    name: 'Cinephile',
+    description: 'Win 100 Reel games',
+    emoji: '📽️',
+    threshold: 100,
+    points: 50,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_film_critic',
+    name: 'Film Critic',
+    description: 'Win 250 Reel games',
+    emoji: '🎞️',
+    threshold: 250,
+    points: 75,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_auteur',
+    name: 'Auteur',
+    description: 'Win 500 Reel games',
+    emoji: '🎬',
+    threshold: 500,
+    points: 100,
+  },
+  {
+    id: 'com.tandemdaily.app.reel_oscar_winner',
+    name: 'Oscar Winner',
+    description: 'Win 1000 Reel games',
+    emoji: '🏆',
     threshold: 1000,
     points: 100,
   },
@@ -547,11 +809,19 @@ export function getAllAchievements() {
 }
 
 /**
- * Get all Daily Cryptic achievements in a single array
- * @returns {Array} All 31 Daily Cryptic achievements
+ * Get all Daily Mini achievements in a single array
+ * @returns {Array} All 31 Daily Mini achievements
  */
-export function getAllCrypticAchievements() {
-  return [...CRYPTIC_STREAK_ACHIEVEMENTS, ...CRYPTIC_WINS_ACHIEVEMENTS];
+export function getAllMiniAchievements() {
+  return [...MINI_STREAK_ACHIEVEMENTS, ...MINI_WINS_ACHIEVEMENTS];
+}
+
+/**
+ * Get all Reel Connections achievements in a single array
+ * @returns {Array} All 31 Reel Connections achievements
+ */
+export function getAllReelAchievements() {
+  return [...REEL_STREAK_ACHIEVEMENTS, ...REEL_WINS_ACHIEVEMENTS];
 }
 
 /**
@@ -560,7 +830,7 @@ export function getAllCrypticAchievements() {
  * @returns {Object|null} Achievement object or null if not found
  */
 export function getAchievementById(achievementId) {
-  const all = [...getAllAchievements(), ...getAllCrypticAchievements()];
+  const all = [...getAllAchievements(), ...getAllMiniAchievements(), ...getAllReelAchievements()];
   return all.find((a) => a.id === achievementId) || null;
 }
 
@@ -581,19 +851,35 @@ export function getWinsAchievements() {
 }
 
 /**
- * Get all Daily Cryptic streak achievements sorted by threshold
- * @returns {Array} Cryptic streak achievements sorted ascending
+ * Get all Daily Mini streak achievements sorted by threshold
+ * @returns {Array} Mini streak achievements sorted ascending
  */
-export function getCrypticStreakAchievements() {
-  return [...CRYPTIC_STREAK_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
+export function getMiniStreakAchievements() {
+  return [...MINI_STREAK_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
 }
 
 /**
- * Get all Daily Cryptic wins achievements sorted by threshold
- * @returns {Array} Cryptic wins achievements sorted ascending
+ * Get all Daily Mini wins achievements sorted by threshold
+ * @returns {Array} Mini wins achievements sorted ascending
  */
-export function getCrypticWinsAchievements() {
-  return [...CRYPTIC_WINS_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
+export function getMiniWinsAchievements() {
+  return [...MINI_WINS_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
+}
+
+/**
+ * Get all Reel Connections streak achievements sorted by threshold
+ * @returns {Array} Reel streak achievements sorted ascending
+ */
+export function getReelStreakAchievements() {
+  return [...REEL_STREAK_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
+}
+
+/**
+ * Get all Reel Connections wins achievements sorted by threshold
+ * @returns {Array} Reel wins achievements sorted ascending
+ */
+export function getReelWinsAchievements() {
+  return [...REEL_WINS_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
 }
 
 /**
@@ -606,10 +892,19 @@ export function getTotalPossiblePoints() {
 }
 
 /**
- * Calculate total possible points for Daily Cryptic
- * @returns {number} Total points from all Daily Cryptic achievements
+ * Calculate total possible points for Daily Mini
+ * @returns {number} Total points from all Daily Mini achievements
  */
-export function getTotalPossibleCrypticPoints() {
-  const all = getAllCrypticAchievements();
+export function getTotalPossibleMiniPoints() {
+  const all = getAllMiniAchievements();
+  return all.reduce((sum, achievement) => sum + achievement.points, 0);
+}
+
+/**
+ * Calculate total possible points for Reel Connections
+ * @returns {number} Total points from all Reel Connections achievements
+ */
+export function getTotalPossibleReelPoints() {
+  const all = getAllReelAchievements();
   return all.reduce((sum, achievement) => sum + achievement.points, 0);
 }
