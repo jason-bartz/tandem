@@ -10,7 +10,7 @@ import Image from 'next/image';
 /**
  * DailyLeaderboard - Displays top 10 players for today's daily puzzle
  *
- * @param {string} gameType - 'tandem' or 'cryptic'
+ * @param {string} gameType - 'tandem' or 'mini'
  */
 export default function DailyLeaderboard({ gameType }) {
   const [leaderboard, setLeaderboard] = useState([]);

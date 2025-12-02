@@ -79,7 +79,7 @@ export default function StatsModalSkeleton() {
         </div>
       </div>
 
-      {/* Cryptic Stats Section */}
+      {/* Mini Stats Section */}
       <div>
         {/* Section Title */}
         <div
@@ -91,25 +91,25 @@ export default function StatsModalSkeleton() {
           className={`rounded-2xl border-[3px] p-4 mb-4 ${
             highContrast
               ? 'bg-hc-primary border-hc-border'
-              : 'bg-purple-600 dark:bg-purple-700 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+              : 'bg-accent-yellow dark:bg-accent-yellow border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
           }`}
         >
           <div className="flex justify-around items-center">
             <div className="text-center">
               <div
-                className={`h-8 w-16 bg-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-8 w-16 bg-black/10 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
               <div
-                className={`h-3 w-12 bg-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-3 w-12 bg-black/10 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
             </div>
-            <div className="w-px h-12 bg-white/30"></div>
+            <div className="w-px h-12 bg-black/20"></div>
             <div className="text-center">
               <div
-                className={`h-8 w-16 bg-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-8 w-16 bg-black/10 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
               <div
-                className={`h-3 w-12 bg-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-3 w-12 bg-black/10 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
             </div>
           </div>
@@ -119,7 +119,7 @@ export default function StatsModalSkeleton() {
         <div className="grid grid-cols-2 gap-3">
           {[1, 2, 3, 4].map((i) => (
             <div
-              key={`cryptic-${i}`}
+              key={`mini-${i}`}
               className={`rounded-2xl border-[3px] p-4 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'

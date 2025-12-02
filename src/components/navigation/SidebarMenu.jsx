@@ -199,7 +199,7 @@ export default function SidebarMenu({
               stiffness: 200,
               duration: reduceMotion ? 0.2 : undefined,
             }}
-            className={`fixed top-0 right-0 bottom-0 w-80 max-w-[85vw] z-50 overflow-y-auto ${
+            className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto ${
               highContrast
                 ? 'bg-hc-surface border-l-[4px] border-hc-border'
                 : 'bg-bg-surface dark:bg-bg-card border-l-[4px] border-border-main'
@@ -255,7 +255,7 @@ export default function SidebarMenu({
             <div className="px-6 pb-6 space-y-6">
               {/* Player Section */}
               <section>
-                <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-3 px-1">
+                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
                   Player
                 </h3>
                 {isGuest ? (
@@ -449,10 +449,10 @@ export default function SidebarMenu({
                 </div>
               </section>
 
-              {/* Games Section */}
+              {/* Word Puzzles Section */}
               <section>
-                <h3 className="text-xs font-bold text-text-secondary uppercase tracking-wider mb-3 px-1">
-                  Games
+                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                  Word Puzzles
                 </h3>
                 <div className="space-y-2">
                   <GameButton
@@ -464,20 +464,31 @@ export default function SidebarMenu({
                     highContrast={highContrast}
                   />
                   <GameButton
-                    icon="/icons/ui/cryptic.png"
-                    label="Daily Cryptic"
-                    onClick={() => handleNavigation('/dailycryptic')}
-                    isActive={pathname === '/dailycryptic'}
-                    gameColor="purple"
-                    highContrast={highContrast}
-                  />
-                  <GameButton
                     icon="/icons/ui/mini.png"
                     label="Daily Mini"
                     onClick={() => handleNavigation('/dailymini')}
                     isActive={pathname === '/dailymini'}
                     gameColor="yellow"
                     highContrast={highContrast}
+                  />
+                </div>
+              </section>
+
+              {/* Other Games Section */}
+              <section>
+                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                  Other Games
+                </h3>
+                <div className="space-y-2">
+                  <GameButton
+                    icon="/icons/ui/movie.png"
+                    label="Reel Connections"
+                    onClick={() => handleNavigation('/reel-connections')}
+                    isActive={pathname === '/reel-connections'}
+                    gameColor="red"
+                    highContrast={highContrast}
+                    badge="BETA"
+                    subtitle="Create four groups of four movies"
                   />
                 </div>
               </section>
@@ -584,7 +595,7 @@ function FooterLink({ label, onClick }) {
 /**
  * GameButton - Game selection button with active state and custom colors
  */
-function GameButton({ icon, label, onClick, isActive, gameColor, highContrast }) {
+function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, badge, subtitle }) {
   const iconSrc = icon;
 
   // Define colors for each game
@@ -603,6 +614,11 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast })
       return {
         bg: '#ffce00', // Yellow (Mini color)
         text: 'text-gray-900',
+      };
+    } else if (gameColor === 'red') {
+      return {
+        bg: '#ef4444', // Red-500 (Reel Connections color)
+        text: 'text-white',
       };
     }
     return {
@@ -628,9 +644,27 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast })
       }`}
     >
       <img src={iconSrc} alt="" className="w-8 h-8" />
-      <span className={`text-base font-bold ${!highContrast ? colors.text : 'text-text-primary'}`}>
-        {label}
-      </span>
+      <div className="flex flex-col items-start">
+        <div className="flex items-center gap-2">
+          <span
+            className={`text-base font-bold whitespace-nowrap ${!highContrast ? colors.text : 'text-text-primary'}`}
+          >
+            {label}
+          </span>
+          {badge && (
+            <span className="px-1.5 py-0.5 bg-[#ffce00] text-[#0f0f1e] text-[10px] font-black uppercase tracking-wider rounded shadow-sm transform -rotate-2">
+              {badge}
+            </span>
+          )}
+        </div>
+        {subtitle && (
+          <span
+            className={`text-[10px] ${!highContrast ? colors.text : 'text-text-secondary'} opacity-90`}
+          >
+            {subtitle}
+          </span>
+        )}
+      </div>
     </button>
   );
 }

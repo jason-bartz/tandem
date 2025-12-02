@@ -53,13 +53,20 @@
 
 [data-theme='dark'] {
   /* Dark mode - lighter versions for contrast on dark backgrounds (WCAG AAA: 7:1 on #0f3460) */
-  --accent-green: #7ed957; /* Light green - 8.21:1 on dark bg */
-  --accent-yellow: #ffd700; /* Gold - 10.5:1 on dark bg */
-  --accent-pink: #ff69b4; /* Hot pink - 7.15:1 on dark bg */
-  --accent-blue: #5eb3ff; /* Light blue - 7.82:1 on dark bg */
-  --accent-red: #ff7b7b; /* Light red - 7.03:1 on dark bg */
-  --accent-orange: #ffa64d; /* Light orange - 8.42:1 on dark bg */
-  --accent-purple: #c084fc; /* Light purple - 8.12:1 on dark bg */
+  --accent-green: #7ed957;
+  /* Light green - 8.21:1 on dark bg */
+  --accent-yellow: #ffd700;
+  /* Gold - 10.5:1 on dark bg */
+  --accent-pink: #ff69b4;
+  /* Hot pink - 7.15:1 on dark bg */
+  --accent-blue: #5eb3ff;
+  /* Light blue - 7.82:1 on dark bg */
+  --accent-red: #ff7b7b;
+  /* Light red - 7.03:1 on dark bg */
+  --accent-orange: #ffa64d;
+  /* Light orange - 8.42:1 on dark bg */
+  --accent-purple: #c084fc;
+  /* Light purple - 8.12:1 on dark bg */
 
   /* Background colors - dark blue/purple complementary to yellow */
   --bg-primary: #1a1a2e;
@@ -170,6 +177,7 @@ select {
   .pt-safe-ios {
     padding-top: max(2.5rem, calc(env(safe-area-inset-top) + 1rem));
   }
+
   .pb-safe-ios {
     padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
   }
@@ -203,7 +211,8 @@ select {
 .mobile-playing-screen {
   height: 100%;
   max-height: 100vh;
-  max-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  max-height: 100dvh;
+  /* Dynamic viewport height for mobile browsers */
 }
 
 /* Prevent scrolling on mobile phone layout */
@@ -255,12 +264,15 @@ select {
 
 /* Hide scrollbar utility for horizontal scroll containers */
 .hide-scrollbar {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 .hide-scrollbar::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 /* Ensure inputs don't zoom on iOS devices */
@@ -289,7 +301,8 @@ body {
     Ubuntu,
     sans-serif;
   background-color: var(--bg-primary);
-  background-image: none !important; /* Remove any background images */
+  background-image: none !important;
+  /* Remove any background images */
   min-height: 100vh;
   margin: 0;
   padding: 0;
@@ -303,7 +316,8 @@ body {
 
 [data-theme='dark'] body {
   background-color: var(--bg-primary);
-  background-image: none !important; /* Remove any background images */
+  background-image: none !important;
+  /* Remove any background images */
 }
 
 .game-container {
@@ -393,6 +407,7 @@ body {
     opacity: 0;
     transform: translateY(100%);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -410,6 +425,7 @@ body {
     opacity: 1;
     transform: translateY(0);
   }
+
   to {
     opacity: 0;
     transform: translateY(100%);
@@ -426,6 +442,7 @@ body {
     opacity: 0;
     transform: translateY(40px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -442,6 +459,7 @@ body {
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -462,6 +480,7 @@ body {
     opacity: 0;
     transform: scale(0.92) translateY(10px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -478,6 +497,7 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+
   to {
     opacity: 0;
     transform: scale(0.95);
@@ -493,6 +513,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -512,6 +533,7 @@ body {
   from {
     transform: translateX(-100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -527,6 +549,7 @@ body {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(-100%);
   }
@@ -541,6 +564,7 @@ body {
   from {
     transform: translateX(100%);
   }
+
   to {
     transform: translateX(0);
   }
@@ -555,6 +579,7 @@ body {
   from {
     transform: translateX(0);
   }
+
   to {
     transform: translateX(100%);
   }
@@ -569,6 +594,7 @@ body {
   from {
     transform: translateY(100%);
   }
+
   to {
     transform: translateY(0);
   }
@@ -584,6 +610,7 @@ body {
   from {
     transform: translateX(-50%) translateY(100%);
   }
+
   to {
     transform: translateX(-50%) translateY(0);
   }
@@ -599,6 +626,7 @@ body {
   from {
     transform: translateY(0);
   }
+
   to {
     transform: translateY(100%);
   }
@@ -617,9 +645,11 @@ body {
   0% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(0.97);
   }
+
   100% {
     transform: scale(1);
   }
@@ -634,15 +664,19 @@ body {
   0% {
     transform: scale(1);
   }
+
   25% {
     transform: scale(1.02);
   }
+
   50% {
     transform: scale(0.98);
   }
+
   75% {
     transform: scale(1.01);
   }
+
   100% {
     transform: scale(1);
   }
@@ -658,15 +692,19 @@ body {
   100% {
     transform: translateX(0);
   }
+
   20% {
     transform: translateX(-6px);
   }
+
   40% {
     transform: translateX(6px);
   }
+
   60% {
     transform: translateX(-3px);
   }
+
   80% {
     transform: translateX(3px);
   }
@@ -682,9 +720,11 @@ body {
     opacity: 0;
     transform: scale(0.8);
   }
+
   50% {
     transform: scale(1.1);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -701,6 +741,7 @@ body {
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
@@ -720,6 +761,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -728,7 +770,8 @@ body {
 
 .animate-fade-in-up {
   animation: fadeInUp 300ms cubic-bezier(0, 0, 0.58, 1);
-  animation-fill-mode: backwards; /* Prevents layout shift by starting in initial state */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift by starting in initial state */
 }
 
 /* Scale fade in */
@@ -737,6 +780,7 @@ body {
     opacity: 0;
     transform: scale(0.9);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -745,33 +789,45 @@ body {
 
 .animate-scale-fade-in {
   animation: scaleFadeIn 300ms cubic-bezier(0, 0, 0.58, 1);
-  animation-fill-mode: backwards; /* Prevents layout shift by starting in initial state */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift by starting in initial state */
 }
 
 /* Stagger delays for list items */
 .stagger-1 {
   animation-delay: 50ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
+
 .stagger-2 {
   animation-delay: 100ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
+
 .stagger-3 {
   animation-delay: 150ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
+
 .stagger-4 {
   animation-delay: 200ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
+
 .stagger-5 {
   animation-delay: 250ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
+
 .stagger-6 {
   animation-delay: 300ms;
-  animation-fill-mode: backwards; /* Prevents layout shift during delay */
+  animation-fill-mode: backwards;
+  /* Prevents layout shift during delay */
 }
 
 /* Apply animation-delay to Tailwind's delay-* utilities when used with animations */
@@ -780,50 +836,62 @@ body {
   animation-delay: 0ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-50 {
   animation-delay: 50ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-75 {
   animation-delay: 75ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-100 {
   animation-delay: 100ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-150 {
   animation-delay: 150ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-200 {
   animation-delay: 200ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-250 {
   animation-delay: 250ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-300 {
   animation-delay: 300ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-400 {
   animation-delay: 400ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-500 {
   animation-delay: 500ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-600 {
   animation-delay: 600ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-700 {
   animation-delay: 700ms !important;
   animation-fill-mode: backwards;
 }
+
 [class*='animate-'].delay-800 {
   animation-delay: 800ms !important;
   animation-fill-mode: backwards;
@@ -839,13 +907,16 @@ body {
     opacity: 0;
     transform: scale(0.3) translateY(-20px);
   }
+
   50% {
     opacity: 0.9;
     transform: scale(1.05) translateY(-5px);
   }
+
   70% {
     transform: scale(0.95) translateY(0);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -863,6 +934,7 @@ body {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.05);
@@ -882,6 +954,7 @@ body {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -892,6 +965,7 @@ body {
   100% {
     transform: scale(1);
   }
+
   50% {
     transform: scale(1.05);
   }
@@ -902,6 +976,7 @@ body {
     opacity: 0;
     transform: translateX(100%);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -913,6 +988,7 @@ body {
     opacity: 0;
     transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -924,6 +1000,7 @@ body {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -934,12 +1011,15 @@ body {
   0% {
     transform: scale(1);
   }
+
   30% {
     transform: scale(0.95);
   }
+
   60% {
     transform: scale(1.08);
   }
+
   100% {
     transform: scale(1);
   }
@@ -950,15 +1030,19 @@ body {
   100% {
     transform: translateX(0);
   }
+
   20% {
     transform: translateX(-6px);
   }
+
   40% {
     transform: translateX(6px);
   }
+
   60% {
     transform: translateX(-3px);
   }
+
   80% {
     transform: translateX(3px);
   }
@@ -969,6 +1053,7 @@ body {
     opacity: 0;
     transform: scale(0.8);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -980,8 +1065,48 @@ body {
   100% {
     transform: translateX(0);
   }
+
   50% {
     transform: translateX(30px);
+  }
+}
+
+/* Cinematic Design Animations */
+@keyframes marqueeLights {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  50% {
+    opacity: 0.7;
+    filter: brightness(1.3);
+  }
+}
+
+@keyframes goldGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 0 10px rgba(255, 206, 0, 0.25),
+      0 0 20px rgba(255, 206, 0, 0.1);
+  }
+
+  50% {
+    box-shadow:
+      0 0 15px rgba(255, 206, 0, 0.35),
+      0 0 30px rgba(255, 206, 0, 0.15);
+  }
+}
+
+@keyframes selectionLift {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-8px);
   }
 }
 
@@ -990,6 +1115,7 @@ body {
     opacity: 0;
     transform: translateY(30px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1001,13 +1127,16 @@ body {
     opacity: 0;
     transform: scale(0.3) translateY(-20px);
   }
+
   50% {
     opacity: 0.9;
     transform: scale(1.05) translateY(-5px);
   }
+
   70% {
     transform: scale(0.95) translateY(0);
   }
+
   100% {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -1024,6 +1153,7 @@ body {
   0% {
     background-position: -1000px 0;
   }
+
   100% {
     background-position: 1000px 0;
   }
@@ -1050,28 +1180,89 @@ body {
   background-size: 1000px 100%;
 }
 
+/* Reel Connections cinema-themed skeleton shimmer - golden/warm glow on dark background */
+.reel-skeleton-shimmer {
+  animation: shimmer 1.5s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 206, 0, 0) 0%,
+    rgba(255, 206, 0, 0.15) 50%,
+    rgba(255, 206, 0, 0) 100%
+  );
+  background-size: 1000px 100%;
+}
+
 /* Slide in animation for loading messages */
 @keyframes loadingSlide {
   0% {
     opacity: 0;
     transform: translateX(20px);
   }
+
   10% {
     opacity: 1;
     transform: translateX(0);
   }
+
   90% {
     opacity: 1;
     transform: translateX(0);
   }
+
   100% {
     opacity: 0;
     transform: translateX(-20px);
   }
 }
 
+/* Marquee animation for scrolling text */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
 .animate-loading-slide {
   animation: loadingSlide 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.animate-marquee {
+  display: inline-block;
+  animation: marquee 8s linear infinite;
+}
+
+/* Cinematic Design Utility Classes */
+.cinema-gradient {
+  background: linear-gradient(135deg, #dc2626 0%, #991b1b 100%);
+}
+
+.gold-glow {
+  animation: goldGlow 2s ease-in-out infinite;
+}
+
+.selection-lift {
+  animation: selectionLift 0.2s ease-out forwards;
+}
+
+.marquee-lights {
+  animation: marqueeLights 1.5s ease-in-out infinite;
+}
+
+.film-grain {
+  position: relative;
+}
+
+.film-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* Hidden canvas for image export */
@@ -1209,41 +1400,66 @@ body {
 
 /* Light mode high contrast - WCAG AAA compliant (7:1 contrast) */
 .high-contrast:not(.dark) {
-  --hc-primary: #0066b3; /* Dark blue - 7.05:1 on white */
-  --hc-primary-text: #ffffff; /* White text on dark blue backgrounds */
-  --hc-success: #2d8504; /* Dark green - 7.12:1 on white */
-  --hc-success-text: #ffffff; /* White text on dark green backgrounds */
-  --hc-error: #c7251a; /* Dark red - 7.26:1 on white */
-  --hc-error-text: #ffffff; /* White text on dark red backgrounds */
-  --hc-warning: #7b3ff2; /* Purple - 7.02:1 on white, more attractive than brown */
-  --hc-warning-text: #ffffff; /* White text on dark purple backgrounds */
+  --hc-primary: #0066b3;
+  /* Dark blue - 7.05:1 on white */
+  --hc-primary-text: #ffffff;
+  /* White text on dark blue backgrounds */
+  --hc-success: #2d8504;
+  /* Dark green - 7.12:1 on white */
+  --hc-success-text: #ffffff;
+  /* White text on dark green backgrounds */
+  --hc-error: #c7251a;
+  /* Dark red - 7.26:1 on white */
+  --hc-error-text: #ffffff;
+  /* White text on dark red backgrounds */
+  --hc-warning: #7b3ff2;
+  /* Purple - 7.02:1 on white, more attractive than brown */
+  --hc-warning-text: #ffffff;
+  /* White text on dark purple backgrounds */
   --hc-background: #ffffff;
   --hc-surface: #f5f5f5;
   --hc-text: #000000;
-  --hc-border: #000000; /* Pure black for maximum contrast */
-  --hc-focus: #0066b3; /* Dark blue for today highlight */
-  --hc-neutral: #595959; /* Dark gray - 7.48:1 on white */
+  --hc-border: #000000;
+  /* Pure black for maximum contrast */
+  --hc-focus: #0066b3;
+  /* Dark blue for today highlight */
+  --hc-neutral: #595959;
+  /* Dark gray - 7.48:1 on white */
 }
 
 /* Dark mode high contrast - WCAG AAA compliant with proper text contrast */
 .high-contrast.dark {
   /* Backgrounds: Dark colors for buttons/surfaces */
-  --hc-primary: #003d73; /* Very dark blue - for button backgrounds */
-  --hc-primary-text: #ffffff; /* White text on dark blue - 10.7:1 ✓ */
-  --hc-success: #1a5c00; /* Very dark green - for button backgrounds */
-  --hc-success-text: #ffffff; /* White text on dark green - 9.2:1 ✓ */
-  --hc-error: #8b0000; /* Very dark red - for button backgrounds */
-  --hc-error-text: #ffffff; /* White text on dark red - 8.1:1 ✓ */
-  --hc-warning: #665200; /* Very dark gold - for button backgrounds */
-  --hc-warning-text: #ffffff; /* White text on dark gold - 7.8:1 ✓ */
+  --hc-primary: #003d73;
+  /* Very dark blue - for button backgrounds */
+  --hc-primary-text: #ffffff;
+  /* White text on dark blue - 10.7:1 ✓ */
+  --hc-success: #1a5c00;
+  /* Very dark green - for button backgrounds */
+  --hc-success-text: #ffffff;
+  /* White text on dark green - 9.2:1 ✓ */
+  --hc-error: #8b0000;
+  /* Very dark red - for button backgrounds */
+  --hc-error-text: #ffffff;
+  /* White text on dark red - 8.1:1 ✓ */
+  --hc-warning: #665200;
+  /* Very dark gold - for button backgrounds */
+  --hc-warning-text: #ffffff;
+  /* White text on dark gold - 7.8:1 ✓ */
 
   /* UI backgrounds */
-  --hc-background: #000814; /* Very dark blue-black */
-  --hc-surface: #001d3d; /* Dark blue surface */
-  --hc-text: #ffffff; /* White text on dark backgrounds */
-  --hc-border: #5eb3ff; /* Light blue for borders - visible on dark */
-  --hc-focus: #ff69b4; /* Hot pink for focus states */
-  --hc-neutral: #b0b0b0; /* Light gray */
+  --hc-background: #000814;
+  /* Very dark blue-black */
+  --hc-surface: #001d3d;
+  /* Dark blue surface */
+  --hc-text: #ffffff;
+  /* White text on dark backgrounds */
+  --hc-border: #5eb3ff;
+  /* Light blue for borders - visible on dark */
+  --hc-focus: #ff69b4;
+  /* Hot pink for focus states */
+  --hc-neutral: #b0b0b0;
+  /* Light gray */
 
   /* Legacy compatibility */
   --hc-success: #1a5c00;

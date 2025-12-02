@@ -5,10 +5,10 @@ import PuzzleEditor from '@/components/admin/PuzzleEditor';
 import PuzzleCalendar from '@/components/admin/PuzzleCalendar';
 import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
-import CrypticPuzzleCalendar from '@/components/admin/cryptic/CrypticPuzzleCalendar';
-import CrypticPuzzleEditor from '@/components/admin/cryptic/CrypticPuzzleEditor';
 import MiniPuzzleCalendar from '@/components/admin/mini/MiniPuzzleCalendar';
 import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
+import ReelConnectionsPuzzleCalendar from '@/components/admin/reel-connections/ReelConnectionsPuzzleCalendar';
+import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import authService from '@/services/auth.service';
 
@@ -22,13 +22,6 @@ export default function AdminDashboard() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [feedbackCounts, setFeedbackCounts] = useState(null);
 
-  // Cryptic puzzle state
-  const [crypticPuzzles, setCrypticPuzzles] = useState([]);
-  const [crypticLoading, setCrypticLoading] = useState(false);
-  const [selectedCrypticDate, setSelectedCrypticDate] = useState(null);
-  const [editingCrypticPuzzle, setEditingCrypticPuzzle] = useState(null);
-  const [showCrypticEditor, setShowCrypticEditor] = useState(false);
-
   // Mini puzzle state
   const [miniPuzzles, setMiniPuzzles] = useState([]);
   const [miniLoading, setMiniLoading] = useState(false);
@@ -36,16 +29,16 @@ export default function AdminDashboard() {
   const [editingMiniPuzzle, setEditingMiniPuzzle] = useState(null);
   const [showMiniEditor, setShowMiniEditor] = useState(false);
 
+  // Reel Connections puzzle state
+  const [reelPuzzles, setReelPuzzles] = useState([]);
+  const [reelLoading, setReelLoading] = useState(false);
+  const [selectedReelDate, setSelectedReelDate] = useState(null);
+  const [editingReelPuzzle, setEditingReelPuzzle] = useState(null);
+  const [showReelEditor, setShowReelEditor] = useState(false);
+
   useEffect(() => {
     setMounted(true);
   }, []);
-
-  // Load cryptic puzzles when cryptic tab is active
-  useEffect(() => {
-    if (activeTab === 'cryptic' && mounted) {
-      loadCrypticPuzzles();
-    }
-  }, [activeTab, mounted, refreshKey]);
 
   // Load mini puzzles when mini tab is active
   useEffect(() => {
@@ -53,85 +46,6 @@ export default function AdminDashboard() {
       loadMiniPuzzles();
     }
   }, [activeTab, mounted, refreshKey]);
-
-  const loadCrypticPuzzles = async () => {
-    setCrypticLoading(true);
-    try {
-      const response = await fetch('/api/admin/cryptic/puzzles?limit=365', {
-        headers: authService.getAuthHeaders(),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        setCrypticPuzzles(data.puzzles || []);
-      }
-    } catch (error) {
-      console.error('Error loading cryptic puzzles:', error);
-    } finally {
-      setCrypticLoading(false);
-    }
-  };
-
-  const handleSaveCrypticPuzzle = async (puzzleData) => {
-    setCrypticLoading(true);
-    try {
-      const isEdit = !!editingCrypticPuzzle;
-      const url = '/api/admin/cryptic/puzzles';
-      const method = isEdit ? 'PUT' : 'POST';
-      const body = isEdit ? { ...puzzleData, id: editingCrypticPuzzle.id } : puzzleData;
-
-      const response = await fetch(url, {
-        method,
-        headers: authService.getAuthHeaders(true), // Include CSRF for state-changing operations
-        body: JSON.stringify(body),
-      });
-
-      if (response.ok) {
-        await loadCrypticPuzzles();
-        setShowCrypticEditor(false);
-        setEditingCrypticPuzzle(null);
-        setSelectedCrypticDate(null);
-      } else {
-        const error = await response.json();
-        alert(`Error: ${error.error || 'Failed to save puzzle'}`);
-      }
-    } catch (error) {
-      console.error('Error saving cryptic puzzle:', error);
-      alert('Failed to save puzzle. Please try again.');
-    } finally {
-      setCrypticLoading(false);
-    }
-  };
-
-  const handleDeleteCrypticPuzzle = async (puzzleId) => {
-    if (!confirm('Are you sure you want to delete this puzzle?')) return;
-
-    try {
-      const response = await fetch(`/api/admin/cryptic/puzzles?id=${puzzleId}`, {
-        method: 'DELETE',
-        headers: authService.getAuthHeaders(true), // Include CSRF
-      });
-
-      if (response.ok) {
-        await loadCrypticPuzzles();
-        setShowCrypticEditor(false);
-        setEditingCrypticPuzzle(null);
-      }
-    } catch (error) {
-      console.error('Error deleting cryptic puzzle:', error);
-      alert('Failed to delete puzzle. Please try again.');
-    }
-  };
-
-  const handleSelectCrypticDate = (date) => {
-    setSelectedCrypticDate(date);
-    const existingPuzzle = crypticPuzzles.find((p) => p.date === date);
-    if (existingPuzzle) {
-      setEditingCrypticPuzzle(existingPuzzle);
-    } else {
-      setEditingCrypticPuzzle(null);
-    }
-    setShowCrypticEditor(true);
-  };
 
   // Mini puzzle functions
   const loadMiniPuzzles = async () => {
@@ -213,6 +127,92 @@ export default function AdminDashboard() {
     setShowMiniEditor(true);
   };
 
+  // Reel Connections puzzle functions
+  useEffect(() => {
+    if (activeTab === 'reel' && mounted) {
+      loadReelPuzzles();
+    }
+  }, [activeTab, mounted, refreshKey]);
+
+  const loadReelPuzzles = async () => {
+    setReelLoading(true);
+    try {
+      const response = await fetch('/api/admin/reel-connections/puzzles?limit=365', {
+        headers: authService.getAuthHeaders(),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setReelPuzzles(data.puzzles || []);
+      }
+    } catch (error) {
+      console.error('Error loading Reel Connections puzzles:', error);
+    } finally {
+      setReelLoading(false);
+    }
+  };
+
+  const handleSaveReelPuzzle = async (puzzleData) => {
+    setReelLoading(true);
+    try {
+      const isEdit = !!editingReelPuzzle;
+      const url = '/api/admin/reel-connections/puzzles';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body = isEdit ? { ...puzzleData, id: editingReelPuzzle.id } : puzzleData;
+
+      const response = await fetch(url, {
+        method,
+        headers: authService.getAuthHeaders(true),
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        await loadReelPuzzles();
+        setShowReelEditor(false);
+        setEditingReelPuzzle(null);
+        setSelectedReelDate(null);
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error || 'Failed to save puzzle'}`);
+      }
+    } catch (error) {
+      console.error('Error saving Reel Connections puzzle:', error);
+      alert('Failed to save puzzle. Please try again.');
+    } finally {
+      setReelLoading(false);
+    }
+  };
+
+  const handleDeleteReelPuzzle = async (puzzleId) => {
+    if (!confirm('Are you sure you want to delete this puzzle?')) return;
+
+    try {
+      const response = await fetch(`/api/admin/reel-connections/puzzles?id=${puzzleId}`, {
+        method: 'DELETE',
+        headers: authService.getAuthHeaders(true),
+      });
+
+      if (response.ok) {
+        await loadReelPuzzles();
+        setShowReelEditor(false);
+        setEditingReelPuzzle(null);
+      }
+    } catch (error) {
+      console.error('Error deleting Reel Connections puzzle:', error);
+      alert('Failed to delete puzzle. Please try again.');
+    }
+  };
+
+  const handleSelectReelDate = (date) => {
+    setSelectedReelDate(date);
+    const existingPuzzle = reelPuzzles.find((p) => p.date === date);
+    if (existingPuzzle) {
+      setEditingReelPuzzle(existingPuzzle);
+    } else {
+      setEditingReelPuzzle(null);
+    }
+    setShowReelEditor(true);
+  };
+
   return (
     <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
       <div className="mb-6">
@@ -249,20 +249,6 @@ export default function AdminDashboard() {
             Tandem
           </button>
           <button
-            onClick={() => setActiveTab('cryptic')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'cryptic'
-                  ? 'border-purple-500 text-text-primary bg-purple-500/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/icons/ui/cryptic.png" alt="" width={20} height={20} />
-            Cryptic
-          </button>
-          <button
             onClick={() => setActiveTab('mini')}
             className={`
               py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
@@ -275,6 +261,20 @@ export default function AdminDashboard() {
           >
             <Image src="/icons/ui/mini.png" alt="" width={20} height={20} />
             Mini
+          </button>
+          <button
+            onClick={() => setActiveTab('reel')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'reel'
+                  ? 'border-accent-red text-text-primary bg-accent-red/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/icons/ui/movie.png" alt="" width={20} height={20} />
+            Reel
           </button>
           <button
             onClick={() => setActiveTab('feedback')}
@@ -383,61 +383,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         )}
-        {activeTab === 'cryptic' && (
-          <div className="space-y-6">
-            {!showCrypticEditor ? (
-              <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-bold text-text-primary">Daily Cryptic Calendar</h3>
-                  <button
-                    onClick={() => {
-                      const today = new Date().toISOString().split('T')[0];
-                      handleSelectCrypticDate(today);
-                    }}
-                    className="px-4 py-2 bg-purple-600 text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
-                  >
-                    New
-                  </button>
-                </div>
-                {crypticLoading ? (
-                  <div className="flex justify-center items-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
-                  </div>
-                ) : (
-                  <CrypticPuzzleCalendar
-                    puzzles={crypticPuzzles}
-                    selectedDate={selectedCrypticDate}
-                    onSelectDate={handleSelectCrypticDate}
-                  />
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {editingCrypticPuzzle && (
-                  <div className="flex justify-end">
-                    <button
-                      onClick={() => handleDeleteCrypticPuzzle(editingCrypticPuzzle.id)}
-                      className="px-4 py-2 bg-accent-red text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
-                    >
-                      Delete Puzzle
-                    </button>
-                  </div>
-                )}
-                <CrypticPuzzleEditor
-                  puzzle={editingCrypticPuzzle}
-                  date={selectedCrypticDate}
-                  onSave={handleSaveCrypticPuzzle}
-                  onCancel={() => {
-                    setShowCrypticEditor(false);
-                    setEditingCrypticPuzzle(null);
-                    setSelectedCrypticDate(null);
-                  }}
-                  loading={crypticLoading}
-                />
-              </div>
-            )}
-          </div>
-        )}
         {activeTab === 'mini' && (
           <div className="space-y-6">
             {!showMiniEditor ? (
@@ -488,6 +433,61 @@ export default function AdminDashboard() {
                     setSelectedMiniDate(null);
                   }}
                   loading={miniLoading}
+                />
+              </div>
+            )}
+          </div>
+        )}
+        {activeTab === 'reel' && (
+          <div className="space-y-6">
+            {!showReelEditor ? (
+              <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-lg font-bold text-text-primary">Reel Connections Calendar</h3>
+                  <button
+                    onClick={() => {
+                      const today = new Date().toISOString().split('T')[0];
+                      handleSelectReelDate(today);
+                    }}
+                    className="px-4 py-2 bg-accent-red text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                  >
+                    New
+                  </button>
+                </div>
+                {reelLoading ? (
+                  <div className="flex justify-center items-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent-red"></div>
+                  </div>
+                ) : (
+                  <ReelConnectionsPuzzleCalendar
+                    puzzles={reelPuzzles}
+                    selectedDate={selectedReelDate}
+                    onSelectDate={handleSelectReelDate}
+                  />
+                )}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {editingReelPuzzle && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => handleDeleteReelPuzzle(editingReelPuzzle.id)}
+                      className="px-4 py-2 bg-accent-red text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                    >
+                      Delete Puzzle
+                    </button>
+                  </div>
+                )}
+                <ReelConnectionsPuzzleEditor
+                  puzzle={editingReelPuzzle}
+                  date={selectedReelDate}
+                  onSave={handleSaveReelPuzzle}
+                  onCancel={() => {
+                    setShowReelEditor(false);
+                    setEditingReelPuzzle(null);
+                    setSelectedReelDate(null);
+                  }}
+                  loading={reelLoading}
                 />
               </div>
             )}

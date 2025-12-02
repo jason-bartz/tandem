@@ -6,7 +6,6 @@ import { useHaptics } from '@/hooks/useHaptics';
 import useUnifiedStats from '@/hooks/useUnifiedStats';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import TandemStatsSection from './TandemStatsSection';
-import CrypticStatsSection from './CrypticStatsSection';
 import MiniStatsSection from './MiniStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
@@ -14,7 +13,7 @@ import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
  * UnifiedStatsModal - Unified statistics left panel for all games
- * Displays Daily Tandem, Daily Cryptic, and Daily Mini stats in a single panel
+ * Displays Daily Tandem and Daily Mini stats in a single panel
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -25,8 +24,8 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const [animationKey, setAnimationKey] = useState(0);
   const [showAchievements, setShowAchievements] = useState(false);
 
-  // Load stats for all three games
-  const { tandemStats, crypticStats, miniStats, loading, error } = useUnifiedStats(isOpen);
+  // Load stats for all games
+  const { tandemStats, miniStats, loading, error } = useUnifiedStats(isOpen);
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -42,10 +41,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 🚲 Daily Tandem
 Played: ${tandemStats.played} | Win Rate: ${tandemStats.played > 0 ? Math.round((tandemStats.wins / tandemStats.played) * 100) : 0}%
 Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '🔥' : ''}
-
-🧩 Daily Cryptic
-Played: ${crypticStats.totalCompleted} | Best Streak: ${crypticStats.longestStreak || 0}
-Current Streak: ${crypticStats.currentStreak} ${crypticStats.currentStreak > 0 ? '🔥' : ''}
 
 📝 Daily Mini
 Played: ${miniStats.totalCompleted} | Best Streak: ${miniStats.longestStreak || 0}
@@ -82,7 +77,7 @@ Play at tandemdaily.com
               {/* Achievements Button */}
               <button
                 onClick={handleOpenAchievements}
-                className={`w-full py-3 px-4 rounded-2xl border-[3px] font-semibold transition-all flex items-center justify-center ${
+                className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
                   highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
                     : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
@@ -123,7 +118,6 @@ Play at tandemdaily.com
         {!loading && !error && (
           <>
             <TandemStatsSection stats={tandemStats} animationKey={animationKey} />
-            <CrypticStatsSection stats={crypticStats} animationKey={animationKey} />
             <MiniStatsSection stats={miniStats} animationKey={animationKey} />
           </>
         )}

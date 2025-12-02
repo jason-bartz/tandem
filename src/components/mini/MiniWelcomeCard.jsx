@@ -46,9 +46,11 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
   useEffect(() => {
     if (!loading) return;
 
+    let timeoutId = null;
+
     const interval = setInterval(() => {
       setIsVisible(false);
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setMessageQueue((prevQueue) => {
           if (prevQueue.length === 0) {
             const shuffled = [...loadingMessages].sort(() => Math.random() - 0.5);
@@ -61,9 +63,12 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         });
         setIsVisible(true);
       }, 300);
-    }, 1000);
+    }, 2000); // Increased to 2 seconds for better readability
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [loading]);
 
   const loadPuzzlePreview = async () => {
@@ -208,7 +213,9 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         <div className="text-xl font-bold text-gray-800 dark:text-gray-200">
           Puzzle #{getPuzzleNumber()}
         </div>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{formatDate(puzzle?.date || new Date().toISOString().split('T')[0])}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          {formatDate(puzzle?.date || new Date().toISOString().split('T')[0])}
+        </p>
       </div>
 
       {/* How to Play Section */}
@@ -247,7 +254,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         style={!highContrast ? { backgroundColor: '#ffce00' } : {}}
       >
         <span className="text-gray-900">
-          {todayCompleted ? 'You solved it!' : "Play Today's Puzzle"}
+          {todayCompleted ? 'You solved it!' : "Play Today's Mini"}
         </span>
       </button>
     </div>

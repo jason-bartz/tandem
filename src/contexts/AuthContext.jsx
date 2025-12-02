@@ -164,23 +164,24 @@ export function AuthProvider({ children }) {
             // Import dynamically to avoid circular dependencies
             const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
             const { loadStats } = await import('@/lib/storage');
-            const { loadCrypticStats } = await import('@/lib/crypticStorage');
-            const { migrateCrypticStatsToDatabase } = await import(
-              '@/lib/migrations/crypticStatsMigration'
-            );
+            const { loadMiniStats } = await import('@/lib/miniStorage');
 
-            // MIGRATION: Sync local cryptic stats to database (database-first architecture)
-            // This runs once per device and ensures existing stats are preserved
-            migrateCrypticStatsToDatabase(session.user).catch((error) => {
-              console.error('[AuthProvider] Cryptic stats migration failed:', error);
-            });
+            // Load current stats for all games
+            const [tandemStats, miniStats] = await Promise.all([loadStats(), loadMiniStats()]);
 
-            // Load current stats (this will now use database as source of truth)
-            const tandemStats = await loadStats();
-            const crypticStats = await loadCrypticStats();
+            // Load reel-connections stats from localStorage
+            let reelStats = null;
+            try {
+              const reelStatsRaw = localStorage.getItem('reel-connections-stats');
+              if (reelStatsRaw) {
+                reelStats = JSON.parse(reelStatsRaw);
+              }
+            } catch (e) {
+              console.error('[AuthProvider] Failed to load reel-connections stats:', e);
+            }
 
             // Sync to leaderboard (non-blocking, fails silently)
-            syncStatsToLeaderboardOnAuth(tandemStats, crypticStats).catch((error) => {
+            syncStatsToLeaderboardOnAuth(tandemStats, null, miniStats, reelStats).catch((error) => {
               console.error('[AuthProvider] Leaderboard sync failed:', error);
             });
           } catch (error) {

@@ -28,9 +28,9 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Daily Tandem or Daily Cryptic ("the Games") at tandemdaily.com
-            or through our iOS app, you agree to be bound by these Terms of Use ("Terms"). If you do
-            not agree to these Terms, please do not use the Games.
+            By accessing or playing Daily Tandem ("the Games") at tandemdaily.com or through our iOS
+            app, you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
+            Terms, please do not use the Games.
           </p>
           <p>
             These Terms apply to all users of the Games, including those who access them through our
@@ -50,8 +50,8 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            We offer two daily word puzzle games provided by Good Vibes Games ("we," "us," or "our")
-            for entertainment purposes:
+            We offer daily word puzzle games provided by Good Vibes Games ("we," "us," or "our") for
+            entertainment purposes:
           </p>
           <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-3">
             <li>
@@ -59,13 +59,12 @@ export default function TermsOfUse() {
               theme
             </li>
             <li>
-              <strong>Daily Cryptic</strong>: Solve cryptic crossword-style clues with emoji hints
-              and wordplay
+              <strong>Daily Mini</strong>: A quick 5x5 mini crossword puzzle
             </li>
           </ul>
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>One free daily puzzle for all users (both games)</li>
+            <li>One free daily puzzle for all users</li>
             <li>Archive of past puzzles (subscription required for full access)</li>
             <li>Statistics tracking and streak counting</li>
             <li>Global leaderboards for competition (web only, requires free account)</li>
@@ -703,10 +702,9 @@ export default function TermsOfUse() {
                     </div>
 
                     {/* Agreement statement */}
-                    <div className="mt-6 p-4 bg-[#ff66c4]/10 border-[3px] border-[#ff66c4] rounded-2xl">
+                    <div className="mt-6 p-4 bg-[#ff66c4]/20 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                        By playing <strong>Daily Tandem</strong> or <strong>Daily Cryptic</strong>,
-                        you agree to these terms
+                        By playing <strong>Tandem Daily Games</strong>, you agree to these terms
                       </p>
                     </div>
                   </div>

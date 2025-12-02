@@ -59,10 +59,10 @@ export default function MiniStatsSection({ stats, animationKey }) {
             lightTap();
             setShowLeaderboard(true);
           }}
-          className={`w-full py-3 px-4 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
+          className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
             highContrast
               ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-              : 'bg-yellow-500 dark:bg-yellow-600 text-gray-900 dark:text-gray-900 border-black dark:border-gray-900 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+              : 'bg-yellow-500 dark:bg-yellow-600 text-gray-900 dark:text-gray-900 border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
           }`}
         >
           View Leaderboard

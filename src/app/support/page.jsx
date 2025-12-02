@@ -15,7 +15,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 
 export default function Support() {
   useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'cryptic', or 'mini'
+  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'mini'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -365,244 +365,6 @@ export default function Support() {
     },
   ];
 
-  // Daily Cryptic sections
-  const crypticSections = [
-    {
-      id: 'cryptic-intro',
-      title: 'Introduction to Daily Cryptic',
-      content: (
-        <div className="space-y-4">
-          <div>
-            <h4 className="font-semibold mb-2">What is Daily Cryptic?</h4>
-            <p className="text-sm mb-3">
-              Daily Cryptic is a cryptic crossword-style puzzle game where each clue is a two-part
-              puzzle: a <strong>definition</strong> (straightforward meaning) and{' '}
-              <strong>wordplay</strong> (clever construction using cryptic devices).
-            </p>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Cryptic Devices</h4>
-            <p className="text-sm mb-2">Puzzles use various cryptic construction techniques:</p>
-            <ul className="list-disc list-inside text-sm space-y-1 ml-4">
-              <li>
-                <strong>Anagrams</strong> - letters rearranged (MOODS = DOOMS)
-              </li>
-              <li>
-                <strong>Containers</strong> - words inside words
-              </li>
-              <li>
-                <strong>Reversals</strong> - reading backwards
-              </li>
-              <li>
-                <strong>Homophones</strong> - sounds-like clues
-              </li>
-              <li>And more classic cryptic techniques</li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="font-semibold mb-2">Daily Puzzle Features</h4>
-            <ul className="list-disc list-inside text-sm space-y-1">
-              <li>
-                <strong>One puzzle daily</strong> at midnight in your local time
-              </li>
-              <li>
-                <strong>4-tier hint system</strong> to help you learn (Fodder, Indicator,
-                Definition, Letter)
-              </li>
-              <li>
-                <strong>Archive access</strong> to play previous puzzles
-              </li>
-              <li>
-                <strong>Dark mode support</strong> for comfortable solving
-              </li>
-              <li>
-                <strong>No time limit</strong> - solve at your own pace
-              </li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'cryptic-devices',
-      title: 'Common Cryptic Devices',
-      content: (
-        <div className="space-y-4">
-          <p className="text-sm mb-3">
-            Cryptic clues use various "devices" or techniques to construct the answer. Here are the
-            most common:
-          </p>
-          <div className="space-y-3 text-sm">
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>🔀</span> Anagram
-              </div>
-              <p className="text-xs mb-1">Letters rearranged to form a new word</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: mixed, confused, scrambled, wild, broken, dancing, crazy
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>➕</span> Charade
-              </div>
-              <p className="text-xs mb-1">Two or more parts joined together (CAR + PET = CARPET)</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: with, and, before, after, following, by, next to
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>📦</span> Container
-              </div>
-              <p className="text-xs mb-1">One word placed inside another (B(AN)D = BAD)</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: in, into, within, holding, containing, around, about
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>✂️</span> Deletion
-              </div>
-              <p className="text-xs mb-1">Remove specific letters from a word</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: without, loses, drops, missing, headless, endless, heartless
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>↩️</span> Reversal
-              </div>
-              <p className="text-xs mb-1">Read a word or letters backward (STOP → POTS)</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: back, returned, reversed, reflected, retreating
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>🔍</span> Hidden Word
-              </div>
-              <p className="text-xs mb-1">Answer hiding in consecutive letters</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: in, within, part of, some of, concealed, buried
-              </p>
-            </div>
-            <div className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg border-2 border-gray-300 dark:border-gray-600">
-              <div className="font-semibold mb-1 flex items-center gap-2">
-                <span>🔊</span> Homophone
-              </div>
-              <p className="text-xs mb-1">A word that sounds like another word</p>
-              <p className="text-xs italic text-gray-600 dark:text-gray-400">
-                Indicators: sounds like, heard, spoken, said, audibly, aloud
-              </p>
-            </div>
-          </div>
-          <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-400">
-            <p className="text-sm">
-              <strong>💡 Tip:</strong> Most Daily Cryptic puzzles combine 2-3 different cryptic
-              devices. Look for multiple indicator words in the clue!
-            </p>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'hint-system',
-      title: 'The Hint System',
-      content: (
-        <div className="space-y-4">
-          <p className="text-sm mb-3">
-            Daily Cryptic offers a 4-tier progressive hint system. Each hint builds on the previous
-            one:
-          </p>
-          <div className="space-y-3">
-            <div className="p-3 bg-purple-50 dark:bg-purple-900/20 rounded-lg border-2 border-purple-300">
-              <div className="font-semibold mb-1">1. Fodder (Most Detailed)</div>
-              <p className="text-sm">
-                Identifies all components of the clue: which words provide the letters, what each
-                piece of text means, any substitutions needed. Walks you through the raw materials.
-              </p>
-            </div>
-            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
-              <div className="font-semibold mb-1">2. Indicator (Operational)</div>
-              <p className="text-sm">
-                Points out indicator words and what cryptic operations they signal. Tells you what
-                to DO with the fodder (rearrange? reverse? combine?).
-              </p>
-            </div>
-            <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-300">
-              <div className="font-semibold mb-1">3. Definition (Concise)</div>
-              <p className="text-sm">
-                Reveals which part of the clue is the straightforward definition - your synonym for
-                the answer.
-              </p>
-            </div>
-            <div className="p-3 bg-orange-50 dark:bg-orange-900/20 rounded-lg border-2 border-orange-300">
-              <div className="font-semibold mb-1">4. First Letter (Final Nudge)</div>
-              <p className="text-sm">
-                Gives you the first letter of the answer. This is your last hint before solving!
-              </p>
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'solving-tips',
-      title: 'Solving Strategy',
-      content: (
-        <div className="space-y-4">
-          <ul className="space-y-3 text-sm">
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">1.</span>
-              <div>
-                <span className="font-semibold">Find the definition</span> - Usually at the start or
-                end of the clue, it's a straightforward synonym for the answer.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">2.</span>
-              <div>
-                <span className="font-semibold">Spot the indicators</span> - Words like "mixed",
-                "back", "in", "loses" tell you what operation to perform.
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">3.</span>
-              <div>
-                <span className="font-semibold">Identify the fodder</span> - Which words/letters
-                will you manipulate?
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">4.</span>
-              <div>
-                <span className="font-semibold">Use hints progressively</span> - Start with Hint 1,
-                then 2, etc. They build on each other!
-              </div>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="font-bold text-purple-600 dark:text-purple-400">5.</span>
-              <div>
-                <span className="font-semibold">Think laterally</span> - Cryptic clues reward
-                creative thinking.
-              </div>
-            </li>
-          </ul>
-          <div className="p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border-2 border-green-400 mt-4">
-            <p className="text-sm font-semibold mb-2">Remember:</p>
-            <ul className="space-y-1 text-sm">
-              <li>✓ Every word in a cryptic clue has a purpose</li>
-              <li>✓ The clue has both a definition and wordplay</li>
-              <li>✓ There's no penalty for using hints - they're designed to teach!</li>
-              <li>✓ The more you play, the better you'll recognize patterns</li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-  ];
-
   // Daily Mini sections
   const miniSections = [
     {
@@ -702,15 +464,15 @@ export default function Support() {
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
                 <p className="font-semibold mb-1">Check Word</p>
                 <p>
-                  Verify all letters in the current word (Across or Down). Incorrect letters will
-                  be cleared.
+                  Verify all letters in the current word (Across or Down). Incorrect letters will be
+                  cleared.
                 </p>
               </div>
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-2 border-blue-300">
                 <p className="font-semibold mb-1">Check Puzzle</p>
                 <p>
-                  Verify the entire puzzle. All incorrect letters will be cleared, and correct
-                  ones will turn green.
+                  Verify the entire puzzle. All incorrect letters will be cleared, and correct ones
+                  will turn green.
                 </p>
               </div>
             </div>
@@ -783,8 +545,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is there a time limit?</p>
                 <p>
-                  A: No! The timer tracks your solving time, but you can take as long as you need
-                  to complete the puzzle.
+                  A: No! The timer tracks your solving time, but you can take as long as you need to
+                  complete the puzzle.
                 </p>
               </div>
               <div>
@@ -847,8 +609,8 @@ export default function Support() {
             <div className="space-y-2 text-sm">
               <p>
                 <strong>Building a Streak</strong>: Complete the daily puzzle each day to maintain
-                your streak. You must complete the puzzle on the same calendar day it's released
-                (in your local timezone).
+                your streak. You must complete the puzzle on the same calendar day it's released (in
+                your local timezone).
               </p>
               <p>
                 <strong>Breaking a Streak</strong>: Missing a day will reset your current streak to
@@ -897,8 +659,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Problem: Can't access older puzzles</p>
                 <p className="italic">
-                  Solution: Puzzles older than 4 days require a Tandem Unlimited subscription.
-                  Check your subscription status in Settings.
+                  Solution: Puzzles older than 4 days require a Tandem Unlimited subscription. Check
+                  your subscription status in Settings.
                 </p>
               </div>
             </div>
@@ -1065,9 +827,7 @@ export default function Support() {
   const currentSections =
     activeGame === 'tandem'
       ? [...tandemSections, ...sharedSections]
-      : activeGame === 'cryptic'
-        ? [...crypticSections, ...sharedSections]
-        : [...miniSections, ...sharedSections];
+      : [...miniSections, ...sharedSections];
 
   // Simulate initial loading
   useEffect(() => {
@@ -1122,7 +882,7 @@ export default function Support() {
 
                   {/* Game Toggle */}
                   <div className="p-6 pb-4">
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <button
                         onClick={() => {
                           setActiveGame('tandem');
@@ -1143,28 +903,6 @@ export default function Support() {
                             className="w-5 h-5"
                           />
                           <span className="hidden sm:inline">Tandem</span>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveGame('cryptic');
-                          setActiveSection(null);
-                        }}
-                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                          activeGame === 'cryptic'
-                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1.5">
-                          <Image
-                            src="/icons/ui/cryptic.png"
-                            alt="Daily Cryptic"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5 rounded-lg"
-                          />
-                          <span className="hidden sm:inline">Cryptic</span>
                         </div>
                       </button>
                       <button

@@ -28,14 +28,14 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Daily Tandem and Daily Cryptic ("we," "our," or "us"), daily word puzzle
-            games developed by Good Vibes Games. We respect your privacy and are committed to
-            protecting your personal data. This privacy policy explains how we collect, use, and
-            safeguard information when you play our games at tandemdaily.com (the "Service").
+            Welcome to Daily Tandem ("we," "our," or "us"), daily word puzzle games developed by
+            Good Vibes Games. We respect your privacy and are committed to protecting your personal
+            data. This privacy policy explains how we collect, use, and safeguard information when
+            you play our games at tandemdaily.com (the "Service").
           </p>
           <p>
-            By using Daily Tandem or Daily Cryptic, you agree to the collection and use of
-            information in accordance with this policy.
+            By using Daily Tandem, you agree to the collection and use of information in accordance
+            with this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
@@ -358,8 +358,8 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Daily Tandem and Daily Cryptic are suitable for all ages. We do not knowingly collect
-            personal information from children under 13. Both games:
+            Daily Tandem is suitable for all ages. We do not knowingly collect personal information
+            from children under 13. Our games:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Do not require account creation to play (iOS and free web access)</li>
@@ -680,8 +680,7 @@ export default function PrivacyPolicy() {
                   <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      Tandem Daily Games (Daily Tandem and Daily Cryptic) are designed with privacy
-                      in mind:
+                      Tandem Daily Games are designed with privacy in mind:
                     </p>
                     <ul className="text-sm space-y-2">
                       <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
@@ -814,10 +813,9 @@ export default function PrivacyPolicy() {
                     </div>
 
                     {/* Thank you message */}
-                    <div className="mt-6 p-4 bg-[#7ed957]/10 border-[3px] border-[#7ed957] rounded-2xl">
+                    <div className="mt-6 p-4 bg-[#7ed957]/20 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                        Thank you for playing <strong>Daily Tandem</strong> and{' '}
-                        <strong>Daily Cryptic</strong>!
+                        Thank you for playing <strong>Tandem Daily Games</strong>!
                       </p>
                     </div>
                   </div>
