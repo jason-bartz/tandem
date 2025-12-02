@@ -10,11 +10,11 @@ import StreakLeaderboard from './StreakLeaderboard';
  * LeaderboardModal - Main leaderboard left panel component
  *
  * Displays both daily speed leaderboards and all-time streak leaderboards
- * for both Daily Tandem and Daily Cryptic games
+ * for Daily Tandem and Daily Mini games
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {function} onClose - Callback when panel closes
- * @param {string} gameType - 'tandem' or 'cryptic'
+ * @param {string} gameType - 'tandem' or 'mini'
  * @param {string} initialTab - 'daily' or 'streak' (default: 'daily')
  */
 export default function LeaderboardModal({
@@ -26,7 +26,7 @@ export default function LeaderboardModal({
   const [activeTab, setActiveTab] = useState(initialTab);
   const { highContrast } = useTheme();
 
-  const gameName = gameType === 'tandem' ? 'Daily Tandem' : 'Daily Cryptic';
+  const gameName = gameType === 'tandem' ? 'Daily Tandem' : 'Daily Mini';
 
   return (
     <LeftSidePanel

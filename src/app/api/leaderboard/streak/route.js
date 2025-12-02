@@ -7,7 +7,7 @@ import logger from '@/lib/logger';
  * Fetch all-time best streak leaderboard for a specific game
  *
  * Query params:
- * - game: 'tandem' | 'cryptic'
+ * - game: 'tandem' | 'cryptic' | 'mini'
  * - limit: number (default 10, max 100)
  */
 export async function GET(request) {
@@ -17,7 +17,7 @@ export async function GET(request) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
 
     // Validation
-    if (!gameType || !['tandem', 'cryptic'].includes(gameType)) {
+    if (!gameType || !['tandem', 'cryptic', 'mini', 'reel'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 
@@ -127,7 +127,7 @@ export async function GET(request) {
  *
  * Body:
  * {
- *   gameType: 'tandem' | 'cryptic',
+ *   gameType: 'tandem' | 'cryptic' | 'mini',
  *   streak: number
  * }
  *
@@ -156,7 +156,7 @@ export async function POST(request) {
     const { gameType, streak } = body;
 
     // Validation
-    if (!gameType || !['tandem', 'cryptic'].includes(gameType)) {
+    if (!gameType || !['tandem', 'cryptic', 'mini', 'reel'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 

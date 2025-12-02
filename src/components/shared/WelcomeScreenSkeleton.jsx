@@ -21,16 +21,21 @@ export default function WelcomeScreenSkeleton() {
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
+    let timeoutId = null;
+
     // Rotate through loading messages
     const interval = setInterval(() => {
       setIsVisible(false);
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setLoadingText(loadingMessages[Math.floor(Math.random() * loadingMessages.length)]);
         setIsVisible(true);
       }, 300);
-    }, 1000);
+    }, 2000); // Increased to 2 seconds for better readability
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   return (

@@ -9,7 +9,7 @@ import Image from 'next/image';
 /**
  * StreakLeaderboard - Displays top 10 players by best streak
  *
- * @param {string} gameType - 'tandem' or 'cryptic'
+ * @param {string} gameType - 'tandem' or 'mini'
  */
 export default function StreakLeaderboard({ gameType }) {
   const [leaderboard, setLeaderboard] = useState([]);

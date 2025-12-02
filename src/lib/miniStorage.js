@@ -597,6 +597,21 @@ export async function updateMiniStatsAfterCompletion(
       totalCompleted: stats.totalCompleted,
     });
 
+    // Sync streak to leaderboard if this was a daily puzzle and we have a streak
+    if (isFirstAttempt && !isArchive && stats.longestStreak > 0) {
+      try {
+        const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
+        syncCurrentStreakToLeaderboard(
+          { currentStreak: stats.currentStreak, bestStreak: stats.longestStreak },
+          'mini'
+        ).catch((error) => {
+          logger.error('[miniStorage] Failed to sync streak to leaderboard:', error);
+        });
+      } catch (error) {
+        logger.error('[miniStorage] Failed to import leaderboard sync:', error);
+      }
+    }
+
     return stats;
   } catch (error) {
     logger.error('[miniStorage] Failed to update stats', { error: error.message });
@@ -617,7 +632,8 @@ export function calculateMiniStreak(completedPuzzles) {
     // Filter to only include daily puzzles
     const dailyPuzzles = {};
     Object.entries(completedPuzzles).forEach(([date, data]) => {
-      const isDaily = data.isDaily === true || (data.isDaily === undefined && data.isArchive !== true);
+      const isDaily =
+        data.isDaily === true || (data.isDaily === undefined && data.isArchive !== true);
       if (isDaily) {
         dailyPuzzles[date] = data;
       }
@@ -722,7 +738,8 @@ export function mergeMiniStats(localStats, cloudStats) {
   const times = Object.values(mergedPuzzles)
     .map((p) => p.timeTaken)
     .filter((t) => t && t > 0);
-  const averageTime = times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
+  const averageTime =
+    times.length > 0 ? Math.round(times.reduce((a, b) => a + b, 0) / times.length) : 0;
 
   const bestTime = Math.min(
     localStats.bestTime || Infinity,

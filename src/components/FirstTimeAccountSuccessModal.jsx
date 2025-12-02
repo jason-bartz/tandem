@@ -93,9 +93,9 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
 
   const benefits = [
     {
-      iconPath: '/icons/ui/cryptic.png',
+      iconPath: '/icons/ui/tandem.png',
       title: 'All Game Modes',
-      description: 'Play Tandem, Daily Cryptic, and Daily Mini',
+      description: 'Play Tandem and Daily Mini',
     },
     {
       iconPath: '/icons/ui/leaderboard.png',

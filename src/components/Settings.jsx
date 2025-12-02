@@ -389,12 +389,28 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
                   </div>
                 ) : isSubscriptionActive ? (
-                  <div className="space-y-3">
-                    {/* Hard Mode Toggle - Only for Premium Users */}
-                    <div className="flex flex-col items-center">
+                  <div>
+                    {/* Hard Mode Toggle - Horizontal inline layout */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p
+                          className={`text-sm font-medium ${
+                            highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                          }`}
+                        >
+                          Hard Mode
+                        </p>
+                        <p
+                          className={`text-xs ${
+                            highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                          }`}
+                        >
+                          3-min limit • No hints
+                        </p>
+                      </div>
                       <button
                         onClick={handleHardModeToggle}
-                        className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                           highContrast
                             ? hardModeEnabled
                               ? 'bg-hc-primary'
@@ -408,8 +424,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       >
                         <span
                           className={`${
-                            hardModeEnabled ? 'translate-x-14' : 'translate-x-1'
-                          } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                            hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
                             highContrast
                               ? 'bg-hc-background'
                               : hardModeEnabled
@@ -424,40 +440,26 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                 : '/icons/ui/hardmode.png'
                             }
                             alt="Hard Mode"
-                            className="w-6 h-6"
+                            className="w-4 h-4"
                           />
                         </span>
                       </button>
-                      <p className={`text-sm font-medium mt-2 text-center ${
-                        highContrast
-                          ? 'text-hc-text'
-                          : 'text-gray-700 dark:text-gray-200'
-                      }`}>
-                        Hard Mode
-                      </p>
-                      <p className={`text-xs mt-1 text-center ${
-                        highContrast
-                          ? 'text-hc-text'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        3-min limit • No hints
-                      </p>
                     </div>
                   </div>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-4">
                     {/* Only show promotional message when user is NOT logged in */}
                     {!user && (
                       <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
-                        <p className="text-gray-600 dark:text-gray-400 mb-3">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                           Get unlimited access to all puzzles with Tandem Unlimited!
                         </p>
                         <button
                           onClick={() => setShowPaywall(true)}
-                          className={`w-full py-2 font-semibold rounded-2xl transition-all ${
+                          className={`w-full py-2 font-semibold rounded-xl text-sm transition-all ${
                             highContrast
-                              ? 'bg-hc-primary text-white border-[3px] border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                              : 'bg-accent-blue text-white border-[3px] border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] dark:hover:shadow-[1px_1px_0px_rgba(0,0,0,0.5)]'
+                              ? 'bg-hc-primary text-white border-[2px] border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                              : 'bg-accent-blue text-white border-[2px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                           }`}
                         >
                           View Plans
@@ -465,10 +467,23 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       </div>
                     )}
 
-                    {/* Hard Mode - Disabled for non-subscribers */}
-                    <div className="flex flex-col items-center opacity-60 cursor-not-allowed">
-                      <div className="relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]">
-                        <span className="translate-x-1 inline-block h-11 w-11 transform rounded-full border-[3px] border-gray-400 dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,0.3)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] bg-white dark:bg-gray-600 flex items-center justify-center">
+                    {/* Hard Mode - Disabled for non-subscribers - Horizontal inline */}
+                    <div className="flex items-center justify-between opacity-60">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium text-gray-500 dark:text-gray-500">
+                            Hard Mode
+                          </p>
+                          <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded-full">
+                            Unlimited
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
+                          3-min limit • No hints
+                        </p>
+                      </div>
+                      <div className="relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 shadow-[2px_2px_0px_rgba(0,0,0,0.3)] cursor-not-allowed">
+                        <span className="translate-x-0.5 inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-gray-400 dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,0.3)] bg-white dark:bg-gray-600">
                           <img
                             src={
                               theme === 'dark'
@@ -476,19 +491,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                 : '/icons/ui/hardmode.png'
                             }
                             alt="Hard Mode"
-                            className="w-6 h-6 opacity-50"
+                            className="w-4 h-4 opacity-50"
                           />
                         </span>
                       </div>
-                      <p className="text-sm font-medium mt-2 text-center text-gray-500 dark:text-gray-500">
-                        Hard Mode
-                      </p>
-                      <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full mt-1">
-                        Tandem Unlimited
-                      </span>
-                      <p className="text-xs mt-1 text-center text-gray-400 dark:text-gray-500">
-                        3-min limit • No hints
-                      </p>
                     </div>
                   </div>
                 )}
@@ -530,14 +536,30 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     </div>
                   ) : (
                     <>
-                      {/* Sync Toggle */}
-                      <div className="flex flex-col items-center">
+                      {/* Sync Toggle - Horizontal inline layout */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <p
+                            className={`text-sm font-medium ${
+                              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                            }`}
+                          >
+                            iCloud Sync
+                          </p>
+                          <p
+                            className={`text-xs ${
+                              highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                            }`}
+                          >
+                            Syncs stats across devices
+                          </p>
+                        </div>
                         <button
                           onClick={async () => {
                             await toggleSync(!syncStatus.enabled);
                             lightTap();
                           }}
-                          className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                          className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                             highContrast
                               ? syncStatus.enabled
                                 ? 'bg-hc-primary'
@@ -551,8 +573,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         >
                           <span
                             className={`${
-                              syncStatus.enabled ? 'translate-x-14' : 'translate-x-1'
-                            } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                              syncStatus.enabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                            } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
                               highContrast
                                 ? 'bg-hc-background'
                                 : syncStatus.enabled
@@ -560,31 +582,21 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                   : 'bg-white dark:bg-gray-600'
                             }`}
                           >
-                            <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                            <svg
+                              className="w-4 h-4 text-current"
+                              fill="currentColor"
+                              viewBox="0 0 20 20"
+                            >
                               <path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z" />
                             </svg>
                           </span>
                         </button>
-                        <p className={`text-sm font-medium mt-2 text-center ${
-                          highContrast
-                            ? 'text-hc-text'
-                            : 'text-gray-700 dark:text-gray-200'
-                        }`}>
-                          iCloud Sync
-                        </p>
-                        <p className={`text-xs mt-1 text-center px-4 ${
-                          highContrast
-                            ? 'text-hc-text'
-                            : 'text-gray-500 dark:text-gray-400'
-                        }`}>
-                          Syncs stats across devices
-                        </p>
                       </div>
 
                       {/* Last Sync Time & Provider */}
                       {syncStatus.enabled && syncStatus.lastSync && (
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                          <div className="flex items-center gap-1 mb-1">
+                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                          <div className="flex items-center gap-1">
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path
                                 fillRule="evenodd"
@@ -593,24 +605,25 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               />
                             </svg>
                             Last synced: {new Date(syncStatus.lastSync).toLocaleString()}
+                            {syncStatus.provider && (
+                              <span className="opacity-75 ml-1">
+                                (
+                                {syncStatus.provider === 'gameCenter'
+                                  ? 'Game Center'
+                                  : syncStatus.provider === 'cloudKit'
+                                    ? 'iCloud'
+                                    : 'Local'}
+                                )
+                              </span>
+                            )}
                           </div>
-                          {syncStatus.provider && (
-                            <div className="ml-4 opacity-75">
-                              Using:{' '}
-                              {syncStatus.provider === 'gameCenter'
-                                ? 'Game Center'
-                                : syncStatus.provider === 'cloudKit'
-                                  ? 'iCloud'
-                                  : 'Local Storage'}
-                            </div>
-                          )}
                         </div>
                       )}
 
                       {/* Sync Error */}
                       {syncStatus.error && (
-                        <div className="bg-red-50 dark:bg-red-900/20 rounded-xl p-3">
-                          <p className="text-sm text-red-800 dark:text-red-200">
+                        <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-3 mt-3">
+                          <p className="text-xs text-red-800 dark:text-red-200">
                             {syncStatus.error}
                           </p>
                         </div>
@@ -668,8 +681,23 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       </button>
                     </div>
                   ) : notificationSettings ? (
-                    <div className="flex flex-col items-center">
-                      {/* Single Master Toggle - Following Apple HIG */}
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <p
+                          className={`text-sm font-medium ${
+                            highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                          }`}
+                        >
+                          Notifications
+                        </p>
+                        <p
+                          className={`text-xs ${
+                            highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                          }`}
+                        >
+                          Daily streak reminders
+                        </p>
+                      </div>
                       <button
                         onClick={async () => {
                           const newValue = !notificationSettings.notificationsEnabled;
@@ -680,9 +708,9 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           await notificationService.updateSettings({
                             notifications_enabled: newValue,
                           });
-                          playHaptic('light');
+                          lightTap();
                         }}
-                        className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                           highContrast
                             ? notificationSettings.notificationsEnabled
                               ? 'bg-hc-primary'
@@ -696,8 +724,10 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       >
                         <span
                           className={`${
-                            notificationSettings.notificationsEnabled ? 'translate-x-14' : 'translate-x-1'
-                          } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                            notificationSettings.notificationsEnabled
+                              ? 'translate-x-[2.125rem]'
+                              : 'translate-x-0.5'
+                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
                             highContrast
                               ? 'bg-hc-background'
                               : notificationSettings.notificationsEnabled
@@ -705,25 +735,15 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                 : 'bg-white dark:bg-gray-600'
                           }`}
                         >
-                          <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                          <svg
+                            className="w-4 h-4 text-current"
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
                             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z" />
                           </svg>
                         </span>
                       </button>
-                      <p className={`text-sm font-medium mt-2 text-center ${
-                        highContrast
-                          ? 'text-hc-text'
-                          : 'text-gray-700 dark:text-gray-200'
-                      }`}>
-                        Notifications
-                      </p>
-                      <p className={`text-xs mt-1 text-center px-4 ${
-                        highContrast
-                          ? 'text-hc-text'
-                          : 'text-gray-500 dark:text-gray-400'
-                      }`}>
-                        Daily streak reminders
-                      </p>
                     </div>
                   ) : (
                     <div className="flex items-center justify-center py-4">
@@ -758,18 +778,34 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 </div>
 
                 {/* Section Content */}
-                <div className="p-5 space-y-4">
+                <div className="p-4 space-y-4">
                   {/* Game Center Button */}
                   <GameCenterButton />
 
                   {/* Divider */}
                   <div className="border-t border-gray-200 dark:border-gray-700"></div>
 
-                  {/* Leaderboards Toggle */}
-                  <div className="flex flex-col items-center">
+                  {/* Leaderboards Toggle - Horizontal inline layout */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p
+                        className={`text-sm font-medium ${
+                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+                        }`}
+                      >
+                        Leaderboards
+                      </p>
+                      <p
+                        className={`text-xs ${
+                          highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        Share scores globally
+                      </p>
+                    </div>
                     <button
                       onClick={handleLeaderboardToggle}
-                      className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                         highContrast
                           ? leaderboardsEnabled
                             ? 'bg-hc-primary'
@@ -783,8 +819,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     >
                       <span
                         className={`${
-                          leaderboardsEnabled ? 'translate-x-14' : 'translate-x-1'
-                        } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                          leaderboardsEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
                           highContrast
                             ? 'bg-hc-background'
                             : leaderboardsEnabled
@@ -792,25 +828,15 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               : 'bg-white dark:bg-gray-600'
                         }`}
                       >
-                        <svg className="w-6 h-6 text-current" fill="currentColor" viewBox="0 0 20 20">
+                        <svg
+                          className="w-4 h-4 text-current"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
                           <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
                         </svg>
                       </span>
                     </button>
-                    <p className={`text-sm font-medium mt-2 text-center ${
-                      highContrast
-                        ? 'text-hc-text'
-                        : 'text-gray-700 dark:text-gray-200'
-                    }`}>
-                      Leaderboards
-                    </p>
-                    <p className={`text-xs mt-1 text-center px-4 ${
-                      highContrast
-                        ? 'text-hc-text'
-                        : 'text-gray-500 dark:text-gray-400'
-                    }`}>
-                      Share scores globally
-                    </p>
                   </div>
                 </div>
               </div>
@@ -839,185 +865,182 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               </div>
 
               {/* Section Content */}
-              <div className="p-5">
-                <div className="grid grid-cols-2 gap-4">
-                {/* Theme Toggle */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => {
-                      toggleTheme();
-                      lightTap();
-                    }}
-                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
-                      highContrast
-                        ? theme === 'dark'
-                          ? 'bg-hc-primary'
-                          : 'bg-hc-surface'
-                        : theme === 'dark'
-                          ? 'bg-gradient-to-r from-indigo-500 to-purple-600'
-                          : 'bg-gradient-to-r from-amber-400 to-yellow-500'
-                    }`}
-                    role="switch"
-                    aria-checked={theme === 'dark'}
-                  >
-                    <span
-                      className={`${
-                        theme === 'dark' ? 'translate-x-14' : 'translate-x-1'
-                      } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+              <div className="p-4">
+                {/* Toggle Grid - 3 columns */}
+                <div className="grid grid-cols-3 gap-3">
+                  {/* Theme Toggle */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        toggleTheme();
+                        lightTap();
+                      }}
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                         highContrast
-                          ? 'bg-hc-background'
+                          ? theme === 'dark'
+                            ? 'bg-hc-primary'
+                            : 'bg-hc-surface'
                           : theme === 'dark'
-                            ? 'bg-purple-700'
-                            : 'bg-yellow-600'
+                            ? 'bg-gradient-to-r from-indigo-500 to-purple-600'
+                            : 'bg-gradient-to-r from-amber-400 to-yellow-500'
+                      }`}
+                      role="switch"
+                      aria-checked={theme === 'dark'}
+                    >
+                      <span
+                        className={`${
+                          theme === 'dark' ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                          highContrast
+                            ? 'bg-hc-background'
+                            : theme === 'dark'
+                              ? 'bg-purple-700'
+                              : 'bg-yellow-600'
+                        }`}
+                      >
+                        <img
+                          src={
+                            theme === 'dark'
+                              ? '/icons/ui/dark-mode.png'
+                              : '/icons/ui/light-mode.png'
+                          }
+                          alt={theme === 'dark' ? 'Dark mode' : 'Light mode'}
+                          className="w-4 h-4"
+                        />
+                      </span>
+                    </button>
+                    <p
+                      className={`text-xs font-medium mt-1.5 text-center ${
+                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
                       }`}
                     >
-                      <img
-                        src={theme === 'dark' ? '/icons/ui/dark-mode.png' : '/icons/ui/light-mode.png'}
-                        alt={theme === 'dark' ? 'Dark mode' : 'Light mode'}
-                        className="w-6 h-6"
-                      />
-                    </span>
-                  </button>
-                  <p className={`text-sm font-medium mt-2 text-center ${
-                    highContrast
-                      ? 'text-hc-text'
-                      : 'text-gray-700 dark:text-gray-200'
-                  }`}>
-                    Appearance
-                  </p>
-                </div>
+                      Appearance
+                    </p>
+                  </div>
 
-                {/* High Contrast Toggle */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => {
-                      toggleHighContrast();
-                      lightTap();
-                    }}
-                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
-                      highContrast
-                        ? 'bg-hc-primary border-hc-border'
-                        : 'bg-gradient-to-r from-green-400 to-teal-500 border-black dark:border-gray-600'
-                    }`}
-                    role="switch"
-                    aria-checked={highContrast}
-                  >
-                    <span
-                      className={`${
-                        highContrast ? 'translate-x-14' : 'translate-x-1'
-                      } inline-block h-11 w-11 transform rounded-full border-[3px] shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                  {/* High Contrast Toggle */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        toggleHighContrast();
+                        lightTap();
+                      }}
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                         highContrast
-                          ? 'bg-hc-background border-hc-border'
-                          : 'bg-teal-600 border-black dark:border-gray-600'
+                          ? 'bg-hc-primary border-hc-border'
+                          : 'bg-gradient-to-r from-green-400 to-teal-500 border-black dark:border-gray-600'
+                      }`}
+                      role="switch"
+                      aria-checked={highContrast}
+                    >
+                      <span
+                        className={`${
+                          highContrast ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                          highContrast
+                            ? 'bg-hc-background border-hc-border'
+                            : 'bg-teal-600 border-black dark:border-gray-600'
+                        }`}
+                      >
+                        <img src="/icons/ui/eye.png" alt="High Contrast" className="w-4 h-4" />
+                      </span>
+                    </button>
+                    <p
+                      className={`text-xs font-medium mt-1.5 text-center ${
+                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
                       }`}
                     >
-                      <img
-                        src="/icons/ui/eye.png"
-                        alt="High Contrast"
-                        className="w-6 h-6"
-                      />
-                    </span>
-                  </button>
-                  <p className={`text-sm font-medium mt-2 text-center ${
-                    highContrast
-                      ? 'text-hc-text'
-                      : 'text-gray-700 dark:text-gray-200'
-                  }`}>
-                    High Contrast
-                  </p>
-                </div>
+                      Contrast
+                    </p>
+                  </div>
 
-                {/* Reduce Motion Toggle */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => {
-                      toggleReduceMotion();
-                      lightTap();
-                    }}
-                    className={`relative inline-flex h-14 w-28 items-center rounded-full border-[3px] border-black dark:border-gray-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] ${
-                      highContrast
-                        ? reduceMotion
-                          ? 'bg-hc-primary'
-                          : 'bg-hc-surface'
-                        : reduceMotion
-                          ? 'bg-gradient-to-r from-purple-400 to-pink-500'
-                          : 'bg-gray-200 dark:bg-gray-700'
-                    }`}
-                    role="switch"
-                    aria-checked={reduceMotion}
-                  >
-                    <span
-                      className={`${
-                        reduceMotion ? 'translate-x-14' : 'translate-x-1'
-                      } inline-block h-11 w-11 transform rounded-full border-[3px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] transition-transform flex items-center justify-center ${
+                  {/* Reduce Motion Toggle */}
+                  <div className="flex flex-col items-center">
+                    <button
+                      onClick={() => {
+                        toggleReduceMotion();
+                        lightTap();
+                      }}
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
                         highContrast
-                          ? 'bg-hc-background'
+                          ? reduceMotion
+                            ? 'bg-hc-primary'
+                            : 'bg-hc-surface'
                           : reduceMotion
-                            ? 'bg-pink-600'
-                            : 'bg-white dark:bg-gray-600'
+                            ? 'bg-gradient-to-r from-purple-400 to-pink-500'
+                            : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                      role="switch"
+                      aria-checked={reduceMotion}
+                    >
+                      <span
+                        className={`${
+                          reduceMotion ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                          highContrast
+                            ? 'bg-hc-background'
+                            : reduceMotion
+                              ? 'bg-pink-600'
+                              : 'bg-white dark:bg-gray-600'
+                        }`}
+                      >
+                        <img src="/icons/ui/motion.png" alt="Motion" className="w-4 h-4" />
+                      </span>
+                    </button>
+                    <p
+                      className={`text-xs font-medium mt-1.5 text-center ${
+                        highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
                       }`}
                     >
-                      <img
-                        src="/icons/ui/motion.png"
-                        alt="Motion"
-                        className="w-6 h-6"
-                      />
-                    </span>
-                  </button>
-                  <p className={`text-sm font-medium mt-2 text-center ${
-                    highContrast
-                      ? 'text-hc-text'
-                      : 'text-gray-700 dark:text-gray-200'
-                  }`}>
-                    Motion
-                  </p>
-                </div>
+                      Motion
+                    </p>
+                  </div>
                 </div>
 
                 {/* Keyboard Layout Selection */}
                 <div className="flex flex-col mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                  <p className="text-sm font-medium text-gray-700 dark:text-gray-200 mb-2">
+                  <p className="text-xs font-medium text-gray-700 dark:text-gray-200 mb-2">
                     Keyboard Layout
                   </p>
                   <div className="grid grid-cols-3 gap-2">
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTY')}
-                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'QWERTY'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTY'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTY
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('QWERTZ')}
-                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'QWERTZ'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTZ'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTZ
                     </button>
                     <button
                       onClick={() => handleKeyboardLayoutChange('AZERTY')}
-                      className={`px-3 py-2 rounded-xl text-sm font-bold text-center transition-all border-[3px] flex items-center justify-center ${
+                      className={`px-2 py-1.5 rounded-lg text-xs font-bold text-center transition-all border-[2px] ${
                         highContrast
                           ? keyboardLayout === 'AZERTY'
-                            ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-hc-primary text-white border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'AZERTY'
-                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       AZERTY
@@ -1027,7 +1050,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               </div>
             </div>
           </div>
-
         </div>
       </LeftSidePanel>
 

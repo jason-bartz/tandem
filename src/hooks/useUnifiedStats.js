@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 import { loadStats } from '@/lib/storage';
-import { loadCrypticStats } from '@/lib/crypticStorage';
 import { loadMiniStats } from '@/lib/miniStorage';
 import logger from '@/lib/logger';
 
 /**
- * useUnifiedStats - Load stats for all three games
+ * useUnifiedStats - Load stats for all games
  * Handles async loading, error states, and CloudKit sync
  *
  * @param {boolean} isOpen - Whether the modal is open (triggers reload)
@@ -17,16 +16,6 @@ export function useUnifiedStats(isOpen) {
     wins: 0,
     currentStreak: 0,
     bestStreak: 0,
-  });
-
-  const [crypticStats, setCrypticStats] = useState({
-    totalCompleted: 0,
-    currentStreak: 0,
-    longestStreak: 0,
-    totalHintsUsed: 0,
-    perfectSolves: 0,
-    averageTime: 0,
-    completedPuzzles: {},
   });
 
   const [miniStats, setMiniStats] = useState({
@@ -55,20 +44,14 @@ export function useUnifiedStats(isOpen) {
     setError(null);
 
     try {
-      // Load stats in parallel for all three games
-      const [tandem, cryptic, mini] = await Promise.all([
-        loadStats(),
-        loadCrypticStats(),
-        loadMiniStats(),
-      ]);
+      // Load stats in parallel for all games
+      const [tandem, mini] = await Promise.all([loadStats(), loadMiniStats()]);
 
       setTandemStats(tandem);
-      setCrypticStats(cryptic);
       setMiniStats(mini);
 
       logger.info('[useUnifiedStats] Stats loaded successfully', {
         tandemPlayed: tandem.played,
-        crypticCompleted: cryptic.totalCompleted,
         miniCompleted: mini.totalCompleted,
       });
     } catch (err) {
@@ -81,7 +64,6 @@ export function useUnifiedStats(isOpen) {
 
   return {
     tandemStats,
-    crypticStats,
     miniStats,
     loading,
     error,

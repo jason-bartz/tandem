@@ -1,12 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { loadStats } from '@/lib/storage';
-import { loadCrypticStats } from '@/lib/crypticStorage';
-import {
-  getAllAchievements,
-  getAllCrypticAchievements,
-  getStreakAchievements,
-  getCrypticStreakAchievements,
-} from '@/lib/achievementDefinitions';
+import { getAllAchievements, getStreakAchievements } from '@/lib/achievementDefinitions';
 import { calculateAchievementProgress } from '@/lib/achievementChecker';
 import logger from '@/lib/logger';
 
@@ -15,7 +9,7 @@ import logger from '@/lib/logger';
  * Determines which achievements are unlocked and progress toward locked ones
  *
  * @param {boolean} isOpen - Whether the modal is open (triggers reload)
- * @param {string} gameMode - Game mode: 'tandem' or 'cryptic'
+ * @param {string} gameMode - Game mode: 'tandem'
  * @returns {Object} Achievement data, loading states, and user progress
  */
 export function useAchievementStatus(isOpen, gameMode = 'tandem') {
@@ -33,23 +27,18 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
     setError(null);
 
     try {
-      // Load user stats based on game mode
-      const isCryptic = gameMode === 'cryptic';
-      const stats = isCryptic ? await loadCrypticStats() : await loadStats();
+      // Load user stats
+      const stats = await loadStats();
 
-      // Use different stat fields based on game mode
-      // Cryptic uses: longestStreak, totalCompleted
       // Tandem uses: bestStreak, wins
-      const bestStreak = isCryptic ? stats.longestStreak || 0 : stats.bestStreak || 0;
-      const wins = isCryptic ? stats.totalCompleted || 0 : stats.wins || 0;
+      const bestStreak = stats.bestStreak || 0;
+      const wins = stats.wins || 0;
 
-      // Get all achievements for the current game mode
-      const allAchievements = isCryptic ? getAllCrypticAchievements() : getAllAchievements();
+      // Get all achievements
+      const allAchievements = getAllAchievements();
 
       // Get streak achievements to properly categorize
-      const streakAchievements = isCryptic
-        ? getCrypticStreakAchievements()
-        : getStreakAchievements();
+      const streakAchievements = getStreakAchievements();
 
       const achievementsWithStatus = allAchievements.map((achievement) => {
         // Determine if this is a streak or wins achievement
@@ -59,13 +48,10 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
         const isUnlocked = currentValue >= achievement.threshold;
         const progress = calculateAchievementProgress(currentValue, achievement.threshold);
 
-        // Determine image filename based on achievement type and game mode
-        const prefix = isCryptic ? 'cryptic-' : '';
+        // Determine image filename based on achievement type
         const imageFilename = isStreakAchievement
-          ? `${prefix}streak-${achievement.threshold}.png`
-          : isCryptic
-            ? `${prefix}completed-${achievement.threshold}.png`
-            : `complete-${achievement.threshold}.png`;
+          ? `streak-${achievement.threshold}.png`
+          : `complete-${achievement.threshold}.png`;
 
         return {
           ...achievement,

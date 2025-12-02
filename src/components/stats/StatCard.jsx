@@ -28,7 +28,7 @@ export default function StatCard({ value, label, emoji = '', animate = true }) {
         {emoji && <span className="ml-1 text-2xl">{emoji}</span>}
       </div>
       <div
-        className={`text-xs uppercase tracking-wide font-medium ${
+        className={`text-xs tracking-wide font-medium ${
           highContrast ? 'text-hc-text' : 'text-white/90'
         }`}
       >

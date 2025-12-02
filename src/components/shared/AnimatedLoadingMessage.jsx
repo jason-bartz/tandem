@@ -30,10 +30,12 @@ export default function AnimatedLoadingMessage() {
   useEffect(() => {
     if (messages.length === 0 || reduceMotion) return;
 
+    let timeoutId = null;
+
     const interval = setInterval(() => {
       // Fade out
       setIsVisible(false);
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         // Change to next message in shuffled order
         setCurrentIndex((prevIndex) => {
           const nextIndex = (prevIndex + 1) % messages.length;
@@ -49,7 +51,10 @@ export default function AnimatedLoadingMessage() {
       }, 300); // Wait 300ms for fade out
     }, 2000); // Change message every 2 seconds
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, [messages, reduceMotion]);
 
   return (

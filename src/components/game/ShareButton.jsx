@@ -93,7 +93,7 @@ export default function ShareButton({ shareText, className = '' }) {
         className={`
           share-button
           w-full py-3 px-4
-          rounded-2xl font-semibold
+          rounded-[20px] font-semibold
           transition-all border-[3px]
           flex items-center justify-center gap-2
           ${
