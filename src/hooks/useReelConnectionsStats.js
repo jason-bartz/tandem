@@ -138,13 +138,16 @@ export function useReelConnectionsStats() {
    * @param {boolean} won - Whether the player won
    * @param {number} timeMs - Time taken in milliseconds
    * @param {number} mistakes - Number of mistakes made
+   * @param {string} puzzleDate - Optional date string (YYYY-MM-DD) for archive puzzles
    */
   const recordGame = useCallback(
-    (won, timeMs, mistakes) => {
+    (won, timeMs, mistakes, puzzleDate = null) => {
       const today = getTodayDateString();
+      const dateToRecord = puzzleDate || today;
 
-      // Don't record if already played today
-      if (stats.lastPlayedDate === today) {
+      // Don't record if already played this puzzle date
+      const alreadyPlayed = stats.gameHistory.some((g) => g.date === dateToRecord);
+      if (alreadyPlayed) {
         return;
       }
 
@@ -175,30 +178,33 @@ export function useReelConnectionsStats() {
 
         // Add to game history (keep last 30 games)
         const newHistory = [
-          { date: today, won, timeMs, mistakes },
+          { date: dateToRecord, won, timeMs, mistakes },
           ...prev.gameHistory.slice(0, 29),
         ];
+
+        // Only update lastPlayedDate and streaks for today's puzzle, not archive
+        const isArchivePuzzle = puzzleDate && puzzleDate !== today;
 
         const newStats = {
           ...prev,
           gamesPlayed: prev.gamesPlayed + 1,
           gamesWon: won ? prev.gamesWon + 1 : prev.gamesWon,
           totalTimeMs: prev.totalTimeMs + timeMs,
-          currentStreak: newCurrentStreak,
-          bestStreak: newBestStreak,
-          lastPlayedDate: today,
+          currentStreak: isArchivePuzzle ? prev.currentStreak : newCurrentStreak,
+          bestStreak: isArchivePuzzle ? prev.bestStreak : newBestStreak,
+          lastPlayedDate: isArchivePuzzle ? prev.lastPlayedDate : today,
           gameHistory: newHistory,
         };
 
-        // Sync streak to leaderboard in background (for authenticated users)
-        if (won && newBestStreak > 0) {
+        // Sync streak to leaderboard in background (for authenticated users, today's puzzle only)
+        if (won && !isArchivePuzzle && newBestStreak > 0) {
           syncStreakToLeaderboard(newStats);
         }
 
         return newStats;
       });
     },
-    [stats.lastPlayedDate, getTodayDateString]
+    [stats.gameHistory, getTodayDateString]
   );
 
   /**
