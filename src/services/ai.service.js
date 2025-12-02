@@ -1731,6 +1731,184 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
   }
 
   /**
+   * Generate movies for Reel Connections puzzle
+   * @param {Object} options - Generation options
+   * @param {string} options.connection - The connection/theme for the movies
+   * @param {string} options.difficulty - Difficulty level (easy, medium, hard)
+   * @returns {Promise<{connection: string, movies: string[]}>}
+   */
+  async generateReelConnectionsMovies({ connection, difficulty = 'medium' }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildReelConnectionsPrompt({ connection, difficulty });
+        const genInfo = {
+          connection,
+          difficulty,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Generating Reel Connections movies with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 512,
+          temperature: 0.9, // Higher for creative movie suggestions
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI Reel Connections response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseReelConnectionsResponse(responseText);
+
+        this.generationCount++;
+        logger.info('Reel Connections movies generated successfully', {
+          connection: result.connection,
+          movieCount: result.movies.length,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI Reel Connections generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI Reel Connections generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build prompt for Reel Connections movie generation
+   */
+  buildReelConnectionsPrompt({ connection, difficulty }) {
+    const difficultyGuidance = {
+      easy: 'Choose well-known, popular movies that most people would recognize. Blockbusters and classics.',
+      medium:
+        'Mix of popular and somewhat less mainstream movies. Should be recognizable but may require some movie knowledge.',
+      hard: 'Can include less mainstream or older films, but they must still be findable in movie databases.',
+    };
+
+    return `You are generating movies for a Reel Connections puzzle game (similar to NYT Connections but with movies).
+
+CONNECTION/THEME: "${connection}"
+
+DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
+
+REQUIREMENTS:
+1. Generate EXACTLY 4 movies that share the connection "${connection}"
+2. Each movie MUST be a real, well-known film that exists in movie databases like IMDB/OMDb
+3. Movies MUST have theatrical posters available (no obscure films without posters)
+4. The connection should be interesting but not too obscure - players should have an "aha!" moment
+5. Prefer movies from 1990-present for better poster availability, but classics are fine
+6. Avoid movies with very similar titles that could be confused
+
+EXAMPLES OF GOOD CONNECTIONS:
+- "Movies with colors in the title" → The Green Mile, Blue Velvet, Scarlet Street, The Color Purple
+- "Movies set in space" → Gravity, Interstellar, Alien, 2001: A Space Odyssey
+- "Movies with food in the title" → Pulp Fiction (just kidding), Chocolat, Fried Green Tomatoes, Ratatouille
+
+RESPONSE FORMAT (JSON only):
+{
+  "connection": "The exact connection/theme",
+  "movies": ["Movie Title 1", "Movie Title 2", "Movie Title 3", "Movie Title 4"]
+}
+
+Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
+  }
+
+  /**
+   * Parse Reel Connections AI response
+   */
+  parseReelConnectionsResponse(responseText) {
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      if (!result.connection || typeof result.connection !== 'string') {
+        throw new Error('Missing or invalid connection');
+      }
+
+      if (!Array.isArray(result.movies) || result.movies.length !== 4) {
+        throw new Error('Must have exactly 4 movies');
+      }
+
+      result.movies.forEach((movie, index) => {
+        if (typeof movie !== 'string' || movie.trim().length < 2) {
+          throw new Error(`Movie ${index + 1} is invalid`);
+        }
+      });
+
+      return {
+        connection: result.connection.trim(),
+        movies: result.movies.map((m) => m.trim()),
+      };
+    } catch (error) {
+      logger.error('Failed to parse Reel Connections response', { error, responseText });
+      throw new Error('Failed to parse AI response. Please try again.');
+    }
+  }
+
+  /**
    * Parse AI crossword clues response
    */
   parseCrosswordCluesResponse(responseText, expectedCount) {
