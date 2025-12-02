@@ -3,8 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Check, X, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
+import confetti from 'canvas-confetti';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
+import { playCorrectSound, playErrorSound, playButtonTone } from '@/lib/sounds';
 import {
   HowToPlayModal,
   AboutModal,
@@ -328,6 +330,50 @@ const ReelConnectionsGame = () => {
     submitToLeaderboard();
   }, [gameWon, endTime, startTime, leaderboardSubmitted, user, archiveDate, mistakes]);
 
+  // Confetti and celebration effects when game is won and reveal is complete
+  useEffect(() => {
+    if (gameWon && !isRevealing) {
+      // Play clapping sound at 50% volume
+      const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
+      clappingAudio.volume = 0.5;
+      clappingAudio.play().catch(() => {});
+
+      const duration = 3000;
+      const animationEnd = Date.now() + duration;
+      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+
+      function randomInRange(min, max) {
+        return Math.random() * (max - min) + min;
+      }
+
+      const interval = setInterval(function () {
+        const timeLeft = animationEnd - Date.now();
+
+        if (timeLeft <= 0) {
+          return clearInterval(interval);
+        }
+
+        const particleCount = 50 * (timeLeft / duration);
+
+        // Red, yellow, and white confetti for cinema theme
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+          colors: ['#FF4444', '#FFCE00', '#FFFFFF', '#FF6B6B', '#FFD700', '#FFF8DC'],
+        });
+        confetti({
+          ...defaults,
+          particleCount,
+          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+          colors: ['#FF4444', '#FFCE00', '#FFFFFF', '#FF6B6B', '#FFD700', '#FFF8DC'],
+        });
+      }, 250);
+
+      return () => clearInterval(interval);
+    }
+  }, [gameWon, isRevealing]);
+
   // Function to start the reveal sequence
   const startReveal = (wasWon) => {
     if (!puzzle) return;
@@ -474,6 +520,9 @@ const ReelConnectionsGame = () => {
     const isCorrect = selectedMovies.every((m) => m.groupId === groupId);
 
     if (isCorrect) {
+      // Play success sound
+      playCorrectSound();
+
       // Find the group
       const group = puzzle.groups.find((g) => g.id === groupId);
       const newSolvedGroups = [...solvedGroups, group];
@@ -491,7 +540,9 @@ const ReelConnectionsGame = () => {
         startReveal(true);
       }
     } else {
-      // Wrong guess
+      // Wrong guess - play error sound
+      playErrorSound();
+
       const newMistakes = mistakes + 1;
       setMistakes(newMistakes);
       setShakeGrid(true);
@@ -587,6 +638,7 @@ const ReelConnectionsGame = () => {
 
   // Start the game - called when user clicks "Action!" button
   const handleStartGame = () => {
+    playButtonTone();
     setGameStarted(true);
     setStartTime(Date.now());
   };
