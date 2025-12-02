@@ -606,7 +606,7 @@ export default function PlayingScreen({
                           highContrast
                             ? 'bg-hc-warning text-black border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                             : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                        } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden`}
+                        } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden whitespace-nowrap`}
                         disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                         aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
                         // Animated layout when celebrating - expand left to fill full width
