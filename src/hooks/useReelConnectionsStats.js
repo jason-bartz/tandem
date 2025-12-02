@@ -26,6 +26,36 @@ function getStorageKey(userId) {
 }
 
 /**
+ * Check for achievement unlocks (non-blocking, fire-and-forget)
+ * Called after game completion to trigger achievement notifications
+ * @param {Object} updatedStats - The updated stats after game completion
+ */
+async function triggerAchievementCheck(updatedStats) {
+  try {
+    const gameCenterService = (await import('@/services/gameCenter.service')).default;
+    await gameCenterService.checkAndSubmitReelAchievements(updatedStats);
+  } catch (error) {
+    console.error('[ReelConnectionsStats] Failed to check achievements:', error);
+  }
+}
+
+/**
+ * Sync streak to leaderboard (non-blocking, fire-and-forget)
+ * @param {Object} updatedStats - The updated stats with streak info
+ */
+async function triggerLeaderboardSync(updatedStats) {
+  try {
+    const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
+    await syncCurrentStreakToLeaderboard(
+      { currentStreak: updatedStats.currentStreak, bestStreak: updatedStats.bestStreak },
+      'reel'
+    );
+  } catch (error) {
+    console.error('[ReelConnectionsStats] Failed to sync streak to leaderboard:', error);
+  }
+}
+
+/**
  * useReelConnectionsStats - Custom hook for managing Reel Connections game statistics
  * Stores data in localStorage for persistence with multi-account support
  *
@@ -151,91 +181,65 @@ export function useReelConnectionsStats() {
         return;
       }
 
-      setStats((prev) => {
-        // Calculate streak
-        let newCurrentStreak = prev.currentStreak;
+      // Calculate new stats synchronously
+      let newCurrentStreak = stats.currentStreak;
 
-        if (won) {
-          // Check if this continues a streak
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
+      if (won) {
+        // Check if this continues a streak
+        const yesterday = new Date();
+        yesterday.setDate(yesterday.getDate() - 1);
+        const yesterdayStr = `${yesterday.getFullYear()}-${String(yesterday.getMonth() + 1).padStart(2, '0')}-${String(yesterday.getDate()).padStart(2, '0')}`;
 
-          if (prev.lastPlayedDate === yesterdayStr || prev.currentStreak === 0) {
-            newCurrentStreak = prev.currentStreak + 1;
-          } else if (prev.lastPlayedDate !== yesterdayStr && prev.lastPlayedDate !== null) {
-            // Streak broken, start fresh
-            newCurrentStreak = 1;
-          } else {
-            newCurrentStreak = 1;
-          }
+        if (stats.lastPlayedDate === yesterdayStr || stats.currentStreak === 0) {
+          newCurrentStreak = stats.currentStreak + 1;
+        } else if (stats.lastPlayedDate !== yesterdayStr && stats.lastPlayedDate !== null) {
+          // Streak broken, start fresh
+          newCurrentStreak = 1;
         } else {
-          // Lost game breaks streak
-          newCurrentStreak = 0;
+          newCurrentStreak = 1;
         }
+      } else {
+        // Lost game breaks streak
+        newCurrentStreak = 0;
+      }
 
-        const newBestStreak = Math.max(prev.bestStreak, newCurrentStreak);
+      const newBestStreak = Math.max(stats.bestStreak, newCurrentStreak);
 
-        // Add to game history (keep last 30 games)
-        const newHistory = [
-          { date: dateToRecord, won, timeMs, mistakes },
-          ...prev.gameHistory.slice(0, 29),
-        ];
+      // Add to game history (keep last 30 games)
+      const newHistory = [
+        { date: dateToRecord, won, timeMs, mistakes },
+        ...stats.gameHistory.slice(0, 29),
+      ];
 
-        // Only update lastPlayedDate and streaks for today's puzzle, not archive
-        const isArchivePuzzle = puzzleDate && puzzleDate !== today;
+      // Only update lastPlayedDate and streaks for today's puzzle, not archive
+      const isArchivePuzzle = puzzleDate && puzzleDate !== today;
 
-        const newStats = {
-          ...prev,
-          gamesPlayed: prev.gamesPlayed + 1,
-          gamesWon: won ? prev.gamesWon + 1 : prev.gamesWon,
-          totalTimeMs: prev.totalTimeMs + timeMs,
-          currentStreak: isArchivePuzzle ? prev.currentStreak : newCurrentStreak,
-          bestStreak: isArchivePuzzle ? prev.bestStreak : newBestStreak,
-          lastPlayedDate: isArchivePuzzle ? prev.lastPlayedDate : today,
-          gameHistory: newHistory,
-        };
+      const newStats = {
+        ...stats,
+        gamesPlayed: stats.gamesPlayed + 1,
+        gamesWon: won ? stats.gamesWon + 1 : stats.gamesWon,
+        totalTimeMs: stats.totalTimeMs + timeMs,
+        currentStreak: isArchivePuzzle ? stats.currentStreak : newCurrentStreak,
+        bestStreak: isArchivePuzzle ? stats.bestStreak : newBestStreak,
+        lastPlayedDate: isArchivePuzzle ? stats.lastPlayedDate : today,
+        gameHistory: newHistory,
+      };
 
-        // Sync streak to leaderboard in background (for authenticated users, today's puzzle only)
-        if (won && !isArchivePuzzle && newBestStreak > 0) {
-          syncStreakToLeaderboard(newStats);
-        }
+      // Update state
+      setStats(newStats);
 
-        // Check for achievement unlocks
-        checkAchievements(newStats);
+      // Trigger async operations after state update (fire-and-forget)
+      // These run outside the React render cycle for better performance
+      if (won && !isArchivePuzzle && newBestStreak > 0) {
+        triggerLeaderboardSync(newStats);
+      }
 
-        return newStats;
-      });
+      // Always check for achievements on game completion (not just wins)
+      // First win achievement needs to trigger for gamesWon >= 1
+      triggerAchievementCheck(newStats);
     },
-    [stats.gameHistory, getTodayDateString]
+    [stats, getTodayDateString]
   );
-
-  /**
-   * Check for achievement unlocks (non-blocking)
-   */
-  const checkAchievements = async (updatedStats) => {
-    try {
-      const gameCenterService = (await import('@/services/gameCenter.service')).default;
-      await gameCenterService.checkAndSubmitReelAchievements(updatedStats);
-    } catch (error) {
-      console.error('[ReelConnectionsStats] Failed to check achievements:', error);
-    }
-  };
-
-  /**
-   * Sync streak to leaderboard (non-blocking)
-   */
-  const syncStreakToLeaderboard = async (updatedStats) => {
-    try {
-      const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
-      await syncCurrentStreakToLeaderboard(
-        { currentStreak: updatedStats.currentStreak, bestStreak: updatedStats.bestStreak },
-        'reel'
-      );
-    } catch (error) {
-      console.error('[ReelConnectionsStats] Failed to sync streak to leaderboard:', error);
-    }
-  };
 
   /**
    * Calculate average time in milliseconds

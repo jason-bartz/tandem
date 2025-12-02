@@ -111,19 +111,21 @@ class StatsService {
         }
       }
 
-      // Check and submit Game Center achievements (only for non-archive games)
-      if (!gameResult.isArchive && Capacitor.isNativePlatform()) {
+      // Check and submit achievements (works on all platforms)
+      if (!gameResult.isArchive) {
         try {
           await gameCenterService.checkAndSubmitAchievements(localStats);
-
-          await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
         } catch (error) {
-          // Log the error for debugging
-          console.error('[StatsService] Game Center update failed:', error);
-          console.error('[StatsService] Error details:', {
-            message: error.message,
-            stack: error.stack,
-          });
+          console.error('[StatsService] Achievement check failed:', error);
+        }
+
+        // Submit to Game Center leaderboard (native only)
+        if (Capacitor.isNativePlatform()) {
+          try {
+            await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
+          } catch (error) {
+            console.error('[StatsService] Game Center leaderboard update failed:', error);
+          }
         }
       }
 
