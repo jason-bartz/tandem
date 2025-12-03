@@ -243,7 +243,7 @@ export function useReelConnectionsGame() {
     if (gameWon && !isRevealing) {
       // Play clapping sound
       const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
-      clappingAudio.volume = 0.5;
+      clappingAudio.volume = 0.35;
       clappingAudio.play().catch(() => {});
 
       const duration = REEL_CONFIG.CONFETTI_DURATION_MS;
