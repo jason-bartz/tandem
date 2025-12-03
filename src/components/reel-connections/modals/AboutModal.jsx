@@ -15,12 +15,13 @@ export default function AboutModal({ isOpen, onClose }) {
         <div className="space-y-4 leading-relaxed">
           <p>I&apos;m Jason, creator of Reel Connections and Tandem Daily Games.</p>
           <p>
-            I wanted a break from infinite scrolling. So I created a quick puzzle you solve, share
-            with friends, then move on with your day.
+            I&apos;m a movie lover and word puzzle enthusiast. I wanted a break from doomscrolling,
+            so I created quick puzzles that you solve, share with friends, and then move on with
+            your day.
           </p>
           <p>
-            This is a passion project. We&apos;ll never feature any ads. Just movies, puzzles, and
-            that satisfying moment when the connection clicks.
+            I&apos;ll never feature ads—just movies, puzzles, and that satisfying &apos;aha&apos;
+            moment when the connection clicks. Hope you enjoy!
           </p>
         </div>
 
