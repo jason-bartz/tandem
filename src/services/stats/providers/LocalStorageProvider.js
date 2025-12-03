@@ -115,17 +115,17 @@ export class LocalStorageProvider extends BaseProvider {
 
       // Proactive cleanup: Check quota before we even start
       if (!this.useCapacitor) {
-        const estimate = await navigator.storage.estimate();
-        const usage = estimate.usage || 0;
-        const quota = estimate.quota || 0;
-        const percentUsed = (usage / quota) * 100;
+        try {
+          const estimate = await navigator.storage.estimate();
+          const usage = estimate.usage || 0;
+          const quota = estimate.quota || 0;
 
-        // If over 70%, run emergency cleanup preemptively
-        if (percentUsed > 70) {
-          console.warn(
-            `[LocalStorageProvider] Storage at ${percentUsed.toFixed(2)}% - running preemptive cleanup`
-          );
-          await this.emergencyStorageCleanup();
+          // If over 70%, run emergency cleanup preemptively (silently)
+          if (quota > 0 && usage / quota > 0.7) {
+            await this.emergencyStorageCleanup();
+          }
+        } catch (estimateError) {
+          // Silently ignore - storage estimate is not critical
         }
       }
 
@@ -136,7 +136,7 @@ export class LocalStorageProvider extends BaseProvider {
       try {
         await this.createBackup();
       } catch (backupError) {
-        console.warn('[LocalStorageProvider] Backup failed, continuing with save:', backupError);
+        // Silently continue - backup is not critical
       }
 
       // Add metadata
@@ -177,11 +177,12 @@ export class LocalStorageProvider extends BaseProvider {
         timestamp: dataToSave.timestamp,
       };
     } catch (error) {
-      console.error('[LocalStorageProvider] Save failed:', error);
-
-      // If quota exceeded, try aggressive cleanup and retry ONCE
-      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        console.warn('[LocalStorageProvider] Quota exceeded, attempting emergency cleanup...');
+      // If quota exceeded, try aggressive cleanup and retry ONCE (silently)
+      if (
+        error.name === 'QuotaExceededError' ||
+        error.message?.includes('quota') ||
+        error.message?.includes('QuotaExceededError')
+      ) {
         try {
           await this.emergencyStorageCleanup();
 
@@ -209,18 +210,30 @@ export class LocalStorageProvider extends BaseProvider {
             timestamp: dataToSave.timestamp,
           };
         } catch (retryError) {
-          console.error('[LocalStorageProvider] Emergency save failed:', retryError);
-          // Don't restore backup if we're out of quota
-          this.handleError(retryError, 'save');
+          // Silently fail on quota errors - primary storageService handles this
+          if (process.env.NODE_ENV === 'development') {
+            console.debug('[LocalStorageProvider] Emergency save failed:', retryError);
+          }
+          // Return gracefully instead of throwing
+          return { success: false, error: 'quota_exceeded' };
         }
       }
 
       // Try to restore from backup if save failed (but not for quota errors)
-      if (!error.message?.includes('quota') && !error.message?.includes('QuotaExceededError')) {
+      if (
+        error.name !== 'QuotaExceededError' &&
+        !error.message?.includes('quota') &&
+        !error.message?.includes('QuotaExceededError')
+      ) {
         await this.restoreFromBackup();
+        // Only log non-quota errors in development
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[LocalStorageProvider] Save failed:', error);
+        }
+        this.handleError(error, 'save');
       }
-
-      this.handleError(error, 'save');
+      // Silently return for quota errors
+      return { success: false, error: 'storage_error' };
     }
   }
 
@@ -246,14 +259,14 @@ export class LocalStorageProvider extends BaseProvider {
 
   /**
    * Create backup before saving
+   * Fails silently - backup is not critical
    */
   async createBackup() {
     try {
       if (!this.useCapacitor) {
         const canBackup = await this.checkStorageQuota(0); // Just check, don't add
         if (!canBackup) {
-          console.warn('[LocalStorageProvider] Skipping backup - quota exceeded');
-          return; // Skip backup if quota exceeded
+          return; // Silently skip backup if quota exceeded
         }
       }
 
@@ -272,9 +285,12 @@ export class LocalStorageProvider extends BaseProvider {
         }
       }
     } catch (error) {
-      // If backup fails with quota error, try to clean up backup file
-      if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        console.warn('[LocalStorageProvider] Backup failed due to quota, removing old backup');
+      // If backup fails with quota error, try to clean up backup file (silently)
+      if (
+        error.name === 'QuotaExceededError' ||
+        error.message?.includes('quota') ||
+        error.message?.includes('QuotaExceededError')
+      ) {
         try {
           if (this.useCapacitor) {
             await Preferences.remove({ key: this.backupKey });
@@ -284,10 +300,8 @@ export class LocalStorageProvider extends BaseProvider {
         } catch (removeError) {
           // Ignore
         }
-      } else {
-        console.error('[LocalStorageProvider] Failed to create backup:', error);
       }
-      // Continue anyway - backup is not critical
+      // Continue anyway - backup is not critical (fail silently)
     }
   }
 
@@ -461,22 +475,14 @@ export class LocalStorageProvider extends BaseProvider {
         const usage = estimate.usage || 0;
         const quota = estimate.quota || 0;
 
-        const percentUsed = (usage / quota) * 100;
-
-        // Warn if over 80% used
-        if (percentUsed > 80) {
-          console.warn('[LocalStorageProvider] Storage quota warning: over 80% used');
-        }
-
-        if (usage + dataSize > quota) {
-          console.error('[LocalStorageProvider] Storage quota would be exceeded');
+        // Silently handle quota - no warnings needed
+        if (quota > 0 && usage + dataSize > quota) {
           return false;
         }
 
         return true;
       } catch (error) {
-        console.error('[LocalStorageProvider] Failed to check storage quota:', error);
-        // Continue anyway - quota check is not critical
+        // Silently continue - quota check is not critical
         return true;
       }
     }
@@ -486,10 +492,9 @@ export class LocalStorageProvider extends BaseProvider {
 
   /**
    * Emergency storage cleanup - aggressively remove old data
+   * Runs silently to avoid console noise
    */
   async emergencyStorageCleanup() {
-    console.warn('[LocalStorageProvider] Running emergency storage cleanup...');
-
     try {
       // 1. Clean up our own storage keys first
       const keysToClean = [
@@ -530,7 +535,7 @@ export class LocalStorageProvider extends BaseProvider {
             }
           }
         } catch (keyError) {
-          console.warn(`[LocalStorageProvider] Failed to clean ${key}:`, keyError);
+          // Silently ignore individual key cleanup failures
         }
       }
 
@@ -545,7 +550,7 @@ export class LocalStorageProvider extends BaseProvider {
         // Ignore
       }
     } catch (error) {
-      console.error('[LocalStorageProvider] Emergency cleanup failed:', error);
+      // Silently ignore - cleanup is best-effort
     }
   }
 

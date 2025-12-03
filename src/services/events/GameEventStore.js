@@ -410,6 +410,7 @@ class GameEventStore {
 
   /**
    * Load events from storage
+   * Fails silently - this is a non-critical secondary storage system
    */
   async loadEvents() {
     try {
@@ -423,13 +424,17 @@ class GameEventStore {
         await this.cleanupOldEvents();
       }
     } catch (error) {
-      console.error('[GameEventStore] Failed to load events:', error);
+      // Silently fail - primary storage handles data
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[GameEventStore] Failed to load events:', error);
+      }
       this.events = [];
     }
   }
 
   /**
    * Persist event to storage
+   * Fails silently on quota errors - this is a non-critical secondary storage system
    */
   async persistEvent(event) {
     try {
@@ -444,7 +449,14 @@ class GameEventStore {
       // Also queue for cloud sync
       await this.queueForSync(event);
     } catch (error) {
-      console.error('[GameEventStore] Failed to persist event:', error);
+      // Silently ignore quota errors - primary storage handles this gracefully
+      if (error.name === 'QuotaExceededError' || error.message?.includes('quota')) {
+        return; // Fail silently
+      }
+      // Only log unexpected errors at debug level
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('[GameEventStore] Failed to persist event:', error);
+      }
     }
   }
 
@@ -643,7 +655,12 @@ class GameEventStore {
 
       localStorage.setItem('gameEvents', JSON.stringify(stored));
     } catch (error) {
-      console.error('[GameEventStore] Cleanup failed:', error);
+      // Silently ignore quota errors
+      if (error.name !== 'QuotaExceededError' && !error.message?.includes('quota')) {
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('[GameEventStore] Cleanup failed:', error);
+        }
+      }
       // Don't throw - continue with existing events
     }
   }
