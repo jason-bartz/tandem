@@ -793,6 +793,30 @@ body {
   /* Prevents layout shift by starting in initial state */
 }
 
+/* One away toast animation */
+@keyframes oneAway {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 10px) scale(0.95);
+  }
+  15% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  85% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.95);
+  }
+}
+
+.animate-one-away {
+  animation: oneAway 1.8s ease-in-out forwards;
+}
+
 /* Stagger delays for list items */
 .stagger-1 {
   animation-delay: 50ms;

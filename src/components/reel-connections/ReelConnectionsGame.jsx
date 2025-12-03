@@ -6,7 +6,7 @@ import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
-import { playCorrectSound, playErrorSound, playButtonTone } from '@/lib/sounds';
+import { playCorrectSound, playErrorSound, playButtonTone, playOneAwaySound } from '@/lib/sounds';
 import {
   HowToPlayModal,
   AboutModal,
@@ -48,6 +48,10 @@ const ReelConnectionsGame = () => {
   // Archive mode - when playing a past puzzle
   const [archiveDate, setArchiveDate] = useState(null);
 
+  // One away feedback
+  const [showOneAway, setShowOneAway] = useState(false);
+  const [oneAwayMessage, setOneAwayMessage] = useState('');
+
   // Stats hook
   const { recordGame } = useReelConnectionsStats();
 
@@ -70,6 +74,20 @@ const ReelConnectionsGame = () => {
 
   // Difficulty order for sorting groups
   const DIFFICULTY_ORDER = ['easiest', 'easy', 'medium', 'hardest'];
+
+  // Movie-themed "one away" messages
+  const ONE_AWAY_MESSAGES = ['One away...', 'So close!', 'Almost!', 'Close-up!', 'Near miss!'];
+
+  // Check if the selected movies are "one away" from a correct group
+  const checkOneAway = (selectedMovies, puzzleGroups) => {
+    for (const group of puzzleGroups) {
+      const matchCount = selectedMovies.filter((m) => m.groupId === group.id).length;
+      if (matchCount === 3) {
+        return true;
+      }
+    }
+    return false;
+  };
 
   // Function to sort groups by difficulty
   const sortGroupsByDifficulty = (groups) => {
@@ -542,13 +560,31 @@ const ReelConnectionsGame = () => {
         startReveal(true);
       }
     } else {
-      // Wrong guess - play error sound
-      playErrorSound();
+      // Wrong guess - check if one away first
+      const isOneAway = checkOneAway(selectedMovies, puzzle.groups);
+
+      if (isOneAway) {
+        // Play one-away sound and show toast
+        playOneAwaySound();
+        setOneAwayMessage(ONE_AWAY_MESSAGES[Math.floor(Math.random() * ONE_AWAY_MESSAGES.length)]);
+        setShowOneAway(true);
+        setTimeout(() => setShowOneAway(false), 1800);
+
+        // Delay the shake slightly so the message registers first
+        setTimeout(() => {
+          playErrorSound();
+          setShakeGrid(true);
+          setTimeout(() => setShakeGrid(false), 500);
+        }, 200);
+      } else {
+        // Regular wrong guess
+        playErrorSound();
+        setShakeGrid(true);
+        setTimeout(() => setShakeGrid(false), 500);
+      }
 
       const newMistakes = mistakes + 1;
       setMistakes(newMistakes);
-      setShakeGrid(true);
-      setTimeout(() => setShakeGrid(false), 500);
       setSelectedMovies([]);
 
       if (newMistakes >= 4) {
@@ -1123,6 +1159,17 @@ const ReelConnectionsGame = () => {
             </div>
           </div>
         ))}
+
+        {/* One Away Toast */}
+        {showOneAway && (
+          <div
+            className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg animate-one-away"
+            role="status"
+            aria-live="polite"
+          >
+            {oneAwayMessage}
+          </div>
+        )}
 
         {/* Movie Grid with Ready Modal */}
         {!gameWon && !gameOver && (

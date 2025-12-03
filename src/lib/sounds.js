@@ -420,6 +420,50 @@ export function playHintSound() {
   undertone.stop(currentTime + 0.35);
 }
 
+// Play a "one away" sound - questioning but not negative, like "hmm, almost"
+export function playOneAwaySound() {
+  const context = initAudio();
+  if (!context) {
+    return;
+  }
+
+  const currentTime = context.currentTime;
+
+  // Two-note "hmm" pattern - questioning but encouraging
+  const notes = [
+    { freq: 392, start: 0, duration: 0.12 }, // G4 - questioning
+    { freq: 349.23, start: 0.1, duration: 0.18 }, // F4 - slight descent, pondering
+  ];
+
+  notes.forEach(({ freq, start, duration }) => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    // Triangle wave for a softer, thoughtful tone
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(freq, currentTime + start);
+
+    // Gentle envelope
+    gainNode.gain.setValueAtTime(0, currentTime + start);
+    gainNode.gain.linearRampToValueAtTime(0.1, currentTime + start + 0.02);
+    gainNode.gain.setValueAtTime(0.08, currentTime + start + duration * 0.6);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    // Add warmth with a lowpass filter
+    const filter = context.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1200;
+    filter.Q.value = 0.7;
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start(currentTime + start);
+    oscillator.stop(currentTime + start + duration);
+  });
+}
+
 // Play a soft, thocky keypress sound - like a quality mechanical keyboard
 export function playKeyPressSound() {
   const context = initAudio();
