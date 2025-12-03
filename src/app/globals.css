@@ -817,6 +817,105 @@ body {
   animation: oneAway 1.8s ease-in-out forwards;
 }
 
+/* ============================================
+   REEL CONNECTIONS SOLVE ANIMATION
+   NYT Connections-style group reveal
+   ============================================ */
+
+/* Phase 1: Solving movies bounce up with stagger - no fade */
+@keyframes solveJump {
+  0% {
+    transform: scale(1) translateY(0);
+  }
+  40% {
+    transform: scale(1.08) translateY(-18px);
+  }
+  70% {
+    transform: scale(1.03) translateY(-10px);
+  }
+  100% {
+    transform: scale(1) translateY(-6px);
+  }
+}
+
+.animate-solve-jump {
+  animation: solveJump 400ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Staggered jump delays for each of the 4 solving movies */
+.animate-solve-jump.solve-delay-0 {
+  animation-delay: 0ms;
+}
+.animate-solve-jump.solve-delay-1 {
+  animation-delay: 60ms;
+}
+.animate-solve-jump.solve-delay-2 {
+  animation-delay: 120ms;
+}
+.animate-solve-jump.solve-delay-3 {
+  animation-delay: 180ms;
+}
+
+/* Phase 2: Movies fade out quickly as solved row appears */
+@keyframes solveFadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.animate-solve-fly-up {
+  animation: solveFadeOut 150ms ease-out forwards;
+}
+
+/* Phase 3: Solved group row appears with scale/fade in */
+@keyframes solvedRowReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-solved-row-reveal {
+  animation: solvedRowReveal 300ms ease-out forwards;
+}
+
+/* Posters in solved row - no animation */
+.animate-poster-arrive {
+  /* Appears with the row */
+}
+
+/* Connection text reveal - fade in */
+@keyframes connectionReveal {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-connection-reveal {
+  animation: connectionReveal 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 150ms;
+  opacity: 0;
+}
+
+/* Remaining movies shift smoothly */
+.animate-grid-shift {
+  transition:
+    transform 500ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 400ms ease;
+}
+
 /* Stagger delays for list items */
 .stagger-1 {
   animation-delay: 50ms;

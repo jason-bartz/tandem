@@ -118,6 +118,10 @@ export function useReelConnectionsGame() {
   const [showOneAway, setShowOneAway] = useState(false);
   const [oneAwayMessage, setOneAwayMessage] = useState('');
 
+  // Solve animation state
+  const [solvingGroup, setSolvingGroup] = useState(null);
+  const [solvingMovies, setSolvingMovies] = useState([]);
+
   // Archive mode
   const [archiveDate, setArchiveDate] = useState(null);
 
@@ -374,6 +378,7 @@ export function useReelConnectionsGame() {
   // Handle submit
   const handleSubmit = useCallback(() => {
     if (selectedMovies.length !== REEL_CONFIG.GROUP_SIZE) return;
+    if (solvingGroup) return; // Don't allow submit during animation
 
     const groupId = selectedMovies[0].groupId;
     const isCorrect = selectedMovies.every((m) => m.groupId === groupId);
@@ -382,15 +387,25 @@ export function useReelConnectionsGame() {
       playCorrectSound();
 
       const group = puzzle.groups.find((g) => g.id === groupId);
-      const newSolvedGroups = [...solvedGroups, group];
-      setSolvedGroups(newSolvedGroups);
-      setSelectedMovies([]);
-      setMovies((prev) => prev.filter((m) => m.groupId !== groupId));
 
-      if (newSolvedGroups.length === puzzle.groups.length) {
-        setGameWon(true);
-        startReveal(true);
-      }
+      // Start solve animation
+      setSolvingGroup(group);
+      setSolvingMovies([...selectedMovies]);
+      setSelectedMovies([]);
+
+      // After animation completes, finalize the solve
+      setTimeout(() => {
+        const newSolvedGroups = [...solvedGroups, group];
+        setSolvedGroups(newSolvedGroups);
+        setMovies((prev) => prev.filter((m) => m.groupId !== groupId));
+        setSolvingGroup(null);
+        setSolvingMovies([]);
+
+        if (newSolvedGroups.length === puzzle.groups.length) {
+          setGameWon(true);
+          startReveal(true);
+        }
+      }, REEL_CONFIG.SOLVE_ANIMATION_MS || 800);
     } else {
       const isOneAway = checkOneAway(selectedMovies, puzzle.groups);
 
@@ -420,7 +435,7 @@ export function useReelConnectionsGame() {
         startReveal(false);
       }
     }
-  }, [selectedMovies, puzzle, solvedGroups, mistakes, startReveal]);
+  }, [selectedMovies, puzzle, solvedGroups, mistakes, startReveal, solvingGroup]);
 
   // Handle shuffle
   const handleShuffle = useCallback(() => {
@@ -448,6 +463,8 @@ export function useReelConnectionsGame() {
     setCurrentTime(0);
     setEndTime(null);
     setStatsRecorded(false);
+    setSolvingGroup(null);
+    setSolvingMovies([]);
 
     const allMovies = flattenPuzzleMovies(puzzle);
     const shuffled = shuffleArray(allMovies);
@@ -532,6 +549,8 @@ export function useReelConnectionsGame() {
     oneAwayMessage,
     archiveDate,
     user,
+    solvingGroup,
+    solvingMovies,
 
     // Actions
     toggleMovieSelection,

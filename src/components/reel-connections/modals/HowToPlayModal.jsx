@@ -35,6 +35,12 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           </ul>
         </div>
 
+        {/* Tips Section */}
+        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+          <p className="text-sm text-white/70 mb-2 font-medium">Tip:</p>
+          <p className="text-sm">Long press any poster to enlarge it for a better view.</p>
+        </div>
+
         {/* Difficulty Colors */}
         <div className="bg-white/5 rounded-xl p-4 border border-white/10">
           <p className="text-sm text-white/70 mb-3">Categories are color-coded by difficulty:</p>

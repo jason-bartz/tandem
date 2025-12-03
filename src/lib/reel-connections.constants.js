@@ -15,6 +15,7 @@ export const REEL_CONFIG = {
   SHAKE_DURATION_MS: 500,
   ONE_AWAY_SHAKE_DELAY_MS: 200,
   CONFETTI_DURATION_MS: 3000,
+  SOLVE_ANIMATION_MS: 800,
 };
 
 // Difficulty levels in order (easiest to hardest)
