@@ -6,7 +6,7 @@ export function playCrowdDisappointmentSound() {
   if (typeof window === 'undefined') return;
 
   const audio = new Audio('/sounds/crowd-disappointment.mp3');
-  audio.volume = 0.5;
+  audio.volume = 0.35;
   audio.play().catch(() => {
     // Ignore autoplay errors
   });
