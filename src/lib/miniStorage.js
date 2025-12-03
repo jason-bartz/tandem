@@ -16,79 +16,44 @@
 import { MINI_STORAGE_KEYS, API_ENDPOINTS } from './constants';
 import { getCurrentMiniPuzzleInfo } from './miniUtils';
 import logger from './logger';
-import { Capacitor } from '@capacitor/core';
-import { Preferences } from '@capacitor/preferences';
 import cloudKitService from '@/services/cloudkit.service';
+import storageService from '@/core/storage/storageService';
 
 // =====================================================
 // PLATFORM-AGNOSTIC STORAGE HELPERS
+// Uses storageService for resilient storage with IndexedDB fallback
 // =====================================================
 
 /**
  * Platform-agnostic storage helper - GET
- * Works on both iOS (Capacitor Preferences) and Web (localStorage)
+ * Uses storageService which provides: localStorage → IndexedDB → in-memory fallback
  */
 async function getMiniStorageItem(key) {
-  if (typeof window === 'undefined') {
-    return null; // SSR safety
-  }
-
-  const isNative = Capacitor.isNativePlatform();
-
-  if (isNative) {
-    const { value } = await Preferences.get({ key });
-    return value;
-  } else {
-    return localStorage.getItem(key);
-  }
+  return storageService.get(key);
 }
 
 /**
  * Platform-agnostic storage helper - SET
+ * Uses storageService which handles quota errors with automatic fallback
  */
 async function setMiniStorageItem(key, value) {
-  if (typeof window === 'undefined') {
-    return; // SSR safety
-  }
-
-  const isNative = Capacitor.isNativePlatform();
-
-  if (isNative) {
-    await Preferences.set({ key, value });
-  } else {
-    localStorage.setItem(key, value);
-  }
+  return storageService.set(key, value);
 }
 
 /**
  * Platform-agnostic storage helper - REMOVE
+ * Removes from all storage layers (localStorage, IndexedDB, memory)
  */
 async function removeMiniStorageItem(key) {
-  if (typeof window === 'undefined') {
-    return; // SSR safety
-  }
-
-  const isNative = Capacitor.isNativePlatform();
-
-  if (isNative) {
-    await Preferences.remove({ key });
-  } else {
-    localStorage.removeItem(key);
-  }
+  return storageService.remove(key);
 }
 
 /**
  * Get all storage keys (for migration/debugging)
+ * Uses storageService to get keys from all storage layers
  */
 async function getMiniStorageKeys() {
-  const isNative = Capacitor.isNativePlatform();
-
-  if (isNative) {
-    const result = await Preferences.keys();
-    return result.keys;
-  } else {
-    return Object.keys(localStorage);
-  }
+  return storageService.getAllKeys();
 }
 
 /**

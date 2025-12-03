@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
+import storageService from '@/core/storage/storageService';
 
 const AuthContext = createContext({
   user: null,
@@ -107,6 +108,11 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    // Initialize unified storage service (loads IndexedDB key tracking, runs health check)
+    storageService.initialize().catch((error) => {
+      console.error('[AuthProvider] Storage service initialization failed:', error);
+    });
+
     autoCleanupIfNeeded().catch((error) => {
       console.error('[AuthProvider] Auto cleanup failed:', error);
     });

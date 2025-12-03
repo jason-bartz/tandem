@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import ReelConnectionsModal from './ReelConnectionsModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import storageService from '@/core/storage/storageService';
 
 const STORAGE_KEY = 'reel-connections-stats';
 
@@ -48,16 +49,18 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
   const todayMonth = today.getMonth();
   const todayYear = today.getFullYear();
 
-  // Load completed puzzles from localStorage when modal opens
+  // Load completed puzzles from storage when modal opens
+  // Uses storageService which checks localStorage → IndexedDB → in-memory
   useEffect(() => {
     // Only load when modal is opening, not closing
     if (!isOpen) return;
     if (typeof window === 'undefined') return;
 
     // Small delay to ensure any pending stats saves have completed
-    const timer = setTimeout(() => {
+    const timer = setTimeout(async () => {
       try {
-        const stored = window.localStorage.getItem(STORAGE_KEY);
+        // Use storageService to check all storage layers (localStorage, IndexedDB, memory)
+        const stored = await storageService.get(STORAGE_KEY);
         if (stored) {
           const parsed = JSON.parse(stored);
           if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
