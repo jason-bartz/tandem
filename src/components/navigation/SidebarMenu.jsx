@@ -456,6 +456,7 @@ export default function SidebarMenu({
                     isActive={pathname === '/'}
                     gameColor="blue"
                     highContrast={highContrast}
+                    subtitle="Decipher four groups of emoji clues"
                   />
                   <GameButton
                     icon="/icons/ui/mini.png"
@@ -464,6 +465,7 @@ export default function SidebarMenu({
                     isActive={pathname === '/dailymini'}
                     gameColor="yellow"
                     highContrast={highContrast}
+                    subtitle="Classic 5x5 mini crossword"
                   />
                 </div>
               </section>
