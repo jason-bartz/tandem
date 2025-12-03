@@ -775,9 +775,16 @@ const ReelConnectionsGame = () => {
                     </p>
                     <button
                       onClick={onStartGame}
-                      className="px-6 sm:px-8 py-2.5 sm:py-3 bg-[#ffce00] border-[2px] sm:border-[3px] border-black rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-base sm:text-lg tracking-wide gold-glow"
+                      className="flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#ffce00] border-[2px] sm:border-[3px] border-black rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-base sm:text-lg tracking-wide gold-glow"
                     >
                       Action!
+                      <Image
+                        src="/icons/ui/clapper.png"
+                        alt=""
+                        width={24}
+                        height={24}
+                        className="w-5 h-5 sm:w-6 sm:h-6"
+                      />
                     </button>
                   </div>
                 </div>
