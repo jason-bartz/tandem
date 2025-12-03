@@ -1,12 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { Check, X, RotateCcw } from 'lucide-react';
 import Image from 'next/image';
-import confetti from 'canvas-confetti';
-import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
-import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
-import { playCorrectSound, playErrorSound, playButtonTone, playOneAwaySound } from '@/lib/sounds';
+import { useReelConnectionsGame } from '@/hooks/useReelConnectionsGame';
+import { REEL_CONFIG } from '@/lib/reel-connections.constants';
 import {
   HowToPlayModal,
   AboutModal,
@@ -15,693 +13,49 @@ import {
   ReelConnectionsAuthModal,
 } from './modals';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
-import { useAuth } from '@/contexts/AuthContext';
 
 const ReelConnectionsGame = () => {
-  const [selectedMovies, setSelectedMovies] = useState([]);
-  const [solvedGroups, setSolvedGroups] = useState([]);
-  const [mistakes, setMistakes] = useState(0);
-  const [gameWon, setGameWon] = useState(false);
-  const [gameOver, setGameOver] = useState(false);
-  const [shakeGrid, setShakeGrid] = useState(false);
-  const [movies, setMovies] = useState([]);
-  const [puzzle, setPuzzle] = useState(null);
-
-  const [startTime, setStartTime] = useState(null);
-  const [endTime, setEndTime] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [congratsMessage, setCongratsMessage] = useState("That's a Wrap!");
-  const [isRevealing, setIsRevealing] = useState(false);
-  const [revealedGroups, setRevealedGroups] = useState([]);
-  const [gameStarted, setGameStarted] = useState(false);
-
   // Modal states
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [statsRecorded, setStatsRecorded] = useState(false);
-  const [leaderboardSubmitted, setLeaderboardSubmitted] = useState(false);
 
-  // Archive mode - when playing a past puzzle
-  const [archiveDate, setArchiveDate] = useState(null);
-
-  // One away feedback
-  const [showOneAway, setShowOneAway] = useState(false);
-  const [oneAwayMessage, setOneAwayMessage] = useState('');
-
-  // Stats hook
-  const { recordGame } = useReelConnectionsStats();
-
-  // Auth hook
-  const { user } = useAuth();
-
-  // Movie-themed congratulatory messages
-  const CONGRATS_MESSAGES = [
-    "That's a Wrap!",
-    'Blockbuster Performance!',
-    'Two Thumbs Up!',
-    'Oscar Worthy!',
-    'Star Performance!',
-    'Box Office Smash!',
-    "Director's Cut!",
-    'Standing Ovation!',
-    'Five Star Review!',
-    'Award Winning!',
-  ];
-
-  // Difficulty order for sorting groups
-  const DIFFICULTY_ORDER = ['easiest', 'easy', 'medium', 'hardest'];
-
-  // Movie-themed "one away" messages
-  const ONE_AWAY_MESSAGES = [
-    'One away...',
-    'So close!',
-    'One star short...',
-    'One frame off...',
-    'Nearly in focus!',
-  ];
-
-  // Check if the selected movies are "one away" from a correct group
-  const checkOneAway = (selectedMovies, puzzleGroups) => {
-    for (const group of puzzleGroups) {
-      const matchCount = selectedMovies.filter((m) => m.groupId === group.id).length;
-      if (matchCount === 3) {
-        return true;
-      }
-    }
-    return false;
-  };
-
-  // Function to sort groups by difficulty
-  const sortGroupsByDifficulty = (groups) => {
-    return [...groups].sort((a, b) => {
-      const aIndex = DIFFICULTY_ORDER.indexOf(a.difficulty);
-      const bIndex = DIFFICULTY_ORDER.indexOf(b.difficulty);
-      return aIndex - bIndex;
-    });
-  };
-
-  // Sample puzzle data (in production, this would come from an API)
-  const samplePuzzle = {
-    groups: [
-      {
-        id: '1',
-        connection: 'Directed by Christopher Nolan',
-        difficulty: 'easiest', // Yellow
-        color: 'bg-[#ffce00]', // Yellow
-        textColor: 'text-[#2c2c2c]',
-        movies: [
-          {
-            imdbId: 'tt1375666',
-            title: 'Inception',
-            year: '2010',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0468569',
-            title: 'The Dark Knight',
-            year: '2008',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMTMxNTMwODM0NF5BMl5BanBnXkFtZTcwODAyMTk2Mw@@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0816692',
-            title: 'Interstellar',
-            year: '2014',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BZjdkOTU3MDktN2IxOS00OGEyLWFmMjktY2FiMmZkNWIyODZiXkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt5013056',
-            title: 'Dunkirk',
-            year: '2017',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BN2YyZjQ0NTEtNzU5MS00NGZkLTg0MTEtYzJmMWY3MWRhZjM2XkEyXkFqcGdeQXVyMDA4NzMyOA@@._V1_SX300.jpg',
-          },
-        ],
-      },
-      {
-        id: '2',
-        connection: 'Marvel Cinematic Universe',
-        difficulty: 'easy', // Green
-        color: 'bg-[#7ed957]', // Green
-        textColor: 'text-[#2c2c2c]',
-        movies: [
-          {
-            imdbId: 'tt0848228',
-            title: 'The Avengers',
-            year: '2012',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BNDYxNjQyMjAtNTdiOS00NGYwLWFmNTAtNThmYjU5ZGI2YTI1XkEyXkFqcGdeQXVyMTMxODk2OTU@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt1843866',
-            title: 'Captain America: The Winter Soldier',
-            year: '2014',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMzA2NDkwODAwM15BMl5BanBnXkFtZTgwODk5MTgzMTE@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt3498820',
-            title: 'Captain America: Civil War',
-            year: '2016',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMjQ0MTgyNjAxMV5BMl5BanBnXkFtZTgwNjUzMDkyODE@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt4154756',
-            title: 'Avengers: Infinity War',
-            year: '2018',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMjMxNjY2MDU1OV5BMl5BanBnXkFtZTgwNzY1MTUwNTM@._V1_SX300.jpg',
-          },
-        ],
-      },
-      {
-        id: '3',
-        connection: 'Won Best Picture Oscar',
-        difficulty: 'medium', // Blue
-        color: 'bg-[#39b6ff]', // Blue
-        textColor: 'text-[#2c2c2c]',
-        movies: [
-          {
-            imdbId: 'tt0111161',
-            title: 'The Shawshank Redemption',
-            year: '1994',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BNDE3ODcxYzMtY2YzZC00NmNlLWJiNDMtZDViZWM2MzIxZDYwXkEyXkFqcGdeQXVyNjAwNDUxODI@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0068646',
-            title: 'The Godfather',
-            year: '1972',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BM2MyNjYxNmUtYTAwNi00MTYxLWJmNWYtYzZlODY3ZTk3OTFlXkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0167260',
-            title: 'The Lord of the Rings: The Return of the King',
-            year: '2003',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BNzA5ZDNlZWMtM2NhNS00NDJjLTk4NDItYTRmY2EwMWZlMTY3XkEyXkFqcGdeQXVyNzkwMjQ5NzM@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0073486',
-            title: "One Flew Over the Cuckoo's Nest",
-            year: '1975',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BZjA0OWVhOTAtYWQxNi00YzNhLWI4ZjYtNjFjZTEyYjJlNDVlL2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-          },
-        ],
-      },
-      {
-        id: '4',
-        connection: 'Features Time Travel',
-        difficulty: 'hardest', // Purple
-        color: 'bg-[#cb6ce6]', // Purple
-        textColor: 'text-[#2c2c2c]',
-        movies: [
-          {
-            imdbId: 'tt0088763',
-            title: 'Back to the Future',
-            year: '1985',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BZmU0M2Y1OGUtZjIxNi00ZjBkLTg1MjgtOWIyNThiZWIwYjRiXkEyXkFqcGdeQXVyMTQxNzMzNDI@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0481499',
-            title: 'Looper',
-            year: '2012',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMTg5NTA3NTg4NF5BMl5BanBnXkFtZTcwNTA0NDYzOA@@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0435761',
-            title: 'Toy Story 3',
-            year: '2010',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BMTgxOTY4Mjc0MF5BMl5BanBnXkFtZTcwNTA4MDQyMw@@._V1_SX300.jpg',
-          },
-          {
-            imdbId: 'tt0133093',
-            title: 'The Matrix',
-            year: '1999',
-            poster:
-              'https://m.media-amazon.com/images/M/MV5BNzQzOTk3OTAtNDQ0Zi00ZTVkLWI0MTEtMDllZjNkYzNjNTc4L2ltYWdlL2ltYWdlXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg',
-          },
-        ],
-      },
-    ],
-  };
-
-  // Timer effect
-  useEffect(() => {
-    if (!gameWon && !gameOver && startTime) {
-      const interval = setInterval(() => {
-        setCurrentTime(Date.now() - startTime);
-      }, 100);
-      return () => clearInterval(interval);
-    }
-  }, [gameWon, gameOver, startTime]);
-
-  // Reveal animation effect - triggers when game ends
-  useEffect(() => {
-    if (!isRevealing || !puzzle) return;
-
-    const allGroupsSorted = sortGroupsByDifficulty(puzzle.groups);
-
-    // Find groups that haven't been revealed yet
-    const unrevealedGroups = allGroupsSorted.filter(
-      (group) => !revealedGroups.some((rg) => rg.id === group.id)
-    );
-
-    if (unrevealedGroups.length === 0) {
-      // All groups revealed, wait 1 second then show final screen
-      const timer = setTimeout(() => {
-        setIsRevealing(false);
-      }, 1000);
-      return () => clearTimeout(timer);
-    }
-
-    // Reveal the next group after 1 second
-    const timer = setTimeout(() => {
-      const nextGroup = unrevealedGroups[0];
-      setRevealedGroups((prev) => [...prev, nextGroup]);
-      // Clear movies for this group from the grid
-      setMovies((prev) => prev.filter((m) => m.groupId !== nextGroup.id));
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  }, [isRevealing, revealedGroups, puzzle]);
-
-  // Record stats when game ends
-  useEffect(() => {
-    if ((gameWon || gameOver) && endTime && startTime && !statsRecorded) {
-      const timeMs = endTime - startTime;
-      // Pass the puzzle date (archiveDate for archive puzzles, or puzzle.date for today's puzzle)
-      const puzzleDate = archiveDate || puzzle?.date;
-      recordGame(gameWon, timeMs, mistakes, puzzleDate);
-      setStatsRecorded(true);
-    }
-  }, [
+  // Game hook
+  const {
+    selectedMovies,
+    solvedGroups,
+    mistakes,
     gameWon,
     gameOver,
-    endTime,
+    shakeGrid,
+    movies,
+    puzzle,
     startTime,
-    mistakes,
-    statsRecorded,
-    recordGame,
+    endTime,
+    currentTime,
+    loading,
+    congratsMessage,
+    isRevealing,
+    revealedGroups,
+    gameStarted,
+    showOneAway,
+    oneAwayMessage,
     archiveDate,
-    puzzle?.date,
-  ]);
-
-  // Submit to leaderboard when game ends (for authenticated users)
-  useEffect(() => {
-    if (!gameWon || !endTime || !startTime || leaderboardSubmitted || !user) return;
-    if (archiveDate) return; // Don't submit archive games
-
-    const submitToLeaderboard = async () => {
-      try {
-        const timeSeconds = Math.floor((endTime - startTime) / 1000);
-        const today = new Date();
-        const puzzleDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-
-        // Submit daily speed score
-        await fetch('/api/leaderboard/daily', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({
-            gameType: 'reel',
-            puzzleDate,
-            score: timeSeconds,
-            metadata: { mistakes },
-          }),
-        });
-
-        // Sync streak to leaderboard
-        const { syncCurrentStreakToLeaderboard } = await import('@/lib/leaderboardSync');
-        const statsRaw = localStorage.getItem('reel-connections-stats');
-        if (statsRaw) {
-          const stats = JSON.parse(statsRaw);
-          if (stats.bestStreak > 0) {
-            syncCurrentStreakToLeaderboard(
-              { currentStreak: stats.currentStreak, bestStreak: stats.bestStreak },
-              'reel'
-            ).catch(console.error);
-          }
-        }
-
-        setLeaderboardSubmitted(true);
-      } catch (error) {
-        console.error('[ReelConnectionsGame] Failed to submit to leaderboard:', error);
-      }
-    };
-
-    submitToLeaderboard();
-  }, [gameWon, endTime, startTime, leaderboardSubmitted, user, archiveDate, mistakes]);
-
-  // Confetti and celebration effects when game is won and reveal is complete
-  useEffect(() => {
-    if (gameWon && !isRevealing) {
-      // Play clapping sound at 50% volume
-      const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
-      clappingAudio.volume = 0.5;
-      clappingAudio.play().catch(() => {});
-
-      const duration = 3000;
-      const animationEnd = Date.now() + duration;
-      const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
-
-      function randomInRange(min, max) {
-        return Math.random() * (max - min) + min;
-      }
-
-      const interval = setInterval(function () {
-        const timeLeft = animationEnd - Date.now();
-
-        if (timeLeft <= 0) {
-          return clearInterval(interval);
-        }
-
-        const particleCount = 50 * (timeLeft / duration);
-
-        // Red, yellow, and white confetti for cinema theme
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
-          colors: ['#FF4444', '#FFCE00', '#FFFFFF', '#FF6B6B', '#FFD700', '#FFF8DC'],
-        });
-        confetti({
-          ...defaults,
-          particleCount,
-          origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
-          colors: ['#FF4444', '#FFCE00', '#FFFFFF', '#FF6B6B', '#FFD700', '#FFF8DC'],
-        });
-      }, 250);
-
-      return () => clearInterval(interval);
-    }
-  }, [gameWon, isRevealing]);
-
-  // Function to start the reveal sequence
-  const startReveal = (wasWon) => {
-    if (!puzzle) return;
-
-    // Set the end time
-    setEndTime(Date.now());
-
-    // Pick a random congrats message
-    if (wasWon) {
-      setCongratsMessage(CONGRATS_MESSAGES[Math.floor(Math.random() * CONGRATS_MESSAGES.length)]);
-    }
-
-    // Start with already solved groups, sorted by difficulty
-    const sortedSolvedGroups = sortGroupsByDifficulty(solvedGroups);
-    setRevealedGroups(sortedSolvedGroups);
-
-    // Clear the grid of solved movies
-    setMovies(movies.filter((m) => !solvedGroups.some((g) => g.id === m.groupId)));
-
-    // Start the reveal animation
-    setIsRevealing(true);
-  };
-
-  // Load puzzle function - can be called on mount, midnight, or for archive
-  const loadPuzzle = useCallback(async (isRefresh = false, specificDate = null) => {
-    try {
-      if (isRefresh || specificDate) {
-        setLoading(true);
-      }
-
-      // Use local date, not UTC (toISOString uses UTC which causes wrong day after 7pm EST)
-      const now = new Date();
-      const localDateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-      const dateToLoad = specificDate || localDateStr;
-      const response = await fetch(`/api/reel-connections/puzzle?date=${dateToLoad}`);
-      const data = await response.json();
-
-      let puzzleToUse = samplePuzzle;
-
-      if (response.ok && data.puzzle) {
-        puzzleToUse = data.puzzle;
-      }
-
-      setPuzzle(puzzleToUse);
-
-      // Flatten and shuffle movies
-      const allMovies = puzzleToUse.groups.flatMap((group) =>
-        group.movies.map((movie) => ({
-          ...movie,
-          groupId: group.id,
-          groupColor: group.color,
-          connection: group.connection,
-          textColor: group.textColor,
-        }))
-      );
-
-      // Shuffle array
-      const shuffled = allMovies.sort(() => Math.random() - 0.5);
-      setMovies(shuffled);
-
-      // Reset game state for new puzzle
-      if (isRefresh || specificDate) {
-        setSelectedMovies([]);
-        setSolvedGroups([]);
-        setMistakes(0);
-        setGameWon(false);
-        setGameOver(false);
-        setIsRevealing(false);
-        setRevealedGroups([]);
-        setEndTime(null);
-        setStatsRecorded(false);
-        setLeaderboardSubmitted(false);
-        // Set archive date if loading a specific date
-        setArchiveDate(specificDate);
-      }
-
-      // Reset game started state - timer will start when user clicks "Action!"
-      setGameStarted(false);
-      setStartTime(null);
-      setCurrentTime(0);
-    } catch (error) {
-      console.error('Error loading puzzle:', error);
-      // Fallback to sample puzzle
-      setPuzzle(samplePuzzle);
-      const allMovies = samplePuzzle.groups.flatMap((group) =>
-        group.movies.map((movie) => ({
-          ...movie,
-          groupId: group.id,
-          groupColor: group.color,
-          connection: group.connection,
-          textColor: group.textColor,
-        }))
-      );
-      const shuffled = allMovies.sort(() => Math.random() - 0.5);
-      setMovies(shuffled);
-      setGameStarted(false);
-      setStartTime(null);
-      setCurrentTime(0);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Initialize puzzle on mount
-  useEffect(() => {
-    loadPuzzle(false);
-  }, [loadPuzzle]);
-
-  // Auto-refresh at midnight local time
-  useMidnightRefresh(
-    useCallback(() => {
-      loadPuzzle(true);
-    }, [loadPuzzle])
-  );
-
-  const toggleMovieSelection = (movie) => {
-    if (!gameStarted) return;
-    if (solvedGroups.some((g) => g.id === movie.groupId)) return;
-    if (gameWon || gameOver) return;
-
-    if (isSelected(movie)) {
-      // Deselect
-      setSelectedMovies(selectedMovies.filter((m) => m.imdbId !== movie.imdbId));
-    } else {
-      if (selectedMovies.length < 4) {
-        setSelectedMovies([...selectedMovies, movie]);
-      }
-    }
-  };
-
-  const handleSubmit = () => {
-    if (selectedMovies.length !== 4) return;
-
-    // Check if all selected movies are from the same group
-    const groupId = selectedMovies[0].groupId;
-    const isCorrect = selectedMovies.every((m) => m.groupId === groupId);
-
-    if (isCorrect) {
-      // Play success sound
-      playCorrectSound();
-
-      // Find the group
-      const group = puzzle.groups.find((g) => g.id === groupId);
-      const newSolvedGroups = [...solvedGroups, group];
-      setSolvedGroups(newSolvedGroups);
-      setSelectedMovies([]);
-
-      // Remove solved movies from the grid
-      setMovies(movies.filter((m) => m.groupId !== groupId));
-
-      // Check if all groups are solved
-      if (newSolvedGroups.length === puzzle.groups.length) {
-        setGameWon(true);
-        // Start reveal animation to show all groups in difficulty order (like failure does)
-        startReveal(true);
-      }
-    } else {
-      // Wrong guess - check if one away first
-      const isOneAway = checkOneAway(selectedMovies, puzzle.groups);
-
-      if (isOneAway) {
-        // Play one-away sound and show toast
-        playOneAwaySound();
-        setOneAwayMessage(ONE_AWAY_MESSAGES[Math.floor(Math.random() * ONE_AWAY_MESSAGES.length)]);
-        setShowOneAway(true);
-        setTimeout(() => setShowOneAway(false), 1800);
-
-        // Delay the shake slightly so the message registers first
-        setTimeout(() => {
-          playErrorSound();
-          setShakeGrid(true);
-          setTimeout(() => setShakeGrid(false), 500);
-        }, 200);
-      } else {
-        // Regular wrong guess
-        playErrorSound();
-        setShakeGrid(true);
-        setTimeout(() => setShakeGrid(false), 500);
-      }
-
-      const newMistakes = mistakes + 1;
-      setMistakes(newMistakes);
-      setSelectedMovies([]);
-
-      if (newMistakes >= 4) {
-        setGameOver(true);
-        // Start reveal animation to show all groups
-        startReveal(false);
-      }
-    }
-  };
-
-  const handleShuffle = () => {
-    const shuffled = [...movies].sort(() => Math.random() - 0.5);
-    setMovies(shuffled);
-  };
-
-  const handleDeselect = () => {
-    setSelectedMovies([]);
-  };
-
-  const resetGame = () => {
-    setSelectedMovies([]);
-    setSolvedGroups([]);
-    setMistakes(0);
-    setGameWon(false);
-    setGameOver(false);
-    setIsRevealing(false);
-    setRevealedGroups([]);
-    setGameStarted(false);
-    setStartTime(null);
-    setCurrentTime(0);
-    setEndTime(null);
-    setStatsRecorded(false);
-    // Re-shuffle all movies using current puzzle
-    const puzzleToUse = puzzle || samplePuzzle;
-    const allMovies = puzzleToUse.groups.flatMap((group) =>
-      group.movies.map((movie) => ({
-        ...movie,
-        groupId: group.id,
-        groupColor: group.color,
-        connection: group.connection,
-        textColor: group.textColor,
-      }))
-    );
-    const shuffled = allMovies.sort(() => Math.random() - 0.5);
-    setMovies(shuffled);
-  };
-
-  // Handle archive date selection
-  const handleArchiveSelect = (date) => {
-    loadPuzzle(false, date);
-  };
-
-  const formatTime = (ms) => {
-    // Handle edge cases like negative time
-    if (!ms || ms < 0) return '0:00';
-    const seconds = Math.floor(ms / 1000);
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    return `${m}:${s.toString().padStart(2, '0')}`;
-  };
-
-  const handleShare = async () => {
-    const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
-    // Use archive date if in archive mode, otherwise use today's date
-    const dateStr = archiveDate
-      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US')
-      : new Date().toLocaleDateString('en-US');
-    // Create emoji string: 4 slots total.
-    // If 0 mistakes: 🍿🍿🍿🍿
-    // If 1 mistake: ❌🍿🍿🍿
-    // If 2 mistakes: ❌❌🍿🍿
-    // etc.
-    const xCount = mistakes;
-    const popcornCount = 4 - mistakes;
-    const mistakeEmojis = '❌'.repeat(xCount) + '🍿'.repeat(popcornCount);
-
-    const shareText = `Reel Connections ${dateStr}\nYou won!\n${mistakeEmojis}\nTime: ${timeStr}`;
-
-    // Try native share first (works on iOS Safari and mobile browsers)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          text: shareText,
-        });
-        return; // User shared or cancelled - either way, we're done
-      } catch (err) {
-        // User cancelled or share failed - fall back to clipboard
-        if (err.name === 'AbortError') {
-          return; // User cancelled, don't show clipboard fallback
-        }
-      }
-    }
-
-    // Fallback to clipboard for desktop browsers
-    try {
-      await navigator.clipboard.writeText(shareText);
-      alert('Results copied to clipboard!');
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
-  const isSelected = (movie) => selectedMovies.some((m) => m.imdbId === movie.imdbId);
-  const isSolved = (movie) => solvedGroups.some((g) => g.id === movie.groupId);
-
-  // Start the game - called when user clicks "Action!" button
-  const handleStartGame = () => {
-    playButtonTone();
-    setGameStarted(true);
-    setStartTime(Date.now());
-  };
+    user,
+    toggleMovieSelection,
+    handleSubmit,
+    handleShuffle,
+    handleDeselect,
+    resetGame,
+    handleArchiveSelect,
+    handleStartGame,
+    handleShare,
+    isSelected,
+    isSolved,
+    formatTime,
+  } = useReelConnectionsGame();
 
   // Reveal phase - showing groups one by one after game over
   if (isRevealing && gameOver) {
@@ -794,6 +148,7 @@ const ReelConnectionsGame = () => {
     );
   }
 
+  // Game complete screen
   if ((gameWon || gameOver) && !isRevealing) {
     const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
     const dateStr = archiveDate
@@ -871,7 +226,9 @@ const ReelConnectionsGame = () => {
               <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Time</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
-              <p className="text-white font-black text-xl mb-1 drop-shadow">{mistakes}/4</p>
+              <p className="text-white font-black text-xl mb-1 drop-shadow">
+                {mistakes}/{REEL_CONFIG.MAX_MISTAKES}
+              </p>
               <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Mistakes</p>
             </div>
             <div className="bg-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
@@ -890,7 +247,6 @@ const ReelConnectionsGame = () => {
               </button>
             )}
 
-            {/* Stats & Leaderboard button */}
             <button
               onClick={() => setShowStats(true)}
               className="w-full py-4 bg-[#cb6ce6] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-white font-black text-lg capitalize tracking-wide hover:brightness-110"
@@ -898,7 +254,6 @@ const ReelConnectionsGame = () => {
               Stats & Leaderboard
             </button>
 
-            {/* Join Leaderboard CTA for non-authenticated users */}
             {!user && (
               <button
                 onClick={() => setShowAuthModal(true)}
@@ -954,7 +309,6 @@ const ReelConnectionsGame = () => {
           </p>
         </div>
 
-        {/* Footer - anchored to bottom */}
         <div className="mt-auto pt-8 text-center space-y-2">
           <button
             onClick={() => setShowAbout(true)}
@@ -965,7 +319,7 @@ const ReelConnectionsGame = () => {
           <p className="text-white/30 text-xs">© 2025 Good Vibes Games</p>
         </div>
 
-        {/* Modals - must be included here for links to work */}
+        {/* Modals */}
         <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
         <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
         <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
@@ -984,10 +338,12 @@ const ReelConnectionsGame = () => {
     );
   }
 
+  // Loading state
   if (loading) {
     return <ReelConnectionsLoadingSkeleton />;
   }
 
+  // Main game screen
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] flex items-center justify-center p-4 film-grain">
       <div className="w-full max-w-2xl">
@@ -1106,7 +462,8 @@ const ReelConnectionsGame = () => {
                 })}
               </div>
               <p className="text-white text-xs font-bold text-center drop-shadow">
-                {4 - mistakes} mistake{4 - mistakes !== 1 ? 's' : ''} left
+                {REEL_CONFIG.MAX_MISTAKES - mistakes} mistake
+                {REEL_CONFIG.MAX_MISTAKES - mistakes !== 1 ? 's' : ''} left
               </p>
             </div>
             <div className="relative">
@@ -1209,7 +566,6 @@ const ReelConnectionsGame = () => {
                         {selected && (
                           <>
                             <div className="absolute inset-0 bg-[rgba(255,206,0,0.15)] rounded-lg" />
-                            {/* Selection Order Badge - Responsive sizing */}
                             <div className="absolute top-1 right-1 sm:top-2 sm:right-2 w-6 h-6 sm:w-8 sm:h-8 bg-[#ffce00] border-[2px] sm:border-[3px] border-white rounded-full flex items-center justify-center shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
                               <span className="text-[#2c2c2c] text-xs sm:text-sm font-bold">
                                 {orderNumber}
@@ -1273,9 +629,9 @@ const ReelConnectionsGame = () => {
             </button>
             <button
               onClick={handleSubmit}
-              disabled={selectedMovies.length !== 4}
+              disabled={selectedMovies.length !== REEL_CONFIG.GROUP_SIZE}
               className={`flex items-center gap-2 px-6 py-3 border-[4px] rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transform transition-all font-bold text-sm ${
-                selectedMovies.length === 4
+                selectedMovies.length === REEL_CONFIG.GROUP_SIZE
                   ? 'cinema-gradient border-[#ffce00] text-white hover:-translate-y-1 hover:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] active:translate-y-0 active:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] gold-glow'
                   : 'bg-white/5 border-white/20 text-white/30 cursor-not-allowed'
               }`}
@@ -1286,7 +642,7 @@ const ReelConnectionsGame = () => {
           </div>
         )}
 
-        {/* Footer with About and Copyright */}
+        {/* Footer */}
         <div className="text-center mt-8 space-y-2">
           <button
             onClick={() => setShowAbout(true)}
