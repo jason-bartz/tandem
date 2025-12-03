@@ -1,6 +1,17 @@
 // Audio effects for the game
 let audioContext = null;
 
+// Play crowd disappointment sound for game failure
+export function playCrowdDisappointmentSound() {
+  if (typeof window === 'undefined') return;
+
+  const audio = new Audio('/sounds/crowd-disappointment.mp3');
+  audio.volume = 0.5;
+  audio.play().catch(() => {
+    // Ignore autoplay errors
+  });
+}
+
 export function initAudio() {
   if (!audioContext && typeof window !== 'undefined') {
     audioContext = new (window.AudioContext || window.webkitAudioContext)();

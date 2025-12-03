@@ -4,7 +4,13 @@ import { useState, useEffect, useCallback } from 'react';
 import confetti from 'canvas-confetti';
 import { useMidnightRefresh } from '@/hooks/useMidnightRefresh';
 import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
-import { playCorrectSound, playErrorSound, playButtonTone, playOneAwaySound } from '@/lib/sounds';
+import {
+  playCorrectSound,
+  playErrorSound,
+  playButtonTone,
+  playOneAwaySound,
+  playCrowdDisappointmentSound,
+} from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   REEL_CONFIG,
@@ -432,6 +438,7 @@ export function useReelConnectionsGame() {
 
       if (newMistakes >= REEL_CONFIG.MAX_MISTAKES) {
         setGameOver(true);
+        playCrowdDisappointmentSound();
         startReveal(false);
       }
     }
