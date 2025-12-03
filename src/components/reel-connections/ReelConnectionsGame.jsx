@@ -76,7 +76,13 @@ const ReelConnectionsGame = () => {
   const DIFFICULTY_ORDER = ['easiest', 'easy', 'medium', 'hardest'];
 
   // Movie-themed "one away" messages
-  const ONE_AWAY_MESSAGES = ['One away...', 'So close!', 'Almost!', 'Close-up!', 'Near miss!'];
+  const ONE_AWAY_MESSAGES = [
+    'One away...',
+    'So close!',
+    'One star short...',
+    'One frame off...',
+    'Nearly in focus!',
+  ];
 
   // Check if the selected movies are "one away" from a correct group
   const checkOneAway = (selectedMovies, puzzleGroups) => {
