@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import {
   REEL_CONFIG,
   DIFFICULTY_ORDER,
+  DIFFICULTY_EMOJIS,
   CONGRATS_MESSAGES,
   ONE_AWAY_MESSAGES,
   CONFETTI_COLORS,
@@ -129,6 +130,9 @@ export function useReelConnectionsGame() {
 
   // Archive mode
   const [archiveDate, setArchiveDate] = useState(null);
+
+  // Guess history for share text (tracks difficulty of each movie in each guess)
+  const [guessHistory, setGuessHistory] = useState([]);
 
   // Tracking state
   const [statsRecorded, setStatsRecorded] = useState(false);
@@ -332,6 +336,7 @@ export function useReelConnectionsGame() {
         setStatsRecorded(false);
         setLeaderboardSubmitted(false);
         setArchiveDate(specificDate);
+        setGuessHistory([]);
       }
 
       setGameStarted(false);
@@ -384,6 +389,13 @@ export function useReelConnectionsGame() {
   const handleSubmit = useCallback(() => {
     if (selectedMovies.length !== REEL_CONFIG.GROUP_SIZE) return;
     if (solvingGroup) return; // Don't allow submit during animation
+
+    // Record this guess to history (map each movie to its group's difficulty)
+    const guessDifficulties = selectedMovies.map((movie) => {
+      const group = puzzle.groups.find((g) => g.id === movie.groupId);
+      return group?.difficulty || 'easiest';
+    });
+    setGuessHistory((prev) => [...prev, guessDifficulties]);
 
     const groupId = selectedMovies[0].groupId;
     const isCorrect = selectedMovies.every((m) => m.groupId === groupId);
@@ -471,6 +483,7 @@ export function useReelConnectionsGame() {
     setStatsRecorded(false);
     setSolvingGroup(null);
     setSolvingMovies([]);
+    setGuessHistory([]);
 
     const allMovies = flattenPuzzleMovies(puzzle);
     const shuffled = shuffleArray(allMovies);
@@ -493,16 +506,25 @@ export function useReelConnectionsGame() {
 
   // Handle share
   const handleShare = useCallback(async () => {
-    const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
+    // Format date as M/D/YYYY
     const dateStr = archiveDate
-      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US')
-      : new Date().toLocaleDateString('en-US');
+      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
+          month: 'numeric',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      : new Date().toLocaleDateString('en-US', {
+          month: 'numeric',
+          day: 'numeric',
+          year: 'numeric',
+        });
 
-    const xCount = mistakes;
-    const popcornCount = REEL_CONFIG.MAX_MISTAKES - mistakes;
-    const mistakeEmojis = '❌'.repeat(xCount) + '🍿'.repeat(popcornCount);
+    // Convert guess history to emoji grid (NYT Connections style)
+    const emojiGrid = guessHistory
+      .map((guess) => guess.map((difficulty) => DIFFICULTY_EMOJIS[difficulty] || '⬜').join(''))
+      .join('\n');
 
-    const shareText = `Reel Connections ${dateStr}\nYou won!\n${mistakeEmojis}\nTime: ${timeStr}`;
+    const shareText = `Reel Connections\n${dateStr}\n${emojiGrid}`;
 
     if (navigator.share) {
       try {
@@ -519,7 +541,7 @@ export function useReelConnectionsGame() {
     } catch (err) {
       console.error('Failed to copy:', err);
     }
-  }, [endTime, startTime, archiveDate, mistakes]);
+  }, [archiveDate, guessHistory]);
 
   // Helper functions
   const isSelected = useCallback(

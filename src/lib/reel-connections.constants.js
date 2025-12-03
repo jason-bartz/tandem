@@ -23,10 +23,18 @@ export const DIFFICULTY_ORDER = ['easiest', 'easy', 'medium', 'hardest'];
 
 // Difficulty colors for groups
 export const DIFFICULTY_COLORS = {
-  easiest: 'bg-[#ffce00]', // Yellow
-  easy: 'bg-[#7ed957]', // Green
-  medium: 'bg-[#39b6ff]', // Blue
-  hardest: 'bg-[#cb6ce6]', // Purple
+  easiest: 'bg-yellow-300', // #FCD34D
+  easy: 'bg-blue-400', // #60A5FA
+  medium: 'bg-purple-400', // #C084FC
+  hardest: 'bg-red-500', // #EF4444
+};
+
+// Difficulty emojis for share text (matches NYT Connections style)
+export const DIFFICULTY_EMOJIS = {
+  easiest: '🟨', // Yellow
+  easy: '🟦', // Blue
+  medium: '🟪', // Purple
+  hardest: '🟥', // Red
 };
 
 // Movie-themed congratulatory messages for winning

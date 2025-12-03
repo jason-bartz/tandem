@@ -404,14 +404,12 @@ const ReelConnectionsGame = () => {
             </div>
 
             <div className="space-y-3 mb-4">
-              {isWin && (
-                <button
-                  onClick={handleShare}
-                  className="w-full py-4 bg-[#4ade80] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
-                >
-                  Share Results
-                </button>
-              )}
+              <button
+                onClick={handleShare}
+                className="w-full py-4 bg-[#4ade80] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
+              >
+                Share Results
+              </button>
 
               <button
                 onClick={() => setShowArchive(true)}
