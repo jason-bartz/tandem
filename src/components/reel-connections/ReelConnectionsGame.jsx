@@ -10,7 +10,7 @@ import { HowToPlayModal, AboutModal, StatsModal, ArchiveModal } from './modals';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 
 // Long press duration in milliseconds
-const LONG_PRESS_DURATION = 500;
+const LONG_PRESS_DURATION = 650;
 
 // PosterModal component for enlarged poster view
 const PosterModal = ({ movie, onClose }) => {
