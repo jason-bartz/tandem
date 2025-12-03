@@ -57,88 +57,93 @@ export default function AboutPage() {
                 {/* Main content card */}
                 <div className="relative">
                   <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
-                {/* Header with back button, title, and hamburger menu */}
-                <div className="flex items-center justify-between p-6 pb-4">
-                  <Link
-                    href="/"
-                    className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
-                    aria-label="Back to game"
-                  >
-                    <svg
-                      className="w-6 h-6 text-gray-800 dark:text-gray-200"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 19l-7-7 7-7"
-                      />
-                    </svg>
-                  </Link>
-                  <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">About</h1>
-                  <HamburgerMenu
-                    isOpen={isSidebarOpen}
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                  />
-                </div>
-
-                {/* Content */}
-                <div className="px-8 pb-8">
-                  {/* Founder Message */}
-                  <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-                    <p>
-                      I'm Jason, and I'm the creator of Tandem Daily Games.
-                    </p>
-                    <p>
-                      We're surrounded by infinite scrolling and algorithms designed to keep us trapped. I wanted to build something different. A peaceful moment where you can think, discover, and feel a spark of joy when things click into place.
-                    </p>
-                    <p>
-                      These games are meant to be a companion to your daily puzzle routine. Whether you're already solving Wordle or playing Sudoku, these games offer fresh challenges that respect your time and intelligence.
-                    </p>
-                    <p>
-                      This is a passion project. I'm not trying to maximize engagement or monetize your attention. I built Tandem because I love puzzles, and I'm committed to keeping it ad-free forever. No pressure. No endless content trying to steal your attention. Just simple, thoughtful puzzles that reward curiosity and let you share in "aha!" moments with friends.
-                    </p>
-
-                    {/* Founder Image and Info */}
-                    <div className="flex flex-col items-center pt-6 border-t-[3px] border-black dark:border-white">
-                      <div className="relative w-32 h-32 rounded-full overflow-hidden border-[3px] border-black dark:border-white mb-4">
-                        <Image
-                          src="/images/jason-bartz.webp"
-                          alt="Jason Bartz"
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <p className="text-center font-semibold text-gray-800 dark:text-gray-200">
-                        <a
-                          href="https://www.jason-bartz.com"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="hover:text-[#38b6ff] transition-colors"
+                    {/* Header with back button, title, and hamburger menu */}
+                    <div className="flex items-center justify-between p-6 pb-4">
+                      <Link
+                        href="/"
+                        className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
+                        aria-label="Back to game"
+                      >
+                        <svg
+                          className="w-6 h-6 text-gray-800 dark:text-gray-200"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
                         >
-                          Jason Bartz
-                        </a>
-                      </p>
-                      <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                        Founder and Puzzlemaster
-                      </p>
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 19l-7-7 7-7"
+                          />
+                        </svg>
+                      </Link>
+                      <h1 className="text-xl font-bold text-gray-800 dark:text-gray-200">About</h1>
+                      <HamburgerMenu
+                        isOpen={isSidebarOpen}
+                        onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+                      />
+                    </div>
+
+                    {/* Content */}
+                    <div className="px-8 pb-8">
+                      {/* Founder Message */}
+                      <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
+                        <p>I&apos;m Jason, creator of Tandem Daily Games.</p>
+                        <p>
+                          We&apos;re surrounded by infinite scrolling and algorithms designed to
+                          keep us trapped. I wanted to build something different. Something peaceful
+                          that you solve, share with friends, and then move on with your day.
+                        </p>
+                        <p>
+                          These games are meant to be a companion to your daily puzzle routine.
+                          Whether you&apos;re already solving Wordle or playing Sudoku, these games
+                          offer fresh challenges that respect your time.
+                        </p>
+                        <p>
+                          I&apos;m committed to keeping our games ad-free forever. No endless
+                          content trying to steal your attention. Just simple, fun puzzles that
+                          reward curiosity and let you share &quot;aha!&quot; moments with friends.
+                          Hope you enjoy!
+                        </p>
+
+                        {/* Founder Image and Info */}
+                        <div className="flex flex-col items-center pt-6 border-t-[3px] border-black dark:border-white">
+                          <div className="relative w-32 h-32 rounded-full overflow-hidden border-[3px] border-black dark:border-white mb-4">
+                            <Image
+                              src="/images/jason-bartz.webp"
+                              alt="Jason Bartz"
+                              fill
+                              className="object-cover"
+                            />
+                          </div>
+                          <p className="text-center font-semibold text-gray-800 dark:text-gray-200">
+                            <a
+                              href="https://www.jason-bartz.com"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:text-[#38b6ff] transition-colors"
+                            >
+                              Jason Bartz
+                            </a>
+                          </p>
+                          <p className="text-center text-sm text-gray-600 dark:text-gray-400">
+                            Founder and Puzzlemaster
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Call to Action */}
+                      <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                        <Link
+                          href="/"
+                          className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                        >
+                          Back to the puzzles
+                        </Link>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Call to Action */}
-                  <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
-                    <Link
-                      href="/"
-                      className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
-                    >
-                      Play Today's Tandem
-                    </Link>
-                  </div>
-                </div>
-              </div>
                   {/* Faux drop shadow */}
                   <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
                 </div>
