@@ -306,12 +306,20 @@ const ReelConnectionsGame = () => {
         <div className="min-h-full flex flex-col items-center py-4 px-4 pb-8">
           {/* Header Links */}
           <div className="w-full max-w-md flex items-center justify-between px-2 mb-3">
-            <button
-              onClick={() => setShowHowToPlay(true)}
-              className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-            >
-              How to Play
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowHowToPlay(true)}
+                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+              >
+                How to Play
+              </button>
+              <button
+                onClick={() => setShowAbout(true)}
+                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+              >
+                About
+              </button>
+            </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowArchive(true)}
@@ -433,13 +441,7 @@ const ReelConnectionsGame = () => {
             </p>
           </div>
 
-          <div className="mt-auto pt-8 text-center space-y-2">
-            <button
-              onClick={() => setShowAbout(true)}
-              className="text-white/50 hover:text-[#ffce00] text-sm font-medium transition-colors"
-            >
-              About
-            </button>
+          <div className="mt-auto pt-8 text-center">
             <p className="text-white/30 text-xs">© 2025 Good Vibes Games</p>
           </div>
 
@@ -469,12 +471,20 @@ const ReelConnectionsGame = () => {
         <div className="w-full max-w-md sm:max-w-lg pb-8">
           {/* Header Links */}
           <div className="flex items-center justify-between px-2 mb-3">
-            <button
-              onClick={() => setShowHowToPlay(true)}
-              className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-            >
-              How to Play
-            </button>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => setShowHowToPlay(true)}
+                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+              >
+                How to Play
+              </button>
+              <button
+                onClick={() => setShowAbout(true)}
+                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+              >
+                About
+              </button>
+            </div>
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setShowArchive(true)}
@@ -521,9 +531,6 @@ const ReelConnectionsGame = () => {
                 <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-lg">
                   Reel Connections
                 </h1>
-                <span className="px-1.5 sm:px-2 py-0.5 bg-[#ffce00] text-[#0f0f1e] text-[10px] sm:text-xs font-black uppercase tracking-wider rounded-md shadow-sm transform -rotate-2">
-                  BETA
-                </span>
               </div>
               <p className="text-white/70 text-xs sm:text-sm font-medium">
                 Group movies that share a common theme
@@ -534,7 +541,7 @@ const ReelConnectionsGame = () => {
             <div className="bg-black/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative">
               <div className="flex items-center justify-between">
                 {/* Mistakes */}
-                <div className="flex items-center gap-2 sm:gap-3">
+                <div className="flex flex-col items-center gap-1">
                   <div className="flex gap-1 sm:gap-1.5">
                     {[0, 1, 2, 3].map((i) => {
                       const isMistake = i < mistakes;
@@ -564,6 +571,7 @@ const ReelConnectionsGame = () => {
                       );
                     })}
                   </div>
+                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Mistakes Left</p>
                 </div>
 
                 {/* Date - Center */}
@@ -588,13 +596,11 @@ const ReelConnectionsGame = () => {
                 </p>
 
                 {/* Timer */}
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  <p className="text-white/80 text-[10px] sm:text-xs font-bold drop-shadow hidden sm:block">
-                    Time
-                  </p>
+                <div className="flex flex-col items-center gap-1">
                   <p className="text-white text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg">
                     {formatTime(currentTime)}
                   </p>
+                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Time</p>
                 </div>
               </div>
             </div>
@@ -797,13 +803,19 @@ const ReelConnectionsGame = () => {
           )}
 
           {/* Footer */}
-          <div className="text-center mt-4 sm:mt-8 space-y-1 sm:space-y-2">
-            <button
-              onClick={() => setShowAbout(true)}
-              className="text-white/50 hover:text-[#ffce00] text-xs sm:text-sm font-medium transition-colors"
-            >
-              About
-            </button>
+          <div className="text-center mt-4 sm:mt-8 space-y-3 sm:space-y-4">
+            <p className="text-white/80 text-xs sm:text-sm font-medium">
+              If you enjoy daily word puzzles, check out our other games{' '}
+              <a
+                href="https://www.tandemdaily.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[#ffce00] hover:underline font-bold"
+              >
+                here
+              </a>
+              !
+            </p>
             <p className="text-white/30 text-[10px] sm:text-xs">© 2025 Good Vibes Games</p>
           </div>
         </div>
