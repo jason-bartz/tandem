@@ -47,10 +47,10 @@ export async function GET(request) {
           difficulty: group.difficulty,
           // Map difficulty to colors
           color: {
-            easiest: 'bg-[#ffce00]',
-            easy: 'bg-[#7ed957]',
-            medium: 'bg-[#39b6ff]',
-            hardest: 'bg-[#cb6ce6]',
+            easiest: 'bg-yellow-300',
+            easy: 'bg-blue-400',
+            medium: 'bg-purple-400',
+            hardest: 'bg-red-500',
           }[group.difficulty],
           textColor: 'text-[#2c2c2c]',
           movies: group.movies

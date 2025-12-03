@@ -5,10 +5,16 @@ import authService from '@/services/auth.service';
 import ReelConnectionsAIGenerator from './ReelConnectionsAIGenerator';
 
 const DIFFICULTY_LEVELS = [
-  { id: 'easiest', label: 'Easiest', color: 'bg-[#ffce00]', textColor: 'text-[#2c2c2c]', order: 1 },
-  { id: 'easy', label: 'Easy', color: 'bg-[#7ed957]', textColor: 'text-[#2c2c2c]', order: 2 },
-  { id: 'medium', label: 'Medium', color: 'bg-[#39b6ff]', textColor: 'text-[#2c2c2c]', order: 3 },
-  { id: 'hardest', label: 'Hardest', color: 'bg-[#cb6ce6]', textColor: 'text-[#2c2c2c]', order: 4 },
+  {
+    id: 'easiest',
+    label: 'Easiest',
+    color: 'bg-yellow-300',
+    textColor: 'text-[#2c2c2c]',
+    order: 1,
+  },
+  { id: 'easy', label: 'Easy', color: 'bg-blue-400', textColor: 'text-[#2c2c2c]', order: 2 },
+  { id: 'medium', label: 'Medium', color: 'bg-purple-400', textColor: 'text-[#2c2c2c]', order: 3 },
+  { id: 'hardest', label: 'Hardest', color: 'bg-red-500', textColor: 'text-white', order: 4 },
 ];
 
 /**

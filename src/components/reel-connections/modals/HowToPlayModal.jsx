@@ -46,19 +46,19 @@ export default function HowToPlayModal({ isOpen, onClose }) {
           <p className="text-sm text-white/70 mb-3">Categories are color-coded by difficulty:</p>
           <div className="space-y-2">
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-[#ffce00]" />
+              <div className="w-4 h-4 rounded bg-yellow-300" />
               <span className="text-sm">Easiest</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-[#7ed957]" />
+              <div className="w-4 h-4 rounded bg-blue-400" />
               <span className="text-sm">Easy</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-[#39b6ff]" />
+              <div className="w-4 h-4 rounded bg-purple-400" />
               <span className="text-sm">Medium</span>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-4 h-4 rounded bg-[#cb6ce6]" />
+              <div className="w-4 h-4 rounded bg-red-500" />
               <span className="text-sm">Hardest</span>
             </div>
           </div>
