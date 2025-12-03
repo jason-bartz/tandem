@@ -28,9 +28,9 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Daily Tandem ("the Games") at tandemdaily.com or through our iOS
-            app, you agree to be bound by these Terms of Use ("Terms"). If you do not agree to these
-            Terms, please do not use the Games.
+            By accessing or playing Tandem Daily Games ("the Games") at tandemdaily.com or through
+            our iOS app, you agree to be bound by these Terms of Use ("Terms"). If you do not agree
+            to these Terms, please do not use the Games.
           </p>
           <p>
             These Terms apply to all users of the Games, including those who access them through our
@@ -60,6 +60,10 @@ export default function TermsOfUse() {
             </li>
             <li>
               <strong>Daily Mini</strong>: A quick 5x5 mini crossword puzzle
+            </li>
+            <li>
+              <strong>Reel Connections</strong>: Group movies that share a common theme into four
+              categories
             </li>
           </ul>
           <p>Features include:</p>
