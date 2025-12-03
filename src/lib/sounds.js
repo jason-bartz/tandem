@@ -266,8 +266,8 @@ export function playFailureSound() {
   harmony.stop(currentTime + 0.8);
 }
 
-// Play clapper sound when starting the game
-export function playButtonTone() {
+// Play clapper sound for Reel Connections game start
+export function playClapperSound() {
   if (typeof window === 'undefined') return;
 
   const audio = new Audio('/sounds/clapper.wav');
@@ -275,6 +275,77 @@ export function playButtonTone() {
   audio.play().catch(() => {
     // Ignore autoplay errors
   });
+}
+
+// Play a soft, friendly button tone for starting the game - warm and inviting
+export function playButtonTone() {
+  const context = initAudio();
+  if (!context) {
+    return;
+  }
+
+  const currentTime = context.currentTime;
+
+  // Soft two-tone ascending pattern - gentle and warm
+  const notes = [
+    { frequency: 440, start: 0, duration: 0.08 }, // A4 - gentle start
+    { frequency: 659.25, start: 0.06, duration: 0.12 }, // E5 - soft lift
+  ];
+
+  notes.forEach((note) => {
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+
+    // Triangle wave for a softer, mellower tone (like a music box)
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(note.frequency, currentTime + note.start);
+
+    // Gentle envelope with soft attack and smooth decay
+    gainNode.gain.setValueAtTime(0, currentTime + note.start);
+    gainNode.gain.linearRampToValueAtTime(0.08, currentTime + note.start + 0.015);
+    gainNode.gain.setValueAtTime(0.07, currentTime + note.start + 0.04);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, currentTime + note.start + note.duration);
+
+    // Add a filter to make it even warmer and rounder
+    const filter = context.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 1500;
+    filter.Q.value = 0.7;
+
+    // Add subtle vibrato for organic warmth
+    const vibrato = context.createOscillator();
+    vibrato.frequency.value = 4;
+    const vibratoGain = context.createGain();
+    vibratoGain.gain.value = 1.5;
+
+    vibrato.connect(vibratoGain);
+    vibratoGain.connect(oscillator.frequency);
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(context.destination);
+
+    oscillator.start(currentTime + note.start);
+    oscillator.stop(currentTime + note.start + note.duration);
+    vibrato.start(currentTime + note.start);
+    vibrato.stop(currentTime + note.start + note.duration);
+  });
+
+  // Add a very soft "pluck" sound for gentle tactile feedback
+  const pluck = context.createOscillator();
+  const pluckGain = context.createGain();
+
+  pluck.type = 'sine';
+  pluck.frequency.setValueAtTime(220, currentTime);
+
+  pluckGain.gain.setValueAtTime(0.02, currentTime);
+  pluckGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.03);
+
+  pluck.connect(pluckGain);
+  pluckGain.connect(context.destination);
+
+  pluck.start(currentTime);
+  pluck.stop(currentTime + 0.03);
 }
 
 // Play a soft, magical hint sound - like a gentle lightbulb moment

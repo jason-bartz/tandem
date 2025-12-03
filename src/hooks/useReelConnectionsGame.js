@@ -7,7 +7,7 @@ import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
 import {
   playCorrectSound,
   playErrorSound,
-  playButtonTone,
+  playClapperSound,
   playOneAwaySound,
   playCrowdDisappointmentSound,
 } from '@/lib/sounds';
@@ -488,7 +488,7 @@ export function useReelConnectionsGame() {
 
   // Start game
   const handleStartGame = useCallback(() => {
-    playButtonTone();
+    playClapperSound();
     setGameStarted(true);
     setStartTime(Date.now());
   }, []);
