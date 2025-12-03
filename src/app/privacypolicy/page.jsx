@@ -28,14 +28,14 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Daily Tandem ("we," "our," or "us"), daily word puzzle games developed by
-            Good Vibes Games. We respect your privacy and are committed to protecting your personal
-            data. This privacy policy explains how we collect, use, and safeguard information when
-            you play our games at tandemdaily.com (the "Service").
+            Welcome to Tandem Daily Games ("we," "our," or "us"), daily word puzzle games developed
+            by Good Vibes Games. We respect your privacy and are committed to protecting your
+            personal data. This privacy policy explains how we collect, use, and safeguard
+            information when you play our games at tandemdaily.com (the "Service").
           </p>
           <p>
-            By using Daily Tandem, you agree to the collection and use of information in accordance
-            with this policy.
+            By using Tandem Daily Games, you agree to the collection and use of information in
+            accordance with this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
@@ -358,8 +358,8 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Daily Tandem is suitable for all ages. We do not knowingly collect personal information
-            from children under 13. Our games:
+            Tandem Daily Games is suitable for all ages. We do not knowingly collect personal
+            information from children under 13. Our games:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Do not require account creation to play (iOS and free web access)</li>
