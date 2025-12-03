@@ -142,7 +142,9 @@ export function generateClueNumbers(grid) {
 export function getWordCellsFromPosition(grid, startRow, startCol, direction) {
   const cells = [];
 
-  console.log(`[getWordCellsFromPosition] Called with startRow=${startRow}, startCol=${startCol}, direction=${direction}`);
+  console.log(
+    `[getWordCellsFromPosition] Called with startRow=${startRow}, startCol=${startCol}, direction=${direction}`
+  );
 
   if (direction === DIRECTION.DOWN) {
     // DOWN - iterate through rows (vertical)
@@ -297,7 +299,13 @@ export function getNextCell(grid, clueNumbers, row, col, direction, forward = tr
 /**
  * Navigate to next clue (for clue navigation)
  */
-export function getNextClue(clues, currentClueNumber, currentDirection, grid = null, clueNumbers = null) {
+export function getNextClue(
+  clues,
+  currentClueNumber,
+  currentDirection,
+  grid = null,
+  clueNumbers = null
+) {
   const allClues = [];
 
   // Build ordered list: all across clues, then all down clues
@@ -333,9 +341,52 @@ export function getNextClue(clues, currentClueNumber, currentDirection, grid = n
 }
 
 /**
+ * Navigate to next clue within the same section (Across or Down)
+ * Wraps to the beginning of the section when reaching the end
+ */
+export function getNextClueInSection(
+  clues,
+  currentClueNumber,
+  currentDirection,
+  grid = null,
+  clueNumbers = null
+) {
+  // Get clues for the current section only
+  const sectionClues =
+    currentDirection === DIRECTION.ACROSS
+      ? (clues.across || []).map((clue) => ({ ...clue, direction: DIRECTION.ACROSS }))
+      : (clues.down || []).map((clue) => ({ ...clue, direction: DIRECTION.DOWN }));
+
+  if (sectionClues.length === 0) return null;
+
+  // Find current clue index within the section
+  const currentIndex = sectionClues.findIndex((clue) => clue.number === currentClueNumber);
+
+  if (currentIndex === -1) return sectionClues[0] || null;
+
+  // Get next clue (wrap to beginning of section)
+  const nextIndex = (currentIndex + 1) % sectionClues.length;
+  const nextClue = sectionClues[nextIndex];
+
+  // Add cells if grid and clueNumbers are provided
+  if (grid && clueNumbers && nextClue) {
+    const cells = getWordCells(grid, clueNumbers, nextClue.number, nextClue.direction);
+    return { ...nextClue, cells };
+  }
+
+  return nextClue;
+}
+
+/**
  * Navigate to previous clue
  */
-export function getPreviousClue(clues, currentClueNumber, currentDirection, grid = null, clueNumbers = null) {
+export function getPreviousClue(
+  clues,
+  currentClueNumber,
+  currentDirection,
+  grid = null,
+  clueNumbers = null
+) {
   const allClues = [];
 
   // Build ordered list: all across clues, then all down clues
@@ -596,9 +647,7 @@ export function validatePuzzleStructure(grid, clues) {
   for (let row = 0; row < GRID_SIZE; row++) {
     for (let col = 0; col < GRID_SIZE; col++) {
       if (!isBlackSquare(grid[row][col]) && letterCounts[row][col] === 1) {
-        errors.push(
-          `Warning: Cell (${row}, ${col}) appears in only one word (unchecked square)`
-        );
+        errors.push(`Warning: Cell (${row}, ${col}) appears in only one word (unchecked square)`);
       }
     }
   }

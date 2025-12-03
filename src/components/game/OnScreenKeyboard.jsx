@@ -30,6 +30,7 @@ export default function OnScreenKeyboard({
   isSmallPhone = false,
   isMobilePhone = false,
   checkButtonColor = '#3B82F6', // Default blue for Daily Tandem
+  actionKeyType = 'check', // 'check' for checkmark (ENTER), 'tab' for tab arrow (TAB)
 }) {
   const { lightTap } = useHaptics();
   const { highContrast, isDark, reduceMotion } = useTheme();
@@ -198,6 +199,21 @@ export default function OnScreenKeyboard({
       );
     }
     if (key === 'ENTER') {
+      // Show Tab icon for crossword navigation, checkmark for word games
+      if (actionKeyType === 'tab') {
+        return (
+          <svg
+            className="w-5 h-5 sm:w-6 sm:h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={2.5}
+          >
+            {/* Tab arrow: horizontal line with arrow pointing right */}
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+          </svg>
+        );
+      }
       return (
         <svg
           className="w-5 h-5 sm:w-6 sm:h-6"
@@ -351,7 +367,15 @@ export default function OnScreenKeyboard({
                         }
                       : {}
                   }
-                  aria-label={key === 'BACKSPACE' ? 'Backspace' : key === 'ENTER' ? 'Enter' : key}
+                  aria-label={
+                    key === 'BACKSPACE'
+                      ? 'Backspace'
+                      : key === 'ENTER'
+                        ? actionKeyType === 'tab'
+                          ? 'Next clue'
+                          : 'Enter'
+                        : key
+                  }
                 >
                   {getKeyContent(key)}
                 </motion.button>

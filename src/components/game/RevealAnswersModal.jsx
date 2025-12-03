@@ -40,13 +40,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
           return (
             <div
               key={index}
-              className={`flex items-center justify-between ${
-                highContrast
-                  ? 'bg-hc-surface border-hc-border'
-                  : 'bg-white dark:bg-gray-700 border-gray-800 dark:border-gray-600'
-              } rounded-[18px] border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] px-4 py-4 animate-fade-in-up stagger-${
-                index + 1
-              }`}
+              className={`flex items-center px-2 py-3 animate-fade-in-up stagger-${index + 1}`}
             >
               {/* Emoji container */}
               <div
@@ -54,16 +48,16 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
                   highContrast
                     ? 'bg-hc-background border-hc-border'
                     : 'bg-white dark:bg-gray-800 border-gray-800 dark:border-gray-500'
-                } min-w-[64px] h-14 px-2 rounded-[14px] border-[3px] shadow-[2px_2px_0px_rgba(0,0,0,0.3)] flex items-center justify-center`}
+                } min-w-[64px] h-14 px-2 rounded-[14px] border-[3px] shadow-[2px_2px_0px_rgba(0,0,0,0.3)] flex items-center justify-center flex-shrink-0`}
               >
                 <span className="text-2xl flex items-center justify-center gap-0 whitespace-nowrap">
                   {item.emoji}
                 </span>
               </div>
 
-              {/* Answer text */}
+              {/* Answer text - centered in remaining space */}
               <span
-                className={`font-black text-xl ${
+                className={`flex-1 text-center font-black text-xl ${
                   highContrast ? 'text-hc-text' : 'text-dark-text dark:text-gray-100'
                 } uppercase tracking-wide`}
               >
