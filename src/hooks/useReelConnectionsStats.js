@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { API_ENDPOINTS } from '@/lib/constants';
+import storageService from '@/core/storage/storageService';
 
 const STORAGE_KEY = 'reel-connections-stats';
 const USER_STORAGE_KEY_PREFIX = 'reel-connections-stats-user-';
@@ -188,23 +189,23 @@ export function useReelConnectionsStats() {
 
     const loadStats = async () => {
       try {
-        // Load local stats first
+        // Load local stats first (uses storageService with IndexedDB fallback)
         let localStats = DEFAULT_STATS;
-        const stored = window.localStorage.getItem(storageKey);
+        const stored = await storageService.get(storageKey);
         if (stored) {
           localStats = { ...DEFAULT_STATS, ...JSON.parse(stored) };
         } else if (userId) {
           // User is logged in but no user-specific stats exist
           // Try to migrate from anonymous stats
-          const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+          const anonymousStats = await storageService.get(STORAGE_KEY);
           if (anonymousStats) {
             localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
             // Save to user-specific key
-            window.localStorage.setItem(storageKey, anonymousStats);
+            await storageService.set(storageKey, anonymousStats);
           }
         } else {
           // Anonymous user - load from default key
-          const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+          const anonymousStats = await storageService.get(STORAGE_KEY);
           if (anonymousStats) {
             localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
           }
@@ -218,9 +219,9 @@ export function useReelConnectionsStats() {
             // Merge local and database stats
             const mergedStats = mergeReelStats(localStats, dbStats);
 
-            // Save merged stats locally
-            window.localStorage.setItem(storageKey, JSON.stringify(mergedStats));
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedStats));
+            // Save merged stats locally (with quota handling and IndexedDB fallback)
+            await storageService.set(storageKey, JSON.stringify(mergedStats));
+            await storageService.set(STORAGE_KEY, JSON.stringify(mergedStats));
 
             // Save merged stats to database (fire-and-forget)
             saveUserReelStatsToDatabase(mergedStats).catch((err) => {
@@ -257,27 +258,32 @@ export function useReelConnectionsStats() {
     if (!isLoaded || typeof window === 'undefined') return;
     if (isSyncingRef.current) return; // Prevent sync loops
 
-    try {
-      const storageKey = currentStorageKeyRef.current;
-      window.localStorage.setItem(storageKey, JSON.stringify(stats));
+    const saveStats = async () => {
+      try {
+        const storageKey = currentStorageKeyRef.current;
+        // Use storageService with quota handling and IndexedDB fallback
+        await storageService.set(storageKey, JSON.stringify(stats));
 
-      // Also save to default key for leaderboard sync to find
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+        // Also save to default key for leaderboard sync to find
+        await storageService.set(STORAGE_KEY, JSON.stringify(stats));
 
-      // If user is authenticated, sync to database (fire-and-forget)
-      if (user?.id && stats.gamesPlayed > 0) {
-        isSyncingRef.current = true;
-        saveUserReelStatsToDatabase(stats)
-          .catch((err) => {
-            console.error('[ReelConnectionsStats] Failed to sync stats to database:', err);
-          })
-          .finally(() => {
-            isSyncingRef.current = false;
-          });
+        // If user is authenticated, sync to database (fire-and-forget)
+        if (user?.id && stats.gamesPlayed > 0) {
+          isSyncingRef.current = true;
+          saveUserReelStatsToDatabase(stats)
+            .catch((err) => {
+              console.error('[ReelConnectionsStats] Failed to sync stats to database:', err);
+            })
+            .finally(() => {
+              isSyncingRef.current = false;
+            });
+        }
+      } catch (error) {
+        console.error('[ReelConnectionsStats] Error saving stats:', error);
       }
-    } catch (error) {
-      console.error('[ReelConnectionsStats] Error saving stats:', error);
-    }
+    };
+
+    saveStats();
   }, [stats, isLoaded, user?.id]);
 
   /**
@@ -399,12 +405,13 @@ export function useReelConnectionsStats() {
   /**
    * Reset all stats (for debugging/testing)
    */
-  const resetStats = useCallback(() => {
+  const resetStats = useCallback(async () => {
     setStats(DEFAULT_STATS);
     if (typeof window !== 'undefined') {
       const storageKey = currentStorageKeyRef.current;
-      window.localStorage.removeItem(storageKey);
-      window.localStorage.removeItem(STORAGE_KEY);
+      // Use storageService to remove from all storage layers
+      await storageService.remove(storageKey);
+      await storageService.remove(STORAGE_KEY);
     }
     // Also clear from database if user is authenticated
     if (user?.id) {
