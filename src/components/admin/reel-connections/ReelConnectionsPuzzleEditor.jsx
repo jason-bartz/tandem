@@ -164,10 +164,24 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
       const loadedGroups = DIFFICULTY_LEVELS.map((level) => {
         const existingGroup = puzzle.groups.find((g) => g.difficulty === level.id);
         if (existingGroup) {
+          // Transform movie data from snake_case (database) to camelCase (component)
+          const transformedMovies = (existingGroup.movies || []).map((movie) => {
+            if (!movie) return null;
+            return {
+              imdbId: movie.imdb_id || movie.imdbId,
+              title: movie.title,
+              year: movie.year,
+              poster: movie.poster,
+            };
+          });
+          // Pad with nulls if fewer than 4 movies
+          while (transformedMovies.length < 4) {
+            transformedMovies.push(null);
+          }
           return {
             difficulty: level.id,
             connection: existingGroup.connection || '',
-            movies: existingGroup.movies || [null, null, null, null],
+            movies: transformedMovies,
           };
         }
         return {
