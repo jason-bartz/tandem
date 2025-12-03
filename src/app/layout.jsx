@@ -65,7 +65,7 @@ export const metadata = {
         width: 1200,
         height: 630,
         alt: `${siteConfig.name} - Daily Word Games`,
-        type: 'image/webp',
+        type: 'image/png',
       },
     ],
     locale: siteConfig.locale,
