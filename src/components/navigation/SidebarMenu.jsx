@@ -483,7 +483,6 @@ export default function SidebarMenu({
                     isActive={pathname === '/reel-connections'}
                     gameColor="red"
                     highContrast={highContrast}
-                    badge="BETA"
                     subtitle="Create four groups of four movies"
                   />
                 </div>
