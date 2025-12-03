@@ -188,8 +188,9 @@ export default function UnifiedArchiveCalendar({
       );
 
       // Load completed puzzles from local storage
+      // getCompletedMiniPuzzles returns an object with date keys, convert to Set of date strings
       const completed = await getCompletedMiniPuzzles();
-      const completedSet = new Set(completed);
+      const completedSet = new Set(Object.keys(completed));
       setCompletedMiniPuzzles(completedSet);
 
       const monthData = {};

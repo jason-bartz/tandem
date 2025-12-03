@@ -41,6 +41,7 @@ export default function MiniGameScreen({
   handleBackspace,
   selectCell,
   navigateToNextClue,
+  navigateToNextClueInSection,
   navigateToPreviousClue,
   navigateToClue: _navigateToClue,
   pauseGame: _pauseGame,
@@ -73,18 +74,26 @@ export default function MiniGameScreen({
       if (showCheckModal || showRevealModal) return;
 
       // Ignore if input/textarea is focused
-      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') {
+      if (
+        document.activeElement?.tagName === 'INPUT' ||
+        document.activeElement?.tagName === 'TEXTAREA'
+      ) {
         return;
       }
 
-      if (e.key === 'Enter') {
+      if (e.key === 'Tab') {
         e.preventDefault();
-        // Enter checks the current word
-        checkWord();
+        // Tab advances to the next clue in the current section
+        navigateToNextClueInSection();
       } else if (e.key === 'Backspace') {
         e.preventDefault();
         handleBackspace();
-      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      } else if (
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowRight'
+      ) {
         e.preventDefault();
         handleArrowKey(e.key);
       } else if (e.key === ' ') {
@@ -105,7 +114,7 @@ export default function MiniGameScreen({
     selectedCell,
     handleLetterInput,
     handleBackspace,
-    checkWord,
+    navigateToNextClueInSection,
     selectCell,
   ]);
 
@@ -186,7 +195,8 @@ export default function MiniGameScreen({
 
   const handleKeyPress = (key) => {
     if (key === 'ENTER') {
-      checkWord();
+      // ENTER key now acts as Tab - advances to next clue in section
+      navigateToNextClueInSection();
     } else if (key === 'BACKSPACE') {
       handleBackspace();
     } else {
@@ -210,15 +220,17 @@ export default function MiniGameScreen({
         {/* Main game card */}
         <div className="flex-1 flex flex-col max-w-md w-full mx-auto">
           <div
-            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col m-4 ${highContrast
+            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col m-4 ${
+              highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                 : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-              }`}
+            }`}
           >
             {/* Header - back button, title/date, and hamburger menu */}
             <header
-              className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
-                }`}
+              className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
+                highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
+              }`}
             >
               {/* Back button */}
               <button
@@ -325,7 +337,7 @@ export default function MiniGameScreen({
                   puzzle={puzzle}
                   onNavigateNext={navigateToNextClue}
                   onNavigatePrevious={navigateToPreviousClue}
-                  onClueClick={() => { }}
+                  onClueClick={() => {}}
                 />
               </div>
             </div>
@@ -338,6 +350,7 @@ export default function MiniGameScreen({
             onKeyPress={handleKeyPress}
             disabled={false}
             checkButtonColor="#ffce00"
+            actionKeyType="tab"
           />
         </div>
       </div>
@@ -364,16 +377,17 @@ export default function MiniGameScreen({
         }}
         defaultTab="mini"
       />
-      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} defaultTab="mini" />
+      <HowToPlayModal
+        isOpen={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+        defaultTab="mini"
+      />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
 
       {/* Check Pane */}
       {showCheckModal && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50"
-          onClick={() => setShowCheckModal(false)}
-        >
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowCheckModal(false)}>
           <div
             className={`
               fixed bottom-0 left-0 right-0
@@ -381,19 +395,14 @@ export default function MiniGameScreen({
               border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast
-                ? 'bg-hc-surface'
-                : 'bg-white dark:bg-gray-800'
-              }
+              ${highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-black text-text-primary">
-                Check Answers
-              </h2>
+              <h2 className="text-xl font-black text-text-primary">Check Answers</h2>
               <button
                 onClick={() => setShowCheckModal(false)}
                 className="
@@ -405,8 +414,18 @@ export default function MiniGameScreen({
                 "
                 aria-label="Close"
               >
-                <svg className="w-4 h-4 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-4 h-4 text-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -445,9 +464,10 @@ export default function MiniGameScreen({
                   border-[2px] border-black dark:border-gray-600
                   text-sm font-medium
                   transition-colors
-                  ${autoCheck
-                    ? 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
-                    : 'bg-white dark:bg-gray-700 text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600'
+                  ${
+                    autoCheck
+                      ? 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
+                      : 'bg-white dark:bg-gray-700 text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600'
                   }
                 `}
               >
@@ -460,10 +480,7 @@ export default function MiniGameScreen({
 
       {/* Reveal Pane */}
       {showRevealModal && (
-        <div
-          className="fixed inset-0 z-50 bg-black/50"
-          onClick={() => setShowRevealModal(false)}
-        >
+        <div className="fixed inset-0 z-50 bg-black/50" onClick={() => setShowRevealModal(false)}>
           <div
             className={`
               fixed bottom-0 left-0 right-0
@@ -471,19 +488,14 @@ export default function MiniGameScreen({
               border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast
-                ? 'bg-hc-surface'
-                : 'bg-white dark:bg-gray-800'
-              }
+              ${highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-black text-text-primary">
-                Reveal Answers
-              </h2>
+              <h2 className="text-xl font-black text-text-primary">Reveal Answers</h2>
               <button
                 onClick={() => setShowRevealModal(false)}
                 className="
@@ -495,8 +507,18 @@ export default function MiniGameScreen({
                 "
                 aria-label="Close"
               >
-                <svg className="w-4 h-4 text-text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-4 h-4 text-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>

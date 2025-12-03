@@ -69,21 +69,19 @@ export default function MiniGrid({
 
     let bgClass = 'bg-white dark:bg-gray-900';
 
-    if (isCorrect) {
+    if (isSelected) {
+      // Selected cell is always blue (priority over correct)
+      bgClass = highContrast
+        ? 'bg-hc-primary text-white'
+        : 'bg-accent-blue dark:bg-accent-blue text-gray-900';
+    } else if (isCorrect) {
       // Correct cells are green
       bgClass = highContrast
         ? 'bg-hc-success text-black'
         : 'bg-accent-green dark:bg-accent-green text-gray-900';
-    } else if (isSelected) {
-      // Selected cell is blue
-      bgClass = highContrast
-        ? 'bg-hc-primary text-white'
-        : 'bg-accent-blue dark:bg-accent-blue text-gray-900';
     } else if (isHighlighted) {
       // Highlighted cells (rest of current word) are grey
-      bgClass = highContrast
-        ? 'bg-gray-300 text-black'
-        : 'bg-gray-200 dark:bg-gray-700';
+      bgClass = highContrast ? 'bg-gray-300 text-black' : 'bg-gray-200 dark:bg-gray-700';
     }
     // REMOVED: Row/column highlighting that was confusing the visual presentation
     // The word highlighting is sufficient and more clear

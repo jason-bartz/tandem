@@ -18,6 +18,7 @@ import {
   getClueForCell,
   getNextCell,
   getNextClue,
+  getNextClueInSection,
   getPreviousClue,
   isCellCorrect,
   isWordCorrect,
@@ -27,6 +28,7 @@ import {
   DIRECTION,
 } from '@/lib/miniUtils';
 import logger from '@/lib/logger';
+import { playCorrectSound } from '@/lib/sounds';
 
 /**
  * Custom hook for managing The Daily Mini crossword game state
@@ -138,9 +140,20 @@ export function useMiniGame(providedDate = null) {
   useEffect(() => {
     if (!solutionGrid || !clueNumbers) return;
 
-    console.log('[useMiniGame] useEffect triggered - selectedCell:', selectedCell, 'direction:', direction);
+    console.log(
+      '[useMiniGame] useEffect triggered - selectedCell:',
+      selectedCell,
+      'direction:',
+      direction
+    );
 
-    const clue = getClueForCell(solutionGrid, clueNumbers, selectedCell.row, selectedCell.col, direction);
+    const clue = getClueForCell(
+      solutionGrid,
+      clueNumbers,
+      selectedCell.row,
+      selectedCell.col,
+      direction
+    );
 
     if (!clue) {
       console.warn('[useMiniGame] getClueForCell returned null');
@@ -156,7 +169,12 @@ export function useMiniGame(providedDate = null) {
     // update the direction state (this happens when the preferred direction doesn't exist)
     // This will trigger this useEffect again, but with the correct direction
     if (clue.direction && clue.direction !== direction) {
-      console.log('[useMiniGame] Direction mismatch - updating from', direction, 'to', clue.direction);
+      console.log(
+        '[useMiniGame] Direction mismatch - updating from',
+        direction,
+        'to',
+        clue.direction
+      );
       setDirection(clue.direction);
     }
   }, [selectedCell, direction, solutionGrid, clueNumbers]);
@@ -340,7 +358,16 @@ export function useMiniGame(providedDate = null) {
         setSelectedCell(nextCell);
       }
     },
-    [selectedCell, direction, userGrid, solutionGrid, clueNumbers, hasStarted, gameState]
+    [
+      selectedCell,
+      direction,
+      userGrid,
+      solutionGrid,
+      clueNumbers,
+      hasStarted,
+      gameState,
+      currentClue,
+    ]
   );
 
   /**
@@ -396,7 +423,33 @@ export function useMiniGame(providedDate = null) {
   const navigateToNextClue = useCallback(() => {
     if (!puzzle || !currentClue || !solutionGrid || !clueNumbers) return;
 
-    const nextClue = getNextClue(puzzle.clues, currentClue.clueNumber, currentClue.direction, solutionGrid, clueNumbers);
+    const nextClue = getNextClue(
+      puzzle.clues,
+      currentClue.clueNumber,
+      currentClue.direction,
+      solutionGrid,
+      clueNumbers
+    );
+    if (nextClue && nextClue.cells && nextClue.cells.length > 0) {
+      setSelectedCell(nextClue.cells[0]);
+      setDirection(nextClue.direction);
+    }
+  }, [puzzle, currentClue, solutionGrid, clueNumbers]);
+
+  /**
+   * Navigate to next clue within the same section (Across or Down)
+   * Used for Tab key navigation
+   */
+  const navigateToNextClueInSection = useCallback(() => {
+    if (!puzzle || !currentClue || !solutionGrid || !clueNumbers) return;
+
+    const nextClue = getNextClueInSection(
+      puzzle.clues,
+      currentClue.clueNumber,
+      currentClue.direction,
+      solutionGrid,
+      clueNumbers
+    );
     if (nextClue && nextClue.cells && nextClue.cells.length > 0) {
       setSelectedCell(nextClue.cells[0]);
       setDirection(nextClue.direction);
@@ -409,7 +462,13 @@ export function useMiniGame(providedDate = null) {
   const navigateToPreviousClue = useCallback(() => {
     if (!puzzle || !currentClue || !solutionGrid || !clueNumbers) return;
 
-    const prevClue = getPreviousClue(puzzle.clues, currentClue.clueNumber, currentClue.direction, solutionGrid, clueNumbers);
+    const prevClue = getPreviousClue(
+      puzzle.clues,
+      currentClue.clueNumber,
+      currentClue.direction,
+      solutionGrid,
+      clueNumbers
+    );
     if (prevClue && prevClue.cells && prevClue.cells.length > 0) {
       setSelectedCell(prevClue.cells[0]);
       setDirection(prevClue.direction);
@@ -539,6 +598,7 @@ export function useMiniGame(providedDate = null) {
     setUserGrid(newGrid);
     setRevealsUsed((prev) => prev + 1);
     setCorrectCells((prev) => new Set(prev).add(`${row},${col}`));
+    playCorrectSound();
   }, [selectedCell, userGrid, solutionGrid]);
 
   /**
@@ -557,6 +617,7 @@ export function useMiniGame(providedDate = null) {
 
     setUserGrid(newGrid);
     setRevealsUsed((prev) => prev + 1);
+    playCorrectSound();
   }, [userGrid, solutionGrid, currentClue]);
 
   /**
@@ -760,6 +821,7 @@ export function useMiniGame(providedDate = null) {
     handleBackspace,
     selectCell,
     navigateToNextClue,
+    navigateToNextClueInSection,
     navigateToPreviousClue,
     navigateToClue,
     checkCell,

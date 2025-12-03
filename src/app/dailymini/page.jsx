@@ -104,12 +104,8 @@ export default function DailyMiniPage() {
           "
         >
           <div className="text-6xl mb-4">😞</div>
-          <h1 className="text-2xl font-black text-text-primary mb-3">
-            Oops!
-          </h1>
-          <p className="text-text-secondary mb-6">
-            {game.error}
-          </p>
+          <h1 className="text-2xl font-black text-text-primary mb-3">Oops!</h1>
+          <p className="text-text-secondary mb-6">{game.error}</p>
           <div className="space-y-3">
             <button
               onClick={() => game.loadPuzzle(dateParam)}
@@ -180,7 +176,8 @@ export default function DailyMiniPage() {
             Archive Requires Tandem Unlimited
           </h1>
           <p className="text-text-secondary mb-6">
-            Get unlimited access to all past Daily Mini puzzles, plus the full archive of Tandem and Cryptic games.
+            Get unlimited access to all past Daily Mini puzzles, plus the full archive of Tandem and
+            Cryptic games.
           </p>
 
           <div className="space-y-2 mb-8 text-left">
@@ -259,12 +256,7 @@ export default function DailyMiniPage() {
       return null;
 
     case MINI_GAME_STATES.START:
-      return (
-        <MiniStartScreen
-          puzzle={game.puzzle}
-          onStart={game.startGame}
-        />
-      );
+      return <MiniStartScreen puzzle={game.puzzle} onStart={game.startGame} />;
 
     case MINI_GAME_STATES.PLAYING:
       return (
@@ -287,6 +279,7 @@ export default function DailyMiniPage() {
           handleBackspace={game.handleBackspace}
           selectCell={game.selectCell}
           navigateToNextClue={game.navigateToNextClue}
+          navigateToNextClueInSection={game.navigateToNextClueInSection}
           navigateToPreviousClue={game.navigateToPreviousClue}
           navigateToClue={game.navigateToClue}
           pauseGame={game.pauseGame}
