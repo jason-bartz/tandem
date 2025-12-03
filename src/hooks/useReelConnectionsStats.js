@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { API_ENDPOINTS } from '@/lib/constants';
 
 const STORAGE_KEY = 'reel-connections-stats';
 const USER_STORAGE_KEY_PREFIX = 'reel-connections-stats-user-';
@@ -23,6 +24,105 @@ function getStorageKey(userId) {
     return `${USER_STORAGE_KEY_PREFIX}${userId}`;
   }
   return STORAGE_KEY;
+}
+
+/**
+ * Fetch user reel stats from database
+ * @private
+ */
+async function fetchUserReelStatsFromDatabase() {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_REEL_STATS, {
+      method: 'GET',
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return null;
+      }
+      throw new Error(`Failed to fetch user reel stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    console.error('[ReelConnectionsStats] Failed to fetch stats from database:', error);
+    return null;
+  }
+}
+
+/**
+ * Save user reel stats to database
+ * @private
+ */
+async function saveUserReelStatsToDatabase(stats) {
+  try {
+    const response = await fetch(API_ENDPOINTS.USER_REEL_STATS, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+      body: JSON.stringify({
+        gamesPlayed: stats.gamesPlayed || 0,
+        gamesWon: stats.gamesWon || 0,
+        totalTimeMs: stats.totalTimeMs || 0,
+        currentStreak: stats.currentStreak || 0,
+        bestStreak: stats.bestStreak || 0,
+        lastPlayedDate: stats.lastPlayedDate || null,
+        gameHistory: stats.gameHistory || [],
+      }),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        return null;
+      }
+      throw new Error(`Failed to save user reel stats: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.stats || null;
+  } catch (error) {
+    console.error('[ReelConnectionsStats] Failed to save stats to database:', error);
+    return null;
+  }
+}
+
+/**
+ * Merge local stats with database stats
+ * Takes the higher values for cumulative stats
+ * @private
+ */
+function mergeReelStats(localStats, dbStats) {
+  // Merge game history - combine and dedupe by date
+  const historyMap = new Map();
+
+  // Add local history first
+  (localStats.gameHistory || []).forEach((game) => {
+    historyMap.set(game.date, game);
+  });
+
+  // Add db history (overwrites if same date - db is authoritative)
+  (dbStats.gameHistory || []).forEach((game) => {
+    historyMap.set(game.date, game);
+  });
+
+  // Sort by date descending and keep last 30
+  const mergedHistory = Array.from(historyMap.values())
+    .sort((a, b) => b.date.localeCompare(a.date))
+    .slice(0, 30);
+
+  return {
+    gamesPlayed: Math.max(localStats.gamesPlayed || 0, dbStats.gamesPlayed || 0),
+    gamesWon: Math.max(localStats.gamesWon || 0, dbStats.gamesWon || 0),
+    totalTimeMs: Math.max(localStats.totalTimeMs || 0, dbStats.totalTimeMs || 0),
+    currentStreak: Math.max(localStats.currentStreak || 0, dbStats.currentStreak || 0),
+    bestStreak: Math.max(localStats.bestStreak || 0, dbStats.bestStreak || 0),
+    lastPlayedDate: localStats.lastPlayedDate || dbStats.lastPlayedDate || null,
+    gameHistory: mergedHistory,
+  };
 }
 
 /**
@@ -57,7 +157,8 @@ async function triggerLeaderboardSync(updatedStats) {
 
 /**
  * useReelConnectionsStats - Custom hook for managing Reel Connections game statistics
- * Stores data in localStorage for persistence with multi-account support
+ * Uses DATABASE-FIRST sync pattern for authenticated users
+ * Falls back to localStorage for anonymous users
  *
  * @returns {Object} stats and methods to update them
  */
@@ -67,8 +168,9 @@ export function useReelConnectionsStats() {
   const [isLoaded, setIsLoaded] = useState(false);
   const prevUserIdRef = useRef(null);
   const currentStorageKeyRef = useRef(STORAGE_KEY);
+  const isSyncingRef = useRef(false);
 
-  // Load stats from localStorage on mount and when user changes
+  // Load stats from localStorage and database on mount and when user changes
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -84,56 +186,99 @@ export function useReelConnectionsStats() {
 
     prevUserIdRef.current = userId;
 
-    try {
-      const stored = window.localStorage.getItem(storageKey);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        setStats({ ...DEFAULT_STATS, ...parsed });
-      } else if (userId) {
-        // User is logged in but no user-specific stats exist
-        // Try to migrate from anonymous stats
-        const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
-        if (anonymousStats) {
-          const parsed = JSON.parse(anonymousStats);
-          setStats({ ...DEFAULT_STATS, ...parsed });
-          // Save to user-specific key
-          window.localStorage.setItem(storageKey, anonymousStats);
-          // Note: Don't clear anonymous stats - keep them for leaderboard sync
+    const loadStats = async () => {
+      try {
+        // Load local stats first
+        let localStats = DEFAULT_STATS;
+        const stored = window.localStorage.getItem(storageKey);
+        if (stored) {
+          localStats = { ...DEFAULT_STATS, ...JSON.parse(stored) };
+        } else if (userId) {
+          // User is logged in but no user-specific stats exist
+          // Try to migrate from anonymous stats
+          const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+          if (anonymousStats) {
+            localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
+            // Save to user-specific key
+            window.localStorage.setItem(storageKey, anonymousStats);
+          }
         } else {
-          setStats(DEFAULT_STATS);
+          // Anonymous user - load from default key
+          const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
+          if (anonymousStats) {
+            localStats = { ...DEFAULT_STATS, ...JSON.parse(anonymousStats) };
+          }
         }
-      } else {
-        // Anonymous user - load from default key
-        const anonymousStats = window.localStorage.getItem(STORAGE_KEY);
-        if (anonymousStats) {
-          const parsed = JSON.parse(anonymousStats);
-          setStats({ ...DEFAULT_STATS, ...parsed });
+
+        // DATABASE-FIRST: If user is authenticated, sync with database
+        if (userId) {
+          const dbStats = await fetchUserReelStatsFromDatabase();
+
+          if (dbStats) {
+            // Merge local and database stats
+            const mergedStats = mergeReelStats(localStats, dbStats);
+
+            // Save merged stats locally
+            window.localStorage.setItem(storageKey, JSON.stringify(mergedStats));
+            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedStats));
+
+            // Save merged stats to database (fire-and-forget)
+            saveUserReelStatsToDatabase(mergedStats).catch((err) => {
+              console.error('[ReelConnectionsStats] Failed to save merged stats to db:', err);
+            });
+
+            setStats(mergedStats);
+          } else {
+            // No database stats, use local and sync to database
+            setStats(localStats);
+
+            // Sync local stats to database if we have any data
+            if (localStats.gamesPlayed > 0) {
+              saveUserReelStatsToDatabase(localStats).catch((err) => {
+                console.error('[ReelConnectionsStats] Failed to sync local stats to db:', err);
+              });
+            }
+          }
         } else {
-          setStats(DEFAULT_STATS);
+          setStats(localStats);
         }
+      } catch (error) {
+        console.error('[ReelConnectionsStats] Error loading stats:', error);
+        setStats(DEFAULT_STATS);
       }
-    } catch (error) {
-      console.error('[ReelConnectionsStats] Error loading stats:', error);
-      setStats(DEFAULT_STATS);
-    }
-    setIsLoaded(true);
+      setIsLoaded(true);
+    };
+
+    loadStats();
   }, [user?.id, isLoaded]);
 
-  // Save stats to localStorage whenever they change
+  // Save stats to localStorage and database whenever they change
   useEffect(() => {
     if (!isLoaded || typeof window === 'undefined') return;
+    if (isSyncingRef.current) return; // Prevent sync loops
 
     try {
       const storageKey = currentStorageKeyRef.current;
       window.localStorage.setItem(storageKey, JSON.stringify(stats));
 
       // Also save to default key for leaderboard sync to find
-      // (AuthContext reads from default key)
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(stats));
+
+      // If user is authenticated, sync to database (fire-and-forget)
+      if (user?.id && stats.gamesPlayed > 0) {
+        isSyncingRef.current = true;
+        saveUserReelStatsToDatabase(stats)
+          .catch((err) => {
+            console.error('[ReelConnectionsStats] Failed to sync stats to database:', err);
+          })
+          .finally(() => {
+            isSyncingRef.current = false;
+          });
+      }
     } catch (error) {
       console.error('[ReelConnectionsStats] Error saving stats:', error);
     }
-  }, [stats, isLoaded]);
+  }, [stats, isLoaded, user?.id]);
 
   /**
    * Get today's date string in YYYY-MM-DD format (local timezone)
@@ -213,7 +358,7 @@ export function useReelConnectionsStats() {
         gameHistory: newHistory,
       };
 
-      // Update state
+      // Update state (this triggers the save effect)
       setStats(newStats);
 
       // Trigger async operations after state update (fire-and-forget)
@@ -261,7 +406,13 @@ export function useReelConnectionsStats() {
       window.localStorage.removeItem(storageKey);
       window.localStorage.removeItem(STORAGE_KEY);
     }
-  }, []);
+    // Also clear from database if user is authenticated
+    if (user?.id) {
+      saveUserReelStatsToDatabase(DEFAULT_STATS).catch((err) => {
+        console.error('[ReelConnectionsStats] Failed to reset stats in database:', err);
+      });
+    }
+  }, [user?.id]);
 
   return {
     stats,

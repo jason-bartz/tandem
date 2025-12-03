@@ -47,6 +47,7 @@ export const API_ENDPOINTS = {
   USER_STATS: '/api/user-stats',
   USER_CRYPTIC_STATS: '/api/user-cryptic-stats',
   USER_MINI_STATS: '/api/user-mini-stats',
+  USER_REEL_STATS: '/api/user-reel-stats',
 };
 
 export const GAME_STATES = {
