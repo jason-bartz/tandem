@@ -442,7 +442,16 @@ const ReelConnectionsGame = () => {
           </div>
 
           <div className="mt-auto pt-8 text-center">
-            <p className="text-white/30 text-xs">© 2025 Good Vibes Games</p>
+            <p className="text-white/30 text-xs">
+              © 2025 Good Vibes Games |{' '}
+              <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
+                Privacy Policy
+              </a>{' '}
+              |{' '}
+              <a href="/terms" className="hover:text-white/50 transition-colors">
+                Terms of Use
+              </a>
+            </p>
           </div>
 
           {/* Modals */}
@@ -816,7 +825,16 @@ const ReelConnectionsGame = () => {
               </a>
               !
             </p>
-            <p className="text-white/30 text-[10px] sm:text-xs">© 2025 Good Vibes Games</p>
+            <p className="text-white/30 text-[10px] sm:text-xs">
+              © 2025 Good Vibes Games |{' '}
+              <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
+                Privacy Policy
+              </a>{' '}
+              |{' '}
+              <a href="/terms" className="hover:text-white/50 transition-colors">
+                Terms of Use
+              </a>
+            </p>
           </div>
         </div>
       </div>
