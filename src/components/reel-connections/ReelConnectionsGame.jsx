@@ -6,6 +6,7 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useReelConnectionsGame } from '@/hooks/useReelConnectionsGame';
 import { REEL_CONFIG } from '@/lib/reel-connections.constants';
+import { playClapperSound } from '@/lib/sounds';
 import { HowToPlayModal, AboutModal, StatsModal, ArchiveModal } from './modals';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 
@@ -98,6 +99,7 @@ const ReelConnectionsGame = () => {
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
+  const [clapperClosed, setClapperClosed] = useState(false);
 
   // Long press refs
   const longPressTimerRef = useRef(null);
@@ -141,18 +143,27 @@ const ReelConnectionsGame = () => {
     formatTime,
   } = useReelConnectionsGame();
 
-  // Handle starting the game with auto-scroll on mobile
+  // Handle starting the game with clapper animation and auto-scroll on mobile
   const onStartGame = useCallback(() => {
-    handleStartGame();
-    // Auto-scroll to game area on mobile after a short delay for state to update
+    // Close the clapper and play sound
+    setClapperClosed(true);
+    playClapperSound();
+
+    // Delay before starting the game to let the animation play
     setTimeout(() => {
-      if (gameAreaRef.current) {
-        gameAreaRef.current.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-      }
-    }, 100);
+      handleStartGame();
+      setClapperClosed(false); // Reset for next time
+
+      // Auto-scroll to game area on mobile after a short delay for state to update
+      setTimeout(() => {
+        if (gameAreaRef.current) {
+          gameAreaRef.current.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+        }
+      }, 100);
+    }, 400);
   }, [handleStartGame]);
 
   // Long press handlers for enlarging posters
@@ -583,33 +594,36 @@ const ReelConnectionsGame = () => {
                   <p className="text-white/70 text-[10px] sm:text-xs font-bold">Mistakes Left</p>
                 </div>
 
-                {/* Date - Center */}
-                <p className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white/70 text-xs sm:text-sm font-bold text-center whitespace-nowrap">
-                  {archiveDate
-                    ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })
-                    : puzzle?.date
-                      ? new Date(puzzle.date + 'T00:00:00').toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })
-                      : new Date().toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                </p>
-
-                {/* Timer */}
-                <div className="flex flex-col items-center gap-1">
+                {/* Timer - Center */}
+                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
                   <p className="text-white text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg">
                     {formatTime(currentTime)}
                   </p>
                   <p className="text-white/70 text-[10px] sm:text-xs font-bold">Time</p>
+                </div>
+
+                {/* Date - Right */}
+                <div className="flex flex-col items-center gap-1">
+                  <p className="text-white text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg whitespace-nowrap">
+                    {archiveDate
+                      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
+                          month: 'short',
+                          day: 'numeric',
+                          year: 'numeric',
+                        })
+                      : puzzle?.date
+                        ? new Date(puzzle.date + 'T00:00:00').toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })
+                        : new Date().toLocaleDateString('en-US', {
+                            month: 'short',
+                            day: 'numeric',
+                            year: 'numeric',
+                          })}
+                  </p>
+                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Date</p>
                 </div>
               </div>
             </div>
@@ -726,7 +740,7 @@ const ReelConnectionsGame = () => {
                               : 'border-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)] sm:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                         }`}
                       >
-                        <div className="relative w-full h-full bg-black rounded-lg overflow-hidden">
+                        <div className="relative w-full h-full bg-black overflow-hidden">
                           <img
                             src={movie.poster}
                             alt={`Movie from ${movie.year}`}
@@ -734,7 +748,7 @@ const ReelConnectionsGame = () => {
                           />
                           {selected && !isSolving && (
                             <>
-                              <div className="absolute inset-0 bg-[rgba(255,206,0,0.15)] rounded-lg" />
+                              <div className="absolute inset-0 bg-[rgba(255,206,0,0.15)]" />
                               <div className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 bg-[#ffce00] border-[2px] border-white rounded-full flex items-center justify-center shadow-[1px_1px_0px_rgba(0,0,0,0.8)] sm:shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
                                 <span className="text-[#2c2c2c] text-[10px] sm:text-xs font-bold">
                                   {orderNumber}
@@ -779,7 +793,9 @@ const ReelConnectionsGame = () => {
                     >
                       Action!
                       <Image
-                        src="/icons/ui/clapper.png"
+                        src={
+                          clapperClosed ? '/icons/ui/clapper-closed.png' : '/icons/ui/clapper.png'
+                        }
                         alt=""
                         width={24}
                         height={24}
