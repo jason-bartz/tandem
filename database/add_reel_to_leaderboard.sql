@@ -127,6 +127,8 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Step 3: Update get_daily_leaderboard function
+-- Drop existing function first due to return type change
+DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
 CREATE OR REPLACE FUNCTION get_daily_leaderboard(
   p_game_type TEXT,
   p_puzzle_date DATE,
@@ -165,6 +167,8 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Step 4: Update get_streak_leaderboard function
+-- Drop existing function first due to return type change
+DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
 CREATE OR REPLACE FUNCTION get_streak_leaderboard(
   p_game_type TEXT,
   p_limit INTEGER DEFAULT 10
@@ -201,6 +205,8 @@ END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Step 5: Update get_user_daily_rank function if it exists
+-- Drop existing function first due to return type change
+DROP FUNCTION IF EXISTS get_user_daily_rank(UUID, TEXT, DATE);
 CREATE OR REPLACE FUNCTION get_user_daily_rank(
   p_user_id UUID,
   p_game_type TEXT,
