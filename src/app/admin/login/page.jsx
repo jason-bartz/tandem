@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import authService from '@/services/auth.service';
 import { useTheme } from '@/contexts/ThemeContext';
+import storageService from '@/core/storage/storageService';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -20,8 +21,13 @@ export default function AdminLogin() {
     try {
       const result = await authService.login(username, password);
       if (result.success) {
-        localStorage.setItem('adminToken', result.token);
-        router.push('/admin');
+        // Use storageService for quota-safe storage with automatic fallback
+        const saved = await storageService.set('adminToken', result.token);
+        if (saved) {
+          router.push('/admin');
+        } else {
+          setError('Failed to save login session. Please clear browser storage and try again.');
+        }
       } else {
         setError('Invalid credentials');
       }

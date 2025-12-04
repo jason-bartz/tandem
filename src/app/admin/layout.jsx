@@ -5,6 +5,7 @@ import Image from 'next/image';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import { useTheme } from '@/contexts/ThemeContext';
+import storageService from '@/core/storage/storageService';
 
 export default function AdminLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -59,7 +60,8 @@ export default function AdminLayout({ children }) {
 
   const checkAuth = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
+      // Use storageService to support fallback storage (IndexedDB, memory)
+      const token = await storageService.get('adminToken');
       if (!token) {
         router.push('/admin/login');
         setLoading(false);
@@ -76,12 +78,12 @@ export default function AdminLayout({ children }) {
         }
         setIsAuthenticated(true);
       } else {
-        localStorage.removeItem('adminToken');
+        await storageService.remove('adminToken');
         router.push('/admin/login');
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      localStorage.removeItem('adminToken');
+      await storageService.remove('adminToken');
       router.push('/admin/login');
     } finally {
       setLoading(false);
@@ -138,8 +140,8 @@ export default function AdminLayout({ children }) {
                 View Game
               </a>
               <button
-                onClick={() => {
-                  localStorage.removeItem('adminToken');
+                onClick={async () => {
+                  await storageService.remove('adminToken');
                   router.push('/admin/login');
                 }}
                 className="px-4 py-2 border-[3px] border-black dark:border-white bg-accent-red text-white rounded-xl font-bold hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
