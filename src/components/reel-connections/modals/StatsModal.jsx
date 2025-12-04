@@ -118,7 +118,7 @@ export default function StatsModal({ isOpen, onClose }) {
               View Leaderboard
             </button>
           ) : (
-            <div className="bg-white/5 rounded-xl border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] overflow-hidden">
+            <div className="bg-ghost-white/5 rounded-xl border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)] overflow-hidden">
               {/* Tab Navigation */}
               <div className="flex border-b-2 border-white/10">
                 <button
@@ -126,7 +126,7 @@ export default function StatsModal({ isOpen, onClose }) {
                   className={`flex-1 px-4 py-3 font-bold text-sm transition-all ${
                     activeTab === 'daily'
                       ? 'bg-[#ffce00] text-[#2c2c2c]'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
                   }`}
                 >
                   Today
@@ -136,7 +136,7 @@ export default function StatsModal({ isOpen, onClose }) {
                   className={`flex-1 px-4 py-3 font-bold text-sm transition-all ${
                     activeTab === 'streak'
                       ? 'bg-[#ffce00] text-[#2c2c2c]'
-                      : 'text-white/60 hover:text-white hover:bg-white/5'
+                      : 'text-white/60 hover:text-white hover:bg-ghost-white/5'
                   }`}
                 >
                   Best Streaks
@@ -150,11 +150,11 @@ export default function StatsModal({ isOpen, onClose }) {
                     {[...Array(5)].map((_, i) => (
                       <div
                         key={i}
-                        className="flex items-center gap-3 p-2 rounded-lg bg-white/5 animate-pulse"
+                        className="flex items-center gap-3 p-2 rounded-lg bg-ghost-white/5 animate-pulse"
                       >
-                        <div className="w-6 h-6 bg-white/10 rounded-lg" />
-                        <div className="w-8 h-8 bg-white/10 rounded-full" />
-                        <div className="flex-1 h-4 bg-white/10 rounded" />
+                        <div className="w-6 h-6 bg-ghost-white/10 rounded-lg" />
+                        <div className="w-8 h-8 bg-ghost-white/10 rounded-full" />
+                        <div className="flex-1 h-4 bg-ghost-white/10 rounded" />
                       </div>
                     ))}
                   </div>
@@ -226,7 +226,7 @@ export default function StatsModal({ isOpen, onClose }) {
 
           {/* Recent Games */}
           {isLoaded && stats.gameHistory.length > 0 && (
-            <div className="bg-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+            <div className="bg-ghost-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
               <h3 className="text-sm font-bold text-white/70 mb-3">Recent Games</h3>
               <div className="space-y-2">
                 {stats.gameHistory.slice(0, 5).map((game, index) => (
@@ -305,7 +305,7 @@ export default function StatsModal({ isOpen, onClose }) {
  */
 function StatCard({ icon, value, label, color }) {
   return (
-    <div className="relative bg-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
+    <div className="relative bg-ghost-white/5 rounded-xl p-4 border-[2px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.8)]">
       <div
         className={`absolute top-3 right-3 w-8 h-8 ${color} rounded-lg flex items-center justify-center text-[#0f0f1e]`}
       >
@@ -326,13 +326,13 @@ function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
   return (
     <div
       className={`flex items-center gap-2 p-2 rounded-lg transition-all ${
-        isCurrentUser ? 'bg-[#ffce00]/20 border-2 border-[#ffce00]' : 'bg-white/5 hover:bg-white/10'
+        isCurrentUser ? 'bg-[#ffce00]/20 border-2 border-[#ffce00]' : 'bg-ghost-white/5 hover:bg-ghost-white/10'
       }`}
     >
       {/* Rank */}
       <div
         className={`w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs flex-shrink-0 ${
-          isCurrentUser ? 'bg-[#ffce00] text-[#2c2c2c]' : 'bg-white/10 text-white/70'
+          isCurrentUser ? 'bg-[#ffce00] text-[#2c2c2c]' : 'bg-ghost-white/10 text-white/70'
         }`}
       >
         {rank}

@@ -849,7 +849,7 @@ export default function Support() {
             ) : (
               <div className="relative">
                 {/* Main content card */}
-                <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
                   <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
                     <Link
@@ -890,8 +890,8 @@ export default function Support() {
                         }}
                         className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'tandem'
-                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
                         }`}
                       >
                         <div className="flex items-center justify-center gap-1.5">
@@ -912,8 +912,8 @@ export default function Support() {
                         }}
                         className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'mini'
-                            ? 'bg-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white/50 text-black/60 border-black/30 hover:bg-white/70'
+                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
                         }`}
                       >
                         <div className="flex items-center justify-center gap-1.5">
@@ -962,7 +962,7 @@ export default function Support() {
                             </svg>
                           </button>
                           {activeSection === section.id && (
-                            <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
                               {section.content}
                             </div>
                           )}
@@ -1001,7 +1001,7 @@ export default function Support() {
                   </div>
                 </div>
                 {/* Faux drop shadow */}
-                <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
               </div>
             )}
           </div>

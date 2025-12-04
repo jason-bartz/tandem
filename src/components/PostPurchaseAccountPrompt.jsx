@@ -142,7 +142,7 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
         className={`rounded-[32px] border-[3px] p-6 max-w-md w-full animate-modal-enter gpu-accelerated ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
         onMouseDown={(e) => e.stopPropagation()}
       >

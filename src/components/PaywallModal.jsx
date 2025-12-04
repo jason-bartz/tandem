@@ -595,10 +595,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                     : loading || restoring
                       ? highContrast
                         ? 'opacity-50 bg-hc-surface border-hc-border'
-                        : 'opacity-50 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                        : 'opacity-50 border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
                       : highContrast
                         ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
-                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
                 }`}
               >
                 {buddyActive && (
@@ -865,7 +865,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
           {/* Loading overlay */}
           {loading && (
-            <div className="absolute inset-0 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center z-10">
+            <div className="absolute inset-0 bg-ghost-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center z-10">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mx-auto"></div>
                 <p className="mt-4 text-gray-600 dark:text-gray-400">Processing...</p>

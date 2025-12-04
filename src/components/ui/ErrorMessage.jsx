@@ -2,7 +2,7 @@
 
 export default function ErrorMessage({ title, message, onRetry }) {
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md w-full">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 max-w-md w-full">
       <div className="text-center">
         <div className="text-6xl mb-4">⚠️</div>
         <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">

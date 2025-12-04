@@ -98,7 +98,7 @@ export default function DailyMiniPage() {
             border-[3px] border-black dark:border-gray-600
             shadow-[6px_6px_0px_rgba(0,0,0,1)]
             dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
-            bg-white dark:bg-gray-800
+            bg-ghost-white dark:bg-gray-800
             p-10
             text-center
           "
@@ -137,7 +137,7 @@ export default function DailyMiniPage() {
                 border-[3px] border-black dark:border-gray-600
                 shadow-[3px_3px_0px_rgba(0,0,0,1)]
                 dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                bg-white dark:bg-gray-700
+                bg-ghost-white dark:bg-gray-700
                 text-text-primary
                 font-bold
                 hover:translate-x-[2px] hover:translate-y-[2px]
@@ -166,7 +166,7 @@ export default function DailyMiniPage() {
             border-[3px] border-black dark:border-gray-600
             shadow-[6px_6px_0px_rgba(0,0,0,1)]
             dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
-            bg-white dark:bg-gray-800
+            bg-ghost-white dark:bg-gray-800
             p-10
             text-center
           "
@@ -230,7 +230,7 @@ export default function DailyMiniPage() {
                 border-[3px] border-black dark:border-gray-600
                 shadow-[3px_3px_0px_rgba(0,0,0,1)]
                 dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                bg-white dark:bg-gray-700
+                bg-ghost-white dark:bg-gray-700
                 text-text-primary
                 font-bold
                 hover:translate-x-[2px] hover:translate-y-[2px]

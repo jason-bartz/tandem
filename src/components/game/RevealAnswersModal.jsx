@@ -47,7 +47,7 @@ export default function RevealAnswersModal({ isOpen, onClose, puzzle }) {
                 className={`${
                   highContrast
                     ? 'bg-hc-background border-hc-border'
-                    : 'bg-white dark:bg-gray-800 border-gray-800 dark:border-gray-500'
+                    : 'bg-ghost-white dark:bg-gray-800 border-gray-800 dark:border-gray-500'
                 } min-w-[64px] h-14 px-2 rounded-[14px] border-[3px] shadow-[2px_2px_0px_rgba(0,0,0,0.3)] flex items-center justify-center flex-shrink-0`}
               >
                 <span className="text-2xl flex items-center justify-center gap-0 whitespace-nowrap">

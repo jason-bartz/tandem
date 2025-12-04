@@ -63,13 +63,13 @@ export default function MiniAdmireScreen({
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col m-4 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu */}
             <header
               className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
-                highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
+                highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
               }`}
             >
               {/* Back button */}
@@ -227,7 +227,7 @@ export default function MiniAdmireScreen({
                     border-[2px] border-black dark:border-gray-600
                     shadow-[3px_3px_0px_rgba(0,0,0,1)]
                     dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                    bg-white dark:bg-gray-700
+                    bg-ghost-white dark:bg-gray-700
                     text-text-primary
                     font-bold text-sm
                     hover:translate-x-[2px] hover:translate-y-[2px]
@@ -251,7 +251,7 @@ export default function MiniAdmireScreen({
                     border-[2px] border-black dark:border-gray-600
                     shadow-[3px_3px_0px_rgba(0,0,0,1)]
                     dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                    bg-white dark:bg-gray-700
+                    bg-ghost-white dark:bg-gray-700
                     text-text-primary
                     font-bold text-sm
                     hover:translate-x-[2px] hover:translate-y-[2px]

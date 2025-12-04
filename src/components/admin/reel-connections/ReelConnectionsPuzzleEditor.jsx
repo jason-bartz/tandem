@@ -316,7 +316,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                     type="button"
                     onClick={() => handleOpenAIGenerator(groupIndex)}
                     disabled={loading || aiLoading}
-                    className="flex items-center gap-1 px-3 py-1 bg-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
+                    className="flex items-center gap-1 px-3 py-1 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path
@@ -334,7 +334,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                   value={group.connection}
                   onChange={(e) => handleConnectionChange(groupIndex, e.target.value)}
                   placeholder="e.g., Movies directed by Steven Spielberg"
-                  className="w-full px-4 py-2 border-[3px] border-black rounded-lg bg-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
+                  className="w-full px-4 py-2 border-[3px] border-black rounded-lg bg-ghost-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
                 />
               </div>
 
@@ -349,7 +349,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                       onChange={(selectedMovie) =>
                         handleMovieChange(groupIndex, movieIndex, selectedMovie)
                       }
-                      groupColor="bg-white"
+                      groupColor="bg-ghost-white"
                     />
                   </div>
                 ))}

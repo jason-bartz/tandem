@@ -2,11 +2,9 @@
 
 import { useState } from 'react';
 import { generateBreadcrumbs } from '@/lib/seo-config';
-import { useTheme } from '@/contexts/ThemeContext';
 import Link from 'next/link';
 
 export default function HowToPlayPage() {
-  const { theme } = useTheme();
   const [activeSection, setActiveSection] = useState(null);
 
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'How to Play', path: '/how-to-play' }]);
@@ -250,7 +248,7 @@ export default function HowToPlayPage() {
 
             {/* Main content card */}
             <div className="relative">
-              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                 {/* Header */}
                 <div className="bg-[#ff66c4] border-b-[3px] border-black dark:border-white p-6 text-black">
                   <h1 className="text-3xl font-bold">How to Play Tandem</h1>
@@ -258,7 +256,7 @@ export default function HowToPlayPage() {
                 </div>
 
                 {/* Quick Start Card */}
-                <div className="mx-6 -mt-3 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                <div className="mx-6 -mt-3 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                   <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                     Quick Start
                   </h3>
@@ -314,7 +312,7 @@ export default function HowToPlayPage() {
                           </svg>
                         </button>
                         {activeSection === section.id && (
-                          <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                          <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
                             {section.content}
                           </div>
                         )}
@@ -340,7 +338,7 @@ export default function HowToPlayPage() {
                       </Link>
                       <Link
                         href="/about"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-ghost-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
                       >
                         ℹ️ About Tandem
                       </Link>
@@ -349,7 +347,7 @@ export default function HowToPlayPage() {
                 </div>
               </div>
               {/* Faux drop shadow */}
-              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
             </div>
 
             {/* Footer */}

@@ -59,7 +59,7 @@ export default function DataConsentScreen({ onContinue, onSkip }) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 animate-fadeIn">
       {/* White Card Container */}
-      <div className="w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8">
+      <div className="w-full max-w-md bg-ghost-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8">
         {/* Logo */}
         <div className="flex justify-center mb-8">
           <div className="w-24 h-24 relative">

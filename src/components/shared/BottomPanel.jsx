@@ -208,7 +208,7 @@ export default function BottomPanel({
           maxWidth
             ? 'left-1/2 -translate-x-1/2 animate-slide-in-bottom-centered'
             : 'left-0 right-0 animate-slide-in-bottom'
-        } ${theme === 'dark' ? 'bg-gray-900' : 'bg-white'}`}
+        } ${theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'}`}
         style={{
           maxHeight,
           maxWidth: maxWidth || undefined,

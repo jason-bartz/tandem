@@ -24,28 +24,28 @@ export default function StatsModalSkeleton() {
           <div className="flex justify-around items-center">
             <div className="text-center">
               <div
-                className={`h-8 w-16 bg-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-8 w-16 bg-ghost-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
               <div
-                className={`h-3 w-12 bg-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
-              />
-            </div>
-            <div className="w-px h-12 bg-white/30"></div>
-            <div className="text-center">
-              <div
-                className={`h-8 w-16 bg-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
-              />
-              <div
-                className={`h-3 w-12 bg-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-3 w-12 bg-ghost-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
             </div>
-            <div className="w-px h-12 bg-white/30"></div>
+            <div className="w-px h-12 bg-ghost-white/30"></div>
             <div className="text-center">
               <div
-                className={`h-8 w-16 bg-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-8 w-16 bg-ghost-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
               <div
-                className={`h-3 w-12 bg-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                className={`h-3 w-12 bg-ghost-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              />
+            </div>
+            <div className="w-px h-12 bg-ghost-white/30"></div>
+            <div className="text-center">
+              <div
+                className={`h-8 w-16 bg-ghost-white/20 rounded-lg mb-2 mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              />
+              <div
+                className={`h-3 w-12 bg-ghost-white/20 rounded mx-auto ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
               />
             </div>
           </div>
@@ -59,7 +59,7 @@ export default function StatsModalSkeleton() {
               className={`rounded-2xl border-[3px] p-4 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               <div
@@ -123,7 +123,7 @@ export default function StatsModalSkeleton() {
               className={`rounded-2xl border-[3px] p-4 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border'
-                  : 'bg-white dark:bg-gray-800 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               <div

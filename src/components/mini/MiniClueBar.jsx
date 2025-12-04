@@ -30,7 +30,7 @@ export default function MiniClueBar({
             border-[3px] border-black dark:border-gray-600
             shadow-[3px_3px_0px_rgba(0,0,0,1)]
             dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-            bg-white dark:bg-gray-800
+            bg-ghost-white dark:bg-gray-800
             p-4
             text-center
             text-text-secondary
@@ -57,7 +57,7 @@ export default function MiniClueBar({
           border-[3px] border-black dark:border-gray-600
           shadow-[3px_3px_0px_rgba(0,0,0,1)]
           dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-          bg-white dark:bg-gray-800
+          bg-ghost-white dark:bg-gray-800
           overflow-hidden
         "
       >

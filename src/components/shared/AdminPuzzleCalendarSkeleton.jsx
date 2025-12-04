@@ -20,7 +20,7 @@ export default function AdminPuzzleCalendarSkeleton() {
         {Array.from({ length: 35 }).map((_, i) => (
           <div
             key={i}
-            className="relative aspect-square min-h-0 p-2 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-800 animate-pulse"
+            className="relative aspect-square min-h-0 p-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-800 animate-pulse"
             style={{
               boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)',
               animationDelay: `${(i % 7) * 50}ms`,

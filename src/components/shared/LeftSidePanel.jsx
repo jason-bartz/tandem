@@ -196,7 +196,7 @@ export default function LeftSidePanel({
       <div
         ref={panelRef}
         className={`absolute left-0 top-0 bottom-0 w-[90vw] animate-slide-in-left shadow-2xl ${
-          theme === 'dark' ? 'bg-gray-900' : 'bg-white'
+          theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'
         }`}
         style={{
           maxWidth,

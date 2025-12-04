@@ -106,14 +106,14 @@ export default function GameCenterDebug() {
       </div>
 
       {debugState && (
-        <div className="bg-white dark:bg-gray-900 p-4 rounded">
+        <div className="bg-ghost-white dark:bg-gray-900 p-4 rounded">
           <h4 className="font-semibold mb-2">Debug State:</h4>
           <pre className="text-xs overflow-auto">{JSON.stringify(debugState, null, 2)}</pre>
         </div>
       )}
 
       {testResult && (
-        <div className="bg-white dark:bg-gray-900 p-4 rounded">
+        <div className="bg-ghost-white dark:bg-gray-900 p-4 rounded">
           <h4 className="font-semibold mb-2">Test Result:</h4>
           <pre className="text-xs overflow-auto">{JSON.stringify(testResult, null, 2)}</pre>
         </div>

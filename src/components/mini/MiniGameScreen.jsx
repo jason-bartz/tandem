@@ -223,13 +223,13 @@ export default function MiniGameScreen({
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col m-4 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             }`}
           >
             {/* Header - back button, title/date, and hamburger menu */}
             <header
               className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
-                highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-bg-card'
+                highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
               }`}
             >
               {/* Back button */}
@@ -395,7 +395,7 @@ export default function MiniGameScreen({
               border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-gray-800'}
+              ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}
@@ -409,7 +409,7 @@ export default function MiniGameScreen({
                   w-8 h-8
                   rounded-[8px]
                   border-[2px] border-black dark:border-gray-600
-                  bg-white dark:bg-gray-700
+                  bg-ghost-white dark:bg-gray-700
                   flex items-center justify-center
                 "
                 aria-label="Close"
@@ -435,19 +435,19 @@ export default function MiniGameScreen({
               <div className="space-y-2">
                 <button
                   onClick={() => handleCheckAction('cell')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Square
                 </button>
                 <button
                   onClick={() => handleCheckAction('word')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Word
                 </button>
                 <button
                   onClick={() => handleCheckAction('puzzle')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Check Puzzle
                 </button>
@@ -467,7 +467,7 @@ export default function MiniGameScreen({
                   ${
                     autoCheck
                       ? 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
-                      : 'bg-white dark:bg-gray-700 text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600'
                   }
                 `}
               >
@@ -488,7 +488,7 @@ export default function MiniGameScreen({
               border-t-[3px] border-l-[3px] border-r-[3px] border-black dark:border-gray-600
               p-6 pb-8
               max-w-md mx-auto
-              ${highContrast ? 'bg-hc-surface' : 'bg-white dark:bg-gray-800'}
+              ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
               ${reduceMotion ? '' : 'animate-slide-up'}
             `}
             onClick={(e) => e.stopPropagation()}
@@ -502,7 +502,7 @@ export default function MiniGameScreen({
                   w-8 h-8
                   rounded-[8px]
                   border-[2px] border-black dark:border-gray-600
-                  bg-white dark:bg-gray-700
+                  bg-ghost-white dark:bg-gray-700
                   flex items-center justify-center
                 "
                 aria-label="Close"
@@ -528,19 +528,19 @@ export default function MiniGameScreen({
               <div className="space-y-2">
                 <button
                   onClick={() => handleRevealAction('cell')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Square
                 </button>
                 <button
                   onClick={() => handleRevealAction('word')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Word
                 </button>
                 <button
                   onClick={() => handleRevealAction('puzzle')}
-                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
+                  className="w-full px-4 py-3 rounded-[12px] border-[2px] border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-700 text-left text-sm font-medium text-text-primary hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors"
                 >
                   Reveal Puzzle
                 </button>

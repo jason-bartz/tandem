@@ -57,7 +57,7 @@ const PuzzleItem = memo(
               : 'bg-hc-surface border-hc-border hover:bg-hc-focus hover:text-white active:scale-98 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
             : actuallyLocked
               ? 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-700 opacity-75 hover:opacity-100'
-              : 'bg-white dark:bg-bg-card border-border-main hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
+              : 'bg-ghost-white dark:bg-bg-card border-border-main hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'
         }`}
         style={{
           WebkitTapHighlightColor: 'transparent',
@@ -134,7 +134,7 @@ const SkeletonLoader = ({ count = 3, highContrast }) => (
         className={`w-full p-3 rounded-2xl mb-2 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
           highContrast
             ? 'bg-hc-surface border-hc-border'
-            : 'bg-white dark:bg-bg-card border-border-main'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main'
         }`}
       >
         <div className="animate-pulse">

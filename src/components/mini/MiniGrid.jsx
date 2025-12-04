@@ -67,7 +67,7 @@ export default function MiniGrid({
       return `${baseClasses} bg-gray-200 dark:bg-gray-800 cursor-not-allowed`;
     }
 
-    let bgClass = 'bg-white dark:bg-gray-900';
+    let bgClass = 'bg-ghost-white dark:bg-gray-900';
 
     if (isSelected) {
       // Selected cell is always blue (priority over correct)
@@ -106,7 +106,7 @@ export default function MiniGrid({
           shadow-[4px_4px_0px_rgba(0,0,0,1)]
           dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
           overflow-hidden
-          bg-white dark:bg-gray-900
+          bg-ghost-white dark:bg-gray-900
         "
       >
         {/* Grid */}

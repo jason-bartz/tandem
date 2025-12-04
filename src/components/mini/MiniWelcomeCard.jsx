@@ -125,7 +125,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center relative ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
       >
         <div className="absolute inset-0 flex items-center justify-center z-10">
@@ -168,7 +168,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
           highContrast
             ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
         }`}
       >
         <p className="text-text-secondary mb-4">{error}</p>
@@ -187,7 +187,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       className={`rounded-[32px] border-[3px] overflow-hidden p-10 text-center ${
         highContrast
           ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-          : 'bg-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+          : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
       }`}
     >
       {/* Header with Icon */}
@@ -221,7 +221,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       {/* How to Play Section */}
       <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
         <div className="flex items-start">
-          <div className="w-10 h-10 bg-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
+          <div className="w-10 h-10 bg-ghost-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
             <Image src="/icons/ui/mini.png" alt="" width={24} height={24} />
           </div>
           <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">

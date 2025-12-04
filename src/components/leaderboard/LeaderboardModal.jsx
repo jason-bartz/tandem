@@ -57,7 +57,7 @@ export default function LeaderboardModal({
             activeTab === 'daily'
               ? highContrast
                 ? 'bg-hc-primary text-white border-b-[3px] border-hc-border'
-                : 'bg-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
+                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >
@@ -69,7 +69,7 @@ export default function LeaderboardModal({
             activeTab === 'streak'
               ? highContrast
                 ? 'bg-hc-primary text-white border-b-[3px] border-hc-border'
-                : 'bg-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
+                : 'bg-ghost-white dark:bg-gray-800 text-sky-600 dark:text-sky-400 border-b-[3px] border-sky-500'
               : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700/50'
           }`}
         >

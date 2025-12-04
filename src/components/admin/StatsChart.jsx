@@ -231,7 +231,7 @@ export function MetricsOverview({ stats }) {
   return (
     <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
       {metrics.map((metric, index) => (
-        <div key={index} className="bg-white dark:bg-gray-800 rounded-lg p-4">
+        <div key={index} className="bg-ghost-white dark:bg-gray-800 rounded-lg p-4">
           <div className="flex items-center justify-between mb-2">
             <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
               {metric.label}

@@ -245,7 +245,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   if (game.error) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
+        <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
           <button

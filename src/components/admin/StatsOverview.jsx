@@ -49,7 +49,7 @@ export default function StatsOverview() {
   };
 
   const StatCard = ({ title, value, color = 'plum' }) => (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
       <div className="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
         {title}
       </div>
@@ -197,7 +197,7 @@ export default function StatsOverview() {
         <StatCard title="Perfect Games" value={stats.perfectGames} color="amber" />
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+      <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
           Daily Activity (Last 7 Days)
         </h3>
@@ -210,7 +210,7 @@ export default function StatsOverview() {
         )}
       </div>
 
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
+      <div className="bg-ghost-white dark:bg-gray-800 rounded-lg shadow p-4 sm:p-6">
         <h3 className="text-base sm:text-lg font-medium text-gray-900 dark:text-white mb-3 sm:mb-4">
           Top Performing Puzzles
         </h3>
