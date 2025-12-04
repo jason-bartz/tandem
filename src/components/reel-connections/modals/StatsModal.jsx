@@ -37,7 +37,9 @@ export default function StatsModal({ isOpen, onClose }) {
   async function fetchLeaderboard() {
     setLeaderboardLoading(true);
     try {
-      const today = new Date().toISOString().split('T')[0];
+      // Use local date to match the format used when submitting scores
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
       const endpoint =
         activeTab === 'daily'
           ? `/api/leaderboard/daily?game=reel&date=${today}&limit=10`
