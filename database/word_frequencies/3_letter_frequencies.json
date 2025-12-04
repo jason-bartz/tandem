@@ -356,6 +356,298 @@
     "frequency": 65
   },
   {
+    "word": "SOS",
+    "frequency": 65
+  },
+  {
+    "word": "EMT",
+    "frequency": 65
+  },
+  {
+    "word": "ICU",
+    "frequency": 65
+  },
+  {
+    "word": "OCD",
+    "frequency": 65
+  },
+  {
+    "word": "IVF",
+    "frequency": 65
+  },
+  {
+    "word": "STD",
+    "frequency": 65
+  },
+  {
+    "word": "STI",
+    "frequency": 65
+  },
+  {
+    "word": "OTC",
+    "frequency": 65
+  },
+  {
+    "word": "TSA",
+    "frequency": 65
+  },
+  {
+    "word": "DOJ",
+    "frequency": 65
+  },
+  {
+    "word": "FCC",
+    "frequency": 65
+  },
+  {
+    "word": "FTC",
+    "frequency": 65
+  },
+  {
+    "word": "NSA",
+    "frequency": 65
+  },
+  {
+    "word": "DEA",
+    "frequency": 65
+  },
+  {
+    "word": "ATF",
+    "frequency": 65
+  },
+  {
+    "word": "SSA",
+    "frequency": 65
+  },
+  {
+    "word": "SSN",
+    "frequency": 65
+  },
+  {
+    "word": "DOB",
+    "frequency": 65
+  },
+  {
+    "word": "DOD",
+    "frequency": 65
+  },
+  {
+    "word": "HUD",
+    "frequency": 65
+  },
+  {
+    "word": "NIH",
+    "frequency": 65
+  },
+  {
+    "word": "CDC",
+    "frequency": 65
+  },
+  {
+    "word": "IMF",
+    "frequency": 65
+  },
+  {
+    "word": "WTO",
+    "frequency": 65
+  },
+  {
+    "word": "HAN",
+    "frequency": 65
+  },
+  {
+    "word": "REY",
+    "frequency": 65
+  },
+  {
+    "word": "POE",
+    "frequency": 65
+  },
+  {
+    "word": "QUI",
+    "frequency": 65
+  },
+  {
+    "word": "JYN",
+    "frequency": 65
+  },
+  {
+    "word": "MAZ",
+    "frequency": 65
+  },
+  {
+    "word": "NEO",
+    "frequency": 65
+  },
+  {
+    "word": "ZOD",
+    "frequency": 65
+  },
+  {
+    "word": "VIC",
+    "frequency": 65
+  },
+  {
+    "word": "ROY",
+    "frequency": 65
+  },
+  {
+    "word": "TIM",
+    "frequency": 65
+  },
+  {
+    "word": "FDR",
+    "frequency": 65
+  },
+  {
+    "word": "JFK",
+    "frequency": 65
+  },
+  {
+    "word": "LBJ",
+    "frequency": 65
+  },
+  {
+    "word": "RFK",
+    "frequency": 65
+  },
+  {
+    "word": "MLK",
+    "frequency": 65
+  },
+  {
+    "word": "RBG",
+    "frequency": 65
+  },
+  {
+    "word": "AOC",
+    "frequency": 65
+  },
+  {
+    "word": "GOP",
+    "frequency": 65
+  },
+  {
+    "word": "DEM",
+    "frequency": 65
+  },
+  {
+    "word": "BMW",
+    "frequency": 65
+  },
+  {
+    "word": "KIA",
+    "frequency": 65
+  },
+  {
+    "word": "API",
+    "frequency": 65
+  },
+  {
+    "word": "CSS",
+    "frequency": 65
+  },
+  {
+    "word": "PHP",
+    "frequency": 65
+  },
+  {
+    "word": "SQL",
+    "frequency": 65
+  },
+  {
+    "word": "SSD",
+    "frequency": 65
+  },
+  {
+    "word": "LAN",
+    "frequency": 65
+  },
+  {
+    "word": "VPN",
+    "frequency": 65
+  },
+  {
+    "word": "FTP",
+    "frequency": 65
+  },
+  {
+    "word": "SSH",
+    "frequency": 65
+  },
+  {
+    "word": "IOT",
+    "frequency": 65
+  },
+  {
+    "word": "NFT",
+    "frequency": 65
+  },
+  {
+    "word": "DAO",
+    "frequency": 65
+  },
+  {
+    "word": "DRM",
+    "frequency": 65
+  },
+  {
+    "word": "AES",
+    "frequency": 65
+  },
+  {
+    "word": "RSA",
+    "frequency": 65
+  },
+  {
+    "word": "GPT",
+    "frequency": 65
+  },
+  {
+    "word": "LLM",
+    "frequency": 65
+  },
+  {
+    "word": "IPA",
+    "frequency": 65
+  },
+  {
+    "word": "BLT",
+    "frequency": 65
+  },
+  {
+    "word": "PBJ",
+    "frequency": 65
+  },
+  {
+    "word": "RBI",
+    "frequency": 65
+  },
+  {
+    "word": "OTT",
+    "frequency": 65
+  },
+  {
+    "word": "USA",
+    "frequency": 65
+  },
+  {
+    "word": "UAE",
+    "frequency": 65
+  },
+  {
+    "word": "EDM",
+    "frequency": 65
+  },
+  {
+    "word": "RNB",
+    "frequency": 65
+  },
+  {
+    "word": "EMO",
+    "frequency": 65
+  },
+  {
     "word": "RED",
     "frequency": 23
   },
