@@ -20,18 +20,34 @@ function getGreeting() {
 }
 
 /**
+ * Get ordinal suffix for a day number
+ * @param {number} day - The day of the month
+ * @returns {string} The ordinal suffix (st, nd, rd, or th)
+ */
+function getOrdinalSuffix(day) {
+  if (day > 3 && day < 21) return 'th';
+  switch (day % 10) {
+    case 1:
+      return 'st';
+    case 2:
+      return 'nd';
+    case 3:
+      return 'rd';
+    default:
+      return 'th';
+  }
+}
+
+/**
  * Get formatted date string
- * @returns {string} Formatted date like "It's Wednesday, December 3, 2025"
+ * @returns {string} Formatted date like "It's Wednesday, December 3rd"
  */
 function getFormattedDate() {
   const now = new Date();
-  const options = {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  };
-  return `It's ${now.toLocaleDateString('en-US', options)}`;
+  const weekday = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = now.toLocaleDateString('en-US', { month: 'long' });
+  const day = now.getDate();
+  return `It's ${weekday}, ${month} ${day}${getOrdinalSuffix(day)}`;
 }
 
 /**
@@ -77,27 +93,21 @@ export default function Greeting() {
     <div className="text-center mb-6 animate-fade-in">
       <h2
         className={`text-2xl font-bold mb-1 ${
-          highContrast
-            ? 'text-hc-text'
-            : 'text-gray-900 dark:text-gray-100'
+          highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
         }`}
       >
         {greeting}
       </h2>
       <p
         className={`text-base mb-1 ${
-          highContrast
-            ? 'text-hc-text opacity-80'
-            : 'text-gray-700 dark:text-gray-300'
+          highContrast ? 'text-hc-text opacity-80' : 'text-gray-700 dark:text-gray-300'
         }`}
       >
         {formattedDate}
       </p>
       <p
         className={`text-base ${
-          highContrast
-            ? 'text-hc-text opacity-80'
-            : 'text-gray-700 dark:text-gray-300'
+          highContrast ? 'text-hc-text opacity-80' : 'text-gray-700 dark:text-gray-300'
         }`}
       >
         Ready to solve today&apos;s puzzles?
