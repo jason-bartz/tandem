@@ -5,8 +5,8 @@
  * @module reelConnectionsUtils
  */
 
-// Reel Connections launch date - December 2, 2025
-export const REEL_CONNECTIONS_LAUNCH_DATE = new Date('2025-12-02T00:00:00Z');
+// Reel Connections launch date - November 30, 2025
+export const REEL_CONNECTIONS_LAUNCH_DATE = new Date('2025-11-30T00:00:00Z');
 
 /**
  * Get current Reel Connections puzzle number based on user's LOCAL timezone
