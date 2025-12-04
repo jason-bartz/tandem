@@ -21,13 +21,18 @@ const EMPTY_CELL = '';
 export default class CrosswordGenerator {
   constructor(trie, options = {}) {
     this.trie = trie;
-    this.grid = Array(5).fill(null).map(() => Array(5).fill(EMPTY_CELL));
-    this.solution = Array(5).fill(null).map(() => Array(5).fill(EMPTY_CELL));
+    this.grid = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(EMPTY_CELL));
+    this.solution = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(EMPTY_CELL));
     this.wordSlots = []; // All detected word slots
     this.placedWords = []; // {word, direction, startRow, startCol}
     this.moveStack = []; // Stack for backtracking
     this.maxRetries = options.maxRetries || 100;
     this.minFrequency = options.minFrequency || 0; // Word frequency threshold (0-100)
+    this.excludeWords = new Set((options.excludeWords || []).map((w) => w.toUpperCase())); // Words to exclude (from recent puzzles)
     this.complete = false;
 
     // Progress tracking
@@ -37,7 +42,8 @@ export default class CrosswordGenerator {
       slotsFilled: 0,
       startTime: null,
       patternSearches: 0,
-      flexibilityCalculations: 0
+      flexibilityCalculations: 0,
+      excludedWordsCount: this.excludeWords.size,
     };
   }
 
@@ -88,8 +94,8 @@ export default class CrosswordGenerator {
         ...this.generationStats,
         elapsedTime,
         cacheHitRate: this.trie.getCacheHitRate(),
-        cacheSize: this.trie.patternCache.size
-      }
+        cacheSize: this.trie.patternCache.size,
+      },
     };
   }
 
@@ -97,8 +103,12 @@ export default class CrosswordGenerator {
    * Reset generator state for new attempt
    */
   reset() {
-    this.grid = Array(5).fill(null).map(() => Array(5).fill(EMPTY_CELL));
-    this.solution = Array(5).fill(null).map(() => Array(5).fill(EMPTY_CELL));
+    this.grid = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(EMPTY_CELL));
+    this.solution = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(EMPTY_CELL));
     this.wordSlots = [];
     this.placedWords = [];
     this.moveStack = [];
@@ -155,7 +165,7 @@ export default class CrosswordGenerator {
         [0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
       // Pattern 2: Diagonal (2 blacks, creates 3-4 letter words)
       [
@@ -163,7 +173,7 @@ export default class CrosswordGenerator {
         [0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
       // Pattern 3: Center cross (minimal blacks, longer words)
       [
@@ -171,7 +181,7 @@ export default class CrosswordGenerator {
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
       // Pattern 4: L-shape (2-3 blacks, varied word lengths)
       [
@@ -179,7 +189,7 @@ export default class CrosswordGenerator {
         [0, 0, 0, 1, 0],
         [0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
       // Pattern 5: Alternating (3-4 blacks, balanced)
       [
@@ -187,7 +197,7 @@ export default class CrosswordGenerator {
         [0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
       // Pattern 6: Minimal (1-2 blacks only)
       [
@@ -195,7 +205,7 @@ export default class CrosswordGenerator {
         [0, 0, 0, 0, 0],
         [0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0]
+        [0, 0, 0, 0, 0],
       ],
     ];
   }
@@ -204,7 +214,7 @@ export default class CrosswordGenerator {
    * Apply symmetry to a pattern
    */
   applySymmetryToPattern(pattern, symmetry) {
-    const newPattern = pattern.map(row => [...row]);
+    const newPattern = pattern.map((row) => [...row]);
 
     for (let row = 0; row < 5; row++) {
       for (let col = 0; col < 5; col++) {
@@ -262,7 +272,9 @@ export default class CrosswordGenerator {
     if (!this.isPatternValid()) {
       console.log('[Generator] Pattern quality check failed, using minimal pattern');
       // Fallback to minimal pattern (center black only)
-      this.grid = Array(5).fill(null).map(() => Array(5).fill(EMPTY_CELL));
+      this.grid = Array(5)
+        .fill(null)
+        .map(() => Array(5).fill(EMPTY_CELL));
       this.grid[2][2] = BLACK_SQUARE;
     }
   }
@@ -289,14 +301,14 @@ export default class CrosswordGenerator {
 
     // Check for entire rows or columns of blacks
     for (let row = 0; row < 5; row++) {
-      if (this.grid[row].every(cell => cell === BLACK_SQUARE)) {
+      if (this.grid[row].every((cell) => cell === BLACK_SQUARE)) {
         console.log(`[Quality] Entire row ${row} is black`);
         return false;
       }
     }
 
     for (let col = 0; col < 5; col++) {
-      if (this.grid.every(row => row[col] === BLACK_SQUARE)) {
+      if (this.grid.every((row) => row[col] === BLACK_SQUARE)) {
         console.log(`[Quality] Entire column ${col} is black`);
         return false;
       }
@@ -315,9 +327,12 @@ export default class CrosswordGenerator {
    * Check if all white squares are connected (flood fill)
    */
   isGridConnected() {
-    const visited = Array(5).fill(null).map(() => Array(5).fill(false));
+    const visited = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(false));
     let whiteSquares = 0;
-    let startRow = -1, startCol = -1;
+    let startRow = -1,
+      startCol = -1;
 
     // Count white squares and find starting position
     for (let row = 0; row < 5; row++) {
@@ -414,7 +429,7 @@ export default class CrosswordGenerator {
               startCol: col,
               length,
               pattern,
-              filled: false
+              filled: false,
             });
           }
 
@@ -441,7 +456,7 @@ export default class CrosswordGenerator {
               startCol: col,
               length,
               pattern,
-              filled: false
+              filled: false,
             });
           }
 
@@ -466,7 +481,7 @@ export default class CrosswordGenerator {
       const c = direction === 'across' ? col + i : col;
       const cell = this.grid[r][c];
 
-      pattern += (cell && cell !== BLACK_SQUARE && cell !== EMPTY_CELL) ? cell : '.';
+      pattern += cell && cell !== BLACK_SQUARE && cell !== EMPTY_CELL ? cell : '.';
     }
 
     return pattern;
@@ -480,10 +495,10 @@ export default class CrosswordGenerator {
     let score = 100;
 
     // Count word lengths
-    const wordLengths = this.placedWords.map(w => w.word.length);
-    const twoLetterWords = wordLengths.filter(len => len === 2).length;
-    const threeLetterWords = wordLengths.filter(len => len === 3).length;
-    const fourPlusWords = wordLengths.filter(len => len >= 4).length;
+    const wordLengths = this.placedWords.map((w) => w.word.length);
+    const twoLetterWords = wordLengths.filter((len) => len === 2).length;
+    const threeLetterWords = wordLengths.filter((len) => len === 3).length;
+    const fourPlusWords = wordLengths.filter((len) => len >= 4).length;
 
     // Heavy penalty for 2-letter words
     score -= twoLetterWords * 30;
@@ -516,7 +531,7 @@ export default class CrosswordGenerator {
       threeLetterWords,
       fourPlusWords,
       blackCount,
-      totalWords: this.placedWords.length
+      totalWords: this.placedWords.length,
     };
   }
 
@@ -547,7 +562,9 @@ export default class CrosswordGenerator {
     const MIN_QUALITY_SCORE = -50; // Threshold (very lenient)
     const MAX_TWO_LETTER_WORDS = 6; // Allow up to 6 two-letter words
     if (quality.score < MIN_QUALITY_SCORE || quality.twoLetterWords > MAX_TWO_LETTER_WORDS) {
-      throw new Error(`Puzzle quality too low (score: ${quality.score}, 2-letter words: ${quality.twoLetterWords})`);
+      throw new Error(
+        `Puzzle quality too low (score: ${quality.score}, 2-letter words: ${quality.twoLetterWords})`
+      );
     }
 
     // Copy grid to solution
@@ -636,7 +653,7 @@ export default class CrosswordGenerator {
 
       // Count possibilities
       const possibilities = this.trie.searchByPatternWithFrequency(slot.pattern, this.minFrequency);
-      const availableCount = possibilities.filter(w => !this.isWordUsed(w)).length;
+      const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
 
       // Select slot with minimum possibilities
       if (availableCount < minPossibilities) {
@@ -657,7 +674,7 @@ export default class CrosswordGenerator {
   orderWordsByFlexibility(slot, candidates) {
     this.generationStats.flexibilityCalculations += candidates.length;
 
-    const scoredWords = candidates.map(word => {
+    const scoredWords = candidates.map((word) => {
       // Tentatively place the word
       const saveState = this.saveGridState();
       this.placeWordTemporary(word, slot);
@@ -684,7 +701,7 @@ export default class CrosswordGenerator {
       return {
         word,
         flexibility: totalPossibilities,
-        adjustedScore
+        adjustedScore,
       };
     });
 
@@ -709,7 +726,7 @@ export default class CrosswordGenerator {
 
       // Get possibilities
       const possibilities = this.trie.searchByPatternWithFrequency(pattern, this.minFrequency);
-      const availableCount = possibilities.filter(w => !this.isWordUsed(w)).length;
+      const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
 
       total += availableCount;
     }
@@ -723,7 +740,7 @@ export default class CrosswordGenerator {
    */
   canBeCompleted(slot) {
     const possibilities = this.trie.searchByPatternWithFrequency(slot.pattern, this.minFrequency);
-    const availableCount = possibilities.filter(w => !this.isWordUsed(w)).length;
+    const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
 
     return availableCount > 0;
   }
@@ -741,16 +758,25 @@ export default class CrosswordGenerator {
     }
 
     // Filter out already-used words (avoid duplicates)
-    const available = matches.filter(w => !this.isWordUsed(w));
+    const available = matches.filter((w) => !this.isWordUsed(w));
 
     return available;
   }
 
   /**
-   * Check if word is already used
+   * Check if word is already used (in this puzzle OR in recent puzzles)
    */
   isWordUsed(word) {
-    return this.placedWords.some(pw => pw.word === word);
+    const upperWord = word.toUpperCase();
+    // Check if used in current puzzle
+    if (this.placedWords.some((pw) => pw.word === upperWord)) {
+      return true;
+    }
+    // Check if in exclusion list (from recent puzzles)
+    if (this.excludeWords.has(upperWord)) {
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -790,7 +816,7 @@ export default class CrosswordGenerator {
       word,
       direction,
       startRow,
-      startCol
+      startCol,
     });
 
     slot.filled = true;
@@ -819,7 +845,12 @@ export default class CrosswordGenerator {
   removeWord(slot) {
     // Remove from placed words
     this.placedWords = this.placedWords.filter(
-      pw => !(pw.direction === slot.direction && pw.startRow === slot.startRow && pw.startCol === slot.startCol)
+      (pw) =>
+        !(
+          pw.direction === slot.direction &&
+          pw.startRow === slot.startRow &&
+          pw.startCol === slot.startCol
+        )
     );
 
     // Pop from move stack and restore state
@@ -858,8 +889,12 @@ export default class CrosswordGenerator {
       const col = direction === 'across' ? startCol + i : startCol;
 
       // Only restore if not part of another word
-      const isPartOfOtherWord = this.placedWords.some(pw => {
-        if (pw.direction === slot.direction && pw.startRow === slot.startRow && pw.startCol === slot.startCol) {
+      const isPartOfOtherWord = this.placedWords.some((pw) => {
+        if (
+          pw.direction === slot.direction &&
+          pw.startRow === slot.startRow &&
+          pw.startCol === slot.startCol
+        ) {
           return false; // Skip current slot
         }
         if (pw.direction === 'across') {
@@ -879,7 +914,7 @@ export default class CrosswordGenerator {
    * Save complete grid state
    */
   saveGridState() {
-    return this.grid.map(row => [...row]);
+    return this.grid.map((row) => [...row]);
   }
 
   /**
@@ -897,8 +932,8 @@ export default class CrosswordGenerator {
    * Get grid with black squares (for display)
    */
   getGridWithBlackSquares() {
-    return this.grid.map(row =>
-      row.map(cell => cell === BLACK_SQUARE ? BLACK_SQUARE : EMPTY_CELL)
+    return this.grid.map((row) =>
+      row.map((cell) => (cell === BLACK_SQUARE ? BLACK_SQUARE : EMPTY_CELL))
     );
   }
 }

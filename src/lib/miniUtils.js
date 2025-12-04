@@ -821,3 +821,91 @@ export function getConstraintDescription(level) {
 
   return descriptions[level] || 'Unknown';
 }
+
+/**
+ * ========================================
+ * WORD EXTRACTION HELPERS
+ * For deduplication across puzzles
+ * ========================================
+ */
+
+/**
+ * Extract all words from a mini puzzle solution grid
+ * Used for preventing duplicate words across puzzles
+ *
+ * @param {Array<Array<string>>} solution - The 5x5 solution grid
+ * @returns {string[]} Array of all words (uppercase) found in the grid
+ */
+export function extractWordsFromSolution(solution) {
+  if (!solution || !Array.isArray(solution)) {
+    return [];
+  }
+
+  const words = new Set();
+
+  // Extract ACROSS words
+  for (let row = 0; row < GRID_SIZE; row++) {
+    let currentWord = '';
+    for (let col = 0; col < GRID_SIZE; col++) {
+      const cell = solution[row]?.[col];
+      if (cell && !isBlackSquare(cell)) {
+        currentWord += cell.toUpperCase();
+      } else {
+        if (currentWord.length >= 2) {
+          words.add(currentWord);
+        }
+        currentWord = '';
+      }
+    }
+    // Don't forget the last word in the row
+    if (currentWord.length >= 2) {
+      words.add(currentWord);
+    }
+  }
+
+  // Extract DOWN words
+  for (let col = 0; col < GRID_SIZE; col++) {
+    let currentWord = '';
+    for (let row = 0; row < GRID_SIZE; row++) {
+      const cell = solution[row]?.[col];
+      if (cell && !isBlackSquare(cell)) {
+        currentWord += cell.toUpperCase();
+      } else {
+        if (currentWord.length >= 2) {
+          words.add(currentWord);
+        }
+        currentWord = '';
+      }
+    }
+    // Don't forget the last word in the column
+    if (currentWord.length >= 2) {
+      words.add(currentWord);
+    }
+  }
+
+  return Array.from(words);
+}
+
+/**
+ * Extract words from multiple mini puzzles
+ * Used for building exclusion list from recent puzzles
+ *
+ * @param {Array<Object>} puzzles - Array of puzzle objects with solution field
+ * @returns {string[]} Array of all unique words (uppercase) from all puzzles
+ */
+export function extractWordsFromPuzzles(puzzles) {
+  if (!puzzles || !Array.isArray(puzzles)) {
+    return [];
+  }
+
+  const allWords = new Set();
+
+  for (const puzzle of puzzles) {
+    if (puzzle.solution) {
+      const words = extractWordsFromSolution(puzzle.solution);
+      words.forEach((word) => allWords.add(word));
+    }
+  }
+
+  return Array.from(allWords);
+}
