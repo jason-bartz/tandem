@@ -177,23 +177,13 @@ export async function POST(request) {
       existingGrid = null,
       symmetry = 'none',
       maxRetries = 100,
-      difficulty = null,
       minFrequency = null,
     } = body;
 
-    // Convert difficulty to minFrequency if provided
-    let actualMinFrequency = minFrequency;
-    if (difficulty && minFrequency === null) {
-      const difficultyMap = {
-        easy: 40, // Top 60% most common words
-        medium: 25, // Top 75% most common words
-        hard: 10, // Top 90% most common words
-        expert: 0, // All words
-      };
-      actualMinFrequency = difficultyMap[difficulty] || 0;
-    } else if (actualMinFrequency === null) {
-      actualMinFrequency = 0; // Default: use all words
-    }
+    // Use high minFrequency by default for NYT Mini-style common vocabulary
+    // Score of 50+ ensures only everyday, recognizable words are used
+    // This prevents obscure, foreign, or archaic words from appearing
+    const actualMinFrequency = minFrequency !== null ? minFrequency : 50;
 
     // Validate mode
     if (!['scratch', 'fill'].includes(mode)) {
@@ -324,7 +314,6 @@ export async function POST(request) {
         ...result.stats,
         excludedWordsCount: excludeWords.length,
       },
-      difficulty: difficulty || 'custom',
       minFrequency: actualMinFrequency,
     });
   } catch (error) {

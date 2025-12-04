@@ -42,7 +42,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const [wordsLoaded, setWordsLoaded] = useState(false);
   const [generationMode, setGenerationMode] = useState('fill'); // 'fill' or 'scratch'
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationDifficulty, setGenerationDifficulty] = useState('medium'); // 'easy', 'medium', 'hard', 'expert'
   const [generationStats, setGenerationStats] = useState(null);
   const [showDebugPanel, setShowDebugPanel] = useState(false);
   // eslint-disable-next-line no-unused-vars
@@ -344,9 +343,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
     setIsGenerating(true);
     setGenerationStats(null); // Clear previous stats
-    console.log(
-      `[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}, difficulty: ${generationDifficulty}...`
-    );
+    console.log(`[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}...`);
 
     try {
       // Add timeout to prevent hanging forever
@@ -361,7 +358,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           existingGrid: generationMode === 'fill' ? formData.grid : null,
           symmetry: symmetryType,
           maxRetries: 100,
-          difficulty: generationDifficulty, // Pass difficulty level
         }),
         signal: controller.signal,
       });
@@ -658,86 +654,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 <div className="font-bold">Generate from Scratch</div>
                 <div className="text-xs opacity-80">Create new pattern & fill</div>
               </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Difficulty Level */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold text-text-primary mb-3">
-            Word Difficulty
-            <span className="text-xs font-normal ml-2 opacity-70">
-              (Controls word frequency/commonness)
-            </span>
-          </label>
-          <div className="grid grid-cols-4 gap-2">
-            <button
-              type="button"
-              onClick={() => setGenerationDifficulty('easy')}
-              disabled={isGenerating}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                generationDifficulty === 'easy'
-                  ? 'bg-green-400 text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={
-                generationDifficulty === 'easy' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
-              }
-            >
-              <div>Easy</div>
-              <div className="text-[10px] opacity-70">Common words</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setGenerationDifficulty('medium')}
-              disabled={isGenerating}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                generationDifficulty === 'medium'
-                  ? 'bg-yellow-400 text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={
-                generationDifficulty === 'medium'
-                  ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }
-                  : {}
-              }
-            >
-              <div>Medium</div>
-              <div className="text-[10px] opacity-70">Balanced</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setGenerationDifficulty('hard')}
-              disabled={isGenerating}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                generationDifficulty === 'hard'
-                  ? 'bg-orange-400 text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={
-                generationDifficulty === 'hard' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
-              }
-            >
-              <div>Hard</div>
-              <div className="text-[10px] opacity-70">Uncommon</div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setGenerationDifficulty('expert')}
-              disabled={isGenerating}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                generationDifficulty === 'expert'
-                  ? 'bg-red-400 text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={
-                generationDifficulty === 'expert'
-                  ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }
-                  : {}
-              }
-            >
-              <div>Expert</div>
-              <div className="text-[10px] opacity-70">All words</div>
             </button>
           </div>
         </div>
