@@ -132,7 +132,7 @@ export default function AdmireScreen({
                 <p className="text-sm text-gray-600 dark:text-gray-400 mb-2 font-medium">Theme:</p>
                 <p
                   className={`text-2xl font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-accent-yellow dark:text-accent-yellow'
+                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
                   }`}
                 >
                   {admireData?.theme || puzzle?.theme}
@@ -190,7 +190,7 @@ export default function AdmireScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-accent-blue dark:text-accent-blue'
+                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
                   }`}
                 >
                   {formatTime(admireData?.time || 0)}
@@ -206,7 +206,7 @@ export default function AdmireScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-accent-orange dark:text-accent-orange'
+                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
                   }`}
                 >
                   {admireData?.mistakes || 0}/4
@@ -222,7 +222,7 @@ export default function AdmireScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-accent-pink dark:text-accent-pink'
+                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
                   }`}
                 >
                   {formatDateShort(puzzleDate)}
