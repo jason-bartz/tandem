@@ -362,7 +362,24 @@ THEME REQUIREMENTS:
     return `${themeInstructions}
 ${themeRequirements}
 
-GOOD EXAMPLES (notice how emoji pairs work TOGETHER to be guessable):
+⚠️ CRITICAL GAMEPLAY RULE - READ THIS CAREFULLY ⚠️
+The player sees ONLY the emojis and hint - they do NOT see the theme until AFTER they solve all puzzles!
+Therefore, the emojis and hint MUST help the player guess the ANSWER WORD on its own.
+The theme connection is the "aha!" moment that comes AFTER they guess the answer.
+
+❌ WRONG APPROACH (theme-biased clues):
+- Theme: "Words That Follow 'Water'" → Answer: CLOSET
+- BAD emojis: 🚽🔽 (these represent "water closet", not "closet")
+- BAD hint: "British term for the loo" (describes "water closet", not "closet")
+- PROBLEM: Player cannot guess "CLOSET" from toilet imagery!
+
+✅ CORRECT APPROACH (answer-focused clues):
+- Theme: "Words That Follow 'Water'" → Answer: CLOSET
+- GOOD emojis: 🚪👔 (door + clothes = a closet where you store clothes)
+- GOOD hint: "Where you hang your wardrobe"
+- WHY IT WORKS: Player can guess "CLOSET" from the clues, THEN realizes "water closet" is the theme connection!
+
+GOOD EXAMPLES (emojis and hints represent the ANSWER WORD, not the theme connection):
 - "Board Games" → MONOPOLY (🏠💰), LIFE (🚙👶), CHECKERS (⬛️🟥), SCRABBLE (🔤📖)
 - "Things That Charge" → BATTERY (🔋⚡), CAVALRY (🐎⚔️), BULL (🐂🚩), LAWYER (⚖️💵)
 - "Forms of Capital" → VENTURE (🏢💰), LETTER (✉️📝), PUNISHMENT (⚖️💀), CITY (🏛️🇩🇪)
@@ -371,11 +388,14 @@ GOOD EXAMPLES (notice how emoji pairs work TOGETHER to be guessable):
 BAD EXAMPLES (emojis are not cohesive or guessable):
 - ❌ "Pizza Toppings" → PEPPERONI (🍕🥓) - uses pizza emoji in the answer
 - ❌ "Dog Breeds" → BEAGLE (🐕👂) - just uses generic dog emoji
+- ❌ "Words That Follow 'Water'" → CLOSET (🚽🔽) - emojis represent "water closet" not "closet"
 
 CRITICAL EMOJI RULES:
+- NEVER let the theme influence your emoji choice - emojis must represent the ANSWER WORD alone
 - NEVER use the theme itself as an emoji (e.g., don't use 🍕 for pizza toppings)
 - NEVER use generic category emojis (e.g., don't use 🐕 for different dog breeds)
-- The two emojis must combine to create a specific, guessable clue
+- The two emojis must combine to create a specific, guessable clue FOR THE ANSWER WORD
+- Test: Could a player guess the ANSWER from just the emojis, without knowing the theme?
 - Each emoji must be unique across the entire puzzle - no repetition
 - Aim for New York Times Connections difficulty: should require thought but feel satisfying when discovered
 
@@ -418,20 +438,21 @@ ${excludedThemesList}
 
 HINT REQUIREMENTS:
 Each puzzle MUST include a concise, crossword-style hint (3-8 words ideal, max 60 characters):
-- CRITICAL: Hints should focus on the ANSWER WORD ITSELF, not its relationship to the theme
-- Only reference the theme if it's essential to understanding what the answer IS (e.g., "Board game" context for MONOPOLY)
-- Avoid revealing the theme connection - if the word stands alone, hint at the word, not the theme pattern
+- ⚠️ CRITICAL: Hints MUST describe the ANSWER WORD on its own - NOT the theme+answer combination!
+- The player uses the hint to guess the ANSWER, they discover the theme connection AFTER
+- WRONG: Theme "Words That Follow 'Water'" + Answer CLOSET → hint "British term for the loo" (describes water closet!)
+- RIGHT: Theme "Words That Follow 'Water'" + Answer CLOSET → hint "Where you store your clothes" (describes closet!)
 - Don't use the answer word in the hint
 - Make hints progressively harder (easy hint for easy answer, harder hint for harder answer)
 - Embrace NYT crossword style: wordplay, puns, cultural references, and clever indirect clues
 - Add personality and character where appropriate
-- Examples of excellent hints:
-  * HOUR → "60 minutes" (simple, direct, doesn't reference "rush hour")
-  * FIGHTING → "FINISH HIM!" (pop culture reference with character)
-  * MONOPOLY → "Park Place and Boardwalk locale" (clever, indirect)
-  * STOVE → "Where things get heated in the kitchen" (wordplay)
-  * FRIDGE → "Cool place for leftovers" (pun on "cool")
-  * TOASTER → "Pop-up breakfast helper" (playful description)
+- Examples of excellent hints (notice they describe the ANSWER, not the theme connection):
+  * HOUR → "60 minutes" (describes an hour, NOT "rush hour" or "happy hour")
+  * CLOSET → "Where you hang your wardrobe" (describes a closet, NOT "water closet")
+  * FIGHTING → "FINISH HIM!" (describes fighting/combat)
+  * MONOPOLY → "Park Place and Boardwalk locale" (describes the game Monopoly)
+  * STOVE → "Where things get heated in the kitchen" (describes a stove)
+  * FRIDGE → "Cool place for leftovers" (describes a fridge)
 
 RESPONSE FORMAT (JSON only, no explanation):
 {
@@ -460,23 +481,28 @@ THEME: "${theme}"
 PUZZLE ANSWERS:
 ${puzzlesList}
 
+⚠️ CRITICAL GAMEPLAY RULE ⚠️
+Players see ONLY the emojis and hint - they do NOT see the theme until AFTER solving!
+Therefore, hints MUST help players guess the ANSWER WORD on its own.
+The theme connection is discovered AFTER guessing, creating an "aha!" moment.
+
 HINT REQUIREMENTS:
 Each hint MUST be concise, crossword-style (3-8 words ideal, max 60 characters):
-- CRITICAL: Hints should focus on the ANSWER WORD ITSELF, not its relationship to the theme
-- Only reference the theme if it's essential to understanding what the answer IS (e.g., "Board game" context for MONOPOLY)
-- Avoid revealing the theme connection - if the word stands alone, hint at the word, not the theme pattern
+- ⚠️ CRITICAL: Hints MUST describe the ANSWER WORD on its own - NOT the theme+answer combination!
+- WRONG: Theme "Words That Follow 'Water'" + Answer CLOSET → "British term for the loo" (describes "water closet"!)
+- RIGHT: Theme "Words That Follow 'Water'" + Answer CLOSET → "Where you store your clothes" (describes "closet"!)
 - Don't use the answer word in the hint
 - Make hints progressively harder (easy hint for easy answer, harder hint for harder answer)
 - Embrace NYT crossword style: wordplay, puns, cultural references, and clever indirect clues
 - Add personality and character where appropriate
 
-EXAMPLES OF EXCELLENT HINTS:
-- HOUR → "60 minutes" (simple, direct, doesn't reference "rush hour")
-- FIGHTING → "FINISH HIM!" (pop culture reference with character)
-- MONOPOLY → "Park Place and Boardwalk locale" (clever, indirect)
-- STOVE → "Where things get heated in the kitchen" (wordplay)
-- FRIDGE → "Cool place for leftovers" (pun on "cool")
-- TOASTER → "Pop-up breakfast helper" (playful description)
+EXAMPLES OF EXCELLENT HINTS (notice they describe the ANSWER, not the theme connection):
+- HOUR → "60 minutes" (describes an hour, NOT "rush hour" or "happy hour")
+- CLOSET → "Where you hang your wardrobe" (describes a closet, NOT "water closet")
+- FIGHTING → "FINISH HIM!" (describes fighting/combat)
+- MONOPOLY → "Park Place and Boardwalk locale" (describes the game Monopoly)
+- STOVE → "Where things get heated in the kitchen" (describes a stove)
+- FRIDGE → "Cool place for leftovers" (describes a fridge)
 
 RESPONSE FORMAT (JSON array only, no explanation):
 ["hint for puzzle 1", "hint for puzzle 2", "hint for puzzle 3", "hint for puzzle 4"]
