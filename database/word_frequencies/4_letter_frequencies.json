@@ -324,6 +324,54 @@
     "frequency": 82
   },
   {
+    "word": "WIFI",
+    "frequency": 75
+  },
+  {
+    "word": "NASA",
+    "frequency": 70
+  },
+  {
+    "word": "UBER",
+    "frequency": 70
+  },
+  {
+    "word": "IPAD",
+    "frequency": 70
+  },
+  {
+    "word": "BDAY",
+    "frequency": 65
+  },
+  {
+    "word": "XBOX",
+    "frequency": 65
+  },
+  {
+    "word": "SIRI",
+    "frequency": 65
+  },
+  {
+    "word": "ELSA",
+    "frequency": 65
+  },
+  {
+    "word": "YOLO",
+    "frequency": 60
+  },
+  {
+    "word": "LMAO",
+    "frequency": 60
+  },
+  {
+    "word": "OLAF",
+    "frequency": 60
+  },
+  {
+    "word": "TIKI",
+    "frequency": 55
+  },
+  {
     "word": "HEED",
     "frequency": 25
   },

@@ -180,10 +180,11 @@ export async function POST(request) {
       minFrequency = null,
     } = body;
 
-    // Use high minFrequency by default for NYT Mini-style common vocabulary
-    // Score of 50+ ensures only everyday, recognizable words are used
-    // This prevents obscure, foreign, or archaic words from appearing
-    const actualMinFrequency = minFrequency !== null ? minFrequency : 50;
+    // Use minFrequency threshold for NYT Mini-style common vocabulary
+    // Score of 20+ filters out the most obscure/archaic words while keeping
+    // enough variety for puzzle generation (~500 words across all lengths)
+    // This prevents words like "nerts", "utile", "paps" while allowing common vocabulary
+    const actualMinFrequency = minFrequency !== null ? minFrequency : 20;
 
     // Validate mode
     if (!['scratch', 'fill'].includes(mode)) {
