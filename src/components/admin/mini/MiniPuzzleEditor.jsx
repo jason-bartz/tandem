@@ -485,6 +485,25 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     }));
   };
 
+  const clearAll = () => {
+    if (!confirm('Clear all grid content, clues, and stats? This cannot be undone.')) {
+      return;
+    }
+    setFormData((prev) => ({
+      ...prev,
+      grid: Array(5)
+        .fill()
+        .map(() => Array(5).fill('')),
+      clues: {
+        across: [],
+        down: [],
+      },
+    }));
+    setGenerationStats(null);
+    setSelectedCell(null);
+    setWordSuggestions([]);
+  };
+
   // Load puzzle data if editing
   useEffect(() => {
     if (puzzle) {
@@ -579,11 +598,21 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             onClick={clearGrid}
             type="button"
             disabled={isGenerating}
-            className="px-3 py-1.5 text-xs font-bold bg-red-500 text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
+            className="px-3 py-1.5 text-xs font-bold bg-orange-500 text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            title="Clear entire grid"
+            title="Clear grid letters only"
           >
             Clear Grid
+          </button>
+          <button
+            onClick={clearAll}
+            type="button"
+            disabled={isGenerating}
+            className="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            title="Clear grid, clues, and stats"
+          >
+            Clear All
           </button>
         </div>
       </div>
