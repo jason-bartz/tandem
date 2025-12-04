@@ -373,11 +373,21 @@ The theme connection is the "aha!" moment that comes AFTER they guess the answer
 - BAD hint: "British term for the loo" (describes "water closet", not "closet")
 - PROBLEM: Player cannot guess "CLOSET" from toilet imagery!
 
+- Theme: "Words That Follow 'Party'" → Answer: ANIMAL
+- BAD emojis: 🚌🐶 (random images that don't represent "animal")
+- BAD hint: "Wild creature or rowdy person" (describes "party animal" behavior!)
+- PROBLEM: A bus and dog don't help guess "ANIMAL"!
+
 ✅ CORRECT APPROACH (answer-focused clues):
 - Theme: "Words That Follow 'Water'" → Answer: CLOSET
 - GOOD emojis: 🚪👔 (door + clothes = a closet where you store clothes)
 - GOOD hint: "Where you hang your wardrobe"
 - WHY IT WORKS: Player can guess "CLOSET" from the clues, THEN realizes "water closet" is the theme connection!
+
+- Theme: "Words That Follow 'Party'" → Answer: ANIMAL
+- GOOD emojis: 🦁🐘 (lion + elephant = animals at a zoo)
+- GOOD hint: "Creature in the wild"
+- WHY IT WORKS: Player can guess "ANIMAL" from zoo creatures, THEN realizes "party animal" is the theme connection!
 
 GOOD EXAMPLES (emojis and hints represent the ANSWER WORD, not the theme connection):
 - "Board Games" → MONOPOLY (🏠💰), LIFE (🚙👶), CHECKERS (⬛️🟥), SCRABBLE (🔤📖)
@@ -389,6 +399,7 @@ BAD EXAMPLES (emojis are not cohesive or guessable):
 - ❌ "Pizza Toppings" → PEPPERONI (🍕🥓) - uses pizza emoji in the answer
 - ❌ "Dog Breeds" → BEAGLE (🐕👂) - just uses generic dog emoji
 - ❌ "Words That Follow 'Water'" → CLOSET (🚽🔽) - emojis represent "water closet" not "closet"
+- ❌ "Words That Follow 'Party'" → ANIMAL (🚌🐶) - emojis don't represent "animal" at all
 
 CRITICAL EMOJI RULES:
 - NEVER let the theme influence your emoji choice - emojis must represent the ANSWER WORD alone
