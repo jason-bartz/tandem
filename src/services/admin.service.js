@@ -4,7 +4,7 @@ import authService from './auth.service';
 import logger from '@/lib/logger';
 
 class AdminService {
-  getAuthHeaders(includeCSRF = false) {
+  async getAuthHeaders(includeCSRF = false) {
     return authService.getAuthHeaders(includeCSRF);
   }
 
@@ -12,7 +12,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_PUZZLES), {
         method: 'POST',
-        headers: this.getAuthHeaders(true),
+        headers: await this.getAuthHeaders(true),
         body: JSON.stringify({ date, puzzle }),
       });
 
@@ -39,7 +39,7 @@ class AdminService {
       const response = await fetch(
         getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}?start=${startDate}&end=${endDate}`),
         {
-          headers: this.getAuthHeaders(),
+          headers: await this.getAuthHeaders(),
         }
       );
 
@@ -55,7 +55,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}?date=${date}`), {
         method: 'DELETE',
-        headers: this.getAuthHeaders(true),
+        headers: await this.getAuthHeaders(true),
       });
 
       const data = await response.json();
@@ -70,7 +70,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl(`${API_ENDPOINTS.ADMIN_PUZZLES}/bulk`), {
         method: 'POST',
-        headers: this.getAuthHeaders(true),
+        headers: await this.getAuthHeaders(true),
         body: JSON.stringify({ puzzles }),
       });
 
@@ -86,7 +86,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl('/api/admin/bulk-import'), {
         method: 'POST',
-        headers: this.getAuthHeaders(true),
+        headers: await this.getAuthHeaders(true),
         body: JSON.stringify({ puzzles, startDate, overwrite }),
       });
 
@@ -118,7 +118,7 @@ class AdminService {
         ...(options.themeHint && { themeHint: options.themeHint }),
       };
 
-      const headers = this.getAuthHeaders(true);
+      const headers = await this.getAuthHeaders(true);
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_GENERATE_PUZZLE), {
         method: 'POST',
         headers,
@@ -155,7 +155,7 @@ class AdminService {
         puzzles: options.puzzles,
       };
 
-      const headers = this.getAuthHeaders(true);
+      const headers = await this.getAuthHeaders(true);
       const response = await fetch(getApiUrl('/api/admin/generate-hints'), {
         method: 'POST',
         headers,
@@ -191,7 +191,7 @@ class AdminService {
         puzzles: puzzle.puzzles,
       };
 
-      const headers = this.getAuthHeaders(true);
+      const headers = await this.getAuthHeaders(true);
       const response = await fetch(getApiUrl('/api/admin/assess-difficulty'), {
         method: 'POST',
         headers,
@@ -229,7 +229,7 @@ class AdminService {
 
       const url = `/api/admin/feedback${params.toString() ? `?${params.toString()}` : ''}`;
       const response = await fetch(getApiUrl(url), {
-        headers: this.getAuthHeaders(),
+        headers: await this.getAuthHeaders(),
       });
 
       const data = await response.json();
@@ -254,7 +254,7 @@ class AdminService {
     try {
       const response = await fetch(getApiUrl('/api/admin/feedback'), {
         method: 'PATCH',
-        headers: this.getAuthHeaders(true),
+        headers: await this.getAuthHeaders(true),
         body: JSON.stringify({ id: feedbackId, ...updates }),
       });
 

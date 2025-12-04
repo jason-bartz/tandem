@@ -4,7 +4,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
-import { useTheme } from '@/contexts/ThemeContext';
 import storageService from '@/core/storage/storageService';
 
 export default function AdminLayout({ children }) {
@@ -12,7 +11,6 @@ export default function AdminLayout({ children }) {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const pathname = usePathname();
-  const { toggleTheme, isDark, mounted } = useTheme();
 
   // Special pages that don't need authentication
   const isPublicPage =
@@ -95,7 +93,7 @@ export default function AdminLayout({ children }) {
     return children;
   }
 
-  if (loading || !mounted) {
+  if (loading) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-surface">
         <LoadingSpinner />
@@ -119,18 +117,6 @@ export default function AdminLayout({ children }) {
               <Image src="/icons/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
-              <button
-                onClick={toggleTheme}
-                className="p-2 rounded-lg border-[3px] border-black dark:border-white bg-bg-card hover:translate-y-[-2px] transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
-                title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                <Image
-                  src={isDark ? '/icons/ui/light-mode.png' : '/icons/ui/dark-mode.png'}
-                  alt={isDark ? 'Light mode' : 'Dark mode'}
-                  width={24}
-                  height={24}
-                />
-              </button>
               <a
                 href="/"
                 target="_blank"

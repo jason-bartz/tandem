@@ -51,13 +51,19 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   // Load word lists on mount
   useEffect(() => {
     console.log('[MiniPuzzleEditor] Starting to load word lists...');
-    wordListService.loadWordLists().then(() => {
-      setWordsLoaded(true);
-      console.log('[MiniPuzzleEditor] Word lists loaded successfully');
-      console.log('[MiniPuzzleEditor] Sample 5-letter words:', wordListService.getWordsByLength(5).slice(0, 5));
-    }).catch((error) => {
-      console.error('[MiniPuzzleEditor] Failed to load word lists:', error);
-    });
+    wordListService
+      .loadWordLists()
+      .then(() => {
+        setWordsLoaded(true);
+        console.log('[MiniPuzzleEditor] Word lists loaded successfully');
+        console.log(
+          '[MiniPuzzleEditor] Sample 5-letter words:',
+          wordListService.getWordsByLength(5).slice(0, 5)
+        );
+      })
+      .catch((error) => {
+        console.error('[MiniPuzzleEditor] Failed to load word lists:', error);
+      });
   }, []);
 
   /**
@@ -84,30 +90,39 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   /**
    * Apply symmetry to grid changes
    */
-  const applySymmetry = useCallback((grid, row, col, value) => {
-    const newGrid = grid.map((r) => [...r]);
-    newGrid[row][col] = value.toUpperCase();
+  const applySymmetry = useCallback(
+    (grid, row, col, value) => {
+      const newGrid = grid.map((r) => [...r]);
+      newGrid[row][col] = value.toUpperCase();
 
-    if (symmetryType !== SYMMETRY_TYPES.NONE && value === '■') {
-      const symmetric = getSymmetricCell(row, col, symmetryType);
-      if (symmetric) {
-        newGrid[symmetric.row][symmetric.col] = value;
+      if (symmetryType !== SYMMETRY_TYPES.NONE && value === '■') {
+        const symmetric = getSymmetricCell(row, col, symmetryType);
+        if (symmetric) {
+          newGrid[symmetric.row][symmetric.col] = value;
+        }
       }
-    }
 
-    return newGrid;
-  }, [symmetryType, getSymmetricCell]);
+      return newGrid;
+    },
+    [symmetryType, getSymmetricCell]
+  );
 
-  const handleGridChange = useCallback((row, col, value) => {
-    const newGrid = applySymmetry(formData.grid, row, col, value);
-    setFormData((prev) => ({ ...prev, grid: newGrid }));
-  }, [formData.grid, applySymmetry]);
+  const handleGridChange = useCallback(
+    (row, col, value) => {
+      const newGrid = applySymmetry(formData.grid, row, col, value);
+      setFormData((prev) => ({ ...prev, grid: newGrid }));
+    },
+    [formData.grid, applySymmetry]
+  );
 
-  const toggleBlackSquare = useCallback((row, col) => {
-    const currentValue = formData.grid[row][col];
-    const newValue = currentValue === '■' ? '' : '■';
-    handleGridChange(row, col, newValue);
-  }, [formData.grid, handleGridChange]);
+  const toggleBlackSquare = useCallback(
+    (row, col) => {
+      const currentValue = formData.grid[row][col];
+      const newValue = currentValue === '■' ? '' : '■';
+      handleGridChange(row, col, newValue);
+    },
+    [formData.grid, handleGridChange]
+  );
 
   const advanceToNextCell = useCallback(() => {
     if (!selectedCell) return;
@@ -261,7 +276,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       return;
     }
 
-    console.log('[MiniPuzzleEditor] Getting suggestions for cell', selectedCell, 'direction:', currentDirection);
+    console.log(
+      '[MiniPuzzleEditor] Getting suggestions for cell',
+      selectedCell,
+      'direction:',
+      currentDirection
+    );
     const suggestions = wordListService.getWordSuggestionsForCell(
       formData.grid,
       selectedCell.row,
@@ -272,7 +292,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     console.log('[MiniPuzzleEditor] Suggestions:', {
       pattern: suggestions.pattern,
       matchCount: suggestions.matches?.length || 0,
-      firstFew: suggestions.matches?.slice(0, 5) || []
+      firstFew: suggestions.matches?.slice(0, 5) || [],
     });
 
     setWordSuggestions(suggestions.matches || []);
@@ -324,7 +344,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
     setIsGenerating(true);
     setGenerationStats(null); // Clear previous stats
-    console.log(`[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}, difficulty: ${generationDifficulty}...`);
+    console.log(
+      `[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}, difficulty: ${generationDifficulty}...`
+    );
 
     try {
       // Add timeout to prevent hanging forever
@@ -333,7 +355,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
       const response = await fetch('/api/admin/mini/generate', {
         method: 'POST',
-        headers: authService.getAuthHeaders(true), // Include auth + CSRF token
+        headers: await authService.getAuthHeaders(true), // Include auth + CSRF token
         body: JSON.stringify({
           mode: generationMode,
           existingGrid: generationMode === 'fill' ? formData.grid : null,
@@ -379,9 +401,13 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       console.error('[Generator] Error:', error);
 
       if (error.name === 'AbortError') {
-        alert('Generation timed out after 60 seconds. This might indicate a server issue. Please check the server console for errors.');
+        alert(
+          'Generation timed out after 60 seconds. This might indicate a server issue. Please check the server console for errors.'
+        );
       } else {
-        alert(`Generation failed: ${error.message}\n\nPlease check the server console for more details.`);
+        alert(
+          `Generation failed: ${error.message}\n\nPlease check the server console for more details.`
+        );
       }
     } finally {
       setIsGenerating(false);
@@ -507,7 +533,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       if (e.key === 'Backspace') {
         e.preventDefault();
         handleBackspaceInGrid();
-      } else if (e.key === 'ArrowUp' || e.key === 'ArrowDown' || e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      } else if (
+        e.key === 'ArrowUp' ||
+        e.key === 'ArrowDown' ||
+        e.key === 'ArrowLeft' ||
+        e.key === 'ArrowRight'
+      ) {
         e.preventDefault();
         handleArrowKey(e.key);
       } else if (e.key === ' ') {
@@ -536,7 +567,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             disabled={loading || !wordsLoaded || isGenerating}
             className="px-3 py-1.5 text-xs font-bold bg-accent-blue text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            title={generationMode === 'fill' ? 'Fill current pattern with valid words' : 'Generate entire puzzle from scratch'}
+            title={
+              generationMode === 'fill'
+                ? 'Fill current pattern with valid words'
+                : 'Generate entire puzzle from scratch'
+            }
           >
             {isGenerating ? 'Generating...' : generationMode === 'fill' ? 'Autofill' : 'Generate'}
           </button>
@@ -559,9 +594,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
         {/* Generation Mode Toggle */}
         <div className="mb-4">
-          <label className="block text-sm font-bold text-text-primary mb-3">
-            Generation Mode
-          </label>
+          <label className="block text-sm font-bold text-text-primary mb-3">Generation Mode</label>
           <div className="flex gap-2">
             <button
               type="button"
@@ -588,7 +621,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   ? 'bg-accent-yellow text-gray-900 border-black'
                   : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
-              style={generationMode === 'scratch' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
+              style={
+                generationMode === 'scratch' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
+              }
             >
               <div className="text-left">
                 <div className="font-bold">Generate from Scratch</div>
@@ -616,7 +651,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   ? 'bg-green-400 text-gray-900 border-black'
                   : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
-              style={generationDifficulty === 'easy' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
+              style={
+                generationDifficulty === 'easy' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
+              }
             >
               <div>Easy</div>
               <div className="text-[10px] opacity-70">Common words</div>
@@ -630,7 +667,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   ? 'bg-yellow-400 text-gray-900 border-black'
                   : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
-              style={generationDifficulty === 'medium' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
+              style={
+                generationDifficulty === 'medium'
+                  ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }
+                  : {}
+              }
             >
               <div>Medium</div>
               <div className="text-[10px] opacity-70">Balanced</div>
@@ -644,7 +685,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   ? 'bg-orange-400 text-gray-900 border-black'
                   : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
-              style={generationDifficulty === 'hard' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
+              style={
+                generationDifficulty === 'hard' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
+              }
             >
               <div>Hard</div>
               <div className="text-[10px] opacity-70">Uncommon</div>
@@ -658,7 +701,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   ? 'bg-red-400 text-gray-900 border-black'
                   : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
-              style={generationDifficulty === 'expert' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
+              style={
+                generationDifficulty === 'expert'
+                  ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }
+                  : {}
+              }
             >
               <div>Expert</div>
               <div className="text-[10px] opacity-70">All words</div>
@@ -682,44 +729,62 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-2">
               <div className="p-2 bg-blue-50 dark:bg-gray-700 rounded">
                 <div className="font-bold text-gray-600 dark:text-gray-400">Time</div>
-                <div className="text-lg font-black text-blue-600">{generationStats.elapsedTime}ms</div>
+                <div className="text-lg font-black text-blue-600">
+                  {generationStats.elapsedTime}ms
+                </div>
               </div>
               <div className="p-2 bg-purple-50 dark:bg-gray-700 rounded">
                 <div className="font-bold text-gray-600 dark:text-gray-400">Attempts</div>
-                <div className="text-lg font-black text-purple-600">{generationStats.totalAttempts}</div>
+                <div className="text-lg font-black text-purple-600">
+                  {generationStats.totalAttempts}
+                </div>
               </div>
               <div className="p-2 bg-orange-50 dark:bg-gray-700 rounded">
                 <div className="font-bold text-gray-600 dark:text-gray-400">Backtracks</div>
-                <div className="text-lg font-black text-orange-600">{generationStats.backtrackCount}</div>
+                <div className="text-lg font-black text-orange-600">
+                  {generationStats.backtrackCount}
+                </div>
               </div>
               <div className="p-2 bg-green-50 dark:bg-gray-700 rounded">
                 <div className="font-bold text-gray-600 dark:text-gray-400">Cache Hit</div>
-                <div className="text-lg font-black text-green-600">{generationStats.cacheHitRate?.toFixed(1)}%</div>
+                <div className="text-lg font-black text-green-600">
+                  {generationStats.cacheHitRate?.toFixed(1)}%
+                </div>
               </div>
             </div>
 
             {/* Quality Metrics */}
             {generationStats.qualityScore !== undefined && (
               <div className="mt-2 p-2 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded border border-green-300">
-                <h5 className="text-xs font-bold mb-1 text-green-700 dark:text-green-400">✨ Puzzle Quality</h5>
+                <h5 className="text-xs font-bold mb-1 text-green-700 dark:text-green-400">
+                  ✨ Puzzle Quality
+                </h5>
                 <div className="grid grid-cols-4 gap-2 text-xs">
                   <div>
                     <div className="font-bold text-gray-600 dark:text-gray-400">Score</div>
-                    <div className="text-base font-black text-green-600">{generationStats.qualityScore}</div>
+                    <div className="text-base font-black text-green-600">
+                      {generationStats.qualityScore}
+                    </div>
                   </div>
                   <div>
                     <div className="font-bold text-gray-600 dark:text-gray-400">2-letter</div>
-                    <div className={`text-base font-black ${generationStats.twoLetterWords === 0 ? 'text-green-600' : 'text-orange-600'}`}>
+                    <div
+                      className={`text-base font-black ${generationStats.twoLetterWords === 0 ? 'text-green-600' : 'text-orange-600'}`}
+                    >
                       {generationStats.twoLetterWords}
                     </div>
                   </div>
                   <div>
                     <div className="font-bold text-gray-600 dark:text-gray-400">3-letter</div>
-                    <div className="text-base font-black text-blue-600">{generationStats.threeLetterWords}</div>
+                    <div className="text-base font-black text-blue-600">
+                      {generationStats.threeLetterWords}
+                    </div>
                   </div>
                   <div>
                     <div className="font-bold text-gray-600 dark:text-gray-400">4+ letter</div>
-                    <div className="text-base font-black text-purple-600">{generationStats.fourPlusWords}</div>
+                    <div className="text-base font-black text-purple-600">
+                      {generationStats.fourPlusWords}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -730,10 +795,22 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
                 <h5 className="text-xs font-bold mb-2">🐛 Debug Information</h5>
                 <div className="text-xs font-mono space-y-1">
-                  <div><span className="font-bold">Pattern Searches:</span> {generationStats.patternSearches || 'N/A'}</div>
-                  <div><span className="font-bold">Flexibility Calculations:</span> {generationStats.flexibilityCalculations || 'N/A'}</div>
-                  <div><span className="font-bold">Slots Filled:</span> {generationStats.slotsFilled || 'N/A'}</div>
-                  <div><span className="font-bold">Cache Size:</span> {generationStats.cacheSize || 'N/A'} entries</div>
+                  <div>
+                    <span className="font-bold">Pattern Searches:</span>{' '}
+                    {generationStats.patternSearches || 'N/A'}
+                  </div>
+                  <div>
+                    <span className="font-bold">Flexibility Calculations:</span>{' '}
+                    {generationStats.flexibilityCalculations || 'N/A'}
+                  </div>
+                  <div>
+                    <span className="font-bold">Slots Filled:</span>{' '}
+                    {generationStats.slotsFilled || 'N/A'}
+                  </div>
+                  <div>
+                    <span className="font-bold">Cache Size:</span>{' '}
+                    {generationStats.cacheSize || 'N/A'} entries
+                  </div>
                   <div className="mt-2 pt-2 border-t border-gray-300 dark:border-gray-600">
                     <span className="font-bold">Algorithm:</span> Two-level heuristic (MCV + LCV)
                   </div>
@@ -945,8 +1022,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               </div>
             </div>
             <p className="text-xs text-text-secondary mt-2">
-              Tip: Type to fill letters and auto-advance. Type <strong>.</strong> (period) for black squares.
-              Use arrows to navigate, Space to toggle direction.
+              Tip: Type to fill letters and auto-advance. Type <strong>.</strong> (period) for black
+              squares. Use arrows to navigate, Space to toggle direction.
             </p>
             {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
           </div>
@@ -961,14 +1038,20 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               {!wordsLoaded ? (
                 <div>
                   <p className="text-xs text-text-secondary">Loading word lists...</p>
-                  <p className="text-xs text-text-secondary mt-1">Check browser console for details</p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Check browser console for details
+                  </p>
                 </div>
               ) : !selectedCell ? (
                 <p className="text-xs text-text-secondary">Select a cell to see suggestions</p>
               ) : wordSuggestions.length === 0 ? (
                 <div>
-                  <p className="text-xs text-text-secondary">No valid words found for this pattern</p>
-                  <p className="text-xs text-text-secondary mt-1">Try filling more letters or check console</p>
+                  <p className="text-xs text-text-secondary">
+                    No valid words found for this pattern
+                  </p>
+                  <p className="text-xs text-text-secondary mt-1">
+                    Try filling more letters or check console
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-1">

@@ -2,7 +2,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import authService from '@/services/auth.service';
-import { useTheme } from '@/contexts/ThemeContext';
 import storageService from '@/core/storage/storageService';
 
 export default function AdminLogin() {
@@ -11,7 +10,6 @@ export default function AdminLogin() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { toggleTheme, isDark, mounted } = useTheme();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -39,23 +37,9 @@ export default function AdminLogin() {
     }
   };
 
-  if (!mounted) {
-    return null;
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-bg-primary p-4">
       <div className="relative">
-        {/* Theme toggle button */}
-        <button
-          onClick={toggleTheme}
-          className="absolute -top-16 right-0 p-3 rounded-lg border-[3px] border-border-main bg-bg-card hover:bg-accent-yellow transition-colors"
-          style={{ boxShadow: 'var(--shadow-button)' }}
-          title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-        >
-          {isDark ? '☀️' : '🌙'}
-        </button>
-
         <div
           className="bg-bg-surface p-8 rounded-2xl border-[3px] border-border-main w-full max-w-md"
           style={{ boxShadow: 'var(--shadow-card)' }}
@@ -112,7 +96,7 @@ export default function AdminLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-accent-blue via-accent-green to-accent-yellow text-text-primary border-[3px] border-border-main font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:translate-y-[-2px] transition-transform"
+              className="w-full px-6 py-3 bg-accent-blue text-white border-[3px] border-border-main font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed hover:translate-y-[-2px] transition-transform"
               style={{ boxShadow: 'var(--shadow-button)' }}
             >
               {loading ? 'Signing in...' : 'Sign In'}
