@@ -1,9 +1,11 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import { getApiUrl } from '@/lib/api-helper';
+import storageService from '@/core/storage/storageService';
 
 class AuthService {
   constructor() {
     this.csrfToken = null;
+    this.cachedToken = null;
     // Try to restore CSRF token from sessionStorage on init
     if (typeof window !== 'undefined') {
       const storedToken = sessionStorage.getItem('csrfToken');
@@ -28,6 +30,7 @@ class AuthService {
     }
     return this.csrfToken;
   }
+
   async login(username, password) {
     try {
       const response = await fetch(getApiUrl(API_ENDPOINTS.ADMIN_AUTH), {
@@ -45,6 +48,8 @@ class AuthService {
         if (data.csrfToken) {
           this.setCSRFToken(data.csrfToken);
         }
+        // Cache the token in memory
+        this.cachedToken = data.token;
         return {
           success: true,
           token: data.token,
@@ -78,6 +83,8 @@ class AuthService {
         } else {
           console.warn('No CSRF token received from token verification');
         }
+        // Cache the verified token
+        this.cachedToken = token;
         return data.valid === true;
       }
 
@@ -88,32 +95,41 @@ class AuthService {
     }
   }
 
-  logout() {
-    localStorage.removeItem('adminToken');
+  async logout() {
+    await storageService.remove('adminToken');
+    this.cachedToken = null;
     this.csrfToken = null;
     if (typeof window !== 'undefined') {
       sessionStorage.removeItem('csrfToken');
     }
   }
 
-  getToken() {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('adminToken');
+  async getToken() {
+    if (typeof window === 'undefined') {
+      return null;
     }
-    return null;
+    // Return cached token if available
+    if (this.cachedToken) {
+      return this.cachedToken;
+    }
+    // Otherwise fetch from storage
+    const token = await storageService.get('adminToken');
+    this.cachedToken = token;
+    return token;
   }
 
-  isAuthenticated() {
-    return this.getToken() !== null;
+  async isAuthenticated() {
+    const token = await this.getToken();
+    return token !== null;
   }
 
   // Helper method to get headers with CSRF token for write operations
-  getAuthHeaders(includeCSRF = false) {
+  async getAuthHeaders(includeCSRF = false) {
     const headers = {
       'Content-Type': 'application/json',
     };
 
-    const token = this.getToken();
+    const token = await this.getToken();
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }

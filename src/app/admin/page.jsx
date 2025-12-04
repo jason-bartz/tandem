@@ -52,7 +52,7 @@ export default function AdminDashboard() {
     setMiniLoading(true);
     try {
       const response = await fetch('/api/admin/mini/puzzles?limit=365', {
-        headers: authService.getAuthHeaders(),
+        headers: await authService.getAuthHeaders(),
       });
       const data = await response.json();
       if (response.ok) {
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 
       const response = await fetch(url, {
         method,
-        headers: authService.getAuthHeaders(true),
+        headers: await authService.getAuthHeaders(true),
         body: JSON.stringify(body),
       });
 
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(`/api/admin/mini/puzzles?id=${puzzleId}`, {
         method: 'DELETE',
-        headers: authService.getAuthHeaders(true),
+        headers: await authService.getAuthHeaders(true),
       });
 
       if (response.ok) {
@@ -138,7 +138,7 @@ export default function AdminDashboard() {
     setReelLoading(true);
     try {
       const response = await fetch('/api/admin/reel-connections/puzzles?limit=365', {
-        headers: authService.getAuthHeaders(),
+        headers: await authService.getAuthHeaders(),
       });
       const data = await response.json();
       if (response.ok) {
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
 
       const response = await fetch(url, {
         method,
-        headers: authService.getAuthHeaders(true),
+        headers: await authService.getAuthHeaders(true),
         body: JSON.stringify(body),
       });
 
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
     try {
       const response = await fetch(`/api/admin/reel-connections/puzzles?id=${puzzleId}`, {
         method: 'DELETE',
-        headers: authService.getAuthHeaders(true),
+        headers: await authService.getAuthHeaders(true),
       });
 
       if (response.ok) {

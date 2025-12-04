@@ -57,7 +57,7 @@ function MovieSearchInput({ value, onChange, groupColor }) {
         const response = await fetch(
           `/api/admin/reel-connections/search?q=${encodeURIComponent(query)}`,
           {
-            headers: authService.getAuthHeaders(),
+            headers: await authService.getAuthHeaders(),
           }
         );
         const data = await response.json();
@@ -250,7 +250,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
     try {
       const response = await fetch('/api/admin/reel-connections/generate', {
         method: 'POST',
-        headers: authService.getAuthHeaders(true),
+        headers: await authService.getAuthHeaders(true),
         body: JSON.stringify({ connection, difficulty }),
       });
 
