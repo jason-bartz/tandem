@@ -243,7 +243,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
 
   return (
     <div
-      className="bg-bg-surface rounded-lg border-[3px] border-border-main p-3 sm:p-6 h-full w-full overflow-x-auto"
+      className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-6 h-full w-full overflow-x-auto"
       style={{ boxShadow: 'var(--shadow-card)' }}
     >
       {initialPuzzle && (
@@ -267,7 +267,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
               style={{ boxShadow: 'var(--shadow-small)' }}
               required
             />
@@ -283,7 +283,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 value={theme}
                 onChange={(e) => setTheme(e.target.value)}
                 placeholder="e.g., Things found in a kitchen"
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 style={{ boxShadow: 'var(--shadow-small)' }}
                 required
               />
@@ -291,7 +291,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 type="button"
                 onClick={handleGenerateWithAI}
                 disabled={generating || loading}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ boxShadow: 'var(--shadow-button)' }}
                 title="Generate puzzle with AI"
               >
@@ -317,7 +317,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                   </span>
                 ) : (
                   <span className="flex items-center gap-1 justify-center">
-                    <span className="hidden sm:inline">✨</span>
                     <span>AI</span>
                     <span className="hidden sm:inline">Generate</span>
                   </span>
@@ -335,7 +334,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
             {puzzles.map((puzzle, index) => (
               <div
                 key={index}
-                className="p-3 sm:p-4 bg-bg-card border-[3px] border-border-main rounded-lg"
+                className="p-3 sm:p-4 bg-bg-card border-[3px] border-black dark:border-white rounded-lg"
                 style={{ boxShadow: 'var(--shadow-small)' }}
               >
                 <div className="flex items-center gap-2 mb-3">
@@ -350,7 +349,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       value={puzzle.emoji}
                       onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
                       placeholder="Emoji pair (e.g., 🍳🔥)"
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green"
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green"
                       style={{ boxShadow: 'var(--shadow-small)' }}
                       required
                     />
@@ -360,7 +359,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
                       placeholder="ANSWER (E.G., STOVE)"
                       maxLength={30}
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green"
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green"
                       style={{ boxShadow: 'var(--shadow-small)' }}
                       required
                     />
@@ -399,7 +398,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 <select
                   value={difficultyRating}
                   onChange={(e) => setDifficultyRating(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
                   style={{ boxShadow: 'var(--shadow-small)' }}
                 >
                   <option value="">Not assessed</option>
@@ -415,7 +414,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                   type="button"
                   onClick={handleAssessDifficulty}
                   disabled={assessingDifficulty || generating || loading}
-                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-orange text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-orange text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                   style={{ boxShadow: 'var(--shadow-button)' }}
                   title="Assess difficulty using AI"
                 >
@@ -491,7 +490,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-border-main bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
+            className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
             style={{ boxShadow: 'var(--shadow-button)' }}
           >
             ← Back to Calendar
@@ -511,7 +510,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 setDifficultyFactors(null);
                 setMessage('');
               }}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-border-main bg-accent-orange text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white bg-accent-orange text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
               style={{ boxShadow: 'var(--shadow-button)' }}
             >
               Clear
@@ -519,7 +518,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
             <button
               type="submit"
               disabled={loading || !validateForm()}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-border-main rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
               style={{ boxShadow: 'var(--shadow-button)' }}
             >
               {loading ? 'Saving...' : 'Save Puzzle'}
