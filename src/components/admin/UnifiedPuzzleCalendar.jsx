@@ -376,16 +376,28 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-text-secondary">
         <div className="flex items-center gap-1.5">
-          <Image src={GAMES.tandem.icon} alt="" width={16} height={16} />
-          <span className="hidden sm:inline">Tandem</span>
+          {/* Mobile: dot, Desktop: icon */}
+          <span className="sm:hidden w-2 h-2 rounded-full bg-accent-yellow"></span>
+          <Image
+            src={GAMES.tandem.icon}
+            alt=""
+            width={16}
+            height={16}
+            className="hidden sm:block"
+          />
+          <span>Tandem</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Image src={GAMES.mini.icon} alt="" width={16} height={16} />
-          <span className="hidden sm:inline">Mini</span>
+          {/* Mobile: dot, Desktop: icon */}
+          <span className="sm:hidden w-2 h-2 rounded-full bg-accent-blue"></span>
+          <Image src={GAMES.mini.icon} alt="" width={16} height={16} className="hidden sm:block" />
+          <span>Mini</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <Image src={GAMES.reel.icon} alt="" width={16} height={16} />
-          <span className="hidden sm:inline">Reel</span>
+          {/* Mobile: dot, Desktop: icon */}
+          <span className="sm:hidden w-2 h-2 rounded-full bg-accent-red"></span>
+          <Image src={GAMES.reel.icon} alt="" width={16} height={16} className="hidden sm:block" />
+          <span>Reel</span>
         </div>
         <span className="text-text-muted">|</span>
         <div className="flex items-center gap-1">
@@ -436,41 +448,67 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                   ${dayInfo.holiday && !hasPuzzles ? 'bg-accent-orange/10' : ''}
                 `}
               >
-                {/* Day number */}
-                <span
-                  className={`text-xs sm:text-sm font-bold ${
-                    dayInfo.isToday ? 'text-accent-yellow' : 'text-text-primary'
-                  }`}
-                >
-                  {dayInfo.day}
-                </span>
+                {/* Day number with mobile holiday emoji */}
+                <div className="flex items-center gap-1">
+                  <span
+                    className={`text-xs sm:text-sm font-bold ${
+                      dayInfo.isToday ? 'text-accent-yellow' : 'text-text-primary'
+                    }`}
+                  >
+                    {dayInfo.day}
+                  </span>
+                  {/* Holiday emoji inline on mobile */}
+                  {dayInfo.holiday && (
+                    <span className="sm:hidden text-xs">{dayInfo.holidayEmoji}</span>
+                  )}
+                </div>
 
-                {/* Holiday indicator */}
+                {/* Holiday indicator - desktop only */}
                 {dayInfo.holiday && (
-                  <div className="mt-0.5 text-left">
-                    <span className="text-sm sm:text-base">{dayInfo.holidayEmoji}</span>
-                    <p className="hidden lg:block text-[8px] text-text-secondary leading-tight truncate max-w-full">
+                  <div className="hidden sm:block mt-0.5 text-left">
+                    <span className="text-base">{dayInfo.holidayEmoji}</span>
+                    <p className="hidden lg:block text-[10px] text-text-secondary leading-tight truncate max-w-full">
                       {dayInfo.holiday}
                     </p>
                   </div>
                 )}
 
-                {/* Game icons */}
+                {/* Game indicators - dots on mobile, icons on desktop */}
                 <div className="flex items-center justify-start gap-0.5 sm:gap-1 mt-auto">
                   {dayInfo.hasTandem && (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 relative">
-                      <Image src={GAMES.tandem.icon} alt="Tandem" fill className="object-contain" />
-                    </div>
+                    <>
+                      {/* Mobile: colored dot */}
+                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-yellow"></span>
+                      {/* Desktop: icon */}
+                      <div className="hidden sm:block w-5 h-5 relative">
+                        <Image
+                          src={GAMES.tandem.icon}
+                          alt="Tandem"
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                    </>
                   )}
                   {dayInfo.hasMini && (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 relative">
-                      <Image src={GAMES.mini.icon} alt="Mini" fill className="object-contain" />
-                    </div>
+                    <>
+                      {/* Mobile: colored dot */}
+                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-blue"></span>
+                      {/* Desktop: icon */}
+                      <div className="hidden sm:block w-5 h-5 relative">
+                        <Image src={GAMES.mini.icon} alt="Mini" fill className="object-contain" />
+                      </div>
+                    </>
                   )}
                   {dayInfo.hasReel && (
-                    <div className="w-4 h-4 sm:w-5 sm:h-5 relative">
-                      <Image src={GAMES.reel.icon} alt="Reel" fill className="object-contain" />
-                    </div>
+                    <>
+                      {/* Mobile: colored dot */}
+                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-red"></span>
+                      {/* Desktop: icon */}
+                      <div className="hidden sm:block w-5 h-5 relative">
+                        <Image src={GAMES.reel.icon} alt="Reel" fill className="object-contain" />
+                      </div>
+                    </>
                   )}
                 </div>
               </button>
