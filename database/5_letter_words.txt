@@ -1,3 +1,11 @@
+DISNY
+MARIO
+NETFX
+PIXAR
+SELFI
+SONIC
+TIKOK
+ZELDA
 aback
 abase
 abate
@@ -2312,4 +2320,4 @@ young
 youth
 zebra
 zesty
-zonal
+zonalEMOJI
