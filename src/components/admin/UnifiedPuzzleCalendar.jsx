@@ -117,9 +117,9 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
       // Merge all data into unified structure keyed by date
       const merged = {};
 
-      // Add Tandem puzzles (already keyed by date)
-      if (tandemData && typeof tandemData === 'object') {
-        Object.entries(tandemData).forEach(([date, puzzle]) => {
+      // Add Tandem puzzles (keyed by date inside puzzles property)
+      if (tandemData?.puzzles && typeof tandemData.puzzles === 'object') {
+        Object.entries(tandemData.puzzles).forEach(([date, puzzle]) => {
           if (!merged[date]) merged[date] = {};
           merged[date].tandem = puzzle;
         });
