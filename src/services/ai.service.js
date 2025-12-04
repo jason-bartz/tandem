@@ -1738,7 +1738,7 @@ Return ONLY the JSON. No additional explanation.`;
   buildCrosswordCluesPrompt(words) {
     const wordsList = words.map((w, i) => `${i + 1}. ${w.word} (${w.direction})`).join('\n');
 
-    return `You are generating crossword-style clues for a Daily Mini crossword puzzle.
+    return `You are generating crossword-style clues for a Daily Mini crossword puzzle (similar to the NYT Mini).
 
 WORDS TO CLUE:
 ${wordsList}
@@ -1746,11 +1746,18 @@ ${wordsList}
 CLUE REQUIREMENTS:
 Each clue MUST be concise, crossword-style (3-10 words ideal, max 80 characters):
 - Focus on the WORD ITSELF - provide a definition, synonym, or description
-- Use NYT crossword style: clever wordplay, puns, cultural references when appropriate
-- Vary difficulty - mix straightforward definitions with clever misdirection
-- Make clues engaging and fun to solve
+- Use NYT Mini crossword style: accessible, clever, and fun for casual solvers
+- Target vocabulary at an everyday reading level - clues should be understandable by general audiences
+- Avoid obscure references, technical jargon, or niche cultural knowledge
+- Make clues engaging and satisfying to solve
 - DO NOT use the answer word in the clue
 - DO NOT reference the word's position in the grid
+
+VOCABULARY GUIDELINES (IMPORTANT):
+- Use simple, everyday language in your clues
+- Prefer common cultural references (popular movies, well-known places, everyday objects)
+- Avoid: academic terms, foreign phrases, archaic language, specialized jargon
+- The NYT Mini is designed to be quick and accessible - clues should match that spirit
 
 CLUE STYLE EXAMPLES:
 - CARDS → "Deck components"
@@ -1760,6 +1767,8 @@ CLUE STYLE EXAMPLES:
 - BREAD → "Dough after baking"
 - RIVER → "Amazon or Nile"
 - MUSIC → "Universal language"
+- PHONE → "Pocket device for calls and texts"
+- BEACH → "Sandy vacation spot"
 
 RESPONSE FORMAT (JSON array only, no explanation):
 ["clue for word 1", "clue for word 2", "clue for word 3", ...]
