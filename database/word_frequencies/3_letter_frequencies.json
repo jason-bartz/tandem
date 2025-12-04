@@ -649,7 +649,1359 @@
   },
   {
     "word": "RED",
-    "frequency": 23
+    "frequency": 30
+  },
+  {
+    "word": "LED",
+    "frequency": 30
+  },
+  {
+    "word": "PER",
+    "frequency": 30
+  },
+  {
+    "word": "MED",
+    "frequency": 30
+  },
+  {
+    "word": "WED",
+    "frequency": 30
+  },
+  {
+    "word": "FED",
+    "frequency": 30
+  },
+  {
+    "word": "TEN",
+    "frequency": 30
+  },
+  {
+    "word": "BED",
+    "frequency": 30
+  },
+  {
+    "word": "REC",
+    "frequency": 30
+  },
+  {
+    "word": "REF",
+    "frequency": 30
+  },
+  {
+    "word": "REP",
+    "frequency": 30
+  },
+  {
+    "word": "HEN",
+    "frequency": 30
+  },
+  {
+    "word": "INN",
+    "frequency": 30
+  },
+  {
+    "word": "REV",
+    "frequency": 30
+  },
+  {
+    "word": "ANT",
+    "frequency": 30
+  },
+  {
+    "word": "END",
+    "frequency": 30
+  },
+  {
+    "word": "HAT",
+    "frequency": 30
+  },
+  {
+    "word": "TON",
+    "frequency": 30
+  },
+  {
+    "word": "TIN",
+    "frequency": 30
+  },
+  {
+    "word": "INK",
+    "frequency": 30
+  },
+  {
+    "word": "TAT",
+    "frequency": 30
+  },
+  {
+    "word": "LET",
+    "frequency": 30
+  },
+  {
+    "word": "TOT",
+    "frequency": 30
+  },
+  {
+    "word": "TAN",
+    "frequency": 30
+  },
+  {
+    "word": "DEN",
+    "frequency": 30
+  },
+  {
+    "word": "SAT",
+    "frequency": 30
+  },
+  {
+    "word": "RAT",
+    "frequency": 30
+  },
+  {
+    "word": "TAR",
+    "frequency": 30
+  },
+  {
+    "word": "NIT",
+    "frequency": 30
+  },
+  {
+    "word": "SIT",
+    "frequency": 30
+  },
+  {
+    "word": "HIT",
+    "frequency": 30
+  },
+  {
+    "word": "GEN",
+    "frequency": 30
+  },
+  {
+    "word": "YEN",
+    "frequency": 30
+  },
+  {
+    "word": "SEW",
+    "frequency": 30
+  },
+  {
+    "word": "PEN",
+    "frequency": 30
+  },
+  {
+    "word": "HEM",
+    "frequency": 30
+  },
+  {
+    "word": "YES",
+    "frequency": 30
+  },
+  {
+    "word": "RAN",
+    "frequency": 30
+  },
+  {
+    "word": "SON",
+    "frequency": 30
+  },
+  {
+    "word": "NOR",
+    "frequency": 30
+  },
+  {
+    "word": "KEN",
+    "frequency": 30
+  },
+  {
+    "word": "LIT",
+    "frequency": 30
+  },
+  {
+    "word": "SIN",
+    "frequency": 30
+  },
+  {
+    "word": "MAT",
+    "frequency": 30
+  },
+  {
+    "word": "SIS",
+    "frequency": 30
+  },
+  {
+    "word": "FAT",
+    "frequency": 30
+  },
+  {
+    "word": "PAT",
+    "frequency": 30
+  },
+  {
+    "word": "TOM",
+    "frequency": 30
+  },
+  {
+    "word": "TOW",
+    "frequency": 30
+  },
+  {
+    "word": "TIC",
+    "frequency": 30
+  },
+  {
+    "word": "OFT",
+    "frequency": 30
+  },
+  {
+    "word": "LEG",
+    "frequency": 30
+  },
+  {
+    "word": "TOG",
+    "frequency": 30
+  },
+  {
+    "word": "TOY",
+    "frequency": 30
+  },
+  {
+    "word": "HAD",
+    "frequency": 30
+  },
+  {
+    "word": "NET",
+    "frequency": 30
+  },
+  {
+    "word": "TOP",
+    "frequency": 30
+  },
+  {
+    "word": "WIT",
+    "frequency": 30
+  },
+  {
+    "word": "FIT",
+    "frequency": 30
+  },
+  {
+    "word": "VAT",
+    "frequency": 30
+  },
+  {
+    "word": "PIT",
+    "frequency": 30
+  },
+  {
+    "word": "TIP",
+    "frequency": 30
+  },
+  {
+    "word": "MAN",
+    "frequency": 30
+  },
+  {
+    "word": "FAN",
+    "frequency": 30
+  },
+  {
+    "word": "PAN",
+    "frequency": 30
+  },
+  {
+    "word": "KIT",
+    "frequency": 30
+  },
+  {
+    "word": "HAM",
+    "frequency": 30
+  },
+  {
+    "word": "WON",
+    "frequency": 30
+  },
+  {
+    "word": "MAR",
+    "frequency": 30
+  },
+  {
+    "word": "GAS",
+    "frequency": 30
+  },
+  {
+    "word": "WAR",
+    "frequency": 30
+  },
+  {
+    "word": "FAR",
+    "frequency": 30
+  },
+  {
+    "word": "HAY",
+    "frequency": 30
+  },
+  {
+    "word": "PAR",
+    "frequency": 30
+  },
+  {
+    "word": "WIN",
+    "frequency": 30
+  },
+  {
+    "word": "FIN",
+    "frequency": 30
+  },
+  {
+    "word": "VAN",
+    "frequency": 30
+  },
+  {
+    "word": "PIN",
+    "frequency": 30
+  },
+  {
+    "word": "ORB",
+    "frequency": 30
+  },
+  {
+    "word": "KIN",
+    "frequency": 30
+  },
+  {
+    "word": "GAL",
+    "frequency": 30
+  },
+  {
+    "word": "MET",
+    "frequency": 30
+  },
+  {
+    "word": "PAL",
+    "frequency": 30
+  },
+  {
+    "word": "WET",
+    "frequency": 30
+  },
+  {
+    "word": "YET",
+    "frequency": 30
+  },
+  {
+    "word": "PET",
+    "frequency": 30
+  },
+  {
+    "word": "BET",
+    "frequency": 30
+  },
+  {
+    "word": "SOT",
+    "frequency": 30
+  },
+  {
+    "word": "VET",
+    "frequency": 30
+  },
+  {
+    "word": "HOT",
+    "frequency": 30
+  },
+  {
+    "word": "ROT",
+    "frequency": 30
+  },
+  {
+    "word": "OFF",
+    "frequency": 30
+  },
+  {
+    "word": "TAD",
+    "frequency": 30
+  },
+  {
+    "word": "DOT",
+    "frequency": 30
+  },
+  {
+    "word": "RYE",
+    "frequency": 30
+  },
+  {
+    "word": "LOT",
+    "frequency": 30
+  },
+  {
+    "word": "COT",
+    "frequency": 30
+  },
+  {
+    "word": "TAG",
+    "frequency": 30
+  },
+  {
+    "word": "TAP",
+    "frequency": 30
+  },
+  {
+    "word": "ELM",
+    "frequency": 30
+  },
+  {
+    "word": "ELF",
+    "frequency": 30
+  },
+  {
+    "word": "DYE",
+    "frequency": 30
+  },
+  {
+    "word": "GEL",
+    "frequency": 30
+  },
+  {
+    "word": "SAD",
+    "frequency": 30
+  },
+  {
+    "word": "GOT",
+    "frequency": 30
+  },
+  {
+    "word": "NUT",
+    "frequency": 30
+  },
+  {
+    "word": "TAB",
+    "frequency": 30
+  },
+  {
+    "word": "NOD",
+    "frequency": 30
+  },
+  {
+    "word": "OPT",
+    "frequency": 30
+  },
+  {
+    "word": "POT",
+    "frequency": 30
+  },
+  {
+    "word": "SOD",
+    "frequency": 30
+  },
+  {
+    "word": "HUT",
+    "frequency": 30
+  },
+  {
+    "word": "HOD",
+    "frequency": 30
+  },
+  {
+    "word": "RUT",
+    "frequency": 30
+  },
+  {
+    "word": "NIL",
+    "frequency": 30
+  },
+  {
+    "word": "ROD",
+    "frequency": 30
+  },
+  {
+    "word": "ELK",
+    "frequency": 30
+  },
+  {
+    "word": "HID",
+    "frequency": 30
+  },
+  {
+    "word": "SAC",
+    "frequency": 30
+  },
+  {
+    "word": "RID",
+    "frequency": 30
+  },
+  {
+    "word": "GEM",
+    "frequency": 30
+  },
+  {
+    "word": "YEW",
+    "frequency": 30
+  },
+  {
+    "word": "PEW",
+    "frequency": 30
+  },
+  {
+    "word": "NAG",
+    "frequency": 30
+  },
+  {
+    "word": "NAY",
+    "frequency": 30
+  },
+  {
+    "word": "NAP",
+    "frequency": 30
+  },
+  {
+    "word": "EGG",
+    "frequency": 30
+  },
+  {
+    "word": "DAD",
+    "frequency": 30
+  },
+  {
+    "word": "PEG",
+    "frequency": 30
+  },
+  {
+    "word": "RAM",
+    "frequency": 30
+  },
+  {
+    "word": "PEP",
+    "frequency": 30
+  },
+  {
+    "word": "RAW",
+    "frequency": 30
+  },
+  {
+    "word": "SAG",
+    "frequency": 30
+  },
+  {
+    "word": "LAD",
+    "frequency": 30
+  },
+  {
+    "word": "SAP",
+    "frequency": 30
+  },
+  {
+    "word": "SPA",
+    "frequency": 30
+  },
+  {
+    "word": "NUN",
+    "frequency": 30
+  },
+  {
+    "word": "NAB",
+    "frequency": 30
+  },
+  {
+    "word": "SOW",
+    "frequency": 30
+  },
+  {
+    "word": "RAG",
+    "frequency": 30
+  },
+  {
+    "word": "RAY",
+    "frequency": 30
+  },
+  {
+    "word": "RAP",
+    "frequency": 30
+  },
+  {
+    "word": "ODD",
+    "frequency": 30
+  },
+  {
+    "word": "OHM",
+    "frequency": 30
+  },
+  {
+    "word": "ROW",
+    "frequency": 30
+  },
+  {
+    "word": "SUN",
+    "frequency": 30
+  },
+  {
+    "word": "SOY",
+    "frequency": 30
+  },
+  {
+    "word": "SOP",
+    "frequency": 30
+  },
+  {
+    "word": "NIP",
+    "frequency": 30
+  },
+  {
+    "word": "HOG",
+    "frequency": 30
+  },
+  {
+    "word": "NOB",
+    "frequency": 30
+  },
+  {
+    "word": "HOP",
+    "frequency": 30
+  },
+  {
+    "word": "RUN",
+    "frequency": 30
+  },
+  {
+    "word": "URN",
+    "frequency": 30
+  },
+  {
+    "word": "KEG",
+    "frequency": 30
+  },
+  {
+    "word": "KEY",
+    "frequency": 30
+  },
+  {
+    "word": "RIM",
+    "frequency": 30
+  },
+  {
+    "word": "LID",
+    "frequency": 30
+  },
+  {
+    "word": "SIP",
+    "frequency": 30
+  },
+  {
+    "word": "SOB",
+    "frequency": 30
+  },
+  {
+    "word": "ILL",
+    "frequency": 30
+  },
+  {
+    "word": "HIP",
+    "frequency": 30
+  },
+  {
+    "word": "LAC",
+    "frequency": 30
+  },
+  {
+    "word": "RIG",
+    "frequency": 30
+  },
+  {
+    "word": "HOB",
+    "frequency": 30
+  },
+  {
+    "word": "RIP",
+    "frequency": 30
+  },
+  {
+    "word": "DAM",
+    "frequency": 30
+  },
+  {
+    "word": "MAD",
+    "frequency": 30
+  },
+  {
+    "word": "ROB",
+    "frequency": 30
+  },
+  {
+    "word": "WAD",
+    "frequency": 30
+  },
+  {
+    "word": "FAD",
+    "frequency": 30
+  },
+  {
+    "word": "CUT",
+    "frequency": 30
+  },
+  {
+    "word": "LAW",
+    "frequency": 30
+  },
+  {
+    "word": "COD",
+    "frequency": 30
+  },
+  {
+    "word": "DOC",
+    "frequency": 30
+  },
+  {
+    "word": "PAD",
+    "frequency": 30
+  },
+  {
+    "word": "RIB",
+    "frequency": 30
+  },
+  {
+    "word": "LAG",
+    "frequency": 30
+  },
+  {
+    "word": "LAY",
+    "frequency": 30
+  },
+  {
+    "word": "MOD",
+    "frequency": 30
+  },
+  {
+    "word": "LAP",
+    "frequency": 30
+  },
+  {
+    "word": "SKI",
+    "frequency": 30
+  },
+  {
+    "word": "LOW",
+    "frequency": 30
+  },
+  {
+    "word": "OWL",
+    "frequency": 30
+  },
+  {
+    "word": "GUT",
+    "frequency": 30
+  },
+  {
+    "word": "TUG",
+    "frequency": 30
+  },
+  {
+    "word": "DOG",
+    "frequency": 30
+  },
+  {
+    "word": "GOD",
+    "frequency": 30
+  },
+  {
+    "word": "IRK",
+    "frequency": 30
+  },
+  {
+    "word": "DAB",
+    "frequency": 30
+  },
+  {
+    "word": "POD",
+    "frequency": 30
+  },
+  {
+    "word": "DIM",
+    "frequency": 30
+  },
+  {
+    "word": "LOG",
+    "frequency": 30
+  },
+  {
+    "word": "LAB",
+    "frequency": 30
+  },
+  {
+    "word": "DIP",
+    "frequency": 30
+  },
+  {
+    "word": "TUB",
+    "frequency": 30
+  },
+  {
+    "word": "MAW",
+    "frequency": 30
+  },
+  {
+    "word": "LIP",
+    "frequency": 30
+  },
+  {
+    "word": "COW",
+    "frequency": 30
+  },
+  {
+    "word": "WAG",
+    "frequency": 30
+  },
+  {
+    "word": "YAM",
+    "frequency": 30
+  },
+  {
+    "word": "MAP",
+    "frequency": 30
+  },
+  {
+    "word": "YAW",
+    "frequency": 30
+  },
+  {
+    "word": "PAW",
+    "frequency": 30
+  },
+  {
+    "word": "MOM",
+    "frequency": 30
+  },
+  {
+    "word": "COG",
+    "frequency": 30
+  },
+  {
+    "word": "MOW",
+    "frequency": 30
+  },
+  {
+    "word": "WOW",
+    "frequency": 30
+  },
+  {
+    "word": "COP",
+    "frequency": 30
+  },
+  {
+    "word": "GAG",
+    "frequency": 30
+  },
+  {
+    "word": "GAY",
+    "frequency": 30
+  },
+  {
+    "word": "GAP",
+    "frequency": 30
+  },
+  {
+    "word": "PAY",
+    "frequency": 30
+  },
+  {
+    "word": "YAP",
+    "frequency": 30
+  },
+  {
+    "word": "PAP",
+    "frequency": 30
+  },
+  {
+    "word": "KID",
+    "frequency": 30
+  },
+  {
+    "word": "MOP",
+    "frequency": 30
+  },
+  {
+    "word": "POW",
+    "frequency": 30
+  },
+  {
+    "word": "FOG",
+    "frequency": 30
+  },
+  {
+    "word": "FUN",
+    "frequency": 30
+  },
+  {
+    "word": "ICY",
+    "frequency": 30
+  },
+  {
+    "word": "FOP",
+    "frequency": 30
+  },
+  {
+    "word": "COB",
+    "frequency": 30
+  },
+  {
+    "word": "CUR",
+    "frequency": 30
+  },
+  {
+    "word": "GUN",
+    "frequency": 30
+  },
+  {
+    "word": "SUM",
+    "frequency": 30
+  },
+  {
+    "word": "GAB",
+    "frequency": 30
+  },
+  {
+    "word": "PUN",
+    "frequency": 30
+  },
+  {
+    "word": "POP",
+    "frequency": 30
+  },
+  {
+    "word": "WIG",
+    "frequency": 30
+  },
+  {
+    "word": "IMP",
+    "frequency": 30
+  },
+  {
+    "word": "DUD",
+    "frequency": 30
+  },
+  {
+    "word": "HUM",
+    "frequency": 30
+  },
+  {
+    "word": "FIG",
+    "frequency": 30
+  },
+  {
+    "word": "MOB",
+    "frequency": 30
+  },
+  {
+    "word": "RUM",
+    "frequency": 30
+  },
+  {
+    "word": "FOB",
+    "frequency": 30
+  },
+  {
+    "word": "PUS",
+    "frequency": 30
+  },
+  {
+    "word": "SUP",
+    "frequency": 30
+  },
+  {
+    "word": "FUR",
+    "frequency": 30
+  },
+  {
+    "word": "PIG",
+    "frequency": 30
+  },
+  {
+    "word": "YAK",
+    "frequency": 30
+  },
+  {
+    "word": "HUG",
+    "frequency": 30
+  },
+  {
+    "word": "VOW",
+    "frequency": 30
+  },
+  {
+    "word": "GOB",
+    "frequency": 30
+  },
+  {
+    "word": "NUB",
+    "frequency": 30
+  },
+  {
+    "word": "RUG",
+    "frequency": 30
+  },
+  {
+    "word": "WOK",
+    "frequency": 30
+  },
+  {
+    "word": "SUB",
+    "frequency": 30
+  },
+  {
+    "word": "HUB",
+    "frequency": 30
+  },
+  {
+    "word": "RUB",
+    "frequency": 30
+  },
+  {
+    "word": "IVY",
+    "frequency": 30
+  },
+  {
+    "word": "CUD",
+    "frequency": 30
+  },
+  {
+    "word": "ZEN",
+    "frequency": 30
+  },
+  {
+    "word": "MUD",
+    "frequency": 30
+  },
+  {
+    "word": "JAR",
+    "frequency": 30
+  },
+  {
+    "word": "DUG",
+    "frequency": 30
+  },
+  {
+    "word": "FLU",
+    "frequency": 30
+  },
+  {
+    "word": "LUG",
+    "frequency": 30
+  },
+  {
+    "word": "DUB",
+    "frequency": 30
+  },
+  {
+    "word": "MUM",
+    "frequency": 30
+  },
+  {
+    "word": "CUP",
+    "frequency": 30
+  },
+  {
+    "word": "GUM",
+    "frequency": 30
+  },
+  {
+    "word": "MUG",
+    "frequency": 30
+  },
+  {
+    "word": "JET",
+    "frequency": 30
+  },
+  {
+    "word": "CUB",
+    "frequency": 30
+  },
+  {
+    "word": "GUY",
+    "frequency": 30
+  },
+  {
+    "word": "PUG",
+    "frequency": 30
+  },
+  {
+    "word": "PUP",
+    "frequency": 30
+  },
+  {
+    "word": "ZIT",
+    "frequency": 30
+  },
+  {
+    "word": "PUB",
+    "frequency": 30
+  },
+  {
+    "word": "JOT",
+    "frequency": 30
+  },
+  {
+    "word": "TAX",
+    "frequency": 30
+  },
+  {
+    "word": "ORE",
+    "frequency": 30
+  },
+  {
+    "word": "JAM",
+    "frequency": 30
+  },
+  {
+    "word": "JAW",
+    "frequency": 30
+  },
+  {
+    "word": "JAG",
+    "frequency": 30
+  },
+  {
+    "word": "JAY",
+    "frequency": 30
+  },
+  {
+    "word": "JOG",
+    "frequency": 30
+  },
+  {
+    "word": "JOY",
+    "frequency": 30
+  },
+  {
+    "word": "JAB",
+    "frequency": 30
+  },
+  {
+    "word": "JIG",
+    "frequency": 30
+  },
+  {
+    "word": "JOB",
+    "frequency": 30
+  },
+  {
+    "word": "SIX",
+    "frequency": 30
+  },
+  {
+    "word": "LAX",
+    "frequency": 30
+  },
+  {
+    "word": "MAX",
+    "frequency": 30
+  },
+  {
+    "word": "WAX",
+    "frequency": 30
+  },
+  {
+    "word": "FAX",
+    "frequency": 30
+  },
+  {
+    "word": "ZAP",
+    "frequency": 30
+  },
+  {
+    "word": "EAT",
+    "frequency": 30
+  },
+  {
+    "word": "JUG",
+    "frequency": 30
+  },
+  {
+    "word": "TEA",
+    "frequency": 30
+  },
+  {
+    "word": "FOX",
+    "frequency": 30
+  },
+  {
+    "word": "FIX",
+    "frequency": 30
+  },
+  {
+    "word": "TOE",
+    "frequency": 30
+  },
+  {
+    "word": "ZIP",
+    "frequency": 30
+  },
+  {
+    "word": "TIE",
+    "frequency": 30
+  },
+  {
+    "word": "SEA",
+    "frequency": 30
+  },
+  {
+    "word": "EAR",
+    "frequency": 30
+  },
+  {
+    "word": "ERA",
+    "frequency": 30
+  },
+  {
+    "word": "LEA",
+    "frequency": 30
+  },
+  {
+    "word": "OAT",
+    "frequency": 30
+  },
+  {
+    "word": "SLY",
+    "frequency": 30
+  },
+  {
+    "word": "OAR",
+    "frequency": 30
+  },
+  {
+    "word": "EEL",
+    "frequency": 30
+  },
+  {
+    "word": "FLY",
+    "frequency": 30
+  },
+  {
+    "word": "PLY",
+    "frequency": 30
+  },
+  {
+    "word": "EWE",
+    "frequency": 30
+  },
+  {
+    "word": "EYE",
+    "frequency": 30
+  },
+  {
+    "word": "STY",
+    "frequency": 30
+  },
+  {
+    "word": "THY",
+    "frequency": 30
+  },
+  {
+    "word": "EVE",
+    "frequency": 30
+  },
+  {
+    "word": "ROE",
+    "frequency": 30
+  },
+  {
+    "word": "DOE",
+    "frequency": 30
+  },
+  {
+    "word": "ODE",
+    "frequency": 30
+  },
+  {
+    "word": "LIE",
+    "frequency": 30
+  },
+  {
+    "word": "PEA",
+    "frequency": 30
+  },
+  {
+    "word": "OWE",
+    "frequency": 30
+  },
+  {
+    "word": "WOE",
+    "frequency": 30
+  },
+  {
+    "word": "ICE",
+    "frequency": 30
+  },
+  {
+    "word": "FOE",
+    "frequency": 30
+  },
+  {
+    "word": "PIE",
+    "frequency": 30
+  },
+  {
+    "word": "HUE",
+    "frequency": 30
+  },
+  {
+    "word": "VIE",
+    "frequency": 30
+  },
+  {
+    "word": "DUE",
+    "frequency": 30
+  },
+  {
+    "word": "OIL",
+    "frequency": 30
+  },
+  {
+    "word": "EMU",
+    "frequency": 30
+  },
+  {
+    "word": "TRY",
+    "frequency": 30
+  },
+  {
+    "word": "OAK",
+    "frequency": 30
+  },
+  {
+    "word": "VIA",
+    "frequency": 30
+  },
+  {
+    "word": "SHY",
+    "frequency": 30
+  },
+  {
+    "word": "DRY",
+    "frequency": 30
+  },
+  {
+    "word": "CRY",
+    "frequency": 30
+  },
+  {
+    "word": "SPY",
+    "frequency": 30
+  },
+  {
+    "word": "FRY",
+    "frequency": 30
+  },
+  {
+    "word": "PRY",
+    "frequency": 30
+  },
+  {
+    "word": "SKY",
+    "frequency": 30
+  },
+  {
+    "word": "GYM",
+    "frequency": 30
+  },
+  {
+    "word": "ZOO",
+    "frequency": 30
   },
   {
     "word": "TED",
@@ -658,10 +2010,6 @@
   {
     "word": "SER",
     "frequency": 21
-  },
-  {
-    "word": "LED",
-    "frequency": 20
   },
   {
     "word": "RES",
@@ -676,22 +2024,6 @@
     "frequency": 19
   },
   {
-    "word": "PER",
-    "frequency": 18
-  },
-  {
-    "word": "MED",
-    "frequency": 18
-  },
-  {
-    "word": "WED",
-    "frequency": 18
-  },
-  {
-    "word": "FED",
-    "frequency": 18
-  },
-  {
     "word": "GED",
     "frequency": 18
   },
@@ -700,23 +2032,7 @@
     "frequency": 18
   },
   {
-    "word": "TEN",
-    "frequency": 18
-  },
-  {
-    "word": "BED",
-    "frequency": 18
-  },
-  {
-    "word": "REC",
-    "frequency": 18
-  },
-  {
     "word": "REM",
-    "frequency": 18
-  },
-  {
-    "word": "REF",
     "frequency": 18
   },
   {
@@ -725,18 +2041,6 @@
   },
   {
     "word": "REG",
-    "frequency": 18
-  },
-  {
-    "word": "REP",
-    "frequency": 18
-  },
-  {
-    "word": "HEN",
-    "frequency": 18
-  },
-  {
-    "word": "INN",
     "frequency": 18
   },
   {
@@ -756,30 +2060,6 @@
     "frequency": 18
   },
   {
-    "word": "REV",
-    "frequency": 18
-  },
-  {
-    "word": "ANT",
-    "frequency": 17
-  },
-  {
-    "word": "END",
-    "frequency": 17
-  },
-  {
-    "word": "HAT",
-    "frequency": 17
-  },
-  {
-    "word": "TON",
-    "frequency": 17
-  },
-  {
-    "word": "TIN",
-    "frequency": 17
-  },
-  {
     "word": "TOR",
     "frequency": 17
   },
@@ -796,10 +2076,6 @@
     "frequency": 17
   },
   {
-    "word": "INK",
-    "frequency": 17
-  },
-  {
     "word": "ETH",
     "frequency": 16
   },
@@ -812,19 +2088,7 @@
     "frequency": 16
   },
   {
-    "word": "TAT",
-    "frequency": 16
-  },
-  {
-    "word": "LET",
-    "frequency": 16
-  },
-  {
     "word": "ENS",
-    "frequency": 16
-  },
-  {
-    "word": "TOT",
     "frequency": 16
   },
   {
@@ -852,19 +2116,7 @@
     "frequency": 16
   },
   {
-    "word": "TAN",
-    "frequency": 16
-  },
-  {
     "word": "TEG",
-    "frequency": 16
-  },
-  {
-    "word": "DEN",
-    "frequency": 16
-  },
-  {
-    "word": "SAT",
     "frequency": 16
   },
   {
@@ -876,14 +2128,6 @@
     "frequency": 16
   },
   {
-    "word": "RAT",
-    "frequency": 16
-  },
-  {
-    "word": "TAR",
-    "frequency": 16
-  },
-  {
     "word": "SEL",
     "frequency": 16
   },
@@ -892,23 +2136,11 @@
     "frequency": 16
   },
   {
-    "word": "NIT",
-    "frequency": 16
-  },
-  {
     "word": "THO",
     "frequency": 16
   },
   {
     "word": "ORT",
-    "frequency": 16
-  },
-  {
-    "word": "SIT",
-    "frequency": 16
-  },
-  {
-    "word": "HIT",
     "frequency": 16
   },
   {
@@ -932,22 +2164,6 @@
     "frequency": 15
   },
   {
-    "word": "GEN",
-    "frequency": 15
-  },
-  {
-    "word": "YEN",
-    "frequency": 15
-  },
-  {
-    "word": "SEW",
-    "frequency": 15
-  },
-  {
-    "word": "PEN",
-    "frequency": 15
-  },
-  {
     "word": "ALT",
     "frequency": 15
   },
@@ -960,10 +2176,6 @@
     "frequency": 15
   },
   {
-    "word": "HEM",
-    "frequency": 15
-  },
-  {
     "word": "HEW",
     "frequency": 15
   },
@@ -972,15 +2184,7 @@
     "frequency": 15
   },
   {
-    "word": "YES",
-    "frequency": 15
-  },
-  {
     "word": "PES",
-    "frequency": 15
-  },
-  {
-    "word": "RAN",
     "frequency": 15
   },
   {
@@ -1024,10 +2228,6 @@
     "frequency": 15
   },
   {
-    "word": "SON",
-    "frequency": 15
-  },
-  {
     "word": "ARS",
     "frequency": 15
   },
@@ -1048,23 +2248,7 @@
     "frequency": 15
   },
   {
-    "word": "NOR",
-    "frequency": 15
-  },
-  {
-    "word": "KEN",
-    "frequency": 15
-  },
-  {
-    "word": "LIT",
-    "frequency": 15
-  },
-  {
     "word": "TIL",
-    "frequency": 15
-  },
-  {
-    "word": "SIN",
     "frequency": 15
   },
   {
@@ -1088,19 +2272,7 @@
     "frequency": 15
   },
   {
-    "word": "MAT",
-    "frequency": 15
-  },
-  {
-    "word": "SIS",
-    "frequency": 15
-  },
-  {
     "word": "WAT",
-    "frequency": 15
-  },
-  {
-    "word": "FAT",
     "frequency": 15
   },
   {
@@ -1112,39 +2284,7 @@
     "frequency": 15
   },
   {
-    "word": "PAT",
-    "frequency": 15
-  },
-  {
-    "word": "TOM",
-    "frequency": 15
-  },
-  {
-    "word": "TOW",
-    "frequency": 15
-  },
-  {
-    "word": "TIC",
-    "frequency": 15
-  },
-  {
-    "word": "OFT",
-    "frequency": 15
-  },
-  {
-    "word": "LEG",
-    "frequency": 15
-  },
-  {
     "word": "LEY",
-    "frequency": 15
-  },
-  {
-    "word": "TOG",
-    "frequency": 15
-  },
-  {
-    "word": "TOY",
     "frequency": 15
   },
   {
@@ -1168,30 +2308,6 @@
     "frequency": 15
   },
   {
-    "word": "HAD",
-    "frequency": 15
-  },
-  {
-    "word": "NET",
-    "frequency": 15
-  },
-  {
-    "word": "TOP",
-    "frequency": 15
-  },
-  {
-    "word": "WIT",
-    "frequency": 15
-  },
-  {
-    "word": "FIT",
-    "frequency": 15
-  },
-  {
-    "word": "VAT",
-    "frequency": 15
-  },
-  {
     "word": "LAR",
     "frequency": 15
   },
@@ -1205,14 +2321,6 @@
   },
   {
     "word": "DIN",
-    "frequency": 15
-  },
-  {
-    "word": "PIT",
-    "frequency": 15
-  },
-  {
-    "word": "TIP",
     "frequency": 15
   },
   {
@@ -1240,19 +2348,11 @@
     "frequency": 15
   },
   {
-    "word": "MAN",
-    "frequency": 15
-  },
-  {
     "word": "BIT",
     "frequency": 15
   },
   {
     "word": "WAN",
-    "frequency": 15
-  },
-  {
-    "word": "FAN",
     "frequency": 15
   },
   {
@@ -1280,19 +2380,7 @@
     "frequency": 15
   },
   {
-    "word": "PAN",
-    "frequency": 15
-  },
-  {
-    "word": "KIT",
-    "frequency": 15
-  },
-  {
     "word": "FAS",
-    "frequency": 15
-  },
-  {
-    "word": "HAM",
     "frequency": 15
   },
   {
@@ -1308,23 +2396,7 @@
     "frequency": 15
   },
   {
-    "word": "WON",
-    "frequency": 15
-  },
-  {
     "word": "ARM",
-    "frequency": 15
-  },
-  {
-    "word": "MAR",
-    "frequency": 15
-  },
-  {
-    "word": "GAS",
-    "frequency": 15
-  },
-  {
-    "word": "WAR",
     "frequency": 15
   },
   {
@@ -1348,10 +2420,6 @@
     "frequency": 15
   },
   {
-    "word": "FAR",
-    "frequency": 15
-  },
-  {
     "word": "COR",
     "frequency": 15
   },
@@ -1361,10 +2429,6 @@
   },
   {
     "word": "ORC",
-    "frequency": 15
-  },
-  {
-    "word": "HAY",
     "frequency": 15
   },
   {
@@ -1388,23 +2452,7 @@
     "frequency": 15
   },
   {
-    "word": "PAR",
-    "frequency": 15
-  },
-  {
-    "word": "WIN",
-    "frequency": 15
-  },
-  {
-    "word": "FIN",
-    "frequency": 15
-  },
-  {
     "word": "MOR",
-    "frequency": 15
-  },
-  {
-    "word": "VAN",
     "frequency": 15
   },
   {
@@ -1429,10 +2477,6 @@
   },
   {
     "word": "WIS",
-    "frequency": 15
-  },
-  {
-    "word": "PIN",
     "frequency": 15
   },
   {
@@ -1472,15 +2516,7 @@
     "frequency": 14
   },
   {
-    "word": "ORB",
-    "frequency": 14
-  },
-  {
     "word": "BIS",
-    "frequency": 14
-  },
-  {
-    "word": "KIN",
     "frequency": 14
   },
   {
@@ -1492,23 +2528,7 @@
     "frequency": 14
   },
   {
-    "word": "GAL",
-    "frequency": 14
-  },
-  {
-    "word": "MET",
-    "frequency": 14
-  },
-  {
     "word": "ALP",
-    "frequency": 14
-  },
-  {
-    "word": "PAL",
-    "frequency": 14
-  },
-  {
-    "word": "WET",
     "frequency": 14
   },
   {
@@ -1532,47 +2552,11 @@
     "frequency": 14
   },
   {
-    "word": "YET",
-    "frequency": 14
-  },
-  {
-    "word": "PET",
-    "frequency": 14
-  },
-  {
     "word": "ALB",
     "frequency": 14
   },
   {
     "word": "ELS",
-    "frequency": 14
-  },
-  {
-    "word": "BET",
-    "frequency": 14
-  },
-  {
-    "word": "SOT",
-    "frequency": 14
-  },
-  {
-    "word": "VET",
-    "frequency": 14
-  },
-  {
-    "word": "HOT",
-    "frequency": 14
-  },
-  {
-    "word": "ROT",
-    "frequency": 14
-  },
-  {
-    "word": "OFF",
-    "frequency": 14
-  },
-  {
-    "word": "TAD",
     "frequency": 14
   },
   {
@@ -1604,10 +2588,6 @@
     "frequency": 14
   },
   {
-    "word": "DOT",
-    "frequency": 14
-  },
-  {
     "word": "ELL",
     "frequency": 14
   },
@@ -1621,14 +2601,6 @@
   },
   {
     "word": "PEH",
-    "frequency": 14
-  },
-  {
-    "word": "RYE",
-    "frequency": 14
-  },
-  {
-    "word": "LOT",
     "frequency": 14
   },
   {
@@ -1680,10 +2652,6 @@
     "frequency": 14
   },
   {
-    "word": "COT",
-    "frequency": 14
-  },
-  {
     "word": "DEW",
     "frequency": 14
   },
@@ -1696,23 +2664,11 @@
     "frequency": 14
   },
   {
-    "word": "TAG",
-    "frequency": 14
-  },
-  {
     "word": "DEF",
     "frequency": 13
   },
   {
     "word": "APT",
-    "frequency": 13
-  },
-  {
-    "word": "TAP",
-    "frequency": 13
-  },
-  {
-    "word": "ELM",
     "frequency": 13
   },
   {
@@ -1724,10 +2680,6 @@
     "frequency": 13
   },
   {
-    "word": "ELF",
-    "frequency": 13
-  },
-  {
     "word": "WOT",
     "frequency": 13
   },
@@ -1736,19 +2688,7 @@
     "frequency": 13
   },
   {
-    "word": "DYE",
-    "frequency": 13
-  },
-  {
     "word": "ADS",
-    "frequency": 13
-  },
-  {
-    "word": "GEL",
-    "frequency": 13
-  },
-  {
-    "word": "SAD",
     "frequency": 13
   },
   {
@@ -1756,35 +2696,11 @@
     "frequency": 13
   },
   {
-    "word": "GOT",
-    "frequency": 13
-  },
-  {
-    "word": "NUT",
-    "frequency": 13
-  },
-  {
     "word": "TUN",
     "frequency": 13
   },
   {
-    "word": "TAB",
-    "frequency": 13
-  },
-  {
     "word": "DAH",
-    "frequency": 13
-  },
-  {
-    "word": "NOD",
-    "frequency": 13
-  },
-  {
-    "word": "OPT",
-    "frequency": 13
-  },
-  {
-    "word": "POT",
     "frequency": 13
   },
   {
@@ -1812,19 +2728,11 @@
     "frequency": 13
   },
   {
-    "word": "SOD",
-    "frequency": 13
-  },
-  {
     "word": "BEL",
     "frequency": 13
   },
   {
     "word": "DEV",
-    "frequency": 13
-  },
-  {
-    "word": "HUT",
     "frequency": 13
   },
   {
@@ -1836,31 +2744,11 @@
     "frequency": 13
   },
   {
-    "word": "HOD",
-    "frequency": 13
-  },
-  {
-    "word": "RUT",
-    "frequency": 13
-  },
-  {
-    "word": "NIL",
-    "frequency": 13
-  },
-  {
-    "word": "ROD",
-    "frequency": 13
-  },
-  {
     "word": "IDS",
     "frequency": 13
   },
   {
     "word": "MEM",
-    "frequency": 13
-  },
-  {
-    "word": "ELK",
     "frequency": 13
   },
   {
@@ -1884,10 +2772,6 @@
     "frequency": 13
   },
   {
-    "word": "HID",
-    "frequency": 13
-  },
-  {
     "word": "FEW",
     "frequency": 13
   },
@@ -1900,19 +2784,7 @@
     "frequency": 13
   },
   {
-    "word": "SAC",
-    "frequency": 13
-  },
-  {
-    "word": "RID",
-    "frequency": 13
-  },
-  {
     "word": "EFF",
-    "frequency": 13
-  },
-  {
-    "word": "GEM",
     "frequency": 13
   },
   {
@@ -1920,43 +2792,11 @@
     "frequency": 13
   },
   {
-    "word": "YEW",
-    "frequency": 13
-  },
-  {
-    "word": "PEW",
-    "frequency": 13
-  },
-  {
-    "word": "NAG",
-    "frequency": 13
-  },
-  {
-    "word": "NAY",
-    "frequency": 13
-  },
-  {
-    "word": "NAP",
-    "frequency": 13
-  },
-  {
-    "word": "EGG",
-    "frequency": 13
-  },
-  {
     "word": "ADD",
     "frequency": 13
   },
   {
-    "word": "DAD",
-    "frequency": 13
-  },
-  {
     "word": "NOM",
-    "frequency": 13
-  },
-  {
-    "word": "PEG",
     "frequency": 13
   },
   {
@@ -1972,34 +2812,6 @@
     "frequency": 13
   },
   {
-    "word": "RAM",
-    "frequency": 13
-  },
-  {
-    "word": "PEP",
-    "frequency": 13
-  },
-  {
-    "word": "RAW",
-    "frequency": 13
-  },
-  {
-    "word": "SAG",
-    "frequency": 13
-  },
-  {
-    "word": "LAD",
-    "frequency": 13
-  },
-  {
-    "word": "SAP",
-    "frequency": 13
-  },
-  {
-    "word": "SPA",
-    "frequency": 13
-  },
-  {
     "word": "WEB",
     "frequency": 13
   },
@@ -2009,10 +2821,6 @@
   },
   {
     "word": "ROC",
-    "frequency": 13
-  },
-  {
-    "word": "NUN",
     "frequency": 13
   },
   {
@@ -2032,14 +2840,6 @@
     "frequency": 13
   },
   {
-    "word": "NAB",
-    "frequency": 13
-  },
-  {
-    "word": "SOW",
-    "frequency": 13
-  },
-  {
     "word": "WOS",
     "frequency": 13
   },
@@ -2048,23 +2848,11 @@
     "frequency": 13
   },
   {
-    "word": "RAG",
-    "frequency": 13
-  },
-  {
     "word": "NIM",
     "frequency": 13
   },
   {
-    "word": "RAY",
-    "frequency": 13
-  },
-  {
     "word": "RYA",
-    "frequency": 13
-  },
-  {
-    "word": "RAP",
     "frequency": 13
   },
   {
@@ -2084,14 +2872,6 @@
     "frequency": 13
   },
   {
-    "word": "ODD",
-    "frequency": 13
-  },
-  {
-    "word": "OHM",
-    "frequency": 13
-  },
-  {
     "word": "BEY",
     "frequency": 13
   },
@@ -2105,10 +2885,6 @@
   },
   {
     "word": "NAV",
-    "frequency": 13
-  },
-  {
-    "word": "ROW",
     "frequency": 13
   },
   {
@@ -2128,15 +2904,7 @@
     "frequency": 13
   },
   {
-    "word": "SUN",
-    "frequency": 13
-  },
-  {
     "word": "FOH",
-    "frequency": 13
-  },
-  {
-    "word": "SOY",
     "frequency": 13
   },
   {
@@ -2156,10 +2924,6 @@
     "frequency": 13
   },
   {
-    "word": "SOP",
-    "frequency": 13
-  },
-  {
     "word": "FRO",
     "frequency": 13
   },
@@ -2169,14 +2933,6 @@
   },
   {
     "word": "KEF",
-    "frequency": 13
-  },
-  {
-    "word": "NIP",
-    "frequency": 13
-  },
-  {
-    "word": "HOG",
     "frequency": 13
   },
   {
@@ -2192,14 +2948,6 @@
     "frequency": 13
   },
   {
-    "word": "NOB",
-    "frequency": 13
-  },
-  {
-    "word": "HOP",
-    "frequency": 13
-  },
-  {
     "word": "IFS",
     "frequency": 13
   },
@@ -2208,23 +2956,7 @@
     "frequency": 13
   },
   {
-    "word": "RUN",
-    "frequency": 13
-  },
-  {
-    "word": "URN",
-    "frequency": 13
-  },
-  {
-    "word": "KEG",
-    "frequency": 13
-  },
-  {
     "word": "BRA",
-    "frequency": 13
-  },
-  {
-    "word": "KEY",
     "frequency": 13
   },
   {
@@ -2240,10 +2972,6 @@
     "frequency": 13
   },
   {
-    "word": "RIM",
-    "frequency": 13
-  },
-  {
     "word": "EBB",
     "frequency": 13
   },
@@ -2252,15 +2980,7 @@
     "frequency": 13
   },
   {
-    "word": "LID",
-    "frequency": 13
-  },
-  {
     "word": "PSI",
-    "frequency": 13
-  },
-  {
-    "word": "SIP",
     "frequency": 13
   },
   {
@@ -2276,15 +2996,7 @@
     "frequency": 13
   },
   {
-    "word": "SOB",
-    "frequency": 13
-  },
-  {
     "word": "GHI",
-    "frequency": 13
-  },
-  {
-    "word": "ILL",
     "frequency": 13
   },
   {
@@ -2292,19 +3004,7 @@
     "frequency": 13
   },
   {
-    "word": "HIP",
-    "frequency": 13
-  },
-  {
     "word": "PHI",
-    "frequency": 13
-  },
-  {
-    "word": "LAC",
-    "frequency": 13
-  },
-  {
-    "word": "RIG",
     "frequency": 13
   },
   {
@@ -2312,39 +3012,11 @@
     "frequency": 13
   },
   {
-    "word": "HOB",
-    "frequency": 13
-  },
-  {
-    "word": "RIP",
-    "frequency": 13
-  },
-  {
-    "word": "DAM",
-    "frequency": 13
-  },
-  {
-    "word": "MAD",
-    "frequency": 13
-  },
-  {
     "word": "BRO",
     "frequency": 13
   },
   {
-    "word": "ROB",
-    "frequency": 13
-  },
-  {
     "word": "DAW",
-    "frequency": 13
-  },
-  {
-    "word": "WAD",
-    "frequency": 13
-  },
-  {
-    "word": "FAD",
     "frequency": 13
   },
   {
@@ -2356,27 +3028,11 @@
     "frequency": 13
   },
   {
-    "word": "CUT",
-    "frequency": 13
-  },
-  {
     "word": "SIB",
     "frequency": 13
   },
   {
     "word": "AWL",
-    "frequency": 13
-  },
-  {
-    "word": "LAW",
-    "frequency": 13
-  },
-  {
-    "word": "COD",
-    "frequency": 13
-  },
-  {
-    "word": "DOC",
     "frequency": 13
   },
   {
@@ -2392,19 +3048,7 @@
     "frequency": 13
   },
   {
-    "word": "PAD",
-    "frequency": 13
-  },
-  {
-    "word": "RIB",
-    "frequency": 13
-  },
-  {
     "word": "MUT",
-    "frequency": 13
-  },
-  {
-    "word": "LAG",
     "frequency": 13
   },
   {
@@ -2412,51 +3056,11 @@
     "frequency": 13
   },
   {
-    "word": "LAY",
-    "frequency": 13
-  },
-  {
-    "word": "MOD",
-    "frequency": 13
-  },
-  {
-    "word": "LAP",
-    "frequency": 13
-  },
-  {
     "word": "DOW",
     "frequency": 13
   },
   {
-    "word": "SKI",
-    "frequency": 13
-  },
-  {
-    "word": "LOW",
-    "frequency": 13
-  },
-  {
-    "word": "OWL",
-    "frequency": 13
-  },
-  {
-    "word": "GUT",
-    "frequency": 13
-  },
-  {
-    "word": "TUG",
-    "frequency": 13
-  },
-  {
     "word": "KHI",
-    "frequency": 13
-  },
-  {
-    "word": "DOG",
-    "frequency": 13
-  },
-  {
-    "word": "GOD",
     "frequency": 13
   },
   {
@@ -2465,10 +3069,6 @@
   },
   {
     "word": "TUP",
-    "frequency": 13
-  },
-  {
-    "word": "IRK",
     "frequency": 13
   },
   {
@@ -2484,27 +3084,7 @@
     "frequency": 13
   },
   {
-    "word": "DAB",
-    "frequency": 13
-  },
-  {
-    "word": "POD",
-    "frequency": 13
-  },
-  {
-    "word": "DIM",
-    "frequency": 13
-  },
-  {
     "word": "MID",
-    "frequency": 13
-  },
-  {
-    "word": "LOG",
-    "frequency": 13
-  },
-  {
-    "word": "LAB",
     "frequency": 13
   },
   {
@@ -2552,14 +3132,6 @@
     "frequency": 13
   },
   {
-    "word": "DIP",
-    "frequency": 13
-  },
-  {
-    "word": "TUB",
-    "frequency": 13
-  },
-  {
     "word": "DUH",
     "frequency": 13
   },
@@ -2569,14 +3141,6 @@
   },
   {
     "word": "URD",
-    "frequency": 13
-  },
-  {
-    "word": "MAW",
-    "frequency": 13
-  },
-  {
-    "word": "LIP",
     "frequency": 13
   },
   {
@@ -2600,10 +3164,6 @@
     "frequency": 12
   },
   {
-    "word": "COW",
-    "frequency": 12
-  },
-  {
     "word": "AFF",
     "frequency": 12
   },
@@ -2613,14 +3173,6 @@
   },
   {
     "word": "MAG",
-    "frequency": 12
-  },
-  {
-    "word": "WAG",
-    "frequency": 12
-  },
-  {
-    "word": "YAM",
     "frequency": 12
   },
   {
@@ -2636,19 +3188,7 @@
     "frequency": 12
   },
   {
-    "word": "MAP",
-    "frequency": 12
-  },
-  {
     "word": "PAM",
-    "frequency": 12
-  },
-  {
-    "word": "YAW",
-    "frequency": 12
-  },
-  {
-    "word": "PAW",
     "frequency": 12
   },
   {
@@ -2664,18 +3204,6 @@
     "frequency": 12
   },
   {
-    "word": "MOM",
-    "frequency": 12
-  },
-  {
-    "word": "COG",
-    "frequency": 12
-  },
-  {
-    "word": "MOW",
-    "frequency": 12
-  },
-  {
     "word": "COY",
     "frequency": 12
   },
@@ -2684,23 +3212,7 @@
     "frequency": 12
   },
   {
-    "word": "WOW",
-    "frequency": 12
-  },
-  {
-    "word": "COP",
-    "frequency": 12
-  },
-  {
-    "word": "GAG",
-    "frequency": 12
-  },
-  {
     "word": "VID",
-    "frequency": 12
-  },
-  {
-    "word": "GAY",
     "frequency": 12
   },
   {
@@ -2708,15 +3220,7 @@
     "frequency": 12
   },
   {
-    "word": "GAP",
-    "frequency": 12
-  },
-  {
     "word": "YAY",
-    "frequency": 12
-  },
-  {
-    "word": "PAY",
     "frequency": 12
   },
   {
@@ -2724,19 +3228,7 @@
     "frequency": 12
   },
   {
-    "word": "YAP",
-    "frequency": 12
-  },
-  {
     "word": "APP",
-    "frequency": 12
-  },
-  {
-    "word": "PAP",
-    "frequency": 12
-  },
-  {
-    "word": "KID",
     "frequency": 12
   },
   {
@@ -2760,10 +3252,6 @@
     "frequency": 12
   },
   {
-    "word": "MOP",
-    "frequency": 12
-  },
-  {
     "word": "POM",
     "frequency": 12
   },
@@ -2773,10 +3261,6 @@
   },
   {
     "word": "WAB",
-    "frequency": 12
-  },
-  {
-    "word": "POW",
     "frequency": 12
   },
   {
@@ -2792,18 +3276,6 @@
     "frequency": 12
   },
   {
-    "word": "FOG",
-    "frequency": 12
-  },
-  {
-    "word": "FUN",
-    "frequency": 12
-  },
-  {
-    "word": "ICY",
-    "frequency": 12
-  },
-  {
     "word": "FOY",
     "frequency": 12
   },
@@ -2816,27 +3288,11 @@
     "frequency": 12
   },
   {
-    "word": "FOP",
-    "frequency": 12
-  },
-  {
-    "word": "COB",
-    "frequency": 12
-  },
-  {
     "word": "CRU",
     "frequency": 12
   },
   {
-    "word": "CUR",
-    "frequency": 12
-  },
-  {
     "word": "GNU",
-    "frequency": 12
-  },
-  {
-    "word": "GUN",
     "frequency": 12
   },
   {
@@ -2852,23 +3308,11 @@
     "frequency": 12
   },
   {
-    "word": "SUM",
-    "frequency": 12
-  },
-  {
     "word": "UMS",
     "frequency": 12
   },
   {
     "word": "BAG",
-    "frequency": 12
-  },
-  {
-    "word": "GAB",
-    "frequency": 12
-  },
-  {
-    "word": "PUN",
     "frequency": 12
   },
   {
@@ -2892,34 +3336,6 @@
     "frequency": 12
   },
   {
-    "word": "POP",
-    "frequency": 12
-  },
-  {
-    "word": "WIG",
-    "frequency": 12
-  },
-  {
-    "word": "IMP",
-    "frequency": 12
-  },
-  {
-    "word": "DUD",
-    "frequency": 12
-  },
-  {
-    "word": "HUM",
-    "frequency": 12
-  },
-  {
-    "word": "FIG",
-    "frequency": 12
-  },
-  {
-    "word": "MOB",
-    "frequency": 12
-  },
-  {
     "word": "KAF",
     "frequency": 12
   },
@@ -2928,23 +3344,7 @@
     "frequency": 12
   },
   {
-    "word": "RUM",
-    "frequency": 12
-  },
-  {
     "word": "UGS",
-    "frequency": 12
-  },
-  {
-    "word": "FOB",
-    "frequency": 12
-  },
-  {
-    "word": "PUS",
-    "frequency": 12
-  },
-  {
-    "word": "SUP",
     "frequency": 12
   },
   {
@@ -2960,23 +3360,7 @@
     "frequency": 12
   },
   {
-    "word": "FUR",
-    "frequency": 12
-  },
-  {
-    "word": "PIG",
-    "frequency": 12
-  },
-  {
     "word": "KAY",
-    "frequency": 12
-  },
-  {
-    "word": "YAK",
-    "frequency": 12
-  },
-  {
-    "word": "HUG",
     "frequency": 12
   },
   {
@@ -2988,10 +3372,6 @@
     "frequency": 12
   },
   {
-    "word": "VOW",
-    "frequency": 12
-  },
-  {
     "word": "PIP",
     "frequency": 12
   },
@@ -3000,15 +3380,7 @@
     "frequency": 12
   },
   {
-    "word": "GOB",
-    "frequency": 12
-  },
-  {
     "word": "BUN",
-    "frequency": 12
-  },
-  {
-    "word": "NUB",
     "frequency": 12
   },
   {
@@ -3017,10 +3389,6 @@
   },
   {
     "word": "BOY",
-    "frequency": 12
-  },
-  {
-    "word": "RUG",
     "frequency": 12
   },
   {
@@ -3044,10 +3412,6 @@
     "frequency": 12
   },
   {
-    "word": "WOK",
-    "frequency": 12
-  },
-  {
     "word": "ICK",
     "frequency": 12
   },
@@ -3057,10 +3421,6 @@
   },
   {
     "word": "BUS",
-    "frequency": 12
-  },
-  {
-    "word": "SUB",
     "frequency": 12
   },
   {
@@ -3088,19 +3448,11 @@
     "frequency": 12
   },
   {
-    "word": "HUB",
-    "frequency": 12
-  },
-  {
     "word": "VAV",
     "frequency": 12
   },
   {
     "word": "BOB",
-    "frequency": 12
-  },
-  {
-    "word": "RUB",
     "frequency": 12
   },
   {
@@ -3116,15 +3468,7 @@
     "frequency": 12
   },
   {
-    "word": "IVY",
-    "frequency": 12
-  },
-  {
     "word": "SUK",
-    "frequency": 12
-  },
-  {
-    "word": "CUD",
     "frequency": 12
   },
   {
@@ -3140,23 +3484,11 @@
     "frequency": 12
   },
   {
-    "word": "ZEN",
-    "frequency": 12
-  },
-  {
-    "word": "MUD",
-    "frequency": 12
-  },
-  {
     "word": "HAJ",
     "frequency": 12
   },
   {
     "word": "WUD",
-    "frequency": 12
-  },
-  {
-    "word": "JAR",
     "frequency": 12
   },
   {
@@ -3173,14 +3505,6 @@
   },
   {
     "word": "SEX",
-    "frequency": 12
-  },
-  {
-    "word": "DUG",
-    "frequency": 12
-  },
-  {
-    "word": "FLU",
     "frequency": 12
   },
   {
@@ -3204,19 +3528,11 @@
     "frequency": 12
   },
   {
-    "word": "LUG",
-    "frequency": 12
-  },
-  {
     "word": "PUL",
     "frequency": 12
   },
   {
     "word": "BUD",
-    "frequency": 12
-  },
-  {
-    "word": "DUB",
     "frequency": 12
   },
   {
@@ -3228,23 +3544,7 @@
     "frequency": 12
   },
   {
-    "word": "MUM",
-    "frequency": 12
-  },
-  {
     "word": "UMM",
-    "frequency": 12
-  },
-  {
-    "word": "CUP",
-    "frequency": 12
-  },
-  {
-    "word": "GUM",
-    "frequency": 12
-  },
-  {
-    "word": "MUG",
     "frequency": 12
   },
   {
@@ -3260,15 +3560,7 @@
     "frequency": 12
   },
   {
-    "word": "JET",
-    "frequency": 12
-  },
-  {
     "word": "LEX",
-    "frequency": 12
-  },
-  {
-    "word": "CUB",
     "frequency": 12
   },
   {
@@ -3276,19 +3568,7 @@
     "frequency": 12
   },
   {
-    "word": "GUY",
-    "frequency": 12
-  },
-  {
-    "word": "PUG",
-    "frequency": 12
-  },
-  {
     "word": "YUP",
-    "frequency": 12
-  },
-  {
-    "word": "PUP",
     "frequency": 12
   },
   {
@@ -3308,19 +3588,11 @@
     "frequency": 11
   },
   {
-    "word": "ZIT",
-    "frequency": 11
-  },
-  {
     "word": "BUG",
     "frequency": 11
   },
   {
     "word": "BUY",
-    "frequency": 11
-  },
-  {
-    "word": "PUB",
     "frequency": 11
   },
   {
@@ -3352,10 +3624,6 @@
     "frequency": 11
   },
   {
-    "word": "JOT",
-    "frequency": 11
-  },
-  {
     "word": "ERE",
     "frequency": 11
   },
@@ -3376,35 +3644,11 @@
     "frequency": 10
   },
   {
-    "word": "TAX",
-    "frequency": 10
-  },
-  {
     "word": "DEX",
     "frequency": 10
   },
   {
     "word": "JUT",
-    "frequency": 10
-  },
-  {
-    "word": "ORE",
-    "frequency": 10
-  },
-  {
-    "word": "JAM",
-    "frequency": 10
-  },
-  {
-    "word": "JAW",
-    "frequency": 10
-  },
-  {
-    "word": "JAG",
-    "frequency": 10
-  },
-  {
-    "word": "JAY",
     "frequency": 10
   },
   {
@@ -3424,23 +3668,11 @@
     "frequency": 10
   },
   {
-    "word": "JOG",
-    "frequency": 10
-  },
-  {
     "word": "JUN",
     "frequency": 10
   },
   {
     "word": "SAX",
-    "frequency": 10
-  },
-  {
-    "word": "JOY",
-    "frequency": 10
-  },
-  {
-    "word": "JAB",
     "frequency": 10
   },
   {
@@ -3460,16 +3692,8 @@
     "frequency": 10
   },
   {
-    "word": "JIG",
-    "frequency": 10
-  },
-  {
     "word": "SOX",
     "frequency": 10
-  },
-  {
-    "word": "JOB",
-    "frequency": 9
   },
   {
     "word": "NIX",
@@ -3484,19 +3708,11 @@
     "frequency": 9
   },
   {
-    "word": "SIX",
-    "frequency": 9
-  },
-  {
     "word": "JIB",
     "frequency": 9
   },
   {
     "word": "ADZ",
-    "frequency": 9
-  },
-  {
-    "word": "LAX",
     "frequency": 9
   },
   {
@@ -3516,18 +3732,6 @@
     "frequency": 9
   },
   {
-    "word": "MAX",
-    "frequency": 9
-  },
-  {
-    "word": "WAX",
-    "frequency": 9
-  },
-  {
-    "word": "FAX",
-    "frequency": 9
-  },
-  {
     "word": "COX",
     "frequency": 9
   },
@@ -3541,26 +3745,6 @@
   },
   {
     "word": "PAX",
-    "frequency": 9
-  },
-  {
-    "word": "ZAP",
-    "frequency": 9
-  },
-  {
-    "word": "EAT",
-    "frequency": 9
-  },
-  {
-    "word": "JUG",
-    "frequency": 9
-  },
-  {
-    "word": "TEA",
-    "frequency": 9
-  },
-  {
-    "word": "FOX",
     "frequency": 9
   },
   {
@@ -3588,14 +3772,6 @@
     "frequency": 9
   },
   {
-    "word": "FIX",
-    "frequency": 9
-  },
-  {
-    "word": "TOE",
-    "frequency": 9
-  },
-  {
     "word": "FIZ",
     "frequency": 9
   },
@@ -3608,15 +3784,7 @@
     "frequency": 9
   },
   {
-    "word": "ZIP",
-    "frequency": 9
-  },
-  {
     "word": "BOX",
-    "frequency": 9
-  },
-  {
-    "word": "TIE",
     "frequency": 9
   },
   {
@@ -3636,10 +3804,6 @@
     "frequency": 8
   },
   {
-    "word": "SEA",
-    "frequency": 8
-  },
-  {
     "word": "EON",
     "frequency": 8
   },
@@ -3649,14 +3813,6 @@
   },
   {
     "word": "LUX",
-    "frequency": 8
-  },
-  {
-    "word": "EAR",
-    "frequency": 8
-  },
-  {
-    "word": "ERA",
     "frequency": 8
   },
   {
@@ -3673,14 +3829,6 @@
   },
   {
     "word": "IRE",
-    "frequency": 8
-  },
-  {
-    "word": "LEA",
-    "frequency": 8
-  },
-  {
-    "word": "OAT",
     "frequency": 8
   },
   {
@@ -3712,10 +3860,6 @@
     "frequency": 8
   },
   {
-    "word": "SLY",
-    "frequency": 8
-  },
-  {
     "word": "NEE",
     "frequency": 8
   },
@@ -3733,10 +3877,6 @@
   },
   {
     "word": "ONO",
-    "frequency": 8
-  },
-  {
-    "word": "OAR",
     "frequency": 8
   },
   {
@@ -3772,27 +3912,11 @@
     "frequency": 7
   },
   {
-    "word": "EEL",
-    "frequency": 7
-  },
-  {
-    "word": "FLY",
-    "frequency": 7
-  },
-  {
     "word": "CEE",
     "frequency": 7
   },
   {
-    "word": "PLY",
-    "frequency": 7
-  },
-  {
     "word": "EME",
-    "frequency": 7
-  },
-  {
-    "word": "EWE",
     "frequency": 7
   },
   {
@@ -3812,14 +3936,6 @@
     "frequency": 7
   },
   {
-    "word": "EYE",
-    "frequency": 7
-  },
-  {
-    "word": "STY",
-    "frequency": 7
-  },
-  {
     "word": "PEE",
     "frequency": 7
   },
@@ -3836,10 +3952,6 @@
     "frequency": 7
   },
   {
-    "word": "THY",
-    "frequency": 7
-  },
-  {
     "word": "BEE",
     "frequency": 7
   },
@@ -3848,19 +3960,11 @@
     "frequency": 7
   },
   {
-    "word": "EVE",
-    "frequency": 7
-  },
-  {
     "word": "VEE",
     "frequency": 7
   },
   {
     "word": "HOE",
-    "frequency": 7
-  },
-  {
-    "word": "ROE",
     "frequency": 7
   },
   {
@@ -3888,23 +3992,11 @@
     "frequency": 6
   },
   {
-    "word": "DOE",
-    "frequency": 6
-  },
-  {
-    "word": "ODE",
-    "frequency": 6
-  },
-  {
     "word": "OOT",
     "frequency": 6
   },
   {
     "word": "DIE",
-    "frequency": 6
-  },
-  {
-    "word": "LIE",
     "frequency": 6
   },
   {
@@ -3948,26 +4040,6 @@
     "frequency": 6
   },
   {
-    "word": "PEA",
-    "frequency": 6
-  },
-  {
-    "word": "OWE",
-    "frequency": 6
-  },
-  {
-    "word": "WOE",
-    "frequency": 6
-  },
-  {
-    "word": "ICE",
-    "frequency": 6
-  },
-  {
-    "word": "FOE",
-    "frequency": 6
-  },
-  {
     "word": "AAH",
     "frequency": 6
   },
@@ -4001,14 +4073,6 @@
   },
   {
     "word": "KEA",
-    "frequency": 6
-  },
-  {
-    "word": "PIE",
-    "frequency": 6
-  },
-  {
-    "word": "HUE",
     "frequency": 6
   },
   {
@@ -4048,10 +4112,6 @@
     "frequency": 6
   },
   {
-    "word": "VIE",
-    "frequency": 6
-  },
-  {
     "word": "TAU",
     "frequency": 6
   },
@@ -4061,10 +4121,6 @@
   },
   {
     "word": "ADO",
-    "frequency": 6
-  },
-  {
-    "word": "DUE",
     "frequency": 6
   },
   {
@@ -4082,10 +4138,6 @@
   {
     "word": "AMA",
     "frequency": 6
-  },
-  {
-    "word": "OIL",
-    "frequency": 5
   },
   {
     "word": "SHH",
@@ -4113,10 +4165,6 @@
   },
   {
     "word": "OAF",
-    "frequency": 5
-  },
-  {
-    "word": "EMU",
     "frequency": 5
   },
   {
@@ -4180,10 +4228,6 @@
     "frequency": 5
   },
   {
-    "word": "TRY",
-    "frequency": 5
-  },
-  {
     "word": "BOA",
     "frequency": 5
   },
@@ -4204,10 +4248,6 @@
     "frequency": 5
   },
   {
-    "word": "OAK",
-    "frequency": 5
-  },
-  {
     "word": "OKA",
     "frequency": 5
   },
@@ -4225,10 +4265,6 @@
   },
   {
     "word": "TSK",
-    "frequency": 5
-  },
-  {
-    "word": "VIA",
     "frequency": 5
   },
   {
@@ -4256,10 +4292,6 @@
     "frequency": 5
   },
   {
-    "word": "SHY",
-    "frequency": 5
-  },
-  {
     "word": "DUI",
     "frequency": 5
   },
@@ -4270,10 +4302,6 @@
   {
     "word": "BRR",
     "frequency": 5
-  },
-  {
-    "word": "DRY",
-    "frequency": 4
   },
   {
     "word": "UPO",
@@ -4304,10 +4332,6 @@
     "frequency": 4
   },
   {
-    "word": "CRY",
-    "frequency": 4
-  },
-  {
     "word": "JEE",
     "frequency": 4
   },
@@ -4316,19 +4340,7 @@
     "frequency": 4
   },
   {
-    "word": "SPY",
-    "frequency": 4
-  },
-  {
-    "word": "FRY",
-    "frequency": 4
-  },
-  {
     "word": "HYP",
-    "frequency": 4
-  },
-  {
-    "word": "PRY",
     "frequency": 4
   },
   {
@@ -4340,15 +4352,7 @@
     "frequency": 4
   },
   {
-    "word": "SKY",
-    "frequency": 4
-  },
-  {
     "word": "CWM",
-    "frequency": 4
-  },
-  {
-    "word": "GYM",
     "frequency": 4
   },
   {
@@ -4377,10 +4381,6 @@
   },
   {
     "word": "OXO",
-    "frequency": 2
-  },
-  {
-    "word": "ZOO",
     "frequency": 2
   },
   {

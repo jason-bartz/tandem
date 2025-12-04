@@ -321,19 +321,31 @@
   },
   {
     "word": "ER",
-    "frequency": 15
+    "frequency": 30
   },
   {
     "word": "ED",
-    "frequency": 15
+    "frequency": 30
   },
   {
     "word": "RE",
-    "frequency": 14
+    "frequency": 30
   },
   {
     "word": "EN",
-    "frequency": 12
+    "frequency": 30
+  },
+  {
+    "word": "HA",
+    "frequency": 30
+  },
+  {
+    "word": "EH",
+    "frequency": 30
+  },
+  {
+    "word": "EM",
+    "frequency": 30
   },
   {
     "word": "ES",
@@ -345,10 +357,6 @@
   },
   {
     "word": "UN",
-    "frequency": 11
-  },
-  {
-    "word": "HA",
     "frequency": 11
   },
   {
@@ -368,10 +376,6 @@
     "frequency": 10
   },
   {
-    "word": "EH",
-    "frequency": 10
-  },
-  {
     "word": "TA",
     "frequency": 10
   },
@@ -381,10 +385,6 @@
   },
   {
     "word": "EL",
-    "frequency": 10
-  },
-  {
-    "word": "EM",
     "frequency": 10
   },
   {
