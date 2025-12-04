@@ -47,11 +47,11 @@ export default function ReelConnectionsAIGenerator({
       aria-modal="true"
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-ghost-white dark:bg-gray-800 rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
+        <div className="sticky top-0 bg-ghost-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex items-center justify-between rounded-t-2xl">
           <div>
             <h2
               id="ai-generator-title"
@@ -128,7 +128,7 @@ export default function ReelConnectionsAIGenerator({
               placeholder="e.g., Best Picture nominees, Spielberg movies, superhero films..."
               maxLength={100}
               disabled={loading}
-              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-accent-red focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-accent-red focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
               Describe what connects the 4 movies (e.g., director, genre, theme, awards)
@@ -218,7 +218,7 @@ export default function ReelConnectionsAIGenerator({
         </div>
 
         {/* Footer Actions */}
-        <div className="sticky bottom-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex gap-3 rounded-b-2xl">
+        <div className="sticky bottom-0 bg-ghost-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 px-6 py-4 flex gap-3 rounded-b-2xl">
           <button
             onClick={onClose}
             disabled={loading}

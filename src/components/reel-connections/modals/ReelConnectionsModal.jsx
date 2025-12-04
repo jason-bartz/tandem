@@ -187,7 +187,7 @@ export default function ReelConnectionsModal({
             {/* Header */}
             <div className="flex items-center justify-between px-5 py-4 border-b-2 border-white/10">
               {/* Drag Handle */}
-              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-white/30 rounded-full" />
+              <div className="absolute top-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-ghost-white/30 rounded-full" />
 
               {title && (
                 <h2 id="modal-title" className="text-xl font-bold text-white drop-shadow-lg pt-2">
@@ -197,7 +197,7 @@ export default function ReelConnectionsModal({
 
               <button
                 onClick={onClose}
-                className="ml-auto p-2 rounded-full transition-all hover:bg-white/10 text-white/70 hover:text-white"
+                className="ml-auto p-2 rounded-full transition-all hover:bg-ghost-white/10 text-white/70 hover:text-white"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />

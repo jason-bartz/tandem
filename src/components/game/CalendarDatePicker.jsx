@@ -138,7 +138,7 @@ export default function CalendarDatePicker({
           ${
             highContrast
               ? 'bg-hc-background border-hc-border'
-              : 'bg-white dark:bg-bg-card border-black dark:border-gray-600'
+              : 'bg-ghost-white dark:bg-bg-card border-black dark:border-gray-600'
           }
         `}
         style={{

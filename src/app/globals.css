@@ -17,8 +17,8 @@
 
   /* Background colors - solid, no gradients */
   --bg-primary: #ffce00;
-  --bg-surface: #ffffff;
-  --bg-card: #ffffff;
+  --bg-surface: #F4F5F9;
+  --bg-card: #F4F5F9;
 
   /* Text colors */
   --text-primary: #2c2c2c;
@@ -1528,7 +1528,7 @@ body {
 }
 
 /* Ensure modals have proper backgrounds in high contrast mode */
-.high-contrast .bg-white {
+.high-contrast .bg-ghost-white {
   background-color: var(--hc-surface) !important;
 }
 
@@ -1555,7 +1555,7 @@ body {
   /* Purple - 7.02:1 on white, more attractive than brown */
   --hc-warning-text: #ffffff;
   /* White text on dark purple backgrounds */
-  --hc-background: #ffffff;
+  --hc-background: #F4F5F9;
   --hc-surface: #f5f5f5;
   --hc-text: #000000;
   --hc-border: #000000;

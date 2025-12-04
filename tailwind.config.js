@@ -73,6 +73,8 @@ module.exports = {
         // Border
         'border-main': 'var(--border-color)',
         'border-light': 'var(--border-light)',
+        // Ghost white (replaces pure white)
+        'ghost-white': '#F4F5F9',
         // Legacy colors for backward compatibility
         'gray-text': '#6B7280',
         'dark-text': '#1F2937',

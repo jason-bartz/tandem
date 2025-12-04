@@ -361,7 +361,7 @@ export default function AccountPage() {
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
               {/* Skeleton card */}
-              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                 {/* Header skeleton */}
                 <div className="flex items-center justify-between p-6 pb-4">
                   <div className="w-10 h-10 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse"></div>
@@ -401,7 +401,7 @@ export default function AccountPage() {
                 </div>
               </div>
               {/* Shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
             </div>
           </div>
         </div>
@@ -421,7 +421,7 @@ export default function AccountPage() {
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
               {/* Main content card */}
-              <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+              <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                 {/* Header with back button, title, and hamburger menu */}
                 <div className="flex items-start justify-between p-6 pb-4">
                   <Link
@@ -550,7 +550,7 @@ export default function AccountPage() {
                                     className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-medium text-sm transition-all ${
                                       loadingUsername
                                         ? 'opacity-50 cursor-not-allowed'
-                                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                                        : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                                     }`}
                                   >
                                     Cancel
@@ -691,7 +691,7 @@ export default function AccountPage() {
                                 className={`p-3 rounded-xl border-2 ${
                                   subscription.cancelAtPeriodEnd
                                     ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
-                                    : 'bg-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
+                                    : 'bg-ghost-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
                                 }`}
                               >
                                 <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
@@ -747,7 +747,7 @@ export default function AccountPage() {
                           {isWeb ? (
                             <button
                               onClick={handleManageAccount}
-                              className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                              className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
                             >
                               Manage Subscription
                             </button>
@@ -811,7 +811,7 @@ export default function AccountPage() {
                     {/* Sign Out Button */}
                     <button
                       onClick={handleSignOut}
-                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                      className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
                     >
                       Sign Out
                     </button>
@@ -828,7 +828,7 @@ export default function AccountPage() {
               </div>
 
               {/* Neo-brutalist shadow element */}
-              <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+              <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
             </div>
           </div>
         </div>

@@ -343,7 +343,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
             ${
               highContrast
                 ? 'bg-hc-background border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-bg-card border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                : 'bg-ghost-white dark:bg-bg-card border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             }
           `}
         >

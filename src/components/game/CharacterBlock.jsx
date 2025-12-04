@@ -138,7 +138,7 @@ export default function CharacterBlock({
     if (isWrong) {
       return highContrast ? 'bg-hc-surface' : 'bg-accent-red/20 dark:bg-red-900/20';
     }
-    return highContrast ? 'bg-hc-background' : 'bg-white dark:bg-gray-800';
+    return highContrast ? 'bg-hc-background' : 'bg-ghost-white dark:bg-gray-800';
   };
 
   // Determine text color

@@ -103,7 +103,7 @@ export function generateFeedbackNotificationEmail(feedback) {
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
     <tr>
       <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border: 3px solid #2c2c2c; border-radius: 24px; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); overflow: hidden;">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #F4F5F9; border: 3px solid #2c2c2c; border-radius: 24px; box-shadow: 6px 6px 0px rgba(0, 0, 0, 1); overflow: hidden;">
 
           <!-- Header -->
           <tr>
@@ -133,7 +133,7 @@ export function generateFeedbackNotificationEmail(feedback) {
           <!-- Message Content -->
           <tr>
             <td style="padding: 24px 40px;">
-              <div style="background-color: #ffffff; border: 3px solid #2c2c2c; border-radius: 16px; padding: 20px; box-shadow: 3px 3px 0px rgba(0, 0, 0, 1);">
+              <div style="background-color: #F4F5F9; border: 3px solid #2c2c2c; border-radius: 16px; padding: 20px; box-shadow: 3px 3px 0px rgba(0, 0, 0, 1);">
                 <p style="margin: 0; color: #2c2c2c; font-size: 15px; line-height: 1.6; white-space: pre-wrap; word-wrap: break-word;">
 ${safe.message}
                 </p>

@@ -219,7 +219,7 @@ export default function ReelConnectionsAuthModal({
                 loading
                   ? 'opacity-50 cursor-not-allowed'
                   : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-              } bg-white text-black border-black`}
+              } bg-ghost-white text-black border-black`}
             >
               {loading ? (
                 <div className="animate-spin rounded-full h-5 w-5 border-2 border-black border-t-transparent"></div>
@@ -241,9 +241,9 @@ export default function ReelConnectionsAuthModal({
 
             {/* Divider */}
             <div className="flex items-center gap-4 my-4">
-              <div className="flex-1 h-px bg-white/20"></div>
+              <div className="flex-1 h-px bg-ghost-white/20"></div>
               <span className="text-sm text-white/50">or</span>
-              <div className="flex-1 h-px bg-white/20"></div>
+              <div className="flex-1 h-px bg-ghost-white/20"></div>
             </div>
           </>
         )}
@@ -264,7 +264,7 @@ export default function ReelConnectionsAuthModal({
                     const sanitized = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
                     setUsername(sanitized);
                   }}
-                  className="flex-1 px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+                  className="flex-1 px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
                   placeholder="your_username"
                   minLength={3}
                   maxLength={20}
@@ -273,7 +273,7 @@ export default function ReelConnectionsAuthModal({
                 <button
                   type="button"
                   onClick={handleGenerateUsername}
-                  className="w-12 h-12 flex items-center justify-center bg-white/10 border-2 border-white/20 rounded-xl hover:bg-white/20 hover:border-[#ffce00] transition-all"
+                  className="w-12 h-12 flex items-center justify-center bg-ghost-white/10 border-2 border-white/20 rounded-xl hover:bg-ghost-white/20 hover:border-[#ffce00] transition-all"
                   aria-label="Generate random username"
                   title="Generate random username"
                 >
@@ -295,7 +295,7 @@ export default function ReelConnectionsAuthModal({
               id="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+              className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
               placeholder="you@example.com"
               required
             />
@@ -327,7 +327,7 @@ export default function ReelConnectionsAuthModal({
                 id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
+                className="w-full px-4 py-3 bg-ghost-white/10 border-2 border-white/20 rounded-xl text-white placeholder-white/40 focus:border-[#ffce00] focus:outline-none transition-colors"
                 placeholder="••••••••"
                 minLength={6}
                 required

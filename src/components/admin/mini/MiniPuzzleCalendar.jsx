@@ -152,7 +152,7 @@ export default function MiniPuzzleCalendar({ puzzles = [], onSelectDate, selecte
   const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6">
       {/* Header */}
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl sm:text-2xl font-black text-text-primary">
@@ -168,14 +168,14 @@ export default function MiniPuzzleCalendar({ puzzles = [], onSelectDate, selecte
           </button>
           <button
             onClick={previousMonth}
-            className="px-3 py-1.5 text-sm sm:text-base font-bold bg-white dark:bg-gray-700 rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
+            className="px-3 py-1.5 text-sm sm:text-base font-bold bg-ghost-white dark:bg-gray-700 rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             ←
           </button>
           <button
             onClick={nextMonth}
-            className="px-3 py-1.5 text-sm sm:text-base font-bold bg-white dark:bg-gray-700 rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
+            className="px-3 py-1.5 text-sm sm:text-base font-bold bg-ghost-white dark:bg-gray-700 rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             →

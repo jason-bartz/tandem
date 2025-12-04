@@ -525,7 +525,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   }, [selectedCell, handleBackspaceInGrid, handleArrowKey, handleLetterInGrid]);
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6">
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6">
       <div className="flex justify-between items-start mb-6">
         <h2 className="text-2xl font-black text-text-primary">
           {puzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
@@ -570,7 +570,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`flex-1 px-4 py-2 text-sm font-bold rounded-lg border-[2px] transition-all ${
                 generationMode === 'fill'
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationMode === 'fill' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -586,7 +586,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`flex-1 px-4 py-2 text-sm font-bold rounded-lg border-[2px] transition-all ${
                 generationMode === 'scratch'
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationMode === 'scratch' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -614,7 +614,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 generationDifficulty === 'easy'
                   ? 'bg-green-400 text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationDifficulty === 'easy' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -628,7 +628,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 generationDifficulty === 'medium'
                   ? 'bg-yellow-400 text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationDifficulty === 'medium' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -642,7 +642,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 generationDifficulty === 'hard'
                   ? 'bg-orange-400 text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationDifficulty === 'hard' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -656,7 +656,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 generationDifficulty === 'expert'
                   ? 'bg-red-400 text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
               style={generationDifficulty === 'expert' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
             >
@@ -668,7 +668,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
         {/* Generation Statistics */}
         {generationStats && (
-          <div className="mt-4 p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-green-500">
+          <div className="mt-4 p-3 bg-ghost-white dark:bg-gray-800 rounded-lg border-[2px] border-green-500">
             <div className="flex justify-between items-center mb-2">
               <h4 className="text-sm font-bold text-text-primary">📊 Last Generation Stats</h4>
               <button
@@ -756,7 +756,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
@@ -770,7 +770,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             <select
               value={formData.difficulty}
               onChange={(e) => handleChange('difficulty', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             >
               <option value="easy">Easy</option>
@@ -792,7 +792,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.NONE
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               No Symmetry
@@ -803,7 +803,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.ROTATIONAL
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               Rotational
@@ -814,7 +814,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.HORIZONTAL
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               Horizontal
@@ -825,7 +825,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.VERTICAL
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               Vertical
@@ -836,7 +836,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.DIAGONAL_NESW
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               NE/SW Diagonal
@@ -847,7 +847,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
                 symmetryType === SYMMETRY_TYPES.DIAGONAL_NWSE
                   ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
               }`}
             >
               NW/SE Diagonal
@@ -873,7 +873,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   className={`px-2 py-1 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'across'
                       ? 'bg-accent-yellow text-gray-900 border-black'
-                      : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
                   }`}
                 >
                   Across
@@ -884,7 +884,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                   className={`px-2 py-1 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'down'
                       ? 'bg-accent-yellow text-gray-900 border-black'
-                      : 'bg-white dark:bg-gray-700 text-text-primary border-gray-300'
+                      : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
                   }`}
                 >
                   Down
@@ -932,7 +932,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                       className={`grid-cell w-12 h-12 text-center text-lg font-bold uppercase border-[2px] ${
                         cell === '■'
                           ? 'bg-black text-white border-black'
-                          : 'bg-white dark:bg-gray-800 border-black dark:border-white'
+                          : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-white'
                       } ${
                         selectedCell?.row === rowIndex && selectedCell?.col === colIndex
                           ? 'ring-2 ring-yellow-500'
@@ -980,7 +980,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                       key={index}
                       type="button"
                       onClick={() => fillWord(word)}
-                      className="w-full text-left px-2 py-1 text-sm font-mono bg-white dark:bg-gray-800 hover:bg-accent-yellow dark:hover:bg-accent-yellow hover:text-gray-900 border border-gray-300 rounded transition-colors"
+                      className="w-full text-left px-2 py-1 text-sm font-mono bg-ghost-white dark:bg-gray-800 hover:bg-accent-yellow dark:hover:bg-accent-yellow hover:text-gray-900 border border-gray-300 rounded transition-colors"
                     >
                       {word}
                     </button>
@@ -1116,7 +1116,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-3 font-bold bg-white dark:bg-gray-700 text-text-primary rounded-lg border-[3px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
+            className="px-6 py-3 font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[3px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
             style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
           >
             Cancel

@@ -645,7 +645,7 @@ export default function PrivacyPolicy() {
               <LegalPageSkeleton />
             ) : (
               <div className="relative">
-                <div className="bg-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
+                <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                   {/* Header with back button, title, and hamburger menu */}
                   <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
                     <Link
@@ -677,7 +677,7 @@ export default function PrivacyPolicy() {
                   </div>
 
                   {/* Summary Card */}
-                  <div className="mx-6 mt-6 mb-6 p-4 bg-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                  <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       Tandem Daily Games are designed with privacy in mind:
@@ -804,7 +804,7 @@ export default function PrivacyPolicy() {
                             </svg>
                           </button>
                           {activeSection === section.id && (
-                            <div className="p-4 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
+                            <div className="p-4 bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-t-[3px] border-black dark:border-white">
                               {section.content}
                             </div>
                           )}
@@ -821,7 +821,7 @@ export default function PrivacyPolicy() {
                   </div>
                 </div>
                 {/* Faux drop shadow */}
-                <div className="absolute inset-0 bg-black dark:bg-white rounded-[32px] -z-10"></div>
+                <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
               </div>
             )}
           </div>

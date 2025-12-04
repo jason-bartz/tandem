@@ -186,7 +186,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   className={`relative px-3 sm:px-4 py-2 sm:py-3 border-[3px] border-black dark:border-white font-bold text-xs sm:text-sm transition-all rounded-t-lg whitespace-nowrap ${
                     isActive
                       ? `${color} text-white border-b-[0px] mb-[-3px] z-10 shadow-none`
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 sm:gap-2">
@@ -195,7 +195,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                     <span
                       className={`min-w-[20px] sm:min-w-[24px] px-1 sm:px-1.5 py-0.5 rounded text-xs font-black ${
                         isActive
-                          ? 'bg-white/20 text-white'
+                          ? 'bg-ghost-white/20 text-white'
                           : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
                       }`}
                     >
@@ -219,8 +219,8 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 onClick={() => setCategoryFilter('all')}
                 className={`px-2.5 sm:px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
                   categoryFilter === 'all'
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 All
@@ -231,8 +231,8 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   onClick={() => setCategoryFilter(category.value)}
                   className={`px-2.5 sm:px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all whitespace-nowrap ${
                     categoryFilter === category.value
-                      ? 'bg-black dark:bg-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                      : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                      ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                      : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                   }`}
                 >
                   {category.label}
@@ -250,8 +250,8 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 onClick={() => setSortOrder('newest')}
                 className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
                   sortOrder === 'newest'
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <span className="hidden sm:inline">Newest First</span>
@@ -261,8 +261,8 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 onClick={() => setSortOrder('oldest')}
                 className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
                   sortOrder === 'oldest'
-                    ? 'bg-black dark:bg-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <span className="hidden sm:inline">Oldest First</span>
@@ -287,7 +287,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
       )}
 
       {!loading && !hasFeedback && (
-        <div className="rounded-xl border-[3px] border-black dark:border-white bg-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] p-12 text-center">
+        <div className="rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] p-12 text-center">
           <div className="max-w-md mx-auto">
             <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2">
               No Feedback Found
@@ -307,12 +307,12 @@ export default function FeedbackDashboard({ onCountsChange }) {
           return (
             <div
               key={entry.id}
-              className={`rounded-xl border-[3px] border-black dark:border-white bg-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden`}
+              className={`rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden`}
             >
               {/* Compact Header */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-4 sm:px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">
                 <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4">
-                  <span className="px-2 py-1 rounded bg-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
+                  <span className="px-2 py-1 rounded bg-ghost-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                     {category.icon && (
                       <img
                         src={getIconPath(category.icon)}
@@ -330,7 +330,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                   value={entry.status}
                   onChange={(event) => handleStatusChange(entry.id, event.target.value)}
                   disabled={isStatusUpdating}
-                  className={`w-full sm:w-auto px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all ${
+                  className={`w-full sm:w-auto px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold bg-ghost-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 transition-all ${
                     isStatusUpdating
                       ? 'opacity-50 cursor-not-allowed'
                       : 'hover:bg-gray-50 dark:hover:bg-gray-600'
@@ -419,7 +419,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                         {entry.comments.map((comment) => (
                           <div
                             key={comment.id}
-                            className="p-3 bg-white dark:bg-gray-800 border-[2px] border-purple-400 dark:border-purple-600 rounded-lg"
+                            className="p-3 bg-ghost-white dark:bg-gray-800 border-[2px] border-purple-400 dark:border-purple-600 rounded-lg"
                           >
                             <div className="flex items-center justify-between mb-1.5">
                               <span className="text-xs font-bold text-gray-900 dark:text-gray-100">
@@ -451,7 +451,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                         }
                         rows={3}
                         placeholder="Add internal note..."
-                        className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none focus:ring-2 focus:ring-purple-500"
                       />
                       <button
                         onClick={() => handleCommentSubmit(entry.id)}

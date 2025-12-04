@@ -264,7 +264,7 @@ export default function SidebarMenu({
                     className={`w-full p-4 rounded-2xl border-[3px] ${
                       highContrast
                         ? 'bg-hc-surface border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                        : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                     }`}
                   >
                     <div className="flex items-start gap-3 mb-3">
@@ -311,7 +311,7 @@ export default function SidebarMenu({
                     className={`w-full p-4 rounded-2xl border-[3px] transition-all text-left ${
                       highContrast
                         ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                        : 'bg-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                     }`}
                   >
                     {/* Profile Header */}
@@ -326,7 +326,7 @@ export default function SidebarMenu({
                       >
                         {profileLoading && !userAvatar && !username ? (
                           /* Loading skeleton */
-                          <div className="w-full h-full bg-white/20 animate-pulse" />
+                          <div className="w-full h-full bg-ghost-white/20 animate-pulse" />
                         ) : userAvatar ? (
                           /* User's selected avatar */
                           <img
@@ -565,7 +565,7 @@ function MenuButton({ icon, label, onClick, highContrast }) {
       className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
         highContrast
           ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-          : 'bg-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+          : 'bg-ghost-white dark:bg-bg-surface border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
       }`}
     >
       <img src={icon} alt="" className="w-6 h-6" />

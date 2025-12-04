@@ -50,7 +50,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
         isUnlocked
           ? highContrast
             ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-            : 'bg-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,0.15)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.4)]'
+            : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,0.15)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.4)]'
           : highContrast
             ? 'bg-hc-surface/40 border-hc-border/40 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
             : 'bg-gray-100 dark:bg-gray-800/50 border-gray-300 dark:border-gray-700 shadow-[2px_2px_0px_rgba(0,0,0,0.1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.2)]'

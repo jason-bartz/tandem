@@ -730,7 +730,7 @@ export function getConstraintLevelStyles(level) {
     high: 'bg-orange-200 dark:bg-orange-900 border-orange-500',
     medium: 'bg-yellow-200 dark:bg-yellow-900 border-yellow-500',
     low: 'bg-green-200 dark:bg-green-900 border-green-500',
-    none: 'bg-white dark:bg-gray-800',
+    none: 'bg-ghost-white dark:bg-gray-800',
   };
 
   return styles[level] || styles.none;

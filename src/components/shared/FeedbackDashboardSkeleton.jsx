@@ -24,7 +24,7 @@ export default function FeedbackDashboardSkeleton() {
           {[1, 2, 3, 4].map((i) => (
             <div
               key={i}
-              className="px-4 py-3 border-[3px] border-black dark:border-white rounded-t-lg bg-white dark:bg-gray-800 animate-pulse"
+              className="px-4 py-3 border-[3px] border-black dark:border-white rounded-t-lg bg-ghost-white dark:bg-gray-800 animate-pulse"
               style={{ animationDelay: `${i * 100}ms` }}
             >
               <div className="flex items-center gap-2">
@@ -57,7 +57,7 @@ export default function FeedbackDashboardSkeleton() {
         {[1, 2, 3].map((i) => (
           <div
             key={i}
-            className="rounded-xl border-[3px] border-black dark:border-white bg-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden"
+            className="rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden"
           >
             {/* Header Skeleton */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">

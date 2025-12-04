@@ -87,13 +87,13 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
       {/* Sliding Pane */}
       <div
-        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-white dark:bg-bg-surface shadow-2xl transform transition-all duration-300 ease-in-out z-50 ${
+        className={`fixed top-0 left-0 h-full w-full sm:w-[480px] bg-ghost-white dark:bg-bg-surface shadow-2xl transform transition-all duration-300 ease-in-out z-50 ${
           isOpen ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
         }`}
       >
         <div className="h-full overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-white dark:bg-bg-surface border-b-[3px] border-border-main p-6">
+          <div className="sticky top-0 z-10 bg-ghost-white dark:bg-bg-surface border-b-[3px] border-border-main p-6">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Feedback</h2>
               <button
@@ -238,7 +238,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                               : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : highContrast
                               ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
-                              : 'bg-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
+                              : 'bg-ghost-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
                       }`}
                     >
                       {category.icon && (
@@ -278,7 +278,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
                       : highContrast
                         ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
-                        : 'border-border-main bg-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                        : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
                   }`}
                   placeholder="Describe your feedback in detail. Include puzzle numbers, steps to reproduce bugs, or specific feature suggestions..."
                   maxLength={2000}

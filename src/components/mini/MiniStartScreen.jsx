@@ -62,7 +62,7 @@ export default function MiniStartScreen({ puzzle, onStart }) {
               ${
                 highContrast
                   ? 'bg-hc-surface'
-                  : 'bg-white dark:bg-gray-800'
+                  : 'bg-ghost-white dark:bg-gray-800'
               }
             `}
           >

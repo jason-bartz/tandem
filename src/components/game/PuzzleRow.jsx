@@ -64,7 +64,7 @@ export default function PuzzleRow({
           } rounded-[18px] flex items-center justify-center border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex-shrink-0 cursor-pointer select-none ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-white dark:bg-gray-700 border-gray-800 dark:border-gray-500'
+              : 'bg-ghost-white dark:bg-gray-700 border-gray-800 dark:border-gray-500'
           } ${!reduceMotion ? 'hover:animate-hover-tilt active:animate-touch-squish' : ''} ${
             isCorrect && !reduceMotion ? 'animate-victory-wiggle' : ''
           }`}

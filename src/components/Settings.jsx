@@ -350,7 +350,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       className={`px-4 py-2 rounded-xl font-medium text-sm transition-all border-[3px] whitespace-nowrap ${
                         highContrast
                           ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus hover:text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                          : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                          : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       Skip
@@ -368,7 +368,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] ${
                 highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-black dark:border-gray-600 bg-white dark:bg-gray-800'
+                  : 'border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
@@ -430,7 +430,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               ? 'bg-hc-background'
                               : hardModeEnabled
                                 ? 'bg-orange-600'
-                                : 'bg-white dark:bg-gray-600'
+                                : 'bg-ghost-white dark:bg-gray-600'
                           }`}
                         >
                           <img
@@ -483,7 +483,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         </p>
                       </div>
                       <div className="relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 shadow-[2px_2px_0px_rgba(0,0,0,0.3)] cursor-not-allowed">
-                        <span className="translate-x-0.5 inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-gray-400 dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,0.3)] bg-white dark:bg-gray-600">
+                        <span className="translate-x-0.5 inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-gray-400 dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,0.3)] bg-ghost-white dark:bg-gray-600">
                           <img
                             src={
                               theme === 'dark'
@@ -510,7 +510,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-white dark:bg-gray-800'
+                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
@@ -579,7 +579,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                                 ? 'bg-hc-background'
                                 : syncStatus.enabled
                                   ? 'bg-blue-600'
-                                  : 'bg-white dark:bg-gray-600'
+                                  : 'bg-ghost-white dark:bg-gray-600'
                             }`}
                           >
                             <svg
@@ -643,7 +643,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-white dark:bg-gray-800'
+                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
@@ -732,7 +732,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               ? 'bg-hc-background'
                               : notificationSettings.notificationsEnabled
                                 ? 'bg-orange-600'
-                                : 'bg-white dark:bg-gray-600'
+                                : 'bg-ghost-white dark:bg-gray-600'
                           }`}
                         >
                           <svg
@@ -763,7 +763,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
                   highContrast
                     ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-white dark:bg-gray-800'
+                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
                 }`}
               >
                 {/* Section Header */}
@@ -825,7 +825,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             ? 'bg-hc-background'
                             : leaderboardsEnabled
                               ? 'bg-green-600'
-                              : 'bg-white dark:bg-gray-600'
+                              : 'bg-ghost-white dark:bg-gray-600'
                         }`}
                       >
                         <svg
@@ -850,7 +850,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
               className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] ${
                 highContrast
                   ? 'border-hc-border bg-hc-surface'
-                  : 'border-black dark:border-gray-600 bg-white dark:bg-gray-800'
+                  : 'border-black dark:border-gray-600 bg-ghost-white dark:bg-gray-800'
               }`}
             >
               {/* Section Header */}
@@ -981,7 +981,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             ? 'bg-hc-background'
                             : reduceMotion
                               ? 'bg-pink-600'
-                              : 'bg-white dark:bg-gray-600'
+                              : 'bg-ghost-white dark:bg-gray-600'
                         }`}
                       >
                         <img src="/icons/ui/motion.png" alt="Motion" className="w-4 h-4" />
@@ -1012,7 +1012,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTY'
                             ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTY
@@ -1026,7 +1026,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'QWERTZ'
                             ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       QWERTZ
@@ -1040,7 +1040,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             : 'bg-hc-surface text-hc-text border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                           : keyboardLayout === 'AZERTY'
                             ? 'bg-sky-500 text-white border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
                       }`}
                     >
                       AZERTY

@@ -18,7 +18,7 @@ class ErrorBoundary extends React.Component {
     };
   }
 
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError(_error) {
     return { hasError: true };
   }
 
@@ -72,7 +72,7 @@ class ErrorBoundary extends React.Component {
       // Default fallback UI
       return (
         <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50 dark:bg-gray-900">
-          <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
+          <div className="max-w-md w-full bg-ghost-white dark:bg-gray-800 rounded-2xl shadow-lg p-8">
             <div className="text-center">
               <div className="mb-4">
                 <svg

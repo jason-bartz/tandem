@@ -158,7 +158,7 @@ export default function DeleteAccountModal({
             className={`flex-1 py-3 rounded-2xl border-[3px] font-semibold transition-all ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
             }`}
           >
             Cancel
@@ -188,7 +188,7 @@ export default function DeleteAccountModal({
             } ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
             }`}
           >
             Back
@@ -346,7 +346,7 @@ export default function DeleteAccountModal({
                 className={`w-full px-4 py-3 rounded-xl border-[3px] font-mono font-bold text-lg ${
                   highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border focus:border-hc-focus'
-                    : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-red-500'
+                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-600 focus:border-red-500'
                 } focus:outline-none`}
                 autoComplete="off"
                 disabled={loading}

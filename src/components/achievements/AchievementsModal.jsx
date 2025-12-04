@@ -124,7 +124,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
                   Unlocked
                 </div>
               </div>
-              <div className="w-px h-12 bg-white/30"></div>
+              <div className="w-px h-12 bg-ghost-white/30"></div>
               <div className="text-center">
                 <div className="text-3xl font-extrabold mb-1">
                   {displayData.unlockedCount > 0

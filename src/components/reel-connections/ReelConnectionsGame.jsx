@@ -385,11 +385,11 @@ const ReelConnectionsGame = () => {
             </p>
 
             <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
+              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
                 <p className="text-white font-black text-xl mb-1 drop-shadow">{timeStr}</p>
                 <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Time</p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
+              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
                 <p className="text-white font-black text-xl mb-1 drop-shadow">
                   {mistakes}/{REEL_CONFIG.MAX_MISTAKES}
                 </p>
@@ -397,7 +397,7 @@ const ReelConnectionsGame = () => {
                   Mistakes
                 </p>
               </div>
-              <div className="bg-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
+              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
                 <p className="text-white font-black text-xl mb-1 drop-shadow">{dateStr}</p>
                 <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Date</p>
               </div>

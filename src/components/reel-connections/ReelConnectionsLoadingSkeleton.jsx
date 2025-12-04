@@ -66,14 +66,14 @@ export default function ReelConnectionsLoadingSkeleton() {
       <div className="w-full max-w-2xl">
         {/* Header Links Skeleton */}
         <div className="flex items-center justify-between px-2 mb-3">
-          <div className="h-4 w-20 bg-white/10 rounded reel-skeleton-shimmer" />
+          <div className="h-4 w-20 bg-ghost-white/10 rounded reel-skeleton-shimmer" />
           <div className="flex items-center gap-4">
             <div
-              className="h-4 w-14 bg-white/10 rounded reel-skeleton-shimmer"
+              className="h-4 w-14 bg-ghost-white/10 rounded reel-skeleton-shimmer"
               style={{ animationDelay: '100ms' }}
             />
             <div
-              className="h-4 w-10 bg-white/10 rounded reel-skeleton-shimmer"
+              className="h-4 w-10 bg-ghost-white/10 rounded reel-skeleton-shimmer"
               style={{ animationDelay: '200ms' }}
             />
           </div>
@@ -95,9 +95,9 @@ export default function ReelConnectionsLoadingSkeleton() {
           {/* Header Content Skeleton */}
           <div className="mt-4 mb-4">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-white/10 rounded reel-skeleton-shimmer" />
+              <div className="w-6 h-6 bg-ghost-white/10 rounded reel-skeleton-shimmer" />
               <div
-                className="h-7 w-44 bg-white/10 rounded-lg reel-skeleton-shimmer"
+                className="h-7 w-44 bg-ghost-white/10 rounded-lg reel-skeleton-shimmer"
                 style={{ animationDelay: '100ms' }}
               />
               <div
@@ -106,7 +106,7 @@ export default function ReelConnectionsLoadingSkeleton() {
               />
             </div>
             <div
-              className="h-4 w-48 mx-auto bg-white/10 rounded reel-skeleton-shimmer"
+              className="h-4 w-48 mx-auto bg-ghost-white/10 rounded reel-skeleton-shimmer"
               style={{ animationDelay: '150ms' }}
             />
           </div>
@@ -118,17 +118,17 @@ export default function ReelConnectionsLoadingSkeleton() {
                 {[0, 1, 2, 3].map((i) => (
                   <div
                     key={i}
-                    className="w-8 h-8 bg-white/10 rounded reel-skeleton-shimmer"
+                    className="w-8 h-8 bg-ghost-white/10 rounded reel-skeleton-shimmer"
                     style={{ animationDelay: `${i * 75}ms` }}
                   />
                 ))}
               </div>
-              <div className="h-3 w-24 bg-white/10 rounded reel-skeleton-shimmer mt-1" />
+              <div className="h-3 w-24 bg-ghost-white/10 rounded reel-skeleton-shimmer mt-1" />
             </div>
             <div className="flex flex-col items-center">
-              <div className="h-8 w-16 bg-white/10 rounded reel-skeleton-shimmer" />
+              <div className="h-8 w-16 bg-ghost-white/10 rounded reel-skeleton-shimmer" />
               <div
-                className="h-3 w-10 bg-white/10 rounded reel-skeleton-shimmer mt-1"
+                className="h-3 w-10 bg-ghost-white/10 rounded reel-skeleton-shimmer mt-1"
                 style={{ animationDelay: '50ms' }}
               />
             </div>
@@ -151,11 +151,11 @@ export default function ReelConnectionsLoadingSkeleton() {
           {[...Array(16)].map((_, i) => (
             <div key={i} className="flex flex-col">
               <div
-                className="aspect-[2/3] rounded-xl overflow-hidden border-[4px] border-black/50 shadow-[3px_3px_0px_rgba(0,0,0,0.5)] mb-1 bg-white/5 reel-skeleton-shimmer"
+                className="aspect-[2/3] rounded-xl overflow-hidden border-[4px] border-black/50 shadow-[3px_3px_0px_rgba(0,0,0,0.5)] mb-1 bg-ghost-white/5 reel-skeleton-shimmer"
                 style={{ animationDelay: `${(i % 4) * 100 + Math.floor(i / 4) * 50}ms` }}
               />
               <div
-                className="h-3 w-full bg-white/10 rounded reel-skeleton-shimmer mx-auto"
+                className="h-3 w-full bg-ghost-white/10 rounded reel-skeleton-shimmer mx-auto"
                 style={{ animationDelay: `${(i % 4) * 100 + Math.floor(i / 4) * 50 + 25}ms` }}
               />
             </div>
@@ -177,22 +177,22 @@ export default function ReelConnectionsLoadingSkeleton() {
 
         {/* Controls Skeleton */}
         <div className="flex gap-3 justify-center mb-6">
-          <div className="h-11 w-24 bg-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer" />
+          <div className="h-11 w-24 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer" />
           <div
-            className="h-11 w-20 bg-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer"
+            className="h-11 w-20 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer"
             style={{ animationDelay: '100ms' }}
           />
           <div
-            className="h-11 w-24 bg-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer"
+            className="h-11 w-24 bg-ghost-white/10 border-[3px] border-white/10 rounded-xl reel-skeleton-shimmer"
             style={{ animationDelay: '200ms' }}
           />
         </div>
 
         {/* Footer Skeleton */}
         <div className="text-center mt-8 space-y-2">
-          <div className="h-4 w-12 mx-auto bg-white/10 rounded reel-skeleton-shimmer" />
+          <div className="h-4 w-12 mx-auto bg-ghost-white/10 rounded reel-skeleton-shimmer" />
           <div
-            className="h-3 w-32 mx-auto bg-white/10 rounded reel-skeleton-shimmer"
+            className="h-3 w-32 mx-auto bg-ghost-white/10 rounded reel-skeleton-shimmer"
             style={{ animationDelay: '50ms' }}
           />
         </div>

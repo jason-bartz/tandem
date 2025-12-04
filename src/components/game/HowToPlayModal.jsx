@@ -38,7 +38,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
             activeGame === 'tandem'
               ? 'bg-[#38b6ff] text-white border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
           <div className="flex items-center justify-center gap-2">
@@ -54,7 +54,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
             activeGame === 'mini'
               ? 'bg-[#FFEB3B] text-gray-900 border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
           <div className="flex items-center justify-center gap-2">
@@ -104,7 +104,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`text-sm space-y-1 mt-2 font-mono rounded p-2 ${
                 highContrast
                   ? 'bg-black text-white border-2 border-yellow-300'
-                  : 'bg-white dark:bg-gray-800'
+                  : 'bg-ghost-white dark:bg-gray-800'
               }`}
             >
               <p className={highContrast ? 'text-white' : ''}>

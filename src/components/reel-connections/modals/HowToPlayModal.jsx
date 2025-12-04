@@ -18,7 +18,7 @@ export default function HowToPlayModal({ isOpen, onClose }) {
         </div>
 
         {/* Rules Section */}
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-3">
               <span className="flex-shrink-0 w-6 h-6 bg-[#ffce00] text-[#0f0f1e] rounded-full flex items-center justify-center text-xs font-bold">
@@ -36,13 +36,13 @@ export default function HowToPlayModal({ isOpen, onClose }) {
         </div>
 
         {/* Tips Section */}
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
           <p className="text-sm text-white/70 mb-2 font-medium">Tip:</p>
           <p className="text-sm">Long press any poster to enlarge it for a better view.</p>
         </div>
 
         {/* Difficulty Colors */}
-        <div className="bg-white/5 rounded-xl p-4 border border-white/10">
+        <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
           <p className="text-sm text-white/70 mb-3">Categories are color-coded by difficulty:</p>
           <div className="space-y-2">
             <div className="flex items-center gap-3">

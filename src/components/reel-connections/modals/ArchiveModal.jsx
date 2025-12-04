@@ -234,7 +234,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                           isToday
                             ? 'bg-[#ffce00] text-[#0f0f1e] font-bold border-2 border-white'
                             : isInteractive
-                              ? 'text-white/90 hover:bg-white/10 active:scale-95 cursor-pointer'
+                              ? 'text-white/90 hover:bg-ghost-white/10 active:scale-95 cursor-pointer'
                               : 'text-white/30 cursor-not-allowed'
                         }
                     `}
@@ -261,7 +261,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
           )}
 
           {/* Grey dot for no puzzle */}
-          {!hasPuzzle && <div className="w-2 h-2 rounded-full bg-white/20" />}
+          {!hasPuzzle && <div className="w-2 h-2 rounded-full bg-ghost-white/20" />}
         </button>
       );
     }
@@ -283,7 +283,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                             ${
                               !canGoPrevious
                                 ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
-                                : 'border-white/30 text-white/80 hover:bg-white/10 active:scale-95'
+                                : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
                             }
                         `}
             aria-label="Previous month"
@@ -304,7 +304,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
                             ${
                               !canGoNext
                                 ? 'opacity-30 cursor-not-allowed border-white/20 text-white/30'
-                                : 'border-white/30 text-white/80 hover:bg-white/10 active:scale-95'
+                                : 'border-white/30 text-white/80 hover:bg-ghost-white/10 active:scale-95'
                             }
                         `}
             aria-label="Next month"
@@ -326,7 +326,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
         {isLoading ? (
           <div className="grid grid-cols-7 gap-2">
             {[...Array(35)].map((_, i) => (
-              <div key={i} className="aspect-square rounded-lg bg-white/5 animate-pulse" />
+              <div key={i} className="aspect-square rounded-lg bg-ghost-white/5 animate-pulse" />
             ))}
           </div>
         ) : (
@@ -344,7 +344,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
             <span className="text-white/60">Not Played</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-white/20" />
+            <div className="w-2 h-2 rounded-full bg-ghost-white/20" />
             <span className="text-white/60">Unavailable</span>
           </div>
         </div>
