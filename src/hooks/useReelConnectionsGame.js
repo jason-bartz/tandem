@@ -14,6 +14,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import {
   REEL_CONFIG,
   DIFFICULTY_ORDER,
+  DIFFICULTY_COLORS,
   DIFFICULTY_EMOJIS,
   CONGRATS_MESSAGES,
   ONE_AWAY_MESSAGES,
@@ -134,6 +135,9 @@ export function useReelConnectionsGame() {
   // Guess history for share text (tracks difficulty of each movie in each guess)
   const [guessHistory, setGuessHistory] = useState([]);
 
+  // Viewing completed puzzle state
+  const [viewingCompletedPuzzle, setViewingCompletedPuzzle] = useState(false);
+
   // Tracking state
   const [statsRecorded, setStatsRecorded] = useState(false);
   const [leaderboardSubmitted, setLeaderboardSubmitted] = useState(false);
@@ -164,7 +168,7 @@ export function useReelConnectionsGame() {
     if (unrevealedGroups.length === 0) {
       const timer = setTimeout(() => {
         setIsRevealing(false);
-      }, REEL_CONFIG.REVEAL_DELAY_MS);
+      }, REEL_CONFIG.REVEAL_FINAL_DELAY_MS);
       return () => clearTimeout(timer);
     }
 
@@ -337,6 +341,7 @@ export function useReelConnectionsGame() {
         setLeaderboardSubmitted(false);
         setArchiveDate(specificDate);
         setGuessHistory([]);
+        setViewingCompletedPuzzle(false);
       }
 
       setGameStarted(false);
@@ -484,6 +489,7 @@ export function useReelConnectionsGame() {
     setSolvingGroup(null);
     setSolvingMovies([]);
     setGuessHistory([]);
+    setViewingCompletedPuzzle(false);
 
     const allMovies = flattenPuzzleMovies(puzzle);
     const shuffled = shuffleArray(allMovies);
@@ -503,6 +509,25 @@ export function useReelConnectionsGame() {
     setGameStarted(true);
     setStartTime(Date.now());
   }, []);
+
+  // View completed puzzle
+  const handleViewPuzzle = useCallback(() => {
+    setViewingCompletedPuzzle(true);
+  }, []);
+
+  // View results screen
+  const handleViewResults = useCallback(() => {
+    setViewingCompletedPuzzle(false);
+  }, []);
+
+  // Get all groups sorted by difficulty for completed puzzle view
+  const getCompletedGroupsSorted = useCallback(() => {
+    if (!puzzle) return [];
+    return sortGroupsByDifficulty(puzzle.groups).map((group) => ({
+      ...group,
+      color: DIFFICULTY_COLORS[group.difficulty] || 'bg-gray-400',
+    }));
+  }, [puzzle]);
 
   // Handle share
   const handleShare = useCallback(async () => {
@@ -578,6 +603,7 @@ export function useReelConnectionsGame() {
     user,
     solvingGroup,
     solvingMovies,
+    viewingCompletedPuzzle,
 
     // Actions
     toggleMovieSelection,
@@ -588,10 +614,13 @@ export function useReelConnectionsGame() {
     handleArchiveSelect,
     handleStartGame,
     handleShare,
+    handleViewPuzzle,
+    handleViewResults,
 
     // Helpers
     isSelected,
     isSolved,
     formatTime,
+    getCompletedGroupsSorted,
   };
 }

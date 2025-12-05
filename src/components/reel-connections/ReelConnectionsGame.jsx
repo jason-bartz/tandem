@@ -99,6 +99,7 @@ const ReelConnectionsGame = () => {
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
+  const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
 
   // Long press refs
@@ -131,6 +132,7 @@ const ReelConnectionsGame = () => {
     archiveDate,
     solvingGroup,
     solvingMovies,
+    viewingCompletedPuzzle,
     toggleMovieSelection,
     handleSubmit,
     handleShuffle,
@@ -138,9 +140,12 @@ const ReelConnectionsGame = () => {
     handleArchiveSelect,
     handleStartGame,
     handleShare,
+    handleViewPuzzle,
+    handleViewResults,
     isSelected,
     isSolved,
     formatTime,
+    getCompletedGroupsSorted,
   } = useReelConnectionsGame();
 
   // Handle starting the game with clapper animation and auto-scroll on mobile
@@ -171,7 +176,7 @@ const ReelConnectionsGame = () => {
     longPressTriggeredRef.current = false;
     longPressTimerRef.current = setTimeout(() => {
       longPressTriggeredRef.current = true;
-      setEnlargedMovie(movie);
+      setEnlargePromptMovie(movie);
     }, LONG_PRESS_DURATION);
   }, []);
 
@@ -182,6 +187,14 @@ const ReelConnectionsGame = () => {
     }
   }, []);
 
+  // Handler for clicking the "Enlarge?" banner
+  const handleEnlargeClick = useCallback((movie, e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setEnlargePromptMovie(null);
+    setEnlargedMovie(movie);
+  }, []);
+
   const handlePosterClick = useCallback(
     (movie, e) => {
       // If long press was triggered, don't toggle selection
@@ -190,6 +203,8 @@ const ReelConnectionsGame = () => {
         e.stopPropagation();
         return;
       }
+      // Dismiss any enlarge prompt when clicking on a poster
+      setEnlargePromptMovie(null);
       toggleMovieSelection(movie);
     },
     [toggleMovieSelection]
@@ -303,6 +318,206 @@ const ReelConnectionsGame = () => {
     );
   }
 
+  // Completed puzzle view - shows all groups in difficulty order
+  if ((gameWon || gameOver) && !isRevealing && viewingCompletedPuzzle) {
+    const completedGroups = getCompletedGroupsSorted();
+    const dateStr = archiveDate
+      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: 'numeric',
+        })
+      : puzzle?.date
+        ? new Date(puzzle.date + 'T00:00:00').toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })
+        : new Date().toLocaleDateString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          });
+
+    return (
+      <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
+        <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
+          <div className="w-full max-w-md sm:max-w-lg pb-8">
+            {/* Header Links */}
+            <div className="flex items-center justify-between px-2 mb-3">
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowHowToPlay(true)}
+                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+                >
+                  How to Play
+                </button>
+                <button
+                  onClick={() => setShowAbout(true)}
+                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+                >
+                  About
+                </button>
+              </div>
+              <div className="flex items-center gap-4">
+                <button
+                  onClick={() => setShowArchive(true)}
+                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+                >
+                  Archive
+                </button>
+                <button
+                  onClick={() => setShowStats(true)}
+                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
+                >
+                  Stats
+                </button>
+              </div>
+            </div>
+
+            {/* Cinematic Marquee Header */}
+            <div className="relative cinema-gradient rounded-2xl border-[3px] sm:border-[4px] border-[#ffce00] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden">
+              {/* Top Marquee Lights */}
+              <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
+                {[...Array(12)].map((_, i) => (
+                  <Image
+                    key={`top-${i}`}
+                    src="/icons/ui/marquee-light.webp"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="marquee-lights"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  />
+                ))}
+              </div>
+
+              {/* Header Content */}
+              <div className="mt-5 sm:mt-6 mb-3 sm:mb-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-0.5">
+                  <Image
+                    src="/icons/ui/movie.png"
+                    alt="Movie icon"
+                    width={20}
+                    height={20}
+                    className="flex-shrink-0 sm:w-6 sm:h-6"
+                  />
+                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-lg">
+                    Reel Connections
+                  </h1>
+                </div>
+                <p className="text-white/70 text-xs sm:text-sm font-medium">{dateStr}</p>
+              </div>
+
+              {/* Bottom Marquee Lights */}
+              <div className="absolute bottom-0 left-0 right-0 flex justify-around py-2">
+                {[...Array(12)].map((_, i) => (
+                  <Image
+                    key={`bottom-${i}`}
+                    src="/icons/ui/marquee-light.webp"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="marquee-lights"
+                    style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Completed Groups - sorted by difficulty */}
+            {completedGroups.map((group, idx) => (
+              <div
+                key={group.id}
+                className="mb-2 sm:mb-3 animate-fade-in-up"
+                style={{ animationDelay: `${idx * 50}ms` }}
+              >
+                {/* Colored background container */}
+                <div
+                  className={`${group.color} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                >
+                  {/* Poster row */}
+                  <div className="grid grid-cols-4 gap-1 sm:gap-2">
+                    {group.movies.map((movie) => (
+                      <div
+                        key={movie.imdbId}
+                        className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                      >
+                        <img
+                          src={movie.poster}
+                          alt={movie.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {/* Connection name overlay - centered across posters */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className={`${group.color} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
+                    >
+                      <h3
+                        className={`text-center font-bold text-xs sm:text-sm text-black drop-shadow-sm`}
+                      >
+                        {group.connection}
+                      </h3>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* Back to Results button */}
+            <div className="mt-4 sm:mt-6">
+              <button
+                onClick={handleViewResults}
+                className="w-full py-4 bg-[#ffce00] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide hover:brightness-110"
+              >
+                Back to Results
+              </button>
+            </div>
+
+            {/* Footer */}
+            <div className="text-center mt-4 sm:mt-8 space-y-3 sm:space-y-4">
+              <p className="text-white/80 text-xs sm:text-sm font-medium">
+                If you enjoy daily word puzzles, check out our other games{' '}
+                <a
+                  href="https://www.tandemdaily.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[#ffce00] hover:underline font-bold"
+                >
+                  here
+                </a>
+                !
+              </p>
+              <p className="text-white/30 text-[10px] sm:text-xs">
+                © 2025 Good Vibes Games |{' '}
+                <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
+                  Privacy Policy
+                </a>{' '}
+                |{' '}
+                <a href="/terms" className="hover:text-white/50 transition-colors">
+                  Terms of Use
+                </a>
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Modals */}
+        <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
+        <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
+        <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+        <ArchiveModal
+          isOpen={showArchive}
+          onClose={() => setShowArchive(false)}
+          onSelectDate={handleArchiveSelect}
+        />
+      </div>
+    );
+  }
+
   // Game complete screen
   if ((gameWon || gameOver) && !isRevealing) {
     const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
@@ -409,6 +624,13 @@ const ReelConnectionsGame = () => {
                 className="w-full py-4 bg-[#4ade80] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
               >
                 Share Results
+              </button>
+
+              <button
+                onClick={handleViewPuzzle}
+                className="w-full py-4 bg-[#ffce00] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide hover:brightness-110"
+              >
+                Back To Puzzle
               </button>
 
               <button
@@ -754,6 +976,17 @@ const ReelConnectionsGame = () => {
                               </div>
                             </>
                           )}
+                          {/* Enlarge? banner overlay */}
+                          {enlargePromptMovie?.imdbId === movie.imdbId && (
+                            <button
+                              onClick={(e) => handleEnlargeClick(movie, e)}
+                              className="absolute top-0 left-0 right-0 bg-[#ffce00] py-1.5 sm:py-2 text-center shadow-[0_2px_4px_rgba(0,0,0,0.3)] z-10 hover:bg-[#ffd82e] active:bg-[#e6b900] transition-colors"
+                            >
+                              <span className="text-[#2c2c2c] text-[10px] sm:text-xs font-bold tracking-wide">
+                                Enlarge?
+                              </span>
+                            </button>
+                          )}
                         </div>
                       </button>
                       <div className="overflow-hidden px-0.5 sm:px-1">
@@ -783,7 +1016,7 @@ const ReelConnectionsGame = () => {
                       Create four groups of four movies
                     </p>
                     <p className="text-white/50 text-[10px] sm:text-xs mb-3 sm:mb-4">
-                      Long press posters to enlarge
+                      Hold poster, then tap banner to enlarge
                     </p>
                     <button
                       onClick={onStartGame}

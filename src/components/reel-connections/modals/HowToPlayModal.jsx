@@ -38,7 +38,9 @@ export default function HowToPlayModal({ isOpen, onClose }) {
         {/* Tips Section */}
         <div className="bg-ghost-white/5 rounded-xl p-4 border border-white/10">
           <p className="text-sm text-white/70 mb-2 font-medium">Tip:</p>
-          <p className="text-sm">Long press any poster to enlarge it for a better view.</p>
+          <p className="text-sm">
+            Hold any poster, then tap the banner to enlarge it for a better view.
+          </p>
         </div>
 
         {/* Difficulty Colors */}
