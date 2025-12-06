@@ -7,6 +7,7 @@ import ReelConnectionsModal from './ReelConnectionsModal';
 import ReelConnectionsAuthModal from './ReelConnectionsAuthModal';
 import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
 import { useAuth } from '@/contexts/AuthContext';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import { Trophy, Clock, Flame, Target, User } from 'lucide-react';
 
 /**
@@ -45,10 +46,8 @@ export default function StatsModal({ isOpen, onClose }) {
           ? `/api/leaderboard/daily?game=reel&date=${today}&limit=10`
           : `/api/leaderboard/streak?game=reel&limit=10`;
 
-      const response = await fetch(endpoint, {
-        method: 'GET',
-        credentials: 'include',
-      });
+      const apiUrl = getApiUrl(endpoint);
+      const response = await capacitorFetch(apiUrl);
       const data = await response.json();
 
       if (data.success) {
@@ -326,7 +325,9 @@ function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
   return (
     <div
       className={`flex items-center gap-2 p-2 rounded-lg transition-all ${
-        isCurrentUser ? 'bg-[#ffce00]/20 border-2 border-[#ffce00]' : 'bg-ghost-white/5 hover:bg-ghost-white/10'
+        isCurrentUser
+          ? 'bg-[#ffce00]/20 border-2 border-[#ffce00]'
+          : 'bg-ghost-white/5 hover:bg-ghost-white/10'
       }`}
     >
       {/* Rank */}
