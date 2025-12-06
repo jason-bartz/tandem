@@ -3,42 +3,48 @@
 import { useState } from 'react';
 import { generateBreadcrumbs } from '@/lib/seo-config';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HowToPlayPage() {
   const [activeSection, setActiveSection] = useState(null);
+  const [activeTab, setActiveTab] = useState('tandem');
 
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'How to Play', path: '/how-to-play' }]);
 
   const howToSchema = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: 'How to Play Tandem - Emoji Word Puzzle Game',
-    description: 'Learn how to play Tandem, a daily emoji word puzzle game similar to Wordle',
+    name: 'How to Play Tandem Daily Games',
+    description:
+      'Learn how to play Tandem Daily Games including Daily Tandem, Daily Mini crossword, and Reel Connections movie puzzle',
     step: [
       {
         '@type': 'HowToStep',
-        name: 'Understand the Basics',
-        text: 'Each puzzle shows two emojis that represent a single word. Type your guess and press Enter to submit. You have 4 mistakes total across all puzzles.',
+        name: 'Choose a Game',
+        text: 'Pick from Daily Tandem (emoji word puzzles), Daily Mini (crossword), or Reel Connections (movie connections).',
       },
       {
         '@type': 'HowToStep',
-        name: 'Use Smart Hints',
-        text: 'When you guess incorrectly, any letters in the correct position turn green and stay locked. Just fill in the remaining blanks for your next guess.',
+        name: 'Solve the Puzzle',
+        text: 'Each game has unique mechanics. Follow the in-game instructions to solve the daily puzzle.',
       },
       {
         '@type': 'HowToStep',
-        name: 'Solve All Four Puzzles',
-        text: 'Complete all four emoji pairs to reveal the connecting theme. The theme ties all the words together.',
-      },
-      {
-        '@type': 'HowToStep',
-        name: 'Get Help When Needed',
-        text: 'Select an answer field and tap the hint button to reveal helpful context. You start with 1 hint and unlock a 2nd after solving 2 puzzles.',
+        name: 'Build Your Streak',
+        text: 'Complete puzzles daily to maintain your streak and compete on the leaderboards.',
       },
     ],
   };
 
-  const sections = [
+  // Tab configuration
+  const tabs = [
+    { id: 'tandem', label: 'Tandem', icon: '/icons/ui/tandem.png', color: '#38b6ff' },
+    { id: 'mini', label: 'Mini', icon: '/icons/ui/mini.png', color: '#ffce00' },
+    { id: 'reel', label: 'Reel', icon: '/icons/ui/movie.png', color: '#ef4444' },
+  ];
+
+  // Tandem sections
+  const tandemSections = [
     {
       id: 'basics',
       title: 'The Basics',
@@ -57,7 +63,7 @@ export default function HowToPlayPage() {
     },
     {
       id: 'smart-hints',
-      title: '💡 Smart Hints',
+      title: 'Smart Hints',
       content: (
         <div className="space-y-4 text-sm">
           <div>
@@ -79,8 +85,8 @@ export default function HowToPlayPage() {
           </div>
           <div>
             <p>
-              <span className="font-semibold">💡 Need help?</span> Select an answer field and tap
-              the hint button to reveal helpful context below that specific answer. You start with 1
+              <span className="font-semibold">Need help?</span> Select an answer field and tap the
+              hint button to reveal helpful context below that specific answer. You start with 1
               hint and unlock a 2nd hint after solving 2 puzzles.
             </p>
           </div>
@@ -97,70 +103,20 @@ export default function HowToPlayPage() {
               <span className="text-2xl">☀️🔥</span>
               <span className="font-mono font-bold">= SUN</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
-              Star → hot in the sky
-            </p>
-
             <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
               <span className="text-2xl">🌶️🔥</span>
               <span className="font-mono font-bold">= PEPPER</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
-              Spice → burns your mouth
-            </p>
-
             <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
               <span className="text-2xl">☕🍵</span>
               <span className="font-mono font-bold">= COFFEE</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
-              Drink → served hot
-            </p>
-
             <div className="flex items-center justify-between bg-[#ff751f]/10 dark:bg-[#ff751f]/20 rounded-xl p-3 border-[2px] border-[#ff751f]">
               <span className="text-2xl">🏜️🌡️</span>
               <span className="font-mono font-bold">= DESERT</span>
             </div>
-            <p className="text-xs text-gray-500 dark:text-gray-400 italic ml-2">
-              Climate → scorching heat
-            </p>
-
             <div className="mt-4 p-3 bg-[#ff5757] text-white rounded-2xl text-center font-bold border-[3px] border-black dark:border-white">
-              🎉 Theme Revealed: Things That Are Hot 🔥
-            </div>
-          </div>
-        </div>
-      ),
-    },
-    {
-      id: 'difficulty',
-      title: 'Difficulty Ratings ⭐',
-      content: (
-        <div className="space-y-4 text-sm">
-          <p>
-            Each puzzle has a difficulty rating that appears after you complete it. These ratings
-            help you reflect on the challenge and track your progress.
-          </p>
-          <div className="space-y-3">
-            <div className="p-3 bg-[#7ed957]/20 border-[3px] border-[#7ed957] rounded-2xl">
-              <p className="font-semibold mb-1">⭐ Easy</p>
-              <p>Straightforward connections, common vocabulary, clear emojis</p>
-            </div>
-            <div className="p-3 bg-[#7ed957]/10 border-[3px] border-[#7ed957]/60 rounded-2xl">
-              <p className="font-semibold mb-1">⭐⭐ Medium-Easy</p>
-              <p>Some thinking required, mostly familiar words</p>
-            </div>
-            <div className="p-3 bg-[#ffce00]/20 border-[3px] border-[#ffce00] rounded-2xl">
-              <p className="font-semibold mb-1">⭐⭐⭐ Medium</p>
-              <p>Balanced challenge, requires creative thinking</p>
-            </div>
-            <div className="p-3 bg-[#ff751f]/20 border-[3px] border-[#ff751f] rounded-2xl">
-              <p className="font-semibold mb-1">⭐⭐⭐⭐ Medium-Hard</p>
-              <p>Clever connections, wordplay involved</p>
-            </div>
-            <div className="p-3 bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl">
-              <p className="font-semibold mb-1">⭐⭐⭐⭐⭐ Hard</p>
-              <p>Abstract themes, challenging vocabulary, obscure connections</p>
+              Theme Revealed: Things That Are Hot
             </div>
           </div>
         </div>
@@ -168,7 +124,7 @@ export default function HowToPlayPage() {
     },
     {
       id: 'streaks',
-      title: 'Streaks 🔥',
+      title: 'Streaks',
       content: (
         <div className="space-y-3 text-sm">
           <p>
@@ -178,42 +134,311 @@ export default function HowToPlayPage() {
         </div>
       ),
     },
+  ];
+
+  // Mini sections
+  const miniSections = [
     {
-      id: 'hard-mode',
-      title: '🔥 Hard Mode (Tandem Unlimited)',
+      id: 'basics',
+      title: 'The Basics',
       content: (
-        <div className="space-y-4 text-sm">
-          <p>For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:</p>
-          <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
-            <h4 className="font-semibold mb-2">Hard Mode Rules:</h4>
-            <ul className="space-y-2">
-              <li className="flex items-start gap-2">
-                <span>•</span>
-                <span>
-                  <strong>3-minute time limit</strong> - Complete the puzzle before time runs out
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>•</span>
-                <span>
-                  <strong>No hints available</strong> - Rely only on your word skills
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span>•</span>
-                <span>
-                  <strong>Same mistake limit</strong> - You still have 4 mistakes maximum
-                </span>
-              </li>
-            </ul>
-          </div>
+        <div className="space-y-3 text-sm">
+          <p>
+            Daily Mini is a 5x5 crossword puzzle designed to be completed in just a few minutes.
+            Fill in the grid using the clues provided.
+          </p>
+          <p>
+            Tap a clue or a cell to start typing. Use the arrow keys or tap cells to navigate. The
+            puzzle is complete when all cells are correctly filled.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'controls',
+      title: 'Controls',
+      content: (
+        <div className="space-y-3 text-sm">
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2">
+              <span className="text-[#ffce00] font-bold">•</span>
+              <span>Tap a cell or clue to select it</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ffce00] font-bold">•</span>
+              <span>Tap the selected clue again to switch direction (across/down)</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ffce00] font-bold">•</span>
+              <span>Use backspace to delete letters</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ffce00] font-bold">•</span>
+              <span>The puzzle auto-advances to the next cell as you type</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: 'help',
+      title: 'Getting Help',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            <strong>Check:</strong> Verify if your current answers are correct. Incorrect letters
+            will be highlighted.
+          </p>
+          <p>
+            <strong>Reveal:</strong> Stuck on a clue? Reveal the answer for a single cell or the
+            entire word.
+          </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Enable Hard Mode in Settings when you have an active Tandem Unlimited subscription.
+            Note: Using Check or Reveal will affect your &quot;perfect solve&quot; status.
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'streaks',
+      title: 'Streaks',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Complete the daily mini puzzle each day to build your streak. Your current streak and
+            best streak are tracked in the stats.
           </p>
         </div>
       ),
     },
   ];
+
+  // Reel sections
+  const reelSections = [
+    {
+      id: 'basics',
+      title: 'The Basics',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Find groups of four movies that share something in common. Select four movie posters and
+            tap Submit to check if your guess is correct.
+          </p>
+          <p>
+            Find all four groups without making four mistakes. Categories are color-coded by
+            difficulty from yellow (easiest) to red (hardest).
+          </p>
+        </div>
+      ),
+    },
+    {
+      id: 'difficulty',
+      title: 'Difficulty Levels',
+      content: (
+        <div className="space-y-3 text-sm">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-yellow-300" />
+              <span>Easiest - Most obvious connections</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-blue-400" />
+              <span>Easy - Clear but requires some thought</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-purple-400" />
+              <span>Medium - Tricky connections</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-4 h-4 rounded bg-red-500" />
+              <span>Hardest - Obscure or wordplay-based</span>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'tips',
+      title: 'Tips',
+      content: (
+        <div className="space-y-3 text-sm">
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2">
+              <span className="text-[#ef4444] font-bold">•</span>
+              <span>Hold any poster, then tap the banner to enlarge it for a better view</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ef4444] font-bold">•</span>
+              <span>Look for common themes: actors, directors, genres, years, or wordplay</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ef4444] font-bold">•</span>
+              <span>Start with the group you&apos;re most confident about</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-[#ef4444] font-bold">•</span>
+              <span>If you&apos;re &quot;one away,&quot; try swapping just one movie</span>
+            </li>
+          </ul>
+        </div>
+      ),
+    },
+    {
+      id: 'streaks',
+      title: 'Streaks',
+      content: (
+        <div className="space-y-3 text-sm">
+          <p>
+            Complete the daily Reel Connections puzzle each day to build your streak. Win without
+            using all your mistakes to keep your streak alive!
+          </p>
+        </div>
+      ),
+    },
+  ];
+
+  // Get sections based on active tab
+  const getSections = () => {
+    switch (activeTab) {
+      case 'mini':
+        return miniSections;
+      case 'reel':
+        return reelSections;
+      default:
+        return tandemSections;
+    }
+  };
+
+  // Get theme color based on active tab
+  const getThemeColor = () => {
+    switch (activeTab) {
+      case 'mini':
+        return '#ffce00';
+      case 'reel':
+        return '#ef4444';
+      default:
+        return '#38b6ff';
+    }
+  };
+
+  // Get game title
+  const getTitle = () => {
+    switch (activeTab) {
+      case 'mini':
+        return 'How to Play Daily Mini';
+      case 'reel':
+        return 'How to Play Reel Connections';
+      default:
+        return 'How to Play Tandem';
+    }
+  };
+
+  // Get play link
+  const getPlayLink = () => {
+    switch (activeTab) {
+      case 'mini':
+        return '/dailymini';
+      case 'reel':
+        return '/reel-connections';
+      default:
+        return '/';
+    }
+  };
+
+  // Get quick start content
+  const getQuickStart = () => {
+    switch (activeTab) {
+      case 'mini':
+        return (
+          <ol className="text-sm space-y-2">
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                1.
+              </span>
+              Read the crossword clues for across and down
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                2.
+              </span>
+              Tap a cell or clue to start typing your answer
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                3.
+              </span>
+              Fill in all cells to complete the puzzle
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                4.
+              </span>
+              Race against the clock for your best time!
+            </li>
+          </ol>
+        );
+      case 'reel':
+        return (
+          <ol className="text-sm space-y-2">
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                1.
+              </span>
+              Find four movies that share something in common
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                2.
+              </span>
+              Tap four movie posters to select them
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                3.
+              </span>
+              Press Submit to check your group
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                4.
+              </span>
+              Find all four groups to win!
+            </li>
+          </ol>
+        );
+      default:
+        return (
+          <ol className="text-sm space-y-2">
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                1.
+              </span>
+              Look at the emoji pairs and guess the word they represent
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                2.
+              </span>
+              Type your answer and press Enter
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                3.
+              </span>
+              Correct letters lock in green - fill in the rest!
+            </li>
+            <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
+              <span style={{ color: getThemeColor() }} className="font-bold">
+                4.
+              </span>
+              Solve all 4 to reveal the hidden theme
+            </li>
+          </ol>
+        );
+    }
+  };
+
+  const sections = getSections();
 
   return (
     <>
@@ -232,7 +457,7 @@ export default function HowToPlayPage() {
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {/* Back to game link */}
             <Link
-              href="/"
+              href={getPlayLink()}
               className="inline-flex items-center gap-2 mb-6 text-white/80 hover:text-white transition-colors"
             >
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -250,34 +475,57 @@ export default function HowToPlayPage() {
             <div className="relative">
               <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10">
                 {/* Header */}
-                <div className="bg-[#ff66c4] border-b-[3px] border-black dark:border-white p-6 text-black">
-                  <h1 className="text-3xl font-bold">How to Play Tandem</h1>
-                  <p className="mt-2 text-black/80">Master the emoji puzzle game</p>
+                <div
+                  className="border-b-[3px] border-black dark:border-white p-6"
+                  style={{ backgroundColor: getThemeColor() }}
+                >
+                  <h1
+                    className={`text-3xl font-bold ${activeTab === 'mini' ? 'text-gray-900' : 'text-white'}`}
+                  >
+                    {getTitle()}
+                  </h1>
+                  <p
+                    className={`mt-2 ${activeTab === 'mini' ? 'text-gray-900/80' : 'text-white/80'}`}
+                  >
+                    {activeTab === 'reel'
+                      ? 'Master the movie connections game'
+                      : activeTab === 'mini'
+                        ? 'Master the mini crossword'
+                        : 'Master the emoji puzzle game'}
+                  </p>
+                </div>
+
+                {/* Tab Navigation */}
+                <div className="flex border-b-[3px] border-black dark:border-white">
+                  {tabs.map((tab) => (
+                    <button
+                      key={tab.id}
+                      onClick={() => {
+                        setActiveTab(tab.id);
+                        setActiveSection(null);
+                      }}
+                      className={`flex-1 py-3 px-4 flex items-center justify-center gap-2 font-semibold text-sm transition-all ${
+                        activeTab === tab.id
+                          ? 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                          : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      }`}
+                      style={{
+                        borderBottom: activeTab === tab.id ? `3px solid ${tab.color}` : 'none',
+                        marginBottom: activeTab === tab.id ? '-3px' : '0',
+                      }}
+                    >
+                      <Image src={tab.icon} alt="" width={20} height={20} />
+                      {tab.label}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Quick Start Card */}
-                <div className="mx-6 -mt-3 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
+                <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                   <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">
                     Quick Start
                   </h3>
-                  <ol className="text-sm space-y-2">
-                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                      <span className="text-[#ff66c4] font-bold">1.</span>
-                      Look at the emoji pairs and guess the word they represent
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                      <span className="text-[#ff66c4] font-bold">2.</span>
-                      Type your answer and press Enter
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                      <span className="text-[#ff66c4] font-bold">3.</span>
-                      Correct letters lock in green - fill in the rest!
-                    </li>
-                    <li className="flex items-start gap-2 text-gray-600 dark:text-gray-400">
-                      <span className="text-[#ff66c4] font-bold">4.</span>
-                      Solve all 4 to reveal the hidden theme
-                    </li>
-                  </ol>
+                  {getQuickStart()}
                 </div>
 
                 {/* Content Accordion */}
@@ -331,16 +579,14 @@ export default function HowToPlayPage() {
                     </p>
                     <div className="flex gap-3 flex-wrap">
                       <Link
-                        href="/"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-[#ff66c4] hover:bg-[#ff66c4]/90 text-black font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                        href={getPlayLink()}
+                        className="inline-flex items-center gap-2 px-4 py-2 hover:opacity-90 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
+                        style={{
+                          backgroundColor: getThemeColor(),
+                          color: activeTab === 'mini' ? '#1f2937' : 'white',
+                        }}
                       >
-                        🎮 Play Today's Puzzle
-                      </Link>
-                      <Link
-                        href="/about"
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-ghost-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
-                      >
-                        ℹ️ About Tandem
+                        Play Today&apos;s Puzzle
                       </Link>
                     </div>
                   </div>

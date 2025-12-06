@@ -6,7 +6,7 @@ import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' }) {
   const { highContrast } = useTheme();
-  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem' or 'mini'
+  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem', 'mini', or 'reel'
   const [, setExpandedSection] = useState(null);
 
   // Reset to default tab when modal opens
@@ -19,6 +19,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
 
   const tandemIcon = '/icons/ui/tandem.png';
   const miniIcon = '/icons/ui/mini.png';
+  const reelIcon = '/icons/ui/movie.png';
 
   return (
     <LeftSidePanel
@@ -35,15 +36,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             setActiveGame('tandem');
             setExpandedSection(null);
           }}
-          className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
             activeGame === 'tandem'
               ? 'bg-[#38b6ff] text-white border-black shadow-[3px_3px_0px_#000]'
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1.5">
             <Image src={tandemIcon} alt="Daily Tandem" width={20} height={20} className="w-5 h-5" />
-            <span>Daily Tandem</span>
+            <span>Tandem</span>
           </div>
         </button>
         <button
@@ -51,15 +52,37 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             setActiveGame('mini');
             setExpandedSection(null);
           }}
-          className={`flex-1 px-4 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
             activeGame === 'mini'
               ? 'bg-[#FFEB3B] text-gray-900 border-black shadow-[3px_3px_0px_#000]'
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-2">
+          <div className="flex items-center justify-center gap-1.5">
             <Image src={miniIcon} alt="Daily Mini" width={20} height={20} className="w-5 h-5" />
-            <span>Daily Mini</span>
+            <span>Mini</span>
+          </div>
+        </button>
+        <button
+          onClick={() => {
+            setActiveGame('reel');
+            setExpandedSection(null);
+          }}
+          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            activeGame === 'reel'
+              ? 'bg-red-500 text-white border-black shadow-[3px_3px_0px_#000]'
+              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+          }`}
+        >
+          <div className="flex items-center justify-center gap-1.5">
+            <Image
+              src={reelIcon}
+              alt="Reel Connections"
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
+            <span>Reel</span>
           </div>
         </button>
       </div>
@@ -361,6 +384,91 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="text-center py-2">
             <p className="text-sm text-gray-500 dark:text-gray-400">
               A new mini crossword is released daily at midnight. Come back tomorrow!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Reel Connections Content */}
+      {activeGame === 'reel' && (
+        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+          <div className="text-center">
+            <p className="text-lg font-semibold text-red-500 dark:text-red-400">
+              Find groups of four movies that share something in common.
+            </p>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  1
+                </span>
+                <span>Select four movies and tap Submit to check if your guess is correct.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  2
+                </span>
+                <span>Find all four groups without making four mistakes.</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Tip</h4>
+            <p className="text-sm">
+              Hold any poster, then tap the banner to enlarge it for a better view.
+            </p>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              Difficulty Colors
+            </h4>
+            <p className="text-sm mb-3">Categories are color-coded by difficulty:</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-yellow-300" />
+                <span className="text-sm">Easiest</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-blue-400" />
+                <span className="text-sm">Easy</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-purple-400" />
+                <span className="text-sm">Medium</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-red-500" />
+                <span className="text-sm">Hardest</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new puzzle is available every day at midnight. Come back tomorrow!
             </p>
           </div>
         </div>

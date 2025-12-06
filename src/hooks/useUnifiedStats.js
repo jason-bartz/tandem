@@ -1,7 +1,43 @@
 import { useState, useEffect } from 'react';
 import { loadStats } from '@/lib/storage';
 import { loadMiniStats } from '@/lib/miniStorage';
+import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
+
+const REEL_STORAGE_KEY = 'reel-connections-stats';
+
+/**
+ * Load Reel Connections stats from storage
+ * @returns {Object} Reel stats object
+ */
+async function loadReelStats() {
+  try {
+    const stored = await storageService.get(REEL_STORAGE_KEY);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        gamesPlayed: parsed.gamesPlayed || 0,
+        gamesWon: parsed.gamesWon || 0,
+        totalTimeMs: parsed.totalTimeMs || 0,
+        currentStreak: parsed.currentStreak || 0,
+        bestStreak: parsed.bestStreak || 0,
+        lastPlayedDate: parsed.lastPlayedDate || null,
+        gameHistory: parsed.gameHistory || [],
+      };
+    }
+  } catch (error) {
+    logger.error('[loadReelStats] Failed to load Reel stats:', error);
+  }
+  return {
+    gamesPlayed: 0,
+    gamesWon: 0,
+    totalTimeMs: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    lastPlayedDate: null,
+    gameHistory: [],
+  };
+}
 
 /**
  * useUnifiedStats - Load stats for all games
@@ -30,6 +66,16 @@ export function useUnifiedStats(isOpen) {
     completedPuzzles: {},
   });
 
+  const [reelStats, setReelStats] = useState({
+    gamesPlayed: 0,
+    gamesWon: 0,
+    totalTimeMs: 0,
+    currentStreak: 0,
+    bestStreak: 0,
+    lastPlayedDate: null,
+    gameHistory: [],
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -45,14 +91,20 @@ export function useUnifiedStats(isOpen) {
 
     try {
       // Load stats in parallel for all games
-      const [tandem, mini] = await Promise.all([loadStats(), loadMiniStats()]);
+      const [tandem, mini, reel] = await Promise.all([
+        loadStats(),
+        loadMiniStats(),
+        loadReelStats(),
+      ]);
 
       setTandemStats(tandem);
       setMiniStats(mini);
+      setReelStats(reel);
 
       logger.info('[useUnifiedStats] Stats loaded successfully', {
         tandemPlayed: tandem.played,
         miniCompleted: mini.totalCompleted,
+        reelPlayed: reel.gamesPlayed,
       });
     } catch (err) {
       logger.error('[useUnifiedStats] Failed to load stats', { error: err.message });
@@ -65,6 +117,7 @@ export function useUnifiedStats(isOpen) {
   return {
     tandemStats,
     miniStats,
+    reelStats,
     loading,
     error,
     reload: loadAllStats,

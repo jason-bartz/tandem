@@ -1,14 +1,20 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { X, Menu, ChevronLeft } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useReelConnectionsGame } from '@/hooks/useReelConnectionsGame';
 import { REEL_CONFIG } from '@/lib/reel-connections.constants';
 import { playClapperSound } from '@/lib/sounds';
-import { HowToPlayModal, AboutModal, StatsModal, ArchiveModal } from './modals';
+import { useHaptics } from '@/hooks/useHaptics';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
+import SidebarMenu from '@/components/navigation/SidebarMenu';
+import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
+import HowToPlayModal from '@/components/game/HowToPlayModal';
+import Settings from '@/components/Settings';
 
 // Long press duration in milliseconds
 const LONG_PRESS_DURATION = 650;
@@ -93,11 +99,15 @@ const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
 );
 
 const ReelConnectionsGame = () => {
-  // Modal states
-  const [showHowToPlay, setShowHowToPlay] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
+  const router = useRouter();
+  const { lightTap } = useHaptics();
+
+  // Sidebar and unified modal states
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showHowToPlay, setShowHowToPlay] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
   const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
@@ -343,36 +353,36 @@ const ReelConnectionsGame = () => {
       <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
         <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
           <div className="w-full max-w-md sm:max-w-lg pb-8">
-            {/* Header Links */}
+            {/* Header with Back Button and Hamburger Menu */}
             <div className="flex items-center justify-between px-2 mb-3">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setShowHowToPlay(true)}
-                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-                >
-                  How to Play
-                </button>
-                <button
-                  onClick={() => setShowAbout(true)}
-                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-                >
-                  About
-                </button>
-              </div>
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => setShowArchive(true)}
-                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-                >
-                  Archive
-                </button>
-                <button
-                  onClick={() => setShowStats(true)}
-                  className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-                >
-                  Stats
-                </button>
-              </div>
+              <button
+                onClick={() => {
+                  lightTap();
+                  router.push('/');
+                }}
+                className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+                aria-label="Back to home"
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+              >
+                <ChevronLeft className="w-8 h-8" />
+              </button>
+              <button
+                onClick={() => {
+                  lightTap();
+                  setIsSidebarOpen(true);
+                }}
+                className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+                aria-label="Open menu"
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+              >
+                <Menu className="w-7 h-7" />
+              </button>
             </div>
 
             {/* Cinematic Marquee Header */}
@@ -476,44 +486,8 @@ const ReelConnectionsGame = () => {
                 Back to Results
               </button>
             </div>
-
-            {/* Footer */}
-            <div className="text-center mt-4 sm:mt-8 space-y-3 sm:space-y-4">
-              <p className="text-white/80 text-xs sm:text-sm font-medium">
-                If you enjoy daily word puzzles, check out our other games{' '}
-                <a
-                  href="https://www.tandemdaily.com"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[#ffce00] hover:underline font-bold"
-                >
-                  here
-                </a>
-                !
-              </p>
-              <p className="text-white/30 text-[10px] sm:text-xs">
-                © 2025 Good Vibes Games |{' '}
-                <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
-                  Privacy Policy
-                </a>{' '}
-                |{' '}
-                <a href="/terms" className="hover:text-white/50 transition-colors">
-                  Terms of Use
-                </a>
-              </p>
-            </div>
           </div>
         </div>
-
-        {/* Modals */}
-        <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-        <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
-        <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-        <ArchiveModal
-          isOpen={showArchive}
-          onClose={() => setShowArchive(false)}
-          onSelectDate={handleArchiveSelect}
-        />
       </div>
     );
   }
@@ -530,36 +504,36 @@ const ReelConnectionsGame = () => {
     return (
       <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
         <div className="min-h-full flex flex-col items-center py-4 px-4 pb-8">
-          {/* Header Links */}
+          {/* Header with Back Button and Hamburger Menu */}
           <div className="w-full max-w-md flex items-center justify-between px-2 mb-3">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowHowToPlay(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                How to Play
-              </button>
-              <button
-                onClick={() => setShowAbout(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                About
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowArchive(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                Archive
-              </button>
-              <button
-                onClick={() => setShowStats(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                Stats
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                lightTap();
+                router.push('/');
+              }}
+              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              aria-label="Back to home"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button
+              onClick={() => {
+                lightTap();
+                setIsSidebarOpen(true);
+              }}
+              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              aria-label="Open menu"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            >
+              <Menu className="w-7 h-7" />
+            </button>
           </div>
 
           <div className="w-full max-w-md relative cinema-gradient rounded-2xl border-[4px] border-[#ffce00] shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-8 text-center animate-fade-in-up overflow-hidden">
@@ -656,44 +630,6 @@ const ReelConnectionsGame = () => {
               ))}
             </div>
           </div>
-
-          <div className="mt-8 text-center animate-fade-in delay-500">
-            <p className="text-white/80 font-medium">
-              If you enjoy daily word puzzles, check out our other games{' '}
-              <a
-                href="https://www.tandemdaily.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#ffce00] hover:underline font-bold"
-              >
-                here
-              </a>
-              !
-            </p>
-          </div>
-
-          <div className="mt-auto pt-8 text-center">
-            <p className="text-white/30 text-xs">
-              © 2025 Good Vibes Games |{' '}
-              <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
-                Privacy Policy
-              </a>{' '}
-              |{' '}
-              <a href="/terms" className="hover:text-white/50 transition-colors">
-                Terms of Use
-              </a>
-            </p>
-          </div>
-
-          {/* Modals */}
-          <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-          <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
-          <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-          <ArchiveModal
-            isOpen={showArchive}
-            onClose={() => setShowArchive(false)}
-            onSelectDate={handleArchiveSelect}
-          />
         </div>
       </div>
     );
@@ -709,36 +645,36 @@ const ReelConnectionsGame = () => {
     <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
       <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
         <div className="w-full max-w-md sm:max-w-lg pb-8">
-          {/* Header Links */}
+          {/* Header with Back Button and Hamburger Menu */}
           <div className="flex items-center justify-between px-2 mb-3">
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowHowToPlay(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                How to Play
-              </button>
-              <button
-                onClick={() => setShowAbout(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                About
-              </button>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => setShowArchive(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                Archive
-              </button>
-              <button
-                onClick={() => setShowStats(true)}
-                className="text-white/70 hover:text-[#ffce00] text-sm font-medium transition-colors"
-              >
-                Stats
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                lightTap();
+                router.push('/');
+              }}
+              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              aria-label="Back to home"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            >
+              <ChevronLeft className="w-8 h-8" />
+            </button>
+            <button
+              onClick={() => {
+                lightTap();
+                setIsSidebarOpen(true);
+              }}
+              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              aria-label="Open menu"
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+            >
+              <Menu className="w-7 h-7" />
+            </button>
           </div>
 
           {/* Cinematic Marquee Header */}
@@ -1064,44 +1000,38 @@ const ReelConnectionsGame = () => {
               />
             </div>
           )}
-
-          {/* Footer */}
-          <div className="text-center mt-4 sm:mt-8 space-y-3 sm:space-y-4">
-            <p className="text-white/80 text-xs sm:text-sm font-medium">
-              If you enjoy daily word puzzles, check out our other games{' '}
-              <a
-                href="https://www.tandemdaily.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-[#ffce00] hover:underline font-bold"
-              >
-                here
-              </a>
-              !
-            </p>
-            <p className="text-white/30 text-[10px] sm:text-xs">
-              © 2025 Good Vibes Games |{' '}
-              <a href="/privacypolicy" className="hover:text-white/50 transition-colors">
-                Privacy Policy
-              </a>{' '}
-              |{' '}
-              <a href="/terms" className="hover:text-white/50 transition-colors">
-                Terms of Use
-              </a>
-            </p>
-          </div>
         </div>
       </div>
 
-      {/* Modals */}
-      <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-      <AboutModal isOpen={showAbout} onClose={() => setShowAbout(false)} />
-      <StatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModal
+      {/* Sidebar Menu */}
+      <SidebarMenu
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onOpenStats={() => setShowStats(true)}
+        onOpenArchive={() => setShowArchive(true)}
+        onOpenHowToPlay={() => setShowHowToPlay(true)}
+        onOpenSettings={() => setShowSettings(true)}
+      />
+
+      {/* Unified Modals */}
+      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}
-        onSelectDate={handleArchiveSelect}
+        onSelectPuzzle={(date) => {
+          setShowArchive(false);
+          handleArchiveSelect(date);
+        }}
+        defaultTab="reel"
       />
+      <HowToPlayModal
+        isOpen={showHowToPlay}
+        onClose={() => setShowHowToPlay(false)}
+        defaultTab="reel"
+      />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+
+      {/* Poster Modal */}
       <PosterModal movie={enlargedMovie} onClose={() => setEnlargedMovie(null)} />
     </div>
   );
