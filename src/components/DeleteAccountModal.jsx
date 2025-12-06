@@ -226,6 +226,7 @@ export default function DeleteAccountModal({
       onClose={handleClose}
       title={title}
       maxWidth="480px"
+      contentClassName="px-6 py-4"
       footer={footer}
     >
       {/* Step 1: Warning */}
