@@ -217,10 +217,10 @@ export default function MiniGameScreen({
   return (
     <>
       <div className="fixed inset-0 flex flex-col bg-bg-main dark:bg-bg-main overflow-hidden">
-        {/* Main game card */}
-        <div className="flex-1 flex flex-col max-w-md w-full mx-auto">
+        {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
+        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios">
           <div
-            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col m-4 ${
+            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col mx-4 mb-4 ${
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                 : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'

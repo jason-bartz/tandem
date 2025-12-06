@@ -402,8 +402,8 @@ export default function PlayingScreen({
         {/* Hint Earned Toast */}
         <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
 
-        {/* Main game card */}
-        <div className="flex-1 flex flex-col pb-safe pb-[200px] pt-4">
+        {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
+        <div className="flex-1 flex flex-col pb-safe pb-[200px] pt-4 pt-safe-ios">
           <div className="max-w-md w-full h-full mx-auto flex flex-col px-4">
             <div
               ref={puzzleContainerRef}
