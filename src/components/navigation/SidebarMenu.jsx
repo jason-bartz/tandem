@@ -199,7 +199,7 @@ export default function SidebarMenu({
               stiffness: 200,
               duration: reduceMotion ? 0.2 : undefined,
             }}
-            className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto ${
+            className={`fixed top-0 right-0 bottom-0 w-[22rem] max-w-[85vw] z-50 overflow-y-auto font-sans ${
               highContrast
                 ? 'bg-hc-surface border-l-[4px] border-hc-border'
                 : 'bg-bg-surface dark:bg-bg-card border-l-[4px] border-border-main'
@@ -415,7 +415,12 @@ export default function SidebarMenu({
               {/* Navigation Section */}
               <section>
                 <div className="space-y-2">
-                  {/* Stats/Leaderboard Link - Always visible */}
+                  <MenuButton
+                    icon={getIconPath('how-to-play')}
+                    label="How to Play"
+                    onClick={() => handleModalOpen(onOpenHowToPlay)}
+                    highContrast={highContrast}
+                  />
                   <MenuButton
                     icon={getIconPath('leaderboard')}
                     label="Stats & Leaderboard"
@@ -426,12 +431,6 @@ export default function SidebarMenu({
                     icon={getIconPath('archive')}
                     label="Puzzle Archive"
                     onClick={() => handleModalOpen(onOpenArchive)}
-                    highContrast={highContrast}
-                  />
-                  <MenuButton
-                    icon={getIconPath('how-to-play')}
-                    label="How to Play"
-                    onClick={() => handleModalOpen(onOpenHowToPlay)}
                     highContrast={highContrast}
                   />
                   <MenuButton
