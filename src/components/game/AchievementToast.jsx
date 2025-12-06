@@ -4,18 +4,12 @@ import { useState } from 'react';
 /**
  * AchievementToast - Display achievement unlock notifications
  *
- * Game Center integration removed - this is now a stub that maintains the UI.
- * TODO: Wire to web achievement system in Phase 4
- *
- * The showAchievement function can be called by the web achievement system
- * to display achievement notifications.
+ * Shows toast notifications when players unlock achievements.
+ * Called via window.__showAchievementToast by the achievementNotifier module.
  */
 export default function AchievementToast() {
   const [achievement, setAchievement] = useState(null);
   const [visible, setVisible] = useState(false);
-
-  // Stub - achievement subscriptions removed with Game Center
-  // TODO: In Phase 4, connect to web achievement events
 
   const showAchievement = (ach) => {
     setAchievement(ach);
@@ -28,8 +22,7 @@ export default function AchievementToast() {
     }, 3000);
   };
 
-  // Expose showAchievement for future use
-  // This will be called by the web achievement system in Phase 4
+  // Expose showAchievement globally for the achievementNotifier module
   if (typeof window !== 'undefined') {
     window.__showAchievementToast = showAchievement;
   }
