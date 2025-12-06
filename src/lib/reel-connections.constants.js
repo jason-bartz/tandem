@@ -30,6 +30,14 @@ export const DIFFICULTY_COLORS = {
   hardest: 'bg-red-500', // #EF4444
 };
 
+// High contrast difficulty colors (WCAG AAA compliant)
+export const DIFFICULTY_COLORS_HC = {
+  easiest: 'bg-hc-warning', // Bold yellow/orange
+  easy: 'bg-hc-primary', // Bold blue
+  medium: 'bg-purple-700', // Darker purple for contrast
+  hardest: 'bg-hc-error', // Bold red
+};
+
 // Difficulty emojis for share text (matches NYT Connections style)
 export const DIFFICULTY_EMOJIS = {
   easiest: '🟨', // Yellow
