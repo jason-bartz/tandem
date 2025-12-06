@@ -6,9 +6,14 @@ import { X, Menu, ChevronLeft } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useReelConnectionsGame } from '@/hooks/useReelConnectionsGame';
-import { REEL_CONFIG } from '@/lib/reel-connections.constants';
+import {
+  REEL_CONFIG,
+  DIFFICULTY_COLORS,
+  DIFFICULTY_COLORS_HC,
+} from '@/lib/reel-connections.constants';
 import { playClapperSound } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useTheme } from '@/contexts/ThemeContext';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -20,7 +25,7 @@ import Settings from '@/components/Settings';
 const LONG_PRESS_DURATION = 650;
 
 // PosterModal component for enlarged poster view
-const PosterModal = ({ movie, onClose }) => {
+const PosterModal = ({ movie, onClose, reduceMotion = false, highContrast = false }) => {
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -39,7 +44,7 @@ const PosterModal = ({ movie, onClose }) => {
 
   const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 animate-backdrop-enter"
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${reduceMotion ? '' : 'animate-backdrop-enter'}`}
       role="dialog"
       aria-modal="true"
       aria-label={`Enlarged poster for ${movie.title}`}
@@ -51,26 +56,32 @@ const PosterModal = ({ movie, onClose }) => {
       {/* Modal Content */}
       <div
         ref={modalRef}
-        className="relative max-w-sm w-full animate-modal-enter"
+        className={`relative max-w-sm w-full ${reduceMotion ? '' : 'animate-modal-enter'}`}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute -top-3 -right-3 z-10 w-10 h-10 bg-[#ffce00] border-[3px] border-black rounded-full flex items-center justify-center shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:scale-110 transition-transform"
+          className={`absolute -top-3 -right-3 z-10 w-10 h-10 border-[3px] rounded-full flex items-center justify-center shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:scale-110 transition-transform ${highContrast ? 'bg-hc-primary border-hc-border' : 'bg-[#ffce00] border-black'}`}
           aria-label="Close enlarged poster"
         >
-          <X className="w-5 h-5 text-[#0f0f1e]" />
+          <X className={`w-5 h-5 ${highContrast ? 'text-white' : 'text-[#0f0f1e]'}`} />
         </button>
 
         {/* Poster */}
-        <div className="rounded-2xl overflow-hidden border-[4px] border-[#ffce00] shadow-[8px_8px_0px_rgba(0,0,0,0.8)]">
+        <div
+          className={`rounded-2xl overflow-hidden border-[4px] shadow-[8px_8px_0px_rgba(0,0,0,0.8)] ${highContrast ? 'border-hc-border' : 'border-[#ffce00]'}`}
+        >
           <img src={movie.poster} alt={movie.title} className="w-full h-auto object-cover" />
         </div>
 
         {/* Movie Title */}
         <div className="mt-4 text-center">
-          <h3 className="text-white text-lg font-bold drop-shadow-lg">{movie.title}</h3>
+          <h3
+            className={`text-lg font-bold drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+          >
+            {movie.title}
+          </h3>
         </div>
       </div>
     </div>
@@ -98,10 +109,19 @@ const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
   </button>
 );
 
+// Helper to get group color based on high contrast mode
+const getGroupColor = (difficulty, highContrast) => {
+  if (highContrast) {
+    return DIFFICULTY_COLORS_HC[difficulty] || 'bg-gray-600';
+  }
+  return DIFFICULTY_COLORS[difficulty] || 'bg-gray-400';
+};
+
 const ReelConnectionsGame = () => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lightTap } = useHaptics();
+  const { reduceMotion, highContrast } = useTheme();
 
   // Sidebar and unified modal states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -239,11 +259,15 @@ const ReelConnectionsGame = () => {
   // Reveal phase - showing groups one by one after game over
   if (isRevealing && gameOver) {
     return (
-      <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
+      <div
+        className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
+      >
         <div className="min-h-full flex items-start justify-center p-4 pt-8">
           <div className="w-full max-w-2xl pb-8">
             {/* Header during reveal */}
-            <div className="relative cinema-gradient rounded-2xl border-[4px] border-[#ffce00] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-6 mb-6 overflow-hidden">
+            <div
+              className={`relative rounded-2xl border-[4px] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-6 mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
+            >
               <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
                 {[...Array(12)].map((_, i) => (
                   <Image
@@ -252,13 +276,15 @@ const ReelConnectionsGame = () => {
                     alt=""
                     width={16}
                     height={16}
-                    className="marquee-lights"
-                    style={{ animationDelay: `${i * 0.1}s` }}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
                   />
                 ))}
               </div>
               <div className="mt-4 mb-4 text-center">
-                <h2 className="text-2xl font-bold text-white drop-shadow-lg">
+                <h2
+                  className={`text-2xl font-bold drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                >
                   Revealing Answers...
                 </h2>
               </div>
@@ -270,68 +296,75 @@ const ReelConnectionsGame = () => {
                     alt=""
                     width={16}
                     height={16}
-                    className="marquee-lights"
-                    style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
                   />
                 ))}
               </div>
             </div>
 
             {/* Revealed Groups */}
-            {revealedGroups.map((group, idx) => (
-              <div
-                key={group.id}
-                className="mb-2 sm:mb-3 animate-fade-in-up"
-                style={{ animationDelay: `${idx * 50}ms` }}
-              >
-                {/* Colored background container */}
+            {revealedGroups.map((group, idx) => {
+              const groupColor = highContrast ? getGroupColor(group.difficulty, true) : group.color;
+              return (
                 <div
-                  className={`${group.color} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                  key={group.id}
+                  className={`mb-2 sm:mb-3 ${reduceMotion ? '' : 'animate-fade-in-up'}`}
+                  style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
                 >
-                  {/* Poster row */}
-                  <div className="grid grid-cols-4 gap-1 sm:gap-2">
-                    {group.movies.map((movie) => (
+                  {/* Colored background container */}
+                  <div
+                    className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                  >
+                    {/* Poster row */}
+                    <div className="grid grid-cols-4 gap-1 sm:gap-2">
+                      {group.movies.map((movie) => (
+                        <div
+                          key={movie.imdbId}
+                          className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                        >
+                          <img
+                            src={movie.poster}
+                            alt={movie.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {/* Connection name overlay - centered across posters */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div
-                        key={movie.imdbId}
-                        className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
                       >
-                        <img
-                          src={movie.poster}
-                          alt={movie.title}
-                          className="w-full h-full object-cover"
-                        />
+                        <h3
+                          className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : group.textColor} drop-shadow-sm`}
+                        >
+                          {group.connection}
+                        </h3>
                       </div>
-                    ))}
-                  </div>
-                  {/* Connection name overlay - centered across posters */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className={`${group.color} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
-                    >
-                      <h3
-                        className={`text-center font-bold text-xs sm:text-sm ${group.textColor} drop-shadow-sm`}
-                      >
-                        {group.connection}
-                      </h3>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Remaining movies grid */}
             {movies.length > 0 && (
               <div className="grid grid-cols-4 gap-3 mb-6 opacity-50">
                 {movies.map((movie) => (
                   <div key={movie.imdbId} className="flex flex-col">
-                    <div className="aspect-[2/3] rounded-xl overflow-hidden border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] mb-1">
+                    <div
+                      className={`aspect-[2/3] rounded-xl overflow-hidden border-[4px] shadow-[3px_3px_0px_rgba(0,0,0,0.5)] mb-1 ${highContrast ? 'border-hc-border' : 'border-black'}`}
+                    >
                       <img
                         src={movie.poster}
                         alt={movie.title}
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <p className="text-white text-xs font-semibold text-center truncate px-1">
+                    <p
+                      className={`text-xs font-semibold text-center truncate px-1 ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                    >
                       {movie.title}
                     </p>
                   </div>
@@ -366,7 +399,9 @@ const ReelConnectionsGame = () => {
           });
 
     return (
-      <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
+      <div
+        className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
+      >
         <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
           <div className="w-full max-w-md sm:max-w-lg pb-8">
             {/* Header with Back Button and Hamburger Menu */}
@@ -376,7 +411,7 @@ const ReelConnectionsGame = () => {
                   lightTap();
                   router.push('/');
                 }}
-                className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+                className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
                 aria-label="Back to home"
                 style={{
                   WebkitTapHighlightColor: 'transparent',
@@ -390,7 +425,7 @@ const ReelConnectionsGame = () => {
                   lightTap();
                   setIsSidebarOpen(true);
                 }}
-                className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+                className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
                 aria-label="Open menu"
                 style={{
                   WebkitTapHighlightColor: 'transparent',
@@ -402,7 +437,9 @@ const ReelConnectionsGame = () => {
             </div>
 
             {/* Cinematic Marquee Header */}
-            <div className="relative cinema-gradient rounded-2xl border-[3px] sm:border-[4px] border-[#ffce00] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden">
+            <div
+              className={`relative rounded-2xl border-[3px] sm:border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
+            >
               {/* Top Marquee Lights */}
               <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
                 {[...Array(12)].map((_, i) => (
@@ -412,8 +449,8 @@ const ReelConnectionsGame = () => {
                     alt=""
                     width={16}
                     height={16}
-                    className="marquee-lights"
-                    style={{ animationDelay: `${i * 0.1}s` }}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
                   />
                 ))}
               </div>
@@ -428,11 +465,17 @@ const ReelConnectionsGame = () => {
                     height={20}
                     className="flex-shrink-0 sm:w-6 sm:h-6"
                   />
-                  <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-lg">
+                  <h1
+                    className={`text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  >
                     Reel Connections
                   </h1>
                 </div>
-                <p className="text-white/70 text-xs sm:text-sm font-medium">{dateStr}</p>
+                <p
+                  className={`text-xs sm:text-sm font-medium ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                >
+                  {dateStr}
+                </p>
               </div>
 
               {/* Bottom Marquee Lights */}
@@ -444,60 +487,63 @@ const ReelConnectionsGame = () => {
                     alt=""
                     width={16}
                     height={16}
-                    className="marquee-lights"
-                    style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
                   />
                 ))}
               </div>
             </div>
 
             {/* Completed Groups - sorted by difficulty */}
-            {completedGroups.map((group, idx) => (
-              <div
-                key={group.id}
-                className="mb-2 sm:mb-3 animate-fade-in-up"
-                style={{ animationDelay: `${idx * 50}ms` }}
-              >
-                {/* Colored background container */}
+            {completedGroups.map((group, idx) => {
+              const groupColor = highContrast ? getGroupColor(group.difficulty, true) : group.color;
+              return (
                 <div
-                  className={`${group.color} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                  key={group.id}
+                  className={`mb-2 sm:mb-3 ${reduceMotion ? '' : 'animate-fade-in-up'}`}
+                  style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
                 >
-                  {/* Poster row */}
-                  <div className="grid grid-cols-4 gap-1 sm:gap-2">
-                    {group.movies.map((movie) => (
+                  {/* Colored background container */}
+                  <div
+                    className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                  >
+                    {/* Poster row */}
+                    <div className="grid grid-cols-4 gap-1 sm:gap-2">
+                      {group.movies.map((movie) => (
+                        <div
+                          key={movie.imdbId}
+                          className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                        >
+                          <img
+                            src={movie.poster}
+                            alt={movie.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    {/* Connection name overlay - centered across posters */}
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                       <div
-                        key={movie.imdbId}
-                        className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                        className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
                       >
-                        <img
-                          src={movie.poster}
-                          alt={movie.title}
-                          className="w-full h-full object-cover"
-                        />
+                        <h3
+                          className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : 'text-black'} drop-shadow-sm`}
+                        >
+                          {group.connection}
+                        </h3>
                       </div>
-                    ))}
-                  </div>
-                  {/* Connection name overlay - centered across posters */}
-                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                    <div
-                      className={`${group.color} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
-                    >
-                      <h3
-                        className={`text-center font-bold text-xs sm:text-sm text-black drop-shadow-sm`}
-                      >
-                        {group.connection}
-                      </h3>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
 
             {/* Back to Results button */}
             <div className="mt-4 sm:mt-6">
               <button
                 onClick={handleViewResults}
-                className="w-full py-4 bg-[#ffce00] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide hover:brightness-110"
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
               >
                 Back to Results
               </button>
@@ -546,7 +592,9 @@ const ReelConnectionsGame = () => {
     const isArchivePuzzle = archiveDate !== null;
 
     return (
-      <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
+      <div
+        className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
+      >
         <div className="min-h-full flex flex-col items-center py-4 px-4 pb-8">
           {/* Header with Back Button and Hamburger Menu */}
           <div className="w-full max-w-md flex items-center justify-between px-2 mb-3">
@@ -555,7 +603,7 @@ const ReelConnectionsGame = () => {
                 lightTap();
                 router.push('/');
               }}
-              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
               aria-label="Back to home"
               style={{
                 WebkitTapHighlightColor: 'transparent',
@@ -569,7 +617,7 @@ const ReelConnectionsGame = () => {
                 lightTap();
                 setIsSidebarOpen(true);
               }}
-              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
               aria-label="Open menu"
               style={{
                 WebkitTapHighlightColor: 'transparent',
@@ -580,7 +628,9 @@ const ReelConnectionsGame = () => {
             </button>
           </div>
 
-          <div className="w-full max-w-md relative cinema-gradient rounded-2xl border-[4px] border-[#ffce00] shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-8 text-center animate-fade-in-up overflow-hidden">
+          <div
+            className={`w-full max-w-md relative rounded-2xl border-[4px] shadow-[8px_8px_0px_rgba(0,0,0,0.8)] p-8 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
+          >
             {/* Top Marquee Lights */}
             <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
               {[...Array(8)].map((_, i) => (
@@ -590,8 +640,8 @@ const ReelConnectionsGame = () => {
                   alt=""
                   width={16}
                   height={16}
-                  className="marquee-lights"
-                  style={{ animationDelay: `${i * 0.1}s` }}
+                  className={reduceMotion ? '' : 'marquee-lights'}
+                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
                 />
               ))}
             </div>
@@ -606,10 +656,14 @@ const ReelConnectionsGame = () => {
               />
             </div>
 
-            <h2 className="text-4xl font-black text-white mb-2 tracking-tight drop-shadow-lg">
+            <h2
+              className={`text-4xl font-black mb-2 tracking-tight drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+            >
               {isWin ? congratsMessage : 'Cut!'}
             </h2>
-            <p className="text-white/90 text-lg mb-8 drop-shadow-md font-black">
+            <p
+              className={`text-lg mb-8 drop-shadow-md font-black ${highContrast ? 'text-hc-text/90' : 'text-white/90'}`}
+            >
               {isWin
                 ? isArchivePuzzle
                   ? 'You solved this puzzle!'
@@ -618,42 +672,68 @@ const ReelConnectionsGame = () => {
             </p>
 
             <div className="grid grid-cols-3 gap-3 mb-6">
-              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
-                <p className="text-white font-black text-xl mb-1 drop-shadow">{timeStr}</p>
-                <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Time</p>
+              <div
+                className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
+              >
+                <p
+                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                >
+                  {timeStr}
+                </p>
+                <p
+                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                >
+                  Time
+                </p>
               </div>
-              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
-                <p className="text-white font-black text-xl mb-1 drop-shadow">
+              <div
+                className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
+              >
+                <p
+                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                >
                   {mistakes}/{REEL_CONFIG.MAX_MISTAKES}
                 </p>
-                <p className="text-white/70 text-xs font-bold capitalize tracking-wider">
+                <p
+                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                >
                   Mistakes
                 </p>
               </div>
-              <div className="bg-ghost-white/10 backdrop-blur-sm border-[3px] border-black rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center">
-                <p className="text-white font-black text-xl mb-1 drop-shadow">{dateStr}</p>
-                <p className="text-white/70 text-xs font-bold capitalize tracking-wider">Date</p>
+              <div
+                className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
+              >
+                <p
+                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                >
+                  {dateStr}
+                </p>
+                <p
+                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                >
+                  Date
+                </p>
               </div>
             </div>
 
             <div className="space-y-3 mb-4">
               <button
                 onClick={handleShare}
-                className="w-full py-4 bg-[#4ade80] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide"
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-[#4ade80] text-[#2c2c2c] border-black'}`}
               >
                 Share Results
               </button>
 
               <button
                 onClick={handleViewPuzzle}
-                className="w-full py-4 bg-[#ffce00] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide hover:brightness-110"
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
               >
                 Back To Puzzle
               </button>
 
               <button
                 onClick={() => setShowArchive(true)}
-                className="w-full py-4 bg-[#39b6ff] border-[3px] border-black rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-lg capitalize tracking-wide hover:brightness-110"
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-[#2c2c2c] border-black'}`}
               >
                 Play the Archive
               </button>
@@ -668,8 +748,8 @@ const ReelConnectionsGame = () => {
                   alt=""
                   width={16}
                   height={16}
-                  className="marquee-lights"
-                  style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                  className={reduceMotion ? '' : 'marquee-lights'}
+                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
                 />
               ))}
             </div>
@@ -714,7 +794,9 @@ const ReelConnectionsGame = () => {
 
   // Main game screen
   return (
-    <div className="!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain">
+    <div
+      className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
+    >
       <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
         <div className="w-full max-w-md sm:max-w-lg pb-8">
           {/* Header with Back Button and Hamburger Menu */}
@@ -724,7 +806,7 @@ const ReelConnectionsGame = () => {
                 lightTap();
                 router.push('/');
               }}
-              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
               aria-label="Back to home"
               style={{
                 WebkitTapHighlightColor: 'transparent',
@@ -738,7 +820,7 @@ const ReelConnectionsGame = () => {
                 lightTap();
                 setIsSidebarOpen(true);
               }}
-              className="w-12 h-12 flex items-center justify-center text-white/80 hover:text-[#ffce00] transition-colors rounded-xl"
+              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
               aria-label="Open menu"
               style={{
                 WebkitTapHighlightColor: 'transparent',
@@ -750,7 +832,9 @@ const ReelConnectionsGame = () => {
           </div>
 
           {/* Cinematic Marquee Header */}
-          <div className="relative cinema-gradient rounded-2xl border-[3px] sm:border-[4px] border-[#ffce00] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden">
+          <div
+            className={`relative rounded-2xl border-[3px] sm:border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
+          >
             {/* Top Marquee Lights */}
             <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
               {[...Array(12)].map((_, i) => (
@@ -760,8 +844,8 @@ const ReelConnectionsGame = () => {
                   alt=""
                   width={16}
                   height={16}
-                  className="marquee-lights"
-                  style={{ animationDelay: `${i * 0.1}s` }}
+                  className={reduceMotion ? '' : 'marquee-lights'}
+                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
                 />
               ))}
             </div>
@@ -776,17 +860,23 @@ const ReelConnectionsGame = () => {
                   height={20}
                   className="flex-shrink-0 sm:w-6 sm:h-6"
                 />
-                <h1 className="text-xl sm:text-2xl font-bold text-white tracking-tight whitespace-nowrap drop-shadow-lg">
+                <h1
+                  className={`text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                >
                   Reel Connections
                 </h1>
               </div>
-              <p className="text-white/70 text-xs sm:text-sm font-medium">
+              <p
+                className={`text-xs sm:text-sm font-medium ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+              >
                 Group movies that share a common theme
               </p>
             </div>
 
             {/* Stats Row */}
-            <div className="bg-black/20 rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative">
+            <div
+              className={`rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative ${highContrast ? 'bg-hc-background' : 'bg-black/20'}`}
+            >
               <div className="flex items-center justify-between">
                 {/* Mistakes */}
                 <div className="flex flex-col items-center gap-1">
@@ -819,20 +909,32 @@ const ReelConnectionsGame = () => {
                       );
                     })}
                   </div>
-                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Mistakes Left</p>
+                  <p
+                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  >
+                    Mistakes Left
+                  </p>
                 </div>
 
                 {/* Timer - Center */}
                 <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-                  <p className="text-white text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg">
+                  <p
+                    className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  >
                     {formatTime(currentTime)}
                   </p>
-                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Time</p>
+                  <p
+                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  >
+                    Time
+                  </p>
                 </div>
 
                 {/* Date - Right */}
                 <div className="flex flex-col items-center gap-1">
-                  <p className="text-white text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg whitespace-nowrap">
+                  <p
+                    className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  >
                     {archiveDate
                       ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
                           month: 'short',
@@ -851,7 +953,11 @@ const ReelConnectionsGame = () => {
                             year: 'numeric',
                           })}
                   </p>
-                  <p className="text-white/70 text-[10px] sm:text-xs font-bold">Date</p>
+                  <p
+                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  >
+                    Date
+                  </p>
                 </div>
               </div>
             </div>
@@ -865,59 +971,62 @@ const ReelConnectionsGame = () => {
                   alt=""
                   width={16}
                   height={16}
-                  className="marquee-lights"
-                  style={{ animationDelay: `${i * 0.1 + 0.05}s` }}
+                  className={reduceMotion ? '' : 'marquee-lights'}
+                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
                 />
               ))}
             </div>
           </div>
 
           {/* Solved Groups */}
-          {solvedGroups.map((group, idx) => (
-            <div
-              key={group.id}
-              className="mb-2 sm:mb-3 animate-fade-in-up"
-              style={{ animationDelay: `${idx * 50}ms` }}
-            >
-              {/* Colored background container */}
+          {solvedGroups.map((group, idx) => {
+            const groupColor = highContrast ? getGroupColor(group.difficulty, true) : group.color;
+            return (
               <div
-                className={`${group.color} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                key={group.id}
+                className={`mb-2 sm:mb-3 ${reduceMotion ? '' : 'animate-fade-in-up'}`}
+                style={reduceMotion ? {} : { animationDelay: `${idx * 50}ms` }}
               >
-                {/* Poster row */}
-                <div className="grid grid-cols-4 gap-1 sm:gap-2">
-                  {group.movies.map((movie) => (
+                {/* Colored background container */}
+                <div
+                  className={`${groupColor} rounded-xl sm:rounded-2xl p-2 sm:p-3 border-[3px] sm:border-[4px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] relative`}
+                >
+                  {/* Poster row */}
+                  <div className="grid grid-cols-4 gap-1 sm:gap-2">
+                    {group.movies.map((movie) => (
+                      <div
+                        key={movie.imdbId}
+                        className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                      >
+                        <img
+                          src={movie.poster}
+                          alt={movie.title}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  {/* Connection name overlay - centered across posters */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
-                      key={movie.imdbId}
-                      className="aspect-[2/3] rounded-lg overflow-hidden border-2 border-black/30 shadow-[1px_1px_0px_rgba(0,0,0,0.3)]"
+                      className={`${groupColor} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
                     >
-                      <img
-                        src={movie.poster}
-                        alt={movie.title}
-                        className="w-full h-full object-cover"
-                      />
+                      <h3
+                        className={`text-center font-bold text-xs sm:text-sm ${highContrast ? 'text-white' : group.textColor} drop-shadow-sm`}
+                      >
+                        {group.connection}
+                      </h3>
                     </div>
-                  ))}
-                </div>
-                {/* Connection name overlay - centered across posters */}
-                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                  <div
-                    className={`${group.color} px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]`}
-                  >
-                    <h3
-                      className={`text-center font-bold text-xs sm:text-sm ${group.textColor} drop-shadow-sm`}
-                    >
-                      {group.connection}
-                    </h3>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
 
           {/* One Away Toast */}
           {showOneAway && (
             <div
-              className="fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg animate-one-away"
+              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg ${reduceMotion ? '' : 'animate-one-away'}`}
               role="status"
               aria-live="polite"
             >
@@ -930,7 +1039,7 @@ const ReelConnectionsGame = () => {
             <div className="relative" ref={gameAreaRef}>
               {/* Movie Grid */}
               <div
-                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid && !reduceMotion ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
               >
                 {movies.map((movie) => {
                   const selected = isSelected(movie);
@@ -945,9 +1054,11 @@ const ReelConnectionsGame = () => {
                     <div
                       key={movie.imdbId}
                       className={`flex flex-col relative ${
-                        isSolving
-                          ? `animate-solve-jump solve-delay-${solvingIndex}`
-                          : 'animate-grid-shift'
+                        reduceMotion
+                          ? ''
+                          : isSolving
+                            ? `animate-solve-jump solve-delay-${solvingIndex}`
+                            : 'animate-grid-shift'
                       }`}
                     >
                       <button
@@ -962,10 +1073,16 @@ const ReelConnectionsGame = () => {
                         disabled={isSolved(movie) || !gameStarted || isSolving}
                         className={`aspect-[2/3] rounded-lg sm:rounded-xl overflow-hidden border-[3px] sm:border-[4px] transition-all transform hover:scale-105 active:scale-95 mb-0.5 sm:mb-1 touch-manipulation ${
                           isSolving
-                            ? 'border-[#ffce00] shadow-[3px_3px_0px_rgba(255,206,0,0.5)] sm:shadow-[4px_4px_0px_rgba(255,206,0,0.5)] gold-glow'
+                            ? highContrast
+                              ? 'border-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
+                              : 'border-[#ffce00] shadow-[3px_3px_0px_rgba(255,206,0,0.5)] sm:shadow-[4px_4px_0px_rgba(255,206,0,0.5)] gold-glow'
                             : selected
-                              ? 'border-[#ffce00] shadow-[3px_3px_0px_rgba(255,206,0,0.5)] sm:shadow-[4px_4px_0px_rgba(255,206,0,0.5)] -translate-y-1 sm:-translate-y-2 gold-glow'
-                              : 'border-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)] sm:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                              ? highContrast
+                                ? 'border-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,0.5)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] -translate-y-1 sm:-translate-y-2'
+                                : 'border-[#ffce00] shadow-[3px_3px_0px_rgba(255,206,0,0.5)] sm:shadow-[4px_4px_0px_rgba(255,206,0,0.5)] -translate-y-1 sm:-translate-y-2 gold-glow'
+                              : highContrast
+                                ? 'border-hc-border shadow-[2px_2px_0px_rgba(0,0,0,0.5)] sm:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                                : 'border-black shadow-[2px_2px_0px_rgba(0,0,0,0.5)] sm:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                         }`}
                       >
                         <div className="relative w-full h-full bg-black overflow-hidden">
@@ -976,9 +1093,15 @@ const ReelConnectionsGame = () => {
                           />
                           {selected && !isSolving && (
                             <>
-                              <div className="absolute inset-0 bg-[rgba(255,206,0,0.15)]" />
-                              <div className="absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 bg-[#ffce00] border-[2px] border-white rounded-full flex items-center justify-center shadow-[1px_1px_0px_rgba(0,0,0,0.8)] sm:shadow-[2px_2px_0px_rgba(0,0,0,0.8)]">
-                                <span className="text-[#2c2c2c] text-[10px] sm:text-xs font-bold">
+                              <div
+                                className={`absolute inset-0 ${highContrast ? 'bg-hc-primary/20' : 'bg-[rgba(255,206,0,0.15)]'}`}
+                              />
+                              <div
+                                className={`absolute top-0.5 right-0.5 sm:top-1 sm:right-1 w-5 h-5 sm:w-6 sm:h-6 border-[2px] border-white rounded-full flex items-center justify-center shadow-[1px_1px_0px_rgba(0,0,0,0.8)] sm:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] ${highContrast ? 'bg-hc-primary' : 'bg-[#ffce00]'}`}
+                              >
+                                <span
+                                  className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-white' : 'text-[#2c2c2c]'}`}
+                                >
                                   {orderNumber}
                                 </span>
                               </div>
@@ -988,9 +1111,11 @@ const ReelConnectionsGame = () => {
                           {enlargePromptMovie?.imdbId === movie.imdbId && (
                             <button
                               onClick={(e) => handleEnlargeClick(movie, e)}
-                              className="absolute top-0 left-0 right-0 bg-[#ffce00] py-1.5 sm:py-2 text-center shadow-[0_2px_4px_rgba(0,0,0,0.3)] z-10 hover:bg-[#ffd82e] active:bg-[#e6b900] transition-colors"
+                              className={`absolute top-0 left-0 right-0 py-1.5 sm:py-2 text-center shadow-[0_2px_4px_rgba(0,0,0,0.3)] z-10 transition-colors ${highContrast ? 'bg-hc-primary hover:bg-hc-focus' : 'bg-[#ffce00] hover:bg-[#ffd82e] active:bg-[#e6b900]'}`}
                             >
-                              <span className="text-[#2c2c2c] text-[10px] sm:text-xs font-bold tracking-wide">
+                              <span
+                                className={`text-[10px] sm:text-xs font-bold tracking-wide ${highContrast ? 'text-white' : 'text-[#2c2c2c]'}`}
+                              >
                                 Enlarge?
                               </span>
                             </button>
@@ -999,11 +1124,11 @@ const ReelConnectionsGame = () => {
                       </button>
                       <div className="overflow-hidden px-0.5 sm:px-1">
                         <p
-                          className={`text-white text-[10px] sm:text-xs font-semibold text-center whitespace-nowrap ${
-                            selected && !isSolving ? 'animate-marquee' : 'truncate'
+                          className={`text-[10px] sm:text-xs font-semibold text-center whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'} ${
+                            selected && !isSolving && !reduceMotion ? 'animate-marquee' : 'truncate'
                           }`}
                         >
-                          {selected && !isSolving
+                          {selected && !isSolving && !reduceMotion
                             ? `${movie.title}  •  ${movie.title}`
                             : movie.title}
                         </p>
@@ -1016,19 +1141,27 @@ const ReelConnectionsGame = () => {
               {/* Ready to Start Modal Overlay */}
               {!gameStarted && (
                 <div className="fixed inset-0 flex items-center justify-center z-10 pointer-events-none">
-                  <div className="bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] rounded-xl sm:rounded-2xl border-[2px] sm:border-[3px] border-[#ffce00] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 text-center animate-fade-in-up mx-4 pointer-events-auto">
-                    <h3 className="text-lg sm:text-xl font-bold text-white mb-1 sm:mb-2 drop-shadow-lg">
+                  <div
+                    className={`rounded-xl sm:rounded-2xl border-[2px] sm:border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} mx-4 pointer-events-auto ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-[#ffce00]'}`}
+                  >
+                    <h3
+                      className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                    >
                       Ready to start?
                     </h3>
-                    <p className="text-white/70 text-xs sm:text-sm mb-1 sm:mb-2">
+                    <p
+                      className={`text-xs sm:text-sm mb-1 sm:mb-2 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                    >
                       Create four groups of four movies
                     </p>
-                    <p className="text-white/50 text-[10px] sm:text-xs mb-3 sm:mb-4">
+                    <p
+                      className={`text-[10px] sm:text-xs mb-3 sm:mb-4 ${highContrast ? 'text-hc-text/50' : 'text-white/50'}`}
+                    >
                       Hold poster, then tap banner to enlarge
                     </p>
                     <button
                       onClick={onStartGame}
-                      className="flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 bg-[#ffce00] border-[2px] sm:border-[3px] border-black rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all text-[#2c2c2c] font-black text-base sm:text-lg tracking-wide gold-glow"
+                      className={`flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 border-[2px] sm:border-[3px] rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black gold-glow'}`}
                     >
                       Action!
                       <Image
@@ -1104,7 +1237,12 @@ const ReelConnectionsGame = () => {
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
 
       {/* Poster Modal */}
-      <PosterModal movie={enlargedMovie} onClose={() => setEnlargedMovie(null)} />
+      <PosterModal
+        movie={enlargedMovie}
+        onClose={() => setEnlargedMovie(null)}
+        reduceMotion={reduceMotion}
+        highContrast={highContrast}
+      />
     </div>
   );
 };
