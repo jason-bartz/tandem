@@ -99,7 +99,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
                   highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
                 }`}
               >
-                Get reminded to play your daily puzzle
+                Get a friendly daily reminder each morning
               </p>
             </div>
           </div>
@@ -127,7 +127,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
                   highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
                 }`}
               >
-                Protect your winning streak
+                Three fresh puzzles waiting each day
               </p>
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
                   highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
                 }`}
               >
-                Choose your notification time in Settings
+                Keep your streak going strong
               </p>
             </div>
           </div>
