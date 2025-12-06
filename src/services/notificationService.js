@@ -1,22 +1,10 @@
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Preferences } from '@capacitor/preferences';
 import { Capacitor } from '@capacitor/core';
-import {
-  getDailyReminder,
-  getStreakSaverMessage,
-  getMilestoneMessage,
-  getRandomMessage,
-  formatMessage,
-  WEEKLY_SUMMARY,
-} from '@/lib/notificationMessages';
-import { loadStats, hasPlayedToday, getWeeklyPuzzleStats } from '@/lib/storage';
+import { getDailyReminder } from '@/lib/notificationMessages';
 
 const NOTIFICATION_IDS = {
   DAILY_REMINDER: 1,
-  STREAK_SAVER: 2,
-  WEEKLY_SUMMARY: 3,
-  MILESTONE: 4,
-  COMEBACK: 5,
 };
 
 // Helper function to get today's date string in user's local timezone
@@ -28,14 +16,9 @@ function getTodayDateString() {
 
 const PREFS_KEYS = {
   NOTIFICATIONS_ENABLED: 'notifications_enabled',
-  DAILY_REMINDER_ENABLED: 'daily_reminder_enabled',
-  DAILY_REMINDER_TIME: 'daily_reminder_time',
-  STREAK_PROTECTION_ENABLED: 'streak_protection_enabled',
-  STREAK_PROTECTION_TIME: 'streak_protection_time',
   QUIET_HOURS_ENABLED: 'quiet_hours_enabled',
   QUIET_HOURS_START: 'quiet_hours_start',
   QUIET_HOURS_END: 'quiet_hours_end',
-  LAST_PLAY_TIME: 'last_play_time',
   NOTIFICATION_PERMISSION: 'notification_permission',
 };
 
@@ -143,8 +126,6 @@ class NotificationService {
   // Get default notification times
   getDefaultTimes() {
     return {
-      dailyReminder: '10:00', // Not used anymore - using random times
-      streakSaver: '20:00', // 8 PM
       quietStart: '21:30', // 9:30 PM
       quietEnd: '07:30', // 7:30 AM
     };
@@ -211,24 +192,8 @@ class NotificationService {
     scheduleDate.setDate(scheduleDate.getDate() + 1);
     scheduleDate.setHours(randomTime.hours, randomTime.minutes, 0, 0);
 
-    // Get current stats for context
-    const stats = await loadStats();
-
-    const isWeekend = this.isWeekend(scheduleDate);
-
-    // Get appropriate message based on tomorrow's day
-    const message = getDailyReminder({
-      streak: stats.currentStreak,
-      isWeekend,
-    });
-
-    // Adjust for weekends (add 30 minutes for variety)
-    if (this.isWeekend(scheduleDate)) {
-      scheduleDate.setMinutes(scheduleDate.getMinutes() + 30);
-    }
-
+    // Respect quiet hours
     if (await this.isInQuietHours(scheduleDate)) {
-      // Reschedule for after quiet hours
       const quietEnd = await this.getNotificationPreference(
         PREFS_KEYS.QUIET_HOURS_END,
         this.getDefaultTimes().quietEnd
@@ -237,9 +202,9 @@ class NotificationService {
       scheduleDate.setHours(endHours, endMinutes, 0, 0);
     }
 
-    // CRITICAL FIX: Do NOT use repeats: true
-    // Instead, schedule a single notification for tomorrow
-    // The app will reschedule on next launch with fresh content
+    // Get random message
+    const message = getDailyReminder();
+
     await LocalNotifications.schedule({
       notifications: [
         {
@@ -248,203 +213,19 @@ class NotificationService {
           body: message.body,
           schedule: {
             at: scheduleDate,
-            // REMOVED: repeats: true, every: 'day'
-            // This ensures each day gets fresh content based on current context
           },
           sound: 'default',
           actionTypeId: 'PLAY_GAME',
           extra: {
             type: 'daily_reminder',
             scheduleDate: scheduleDate.toISOString(),
-            isWeekend,
-            streak: stats.currentStreak,
           },
         },
       ],
     });
-
-    // Log scheduling for debugging
 
     // Store when we last scheduled
     await this.setNotificationPreference('last_daily_reminder_scheduled', new Date().toISOString());
-  }
-
-  async scheduleStreakSaver() {
-    if (!this.isNative) return;
-
-    // Always enabled if master notifications are on
-    const notificationsEnabled = await this.getNotificationPreference(
-      PREFS_KEYS.NOTIFICATIONS_ENABLED,
-      true
-    );
-    if (!notificationsEnabled) return;
-
-    // Cancel existing streak saver
-    await this.cancelNotification(NOTIFICATION_IDS.STREAK_SAVER);
-
-    // Get current stats
-    const stats = await loadStats();
-
-    if (stats.currentStreak < 3) return;
-
-    if (await hasPlayedToday()) return;
-
-    // Get streak saver time
-    const streakTime = await this.getNotificationPreference(
-      PREFS_KEYS.STREAK_PROTECTION_TIME,
-      this.getDefaultTimes().streakSaver
-    );
-
-    const [hours, minutes] = streakTime.split(':').map(Number);
-
-    // Schedule for today at specified time
-    const scheduleDate = new Date();
-    scheduleDate.setHours(hours, minutes, 0, 0);
-
-    // If time has passed, schedule for tomorrow
-    if (scheduleDate <= new Date()) {
-      scheduleDate.setDate(scheduleDate.getDate() + 1);
-    }
-
-    const midnight = new Date();
-    midnight.setDate(midnight.getDate() + 1);
-    midnight.setHours(0, 0, 0, 0);
-    const hoursLeft = (midnight - new Date()) / (1000 * 60 * 60);
-
-    // Get appropriate message
-    const message = getStreakSaverMessage(stats.currentStreak, hoursLeft);
-
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: NOTIFICATION_IDS.STREAK_SAVER,
-          title: message.title,
-          body: message.body,
-          schedule: {
-            at: scheduleDate,
-          },
-          sound: 'default',
-          actionTypeId: 'SAVE_STREAK',
-          extra: {
-            type: 'streak_saver',
-            streak: stats.currentStreak,
-            scheduleDate: scheduleDate.toISOString(),
-          },
-        },
-      ],
-    });
-  }
-
-  async sendWeeklySummaryNow() {
-    if (!this.isNative) return;
-
-    // Get current weekly stats
-    const weeklyStats = await getWeeklyPuzzleStats();
-
-    // Get random message and format with actual data
-    const message = getRandomMessage(WEEKLY_SUMMARY);
-    const formattedMessage = formatMessage(message, {
-      played: weeklyStats.puzzlesCompleted,
-    });
-
-    // Send notification immediately
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: NOTIFICATION_IDS.WEEKLY_SUMMARY,
-          title: formattedMessage.title,
-          body: formattedMessage.body,
-          schedule: {
-            at: new Date(Date.now() + 1000), // 1 second from now
-          },
-          sound: 'default',
-          actionTypeId: 'PLAY_GAME',
-          extra: {
-            type: 'weekly_summary',
-            puzzlesCompleted: weeklyStats.puzzlesCompleted,
-          },
-        },
-      ],
-    });
-  }
-
-  async scheduleWeeklySummary() {
-    if (!this.isNative) return;
-
-    // Cancel existing weekly summary
-    await this.cancelNotification(NOTIFICATION_IDS.WEEKLY_SUMMARY);
-
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const hours = now.getHours();
-
-    // If it's Sunday and between 10:30 AM and 11:30 AM, send immediately
-    if (dayOfWeek === 0 && hours >= 10 && hours <= 11) {
-      await this.sendWeeklySummaryNow();
-      return;
-    }
-
-    // Schedule for next Sunday at 11 AM
-    const scheduleDate = new Date();
-    const daysUntilSunday = dayOfWeek === 0 ? 7 : 7 - dayOfWeek;
-    scheduleDate.setDate(scheduleDate.getDate() + daysUntilSunday);
-    scheduleDate.setHours(11, 0, 0, 0);
-
-    // Schedule a single notification for next Sunday
-    // The app will reschedule on launch with fresh stats
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: NOTIFICATION_IDS.WEEKLY_SUMMARY,
-          title: 'Weekly Check-In',
-          body: 'Check your Tandem stats for this week! 🎯',
-          schedule: {
-            at: scheduleDate,
-            // REMOVED: repeats: true, every: 'week'
-            // This ensures fresh stats calculation each week
-          },
-          sound: 'default',
-          actionTypeId: 'PLAY_GAME',
-          extra: {
-            type: 'weekly_summary_trigger',
-            scheduleDate: scheduleDate.toISOString(),
-          },
-        },
-      ],
-    });
-  }
-
-  async scheduleMilestoneNotification(days) {
-    if (!this.isNative) return;
-
-    const message = getMilestoneMessage(days);
-    if (!message) return;
-
-    // Schedule immediately
-    await LocalNotifications.schedule({
-      notifications: [
-        {
-          id: NOTIFICATION_IDS.MILESTONE,
-          title: message.title,
-          body: message.body,
-          schedule: {
-            at: new Date(Date.now() + 1000), // 1 second from now
-          },
-          sound: 'default',
-          actionTypeId: 'PLAY_GAME',
-          extra: {
-            type: 'milestone',
-            days,
-          },
-        },
-      ],
-    });
-  }
-
-  // Helper methods
-  isWeekend(date = new Date()) {
-    const day = date.getDay();
-    return day === 0 || day === 6; // Sunday or Saturday
   }
 
   async isInQuietHours(date = new Date()) {
@@ -508,29 +289,14 @@ class NotificationService {
     const enabled = await this.getNotificationPreference(PREFS_KEYS.NOTIFICATIONS_ENABLED, true);
     if (!enabled) return;
 
-    // Reschedule all notification types
+    // Schedule daily reminder
     await this.scheduleDailyReminder();
-    await this.scheduleStreakSaver();
-    await this.scheduleWeeklySummary();
   }
 
   // Called when puzzle is completed
   async onPuzzleCompleted() {
     if (!this.isNative) return;
-
-    // Cancel today's streak saver since puzzle is done
-    await this.cancelNotification(NOTIFICATION_IDS.STREAK_SAVER);
-
     await this.clearBadge();
-
-    // Check for milestone
-    const stats = await loadStats();
-    const milestones = [7, 14, 30, 50, 100];
-    if (milestones.includes(stats.currentStreak)) {
-      await this.scheduleMilestoneNotification(stats.currentStreak);
-    }
-
-    await this.setNotificationPreference(PREFS_KEYS.LAST_PLAY_TIME, new Date().toISOString());
   }
 
   // Called on app launch
@@ -541,19 +307,15 @@ class NotificationService {
 
     await this.clearBadge();
 
-    // CRITICAL FIX: Always reschedule notifications on launch
-    // This ensures we have fresh content with correct day-of-week and streak
+    // Reschedule notifications on launch to ensure fresh content
     const today = getTodayDateString();
     const lastCheck = await this.getNotificationPreference('last_notification_check');
 
-    const shouldReschedule = lastCheck !== today;
-
-    if (shouldReschedule) {
+    if (lastCheck !== today) {
       await this.rescheduleAllNotifications();
       await this.setNotificationPreference('last_notification_check', today);
     } else {
-      // Even on the same day, verify notifications are scheduled
-      // This handles cases where notifications were delivered or cancelled
+      // Verify daily reminder is scheduled
       const pending = await LocalNotifications.getPending();
       const hasDailyReminder = pending.notifications.some(
         (n) => n.id === NOTIFICATION_IDS.DAILY_REMINDER
@@ -562,18 +324,6 @@ class NotificationService {
       if (!hasDailyReminder) {
         await this.scheduleDailyReminder();
       }
-    }
-
-    const now = new Date();
-    const dayOfWeek = now.getDay();
-    const hours = now.getHours();
-
-    const lastWeeklySummary = await this.getNotificationPreference('last_weekly_summary_date');
-
-    if (dayOfWeek === 0 && hours >= 10 && lastWeeklySummary !== today) {
-      // Send weekly summary with actual stats
-      await this.sendWeeklySummaryNow();
-      await this.setNotificationPreference('last_weekly_summary_date', today);
     }
   }
 
