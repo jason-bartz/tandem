@@ -1,7 +1,7 @@
 import './globals.css';
 import '@/styles/ios-optimizations.css';
 import localFont from 'next/font/local';
-import Script from 'next/script';
+// Script import removed - not currently used
 import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
 import ErrorBoundary from '@/components/shared/ErrorBoundary';
@@ -212,13 +212,7 @@ export default function RootLayout({ children }) {
         )}
       </head>
       <body className={`${plusJakartaSans.className} antialiased`}>
-        {/* Load Cordova for iOS app - Required for cordova-plugin-purchase */}
-        {process.env.BUILD_TARGET === 'capacitor' && (
-          <>
-            <Script src="/cordova.js" strategy="beforeInteractive" />
-            <Script src="/cordova_plugins.js" strategy="beforeInteractive" />
-          </>
-        )}
+        {/* Cordova scripts are automatically injected by Capacitor WebView - do NOT load manually */}
         <ErrorBoundary name="RootLayout">
           <ThemeProvider>
             <AuthProvider>

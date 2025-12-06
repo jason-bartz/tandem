@@ -7,18 +7,57 @@ import { getCurrentPuzzleNumber, getDateForPuzzleNumber } from '@/lib/puzzleNumb
 
 class PlatformService {
   constructor() {
-    // Detect if running on native iOS
-    this.isNative = Capacitor.isNativePlatform();
-    this.isIOS = Capacitor.getPlatform() === 'ios';
-    this.isWeb = Capacitor.getPlatform() === 'web';
-
-    this.apiUrl = this.isNative
-      ? 'https://www.tandemdaily.com'
-      : process.env.NEXT_PUBLIC_API_URL || '';
-
     // Cache key prefix for offline storage
     this.CACHE_PREFIX = 'tandem_puzzle_';
     this.CACHE_DAYS = 7;
+
+    // Platform detection is now done dynamically via getters
+    // to handle SSR and ensure Capacitor is ready
+    this._platformChecked = false;
+    this._isNative = false;
+    this._isIOS = false;
+    this._isWeb = true;
+  }
+
+  // Lazy platform detection - ensures Capacitor is ready before checking
+  _checkPlatform() {
+    if (this._platformChecked) return;
+
+    try {
+      // Only check if we're in a browser environment
+      if (typeof window !== 'undefined') {
+        this._isNative = Capacitor.isNativePlatform();
+        this._isIOS = Capacitor.getPlatform() === 'ios';
+        this._isWeb = Capacitor.getPlatform() === 'web';
+        this._platformChecked = true;
+      }
+    } catch {
+      // Capacitor not available, use defaults (web)
+      this._isNative = false;
+      this._isIOS = false;
+      this._isWeb = true;
+      this._platformChecked = true;
+    }
+  }
+
+  // Dynamic getters for platform state
+  get isNative() {
+    this._checkPlatform();
+    return this._isNative;
+  }
+
+  get isIOS() {
+    this._checkPlatform();
+    return this._isIOS;
+  }
+
+  get isWeb() {
+    this._checkPlatform();
+    return this._isWeb;
+  }
+
+  get apiUrl() {
+    return this.isNative ? 'https://www.tandemdaily.com' : process.env.NEXT_PUBLIC_API_URL || '';
   }
 
   // Platform detection methods

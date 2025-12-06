@@ -203,6 +203,30 @@ export default function AccountPage() {
       router.push('/');
     } catch (error) {
       console.error('Failed to sign out:', error);
+      // Force clear on iOS if normal sign out fails
+      if (!isWeb) {
+        await forceLogout();
+      }
+    }
+  };
+
+  // Force logout - clears ALL local data (for corrupted sessions)
+  const forceLogout = async () => {
+    try {
+      const { Preferences } = await import('@capacitor/preferences');
+      await Preferences.clear();
+      console.log('[Account] Force cleared all preferences');
+      // Clear localStorage too
+      if (typeof localStorage !== 'undefined') {
+        localStorage.clear();
+      }
+      router.push('/');
+      // Force reload to clear React state
+      window.location.reload();
+    } catch (error) {
+      console.error('[Account] Force logout failed:', error);
+      // Last resort - just reload
+      window.location.reload();
     }
   };
 
@@ -411,6 +435,11 @@ export default function AccountPage() {
 
   if (!user && isWeb) {
     return null; // Will redirect
+  }
+
+  // iOS: Show sign-in UI for unauthenticated users
+  if (!user && !isWeb) {
+    return <IOSSignInPage />;
   }
 
   return (
@@ -816,6 +845,16 @@ export default function AccountPage() {
                       Sign Out
                     </button>
 
+                    {/* Force Logout - shows on iOS when session appears corrupted */}
+                    {!isWeb && !user?.email && (
+                      <button
+                        onClick={forceLogout}
+                        className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-orange-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                      >
+                        Force Logout (Clear All Data)
+                      </button>
+                    )}
+
                     {/* Delete Account Button */}
                     <button
                       onClick={handleDeleteAccount}
@@ -881,5 +920,243 @@ export default function AccountPage() {
         isFirstTime={false}
       />
     </>
+  );
+}
+
+/**
+ * IOSSignInPage - Sign-in page for iOS users who haven't authenticated yet
+ * Shows Apple Sign In button and email/password form
+ */
+function IOSSignInPage() {
+  const router = useRouter();
+  const { signInWithApple, signIn, signUp } = useAuth();
+  const { lightTap } = useHaptics();
+  const [mode, setMode] = useState('login'); // 'login' or 'signup'
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState(null);
+
+  const handleAppleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+    lightTap();
+
+    try {
+      const { error: appleError } = await signInWithApple();
+
+      if (appleError) {
+        setError('Unable to sign in with Apple. Please try again.');
+        setLoading(false);
+      }
+      // Success will trigger auth state change and redirect
+    } catch (err) {
+      console.error('[IOSSignIn] Apple sign in error:', err);
+      setError('Unable to sign in with Apple. Please try again.');
+      setLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setLoading(true);
+    lightTap();
+
+    try {
+      if (mode === 'signup') {
+        const usernameValidation = validateUsername(username);
+        if (!usernameValidation.valid) {
+          setError(usernameValidation.error);
+          setLoading(false);
+          return;
+        }
+
+        const { error } = await signUp(email, password, { username });
+
+        if (error) {
+          setError(error.message);
+        } else {
+          setSuccessMessage('Account created! Check your email for confirmation link.');
+          setMode('login');
+          setPassword('');
+        }
+      } else {
+        const { error } = await signIn(email, password);
+
+        if (error) {
+          setError(error.message);
+        }
+        // Success will trigger auth state change
+      }
+    } catch (err) {
+      setError('An unexpected error occurred');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+      <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="w-full max-w-md mx-auto p-6">
+          <div className="relative">
+            {/* Main card */}
+            <div className="bg-ghost-white dark:bg-gray-800 rounded-[32px] border-[3px] border-black dark:border-white overflow-hidden -translate-x-[4px] -translate-y-[4px] relative z-10 p-6">
+              {/* Back button */}
+              <button
+                onClick={() => {
+                  lightTap();
+                  router.push('/');
+                }}
+                className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-6"
+              >
+                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 19l-7-7 7-7"
+                  />
+                </svg>
+                Back to game
+              </button>
+
+              {/* Title */}
+              <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-200 mb-2 text-center">
+                {mode === 'signup' ? 'Create Account' : 'Sign In'}
+              </h1>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-6 text-center">
+                Sign in to track your stats across devices and compete on leaderboards
+              </p>
+
+              {/* Success message */}
+              {successMessage && (
+                <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border-2 border-green-500 rounded-xl">
+                  <p className="text-sm text-green-700 dark:text-green-300">{successMessage}</p>
+                </div>
+              )}
+
+              {/* Error message */}
+              {error && (
+                <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-xl">
+                  <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+                </div>
+              )}
+
+              {/* Apple Sign In Button */}
+              <button
+                onClick={handleAppleSignIn}
+                disabled={loading}
+                className={`w-full p-4 rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all flex items-center justify-center gap-3 bg-black text-white ${
+                  loading
+                    ? 'opacity-50 cursor-not-allowed'
+                    : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                }`}
+              >
+                {loading ? (
+                  <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                ) : (
+                  <>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+                    </svg>
+                    <span className="font-bold">Sign in with Apple</span>
+                  </>
+                )}
+              </button>
+
+              {/* Divider */}
+              <div className="flex items-center gap-4 my-6">
+                <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+                <span className="text-sm text-gray-500">or</span>
+                <div className="flex-1 h-px bg-gray-300 dark:bg-gray-600"></div>
+              </div>
+
+              {/* Email/Password Form */}
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {mode === 'signup' && (
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                      Username
+                    </label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''))}
+                      className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                      placeholder="your_username"
+                      minLength={3}
+                      maxLength={20}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="you@example.com"
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-bold text-gray-700 dark:text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full px-4 py-3 border-2 border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 dark:bg-gray-700 dark:text-white"
+                    placeholder="••••••••"
+                    minLength={6}
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className={`w-full py-4 bg-purple-500 text-white rounded-xl border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] font-bold ${
+                    loading
+                      ? 'opacity-50 cursor-not-allowed'
+                      : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  }`}
+                >
+                  {loading ? 'Please wait...' : mode === 'signup' ? 'Create Account' : 'Sign In'}
+                </button>
+              </form>
+
+              {/* Toggle mode */}
+              <button
+                onClick={() => {
+                  setMode(mode === 'login' ? 'signup' : 'login');
+                  setError(null);
+                  lightTap();
+                }}
+                className="w-full mt-4 text-sm text-gray-600 dark:text-gray-400 hover:text-purple-600 dark:hover:text-purple-400"
+              >
+                {mode === 'signup'
+                  ? 'Already have an account? Sign in'
+                  : "Don't have an account? Sign up"}
+              </button>
+            </div>
+
+            {/* Shadow */}
+            <div className="absolute inset-0 bg-black dark:bg-ghost-white rounded-[32px] -z-10"></div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }

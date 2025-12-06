@@ -10,8 +10,8 @@ import { extractWordsFromPuzzles } from '@/lib/miniUtils';
 // Default lookback period for word deduplication (in days)
 const DEDUP_LOOKBACK_DAYS = 45;
 
-// Mark as dynamic route
-export const dynamic = 'force-dynamic';
+// Mark as dynamic route (skip for static export/iOS builds)
+export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
 
 // Cache the Trie in memory for performance
 let cachedTrie = null;

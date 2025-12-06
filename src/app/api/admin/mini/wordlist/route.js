@@ -3,8 +3,8 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { requireAdmin } from '@/lib/auth';
 
-// Mark as dynamic route
-export const dynamic = 'force-dynamic';
+// Mark as dynamic route (skip for static export/iOS builds)
+export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
 
 /**
  * GET /api/admin/mini/wordlist
@@ -41,9 +41,6 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error('[WordList API] Error reading word list:', error);
-    return NextResponse.json(
-      { error: 'Failed to load word list' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to load word list' }, { status: 500 });
   }
 }

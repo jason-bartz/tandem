@@ -430,26 +430,9 @@ export function AuthProvider({ children }) {
         }
       }
 
-      // Create user profile in database if new user
-      if (data.user) {
-        try {
-          const { error: profileError } = await supabase.from('users').insert({
-            id: data.user.id,
-            email: data.user.email || result.response.email,
-            username: data.user.user_metadata?.username || result.response.givenName || null,
-            avatar_url: data.user.user_metadata?.avatar_url || null,
-          });
-
-          if (profileError && profileError.code !== '23505') {
-            // Ignore duplicate key errors (user already exists)
-            console.warn('[Auth] Profile creation warning:', profileError.message);
-            // Don't fail sign-in if profile creation fails
-          }
-        } catch (profileErr) {
-          console.warn('[Auth] Profile creation error:', profileErr.message);
-          // Don't fail sign-in if profile creation fails
-        }
-      }
+      // User profile is automatically created by database trigger
+      // (see migration 006_auto_create_user_profile.sql)
+      // The trigger fires for ALL auth flows including signInWithIdToken
 
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
@@ -467,11 +450,30 @@ export function AuthProvider({ children }) {
     try {
       const { error } = await supabase.auth.signOut();
 
+      // Clear iOS-specific stored auth data
+      try {
+        const { Capacitor } = await import('@capacitor/core');
+        if (Capacitor.isNativePlatform()) {
+          const { Preferences } = await import('@capacitor/preferences');
+          // Clear Apple Sign-In stored data
+          await Preferences.remove({ key: 'apple_authorization_code' });
+          await Preferences.remove({ key: 'apple_user_id' });
+          console.log('[Auth] Cleared iOS auth preferences');
+        }
+      } catch (clearError) {
+        // Non-critical - continue with sign out
+        console.warn('[Auth] Could not clear iOS preferences:', clearError);
+      }
+
       if (error) throw error;
 
       return { error: null };
     } catch (error) {
       console.error('Sign out error:', error);
+      // Even if sign out fails, force clear local state
+      setUser(null);
+      setSession(null);
+      setUserProfile(null);
       return { error };
     }
   };

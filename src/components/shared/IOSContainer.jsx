@@ -76,17 +76,8 @@ export default function IOSContainer({ children }) {
         Keyboard.addListener('keyboardWillShow', handleKeyboardShow);
         Keyboard.addListener('keyboardWillHide', handleKeyboardHide);
 
-        // Prevent bounce scrolling on iOS
-        document.body.addEventListener(
-          'touchmove',
-          (e) => {
-            if (e.target.closest('.scrollable')) {
-              return;
-            }
-            e.preventDefault();
-          },
-          { passive: false }
-        );
+        // Note: Removed global touchmove preventDefault as it blocks all touch interactions
+        // Bounce prevention is now handled via CSS overscroll-behavior
 
         // Add viewport meta for iOS
         const viewport = document.querySelector('meta[name="viewport"]');
@@ -180,11 +171,8 @@ export default function IOSContainer({ children }) {
         transform: scale(0.98);
       }
 
-      /* Disable text selection except in inputs */
-      .ios-app *:not(input):not(textarea) {
-        -webkit-user-select: none;
-        user-select: none;
-      }
+      /* Text selection disabled on root - inputs inherit auto */
+      /* Note: Removed wildcard selector as it can cause performance issues */
 
       /* Fix for iOS rubber band scrolling */
       .ios-app .game-container {
@@ -211,11 +199,8 @@ export default function IOSContainer({ children }) {
         z-index: 9999;
       }
 
-      /* iOS-style transitions */
-      .ios-app * {
-        -webkit-transform: translateZ(0);
-        -webkit-backface-visibility: hidden;
-      }
+      /* iOS-style transitions - only apply GPU acceleration where needed */
+      /* Removed: .ios-app * { transform/backface-visibility } - this breaks click handling in WKWebView */
 
       /* Prevent zoom on double tap */
       .ios-app button,

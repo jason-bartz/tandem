@@ -1,4 +1,5 @@
 import { createBrowserClient as createBrowserClientSSR } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
 
 /**
@@ -11,8 +12,8 @@ import { Capacitor } from '@capacitor/core';
  * - Any code that runs in the user's browser
  *
  * Storage:
- * - Web: Uses cookies so sessions work with API routes
- * - iOS/Android: Uses Capacitor Preferences for native storage
+ * - Web: Uses @supabase/ssr with cookies so sessions work with API routes
+ * - iOS/Android: Uses standard @supabase/supabase-js with localStorage
  *
  * RLS policies will ensure users can only access their own data.
  */
@@ -24,23 +25,26 @@ export function createBrowserClient() {
     throw new Error('Missing Supabase public environment variables');
   }
 
-  // On native platforms (iOS/Android), use localStorage instead of cookies
-  // Capacitor Preferences is async but Supabase SSR expects sync cookie handlers
+  // On native platforms (iOS/Android), use standard Supabase client with localStorage
+  // The @supabase/ssr package doesn't work well in WKWebView
   const isNative = Capacitor.isNativePlatform();
 
   if (isNative) {
-    // Use default storage (localStorage) for native - Supabase SSR handles this automatically
-    return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
+    console.log('[Supabase] Creating native client with localStorage');
+    // Use standard Supabase JS client for native - works better in WKWebView
+    return createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: typeof window !== 'undefined' ? window.localStorage : undefined,
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: false,
+        // Add flow type for native
+        flowType: 'implicit',
       },
     });
   }
 
-  // On web, use document.cookie with proper session persistence
+  // On web, use @supabase/ssr with document.cookie for session persistence
   return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
     auth: {
       // Enable session persistence following web best practices
