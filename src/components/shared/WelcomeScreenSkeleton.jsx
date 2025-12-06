@@ -19,17 +19,40 @@ const loadingMessages = [
 /**
  * Skeleton card component for game cards
  */
-function GameCardSkeleton({ reduceMotion, highContrast, animationDelay = 0 }) {
+function GameCardSkeleton({
+  reduceMotion,
+  highContrast,
+  animationDelay = 0,
+  loadingText = null,
+  isTextVisible = true,
+}) {
   return (
     <div
-      className={`w-full rounded-[24px] border-[3px] overflow-hidden p-5 ${
+      className={`w-full rounded-[24px] border-[3px] overflow-hidden p-5 relative ${
         highContrast
           ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
           : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
       }`}
       style={{ animationDelay: !reduceMotion ? `${animationDelay}ms` : '0ms' }}
     >
-      <div className="flex items-center gap-4">
+      {/* Loading text overlay - centered within this card */}
+      {loadingText && (
+        <div
+          className={`absolute inset-0 flex items-center justify-center z-10 transition-opacity duration-300 ${
+            isTextVisible ? 'opacity-100' : 'opacity-0'
+          }`}
+        >
+          <p
+            className={`text-base font-bold text-center px-4 ${
+              highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'
+            }`}
+          >
+            {loadingText}
+          </p>
+        </div>
+      )}
+
+      <div className={`flex items-center gap-4 ${loadingText ? 'opacity-30' : ''}`}>
         {/* Icon skeleton */}
         <div
           className={`w-[52px] h-[52px] flex-shrink-0 rounded-xl bg-gray-200 dark:bg-gray-700 ${
@@ -124,9 +147,7 @@ export default function WelcomeScreenSkeleton() {
               </div>
               <h1
                 className={`text-lg font-bold ${
-                  highContrast
-                    ? 'text-hc-text'
-                    : 'text-gray-900 dark:text-gray-100'
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                 }`}
               >
                 Tandem Daily Games
@@ -152,25 +173,6 @@ export default function WelcomeScreenSkeleton() {
         }`}
       >
         <div className="max-w-2xl w-full mx-auto px-4 py-6 animate-fade-in">
-          {/* Loading message overlay */}
-          <div className="fixed inset-0 pointer-events-none flex items-center justify-center z-30">
-            <div
-              className={`transition-opacity duration-300 ${
-                isVisible ? 'opacity-100' : 'opacity-0'
-              }`}
-            >
-              <div className="px-6 py-3">
-                <p
-                  className={`text-base font-bold text-center ${
-                    highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'
-                  }`}
-                >
-                  {loadingText}
-                </p>
-              </div>
-            </div>
-          </div>
-
           {/* Greeting Skeleton */}
           <div className="text-center mb-6">
             <div
@@ -196,6 +198,8 @@ export default function WelcomeScreenSkeleton() {
               reduceMotion={reduceMotion}
               highContrast={highContrast}
               animationDelay={0}
+              loadingText={loadingText}
+              isTextVisible={isVisible}
             />
             <GameCardSkeleton
               reduceMotion={reduceMotion}
