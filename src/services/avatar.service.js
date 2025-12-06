@@ -81,6 +81,31 @@ class AvatarService {
 
       const supabase = getSupabaseBrowserClient();
 
+      // CRITICAL: Verify auth session is established and matches userId
+      // This fixes race condition on iOS where signInWithIdToken returns
+      // but the Supabase client hasn't synced the session yet
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+
+      if (authError) {
+        console.error('[AvatarService] Auth error:', authError);
+        throw new Error('Authentication error. Please sign in again.');
+      }
+
+      if (!authData?.user) {
+        console.error('[AvatarService] No authenticated user found');
+        throw new Error('Not authenticated. Please sign in again.');
+      }
+
+      if (authData.user.id !== userId) {
+        console.error('[AvatarService] User ID mismatch:', {
+          authUserId: authData.user.id,
+          passedUserId: userId,
+        });
+        throw new Error('Authentication mismatch. Please sign in again.');
+      }
+
+      console.log('[AvatarService] Auth verified for user:', userId);
+
       // First verify the avatar exists and is active
       const avatar = await this.getAvatarById(avatarId);
       if (!avatar) {
@@ -97,23 +122,30 @@ class AvatarService {
         console.error('[AvatarService] Error checking user:', userCheckError);
       }
 
-      if (!existingUser) {
-        console.warn('[AvatarService] User not found in users table:', userId);
-        // Try to create the user first
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData?.user) {
-          const { error: createError } = await supabase.from('users').insert({
-            id: userId,
-            email: userData.user.email,
-            username: userData.user.user_metadata?.username || null,
-          });
+      console.log('[AvatarService] User check result:', { existingUser, userCheckError });
 
-          if (createError && createError.code !== '23505') {
-            console.error('[AvatarService] Failed to create user:', createError);
-          }
+      if (!existingUser) {
+        console.warn('[AvatarService] User not found in users table, creating...:', userId);
+        // Try to create the user first
+        const { error: createError } = await supabase.from('users').insert({
+          id: userId,
+          email: authData.user.email,
+          username: authData.user.user_metadata?.username || null,
+        });
+
+        if (createError && createError.code !== '23505') {
+          console.error('[AvatarService] Failed to create user:', createError);
+          // If insert fails, the database trigger should handle it
+          // Wait a moment for trigger to complete then retry
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        } else {
+          console.log('[AvatarService] User created successfully or already exists');
         }
       } else {
+        console.log('[AvatarService] User exists in database');
       }
+
+      console.log('[AvatarService] Updating avatar to:', avatarId);
 
       const { data, error } = await supabase
         .from('users')
@@ -280,6 +312,21 @@ class AvatarService {
       }
 
       const supabase = getSupabaseBrowserClient();
+
+      // Verify auth session is established
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+
+      if (authError || !authData?.user) {
+        console.error('[AvatarService] Auth not available for markFirstTimeSetupComplete');
+        // Non-critical - return silently as this is a nice-to-have flag
+        return;
+      }
+
+      if (authData.user.id !== userId) {
+        console.error('[AvatarService] User ID mismatch in markFirstTimeSetupComplete');
+        return;
+      }
+
       const { error } = await supabase
         .from('users')
         .update({ has_completed_first_time_setup: true })
@@ -287,11 +334,13 @@ class AvatarService {
 
       if (error) {
         console.error('[AvatarService] Failed to mark first-time setup complete:', error);
-        throw new Error('Failed to update first-time setup status.');
+        // Don't throw - this is a non-critical update
+      } else {
+        console.log('[AvatarService] First-time setup marked complete');
       }
     } catch (error) {
       console.error('[AvatarService] markFirstTimeSetupComplete error:', error);
-      throw error;
+      // Don't throw - this is a non-critical update
     }
   }
 

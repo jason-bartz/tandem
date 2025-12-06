@@ -12,7 +12,7 @@ const config: CapacitorConfig = {
   ios: {
     contentInset: 'automatic',
     preferredContentMode: 'mobile',
-    scrollEnabled: false,
+    scrollEnabled: true, // Changed from false - was blocking input on macOS Catalyst
     allowsLinkPreview: false,
     limitsNavigationsToAppBoundDomains: false,
   },
