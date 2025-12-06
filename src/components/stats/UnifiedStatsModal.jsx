@@ -7,13 +7,14 @@ import useUnifiedStats from '@/hooks/useUnifiedStats';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import TandemStatsSection from './TandemStatsSection';
 import MiniStatsSection from './MiniStatsSection';
+import ReelStatsSection from './ReelStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
  * UnifiedStatsModal - Unified statistics left panel for all games
- * Displays Daily Tandem and Daily Mini stats in a single panel
+ * Displays Daily Tandem, Daily Mini, and Reel Connections stats in a single panel
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -25,7 +26,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const [showAchievements, setShowAchievements] = useState(false);
 
   // Load stats for all games
-  const { tandemStats, miniStats, loading, error } = useUnifiedStats(isOpen);
+  const { tandemStats, miniStats, reelStats, loading, error } = useUnifiedStats(isOpen);
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -35,6 +36,8 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   }, [isOpen]);
 
   // Generate shareable stats text
+  const reelWinRate =
+    reelStats.gamesPlayed > 0 ? Math.round((reelStats.gamesWon / reelStats.gamesPlayed) * 100) : 0;
   const shareableStatsText = `My Tandem Daily Games Stats 🚲
 ═══════════════════════
 
@@ -45,6 +48,10 @@ Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '
 📝 Daily Mini
 Played: ${miniStats.totalCompleted} | Best Streak: ${miniStats.longestStreak || 0}
 Current Streak: ${miniStats.currentStreak} ${miniStats.currentStreak > 0 ? '🔥' : ''}
+
+🎬 Reel Connections
+Played: ${reelStats.gamesPlayed} | Win Rate: ${reelWinRate}%
+Current Streak: ${reelStats.currentStreak} ${reelStats.currentStreak > 0 ? '🔥' : ''}
 
 Play at tandemdaily.com
 #TandemDailyGames`;
@@ -119,6 +126,7 @@ Play at tandemdaily.com
           <>
             <TandemStatsSection stats={tandemStats} animationKey={animationKey} />
             <MiniStatsSection stats={miniStats} animationKey={animationKey} />
+            <ReelStatsSection stats={reelStats} animationKey={animationKey} />
           </>
         )}
       </LeftSidePanel>

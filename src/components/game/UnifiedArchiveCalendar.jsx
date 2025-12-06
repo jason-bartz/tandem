@@ -14,20 +14,23 @@ import subscriptionService from '@/services/subscriptionService';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
+import storageService from '@/core/storage/storageService';
+
+const REEL_STORAGE_KEY = 'reel-connections-stats';
 
 /**
  * UnifiedArchiveCalendar Component
  *
- * Unified calendar-based puzzle archive interface with tabs for Tandem and Mini puzzles.
+ * Unified calendar-based puzzle archive interface with tabs for Tandem, Mini, and Reel puzzles.
  * Shows month view with color-coded status dots for each puzzle.
  *
  * Features:
- * - Tabs to switch between Tandem (blue) and Mini (yellow) archives
+ * - Tabs to switch between Tandem (blue), Mini (yellow), and Reel (red) archives
  * - Full month visible without scrolling
  * - Color-coded status indicators (green/yellow/red/grey dots)
  * - Month/year navigation with iOS-style picker
  * - Minimal design (no puzzle numbers or themes in calendar view)
- * - Subscription paywall integration
+ * - Subscription paywall integration (Tandem/Mini only - Reel archive is free)
  * - Works identically on web and iOS native
  * - Uses LeftSidePanel for consistent slide-in behavior
  *
@@ -41,7 +44,7 @@ import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
  * @param {boolean} props.isOpen - Whether modal is visible
  * @param {Function} props.onClose - Close handler
  * @param {Function} props.onSelectPuzzle - Puzzle selection handler for Tandem (puzzleNumber)
- * @param {string} props.defaultTab - Default tab to show ('tandem' or 'mini')
+ * @param {string} props.defaultTab - Default tab to show ('tandem', 'mini', or 'reel')
  */
 export default function UnifiedArchiveCalendar({
   isOpen,
@@ -60,6 +63,7 @@ export default function UnifiedArchiveCalendar({
   const [puzzleData, setPuzzleData] = useState({});
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
   const [completedMiniPuzzles, setCompletedMiniPuzzles] = useState(new Set());
+  const [completedReelPuzzles, setCompletedReelPuzzles] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef(null);
 
@@ -89,10 +93,29 @@ export default function UnifiedArchiveCalendar({
   const firstMiniPuzzleMonth = 10;
   const firstMiniPuzzleYear = 2025;
 
+  const firstReelPuzzleDate = new Date(2025, 10, 30); // November 30, 2025
+  const firstReelPuzzleMonth = 10;
+  const firstReelPuzzleYear = 2025;
+
   // Current first puzzle date based on active tab
-  const firstPuzzleDate = activeTab === 'tandem' ? firstTandemPuzzleDate : firstMiniPuzzleDate;
-  const firstPuzzleMonth = activeTab === 'tandem' ? firstTandemPuzzleMonth : firstMiniPuzzleMonth;
-  const firstPuzzleYear = activeTab === 'tandem' ? firstTandemPuzzleYear : firstMiniPuzzleYear;
+  const getFirstPuzzleInfo = () => {
+    if (activeTab === 'tandem') {
+      return {
+        date: firstTandemPuzzleDate,
+        month: firstTandemPuzzleMonth,
+        year: firstTandemPuzzleYear,
+      };
+    } else if (activeTab === 'mini') {
+      return { date: firstMiniPuzzleDate, month: firstMiniPuzzleMonth, year: firstMiniPuzzleYear };
+    } else {
+      return { date: firstReelPuzzleDate, month: firstReelPuzzleMonth, year: firstReelPuzzleYear };
+    }
+  };
+  const {
+    date: firstPuzzleDate,
+    month: firstPuzzleMonth,
+    year: firstPuzzleYear,
+  } = getFirstPuzzleInfo();
 
   // Get today's date in local timezone
   const today = new Date();
@@ -179,13 +202,11 @@ export default function UnifiedArchiveCalendar({
       const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
 
       // Load puzzles for this month using public API
-      const puzzlesResponse = await fetch(
-        `/api/mini/puzzle?startDate=${startDate}&endDate=${endDate}`,
-        {
-          signal: abortControllerRef.current?.signal,
-          credentials: 'include',
-        }
-      );
+      // Use getApiUrl and capacitorFetch for iOS native compatibility
+      const apiUrl = getApiUrl(`/api/mini/puzzle?startDate=${startDate}&endDate=${endDate}`);
+      const puzzlesResponse = await capacitorFetch(apiUrl, {
+        signal: abortControllerRef.current?.signal,
+      });
 
       // Load completed puzzles from local storage
       // getCompletedMiniPuzzles returns an object with date keys, convert to Set of date strings
@@ -221,6 +242,71 @@ export default function UnifiedArchiveCalendar({
   }, []);
 
   /**
+   * Load puzzles for the current month - Reel Connections puzzles
+   */
+  const loadReelMonthData = useCallback(async (month, year) => {
+    try {
+      const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+      // Load puzzles for this month using Reel Connections archive API
+      // Use getApiUrl and capacitorFetch for iOS native compatibility
+      const apiUrl = getApiUrl(
+        `/api/reel-connections/archive?startDate=${startDate}&endDate=${endDate}`
+      );
+      const puzzlesResponse = await capacitorFetch(apiUrl, {
+        signal: abortControllerRef.current?.signal,
+      });
+
+      // Load completed puzzles from storage
+      // Uses storageService which checks localStorage → IndexedDB → in-memory
+      try {
+        const stored = await storageService.get(REEL_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          if (parsed.gameHistory && Array.isArray(parsed.gameHistory)) {
+            const completed = new Set(parsed.gameHistory.filter((g) => g.won).map((g) => g.date));
+            setCompletedReelPuzzles(completed);
+          } else {
+            setCompletedReelPuzzles(new Set());
+          }
+        } else {
+          setCompletedReelPuzzles(new Set());
+        }
+      } catch (storageError) {
+        console.error('[UnifiedArchiveCalendar] Error loading Reel history:', storageError);
+        setCompletedReelPuzzles(new Set());
+      }
+
+      const monthData = {};
+
+      if (puzzlesResponse.ok) {
+        const puzzlesData = await puzzlesResponse.json();
+        if (puzzlesData.success && puzzlesData.puzzles) {
+          puzzlesData.puzzles.forEach((puzzle) => {
+            const puzzleDate = new Date(puzzle.date + 'T00:00:00'); // Parse in local timezone
+            if (puzzleDate.getMonth() === month && puzzleDate.getFullYear() === year) {
+              const day = puzzleDate.getDate();
+              monthData[day] = {
+                id: puzzle.id,
+                date: puzzle.date,
+              };
+            }
+          });
+        }
+      }
+
+      // Reel archive is free - no access map needed
+      return { monthData, accessMap: {} };
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        console.error('[UnifiedArchiveCalendar] Failed to load Reel month data:', error);
+      }
+      return { monthData: {}, accessMap: {} };
+    }
+  }, []);
+
+  /**
    * Load puzzles for the current month based on active tab
    */
   const loadMonthData = useCallback(
@@ -237,8 +323,10 @@ export default function UnifiedArchiveCalendar({
         let result;
         if (activeTab === 'tandem') {
           result = await loadTandemMonthData(month, year);
-        } else {
+        } else if (activeTab === 'mini') {
           result = await loadMiniMonthData(month, year);
+        } else {
+          result = await loadReelMonthData(month, year);
         }
 
         setPuzzleData(result.monthData);
@@ -247,7 +335,7 @@ export default function UnifiedArchiveCalendar({
         setIsLoading(false);
       }
     },
-    [activeTab, loadTandemMonthData, loadMiniMonthData]
+    [activeTab, loadTandemMonthData, loadMiniMonthData, loadReelMonthData]
   );
 
   // Load data when month/year changes, modal opens, or tab changes
@@ -340,7 +428,7 @@ export default function UnifiedArchiveCalendar({
 
       // Load puzzle - pass date for proper admire mode detection
       onSelectPuzzle(puzzle.date);
-    } else {
+    } else if (activeTab === 'mini') {
       // Mini - only require subscription for archive puzzles (not today's puzzle)
       const isArchivePuzzle = !isToday;
       if (isArchivePuzzle && !hasSubscription) {
@@ -351,6 +439,10 @@ export default function UnifiedArchiveCalendar({
       // Navigate to the mini game with the selected date
       onClose?.();
       router.push(`/dailymini?date=${puzzle.date}`);
+    } else {
+      // Reel Connections - archive is free, no paywall needed
+      onClose?.();
+      router.push(`/reel-connections?date=${puzzle.date}`);
     }
   };
 
@@ -401,7 +493,7 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
         shouldBeLocked = puzzleAccessMap[day] === true;
-      } else {
+      } else if (activeTab === 'mini') {
         // Mini
         const dateStr = puzzle?.date;
         const isCompleted = dateStr ? completedMiniPuzzles.has(dateStr) : false;
@@ -416,6 +508,21 @@ export default function UnifiedArchiveCalendar({
 
         const isArchivePuzzle = puzzle && !isToday;
         shouldBeLocked = !hasSubscription && isArchivePuzzle;
+      } else {
+        // Reel Connections
+        const dateStr = puzzle?.date;
+        const isCompleted = dateStr ? completedReelPuzzles.has(dateStr) : false;
+
+        if (puzzle && isCompleted) {
+          status = 'completed';
+        } else if (puzzle && !isFutureDate) {
+          status = 'not_played';
+        } else if (!isPastFirstPuzzle || isFutureDate) {
+          status = 'no_puzzle';
+        }
+
+        // Reel archive is free - no locking
+        shouldBeLocked = false;
       }
 
       days.push(
@@ -444,14 +551,20 @@ export default function UnifiedArchiveCalendar({
     currentYear < todayYear || (currentYear === todayYear && currentMonth < todayMonth);
 
   // Get title with logo based on active tab
+  const getTabTitle = () => {
+    if (activeTab === 'tandem') {
+      return { icon: '/icons/ui/tandem.png', alt: 'Tandem', text: 'Tandem Puzzle Archive' };
+    } else if (activeTab === 'mini') {
+      return { icon: '/icons/ui/mini.png', alt: 'Mini', text: 'Mini Puzzle Archive' };
+    } else {
+      return { icon: '/icons/ui/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
+    }
+  };
+  const tabTitle = getTabTitle();
   const title = (
     <div className="flex items-center gap-2">
-      <img
-        src={activeTab === 'tandem' ? '/icons/ui/tandem.png' : '/icons/ui/mini.png'}
-        alt={activeTab === 'tandem' ? 'Tandem' : 'Mini'}
-        className="w-6 h-6"
-      />
-      <span>{activeTab === 'tandem' ? 'Tandem Puzzle Archive' : 'Mini Puzzle Archive'}</span>
+      <img src={tabTitle.icon} alt={tabTitle.alt} className="w-6 h-6" />
+      <span>{tabTitle.text}</span>
     </div>
   );
 
@@ -466,7 +579,9 @@ export default function UnifiedArchiveCalendar({
         headerClassName={
           activeTab === 'tandem'
             ? 'bg-accent-blue/30 dark:bg-accent-blue/30'
-            : 'bg-accent-yellow/30 dark:bg-accent-yellow/30'
+            : activeTab === 'mini'
+              ? 'bg-accent-yellow/30 dark:bg-accent-yellow/30'
+              : 'bg-red-500/30 dark:bg-red-500/30'
         }
         footer={
           /* Tab Buttons */
@@ -474,12 +589,13 @@ export default function UnifiedArchiveCalendar({
             <button
               onClick={() => setActiveTab('tandem')}
               className={`
-                flex-1 py-3 px-4
+                flex-1 py-3 px-3
                 rounded-2xl
                 border-[3px]
                 font-semibold
                 transition-all
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-1.5
+                text-sm
                 ${
                   activeTab === 'tandem'
                     ? highContrast
@@ -503,12 +619,13 @@ export default function UnifiedArchiveCalendar({
             <button
               onClick={() => setActiveTab('mini')}
               className={`
-                flex-1 py-3 px-4
+                flex-1 py-3 px-3
                 rounded-2xl
                 border-[3px]
                 font-semibold
                 transition-all
-                flex items-center justify-center gap-2
+                flex items-center justify-center gap-1.5
+                text-sm
                 ${
                   activeTab === 'mini'
                     ? highContrast
@@ -528,6 +645,36 @@ export default function UnifiedArchiveCalendar({
             >
               <img src="/icons/ui/mini.png" alt="" className="w-5 h-5" />
               Mini
+            </button>
+            <button
+              onClick={() => setActiveTab('reel')}
+              className={`
+                flex-1 py-3 px-3
+                rounded-2xl
+                border-[3px]
+                font-semibold
+                transition-all
+                flex items-center justify-center gap-1.5
+                text-sm
+                ${
+                  activeTab === 'reel'
+                    ? highContrast
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                      : 'bg-red-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : highContrast
+                      ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-red-500 text-white border-black dark:border-gray-600 hover:bg-red-500/90 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }
+              `}
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+              aria-label="Reel Archive"
+              aria-pressed={activeTab === 'reel'}
+            >
+              <img src="/icons/ui/movie.png" alt="" className="w-5 h-5" />
+              Reel
             </button>
           </div>
         }
