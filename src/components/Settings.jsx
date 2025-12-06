@@ -31,7 +31,7 @@ import { useHoroscope } from '@/hooks/useHoroscope';
 import notificationService from '@/services/notificationService';
 import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
-import GameCenterButton from '@/components/GameCenterButton';
+// GameCenterButton removed - Game Center integration deprecated
 import { STORAGE_KEYS } from '@/lib/constants';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
@@ -779,12 +779,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
 
                 {/* Section Content */}
                 <div className="p-4 space-y-4">
-                  {/* Game Center Button */}
-                  <GameCenterButton />
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-200 dark:border-gray-700"></div>
-
                   {/* Leaderboards Toggle - Horizontal inline layout */}
                   <div className="flex items-center justify-between">
                     <div className="flex-1">

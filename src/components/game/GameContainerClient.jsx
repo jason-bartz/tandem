@@ -21,7 +21,7 @@ import { Preferences } from '@capacitor/preferences';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
 import subscriptionService from '@/services/subscriptionService';
-import gameCenterService from '@/services/gameCenter.service';
+// gameCenterService removed - Game Center integration deprecated
 
 export default function GameContainerClient({ initialPuzzleData }) {
   const game = useGameWithInitialData(initialPuzzleData);
@@ -67,16 +67,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
           // App continues to work even if subscription init fails
         });
 
-      gameCenterService
-        .initialize()
-        .then((success) => {
-          if (success) {
-          } else {
-          }
-        })
-        .catch((_error) => {
-          // App continues to work even if Game Center init fails
-        });
+      // Game Center initialization removed - deprecated
     }
   }, []);
 

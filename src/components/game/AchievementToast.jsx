@@ -1,25 +1,21 @@
 'use client';
-import { useState, useEffect } from 'react';
-import gameCenterService from '@/services/gameCenter.service';
+import { useState } from 'react';
 
+/**
+ * AchievementToast - Display achievement unlock notifications
+ *
+ * Game Center integration removed - this is now a stub that maintains the UI.
+ * TODO: Wire to web achievement system in Phase 4
+ *
+ * The showAchievement function can be called by the web achievement system
+ * to display achievement notifications.
+ */
 export default function AchievementToast() {
   const [achievement, setAchievement] = useState(null);
   const [visible, setVisible] = useState(false);
 
-  useEffect(() => {
-    // Subscribe to achievement unlocks
-    const unsubscribe = gameCenterService.onAchievementUnlocked((achievements) => {
-      if (achievements && achievements.length > 0) {
-        showAchievement(achievements[0]);
-
-        achievements.slice(1).forEach((ach, index) => {
-          setTimeout(() => showAchievement(ach), (index + 1) * 3500);
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
+  // Stub - achievement subscriptions removed with Game Center
+  // TODO: In Phase 4, connect to web achievement events
 
   const showAchievement = (ach) => {
     setAchievement(ach);
@@ -31,6 +27,12 @@ export default function AchievementToast() {
       setTimeout(() => setAchievement(null), 300);
     }, 3000);
   };
+
+  // Expose showAchievement for future use
+  // This will be called by the web achievement system in Phase 4
+  if (typeof window !== 'undefined') {
+    window.__showAchievementToast = showAchievement;
+  }
 
   if (!achievement) {
     return null;

@@ -1,6 +1,6 @@
 import { API_ENDPOINTS, STORAGE_KEYS } from '@/core/config/constants';
 import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/core/storage/storage';
-import gameCenterService from '@/core/services/gameCenter.service';
+// gameCenterService removed - Game Center integration deprecated
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 
@@ -111,21 +111,8 @@ class StatsService {
         }
       }
 
-      // Check and submit Game Center achievements (only for non-archive games)
-      if (!gameResult.isArchive && Capacitor.isNativePlatform()) {
-        try {
-          await gameCenterService.checkAndSubmitAchievements(localStats);
-
-          await gameCenterService.submitStreakToLeaderboard(localStats.currentStreak);
-        } catch (error) {
-          // Log the error for debugging
-          console.error('[StatsService] Game Center update failed:', error);
-          console.error('[StatsService] Error details:', {
-            message: error.message,
-            stack: error.stack,
-          });
-        }
-      }
+      // Game Center achievements removed - deprecated
+      // TODO: Wire to web achievement system in Phase 4
 
       return localStats;
     } catch (error) {

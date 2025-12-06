@@ -11,6 +11,7 @@ import {
   playCrowdDisappointmentSound,
 } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import {
   REEL_CONFIG,
   DIFFICULTY_ORDER,
@@ -211,10 +212,10 @@ export function useReelConnectionsGame() {
         const timeSeconds = Math.floor((endTime - startTime) / 1000);
         const puzzleDate = getLocalDateString();
 
-        await fetch(REEL_API.LEADERBOARD_DAILY, {
+        const leaderboardUrl = getApiUrl(REEL_API.LEADERBOARD_DAILY);
+        await capacitorFetch(leaderboardUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({
             gameType: REEL_GAME_TYPE,
             puzzleDate,
@@ -313,7 +314,8 @@ export function useReelConnectionsGame() {
       }
 
       const dateToLoad = specificDate || getLocalDateString();
-      const response = await fetch(`${REEL_API.PUZZLE}?date=${dateToLoad}`);
+      const apiUrl = getApiUrl(`${REEL_API.PUZZLE}?date=${dateToLoad}`);
+      const response = await capacitorFetch(apiUrl, {}, false); // No auth needed for puzzle fetch
       const data = await response.json();
 
       if (!response.ok || !data.puzzle) {
