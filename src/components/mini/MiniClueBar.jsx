@@ -23,19 +23,8 @@ export default function MiniClueBar({
 }) {
   if (!currentClue || !puzzle) {
     return (
-      <div className="w-full py-4 px-2">
-        <div
-          className="
-            rounded-[16px]
-            border-[3px] border-black dark:border-gray-600
-            shadow-[3px_3px_0px_rgba(0,0,0,1)]
-            dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-            bg-ghost-white dark:bg-gray-800
-            p-4
-            text-center
-            text-text-secondary
-          "
-        >
+      <div className="w-full py-1 px-2">
+        <div className="py-2 min-h-[48px] flex items-center justify-center text-center text-text-secondary">
           Select a cell to see the clue
         </div>
       </div>
@@ -50,22 +39,12 @@ export default function MiniClueBar({
   const clueText = clueEntry?.clue || clue || '';
 
   return (
-    <div className="w-full max-w-md mx-auto py-2 px-2">
-      <div
-        className="
-          rounded-[16px]
-          border-[3px] border-black dark:border-gray-600
-          shadow-[3px_3px_0px_rgba(0,0,0,1)]
-          dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-          bg-ghost-white dark:bg-gray-800
-          overflow-hidden
-        "
-      >
-        <div className="flex items-center gap-2 p-3 min-h-[72px]">
-          {/* Previous button */}
-          <button
-            onClick={onNavigatePrevious}
-            className="
+    <div className="w-full max-w-md mx-auto py-1 px-2">
+      <div className="flex items-center gap-2 py-2 min-h-[48px]">
+        {/* Previous button */}
+        <button
+          onClick={onNavigatePrevious}
+          className="
               flex-shrink-0
               w-10 h-10
               rounded-[12px]
@@ -75,33 +54,33 @@ export default function MiniClueBar({
               active:bg-gray-200 dark:active:bg-gray-600
               transition-colors
             "
-            aria-label="Previous clue"
-          >
-            <span className="text-xl text-text-primary">‹</span>
-          </button>
+          aria-label="Previous clue"
+        >
+          <span className="text-xl text-text-primary">‹</span>
+        </button>
 
-          {/* Clue content */}
-          <button
-            onClick={onClueClick}
-            className="
+        {/* Clue content */}
+        <button
+          onClick={onClueClick}
+          className="
               flex-1
               flex items-center justify-center
               text-center
               min-w-0
               py-1
             "
-            aria-label={`Clue: ${clueText}`}
-          >
-            {/* Clue text - centered, allows wrapping */}
-            <p className="text-sm sm:text-base font-medium text-text-primary line-clamp-2">
-              {clueText}
-            </p>
-          </button>
+          aria-label={`Clue: ${clueText}`}
+        >
+          {/* Clue text - centered, allows wrapping */}
+          <p className="text-sm sm:text-base font-medium text-text-primary line-clamp-2">
+            {clueText}
+          </p>
+        </button>
 
-          {/* Next button */}
-          <button
-            onClick={onNavigateNext}
-            className="
+        {/* Next button */}
+        <button
+          onClick={onNavigateNext}
+          className="
               flex-shrink-0
               w-10 h-10
               rounded-[12px]
@@ -111,11 +90,10 @@ export default function MiniClueBar({
               active:bg-gray-200 dark:active:bg-gray-600
               transition-colors
             "
-            aria-label="Next clue"
-          >
-            <span className="text-xl text-text-primary">›</span>
-          </button>
-        </div>
+          aria-label="Next clue"
+        >
+          <span className="text-xl text-text-primary">›</span>
+        </button>
       </div>
     </div>
   );

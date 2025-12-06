@@ -228,7 +228,7 @@ export default function MiniGameScreen({
           >
             {/* Header - back button, title/date, and hamburger menu */}
             <header
-              className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
+              className={`pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
                 highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
               }`}
             >
