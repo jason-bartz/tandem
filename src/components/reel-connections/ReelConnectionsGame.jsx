@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { X, Menu, ChevronLeft } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
@@ -100,6 +100,7 @@ const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
 
 const ReelConnectionsGame = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { lightTap } = useHaptics();
 
   // Sidebar and unified modal states
@@ -157,6 +158,21 @@ const ReelConnectionsGame = () => {
     formatTime,
     getCompletedGroupsSorted,
   } = useReelConnectionsGame();
+
+  // Track if we've already loaded an archive puzzle from URL
+  const archiveLoadedRef = useRef(false);
+
+  // Load archive puzzle from URL parameter on mount
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam && !loading && !archiveLoadedRef.current) {
+      // Validate date format (YYYY-MM-DD)
+      if (/^\d{4}-\d{2}-\d{2}$/.test(dateParam)) {
+        archiveLoadedRef.current = true;
+        handleArchiveSelect(dateParam);
+      }
+    }
+  }, [searchParams, handleArchiveSelect, loading]);
 
   // Handle starting the game with clapper animation and auto-scroll on mobile
   const onStartGame = useCallback(() => {

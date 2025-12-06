@@ -19,10 +19,11 @@ import { Capacitor } from '@capacitor/core';
 import { getPuzzleResult } from '@/lib/storage';
 import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
 import miniService from '@/services/mini.service';
+import storageService from '@/core/storage/storageService';
 
 export default function WelcomeScreen({
   onStart,
-  theme,
+  _theme,
   _isAuto,
   _currentState,
   onSelectPuzzle,
@@ -70,8 +71,8 @@ export default function WelcomeScreen({
         }
         setMiniLoading(false);
 
-        // Check Reel Connections completion (uses localStorage)
-        const reelStats = localStorage.getItem('reel-connections-stats');
+        // Check Reel Connections completion (uses storageService for IndexedDB fallback)
+        const reelStats = await storageService.get('reel-connections-stats');
         if (reelStats) {
           const parsed = JSON.parse(reelStats);
           const today = getLocalDateString();
@@ -80,7 +81,9 @@ export default function WelcomeScreen({
         }
 
         // Load Reel puzzle
-        const reelResponse = await fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`);
+        const reelResponse = await fetch(
+          `/api/reel-connections/puzzle?date=${getLocalDateString()}`
+        );
         const reelData = await reelResponse.json();
         if (reelData.puzzle) {
           setReelPuzzle(reelData.puzzle);
@@ -223,10 +226,7 @@ export default function WelcomeScreen({
         defaultTab="tandem"
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
-      <Settings
-        isOpen={showSettings}
-        onClose={() => setShowSettings(false)}
-      />
+      <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
     </>
   );
 }
