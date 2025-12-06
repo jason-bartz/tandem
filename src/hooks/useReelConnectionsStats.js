@@ -132,9 +132,12 @@ function mergeReelStats(localStats, dbStats) {
  * @param {Object} updatedStats - The updated stats after game completion
  */
 async function triggerAchievementCheck(updatedStats) {
-  // Game Center achievements removed - deprecated
-  // TODO: Wire to web achievement system in Phase 4
-  void updatedStats; // Silence unused parameter warning until Phase 4
+  try {
+    const { checkAndNotifyReelAchievements } = await import('@/lib/achievementNotifier');
+    await checkAndNotifyReelAchievements(updatedStats);
+  } catch (error) {
+    console.error('[ReelConnectionsStats] Failed to check achievements:', error);
+  }
 }
 
 /**

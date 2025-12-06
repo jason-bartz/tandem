@@ -111,8 +111,15 @@ class StatsService {
         }
       }
 
-      // Game Center achievements removed - deprecated
-      // TODO: Wire to web achievement system in Phase 4
+      // Check and notify for Tandem achievements (fire-and-forget)
+      try {
+        const { checkAndNotifyTandemAchievements } = await import('@/lib/achievementNotifier');
+        checkAndNotifyTandemAchievements(localStats).catch((error) => {
+          console.error('StatsService: Failed to check achievements:', error);
+        });
+      } catch (error) {
+        console.error('StatsService: Failed to import achievement notifier:', error);
+      }
 
       return localStats;
     } catch (error) {

@@ -577,8 +577,15 @@ export async function updateMiniStatsAfterCompletion(
       }
     }
 
-    // Game Center achievements removed - deprecated
-    // TODO: Wire to web achievement system in Phase 4
+    // Check and notify for mini achievements (fire-and-forget)
+    try {
+      const { checkAndNotifyMiniAchievements } = await import('@/lib/achievementNotifier');
+      checkAndNotifyMiniAchievements(stats).catch((error) => {
+        logger.error('[miniStorage] Failed to check achievements:', error);
+      });
+    } catch (error) {
+      logger.error('[miniStorage] Failed to import achievement notifier:', error);
+    }
 
     return stats;
   } catch (error) {
