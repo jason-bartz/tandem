@@ -914,7 +914,7 @@ const ReelConnectionsGame = () => {
             <div className="relative" ref={gameAreaRef}>
               {/* Movie Grid */}
               <div
-                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 transition-all duration-300 ${shakeGrid ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+                className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
               >
                 {movies.map((movie) => {
                   const selected = isSelected(movie);
