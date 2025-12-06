@@ -577,17 +577,8 @@ export async function updateMiniStatsAfterCompletion(
       }
     }
 
-    // Check for achievement unlocks (first-time completions only)
-    if (isFirstAttempt) {
-      try {
-        const gameCenterService = (await import('@/services/gameCenter.service')).default;
-        gameCenterService.checkAndSubmitMiniAchievements(stats).catch((error) => {
-          logger.error('[miniStorage] Failed to check mini achievements:', error);
-        });
-      } catch (error) {
-        logger.error('[miniStorage] Failed to import gameCenter service:', error);
-      }
-    }
+    // Game Center achievements removed - deprecated
+    // TODO: Wire to web achievement system in Phase 4
 
     return stats;
   } catch (error) {

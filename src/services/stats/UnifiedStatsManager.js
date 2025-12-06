@@ -9,7 +9,7 @@
 
 import { gameEventStore, EventTypes } from '../events/GameEventStore';
 import { ConflictResolver } from './ConflictResolver';
-import { GameCenterProvider } from './providers/GameCenterProvider';
+// GameCenterProvider removed - Game Center integration deprecated
 import { CloudKitProvider } from './providers/CloudKitProvider';
 import { LocalStorageProvider } from './providers/LocalStorageProvider';
 import { KeyValueStoreProvider } from './providers/KeyValueStoreProvider';
@@ -111,7 +111,7 @@ class UnifiedStatsManager {
    */
   async initializeProviders() {
     this.providers = {
-      gameCenter: new GameCenterProvider(),
+      // gameCenter removed - Game Center integration deprecated
       cloudKit: new CloudKitProvider(),
       localStorage: new LocalStorageProvider(),
       keyValueStore: new KeyValueStoreProvider(),
@@ -136,19 +136,17 @@ class UnifiedStatsManager {
     const platform = this.getPlatform();
 
     if (platform === 'ios') {
-      // iOS: Game Center primary, CloudKit secondary, KeyValue tertiary
-      if (await this.providers.gameCenter.isAvailable()) {
-        this.primary = this.providers.gameCenter;
-      }
-
+      // iOS: CloudKit primary, KeyValue secondary (Game Center removed)
       if (await this.providers.cloudKit.isAvailable()) {
-        this.secondary = this.primary ? this.providers.cloudKit : this.providers.gameCenter;
-        if (!this.primary) this.primary = this.providers.cloudKit;
+        this.primary = this.providers.cloudKit;
       }
 
       if (await this.providers.keyValueStore.isAvailable()) {
-        this.tertiary = this.providers.keyValueStore;
+        this.secondary = this.primary ? this.providers.keyValueStore : this.providers.localStorage;
+        if (!this.primary) this.primary = this.providers.keyValueStore;
       }
+
+      this.tertiary = this.providers.localStorage;
     } else {
       // Web/Android: CloudKit primary, localStorage secondary
       if (await this.providers.cloudKit.isAvailable()) {
@@ -492,49 +490,30 @@ class UnifiedStatsManager {
 
     const savePromises = [];
 
-    // Special handling for Game Center - only submit streak to the configured leaderboard
-    if (this.getPlatform() === 'ios' && this.providers.gameCenter) {
-      const gameCenterData = {
-        stats: {
-          currentStreak: stats.currentStreak || 0,
-          lastStreakDate: stats.lastStreakDate,
-        },
-      };
+    // Game Center handling removed - deprecated
 
+    // Save to primary
+    if (this.primary) {
       savePromises.push(
-        this.providers.gameCenter.save(gameCenterData).catch((error) => {
-          console.error('[UnifiedStatsManager] Failed to save streak to Game Center:', error);
+        this.primary.save(saveData).catch((error) => {
+          console.error('[UnifiedStatsManager] Failed to save to primary:', error);
           return { success: false, error };
         })
       );
     }
 
-    // Save to primary
-    if (this.primary) {
-      if (this.primary.name !== 'gameCenter') {
-        savePromises.push(
-          this.primary.save(saveData).catch((error) => {
-            console.error('[UnifiedStatsManager] Failed to save to primary:', error);
-            return { success: false, error };
-          })
-        );
-      }
-    }
-
     // Save to secondary
     if (this.secondary && this.secondary !== this.primary) {
-      if (this.secondary.name !== 'gameCenter') {
-        savePromises.push(
-          this.secondary.save(saveData).catch((error) => {
-            console.error('[UnifiedStatsManager] Failed to save to secondary:', error);
-            return { success: false, error };
-          })
-        );
-      }
+      savePromises.push(
+        this.secondary.save(saveData).catch((error) => {
+          console.error('[UnifiedStatsManager] Failed to save to secondary:', error);
+          return { success: false, error };
+        })
+      );
     }
 
     // Save to tertiary
-    if (this.tertiary && this.tertiary.name !== 'gameCenter') {
+    if (this.tertiary) {
       savePromises.push(
         this.tertiary.save(saveData).catch((error) => {
           console.error('[UnifiedStatsManager] Failed to save to tertiary:', error);
@@ -697,14 +676,7 @@ class UnifiedStatsManager {
         event.type === EventTypes.STREAK_CONTINUED ||
         event.type === EventTypes.ACHIEVEMENT_UNLOCKED
       ) {
-        // Immediately submit to Game Center for iOS
-        if (
-          this.getPlatform() === 'ios' &&
-          this.providers.gameCenter &&
-          (await this.providers.gameCenter.isAvailable())
-        ) {
-          await this.submitToGameCenter(event);
-        }
+        // Game Center submission removed - deprecated
 
         // Debounce full sync
         if (this.syncDebounceTimer) {
@@ -718,30 +690,7 @@ class UnifiedStatsManager {
     });
   }
 
-  /**
-   * Submit scores to Game Center immediately
-   * Note: Only submits current streak since that's the only configured leaderboard
-   */
-  async submitToGameCenter(_event) {
-    try {
-      // Compute current stats
-      const currentStats = this.getCurrentStats();
-
-      // Format for Game Center - only send streak data
-      const gameCenterData = {
-        stats: {
-          currentStreak: currentStats.currentStreak,
-          lastStreakDate: currentStats.lastStreakDate,
-        },
-      };
-
-      // Submit to Game Center (will update the longest_streak leaderboard with best streak)
-      await this.providers.gameCenter.save(gameCenterData);
-    } catch (error) {
-      console.error('[UnifiedStatsManager] Game Center streak submission failed:', error);
-      // Don't throw - we don't want to break the flow if Game Center fails
-    }
-  }
+  // submitToGameCenter method removed - Game Center integration deprecated
 
   /**
    * Update sync state
