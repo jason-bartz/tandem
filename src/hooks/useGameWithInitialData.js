@@ -12,6 +12,7 @@ import {
 } from '@/lib/storage';
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import statsService from '@/services/stats.service';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 export function useGameWithInitialData(initialPuzzleData) {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -292,10 +293,9 @@ export function useGameWithInitialData(initialPuzzleData) {
           };
 
           try {
-            const response = await fetch('/api/leaderboard/daily', {
+            const response = await capacitorFetch(getApiUrl('/api/leaderboard/daily'), {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              credentials: 'include', // Include cookies for authentication
               body: JSON.stringify(payload),
             });
 
@@ -322,10 +322,9 @@ export function useGameWithInitialData(initialPuzzleData) {
               const currentStreak = stats?.currentStreak || 0;
 
               if (currentStreak > 0) {
-                const streakResponse = await fetch('/api/leaderboard/streak', {
+                const streakResponse = await capacitorFetch(getApiUrl('/api/leaderboard/streak'), {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
-                  credentials: 'include',
                   body: JSON.stringify({
                     gameType: 'tandem',
                     streak: currentStreak,
