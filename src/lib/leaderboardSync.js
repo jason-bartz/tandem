@@ -6,6 +6,7 @@
  */
 
 import logger from '@/lib/logger';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 /**
  * Submit user's best streak to the leaderboard
@@ -26,10 +27,9 @@ async function submitStreakToLeaderboard(stats, gameType = 'tandem') {
       stats.bestStreak
     );
 
-    const response = await fetch('/api/leaderboard/streak', {
+    const response = await capacitorFetch(getApiUrl('/api/leaderboard/streak'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({
         gameType,
         streak: stats.bestStreak,

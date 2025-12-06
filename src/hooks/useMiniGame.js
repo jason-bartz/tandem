@@ -29,6 +29,7 @@ import {
 } from '@/lib/miniUtils';
 import logger from '@/lib/logger';
 import { playCorrectSound } from '@/lib/sounds';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 /**
  * Custom hook for managing The Daily Mini crossword game state
@@ -720,10 +721,9 @@ export function useMiniGame(providedDate = null) {
       };
 
       try {
-        const response = await fetch('/api/leaderboard/daily', {
+        const response = await capacitorFetch(getApiUrl('/api/leaderboard/daily'), {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify(payload),
         });
 
