@@ -3,27 +3,15 @@ import { useState } from 'react';
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { STORAGE_KEYS } from '@/lib/constants';
-import DataConsentScreen from './DataConsentScreen';
 import NotificationPermissionScreen from './NotificationPermissionScreen';
 
 const ONBOARDING_STEPS = {
-  DATA_CONSENT: 'data_consent',
   NOTIFICATIONS: 'notifications',
   COMPLETE: 'complete',
 };
 
 export default function OnboardingFlow({ onComplete }) {
-  const [currentStep, setCurrentStep] = useState(ONBOARDING_STEPS.DATA_CONSENT);
-
-  const handleDataConsentContinue = () => {
-    // Move to notifications screen
-    setCurrentStep(ONBOARDING_STEPS.NOTIFICATIONS);
-  };
-
-  const handleDataConsentSkip = async () => {
-    // User chose "Maybe Later" - continue to notifications screen
-    setCurrentStep(ONBOARDING_STEPS.NOTIFICATIONS);
-  };
+  const [currentStep, setCurrentStep] = useState(ONBOARDING_STEPS.NOTIFICATIONS);
 
   const handleNotificationsContinue = async () => {
     // Mark onboarding as complete
@@ -56,11 +44,6 @@ export default function OnboardingFlow({ onComplete }) {
 
   // Render appropriate screen based on current step
   switch (currentStep) {
-    case ONBOARDING_STEPS.DATA_CONSENT:
-      return (
-        <DataConsentScreen onContinue={handleDataConsentContinue} onSkip={handleDataConsentSkip} />
-      );
-
     case ONBOARDING_STEPS.NOTIFICATIONS:
       return (
         <NotificationPermissionScreen

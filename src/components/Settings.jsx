@@ -9,7 +9,6 @@
  * - Subscription and Hard Mode
  * - iCloud Sync (iOS)
  * - Notifications (iOS)
- * - Game Center and Leaderboards (iOS)
  * - Accessibility preferences
  *
  * Nested modals:
@@ -31,8 +30,6 @@ import { useHoroscope } from '@/hooks/useHoroscope';
 import notificationService from '@/services/notificationService';
 import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
-// GameCenterButton removed - Game Center integration deprecated
-import { STORAGE_KEYS } from '@/lib/constants';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
@@ -42,7 +39,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showAppBanner, setShowAppBanner] = useState(false);
   const [hardModeEnabled, setHardModeEnabled] = useState(false);
-  const [leaderboardsEnabled, setLeaderboardsEnabled] = useState(true);
   const [userAvatar, setUserAvatar] = useState(null);
   const [showAvatarModal, setShowAvatarModal] = useState(false);
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
@@ -57,7 +53,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       loadNotificationSettings();
       loadKeyboardLayout();
       loadHardModePreference();
-      loadLeaderboardPreference();
       checkAppBannerVisibility();
 
       // Load user avatar if signed in
@@ -109,24 +104,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     const saved = localStorage.getItem('tandemHardMode');
     if (saved === 'true') {
       setHardModeEnabled(true);
-    }
-  };
-
-  const loadLeaderboardPreference = async () => {
-    try {
-      let enabled;
-      if (Capacitor.isNativePlatform()) {
-        const { Preferences } = await import('@capacitor/preferences');
-        const result = await Preferences.get({ key: STORAGE_KEYS.LEADERBOARDS_ENABLED });
-        enabled = result.value !== 'false'; // Default to true if not set
-      } else {
-        const saved = localStorage.getItem(STORAGE_KEYS.LEADERBOARDS_ENABLED);
-        enabled = saved !== 'false'; // Default to true if not set
-      }
-      setLeaderboardsEnabled(enabled);
-    } catch (error) {
-      console.error('Failed to load leaderboard preference:', error);
-      setLeaderboardsEnabled(true); // Default to true on error
     }
   };
 
@@ -246,25 +223,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     if (window.dispatchEvent) {
       window.dispatchEvent(new CustomEvent('keyboardLayoutChanged', { detail: layout }));
     }
-  };
-
-  const handleLeaderboardToggle = async () => {
-    const newValue = !leaderboardsEnabled;
-    setLeaderboardsEnabled(newValue);
-    try {
-      if (Capacitor.isNativePlatform()) {
-        const { Preferences } = await import('@capacitor/preferences');
-        await Preferences.set({
-          key: STORAGE_KEYS.LEADERBOARDS_ENABLED,
-          value: newValue.toString(),
-        });
-      } else {
-        localStorage.setItem(STORAGE_KEYS.LEADERBOARDS_ENABLED, newValue.toString());
-      }
-    } catch (error) {
-      console.error('Failed to save leaderboard preference:', error);
-    }
-    lightTap();
   };
 
   const handleHardModeToggle = () => {
@@ -750,88 +708,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-sky-500"></div>
                     </div>
                   )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Game Center & Leaderboards Section (iOS only) */}
-          {Capacitor.isNativePlatform() && (
-            <div className="mb-8">
-              {/* Section Card */}
-              <div
-                className={`rounded-2xl border-[3px] overflow-hidden shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)] ${
-                  highContrast
-                    ? 'border-hc-border bg-hc-surface'
-                    : 'border-black dark:border-white bg-ghost-white dark:bg-gray-800'
-                }`}
-              >
-                {/* Section Header */}
-                <div
-                  className={`px-5 py-3 border-b-[3px] ${
-                    highContrast ? 'border-hc-border' : 'border-gray-300 dark:border-gray-600'
-                  }`}
-                >
-                  <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
-                    Game Center
-                  </h3>
-                </div>
-
-                {/* Section Content */}
-                <div className="p-4 space-y-4">
-                  {/* Leaderboards Toggle - Horizontal inline layout */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <p
-                        className={`text-sm font-medium ${
-                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
-                        }`}
-                      >
-                        Leaderboards
-                      </p>
-                      <p
-                        className={`text-xs ${
-                          highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
-                        }`}
-                      >
-                        Share scores globally
-                      </p>
-                    </div>
-                    <button
-                      onClick={handleLeaderboardToggle}
-                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
-                        highContrast
-                          ? leaderboardsEnabled
-                            ? 'bg-hc-primary'
-                            : 'bg-hc-surface'
-                          : leaderboardsEnabled
-                            ? 'bg-gradient-to-r from-emerald-400 to-green-500'
-                            : 'bg-gray-200 dark:bg-gray-700'
-                      }`}
-                      role="switch"
-                      aria-checked={leaderboardsEnabled}
-                    >
-                      <span
-                        className={`${
-                          leaderboardsEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                          highContrast
-                            ? 'bg-hc-background'
-                            : leaderboardsEnabled
-                              ? 'bg-green-600'
-                              : 'bg-ghost-white dark:bg-gray-600'
-                        }`}
-                      >
-                        <svg
-                          className="w-4 h-4 text-current"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
                 </div>
               </div>
             </div>
