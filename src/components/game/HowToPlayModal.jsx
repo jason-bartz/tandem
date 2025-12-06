@@ -392,9 +392,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {/* Reel Connections Content */}
       {activeGame === 'reel' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <div className="text-center">
-            <p className="text-lg font-semibold text-red-500 dark:text-red-400">
-              Find groups of four movies that share something in common.
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">The Basics</h3>
+            <p className="text-sm mb-2">
+              Find groups of four movies that share something in common. Select four movie posters
+              and tap Submit to check if your guess is correct.
+            </p>
+            <p className="text-sm">
+              Find all four groups without making four mistakes. A new puzzle is released daily!
             </p>
           </div>
 
@@ -411,15 +416,86 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   1
                 </span>
-                <span>Select four movies and tap Submit to check if your guess is correct.</span>
+                <span>Select four movies you think belong together.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   2
                 </span>
-                <span>Find all four groups without making four mistakes.</span>
+                <span>Tap Submit to check your guess.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  3
+                </span>
+                <span>Find all four groups to win!</span>
               </li>
             </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              Example Connections
+            </h4>
+            <ul className="space-y-2 text-sm">
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">•</span>
+                <span>80&apos;s Fantasy Movies</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">•</span>
+                <span>Movies Directed by Christopher Nolan</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">•</span>
+                <span>Movies Starring a Furry Friend</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-red-500 font-bold">•</span>
+                <span>Soundtracks That Produced a Billboard #1 Hit</span>
+              </li>
+            </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              Difficulty Levels
+            </h4>
+            <p className="text-sm mb-3">Categories are color-coded by difficulty:</p>
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-yellow-300" />
+                <span className="text-sm font-medium">MATINEE</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">— Easiest</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-blue-400" />
+                <span className="text-sm font-medium">FEATURE</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">— Easy</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-purple-400" />
+                <span className="text-sm font-medium">PREMIERE</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">— Medium</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-4 h-4 rounded bg-red-500" />
+                <span className="text-sm font-medium">GALA</span>
+                <span className="text-sm text-gray-500 dark:text-gray-400">— Hardest</span>
+              </div>
+            </div>
           </div>
 
           <div
@@ -433,37 +509,6 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             <p className="text-sm">
               Hold any poster, then tap the banner to enlarge it for a better view.
             </p>
-          </div>
-
-          <div
-            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
-              highContrast
-                ? 'bg-hc-surface text-hc-text border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
-            }`}
-          >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
-              Difficulty Colors
-            </h4>
-            <p className="text-sm mb-3">Categories are color-coded by difficulty:</p>
-            <div className="space-y-2">
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-yellow-300" />
-                <span className="text-sm">Easiest</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-blue-400" />
-                <span className="text-sm">Easy</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-purple-400" />
-                <span className="text-sm">Medium</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-4 h-4 rounded bg-red-500" />
-                <span className="text-sm">Hardest</span>
-              </div>
-            </div>
           </div>
 
           <div className="text-center py-2">
