@@ -488,6 +488,34 @@ const ReelConnectionsGame = () => {
             </div>
           </div>
         </div>
+
+        {/* Sidebar Menu */}
+        <SidebarMenu
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onOpenStats={() => setShowStats(true)}
+          onOpenArchive={() => setShowArchive(true)}
+          onOpenHowToPlay={() => setShowHowToPlay(true)}
+          onOpenSettings={() => setShowSettings(true)}
+        />
+
+        {/* Unified Modals */}
+        <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+        <UnifiedArchiveCalendar
+          isOpen={showArchive}
+          onClose={() => setShowArchive(false)}
+          onSelectPuzzle={(date) => {
+            setShowArchive(false);
+            handleArchiveSelect(date);
+          }}
+          defaultTab="reel"
+        />
+        <HowToPlayModal
+          isOpen={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+          defaultTab="reel"
+        />
+        <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       </div>
     );
   }
@@ -631,6 +659,34 @@ const ReelConnectionsGame = () => {
             </div>
           </div>
         </div>
+
+        {/* Sidebar Menu */}
+        <SidebarMenu
+          isOpen={isSidebarOpen}
+          onClose={() => setIsSidebarOpen(false)}
+          onOpenStats={() => setShowStats(true)}
+          onOpenArchive={() => setShowArchive(true)}
+          onOpenHowToPlay={() => setShowHowToPlay(true)}
+          onOpenSettings={() => setShowSettings(true)}
+        />
+
+        {/* Unified Modals */}
+        <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+        <UnifiedArchiveCalendar
+          isOpen={showArchive}
+          onClose={() => setShowArchive(false)}
+          onSelectPuzzle={(date) => {
+            setShowArchive(false);
+            handleArchiveSelect(date);
+          }}
+          defaultTab="reel"
+        />
+        <HowToPlayModal
+          isOpen={showHowToPlay}
+          onClose={() => setShowHowToPlay(false)}
+          defaultTab="reel"
+        />
+        <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       </div>
     );
   }

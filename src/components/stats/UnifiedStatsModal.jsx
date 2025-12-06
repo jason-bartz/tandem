@@ -78,26 +78,6 @@ Play at tandemdaily.com
         title="Statistics"
         maxWidth="480px"
         contentClassName="px-6 py-4"
-        footer={
-          !loading && !error ? (
-            <div className="space-y-2">
-              {/* Achievements Button */}
-              <button
-                onClick={handleOpenAchievements}
-                className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
-                  highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                View Achievements
-              </button>
-
-              {/* Share Button */}
-              <ShareButton shareText={shareableStatsText} className="w-full" />
-            </div>
-          ) : null
-        }
       >
         {/* Loading State */}
         {loading && <StatsModalSkeleton />}
@@ -127,6 +107,24 @@ Play at tandemdaily.com
             <TandemStatsSection stats={tandemStats} animationKey={animationKey} />
             <MiniStatsSection stats={miniStats} animationKey={animationKey} />
             <ReelStatsSection stats={reelStats} animationKey={animationKey} />
+
+            {/* Action Buttons - scrollable with content */}
+            <div className="space-y-2 mt-4 pb-4">
+              {/* Achievements Button */}
+              <button
+                onClick={handleOpenAchievements}
+                className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
+                  highContrast
+                    ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }`}
+              >
+                View Achievements
+              </button>
+
+              {/* Share Button */}
+              <ShareButton shareText={shareableStatsText} className="w-full" />
+            </div>
           </>
         )}
       </LeftSidePanel>
