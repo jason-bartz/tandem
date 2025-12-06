@@ -386,6 +386,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         title="Tandem Unlimited"
         subtitle="Subscribe to unlock access to all puzzles, Hard Mode, and future features!"
         maxWidth="520px"
+        contentClassName="px-6 py-6"
         footer={
           <button
             onClick={onClose}
@@ -399,480 +400,475 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </button>
         }
       >
-        {/* Content wrapper with padding */}
-        <div className="px-6 py-6">
-          {/* Logo */}
-          <div className="w-20 h-20 mx-auto mb-6 relative">
-            <Image
-              src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
-              alt="Tandem Logo"
-              width={80}
-              height={80}
-              className="rounded-2xl"
-              priority
-            />
-          </div>
+        {/* Logo */}
+        <div className="w-20 h-20 mx-auto mb-6 relative">
+          <Image
+            src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
+            alt="Tandem Logo"
+            width={80}
+            height={80}
+            className="rounded-2xl"
+            priority
+          />
+        </div>
 
-          {/* Benefits list */}
+        {/* Benefits list */}
+        <div
+          className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
+          }`}
+        >
+          <h3
+            className={`text-base font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+          >
+            What You Get
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Archive access for all past puzzles (Daily Tandem, Daily Mini, and Reel Connections)
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Sync and save your progress across devices
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Keep Tandem an Ad-Free experience for everyone
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Access to Hard Mode and future exclusive features
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Support a solo developer to keep building great puzzles
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Cancel anytime
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Keep Daily Puzzle Free Message */}
+        <div
+          className={`rounded-2xl p-4 mb-6 text-center border-2 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-success'
+              : 'bg-accent-green/10 border-accent-green/30'
+          }`}
+        >
+          <p
+            className={`text-sm font-medium ${
+              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            Tandem Unlimited members keep the daily puzzle free for everyone to play!
+          </p>
+        </div>
+
+        {/* iOS: Sign in with Apple prompt - show if not authenticated */}
+        {isIOS && !user && (
           <div
-            className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+            className={`rounded-2xl p-5 mb-6 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
               highContrast
                 ? 'bg-hc-surface border-hc-border'
-                : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
+                : 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-blue-300 dark:border-blue-700'
             }`}
           >
-            <h3
-              className={`text-base font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
-            >
-              What You Get
-            </h3>
-            <div className="space-y-3">
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Archive access for all past puzzles (Daily Tandem, Daily Cryptic, and Daily Mini)
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Sync and save your progress across devices
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Keep Tandem an Ad-Free experience for everyone
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Access to Hard Mode and future exclusive features
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Support a solo developer to keep building great puzzles
-                </span>
-              </div>
-              <div className="flex items-start gap-3">
-                <span
-                  className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-                >
-                  ✓
-                </span>
-                <span
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-                >
-                  Cancel anytime
-                </span>
-              </div>
+            <div className="text-center mb-4">
+              <h3
+                className={`text-base font-bold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+              >
+                Sign in to sync across devices
+              </h3>
+              <p
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}
+              >
+                Sign in to access your subscription on all devices
+              </p>
             </div>
-          </div>
 
-          {/* Keep Daily Puzzle Free Message */}
-          <div
-            className={`rounded-2xl p-4 mb-6 text-center border-2 ${
-              highContrast
-                ? 'bg-hc-surface border-hc-success'
-                : 'bg-accent-green/10 border-accent-green/30'
-            }`}
-          >
-            <p
-              className={`text-sm font-medium ${
-                highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
-              }`}
-            >
-              Tandem Unlimited members keep the daily puzzle free for everyone to play!
-            </p>
-          </div>
-
-          {/* iOS: Sign in with Apple prompt - show if not authenticated */}
-          {isIOS && !user && (
-            <div
-              className={`rounded-2xl p-5 mb-6 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+            <button
+              onClick={handleAppleSignIn}
+              disabled={loading}
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 ${
+                loading
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
+              } ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border'
-                  : 'bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/30 dark:to-purple-900/30 border-blue-300 dark:border-blue-700'
+                  ? 'bg-black text-white border-hc-border'
+                  : 'bg-black text-white border-black dark:border-gray-600'
               }`}
             >
-              <div className="text-center mb-4">
-                <h3
-                  className={`text-base font-bold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
-                >
-                  Sign in to sync across devices
-                </h3>
-                <p
-                  className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'}`}
-                >
-                  Sign in to access your subscription on all devices
-                </p>
-              </div>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
+              </svg>
+              <span className="font-bold">Sign in with Apple</span>
+            </button>
 
-              <button
-                onClick={handleAppleSignIn}
-                disabled={loading}
-                className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all flex items-center justify-center gap-3 ${
-                  loading
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)]'
-                } ${
-                  highContrast
-                    ? 'bg-black text-white border-hc-border'
-                    : 'bg-black text-white border-black dark:border-gray-600'
-                }`}
+            <div className="text-center mt-4">
+              <p
+                className={`text-xs ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09l.01-.01zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z" />
-                </svg>
-                <span className="font-bold">Sign in with Apple</span>
-              </button>
-
-              <div className="text-center mt-4">
-                <p
-                  className={`text-xs ${highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'}`}
-                >
-                  or continue below without an account
-                </p>
-              </div>
+                or continue below without an account
+              </p>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Subscription options */}
-          {productsLoading ? (
-            <div className="space-y-3 mb-6">
-              <div className="text-center py-8">
-                <div className="animate-spin rounded-full h-10 w-10 border-4 border-sky-500 border-t-transparent mx-auto mb-3"></div>
-                <p className="text-gray-600 dark:text-gray-400 text-sm">
-                  Loading subscription options...
-                </p>
-                <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
-                  This may take a moment in TestFlight
-                </p>
-              </div>
+        {/* Subscription options */}
+        {productsLoading ? (
+          <div className="space-y-3 mb-6">
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-sky-500 border-t-transparent mx-auto mb-3"></div>
+              <p className="text-gray-600 dark:text-gray-400 text-sm">
+                Loading subscription options...
+              </p>
+              <p className="text-gray-500 dark:text-gray-500 text-xs mt-2">
+                This may take a moment in TestFlight
+              </p>
             </div>
-          ) : (
-            <div className="space-y-3 mb-6">
-              {/* Buddy Pass - Monthly */}
-              <button
-                onClick={() => handlePurchase(BUDDY_PASS)}
-                disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
-                className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
-                  buddyActive
-                    ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
-                    : loading || restoring
-                      ? highContrast
-                        ? 'opacity-50 bg-hc-surface border-hc-border'
-                        : 'opacity-50 border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
-                      : highContrast
-                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
-                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
-                }`}
-              >
-                {buddyActive && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                    ✓ ACTIVE
-                  </div>
-                )}
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">🤝</span>
-                      <span
-                        className={`font-bold text-lg ${
-                          buddyActive
-                            ? 'text-gray-500 dark:text-gray-500'
-                            : highContrast
-                              ? 'text-hc-text'
-                              : 'text-gray-800 dark:text-gray-200'
-                        }`}
-                      >
-                        Buddy Pass
-                      </span>
-                    </div>
-                    <p
-                      className={`text-sm mt-1 ${
-                        buddyActive
-                          ? 'text-gray-400 dark:text-gray-500'
-                          : 'text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      Monthly subscription • Auto-renews
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-xl font-bold ${
+          </div>
+        ) : (
+          <div className="space-y-3 mb-6">
+            {/* Buddy Pass - Monthly */}
+            <button
+              onClick={() => handlePurchase(BUDDY_PASS)}
+              disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+                buddyActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
+                    : highContrast
+                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
+              }`}
+            >
+              {buddyActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                  ✓ ACTIVE
+                </div>
+              )}
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">🤝</span>
+                    <span
+                      className={`font-bold text-lg ${
                         buddyActive
                           ? 'text-gray-500 dark:text-gray-500'
-                          : highContrast
-                            ? 'text-hc-primary'
-                            : 'text-sky-600 dark:text-sky-400'
-                      }`}
-                    >
-                      {getPrice(BUDDY_PASS) || '$1.99'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">per month</p>
-                  </div>
-                </div>
-              </button>
-
-              {/* Best Friends - Yearly */}
-              <button
-                onClick={() => handlePurchase(BEST_FRIENDS)}
-                disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
-                className={`w-full p-4 pt-6 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all relative ${
-                  bestFriendsActive
-                    ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
-                    : loading || restoring
-                      ? highContrast
-                        ? 'opacity-50 bg-hc-surface border-hc-border'
-                        : 'opacity-50 border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
-                      : highContrast
-                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[4px]'
-                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
-                }`}
-              >
-                {/* Best Value badge */}
-                <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                  <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                    BEST VALUE • SAVE 37%
-                  </span>
-                </div>
-
-                {bestFriendsActive && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)] z-10">
-                    ✓ ACTIVE
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between">
-                  <div className="text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">👯</span>
-                      <span
-                        className={`font-bold text-lg ${
-                          bestFriendsActive
-                            ? 'text-gray-500 dark:text-gray-500'
-                            : highContrast
-                              ? 'text-hc-text'
-                              : 'text-gray-800 dark:text-gray-200'
-                        }`}
-                      >
-                        Best Friends
-                      </span>
-                    </div>
-                    <p
-                      className={`text-sm mt-1 ${
-                        bestFriendsActive
-                          ? 'text-gray-400 dark:text-gray-500'
                           : highContrast
                             ? 'text-hc-text'
-                            : 'text-gray-600 dark:text-gray-400'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
-                      Yearly subscription • Auto-renews
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-xl font-bold ${
-                        bestFriendsActive
-                          ? 'text-gray-500 dark:text-gray-500'
-                          : highContrast
-                            ? 'text-hc-primary'
-                            : 'text-accent-teal dark:text-accent-teal'
-                      }`}
-                    >
-                      {getPrice(BEST_FRIENDS) || '$14.99'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">per year</p>
-                  </div>
-                </div>
-              </button>
-
-              {/* Soulmates - Lifetime */}
-              <button
-                onClick={() => handlePurchase(SOULMATES)}
-                disabled={loading || restoring || soulmatesActive}
-                className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
-                  soulmatesActive
-                    ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
-                    : loading || restoring
-                      ? highContrast
-                        ? 'opacity-50 bg-hc-surface border-hc-border'
-                        : 'opacity-50 border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
-                      : currentSubscription && !soulmatesActive
-                        ? highContrast
-                          ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-warning border-[4px]'
-                          : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/30 dark:bg-pink-900/50 border-[4px]'
-                        : highContrast
-                          ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[3px]'
-                          : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
-                }`}
-              >
-                {soulmatesActive && (
-                  <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                    ✓ ACTIVE
-                  </div>
-                )}
-                {currentSubscription && !soulmatesActive && (
-                  <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                    <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                      ⭐ UPGRADE TO LIFETIME
+                      Buddy Pass
                     </span>
                   </div>
-                )}
-                <div className="flex items-center justify-between mt-1">
-                  <div className="text-left">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">💕</span>
-                      <span
-                        className={`font-bold text-lg ${
-                          soulmatesActive
-                            ? 'text-gray-500 dark:text-gray-500'
-                            : highContrast
-                              ? 'text-hc-text'
-                              : 'text-gray-800 dark:text-gray-200'
-                        }`}
-                      >
-                        Soulmates
-                      </span>
-                    </div>
-                    <p
-                      className={`text-sm mt-1 ${
-                        soulmatesActive
-                          ? 'text-gray-400 dark:text-gray-500'
+                  <p
+                    className={`text-sm mt-1 ${
+                      buddyActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Monthly subscription • Auto-renews
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p
+                    className={`text-xl font-bold ${
+                      buddyActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-primary'
+                          : 'text-sky-600 dark:text-sky-400'
+                    }`}
+                  >
+                    {getPrice(BUDDY_PASS) || '$1.99'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">per month</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Best Friends - Yearly */}
+            <button
+              onClick={() => handlePurchase(BEST_FRIENDS)}
+              disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
+              className={`w-full p-4 pt-6 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+                bestFriendsActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
+                    : highContrast
+                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[4px]'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
+              }`}
+            >
+              {/* Best Value badge */}
+              <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                  BEST VALUE • SAVE 37%
+                </span>
+              </div>
+
+              {bestFriendsActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)] z-10">
+                  ✓ ACTIVE
+                </div>
+              )}
+
+              <div className="flex items-center justify-between">
+                <div className="text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">👯</span>
+                    <span
+                      className={`font-bold text-lg ${
+                        bestFriendsActive
+                          ? 'text-gray-500 dark:text-gray-500'
                           : highContrast
                             ? 'text-hc-text'
-                            : 'text-gray-600 dark:text-gray-400'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
-                      {isIOS ? 'Lifetime • Shareable with Family' : 'Lifetime'}
-                    </p>
+                      Best Friends
+                    </span>
                   </div>
-                  <div className="text-right">
-                    <p
-                      className={`text-xl font-bold ${
+                  <p
+                    className={`text-sm mt-1 ${
+                      bestFriendsActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    Yearly subscription • Auto-renews
+                  </p>
+                </div>
+                <div className="text-right">
+                  <p
+                    className={`text-xl font-bold ${
+                      bestFriendsActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-primary'
+                          : 'text-accent-teal dark:text-accent-teal'
+                    }`}
+                  >
+                    {getPrice(BEST_FRIENDS) || '$14.99'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">per year</p>
+                </div>
+              </div>
+            </button>
+
+            {/* Soulmates - Lifetime */}
+            <button
+              onClick={() => handlePurchase(SOULMATES)}
+              disabled={loading || restoring || soulmatesActive}
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+                soulmatesActive
+                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  : loading || restoring
+                    ? highContrast
+                      ? 'opacity-50 bg-hc-surface border-hc-border'
+                      : 'opacity-50 border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
+                    : currentSubscription && !soulmatesActive
+                      ? highContrast
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-warning border-[4px]'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/30 dark:bg-pink-900/50 border-[4px]'
+                      : highContrast
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[3px]'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
+              }`}
+            >
+              {soulmatesActive && (
+                <div className="absolute -top-2 -right-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                  ✓ ACTIVE
+                </div>
+              )}
+              {currentSubscription && !soulmatesActive && (
+                <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
+                  <span className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                    ⭐ UPGRADE TO LIFETIME
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center justify-between mt-1">
+                <div className="text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">💕</span>
+                    <span
+                      className={`font-bold text-lg ${
                         soulmatesActive
                           ? 'text-gray-500 dark:text-gray-500'
                           : highContrast
-                            ? 'text-hc-warning'
-                            : 'text-accent-pink dark:text-accent-pink'
+                            ? 'text-hc-text'
+                            : 'text-gray-800 dark:text-gray-200'
                       }`}
                     >
-                      {getPrice(SOULMATES) || '$29.99'}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
+                      Soulmates
+                    </span>
                   </div>
+                  <p
+                    className={`text-sm mt-1 ${
+                      soulmatesActive
+                        ? 'text-gray-400 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-600 dark:text-gray-400'
+                    }`}
+                  >
+                    {isIOS ? 'Lifetime • Shareable with Family' : 'Lifetime'}
+                  </p>
                 </div>
-              </button>
-            </div>
-          )}
-
-          {/* Error message */}
-          {error && (
-            <div
-              className={`text-sm text-center mb-4 p-3 rounded-lg ${
-                error.includes('restored')
-                  ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
-                  : 'text-red-600 bg-red-50 dark:bg-red-900/20'
-              }`}
-            >
-              {error}
-              {(error.includes('loading') ||
-                error.includes('No products') ||
-                error.includes('Failed')) && (
-                <button
-                  onClick={retryInitialization}
-                  className="block mx-auto mt-2 text-xs text-sky-600 dark:text-sky-400 hover:underline"
-                >
-                  Retry
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Restore Purchase (iOS) or Login (Web) button - Only show if not logged in */}
-          {(!isWeb || !user) && (
-            <button
-              onClick={handleRestoreOrLogin}
-              disabled={loading || restoring || productsLoading}
-              className="w-full py-3 text-sky-600 dark:text-sky-400 font-medium text-sm hover:underline disabled:opacity-50"
-            >
-              {restoring ? 'Restoring...' : isWeb ? 'Login' : 'Restore Purchase'}
+                <div className="text-right">
+                  <p
+                    className={`text-xl font-bold ${
+                      soulmatesActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-warning'
+                          : 'text-accent-pink dark:text-accent-pink'
+                    }`}
+                  >
+                    {getPrice(SOULMATES) || '$29.99'}
+                  </p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
+                </div>
+              </div>
             </button>
-          )}
+          </div>
+        )}
 
-          {/* Payment disclaimers */}
-          <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-            <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-              {isWeb
-                ? 'Payment will be charged to your account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions in your account settings after purchase.'
-                : 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.'}
-            </p>
-            <div className="flex justify-center gap-4 mt-3">
+        {/* Error message */}
+        {error && (
+          <div
+            className={`text-sm text-center mb-4 p-3 rounded-lg ${
+              error.includes('restored')
+                ? 'text-green-600 bg-green-50 dark:bg-green-900/20'
+                : 'text-red-600 bg-red-50 dark:bg-red-900/20'
+            }`}
+          >
+            {error}
+            {(error.includes('loading') ||
+              error.includes('No products') ||
+              error.includes('Failed')) && (
               <button
-                onClick={() =>
-                  handleOpenLink(
-                    'https://www.apple.com/legal/internet-services/itunes/dev/stdeula/'
-                  )
-                }
-                className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
+                onClick={retryInitialization}
+                className="block mx-auto mt-2 text-xs text-sky-600 dark:text-sky-400 hover:underline"
               >
-                Terms of Use
+                Retry
               </button>
-              <button
-                onClick={() => handleOpenLink('https://tandemdaily.com/privacypolicy')}
-                className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
-              >
-                Privacy Policy
-              </button>
+            )}
+          </div>
+        )}
+
+        {/* Restore Purchase (iOS) or Login (Web) button - Only show if not logged in */}
+        {(!isWeb || !user) && (
+          <button
+            onClick={handleRestoreOrLogin}
+            disabled={loading || restoring || productsLoading}
+            className="w-full py-3 text-sky-600 dark:text-sky-400 font-medium text-sm hover:underline disabled:opacity-50"
+          >
+            {restoring ? 'Restoring...' : isWeb ? 'Login' : 'Restore Purchase'}
+          </button>
+        )}
+
+        {/* Payment disclaimers */}
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+            {isWeb
+              ? 'Payment will be charged to your account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions in your account settings after purchase.'
+              : 'Payment will be charged to your Apple ID account at confirmation of purchase. Subscription automatically renews unless canceled at least 24 hours before the end of the current period. Your account will be charged for renewal within 24 hours prior to the end of the current period. You can manage and cancel your subscriptions by going to your account settings on the App Store after purchase.'}
+          </p>
+          <div className="flex justify-center gap-4 mt-3">
+            <button
+              onClick={() =>
+                handleOpenLink('https://www.apple.com/legal/internet-services/itunes/dev/stdeula/')
+              }
+              className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
+            >
+              Terms of Use
+            </button>
+            <button
+              onClick={() => handleOpenLink('https://tandemdaily.com/privacypolicy')}
+              className="text-xs text-sky-600 dark:text-sky-400 hover:underline"
+            >
+              Privacy Policy
+            </button>
+          </div>
+        </div>
+
+        {/* Loading overlay */}
+        {loading && (
+          <div className="absolute inset-0 bg-ghost-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center z-10">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mx-auto"></div>
+              <p className="mt-4 text-gray-600 dark:text-gray-400">Processing...</p>
             </div>
           </div>
-
-          {/* Loading overlay */}
-          {loading && (
-            <div className="absolute inset-0 bg-ghost-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 rounded-3xl flex items-center justify-center z-10">
-              <div className="text-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-4 border-sky-500 border-t-transparent mx-auto"></div>
-                <p className="mt-4 text-gray-600 dark:text-gray-400">Processing...</p>
-              </div>
-            </div>
-          )}
-        </div>
+        )}
       </LeftSidePanel>
 
       {/* Auth Modal for Web Users - Nested at z-60 */}
