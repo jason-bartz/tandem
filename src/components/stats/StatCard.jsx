@@ -15,9 +15,15 @@ import { useTheme } from '@/contexts/ThemeContext';
 export default function StatCard({ value, label, emoji = '', animate = true }) {
   const { highContrast, reduceMotion } = useTheme();
 
+  // Determine font size based on value length to prevent overflow
+  // Values 6+ chars (like "152:04") use smaller text
+  const valueStr = String(value);
+  const valueLength = valueStr.length;
+  const fontSizeClass = valueLength >= 6 ? 'text-xl' : valueLength >= 4 ? 'text-2xl' : 'text-3xl';
+
   return (
-    <div className="text-center">
-      <div className="text-3xl font-extrabold mb-1">
+    <div className="text-center overflow-hidden">
+      <div className={`${fontSizeClass} font-extrabold mb-1 whitespace-nowrap`}>
         <span
           className={`${
             highContrast ? 'text-hc-primary' : 'text-white'
@@ -25,7 +31,7 @@ export default function StatCard({ value, label, emoji = '', animate = true }) {
         >
           {value}
         </span>
-        {emoji && <span className="ml-1 text-2xl">{emoji}</span>}
+        {emoji && <span className="ml-1 text-lg">{emoji}</span>}
       </div>
       <div
         className={`text-xs tracking-wide font-medium ${
