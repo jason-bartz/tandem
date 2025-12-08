@@ -181,7 +181,9 @@ export default function AdminDashboard() {
             </div>
             <div className="p-3 sm:p-6">
               <PuzzleEditor
-                initialPuzzle={editingPuzzle || { date: selectedDate }}
+                initialPuzzle={
+                  editingPuzzle ? { ...editingPuzzle, date: selectedDate } : { date: selectedDate }
+                }
                 onClose={handleCloseEditor}
               />
             </div>
