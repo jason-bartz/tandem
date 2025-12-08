@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
@@ -34,6 +35,7 @@ export default function SidebarMenu({
 }) {
   const { highContrast, reduceMotion, isDark, toggleTheme } = useTheme();
   const { user, userProfile, profileLoading } = useAuth();
+  const { isActive: hasSubscription } = useSubscription();
   const getIconPath = useUIIcon();
   const { lightTap } = useHaptics();
   const router = useRouter();
@@ -484,6 +486,56 @@ export default function SidebarMenu({
                     highContrast={highContrast}
                     subtitle="Create four groups of four movies"
                   />
+                  {/* Create Puzzle - Shows paywall if not subscribed */}
+                  <button
+                    onClick={() => {
+                      if (hasSubscription) {
+                        handleNavigation('/create-puzzle');
+                      } else if (Capacitor.isNativePlatform()) {
+                        // On iOS, navigate to account page for subscription
+                        handleNavigation('/account');
+                      } else {
+                        lightTap();
+                        onClose();
+                        // Trigger paywall modal on web
+                        window.dispatchEvent(new CustomEvent('openPaywall'));
+                      }
+                    }}
+                    style={!highContrast ? { backgroundColor: '#ef4444' } : undefined}
+                    className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
+                      pathname === '/create-puzzle'
+                        ? highContrast
+                          ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : 'border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]'
+                        : highContrast
+                          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                    }`}
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                      <svg
+                        className="w-5 h-5 text-white"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 4v16m8-8H4"
+                        />
+                      </svg>
+                    </div>
+                    <div className="flex flex-col items-start">
+                      <span className="text-base font-bold text-white whitespace-nowrap">
+                        Create Puzzle
+                      </span>
+                      <span className="text-[10px] text-white opacity-90">
+                        Submit your own Reel Connections
+                      </span>
+                    </div>
+                  </button>
                 </div>
               </section>
 
@@ -635,7 +687,7 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
             : `border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]`
           : highContrast
             ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-            : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] opacity-80 hover:opacity-100'
+            : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
       }`}
     >
       <img src={iconSrc} alt="" className="w-8 h-8" />

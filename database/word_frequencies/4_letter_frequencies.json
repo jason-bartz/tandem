@@ -272,6 +272,10 @@
     "frequency": 86
   },
   {
+    "word": "SHOW",
+    "frequency": 86
+  },
+  {
     "word": "FACT",
     "frequency": 86
   },
@@ -324,2448 +328,424 @@
     "frequency": 82
   },
   {
-    "word": "WIFI",
+    "word": "EDEN",
+    "frequency": 78
+  },
+  {
+    "word": "THEO",
+    "frequency": 77
+  },
+  {
+    "word": "TINA",
+    "frequency": 77
+  },
+  {
+    "word": "KATE",
+    "frequency": 77
+  },
+  {
+    "word": "ALAN",
+    "frequency": 76
+  },
+  {
+    "word": "FRED",
+    "frequency": 76
+  },
+  {
+    "word": "ANNE",
     "frequency": 75
   },
   {
-    "word": "NASA",
-    "frequency": 70
+    "word": "DEAN",
+    "frequency": 75
   },
   {
-    "word": "UBER",
-    "frequency": 70
+    "word": "ANNA",
+    "frequency": 75
   },
   {
-    "word": "IPAD",
-    "frequency": 70
+    "word": "OWEN",
+    "frequency": 74
   },
   {
-    "word": "BDAY",
-    "frequency": 65
+    "word": "SARA",
+    "frequency": 74
   },
   {
-    "word": "XBOX",
-    "frequency": 65
+    "word": "EVAN",
+    "frequency": 74
   },
   {
-    "word": "SIRI",
-    "frequency": 65
+    "word": "ERIC",
+    "frequency": 74
+  },
+  {
+    "word": "NORA",
+    "frequency": 74
+  },
+  {
+    "word": "VERA",
+    "frequency": 74
+  },
+  {
+    "word": "DANA",
+    "frequency": 74
+  },
+  {
+    "word": "ARLO",
+    "frequency": 74
+  },
+  {
+    "word": "LISA",
+    "frequency": 74
+  },
+  {
+    "word": "ARYA",
+    "frequency": 74
   },
   {
     "word": "ELSA",
-    "frequency": 65
+    "frequency": 73
   },
   {
-    "word": "LYFT",
-    "frequency": 65
-  },
-  {
-    "word": "IPOD",
-    "frequency": 65
-  },
-  {
-    "word": "ZOOM",
-    "frequency": 65
-  },
-  {
-    "word": "YELP",
-    "frequency": 65
-  },
-  {
-    "word": "ETSY",
-    "frequency": 65
-  },
-  {
-    "word": "EBAY",
-    "frequency": 65
-  },
-  {
-    "word": "SPAM",
-    "frequency": 65
-  },
-  {
-    "word": "BLOG",
-    "frequency": 65
-  },
-  {
-    "word": "TEXT",
-    "frequency": 65
-  },
-  {
-    "word": "SYNC",
-    "frequency": 65
-  },
-  {
-    "word": "TECH",
-    "frequency": 65
-  },
-  {
-    "word": "HDMI",
-    "frequency": 65
-  },
-  {
-    "word": "HTML",
-    "frequency": 65
-  },
-  {
-    "word": "HTTP",
-    "frequency": 65
-  },
-  {
-    "word": "FOMO",
-    "frequency": 65
-  },
-  {
-    "word": "ASAP",
-    "frequency": 65
-  },
-  {
-    "word": "NATO",
-    "frequency": 65
-  },
-  {
-    "word": "SWAT",
-    "frequency": 65
-  },
-  {
-    "word": "RSVP",
-    "frequency": 65
-  },
-  {
-    "word": "TGIF",
-    "frequency": 65
-  },
-  {
-    "word": "BYOB",
-    "frequency": 65
-  },
-  {
-    "word": "STAT",
-    "frequency": 65
+    "word": "NEIL",
+    "frequency": 73
   },
   {
     "word": "NEMO",
-    "frequency": 65
+    "frequency": 73
+  },
+  {
+    "word": "SAGE",
+    "frequency": 73
+  },
+  {
+    "word": "ELLA",
+    "frequency": 73
   },
   {
     "word": "THOR",
-    "frequency": 65
+    "frequency": 72
   },
   {
-    "word": "LOKI",
-    "frequency": 65
+    "word": "NOAH",
+    "frequency": 72
+  },
+  {
+    "word": "ROSA",
+    "frequency": 72
+  },
+  {
+    "word": "WREN",
+    "frequency": 72
+  },
+  {
+    "word": "EMMA",
+    "frequency": 72
+  },
+  {
+    "word": "TONY",
+    "frequency": 72
+  },
+  {
+    "word": "ALEX",
+    "frequency": 72
+  },
+  {
+    "word": "JANE",
+    "frequency": 71
+  },
+  {
+    "word": "JEAN",
+    "frequency": 71
+  },
+  {
+    "word": "OLAF",
+    "frequency": 71
   },
   {
     "word": "YODA",
-    "frequency": 65
+    "frequency": 71
+  },
+  {
+    "word": "HANK",
+    "frequency": 71
+  },
+  {
+    "word": "LUNA",
+    "frequency": 71
+  },
+  {
+    "word": "LIAM",
+    "frequency": 71
+  },
+  {
+    "word": "MILA",
+    "frequency": 71
+  },
+  {
+    "word": "MAYA",
+    "frequency": 71
+  },
+  {
+    "word": "GAGA",
+    "frequency": 71
+  },
+  {
+    "word": "LOKI",
+    "frequency": 71
+  },
+  {
+    "word": "JOAN",
+    "frequency": 70
+  },
+  {
+    "word": "LILY",
+    "frequency": 70
+  },
+  {
+    "word": "PAUL",
+    "frequency": 70
+  },
+  {
+    "word": "RYAN",
+    "frequency": 69
+  },
+  {
+    "word": "ZARA",
+    "frequency": 69
+  },
+  {
+    "word": "CARL",
+    "frequency": 69
+  },
+  {
+    "word": "JADE",
+    "frequency": 69
+  },
+  {
+    "word": "MARY",
+    "frequency": 69
+  },
+  {
+    "word": "EZRA",
+    "frequency": 68
+  },
+  {
+    "word": "JAKE",
+    "frequency": 68
+  },
+  {
+    "word": "DOJA",
+    "frequency": 68
+  },
+  {
+    "word": "UBER",
+    "frequency": 68
+  },
+  {
+    "word": "ZOEY",
+    "frequency": 67
+  },
+  {
+    "word": "JUNO",
+    "frequency": 67
+  },
+  {
+    "word": "RING",
+    "frequency": 66
+  },
+  {
+    "word": "KYLO",
+    "frequency": 66
+  },
+  {
+    "word": "RUBY",
+    "frequency": 66
   },
   {
     "word": "LEIA",
-    "frequency": 65
-  },
-  {
-    "word": "SOLO",
-    "frequency": 65
-  },
-  {
-    "word": "SPOK",
-    "frequency": 65
-  },
-  {
-    "word": "GUMP",
-    "frequency": 65
-  },
-  {
-    "word": "KONG",
-    "frequency": 65
-  },
-  {
-    "word": "LEGO",
-    "frequency": 65
-  },
-  {
-    "word": "OREO",
-    "frequency": 65
-  },
-  {
-    "word": "IKEA",
-    "frequency": 65
-  },
-  {
-    "word": "NIKE",
-    "frequency": 65
-  },
-  {
-    "word": "TACO",
-    "frequency": 65
+    "frequency": 66
   },
   {
     "word": "TOFU",
     "frequency": 65
   },
   {
-    "word": "ACAI",
+    "word": "ROTI",
     "frequency": 65
-  },
-  {
-    "word": "CHAI",
-    "frequency": 65
-  },
-  {
-    "word": "WRAP",
-    "frequency": 65
-  },
-  {
-    "word": "ROCK",
-    "frequency": 65
-  },
-  {
-    "word": "RAVE",
-    "frequency": 65
-  },
-  {
-    "word": "TOUR",
-    "frequency": 65
-  },
-  {
-    "word": "STAR",
-    "frequency": 65
-  },
-  {
-    "word": "SHOW",
-    "frequency": 65
-  },
-  {
-    "word": "ROLE",
-    "frequency": 65
-  },
-  {
-    "word": "SLAM",
-    "frequency": 65
-  },
-  {
-    "word": "SURF",
-    "frequency": 65
-  },
-  {
-    "word": "YOGA",
-    "frequency": 65
-  },
-  {
-    "word": "SPIN",
-    "frequency": 65
-  },
-  {
-    "word": "VIBE",
-    "frequency": 65
-  },
-  {
-    "word": "STAN",
-    "frequency": 65
-  },
-  {
-    "word": "WOKE",
-    "frequency": 65
-  },
-  {
-    "word": "SWAG",
-    "frequency": 65
-  },
-  {
-    "word": "BALI",
-    "frequency": 65
-  },
-  {
-    "word": "FIJI",
-    "frequency": 65
-  },
-  {
-    "word": "MAUI",
-    "frequency": 65
-  },
-  {
-    "word": "OHIO",
-    "frequency": 65
-  },
-  {
-    "word": "UTAH",
-    "frequency": 65
-  },
-  {
-    "word": "IOWA",
-    "frequency": 65
-  },
-  {
-    "word": "ROME",
-    "frequency": 65
-  },
-  {
-    "word": "WAND",
-    "frequency": 65
-  },
-  {
-    "word": "GRYF",
-    "frequency": 65
-  },
-  {
-    "word": "SLYT",
-    "frequency": 65
-  },
-  {
-    "word": "GAND",
-    "frequency": 65
-  },
-  {
-    "word": "SULU",
-    "frequency": 65
-  },
-  {
-    "word": "WORF",
-    "frequency": 65
-  },
-  {
-    "word": "BORG",
-    "frequency": 65
-  },
-  {
-    "word": "GOKU",
-    "frequency": 65
-  },
-  {
-    "word": "EREN",
-    "frequency": 65
-  },
-  {
-    "word": "DEKU",
-    "frequency": 65
-  },
-  {
-    "word": "JOJO",
-    "frequency": 65
-  },
-  {
-    "word": "ARYA",
-    "frequency": 65
-  },
-  {
-    "word": "ROBB",
-    "frequency": 65
-  },
-  {
-    "word": "TAFT",
-    "frequency": 65
-  },
-  {
-    "word": "MARX",
-    "frequency": 65
-  },
-  {
-    "word": "ROSA",
-    "frequency": 65
-  },
-  {
-    "word": "ANNE",
-    "frequency": 65
-  },
-  {
-    "word": "JOAN",
-    "frequency": 65
-  },
-  {
-    "word": "NERO",
-    "frequency": 65
-  },
-  {
-    "word": "AUDI",
-    "frequency": 65
-  },
-  {
-    "word": "SAAB",
-    "frequency": 65
-  },
-  {
-    "word": "OPEL",
-    "frequency": 65
-  },
-  {
-    "word": "SEAT",
-    "frequency": 65
-  },
-  {
-    "word": "TATA",
-    "frequency": 65
-  },
-  {
-    "word": "BAIC",
-    "frequency": 65
-  },
-  {
-    "word": "SAIC",
-    "frequency": 65
-  },
-  {
-    "word": "SONY",
-    "frequency": 65
-  },
-  {
-    "word": "ASUS",
-    "frequency": 65
-  },
-  {
-    "word": "ACER",
-    "frequency": 65
-  },
-  {
-    "word": "ROKU",
-    "frequency": 65
-  },
-  {
-    "word": "BOSE",
-    "frequency": 65
-  },
-  {
-    "word": "VISA",
-    "frequency": 65
-  },
-  {
-    "word": "AMEX",
-    "frequency": 65
-  },
-  {
-    "word": "CITI",
-    "frequency": 65
-  },
-  {
-    "word": "ALDI",
-    "frequency": 65
-  },
-  {
-    "word": "LIDL",
-    "frequency": 65
-  },
-  {
-    "word": "ZARA",
-    "frequency": 65
-  },
-  {
-    "word": "HULU",
-    "frequency": 65
-  },
-  {
-    "word": "SNAP",
-    "frequency": 65
-  },
-  {
-    "word": "PERU",
-    "frequency": 65
-  },
-  {
-    "word": "CUBA",
-    "frequency": 65
-  },
-  {
-    "word": "TOGO",
-    "frequency": 65
-  },
-  {
-    "word": "GUAM",
-    "frequency": 65
-  },
-  {
-    "word": "LAOS",
-    "frequency": 65
-  },
-  {
-    "word": "IRAN",
-    "frequency": 65
-  },
-  {
-    "word": "IRAQ",
-    "frequency": 65
-  },
-  {
-    "word": "OMAN",
-    "frequency": 65
-  },
-  {
-    "word": "OSLO",
-    "frequency": 65
-  },
-  {
-    "word": "BERN",
-    "frequency": 65
-  },
-  {
-    "word": "DOHA",
-    "frequency": 65
-  },
-  {
-    "word": "KYIV",
-    "frequency": 65
-  },
-  {
-    "word": "BAKU",
-    "frequency": 65
-  },
-  {
-    "word": "GAZA",
-    "frequency": 65
-  },
-  {
-    "word": "SUEZ",
-    "frequency": 65
-  },
-  {
-    "word": "LYON",
-    "frequency": 65
-  },
-  {
-    "word": "YORK",
-    "frequency": 65
-  },
-  {
-    "word": "TROY",
-    "frequency": 65
-  },
-  {
-    "word": "TANG",
-    "frequency": 65
-  },
-  {
-    "word": "KOOL",
-    "frequency": 65
-  },
-  {
-    "word": "CLIF",
-    "frequency": 65
-  },
-  {
-    "word": "ZONE",
-    "frequency": 65
-  },
-  {
-    "word": "IHOP",
-    "frequency": 65
-  },
-  {
-    "word": "REDS",
-    "frequency": 65
-  },
-  {
-    "word": "SNAP",
-    "frequency": 65
-  },
-  {
-    "word": "REEL",
-    "frequency": 65
-  },
-  {
-    "word": "HULU",
-    "frequency": 65
-  },
-  {
-    "word": "ROKU",
-    "frequency": 65
-  },
-  {
-    "word": "TUBI",
-    "frequency": 65
-  },
-  {
-    "word": "YOLO",
-    "frequency": 60
-  },
-  {
-    "word": "LMAO",
-    "frequency": 60
-  },
-  {
-    "word": "OLAF",
-    "frequency": 60
-  },
-  {
-    "word": "TIKI",
-    "frequency": 55
-  },
-  {
-    "word": "HATE",
-    "frequency": 30
-  },
-  {
-    "word": "DEER",
-    "frequency": 30
-  },
-  {
-    "word": "DEED",
-    "frequency": 30
-  },
-  {
-    "word": "PEER",
-    "frequency": 30
-  },
-  {
-    "word": "BEER",
-    "frequency": 30
-  },
-  {
-    "word": "EVER",
-    "frequency": 30
-  },
-  {
-    "word": "FEED",
-    "frequency": 30
-  },
-  {
-    "word": "ONTO",
-    "frequency": 30
-  },
-  {
-    "word": "DIED",
-    "frequency": 30
-  },
-  {
-    "word": "PIER",
-    "frequency": 30
-  },
-  {
-    "word": "AGED",
-    "frequency": 30
-  },
-  {
-    "word": "OWED",
-    "frequency": 30
-  },
-  {
-    "word": "EAST",
-    "frequency": 30
-  },
-  {
-    "word": "HEAT",
-    "frequency": 30
-  },
-  {
-    "word": "DATE",
-    "frequency": 30
-  },
-  {
-    "word": "MERE",
-    "frequency": 30
-  },
-  {
-    "word": "ONES",
-    "frequency": 30
-  },
-  {
-    "word": "EDIT",
-    "frequency": 30
-  },
-  {
-    "word": "MATE",
-    "frequency": 30
-  },
-  {
-    "word": "HERO",
-    "frequency": 30
-  },
-  {
-    "word": "FATE",
-    "frequency": 30
-  },
-  {
-    "word": "GATE",
-    "frequency": 30
-  },
-  {
-    "word": "LEAN",
-    "frequency": 30
-  },
-  {
-    "word": "CITE",
-    "frequency": 30
-  },
-  {
-    "word": "ITEM",
-    "frequency": 30
-  },
-  {
-    "word": "HEAL",
-    "frequency": 30
-  },
-  {
-    "word": "ISLE",
-    "frequency": 30
-  },
-  {
-    "word": "BITE",
-    "frequency": 30
-  },
-  {
-    "word": "CARE",
-    "frequency": 30
-  },
-  {
-    "word": "KITE",
-    "frequency": 30
-  },
-  {
-    "word": "FARE",
-    "frequency": 30
-  },
-  {
-    "word": "CORE",
-    "frequency": 30
-  },
-  {
-    "word": "BASE",
-    "frequency": 30
-  },
-  {
-    "word": "INFO",
-    "frequency": 30
-  },
-  {
-    "word": "MALE",
-    "frequency": 30
-  },
-  {
-    "word": "PALE",
-    "frequency": 30
-  },
-  {
-    "word": "NEAT",
-    "frequency": 30
-  },
-  {
-    "word": "NOTE",
-    "frequency": 30
-  },
-  {
-    "word": "ELSE",
-    "frequency": 30
-  },
-  {
-    "word": "ORAL",
-    "frequency": 30
-  },
-  {
-    "word": "KALE",
-    "frequency": 30
-  },
-  {
-    "word": "HEEL",
-    "frequency": 30
-  },
-  {
-    "word": "LION",
-    "frequency": 30
-  },
-  {
-    "word": "BRED",
-    "frequency": 30
-  },
-  {
-    "word": "GENE",
-    "frequency": 30
-  },
-  {
-    "word": "FEES",
-    "frequency": 30
-  },
-  {
-    "word": "NEON",
-    "frequency": 30
-  },
-  {
-    "word": "NONE",
-    "frequency": 30
-  },
-  {
-    "word": "EYES",
-    "frequency": 30
-  },
-  {
-    "word": "EARN",
-    "frequency": 30
-  },
-  {
-    "word": "NOSE",
-    "frequency": 30
-  },
-  {
-    "word": "FLED",
-    "frequency": 30
-  },
-  {
-    "word": "NINE",
-    "frequency": 30
-  },
-  {
-    "word": "KEEN",
-    "frequency": 30
-  },
-  {
-    "word": "MEAT",
-    "frequency": 30
-  },
-  {
-    "word": "FEAT",
-    "frequency": 30
-  },
-  {
-    "word": "DEAN",
-    "frequency": 30
-  },
-  {
-    "word": "HIRE",
-    "frequency": 30
-  },
-  {
-    "word": "EDGE",
-    "frequency": 30
-  },
-  {
-    "word": "LANE",
-    "frequency": 30
-  },
-  {
-    "word": "KING",
-    "frequency": 30
-  },
-  {
-    "word": "BEAT",
-    "frequency": 30
-  },
-  {
-    "word": "DONE",
-    "frequency": 30
-  },
-  {
-    "word": "EMIT",
-    "frequency": 30
-  },
-  {
-    "word": "DEAR",
-    "frequency": 30
-  },
-  {
-    "word": "LONE",
-    "frequency": 30
-  },
-  {
-    "word": "DOES",
-    "frequency": 30
-  },
-  {
-    "word": "DOSE",
-    "frequency": 30
-  },
-  {
-    "word": "LOSE",
-    "frequency": 30
-  },
-  {
-    "word": "HOLE",
-    "frequency": 30
-  },
-  {
-    "word": "LIES",
-    "frequency": 30
-  },
-  {
-    "word": "ACHE",
-    "frequency": 30
-  },
-  {
-    "word": "DATA",
-    "frequency": 30
-  },
-  {
-    "word": "EASY",
-    "frequency": 30
-  },
-  {
-    "word": "DEAL",
-    "frequency": 30
-  },
-  {
-    "word": "LEAD",
-    "frequency": 30
-  },
-  {
-    "word": "FEAR",
-    "frequency": 30
-  },
-  {
-    "word": "HEAP",
-    "frequency": 30
-  },
-  {
-    "word": "GEAR",
-    "frequency": 30
-  },
-  {
-    "word": "MINE",
-    "frequency": 30
-  },
-  {
-    "word": "PEAR",
-    "frequency": 30
-  },
-  {
-    "word": "FINE",
-    "frequency": 30
-  },
-  {
-    "word": "GOES",
-    "frequency": 30
-  },
-  {
-    "word": "NOON",
-    "frequency": 30
-  },
-  {
-    "word": "POSE",
-    "frequency": 30
-  },
-  {
-    "word": "PINE",
-    "frequency": 30
-  },
-  {
-    "word": "BONE",
-    "frequency": 30
-  },
-  {
-    "word": "BEAR",
-    "frequency": 30
-  },
-  {
-    "word": "OVEN",
-    "frequency": 30
-  },
-  {
-    "word": "FIRE",
-    "frequency": 30
-  },
-  {
-    "word": "LEND",
-    "frequency": 30
-  },
-  {
-    "word": "COAT",
-    "frequency": 30
-  },
-  {
-    "word": "MEAL",
-    "frequency": 30
-  },
-  {
-    "word": "CUTE",
-    "frequency": 30
-  },
-  {
-    "word": "HAIR",
-    "frequency": 30
-  },
-  {
-    "word": "IRON",
-    "frequency": 30
-  },
-  {
-    "word": "LEAF",
-    "frequency": 30
-  },
-  {
-    "word": "COLE",
-    "frequency": 30
-  },
-  {
-    "word": "MEET",
-    "frequency": 30
-  },
-  {
-    "word": "LEAP",
-    "frequency": 30
-  },
-  {
-    "word": "PLEA",
-    "frequency": 30
   },
   {
     "word": "GOAT",
-    "frequency": 30
+    "frequency": 65
   },
   {
-    "word": "FEET",
-    "frequency": 30
-  },
-  {
-    "word": "LOAN",
-    "frequency": 30
-  },
-  {
-    "word": "POLE",
-    "frequency": 30
-  },
-  {
-    "word": "MILE",
-    "frequency": 30
-  },
-  {
-    "word": "BOAT",
-    "frequency": 30
-  },
-  {
-    "word": "FILE",
-    "frequency": 30
-  },
-  {
-    "word": "PILE",
-    "frequency": 30
-  },
-  {
-    "word": "DOOR",
-    "frequency": 30
-  },
-  {
-    "word": "HAIL",
-    "frequency": 30
-  },
-  {
-    "word": "LIAR",
-    "frequency": 30
-  },
-  {
-    "word": "NEST",
-    "frequency": 30
-  },
-  {
-    "word": "MENU",
-    "frequency": 30
-  },
-  {
-    "word": "MAIN",
-    "frequency": 30
-  },
-  {
-    "word": "CURE",
-    "frequency": 30
-  },
-  {
-    "word": "MOON",
-    "frequency": 30
-  },
-  {
-    "word": "FUSE",
-    "frequency": 30
-  },
-  {
-    "word": "COIN",
-    "frequency": 30
-  },
-  {
-    "word": "ICON",
-    "frequency": 30
-  },
-  {
-    "word": "GAIN",
-    "frequency": 30
-  },
-  {
-    "word": "PAIN",
-    "frequency": 30
-  },
-  {
-    "word": "NOUN",
-    "frequency": 30
-  },
-  {
-    "word": "DIAL",
-    "frequency": 30
-  },
-  {
-    "word": "PURE",
-    "frequency": 30
-  },
-  {
-    "word": "HANG",
-    "frequency": 30
-  },
-  {
-    "word": "DIET",
-    "frequency": 30
-  },
-  {
-    "word": "POOR",
-    "frequency": 30
-  },
-  {
-    "word": "KNEE",
-    "frequency": 30
-  },
-  {
-    "word": "COAL",
-    "frequency": 30
-  },
-  {
-    "word": "HOUR",
-    "frequency": 30
-  },
-  {
-    "word": "MULE",
-    "frequency": 30
-  },
-  {
-    "word": "GOAL",
-    "frequency": 30
-  },
-  {
-    "word": "DEEP",
-    "frequency": 30
-  },
-  {
-    "word": "NODE",
-    "frequency": 30
-  },
-  {
-    "word": "POET",
-    "frequency": 30
-  },
-  {
-    "word": "HAUL",
-    "frequency": 30
-  },
-  {
-    "word": "ENDS",
-    "frequency": 30
-  },
-  {
-    "word": "HIDE",
-    "frequency": 30
-  },
-  {
-    "word": "LENS",
-    "frequency": 30
-  },
-  {
-    "word": "BENT",
-    "frequency": 30
-  },
-  {
-    "word": "DEAD",
-    "frequency": 30
-  },
-  {
-    "word": "HART",
-    "frequency": 30
-  },
-  {
-    "word": "DUAL",
-    "frequency": 30
-  },
-  {
-    "word": "NICE",
-    "frequency": 30
-  },
-  {
-    "word": "HERD",
-    "frequency": 30
-  },
-  {
-    "word": "QUIT",
-    "frequency": 30
-  },
-  {
-    "word": "HINT",
-    "frequency": 30
-  },
-  {
-    "word": "LOUD",
-    "frequency": 30
-  },
-  {
-    "word": "HOPE",
-    "frequency": 30
-  },
-  {
-    "word": "POUR",
-    "frequency": 30
-  },
-  {
-    "word": "INCH",
-    "frequency": 30
-  },
-  {
-    "word": "DAME",
-    "frequency": 30
-  },
-  {
-    "word": "DEAF",
-    "frequency": 30
-  },
-  {
-    "word": "FADE",
-    "frequency": 30
-  },
-  {
-    "word": "HALT",
-    "frequency": 30
-  },
-  {
-    "word": "CODE",
-    "frequency": 30
-  },
-  {
-    "word": "DEMO",
-    "frequency": 30
-  },
-  {
-    "word": "DOME",
-    "frequency": 30
-  },
-  {
-    "word": "MODE",
-    "frequency": 30
-  },
-  {
-    "word": "DICE",
-    "frequency": 30
-  },
-  {
-    "word": "FOUL",
-    "frequency": 30
-  },
-  {
-    "word": "HIKE",
-    "frequency": 30
-  },
-  {
-    "word": "CAST",
-    "frequency": 30
-  },
-  {
-    "word": "FOOT",
-    "frequency": 30
-  },
-  {
-    "word": "LIME",
-    "frequency": 30
-  },
-  {
-    "word": "HERB",
-    "frequency": 30
-  },
-  {
-    "word": "CAME",
-    "frequency": 30
-  },
-  {
-    "word": "NAIL",
-    "frequency": 30
-  },
-  {
-    "word": "PANT",
-    "frequency": 30
-  },
-  {
-    "word": "CAFE",
-    "frequency": 30
-  },
-  {
-    "word": "FAST",
-    "frequency": 30
-  },
-  {
-    "word": "MATH",
-    "frequency": 30
-  },
-  {
-    "word": "CAGE",
-    "frequency": 30
-  },
-  {
-    "word": "LAKE",
-    "frequency": 30
-  },
-  {
-    "word": "PACE",
-    "frequency": 30
-  },
-  {
-    "word": "FAME",
-    "frequency": 30
-  },
-  {
-    "word": "BOOT",
-    "frequency": 30
-  },
-  {
-    "word": "HOOD",
-    "frequency": 30
-  },
-  {
-    "word": "GAME",
-    "frequency": 30
-  },
-  {
-    "word": "MEGA",
-    "frequency": 30
-  },
-  {
-    "word": "PATH",
-    "frequency": 30
-  },
-  {
-    "word": "MINT",
-    "frequency": 30
-  },
-  {
-    "word": "MEMO",
-    "frequency": 30
-  },
-  {
-    "word": "BEND",
-    "frequency": 30
-  },
-  {
-    "word": "COPE",
-    "frequency": 30
-  },
-  {
-    "word": "MICE",
-    "frequency": 30
-  },
-  {
-    "word": "PAGE",
-    "frequency": 30
-  },
-  {
-    "word": "EVIL",
-    "frequency": 30
-  },
-  {
-    "word": "CAVE",
-    "frequency": 30
-  },
-  {
-    "word": "BATH",
-    "frequency": 30
-  },
-  {
-    "word": "FIST",
-    "frequency": 30
-  },
-  {
-    "word": "POEM",
-    "frequency": 30
-  },
-  {
-    "word": "HARD",
-    "frequency": 30
-  },
-  {
-    "word": "CAKE",
-    "frequency": 30
-  },
-  {
-    "word": "EPIC",
-    "frequency": 30
-  },
-  {
-    "word": "POPE",
-    "frequency": 30
-  },
-  {
-    "word": "DUDE",
-    "frequency": 30
-  },
-  {
-    "word": "LOAD",
-    "frequency": 30
-  },
-  {
-    "word": "FAKE",
-    "frequency": 30
-  },
-  {
-    "word": "HUGE",
-    "frequency": 30
-  },
-  {
-    "word": "PEAK",
-    "frequency": 30
-  },
-  {
-    "word": "PIPE",
-    "frequency": 30
-  },
-  {
-    "word": "LAID",
-    "frequency": 30
-  },
-  {
-    "word": "FAIR",
-    "frequency": 30
-  },
-  {
-    "word": "LAND",
-    "frequency": 30
-  },
-  {
-    "word": "PAIR",
-    "frequency": 30
-  },
-  {
-    "word": "MIKE",
-    "frequency": 30
-  },
-  {
-    "word": "JANE",
-    "frequency": 30
-  },
-  {
-    "word": "JEAN",
-    "frequency": 30
-  },
-  {
-    "word": "HARM",
-    "frequency": 30
-  },
-  {
-    "word": "PIKE",
-    "frequency": 30
-  },
-  {
-    "word": "HALL",
-    "frequency": 30
-  },
-  {
-    "word": "CLUE",
-    "frequency": 30
-  },
-  {
-    "word": "ACID",
-    "frequency": 30
-  },
-  {
-    "word": "HOOK",
-    "frequency": 30
-  },
-  {
-    "word": "COOL",
-    "frequency": 30
-  },
-  {
-    "word": "FUEL",
-    "frequency": 30
-  },
-  {
-    "word": "DOOM",
-    "frequency": 30
-  },
-  {
-    "word": "MOOD",
-    "frequency": 30
-  },
-  {
-    "word": "MAIL",
-    "frequency": 30
-  },
-  {
-    "word": "GLUE",
-    "frequency": 30
-  },
-  {
-    "word": "FOOD",
-    "frequency": 30
-  },
-  {
-    "word": "FAIL",
-    "frequency": 30
-  },
-  {
-    "word": "FOOL",
-    "frequency": 30
-  },
-  {
-    "word": "LOGO",
-    "frequency": 30
-  },
-  {
-    "word": "POOL",
-    "frequency": 30
-  },
-  {
-    "word": "LOOP",
-    "frequency": 30
-  },
-  {
-    "word": "POLO",
-    "frequency": 30
-  },
-  {
-    "word": "BLUE",
-    "frequency": 30
-  },
-  {
-    "word": "AWAY",
-    "frequency": 30
-  },
-  {
-    "word": "HALF",
-    "frequency": 30
-  },
-  {
-    "word": "DUKE",
-    "frequency": 30
-  },
-  {
-    "word": "BAND",
-    "frequency": 30
-  },
-  {
-    "word": "POND",
-    "frequency": 30
-  },
-  {
-    "word": "FOAM",
-    "frequency": 30
-  },
-  {
-    "word": "MAYO",
-    "frequency": 30
-  },
-  {
-    "word": "BOND",
-    "frequency": 30
-  },
-  {
-    "word": "HOLY",
-    "frequency": 30
-  },
-  {
-    "word": "HOST",
-    "frequency": 30
-  },
-  {
-    "word": "GANG",
-    "frequency": 30
-  },
-  {
-    "word": "EXIT",
-    "frequency": 30
-  },
-  {
-    "word": "BOOM",
-    "frequency": 30
-  },
-  {
-    "word": "COOK",
-    "frequency": 30
-  },
-  {
-    "word": "HITS",
-    "frequency": 30
-  },
-  {
-    "word": "OKAY",
-    "frequency": 30
-  },
-  {
-    "word": "MESS",
-    "frequency": 30
-  },
-  {
-    "word": "MESH",
-    "frequency": 30
-  },
-  {
-    "word": "MITT",
-    "frequency": 30
-  },
-  {
-    "word": "LILY",
-    "frequency": 30
-  },
-  {
-    "word": "LOST",
-    "frequency": 30
-  },
-  {
-    "word": "PAUL",
-    "frequency": 30
-  },
-  {
-    "word": "HELL",
-    "frequency": 30
-  },
-  {
-    "word": "JOIN",
-    "frequency": 30
-  },
-  {
-    "word": "CATS",
-    "frequency": 30
-  },
-  {
-    "word": "HORN",
-    "frequency": 30
-  },
-  {
-    "word": "COST",
-    "frequency": 30
-  },
-  {
-    "word": "DENY",
-    "frequency": 30
-  },
-  {
-    "word": "DREW",
-    "frequency": 30
-  },
-  {
-    "word": "LEGS",
-    "frequency": 30
-  },
-  {
-    "word": "MOTH",
-    "frequency": 30
-  },
-  {
-    "word": "POST",
-    "frequency": 30
-  },
-  {
-    "word": "FORT",
-    "frequency": 30
-  },
-  {
-    "word": "HUNT",
-    "frequency": 30
-  },
-  {
-    "word": "FITS",
-    "frequency": 30
-  },
-  {
-    "word": "PORT",
-    "frequency": 30
-  },
-  {
-    "word": "PITS",
-    "frequency": 30
-  },
-  {
-    "word": "DESK",
-    "frequency": 30
-  },
-  {
-    "word": "CREW",
-    "frequency": 30
-  },
-  {
-    "word": "CHEF",
-    "frequency": 30
-  },
-  {
-    "word": "DISH",
-    "frequency": 30
-  },
-  {
-    "word": "KNIT",
-    "frequency": 30
-  },
-  {
-    "word": "GURU",
-    "frequency": 30
-  },
-  {
-    "word": "FLAT",
-    "frequency": 30
-  },
-  {
-    "word": "FANS",
-    "frequency": 30
-  },
-  {
-    "word": "CASH",
-    "frequency": 30
-  },
-  {
-    "word": "CARS",
-    "frequency": 30
-  },
-  {
-    "word": "MASS",
-    "frequency": 30
-  },
-  {
-    "word": "HEMP",
-    "frequency": 30
-  },
-  {
-    "word": "GREW",
-    "frequency": 30
-  },
-  {
-    "word": "CORN",
-    "frequency": 30
-  },
-  {
-    "word": "MARS",
-    "frequency": 30
-  },
-  {
-    "word": "GREY",
-    "frequency": 30
-  },
-  {
-    "word": "NORM",
-    "frequency": 30
-  },
-  {
-    "word": "PREY",
-    "frequency": 30
-  },
-  {
-    "word": "PREP",
-    "frequency": 30
-  },
-  {
-    "word": "JEEP",
-    "frequency": 30
-  },
-  {
-    "word": "DUST",
-    "frequency": 30
-  },
-  {
-    "word": "ENVY",
-    "frequency": 30
-  },
-  {
-    "word": "MISS",
-    "frequency": 30
-  },
-  {
-    "word": "LORD",
-    "frequency": 30
-  },
-  {
-    "word": "GRIN",
-    "frequency": 30
-  },
-  {
-    "word": "FISH",
-    "frequency": 30
-  },
-  {
-    "word": "BORN",
-    "frequency": 30
-  },
-  {
-    "word": "FLEW",
-    "frequency": 30
-  },
-  {
-    "word": "CARD",
-    "frequency": 30
-  },
-  {
-    "word": "CARL",
-    "frequency": 30
-  },
-  {
-    "word": "CITY",
-    "frequency": 30
-  },
-  {
-    "word": "CORD",
-    "frequency": 30
-  },
-  {
-    "word": "KISS",
-    "frequency": 30
-  },
-  {
-    "word": "DISC",
-    "frequency": 30
-  },
-  {
-    "word": "GETS",
-    "frequency": 30
-  },
-  {
-    "word": "PETS",
-    "frequency": 30
-  },
-  {
-    "word": "EASE",
-    "frequency": 30
-  },
-  {
-    "word": "DARK",
-    "frequency": 30
-  },
-  {
-    "word": "FARM",
-    "frequency": 30
-  },
-  {
-    "word": "MALL",
-    "frequency": 30
-  },
-  {
-    "word": "ARMY",
-    "frequency": 30
-  },
-  {
-    "word": "LINK",
-    "frequency": 30
-  },
-  {
-    "word": "FALL",
-    "frequency": 30
-  },
-  {
-    "word": "EXEC",
-    "frequency": 30
-  },
-  {
-    "word": "DISK",
-    "frequency": 30
-  },
-  {
-    "word": "MELT",
-    "frequency": 30
-  },
-  {
-    "word": "FORM",
-    "frequency": 30
-  },
-  {
-    "word": "NEWS",
-    "frequency": 30
-  },
-  {
-    "word": "FELT",
-    "frequency": 30
-  },
-  {
-    "word": "HACK",
-    "frequency": 30
-  },
-  {
-    "word": "MASK",
-    "frequency": 30
-  },
-  {
-    "word": "HUNG",
-    "frequency": 30
-  },
-  {
-    "word": "BALL",
-    "frequency": 30
-  },
-  {
-    "word": "CALM",
-    "frequency": 30
-  },
-  {
-    "word": "HAWK",
-    "frequency": 30
-  },
-  {
-    "word": "MARK",
-    "frequency": 30
-  },
-  {
-    "word": "DEBT",
-    "frequency": 30
-  },
-  {
-    "word": "BELT",
-    "frequency": 30
-  },
-  {
-    "word": "BANK",
-    "frequency": 30
-  },
-  {
-    "word": "LOTS",
-    "frequency": 30
-  },
-  {
-    "word": "PARK",
-    "frequency": 30
-  },
-  {
-    "word": "PALM",
-    "frequency": 30
-  },
-  {
-    "word": "FORK",
-    "frequency": 30
-  },
-  {
-    "word": "PINK",
-    "frequency": 30
-  },
-  {
-    "word": "DIRT",
-    "frequency": 30
-  },
-  {
-    "word": "PORK",
-    "frequency": 30
-  },
-  {
-    "word": "JOKE",
-    "frequency": 30
-  },
-  {
-    "word": "FUND",
-    "frequency": 30
-  },
-  {
-    "word": "LUNG",
-    "frequency": 30
-  },
-  {
-    "word": "NUTS",
-    "frequency": 30
-  },
-  {
-    "word": "KEPT",
-    "frequency": 30
-  },
-  {
-    "word": "JAIL",
-    "frequency": 30
-  },
-  {
-    "word": "LOSS",
-    "frequency": 30
-  },
-  {
-    "word": "HURT",
-    "frequency": 30
-  },
-  {
-    "word": "CELL",
-    "frequency": 30
-  },
-  {
-    "word": "EXAM",
-    "frequency": 30
-  },
-  {
-    "word": "MAZE",
-    "frequency": 30
-  },
-  {
-    "word": "EGGS",
-    "frequency": 30
-  },
-  {
-    "word": "NECK",
-    "frequency": 30
-  },
-  {
-    "word": "FELL",
-    "frequency": 30
-  },
-  {
-    "word": "GAZE",
-    "frequency": 30
-  },
-  {
-    "word": "OWNS",
-    "frequency": 30
-  },
-  {
-    "word": "MOSS",
-    "frequency": 30
-  },
-  {
-    "word": "PLOT",
-    "frequency": 30
-  },
-  {
-    "word": "ODDS",
-    "frequency": 30
-  },
-  {
-    "word": "LIFT",
-    "frequency": 30
-  },
-  {
-    "word": "BELL",
-    "frequency": 30
-  },
-  {
-    "word": "HOLD",
-    "frequency": 30
-  },
-  {
-    "word": "PROS",
-    "frequency": 30
-  },
-  {
-    "word": "DAMN",
-    "frequency": 30
-  },
-  {
-    "word": "DAWN",
-    "frequency": 30
-  },
-  {
-    "word": "BOSS",
-    "frequency": 30
-  },
-  {
-    "word": "LAWN",
-    "frequency": 30
-  },
-  {
-    "word": "HILL",
-    "frequency": 30
-  },
-  {
-    "word": "LAWS",
-    "frequency": 30
-  },
-  {
-    "word": "DRAW",
-    "frequency": 30
-  },
-  {
-    "word": "DAYS",
-    "frequency": 30
-  },
-  {
-    "word": "DECK",
-    "frequency": 30
-  },
-  {
-    "word": "DRAG",
-    "frequency": 30
-  },
-  {
-    "word": "GRAD",
-    "frequency": 30
-  },
-  {
-    "word": "GIFT",
-    "frequency": 30
-  },
-  {
-    "word": "DOGS",
-    "frequency": 30
-  },
-  {
-    "word": "GODS",
-    "frequency": 30
-  },
-  {
-    "word": "DOLL",
-    "frequency": 30
-  },
-  {
-    "word": "LABS",
-    "frequency": 30
-  },
-  {
-    "word": "DROP",
-    "frequency": 30
-  },
-  {
-    "word": "LIPS",
-    "frequency": 30
-  },
-  {
-    "word": "GRID",
-    "frequency": 30
-  },
-  {
-    "word": "DRIP",
-    "frequency": 30
-  },
-  {
-    "word": "GIRL",
-    "frequency": 30
-  },
-  {
-    "word": "MAPS",
-    "frequency": 30
-  },
-  {
-    "word": "GRAM",
-    "frequency": 30
-  },
-  {
-    "word": "COLD",
-    "frequency": 30
-  },
-  {
-    "word": "BIRD",
-    "frequency": 30
-  },
-  {
-    "word": "GLAD",
-    "frequency": 30
-  },
-  {
-    "word": "GAPS",
-    "frequency": 30
-  },
-  {
-    "word": "KIDS",
-    "frequency": 30
-  },
-  {
-    "word": "CROP",
-    "frequency": 30
-  },
-  {
-    "word": "MOLD",
-    "frequency": 30
-  },
-  {
-    "word": "GRAY",
-    "frequency": 30
-  },
-  {
-    "word": "DUTY",
-    "frequency": 30
-  },
-  {
-    "word": "GROW",
-    "frequency": 30
-  },
-  {
-    "word": "NAVY",
-    "frequency": 30
-  },
-  {
-    "word": "GUNS",
-    "frequency": 30
-  },
-  {
-    "word": "GOLD",
-    "frequency": 30
-  },
-  {
-    "word": "CHIP",
-    "frequency": 30
-  },
-  {
-    "word": "MILD",
-    "frequency": 30
-  },
-  {
-    "word": "FIRM",
-    "frequency": 30
-  },
-  {
-    "word": "POLL",
-    "frequency": 30
-  },
-  {
-    "word": "GRAB",
-    "frequency": 30
-  },
-  {
-    "word": "MILL",
-    "frequency": 30
-  },
-  {
-    "word": "GRIM",
-    "frequency": 30
-  },
-  {
-    "word": "NICK",
-    "frequency": 30
-  },
-  {
-    "word": "FILL",
-    "frequency": 30
-  },
-  {
-    "word": "PUSH",
-    "frequency": 30
-  },
-  {
-    "word": "BOYS",
-    "frequency": 30
-  },
-  {
-    "word": "BOLD",
-    "frequency": 30
-  },
-  {
-    "word": "PILL",
-    "frequency": 30
-  },
-  {
-    "word": "CLAY",
-    "frequency": 30
-  },
-  {
-    "word": "GRIP",
-    "frequency": 30
-  },
-  {
-    "word": "HULL",
-    "frequency": 30
-  },
-  {
-    "word": "BURN",
-    "frequency": 30
-  },
-  {
-    "word": "DAMP",
-    "frequency": 30
-  },
-  {
-    "word": "LAMP",
-    "frequency": 30
-  },
-  {
-    "word": "BUSH",
-    "frequency": 30
-  },
-  {
-    "word": "FLAG",
-    "frequency": 30
-  },
-  {
-    "word": "BILL",
-    "frequency": 30
-  },
-  {
-    "word": "KNOB",
-    "frequency": 30
-  },
-  {
-    "word": "FLOW",
-    "frequency": 30
-  },
-  {
-    "word": "GLOW",
-    "frequency": 30
-  },
-  {
-    "word": "LAMB",
-    "frequency": 30
-  },
-  {
-    "word": "PLOW",
-    "frequency": 30
-  },
-  {
-    "word": "KILL",
-    "frequency": 30
-  },
-  {
-    "word": "GOLF",
-    "frequency": 30
-  },
-  {
-    "word": "LACK",
-    "frequency": 30
-  },
-  {
-    "word": "CLIP",
-    "frequency": 30
-  },
-  {
-    "word": "FILM",
-    "frequency": 30
-  },
-  {
-    "word": "DRUM",
-    "frequency": 30
-  },
-  {
-    "word": "DOCK",
-    "frequency": 30
-  },
-  {
-    "word": "CAMP",
-    "frequency": 30
-  },
-  {
-    "word": "BLOW",
-    "frequency": 30
-  },
-  {
-    "word": "BOWL",
-    "frequency": 30
-  },
-  {
-    "word": "FLIP",
-    "frequency": 30
-  },
-  {
-    "word": "LOCK",
-    "frequency": 30
-  },
-  {
-    "word": "DULL",
-    "frequency": 30
-  },
-  {
-    "word": "PLUS",
-    "frequency": 30
-  },
-  {
-    "word": "DRUG",
-    "frequency": 30
-  },
-  {
-    "word": "LIMB",
-    "frequency": 30
-  },
-  {
-    "word": "LICK",
-    "frequency": 30
-  },
-  {
-    "word": "FOLK",
-    "frequency": 30
-  },
-  {
-    "word": "COPY",
-    "frequency": 30
-  },
-  {
-    "word": "MILK",
-    "frequency": 30
-  },
-  {
-    "word": "COCK",
-    "frequency": 30
-  },
-  {
-    "word": "PACK",
-    "frequency": 30
-  },
-  {
-    "word": "GUYS",
-    "frequency": 30
-  },
-  {
-    "word": "FURY",
-    "frequency": 30
-  },
-  {
-    "word": "PULL",
-    "frequency": 30
-  },
-  {
-    "word": "BABY",
-    "frequency": 30
-  },
-  {
-    "word": "BOMB",
-    "frequency": 30
-  },
-  {
-    "word": "PICK",
-    "frequency": 30
-  },
-  {
-    "word": "BUSY",
-    "frequency": 30
-  },
-  {
-    "word": "PUNK",
-    "frequency": 30
-  },
-  {
-    "word": "DUMP",
-    "frequency": 30
-  },
-  {
-    "word": "KICK",
-    "frequency": 30
-  },
-  {
-    "word": "LUMP",
-    "frequency": 30
-  },
-  {
-    "word": "GULF",
-    "frequency": 30
-  },
-  {
-    "word": "CLUB",
-    "frequency": 30
-  },
-  {
-    "word": "PLUG",
-    "frequency": 30
-  },
-  {
-    "word": "DUMB",
-    "frequency": 30
-  },
-  {
-    "word": "DUCK",
-    "frequency": 30
-  },
-  {
-    "word": "LUCK",
-    "frequency": 30
-  },
-  {
-    "word": "QUIZ",
-    "frequency": 30
-  },
-  {
-    "word": "FLEX",
-    "frequency": 30
-  },
-  {
-    "word": "PUMP",
-    "frequency": 30
+    "word": "LEGO",
+    "frequency": 64
   },
   {
     "word": "JOHN",
-    "frequency": 30
+    "frequency": 64
   },
   {
-    "word": "JOBS",
-    "frequency": 30
+    "word": "VISA",
+    "frequency": 64
   },
   {
-    "word": "MYTH",
-    "frequency": 30
+    "word": "STAN",
+    "frequency": 63
   },
   {
-    "word": "EURO",
-    "frequency": 30
+    "word": "MEME",
+    "frequency": 63
   },
   {
-    "word": "JACK",
-    "frequency": 30
+    "word": "ECHO",
+    "frequency": 63
   },
   {
-    "word": "JURY",
-    "frequency": 30
+    "word": "DELI",
+    "frequency": 63
   },
   {
-    "word": "JUNK",
-    "frequency": 30
+    "word": "TACO",
+    "frequency": 63
   },
   {
-    "word": "JUMP",
-    "frequency": 30
+    "word": "TUNA",
+    "frequency": 63
   },
   {
-    "word": "JAZZ",
-    "frequency": 30
+    "word": "SIRI",
+    "frequency": 63
+  },
+  {
+    "word": "SODA",
+    "frequency": 63
+  },
+  {
+    "word": "NCAA",
+    "frequency": 63
+  },
+  {
+    "word": "BEAU",
+    "frequency": 62
+  },
+  {
+    "word": "RIGA",
+    "frequency": 62
+  },
+  {
+    "word": "IMHO",
+    "frequency": 62
+  },
+  {
+    "word": "COLA",
+    "frequency": 62
+  },
+  {
+    "word": "VIBE",
+    "frequency": 62
+  },
+  {
+    "word": "YOLO",
+    "frequency": 62
+  },
+  {
+    "word": "YOGA",
+    "frequency": 61
+  },
+  {
+    "word": "FOMO",
+    "frequency": 61
+  },
+  {
+    "word": "FIFA",
+    "frequency": 61
+  },
+  {
+    "word": "WIFI",
+    "frequency": 61
+  },
+  {
+    "word": "BOBA",
+    "frequency": 61
+  },
+  {
+    "word": "ESPN",
+    "frequency": 61
+  },
+  {
+    "word": "ROKU",
+    "frequency": 61
+  },
+  {
+    "word": "HULU",
+    "frequency": 61
+  },
+  {
+    "word": "ETSY",
+    "frequency": 60
+  },
+  {
+    "word": "SNAP",
+    "frequency": 58
+  },
+  {
+    "word": "SLAW",
+    "frequency": 58
+  },
+  {
+    "word": "YELP",
+    "frequency": 58
+  },
+  {
+    "word": "GRAM",
+    "frequency": 57
+  },
+  {
+    "word": "WNBA",
+    "frequency": 57
+  },
+  {
+    "word": "APPS",
+    "frequency": 57
+  },
+  {
+    "word": "IMAX",
+    "frequency": 57
+  },
+  {
+    "word": "ZOOM",
+    "frequency": 57
+  },
+  {
+    "word": "BLOG",
+    "frequency": 57
+  },
+  {
+    "word": "YUZU",
+    "frequency": 55
+  },
+  {
+    "word": "JPEG",
+    "frequency": 54
+  },
+  {
+    "word": "IKEA",
+    "frequency": 54
+  },
+  {
+    "word": "OAHU",
+    "frequency": 53
+  },
+  {
+    "word": "TTYL",
+    "frequency": 53
+  },
+  {
+    "word": "LYFT",
+    "frequency": 52
   },
   {
     "word": "HEED",
@@ -2800,6 +780,10 @@
     "frequency": 24
   },
   {
+    "word": "EREN",
+    "frequency": 24
+  },
+  {
     "word": "NEER",
     "frequency": 24
   },
@@ -2816,7 +800,19 @@
     "frequency": 23
   },
   {
+    "word": "HATE",
+    "frequency": 23
+  },
+  {
+    "word": "DEER",
+    "frequency": 23
+  },
+  {
     "word": "LERE",
+    "frequency": 23
+  },
+  {
+    "word": "DEED",
     "frequency": 23
   },
   {
@@ -2836,6 +832,10 @@
     "frequency": 23
   },
   {
+    "word": "PEER",
+    "frequency": 23
+  },
+  {
     "word": "ARES",
     "frequency": 23
   },
@@ -2844,7 +844,15 @@
     "frequency": 23
   },
   {
+    "word": "BEER",
+    "frequency": 22
+  },
+  {
     "word": "ORES",
+    "frequency": 22
+  },
+  {
+    "word": "EVER",
     "frequency": 22
   },
   {
@@ -2853,6 +861,10 @@
   },
   {
     "word": "MEED",
+    "frequency": 22
+  },
+  {
+    "word": "FEED",
     "frequency": 22
   },
   {
@@ -2880,6 +892,10 @@
     "frequency": 22
   },
   {
+    "word": "ONTO",
+    "frequency": 22
+  },
+  {
     "word": "HOED",
     "frequency": 22
   },
@@ -2892,11 +908,19 @@
     "frequency": 22
   },
   {
+    "word": "REEL",
+    "frequency": 22
+  },
+  {
     "word": "HIED",
     "frequency": 22
   },
   {
     "word": "LIER",
+    "frequency": 22
+  },
+  {
+    "word": "ACER",
     "frequency": 22
   },
   {
@@ -2932,6 +956,10 @@
     "frequency": 22
   },
   {
+    "word": "DIED",
+    "frequency": 22
+  },
+  {
     "word": "ESSE",
     "frequency": 22
   },
@@ -2948,6 +976,10 @@
     "frequency": 22
   },
   {
+    "word": "PIER",
+    "frequency": 22
+  },
+  {
     "word": "HUER",
     "frequency": 22
   },
@@ -2960,6 +992,10 @@
     "frequency": 21
   },
   {
+    "word": "AGED",
+    "frequency": 21
+  },
+  {
     "word": "GAED",
     "frequency": 21
   },
@@ -2969,6 +1005,10 @@
   },
   {
     "word": "BIER",
+    "frequency": 21
+  },
+  {
+    "word": "OWED",
     "frequency": 21
   },
   {
@@ -2985,6 +1025,18 @@
   },
   {
     "word": "OPED",
+    "frequency": 21
+  },
+  {
+    "word": "EAST",
+    "frequency": 21
+  },
+  {
+    "word": "SEAT",
+    "frequency": 21
+  },
+  {
+    "word": "HEAT",
     "frequency": 21
   },
   {
@@ -3028,6 +1080,10 @@
     "frequency": 21
   },
   {
+    "word": "DATE",
+    "frequency": 21
+  },
+  {
     "word": "CERE",
     "frequency": 21
   },
@@ -3041,6 +1097,10 @@
   },
   {
     "word": "LEAT",
+    "frequency": 21
+  },
+  {
+    "word": "MERE",
     "frequency": 21
   },
   {
@@ -3068,11 +1128,19 @@
     "frequency": 21
   },
   {
+    "word": "ONES",
+    "frequency": 21
+  },
+  {
     "word": "ERAS",
     "frequency": 21
   },
   {
     "word": "DITE",
+    "frequency": 21
+  },
+  {
+    "word": "EDIT",
     "frequency": 21
   },
   {
@@ -3092,7 +1160,19 @@
     "frequency": 21
   },
   {
+    "word": "MATE",
+    "frequency": 21
+  },
+  {
+    "word": "HERO",
+    "frequency": 21
+  },
+  {
     "word": "INRO",
+    "frequency": 21
+  },
+  {
+    "word": "FATE",
     "frequency": 21
   },
   {
@@ -3104,7 +1184,23 @@
     "frequency": 20
   },
   {
+    "word": "GATE",
+    "frequency": 20
+  },
+  {
     "word": "PATE",
+    "frequency": 20
+  },
+  {
+    "word": "LEAN",
+    "frequency": 20
+  },
+  {
+    "word": "CITE",
+    "frequency": 20
+  },
+  {
+    "word": "NATO",
     "frequency": 20
   },
   {
@@ -3124,6 +1220,10 @@
     "frequency": 20
   },
   {
+    "word": "ITEM",
+    "frequency": 20
+  },
+  {
     "word": "MITE",
     "frequency": 20
   },
@@ -3133,6 +1233,10 @@
   },
   {
     "word": "OAST",
+    "frequency": 20
+  },
+  {
+    "word": "HEAL",
     "frequency": 20
   },
   {
@@ -3180,7 +1284,23 @@
     "frequency": 20
   },
   {
+    "word": "ISLE",
+    "frequency": 20
+  },
+  {
     "word": "LEIS",
+    "frequency": 20
+  },
+  {
+    "word": "BITE",
+    "frequency": 20
+  },
+  {
+    "word": "CARE",
+    "frequency": 20
+  },
+  {
+    "word": "KITE",
     "frequency": 20
   },
   {
@@ -3204,7 +1324,15 @@
     "frequency": 20
   },
   {
+    "word": "FARE",
+    "frequency": 20
+  },
+  {
     "word": "DATO",
+    "frequency": 20
+  },
+  {
+    "word": "CORE",
     "frequency": 20
   },
   {
@@ -3232,7 +1360,15 @@
     "frequency": 20
   },
   {
+    "word": "BASE",
+    "frequency": 20
+  },
+  {
     "word": "ESNE",
+    "frequency": 20
+  },
+  {
+    "word": "INFO",
     "frequency": 20
   },
   {
@@ -3296,6 +1432,10 @@
     "frequency": 20
   },
   {
+    "word": "MALE",
+    "frequency": 20
+  },
+  {
     "word": "BISE",
     "frequency": 20
   },
@@ -3328,11 +1468,19 @@
     "frequency": 20
   },
   {
+    "word": "PALE",
+    "frequency": 20
+  },
+  {
     "word": "ALAS",
     "frequency": 19
   },
   {
     "word": "FETE",
+    "frequency": 19
+  },
+  {
+    "word": "NEAT",
     "frequency": 19
   },
   {
@@ -3380,6 +1528,10 @@
     "frequency": 19
   },
   {
+    "word": "NOTE",
+    "frequency": 19
+  },
+  {
     "word": "DEES",
     "frequency": 19
   },
@@ -3388,7 +1540,23 @@
     "frequency": 19
   },
   {
+    "word": "CITI",
+    "frequency": 19
+  },
+  {
+    "word": "ELSE",
+    "frequency": 19
+  },
+  {
     "word": "CRED",
+    "frequency": 19
+  },
+  {
+    "word": "ORAL",
+    "frequency": 19
+  },
+  {
+    "word": "KALE",
     "frequency": 19
   },
   {
@@ -3400,11 +1568,19 @@
     "frequency": 19
   },
   {
+    "word": "HEEL",
+    "frequency": 19
+  },
+  {
     "word": "HOTE",
     "frequency": 19
   },
   {
-    "word": "FRED",
+    "word": "TOUR",
+    "frequency": 19
+  },
+  {
+    "word": "LION",
     "frequency": 19
   },
   {
@@ -3444,6 +1620,10 @@
     "frequency": 19
   },
   {
+    "word": "TATA",
+    "frequency": 19
+  },
+  {
     "word": "NANE",
     "frequency": 19
   },
@@ -3452,7 +1632,19 @@
     "frequency": 19
   },
   {
+    "word": "REDS",
+    "frequency": 19
+  },
+  {
+    "word": "BRED",
+    "frequency": 19
+  },
+  {
     "word": "HEST",
+    "frequency": 19
+  },
+  {
+    "word": "GENE",
     "frequency": 19
   },
   {
@@ -3484,6 +1676,10 @@
     "frequency": 19
   },
   {
+    "word": "FEES",
+    "frequency": 19
+  },
+  {
     "word": "NAES",
     "frequency": 19
   },
@@ -3496,11 +1692,27 @@
     "frequency": 19
   },
   {
+    "word": "NEON",
+    "frequency": 19
+  },
+  {
+    "word": "NONE",
+    "frequency": 19
+  },
+  {
+    "word": "EYES",
+    "frequency": 19
+  },
+  {
     "word": "DELE",
     "frequency": 19
   },
   {
     "word": "PEES",
+    "frequency": 19
+  },
+  {
+    "word": "EARN",
     "frequency": 19
   },
   {
@@ -3544,7 +1756,19 @@
     "frequency": 19
   },
   {
+    "word": "NOSE",
+    "frequency": 19
+  },
+  {
+    "word": "FLED",
+    "frequency": 19
+  },
+  {
     "word": "EARS",
+    "frequency": 19
+  },
+  {
+    "word": "NINE",
     "frequency": 19
   },
   {
@@ -3569,6 +1793,14 @@
   },
   {
     "word": "GLED",
+    "frequency": 19
+  },
+  {
+    "word": "NERO",
+    "frequency": 19
+  },
+  {
+    "word": "KEEN",
     "frequency": 19
   },
   {
@@ -3624,11 +1856,19 @@
     "frequency": 19
   },
   {
+    "word": "MEAT",
+    "frequency": 19
+  },
+  {
     "word": "BLED",
     "frequency": 19
   },
   {
     "word": "ELEC",
+    "frequency": 19
+  },
+  {
+    "word": "FEAT",
     "frequency": 19
   },
   {
@@ -3656,7 +1896,15 @@
     "frequency": 19
   },
   {
+    "word": "HIRE",
+    "frequency": 19
+  },
+  {
     "word": "MOTE",
+    "frequency": 19
+  },
+  {
+    "word": "EDGE",
     "frequency": 19
   },
   {
@@ -3668,7 +1916,15 @@
     "frequency": 19
   },
   {
+    "word": "LANE",
+    "frequency": 19
+  },
+  {
     "word": "ETIC",
+    "frequency": 19
+  },
+  {
+    "word": "KING",
     "frequency": 19
   },
   {
@@ -3680,11 +1936,27 @@
     "frequency": 18
   },
   {
+    "word": "BEAT",
+    "frequency": 18
+  },
+  {
+    "word": "DONE",
+    "frequency": 18
+  },
+  {
     "word": "HADE",
     "frequency": 18
   },
   {
     "word": "POTE",
+    "frequency": 18
+  },
+  {
+    "word": "EMIT",
+    "frequency": 18
+  },
+  {
+    "word": "DEAR",
     "frequency": 18
   },
   {
@@ -3696,11 +1968,23 @@
     "frequency": 18
   },
   {
+    "word": "LONE",
+    "frequency": 18
+  },
+  {
     "word": "NOLE",
     "frequency": 18
   },
   {
     "word": "EARL",
+    "frequency": 18
+  },
+  {
+    "word": "DOES",
+    "frequency": 18
+  },
+  {
+    "word": "DOSE",
     "frequency": 18
   },
   {
@@ -3713,6 +1997,10 @@
   },
   {
     "word": "DINE",
+    "frequency": 18
+  },
+  {
+    "word": "LOSE",
     "frequency": 18
   },
   {
@@ -3740,6 +2028,10 @@
     "frequency": 18
   },
   {
+    "word": "HOLE",
+    "frequency": 18
+  },
+  {
     "word": "DIES",
     "frequency": 18
   },
@@ -3749,6 +2041,10 @@
   },
   {
     "word": "EORL",
+    "frequency": 18
+  },
+  {
+    "word": "ROLE",
     "frequency": 18
   },
   {
@@ -3772,6 +2068,10 @@
     "frequency": 18
   },
   {
+    "word": "LIES",
+    "frequency": 18
+  },
+  {
     "word": "MANE",
     "frequency": 18
   },
@@ -3792,10 +2092,6 @@
     "frequency": 18
   },
   {
-    "word": "ANNA",
-    "frequency": 18
-  },
-  {
     "word": "NAAN",
     "frequency": 18
   },
@@ -3812,11 +2108,19 @@
     "frequency": 18
   },
   {
+    "word": "ACHE",
+    "frequency": 18
+  },
+  {
     "word": "CONE",
     "frequency": 18
   },
   {
     "word": "LIRE",
+    "frequency": 18
+  },
+  {
+    "word": "DATA",
     "frequency": 18
   },
   {
@@ -3857,6 +2161,10 @@
   },
   {
     "word": "ANSA",
+    "frequency": 18
+  },
+  {
+    "word": "NASA",
     "frequency": 18
   },
   {
@@ -3920,6 +2228,18 @@
     "frequency": 18
   },
   {
+    "word": "EASY",
+    "frequency": 18
+  },
+  {
+    "word": "DEAL",
+    "frequency": 18
+  },
+  {
+    "word": "LEAD",
+    "frequency": 18
+  },
+  {
     "word": "APES",
     "frequency": 18
   },
@@ -3929,6 +2249,10 @@
   },
   {
     "word": "PEAS",
+    "frequency": 18
+  },
+  {
+    "word": "FEAR",
     "frequency": 18
   },
   {
@@ -3968,11 +2292,19 @@
     "frequency": 18
   },
   {
+    "word": "HEAP",
+    "frequency": 18
+  },
+  {
     "word": "PEON",
     "frequency": 18
   },
   {
     "word": "PONE",
+    "frequency": 18
+  },
+  {
+    "word": "GEAR",
     "frequency": 18
   },
   {
@@ -3985,6 +2317,14 @@
   },
   {
     "word": "MIEN",
+    "frequency": 18
+  },
+  {
+    "word": "MINE",
+    "frequency": 18
+  },
+  {
+    "word": "PEAR",
     "frequency": 18
   },
   {
@@ -4008,7 +2348,15 @@
     "frequency": 18
   },
   {
+    "word": "FINE",
+    "frequency": 18
+  },
+  {
     "word": "NAIN",
+    "frequency": 18
+  },
+  {
+    "word": "GOES",
     "frequency": 18
   },
   {
@@ -4017,6 +2365,10 @@
   },
   {
     "word": "LUTE",
+    "frequency": 18
+  },
+  {
+    "word": "NOON",
     "frequency": 18
   },
   {
@@ -4037,6 +2389,10 @@
   },
   {
     "word": "PESO",
+    "frequency": 18
+  },
+  {
+    "word": "POSE",
     "frequency": 18
   },
   {
@@ -4068,6 +2424,14 @@
     "frequency": 18
   },
   {
+    "word": "PINE",
+    "frequency": 18
+  },
+  {
+    "word": "BONE",
+    "frequency": 18
+  },
+  {
     "word": "EBON",
     "frequency": 18
   },
@@ -4085,6 +2449,10 @@
   },
   {
     "word": "AVES",
+    "frequency": 18
+  },
+  {
+    "word": "BEAR",
     "frequency": 18
   },
   {
@@ -4136,11 +2504,27 @@
     "frequency": 18
   },
   {
+    "word": "OVEN",
+    "frequency": 18
+  },
+  {
     "word": "PIES",
     "frequency": 18
   },
   {
+    "word": "FIRE",
+    "frequency": 18
+  },
+  {
     "word": "HUES",
+    "frequency": 18
+  },
+  {
+    "word": "IRAN",
+    "frequency": 18
+  },
+  {
+    "word": "BOSE",
     "frequency": 18
   },
   {
@@ -4161,6 +2545,10 @@
   },
   {
     "word": "HORA",
+    "frequency": 18
+  },
+  {
+    "word": "LEND",
     "frequency": 18
   },
   {
@@ -4192,6 +2580,10 @@
     "frequency": 18
   },
   {
+    "word": "COAT",
+    "frequency": 18
+  },
+  {
     "word": "ALME",
     "frequency": 18
   },
@@ -4200,7 +2592,23 @@
     "frequency": 18
   },
   {
+    "word": "MEAL",
+    "frequency": 18
+  },
+  {
     "word": "OKES",
+    "frequency": 18
+  },
+  {
+    "word": "CUTE",
+    "frequency": 18
+  },
+  {
+    "word": "HAIR",
+    "frequency": 18
+  },
+  {
+    "word": "IRON",
     "frequency": 18
   },
   {
@@ -4224,11 +2632,19 @@
     "frequency": 18
   },
   {
+    "word": "LEAF",
+    "frequency": 18
+  },
+  {
     "word": "NALA",
     "frequency": 18
   },
   {
     "word": "HORO",
+    "frequency": 18
+  },
+  {
+    "word": "COLE",
     "frequency": 18
   },
   {
@@ -4244,7 +2660,19 @@
     "frequency": 18
   },
   {
+    "word": "MEET",
+    "frequency": 18
+  },
+  {
+    "word": "LEAP",
+    "frequency": 18
+  },
+  {
     "word": "PEAL",
+    "frequency": 18
+  },
+  {
+    "word": "PLEA",
     "frequency": 18
   },
   {
@@ -4260,6 +2688,10 @@
     "frequency": 18
   },
   {
+    "word": "FEET",
+    "frequency": 18
+  },
+  {
     "word": "DONA",
     "frequency": 18
   },
@@ -4269,6 +2701,10 @@
   },
   {
     "word": "MOLE",
+    "frequency": 18
+  },
+  {
+    "word": "LOAN",
     "frequency": 18
   },
   {
@@ -4300,7 +2736,19 @@
     "frequency": 18
   },
   {
+    "word": "POLE",
+    "frequency": 18
+  },
+  {
     "word": "PITA",
+    "frequency": 18
+  },
+  {
+    "word": "MILE",
+    "frequency": 18
+  },
+  {
+    "word": "TOGO",
     "frequency": 18
   },
   {
@@ -4308,7 +2756,19 @@
     "frequency": 17
   },
   {
+    "word": "BOAT",
+    "frequency": 17
+  },
+  {
+    "word": "DOHA",
+    "frequency": 17
+  },
+  {
     "word": "OMIT",
+    "frequency": 17
+  },
+  {
+    "word": "FILE",
     "frequency": 17
   },
   {
@@ -4368,6 +2828,10 @@
     "frequency": 17
   },
   {
+    "word": "PILE",
+    "frequency": 17
+  },
+  {
     "word": "BOLE",
     "frequency": 17
   },
@@ -4416,6 +2880,14 @@
     "frequency": 17
   },
   {
+    "word": "DOOR",
+    "frequency": 17
+  },
+  {
+    "word": "HAIL",
+    "frequency": 17
+  },
+  {
     "word": "LINO",
     "frequency": 17
   },
@@ -4441,6 +2913,10 @@
   },
   {
     "word": "LARI",
+    "frequency": 17
+  },
+  {
+    "word": "LIAR",
     "frequency": 17
   },
   {
@@ -4488,6 +2964,14 @@
     "frequency": 17
   },
   {
+    "word": "NEST",
+    "frequency": 17
+  },
+  {
+    "word": "OMAN",
+    "frequency": 17
+  },
+  {
     "word": "OBIT",
     "frequency": 17
   },
@@ -4517,6 +3001,14 @@
   },
   {
     "word": "HAAF",
+    "frequency": 17
+  },
+  {
+    "word": "MENU",
+    "frequency": 17
+  },
+  {
+    "word": "ASAP",
     "frequency": 17
   },
   {
@@ -4560,6 +3052,10 @@
     "frequency": 17
   },
   {
+    "word": "MAIN",
+    "frequency": 17
+  },
+  {
     "word": "MANI",
     "frequency": 17
   },
@@ -4576,6 +3072,10 @@
     "frequency": 17
   },
   {
+    "word": "CURE",
+    "frequency": 17
+  },
+  {
     "word": "GENU",
     "frequency": 17
   },
@@ -4585,6 +3085,10 @@
   },
   {
     "word": "MONO",
+    "frequency": 17
+  },
+  {
+    "word": "MOON",
     "frequency": 17
   },
   {
@@ -4612,6 +3116,10 @@
     "frequency": 17
   },
   {
+    "word": "FUSE",
+    "frequency": 17
+  },
+  {
     "word": "LATU",
     "frequency": 17
   },
@@ -4620,7 +3128,19 @@
     "frequency": 17
   },
   {
+    "word": "CHAI",
+    "frequency": 17
+  },
+  {
+    "word": "COIN",
+    "frequency": 17
+  },
+  {
     "word": "CONI",
+    "frequency": 17
+  },
+  {
+    "word": "ICON",
     "frequency": 17
   },
   {
@@ -4648,6 +3168,10 @@
     "frequency": 17
   },
   {
+    "word": "GAIN",
+    "frequency": 17
+  },
+  {
     "word": "FARO",
     "frequency": 17
   },
@@ -4672,6 +3196,10 @@
     "frequency": 17
   },
   {
+    "word": "PAIN",
+    "frequency": 17
+  },
+  {
     "word": "PIAN",
     "frequency": 17
   },
@@ -4681,6 +3209,14 @@
   },
   {
     "word": "GOON",
+    "frequency": 17
+  },
+  {
+    "word": "NOUN",
+    "frequency": 17
+  },
+  {
+    "word": "TIKI",
     "frequency": 17
   },
   {
@@ -4712,6 +3248,10 @@
     "frequency": 17
   },
   {
+    "word": "ASUS",
+    "frequency": 17
+  },
+  {
     "word": "FINO",
     "frequency": 17
   },
@@ -4728,6 +3268,14 @@
     "frequency": 17
   },
   {
+    "word": "ALDI",
+    "frequency": 17
+  },
+  {
+    "word": "DIAL",
+    "frequency": 17
+  },
+  {
     "word": "MOOR",
     "frequency": 17
   },
@@ -4737,6 +3285,14 @@
   },
   {
     "word": "PIAS",
+    "frequency": 17
+  },
+  {
+    "word": "PERU",
+    "frequency": 17
+  },
+  {
+    "word": "PURE",
     "frequency": 17
   },
   {
@@ -4820,7 +3376,15 @@
     "frequency": 17
   },
   {
+    "word": "HANG",
+    "frequency": 17
+  },
+  {
     "word": "OURN",
+    "frequency": 17
+  },
+  {
+    "word": "DIET",
     "frequency": 17
   },
   {
@@ -4829,6 +3393,14 @@
   },
   {
     "word": "BORA",
+    "frequency": 17
+  },
+  {
+    "word": "POOR",
+    "frequency": 17
+  },
+  {
+    "word": "KNEE",
     "frequency": 17
   },
   {
@@ -4900,6 +3472,10 @@
     "frequency": 17
   },
   {
+    "word": "STAT",
+    "frequency": 17
+  },
+  {
     "word": "ALFA",
     "frequency": 17
   },
@@ -4920,6 +3496,10 @@
     "frequency": 17
   },
   {
+    "word": "COAL",
+    "frequency": 17
+  },
+  {
     "word": "KARO",
     "frequency": 17
   },
@@ -4933,6 +3513,10 @@
   },
   {
     "word": "GALA",
+    "frequency": 17
+  },
+  {
+    "word": "HOUR",
     "frequency": 17
   },
   {
@@ -5008,6 +3592,10 @@
     "frequency": 17
   },
   {
+    "word": "MULE",
+    "frequency": 17
+  },
+  {
     "word": "HENS",
     "frequency": 17
   },
@@ -5020,6 +3608,10 @@
     "frequency": 17
   },
   {
+    "word": "GOAL",
+    "frequency": 17
+  },
+  {
     "word": "ALBA",
     "frequency": 17
   },
@@ -5029,6 +3621,10 @@
   },
   {
     "word": "OPAL",
+    "frequency": 17
+  },
+  {
+    "word": "DEEP",
     "frequency": 17
   },
   {
@@ -5084,6 +3680,14 @@
     "frequency": 17
   },
   {
+    "word": "NODE",
+    "frequency": 17
+  },
+  {
+    "word": "POET",
+    "frequency": 17
+  },
+  {
     "word": "DUAR",
     "frequency": 17
   },
@@ -5097,6 +3701,10 @@
   },
   {
     "word": "PIAL",
+    "frequency": 17
+  },
+  {
+    "word": "HAUL",
     "frequency": 17
   },
   {
@@ -5156,6 +3764,10 @@
     "frequency": 16
   },
   {
+    "word": "BALI",
+    "frequency": 16
+  },
+  {
     "word": "PENT",
     "frequency": 16
   },
@@ -5181,10 +3793,6 @@
   },
   {
     "word": "LEKU",
-    "frequency": 16
-  },
-  {
-    "word": "MEME",
     "frequency": 16
   },
   {
@@ -5216,6 +3824,10 @@
     "frequency": 16
   },
   {
+    "word": "ENDS",
+    "frequency": 16
+  },
+  {
     "word": "NEMA",
     "frequency": 16
   },
@@ -5228,6 +3840,10 @@
     "frequency": 16
   },
   {
+    "word": "HIDE",
+    "frequency": 16
+  },
+  {
     "word": "JATO",
     "frequency": 16
   },
@@ -5237,6 +3853,14 @@
   },
   {
     "word": "NEAF",
+    "frequency": 16
+  },
+  {
+    "word": "LENS",
+    "frequency": 16
+  },
+  {
+    "word": "BENT",
     "frequency": 16
   },
   {
@@ -5264,7 +3888,15 @@
     "frequency": 16
   },
   {
+    "word": "STAR",
+    "frequency": 16
+  },
+  {
     "word": "MUON",
+    "frequency": 16
+  },
+  {
+    "word": "DEAD",
     "frequency": 16
   },
   {
@@ -5273,6 +3905,10 @@
   },
   {
     "word": "ARUM",
+    "frequency": 16
+  },
+  {
+    "word": "HART",
     "frequency": 16
   },
   {
@@ -5292,6 +3928,14 @@
     "frequency": 16
   },
   {
+    "word": "DUAL",
+    "frequency": 16
+  },
+  {
+    "word": "NICE",
+    "frequency": 16
+  },
+  {
     "word": "POOF",
     "frequency": 16
   },
@@ -5308,7 +3952,7 @@
     "frequency": 16
   },
   {
-    "word": "ECHO",
+    "word": "HERD",
     "frequency": 16
   },
   {
@@ -5341,6 +3985,14 @@
   },
   {
     "word": "NOPE",
+    "frequency": 16
+  },
+  {
+    "word": "QUIT",
+    "frequency": 16
+  },
+  {
+    "word": "HINT",
     "frequency": 16
   },
   {
@@ -5392,6 +4044,10 @@
     "frequency": 16
   },
   {
+    "word": "ROME",
+    "frequency": 16
+  },
+  {
     "word": "NAVE",
     "frequency": 16
   },
@@ -5408,6 +4064,10 @@
     "frequency": 16
   },
   {
+    "word": "LOUD",
+    "frequency": 16
+  },
+  {
     "word": "OULD",
     "frequency": 16
   },
@@ -5417,10 +4077,6 @@
   },
   {
     "word": "OUPS",
-    "frequency": 16
-  },
-  {
-    "word": "NOAH",
     "frequency": 16
   },
   {
@@ -5460,11 +4116,19 @@
     "frequency": 16
   },
   {
+    "word": "HOPE",
+    "frequency": 16
+  },
+  {
     "word": "ALLY",
     "frequency": 16
   },
   {
     "word": "GEEK",
+    "frequency": 16
+  },
+  {
+    "word": "POUR",
     "frequency": 16
   },
   {
@@ -5496,10 +4160,6 @@
     "frequency": 16
   },
   {
-    "word": "DELI",
-    "frequency": 16
-  },
-  {
     "word": "DIEL",
     "frequency": 16
   },
@@ -5524,6 +4184,10 @@
     "frequency": 16
   },
   {
+    "word": "RAVE",
+    "frequency": 16
+  },
+  {
     "word": "ENGS",
     "frequency": 16
   },
@@ -5537,6 +4201,14 @@
   },
   {
     "word": "LACE",
+    "frequency": 16
+  },
+  {
+    "word": "INCH",
+    "frequency": 16
+  },
+  {
+    "word": "DAME",
     "frequency": 16
   },
   {
@@ -5568,6 +4240,18 @@
     "frequency": 16
   },
   {
+    "word": "DEAF",
+    "frequency": 16
+  },
+  {
+    "word": "FADE",
+    "frequency": 16
+  },
+  {
+    "word": "HALT",
+    "frequency": 16
+  },
+  {
     "word": "LATH",
     "frequency": 16
   },
@@ -5592,6 +4276,10 @@
     "frequency": 16
   },
   {
+    "word": "CODE",
+    "frequency": 16
+  },
+  {
     "word": "DECO",
     "frequency": 16
   },
@@ -5605,6 +4293,10 @@
   },
   {
     "word": "HERM",
+    "frequency": 16
+  },
+  {
+    "word": "NIKE",
     "frequency": 16
   },
   {
@@ -5644,6 +4336,18 @@
     "frequency": 16
   },
   {
+    "word": "DEMO",
+    "frequency": 16
+  },
+  {
+    "word": "DOME",
+    "frequency": 16
+  },
+  {
+    "word": "MODE",
+    "frequency": 16
+  },
+  {
     "word": "COOT",
     "frequency": 16
   },
@@ -5672,6 +4376,10 @@
     "frequency": 16
   },
   {
+    "word": "DICE",
+    "frequency": 16
+  },
+  {
     "word": "FEOD",
     "frequency": 16
   },
@@ -5685,6 +4393,14 @@
   },
   {
     "word": "LOWE",
+    "frequency": 16
+  },
+  {
+    "word": "FOUL",
+    "frequency": 16
+  },
+  {
+    "word": "HIKE",
     "frequency": 16
   },
   {
@@ -5736,6 +4452,10 @@
     "frequency": 16
   },
   {
+    "word": "CAST",
+    "frequency": 16
+  },
+  {
     "word": "DIEM",
     "frequency": 16
   },
@@ -5745,6 +4465,10 @@
   },
   {
     "word": "IDEM",
+    "frequency": 16
+  },
+  {
+    "word": "FOOT",
     "frequency": 16
   },
   {
@@ -5768,11 +4492,19 @@
     "frequency": 16
   },
   {
+    "word": "OPEL",
+    "frequency": 16
+  },
+  {
     "word": "DEFI",
     "frequency": 16
   },
   {
     "word": "LITH",
+    "frequency": 16
+  },
+  {
+    "word": "LIME",
     "frequency": 16
   },
   {
@@ -5792,7 +4524,19 @@
     "frequency": 16
   },
   {
+    "word": "UTAH",
+    "frequency": 16
+  },
+  {
+    "word": "HERB",
+    "frequency": 16
+  },
+  {
     "word": "ACME",
+    "frequency": 16
+  },
+  {
+    "word": "CAME",
     "frequency": 16
   },
   {
@@ -5801,6 +4545,10 @@
   },
   {
     "word": "MACE",
+    "frequency": 16
+  },
+  {
+    "word": "LAOS",
     "frequency": 16
   },
   {
@@ -5820,6 +4568,10 @@
     "frequency": 16
   },
   {
+    "word": "TANG",
+    "frequency": 16
+  },
+  {
     "word": "MAST",
     "frequency": 16
   },
@@ -5829,6 +4581,18 @@
   },
   {
     "word": "LIEF",
+    "frequency": 16
+  },
+  {
+    "word": "NAIL",
+    "frequency": 16
+  },
+  {
+    "word": "PANT",
+    "frequency": 16
+  },
+  {
+    "word": "CAFE",
     "frequency": 16
   },
   {
@@ -5848,6 +4612,10 @@
     "frequency": 16
   },
   {
+    "word": "FAST",
+    "frequency": 16
+  },
+  {
     "word": "BODE",
     "frequency": 16
   },
@@ -5856,11 +4624,19 @@
     "frequency": 16
   },
   {
+    "word": "MATH",
+    "frequency": 16
+  },
+  {
     "word": "AIDS",
     "frequency": 16
   },
   {
-    "word": "EMMA",
+    "word": "CAGE",
+    "frequency": 16
+  },
+  {
+    "word": "LAKE",
     "frequency": 16
   },
   {
@@ -5888,11 +4664,19 @@
     "frequency": 16
   },
   {
+    "word": "PACE",
+    "frequency": 16
+  },
+  {
     "word": "FONT",
     "frequency": 16
   },
   {
     "word": "LOBE",
+    "frequency": 16
+  },
+  {
+    "word": "FAME",
     "frequency": 16
   },
   {
@@ -5928,11 +4712,35 @@
     "frequency": 15
   },
   {
+    "word": "OSLO",
+    "frequency": 15
+  },
+  {
+    "word": "SOLO",
+    "frequency": 15
+  },
+  {
+    "word": "BOOT",
+    "frequency": 15
+  },
+  {
+    "word": "HOOD",
+    "frequency": 15
+  },
+  {
     "word": "GHAT",
     "frequency": 15
   },
   {
+    "word": "GAME",
+    "frequency": 15
+  },
+  {
     "word": "MAGE",
+    "frequency": 15
+  },
+  {
+    "word": "MEGA",
     "frequency": 15
   },
   {
@@ -5941,6 +4749,10 @@
   },
   {
     "word": "NOIL",
+    "frequency": 15
+  },
+  {
+    "word": "PATH",
     "frequency": 15
   },
   {
@@ -5953,6 +4765,10 @@
   },
   {
     "word": "BIDE",
+    "frequency": 15
+  },
+  {
+    "word": "MINT",
     "frequency": 15
   },
   {
@@ -5972,6 +4788,10 @@
     "frequency": 15
   },
   {
+    "word": "MEMO",
+    "frequency": 15
+  },
+  {
     "word": "MOME",
     "frequency": 15
   },
@@ -5988,6 +4808,10 @@
     "frequency": 15
   },
   {
+    "word": "BEND",
+    "frequency": 15
+  },
+  {
     "word": "COUP",
     "frequency": 15
   },
@@ -5997,6 +4821,10 @@
   },
   {
     "word": "NIDI",
+    "frequency": 15
+  },
+  {
+    "word": "COPE",
     "frequency": 15
   },
   {
@@ -6013,6 +4841,10 @@
   },
   {
     "word": "EMIC",
+    "frequency": 15
+  },
+  {
+    "word": "MICE",
     "frequency": 15
   },
   {
@@ -6044,6 +4876,10 @@
     "frequency": 15
   },
   {
+    "word": "PAGE",
+    "frequency": 15
+  },
+  {
     "word": "PEAG",
     "frequency": 15
   },
@@ -6064,6 +4900,10 @@
     "frequency": 15
   },
   {
+    "word": "EVIL",
+    "frequency": 15
+  },
+  {
     "word": "FICE",
     "frequency": 15
   },
@@ -6072,7 +4912,15 @@
     "frequency": 15
   },
   {
+    "word": "CAVE",
+    "frequency": 15
+  },
+  {
     "word": "NEUM",
+    "frequency": 15
+  },
+  {
+    "word": "BATH",
     "frequency": 15
   },
   {
@@ -6081,6 +4929,10 @@
   },
   {
     "word": "HOND",
+    "frequency": 15
+  },
+  {
+    "word": "FIST",
     "frequency": 15
   },
   {
@@ -6104,7 +4956,15 @@
     "frequency": 15
   },
   {
+    "word": "POEM",
+    "frequency": 15
+  },
+  {
     "word": "POME",
+    "frequency": 15
+  },
+  {
+    "word": "HARD",
     "frequency": 15
   },
   {
@@ -6124,7 +4984,15 @@
     "frequency": 15
   },
   {
+    "word": "CAKE",
+    "frequency": 15
+  },
+  {
     "word": "AYAH",
+    "frequency": 15
+  },
+  {
+    "word": "EPIC",
     "frequency": 15
   },
   {
@@ -6141,6 +5009,10 @@
   },
   {
     "word": "MAVE",
+    "frequency": 15
+  },
+  {
+    "word": "SAIC",
     "frequency": 15
   },
   {
@@ -6180,6 +5052,10 @@
     "frequency": 15
   },
   {
+    "word": "EBAY",
+    "frequency": 15
+  },
+  {
     "word": "FIEF",
     "frequency": 15
   },
@@ -6216,6 +5092,10 @@
     "frequency": 15
   },
   {
+    "word": "POPE",
+    "frequency": 15
+  },
+  {
     "word": "HIND",
     "frequency": 15
   },
@@ -6240,7 +5120,19 @@
     "frequency": 15
   },
   {
+    "word": "DUDE",
+    "frequency": 15
+  },
+  {
     "word": "LIRI",
+    "frequency": 15
+  },
+  {
+    "word": "LOAD",
+    "frequency": 15
+  },
+  {
+    "word": "SAAB",
     "frequency": 15
   },
   {
@@ -6257,6 +5149,10 @@
   },
   {
     "word": "AIMS",
+    "frequency": 15
+  },
+  {
+    "word": "FAKE",
     "frequency": 15
   },
   {
@@ -6316,11 +5212,23 @@
     "frequency": 15
   },
   {
+    "word": "HUGE",
+    "frequency": 15
+  },
+  {
+    "word": "PEAK",
+    "frequency": 15
+  },
+  {
     "word": "AMIR",
     "frequency": 15
   },
   {
     "word": "MAIR",
+    "frequency": 15
+  },
+  {
+    "word": "PIPE",
     "frequency": 15
   },
   {
@@ -6348,6 +5256,10 @@
     "frequency": 15
   },
   {
+    "word": "LAID",
+    "frequency": 15
+  },
+  {
     "word": "NOVA",
     "frequency": 15
   },
@@ -6357,6 +5269,14 @@
   },
   {
     "word": "GOOS",
+    "frequency": 15
+  },
+  {
+    "word": "FAIR",
+    "frequency": 15
+  },
+  {
+    "word": "WOKE",
     "frequency": 15
   },
   {
@@ -6380,6 +5300,10 @@
     "frequency": 15
   },
   {
+    "word": "LAND",
+    "frequency": 15
+  },
+  {
     "word": "LILA",
     "frequency": 15
   },
@@ -6389,6 +5313,10 @@
   },
   {
     "word": "AIRY",
+    "frequency": 15
+  },
+  {
+    "word": "PAIR",
     "frequency": 15
   },
   {
@@ -6444,6 +5372,10 @@
     "frequency": 15
   },
   {
+    "word": "MIKE",
+    "frequency": 15
+  },
+  {
     "word": "LAMA",
     "frequency": 15
   },
@@ -6480,6 +5412,10 @@
     "frequency": 15
   },
   {
+    "word": "HARM",
+    "frequency": 15
+  },
+  {
     "word": "NAIK",
     "frequency": 15
   },
@@ -6508,7 +5444,7 @@
     "frequency": 15
   },
   {
-    "word": "COLA",
+    "word": "IHOP",
     "frequency": 15
   },
   {
@@ -6552,11 +5488,23 @@
     "frequency": 15
   },
   {
+    "word": "PIKE",
+    "frequency": 15
+  },
+  {
     "word": "MIRI",
     "frequency": 15
   },
   {
+    "word": "HALL",
+    "frequency": 15
+  },
+  {
     "word": "KUEH",
+    "frequency": 15
+  },
+  {
+    "word": "CLUE",
     "frequency": 15
   },
   {
@@ -6565,6 +5513,10 @@
   },
   {
     "word": "HARP",
+    "frequency": 15
+  },
+  {
+    "word": "ACID",
     "frequency": 15
   },
   {
@@ -6581,6 +5533,10 @@
   },
   {
     "word": "LETS",
+    "frequency": 15
+  },
+  {
+    "word": "LMAO",
     "frequency": 15
   },
   {
@@ -6652,11 +5608,19 @@
     "frequency": 15
   },
   {
+    "word": "HOOK",
+    "frequency": 15
+  },
+  {
     "word": "APOD",
     "frequency": 15
   },
   {
     "word": "DOPA",
+    "frequency": 15
+  },
+  {
+    "word": "COOL",
     "frequency": 15
   },
   {
@@ -6669,10 +5633,6 @@
   },
   {
     "word": "MAID",
-    "frequency": 15
-  },
-  {
-    "word": "HANK",
     "frequency": 15
   },
   {
@@ -6700,11 +5660,19 @@
     "frequency": 15
   },
   {
-    "word": "LUNA",
+    "word": "FUEL",
     "frequency": 15
   },
   {
     "word": "JOES",
+    "frequency": 15
+  },
+  {
+    "word": "DOOM",
+    "frequency": 15
+  },
+  {
+    "word": "MOOD",
     "frequency": 15
   },
   {
@@ -6716,6 +5684,10 @@
     "frequency": 15
   },
   {
+    "word": "MAIL",
+    "frequency": 15
+  },
+  {
     "word": "MAND",
     "frequency": 15
   },
@@ -6724,11 +5696,23 @@
     "frequency": 15
   },
   {
+    "word": "WAND",
+    "frequency": 15
+  },
+  {
+    "word": "GLUE",
+    "frequency": 15
+  },
+  {
     "word": "LUGE",
     "frequency": 15
   },
   {
     "word": "ODIC",
+    "frequency": 15
+  },
+  {
+    "word": "FOOD",
     "frequency": 15
   },
   {
@@ -6756,6 +5740,10 @@
     "frequency": 15
   },
   {
+    "word": "FAIL",
+    "frequency": 15
+  },
+  {
     "word": "FAND",
     "frequency": 15
   },
@@ -6765,6 +5753,10 @@
   },
   {
     "word": "LAVA",
+    "frequency": 15
+  },
+  {
+    "word": "IPAD",
     "frequency": 15
   },
   {
@@ -6781,6 +5773,10 @@
   },
   {
     "word": "ABUT",
+    "frequency": 15
+  },
+  {
+    "word": "FOOL",
     "frequency": 15
   },
   {
@@ -6801,6 +5797,10 @@
   },
   {
     "word": "DANG",
+    "frequency": 15
+  },
+  {
+    "word": "GAND",
     "frequency": 15
   },
   {
@@ -6840,6 +5840,10 @@
     "frequency": 15
   },
   {
+    "word": "LOGO",
+    "frequency": 15
+  },
+  {
     "word": "HULA",
     "frequency": 15
   },
@@ -6857,6 +5861,18 @@
   },
   {
     "word": "BOLA",
+    "frequency": 15
+  },
+  {
+    "word": "POOL",
+    "frequency": 15
+  },
+  {
+    "word": "LOOP",
+    "frequency": 15
+  },
+  {
+    "word": "POLO",
     "frequency": 15
   },
   {
@@ -6892,6 +5908,10 @@
     "frequency": 15
   },
   {
+    "word": "BLUE",
+    "frequency": 15
+  },
+  {
     "word": "LUBE",
     "frequency": 15
   },
@@ -6920,10 +5940,6 @@
     "frequency": 15
   },
   {
-    "word": "MAYA",
-    "frequency": 15
-  },
-  {
     "word": "PTUI",
     "frequency": 15
   },
@@ -6932,7 +5948,19 @@
     "frequency": 15
   },
   {
+    "word": "AWAY",
+    "frequency": 15
+  },
+  {
+    "word": "IPOD",
+    "frequency": 15
+  },
+  {
     "word": "PAWA",
+    "frequency": 15
+  },
+  {
+    "word": "TECH",
     "frequency": 15
   },
   {
@@ -6952,11 +5980,23 @@
     "frequency": 15
   },
   {
+    "word": "HALF",
+    "frequency": 15
+  },
+  {
     "word": "DURO",
     "frequency": 15
   },
   {
     "word": "AMMO",
+    "frequency": 15
+  },
+  {
+    "word": "DEKU",
+    "frequency": 15
+  },
+  {
+    "word": "DUKE",
     "frequency": 15
   },
   {
@@ -6968,11 +6008,19 @@
     "frequency": 15
   },
   {
+    "word": "BAND",
+    "frequency": 15
+  },
+  {
     "word": "MOWA",
     "frequency": 15
   },
   {
     "word": "LIPO",
+    "frequency": 15
+  },
+  {
+    "word": "POND",
     "frequency": 15
   },
   {
@@ -6985,10 +6033,6 @@
   },
   {
     "word": "PACO",
-    "frequency": 15
-  },
-  {
-    "word": "GAGA",
     "frequency": 15
   },
   {
@@ -7017,6 +6061,10 @@
   },
   {
     "word": "MICA",
+    "frequency": 15
+  },
+  {
+    "word": "FOAM",
     "frequency": 15
   },
   {
@@ -7057,6 +6105,14 @@
   },
   {
     "word": "HEFT",
+    "frequency": 14
+  },
+  {
+    "word": "TUBI",
+    "frequency": 14
+  },
+  {
+    "word": "MAYO",
     "frequency": 14
   },
   {
@@ -7120,7 +6176,15 @@
     "frequency": 14
   },
   {
+    "word": "KOOL",
+    "frequency": 14
+  },
+  {
     "word": "BOIL",
+    "frequency": 14
+  },
+  {
+    "word": "BOND",
     "frequency": 14
   },
   {
@@ -7161,6 +6225,10 @@
   },
   {
     "word": "PUNA",
+    "frequency": 14
+  },
+  {
+    "word": "HOLY",
     "frequency": 14
   },
   {
@@ -7248,6 +6316,10 @@
     "frequency": 14
   },
   {
+    "word": "BAIC",
+    "frequency": 14
+  },
+  {
     "word": "LAUD",
     "frequency": 14
   },
@@ -7288,6 +6360,10 @@
     "frequency": 14
   },
   {
+    "word": "HOST",
+    "frequency": 14
+  },
+  {
     "word": "BUNA",
     "frequency": 14
   },
@@ -7297,6 +6373,10 @@
   },
   {
     "word": "POGO",
+    "frequency": 14
+  },
+  {
+    "word": "GANG",
     "frequency": 14
   },
   {
@@ -7317,6 +6397,10 @@
   },
   {
     "word": "ORTS",
+    "frequency": 14
+  },
+  {
+    "word": "EXIT",
     "frequency": 14
   },
   {
@@ -7348,6 +6432,10 @@
     "frequency": 14
   },
   {
+    "word": "BOOM",
+    "frequency": 14
+  },
+  {
     "word": "MATT",
     "frequency": 14
   },
@@ -7364,11 +6452,19 @@
     "frequency": 14
   },
   {
+    "word": "COOK",
+    "frequency": 14
+  },
+  {
     "word": "LUDO",
     "frequency": 14
   },
   {
     "word": "OPUS",
+    "frequency": 14
+  },
+  {
+    "word": "HITS",
     "frequency": 14
   },
   {
@@ -7381,6 +6477,10 @@
   },
   {
     "word": "OAKY",
+    "frequency": 14
+  },
+  {
+    "word": "OKAY",
     "frequency": 14
   },
   {
@@ -7492,6 +6592,10 @@
     "frequency": 14
   },
   {
+    "word": "MESS",
+    "frequency": 14
+  },
+  {
     "word": "NYES",
     "frequency": 14
   },
@@ -7565,6 +6669,14 @@
   },
   {
     "word": "HEMS",
+    "frequency": 14
+  },
+  {
+    "word": "MESH",
+    "frequency": 14
+  },
+  {
+    "word": "MITT",
     "frequency": 14
   },
   {
@@ -7648,11 +6760,19 @@
     "frequency": 14
   },
   {
+    "word": "KONG",
+    "frequency": 14
+  },
+  {
     "word": "ERGS",
     "frequency": 14
   },
   {
     "word": "HAZE",
+    "frequency": 14
+  },
+  {
+    "word": "ZONE",
     "frequency": 14
   },
   {
@@ -7668,6 +6788,10 @@
     "frequency": 14
   },
   {
+    "word": "LOST",
+    "frequency": 14
+  },
+  {
     "word": "DOTH",
     "frequency": 14
   },
@@ -7680,7 +6804,15 @@
     "frequency": 14
   },
   {
+    "word": "HELL",
+    "frequency": 14
+  },
+  {
     "word": "DUCI",
+    "frequency": 14
+  },
+  {
+    "word": "BERN",
     "frequency": 14
   },
   {
@@ -7748,6 +6880,18 @@
     "frequency": 14
   },
   {
+    "word": "JOIN",
+    "frequency": 14
+  },
+  {
+    "word": "CATS",
+    "frequency": 14
+  },
+  {
+    "word": "HORN",
+    "frequency": 14
+  },
+  {
     "word": "KERN",
     "frequency": 14
   },
@@ -7796,7 +6940,15 @@
     "frequency": 14
   },
   {
+    "word": "SWAT",
+    "frequency": 14
+  },
+  {
     "word": "KESH",
+    "frequency": 14
+  },
+  {
+    "word": "SULU",
     "frequency": 14
   },
   {
@@ -7825,6 +6977,14 @@
   },
   {
     "word": "PULI",
+    "frequency": 14
+  },
+  {
+    "word": "COST",
+    "frequency": 14
+  },
+  {
+    "word": "DENY",
     "frequency": 14
   },
   {
@@ -7876,7 +7036,15 @@
     "frequency": 14
   },
   {
+    "word": "GUAM",
+    "frequency": 14
+  },
+  {
     "word": "DERM",
+    "frequency": 14
+  },
+  {
+    "word": "DREW",
     "frequency": 14
   },
   {
@@ -7936,6 +7104,14 @@
     "frequency": 14
   },
   {
+    "word": "LEGS",
+    "frequency": 14
+  },
+  {
+    "word": "MOTH",
+    "frequency": 14
+  },
+  {
     "word": "AXLE",
     "frequency": 14
   },
@@ -7953,6 +7129,10 @@
   },
   {
     "word": "BYTE",
+    "frequency": 14
+  },
+  {
+    "word": "CUBA",
     "frequency": 14
   },
   {
@@ -8008,7 +7188,15 @@
     "frequency": 14
   },
   {
+    "word": "POST",
+    "frequency": 14
+  },
+  {
     "word": "CRIT",
+    "frequency": 14
+  },
+  {
+    "word": "FORT",
     "frequency": 14
   },
   {
@@ -8032,11 +7220,19 @@
     "frequency": 13
   },
   {
+    "word": "HUNT",
+    "frequency": 13
+  },
+  {
     "word": "LASH",
     "frequency": 13
   },
   {
     "word": "QUOD",
+    "frequency": 13
+  },
+  {
+    "word": "FITS",
     "frequency": 13
   },
   {
@@ -8060,6 +7256,10 @@
     "frequency": 13
   },
   {
+    "word": "PORT",
+    "frequency": 13
+  },
+  {
     "word": "GITS",
     "frequency": 13
   },
@@ -8069,6 +7269,10 @@
   },
   {
     "word": "DINS",
+    "frequency": 13
+  },
+  {
+    "word": "PITS",
     "frequency": 13
   },
   {
@@ -8097,6 +7301,10 @@
   },
   {
     "word": "PIUM",
+    "frequency": 13
+  },
+  {
+    "word": "DESK",
     "frequency": 13
   },
   {
@@ -8144,11 +7352,19 @@
     "frequency": 13
   },
   {
+    "word": "CREW",
+    "frequency": 13
+  },
+  {
     "word": "LEKS",
     "frequency": 13
   },
   {
     "word": "NGWE",
+    "frequency": 13
+  },
+  {
+    "word": "CHEF",
     "frequency": 13
   },
   {
@@ -8196,6 +7412,10 @@
     "frequency": 13
   },
   {
+    "word": "DISH",
+    "frequency": 13
+  },
+  {
     "word": "PUKA",
     "frequency": 13
   },
@@ -8204,11 +7424,31 @@
     "frequency": 13
   },
   {
+    "word": "KNIT",
+    "frequency": 13
+  },
+  {
     "word": "BUOY",
     "frequency": 13
   },
   {
+    "word": "GURU",
+    "frequency": 13
+  },
+  {
     "word": "BABU",
+    "frequency": 13
+  },
+  {
+    "word": "FLAT",
+    "frequency": 13
+  },
+  {
+    "word": "FANS",
+    "frequency": 13
+  },
+  {
+    "word": "CASH",
     "frequency": 13
   },
   {
@@ -8236,11 +7476,19 @@
     "frequency": 13
   },
   {
+    "word": "CARS",
+    "frequency": 13
+  },
+  {
     "word": "GANS",
     "frequency": 13
   },
   {
     "word": "JEST",
+    "frequency": 13
+  },
+  {
+    "word": "MASS",
     "frequency": 13
   },
   {
@@ -8268,6 +7516,10 @@
     "frequency": 13
   },
   {
+    "word": "HEMP",
+    "frequency": 13
+  },
+  {
     "word": "KITS",
     "frequency": 13
   },
@@ -8280,11 +7532,23 @@
     "frequency": 13
   },
   {
+    "word": "GREW",
+    "frequency": 13
+  },
+  {
+    "word": "GOKU",
+    "frequency": 13
+  },
+  {
     "word": "QUAG",
     "frequency": 13
   },
   {
     "word": "ARCH",
+    "frequency": 13
+  },
+  {
+    "word": "CORN",
     "frequency": 13
   },
   {
@@ -8313,6 +7577,10 @@
   },
   {
     "word": "QUAY",
+    "frequency": 13
+  },
+  {
+    "word": "BAKU",
     "frequency": 13
   },
   {
@@ -8345,6 +7613,10 @@
   },
   {
     "word": "ARMS",
+    "frequency": 13
+  },
+  {
+    "word": "MARS",
     "frequency": 13
   },
   {
@@ -8400,11 +7672,19 @@
     "frequency": 13
   },
   {
+    "word": "GREY",
+    "frequency": 13
+  },
+  {
     "word": "GYRE",
     "frequency": 13
   },
   {
     "word": "MORN",
+    "frequency": 13
+  },
+  {
+    "word": "NORM",
     "frequency": 13
   },
   {
@@ -8432,6 +7712,10 @@
     "frequency": 13
   },
   {
+    "word": "PREY",
+    "frequency": 13
+  },
+  {
     "word": "PYRE",
     "frequency": 13
   },
@@ -8452,11 +7736,19 @@
     "frequency": 13
   },
   {
+    "word": "SONY",
+    "frequency": 13
+  },
+  {
     "word": "BLAT",
     "frequency": 13
   },
   {
     "word": "PERP",
+    "frequency": 13
+  },
+  {
+    "word": "PREP",
     "frequency": 13
   },
   {
@@ -8484,6 +7776,10 @@
     "frequency": 13
   },
   {
+    "word": "JEEP",
+    "frequency": 13
+  },
+  {
     "word": "ARSY",
     "frequency": 13
   },
@@ -8493,6 +7789,14 @@
   },
   {
     "word": "PARS",
+    "frequency": 13
+  },
+  {
+    "word": "DUST",
+    "frequency": 13
+  },
+  {
+    "word": "ENVY",
     "frequency": 13
   },
   {
@@ -8592,11 +7896,19 @@
     "frequency": 13
   },
   {
+    "word": "MISS",
+    "frequency": 13
+  },
+  {
     "word": "KANS",
     "frequency": 13
   },
   {
     "word": "PINS",
+    "frequency": 13
+  },
+  {
+    "word": "SPIN",
     "frequency": 13
   },
   {
@@ -8624,6 +7936,10 @@
     "frequency": 13
   },
   {
+    "word": "LORD",
+    "frequency": 13
+  },
+  {
     "word": "KYES",
     "frequency": 13
   },
@@ -8637,6 +7953,10 @@
   },
   {
     "word": "CLAN",
+    "frequency": 13
+  },
+  {
+    "word": "GRIN",
     "frequency": 13
   },
   {
@@ -8660,6 +7980,10 @@
     "frequency": 13
   },
   {
+    "word": "FISH",
+    "frequency": 13
+  },
+  {
     "word": "ASKS",
     "frequency": 13
   },
@@ -8680,6 +8004,10 @@
     "frequency": 13
   },
   {
+    "word": "BORN",
+    "frequency": 13
+  },
+  {
     "word": "PORR",
     "frequency": 13
   },
@@ -8697,6 +8025,10 @@
   },
   {
     "word": "BINS",
+    "frequency": 13
+  },
+  {
+    "word": "FLEW",
     "frequency": 13
   },
   {
@@ -8721,6 +8053,10 @@
   },
   {
     "word": "IZAR",
+    "frequency": 13
+  },
+  {
+    "word": "CARD",
     "frequency": 13
   },
   {
@@ -8780,6 +8116,10 @@
     "frequency": 13
   },
   {
+    "word": "CITY",
+    "frequency": 13
+  },
+  {
     "word": "GULY",
     "frequency": 13
   },
@@ -8832,7 +8172,7 @@
     "frequency": 13
   },
   {
-    "word": "KUDU",
+    "word": "CORD",
     "frequency": 13
   },
   {
@@ -8868,6 +8208,10 @@
     "frequency": 13
   },
   {
+    "word": "KISS",
+    "frequency": 13
+  },
+  {
     "word": "BLEW",
     "frequency": 13
   },
@@ -8884,6 +8228,10 @@
     "frequency": 13
   },
   {
+    "word": "DISC",
+    "frequency": 13
+  },
+  {
     "word": "EFTS",
     "frequency": 13
   },
@@ -8892,15 +8240,15 @@
     "frequency": 13
   },
   {
-    "word": "JADE",
-    "frequency": 13
-  },
-  {
     "word": "HYAL",
     "frequency": 13
   },
   {
     "word": "LALL",
+    "frequency": 13
+  },
+  {
+    "word": "LYON",
     "frequency": 13
   },
   {
@@ -8920,7 +8268,15 @@
     "frequency": 13
   },
   {
+    "word": "GETS",
+    "frequency": 13
+  },
+  {
     "word": "KRIS",
+    "frequency": 13
+  },
+  {
+    "word": "PETS",
     "frequency": 13
   },
   {
@@ -8944,6 +8300,10 @@
     "frequency": 13
   },
   {
+    "word": "EASE",
+    "frequency": 13
+  },
+  {
     "word": "JOTA",
     "frequency": 13
   },
@@ -8957,10 +8317,6 @@
   },
   {
     "word": "BALS",
-    "frequency": 13
-  },
-  {
-    "word": "FUGU",
     "frequency": 13
   },
   {
@@ -9040,6 +8396,10 @@
     "frequency": 12
   },
   {
+    "word": "DARK",
+    "frequency": 12
+  },
+  {
     "word": "BLIN",
     "frequency": 12
   },
@@ -9076,6 +8436,10 @@
     "frequency": 12
   },
   {
+    "word": "FARM",
+    "frequency": 12
+  },
+  {
     "word": "DINK",
     "frequency": 12
   },
@@ -9085,6 +8449,10 @@
   },
   {
     "word": "CORM",
+    "frequency": 12
+  },
+  {
+    "word": "MALL",
     "frequency": 12
   },
   {
@@ -9104,7 +8472,19 @@
     "frequency": 12
   },
   {
+    "word": "ARMY",
+    "frequency": 12
+  },
+  {
+    "word": "TAFT",
+    "frequency": 12
+  },
+  {
     "word": "DORK",
+    "frequency": 12
+  },
+  {
+    "word": "LINK",
     "frequency": 12
   },
   {
@@ -9116,11 +8496,23 @@
     "frequency": 12
   },
   {
+    "word": "FALL",
+    "frequency": 12
+  },
+  {
     "word": "GASP",
     "frequency": 12
   },
   {
     "word": "PYAS",
+    "frequency": 12
+  },
+  {
+    "word": "EXEC",
+    "frequency": 12
+  },
+  {
+    "word": "DISK",
     "frequency": 12
   },
   {
@@ -9152,11 +8544,23 @@
     "frequency": 12
   },
   {
+    "word": "MELT",
+    "frequency": 12
+  },
+  {
     "word": "PALL",
     "frequency": 12
   },
   {
     "word": "PONY",
+    "frequency": 12
+  },
+  {
+    "word": "FORM",
+    "frequency": 12
+  },
+  {
+    "word": "NEWS",
     "frequency": 12
   },
   {
@@ -9168,11 +8572,19 @@
     "frequency": 12
   },
   {
+    "word": "WORF",
+    "frequency": 12
+  },
+  {
     "word": "CASK",
     "frequency": 12
   },
   {
     "word": "MOTT",
+    "frequency": 12
+  },
+  {
+    "word": "FELT",
     "frequency": 12
   },
   {
@@ -9204,6 +8616,10 @@
     "frequency": 12
   },
   {
+    "word": "HACK",
+    "frequency": 12
+  },
+  {
     "word": "NEGS",
     "frequency": 12
   },
@@ -9228,7 +8644,15 @@
     "frequency": 12
   },
   {
+    "word": "MASK",
+    "frequency": 12
+  },
+  {
     "word": "PROF",
+    "frequency": 12
+  },
+  {
+    "word": "HUNG",
     "frequency": 12
   },
   {
@@ -9245,6 +8669,10 @@
   },
   {
     "word": "POTT",
+    "frequency": 12
+  },
+  {
+    "word": "BALL",
     "frequency": 12
   },
   {
@@ -9276,7 +8704,19 @@
     "frequency": 12
   },
   {
+    "word": "CALM",
+    "frequency": 12
+  },
+  {
+    "word": "HAWK",
+    "frequency": 12
+  },
+  {
     "word": "FEHS",
+    "frequency": 12
+  },
+  {
+    "word": "MARK",
     "frequency": 12
   },
   {
@@ -9292,6 +8732,10 @@
     "frequency": 12
   },
   {
+    "word": "DEBT",
+    "frequency": 12
+  },
+  {
     "word": "CALF",
     "frequency": 12
   },
@@ -9301,6 +8745,10 @@
   },
   {
     "word": "ELLS",
+    "frequency": 12
+  },
+  {
+    "word": "BELT",
     "frequency": 12
   },
   {
@@ -9332,7 +8780,15 @@
     "frequency": 12
   },
   {
+    "word": "BANK",
+    "frequency": 12
+  },
+  {
     "word": "PONK",
+    "frequency": 12
+  },
+  {
+    "word": "LOTS",
     "frequency": 12
   },
   {
@@ -9352,7 +8808,11 @@
     "frequency": 12
   },
   {
-    "word": "JAKE",
+    "word": "PARK",
+    "frequency": 12
+  },
+  {
+    "word": "BORG",
     "frequency": 12
   },
   {
@@ -9396,7 +8856,19 @@
     "frequency": 12
   },
   {
+    "word": "PALM",
+    "frequency": 12
+  },
+  {
     "word": "GINK",
+    "frequency": 12
+  },
+  {
+    "word": "FORK",
+    "frequency": 12
+  },
+  {
+    "word": "PINK",
     "frequency": 12
   },
   {
@@ -9408,7 +8880,15 @@
     "frequency": 12
   },
   {
+    "word": "DIRT",
+    "frequency": 12
+  },
+  {
     "word": "KVAS",
+    "frequency": 12
+  },
+  {
+    "word": "YORK",
     "frequency": 12
   },
   {
@@ -9424,6 +8904,10 @@
     "frequency": 12
   },
   {
+    "word": "PORK",
+    "frequency": 12
+  },
+  {
     "word": "GYAL",
     "frequency": 12
   },
@@ -9436,6 +8920,10 @@
     "frequency": 12
   },
   {
+    "word": "JOKE",
+    "frequency": 12
+  },
+  {
     "word": "JIBE",
     "frequency": 12
   },
@@ -9444,15 +8932,15 @@
     "frequency": 12
   },
   {
+    "word": "FUND",
+    "frequency": 12
+  },
+  {
     "word": "BALM",
     "frequency": 12
   },
   {
     "word": "CELS",
-    "frequency": 12
-  },
-  {
-    "word": "JIVE",
     "frequency": 12
   },
   {
@@ -9493,6 +8981,10 @@
   },
   {
     "word": "DEWS",
+    "frequency": 12
+  },
+  {
+    "word": "LUNG",
     "frequency": 12
   },
   {
@@ -9568,6 +9060,10 @@
     "frequency": 12
   },
   {
+    "word": "NUTS",
+    "frequency": 12
+  },
+  {
     "word": "JUDE",
     "frequency": 12
   },
@@ -9616,6 +9112,14 @@
     "frequency": 12
   },
   {
+    "word": "TROY",
+    "frequency": 12
+  },
+  {
+    "word": "KEPT",
+    "frequency": 12
+  },
+  {
     "word": "DOJO",
     "frequency": 12
   },
@@ -9628,6 +9132,10 @@
     "frequency": 12
   },
   {
+    "word": "JAIL",
+    "frequency": 12
+  },
+  {
     "word": "NIDS",
     "frequency": 12
   },
@@ -9637,6 +9145,10 @@
   },
   {
     "word": "HUTS",
+    "frequency": 12
+  },
+  {
+    "word": "LOSS",
     "frequency": 12
   },
   {
@@ -9676,6 +9188,10 @@
     "frequency": 11
   },
   {
+    "word": "HURT",
+    "frequency": 11
+  },
+  {
     "word": "INIA",
     "frequency": 11
   },
@@ -9712,11 +9228,19 @@
     "frequency": 11
   },
   {
+    "word": "OREO",
+    "frequency": 11
+  },
+  {
     "word": "FEMS",
     "frequency": 11
   },
   {
     "word": "AWNS",
+    "frequency": 11
+  },
+  {
+    "word": "CELL",
     "frequency": 11
   },
   {
@@ -9744,6 +9268,14 @@
     "frequency": 11
   },
   {
+    "word": "AMEX",
+    "frequency": 11
+  },
+  {
+    "word": "EXAM",
+    "frequency": 11
+  },
+  {
     "word": "JAAP",
     "frequency": 11
   },
@@ -9765,6 +9297,10 @@
   },
   {
     "word": "NOCS",
+    "frequency": 11
+  },
+  {
+    "word": "MAZE",
     "frequency": 11
   },
   {
@@ -9812,6 +9348,10 @@
     "frequency": 11
   },
   {
+    "word": "EGGS",
+    "frequency": 11
+  },
+  {
     "word": "DICT",
     "frequency": 11
   },
@@ -9832,11 +9372,23 @@
     "frequency": 11
   },
   {
+    "word": "NECK",
+    "frequency": 11
+  },
+  {
     "word": "NOMS",
     "frequency": 11
   },
   {
+    "word": "FELL",
+    "frequency": 11
+  },
+  {
     "word": "PEGS",
+    "frequency": 11
+  },
+  {
+    "word": "GAZE",
     "frequency": 11
   },
   {
@@ -9849,6 +9401,10 @@
   },
   {
     "word": "COSS",
+    "frequency": 11
+  },
+  {
+    "word": "OWNS",
     "frequency": 11
   },
   {
@@ -9912,6 +9468,10 @@
     "frequency": 11
   },
   {
+    "word": "MOSS",
+    "frequency": 11
+  },
+  {
     "word": "MOJO",
     "frequency": 11
   },
@@ -9933,6 +9493,10 @@
   },
   {
     "word": "NABS",
+    "frequency": 11
+  },
+  {
+    "word": "PLOT",
     "frequency": 11
   },
   {
@@ -9976,6 +9540,10 @@
     "frequency": 11
   },
   {
+    "word": "ODDS",
+    "frequency": 11
+  },
+  {
     "word": "OHMS",
     "frequency": 11
   },
@@ -9993,6 +9561,10 @@
   },
   {
     "word": "HOWS",
+    "frequency": 11
+  },
+  {
+    "word": "LIFT",
     "frequency": 11
   },
   {
@@ -10045,6 +9617,10 @@
   },
   {
     "word": "FIXE",
+    "frequency": 11
+  },
+  {
+    "word": "BELL",
     "frequency": 11
   },
   {
@@ -10104,7 +9680,15 @@
     "frequency": 11
   },
   {
+    "word": "HOLD",
+    "frequency": 11
+  },
+  {
     "word": "NOBS",
+    "frequency": 11
+  },
+  {
+    "word": "SUEZ",
     "frequency": 11
   },
   {
@@ -10144,6 +9728,10 @@
     "frequency": 11
   },
   {
+    "word": "PROS",
+    "frequency": 11
+  },
+  {
     "word": "GIRN",
     "frequency": 11
   },
@@ -10176,6 +9764,10 @@
     "frequency": 11
   },
   {
+    "word": "DAMN",
+    "frequency": 11
+  },
+  {
     "word": "LIDS",
     "frequency": 11
   },
@@ -10185,6 +9777,10 @@
   },
   {
     "word": "CADS",
+    "frequency": 11
+  },
+  {
+    "word": "DAWN",
     "frequency": 11
   },
   {
@@ -10201,6 +9797,10 @@
   },
   {
     "word": "NURR",
+    "frequency": 11
+  },
+  {
+    "word": "BOSS",
     "frequency": 11
   },
   {
@@ -10228,11 +9828,19 @@
     "frequency": 11
   },
   {
+    "word": "FIJI",
+    "frequency": 11
+  },
+  {
     "word": "HIPS",
     "frequency": 11
   },
   {
     "word": "LACS",
+    "frequency": 11
+  },
+  {
+    "word": "LAWN",
     "frequency": 11
   },
   {
@@ -10280,6 +9888,10 @@
     "frequency": 11
   },
   {
+    "word": "HILL",
+    "frequency": 11
+  },
+  {
     "word": "IBEX",
     "frequency": 11
   },
@@ -10304,6 +9916,10 @@
     "frequency": 11
   },
   {
+    "word": "TEXT",
+    "frequency": 11
+  },
+  {
     "word": "JOOK",
     "frequency": 11
   },
@@ -10316,11 +9932,19 @@
     "frequency": 11
   },
   {
+    "word": "SLAM",
+    "frequency": 11
+  },
+  {
     "word": "CUTS",
     "frequency": 11
   },
   {
     "word": "AWLS",
+    "frequency": 11
+  },
+  {
+    "word": "LAWS",
     "frequency": 11
   },
   {
@@ -10344,11 +9968,19 @@
     "frequency": 11
   },
   {
+    "word": "DRAW",
+    "frequency": 11
+  },
+  {
     "word": "GADS",
     "frequency": 11
   },
   {
     "word": "BAFT",
+    "frequency": 11
+  },
+  {
+    "word": "DAYS",
     "frequency": 11
   },
   {
@@ -10392,6 +10024,10 @@
     "frequency": 11
   },
   {
+    "word": "DECK",
+    "frequency": 11
+  },
+  {
     "word": "DOMS",
     "frequency": 11
   },
@@ -10420,6 +10056,14 @@
     "frequency": 11
   },
   {
+    "word": "DRAG",
+    "frequency": 11
+  },
+  {
+    "word": "GRAD",
+    "frequency": 11
+  },
+  {
     "word": "LOCH",
     "frequency": 11
   },
@@ -10432,7 +10076,19 @@
     "frequency": 11
   },
   {
+    "word": "JOJO",
+    "frequency": 11
+  },
+  {
+    "word": "GIFT",
+    "frequency": 11
+  },
+  {
     "word": "MOLS",
+    "frequency": 11
+  },
+  {
+    "word": "TGIF",
     "frequency": 11
   },
   {
@@ -10465,6 +10121,14 @@
   },
   {
     "word": "LYRA",
+    "frequency": 11
+  },
+  {
+    "word": "DOGS",
+    "frequency": 11
+  },
+  {
+    "word": "GODS",
     "frequency": 11
   },
   {
@@ -10536,6 +10200,14 @@
     "frequency": 11
   },
   {
+    "word": "DOLL",
+    "frequency": 11
+  },
+  {
+    "word": "LABS",
+    "frequency": 11
+  },
+  {
     "word": "LOPS",
     "frequency": 11
   },
@@ -10568,6 +10240,10 @@
     "frequency": 11
   },
   {
+    "word": "HDMI",
+    "frequency": 11
+  },
+  {
     "word": "BRAD",
     "frequency": 11
   },
@@ -10589,6 +10265,10 @@
   },
   {
     "word": "MAWN",
+    "frequency": 11
+  },
+  {
+    "word": "DROP",
     "frequency": 11
   },
   {
@@ -10724,7 +10404,15 @@
     "frequency": 11
   },
   {
+    "word": "LIDL",
+    "frequency": 11
+  },
+  {
     "word": "MAWS",
+    "frequency": 11
+  },
+  {
+    "word": "LIPS",
     "frequency": 11
   },
   {
@@ -10741,6 +10429,10 @@
   },
   {
     "word": "GIRD",
+    "frequency": 11
+  },
+  {
+    "word": "GRID",
     "frequency": 11
   },
   {
@@ -10769,6 +10461,10 @@
   },
   {
     "word": "LOBS",
+    "frequency": 11
+  },
+  {
+    "word": "DRIP",
     "frequency": 11
   },
   {
@@ -10805,6 +10501,10 @@
   },
   {
     "word": "MOWN",
+    "frequency": 11
+  },
+  {
+    "word": "GIRL",
     "frequency": 11
   },
   {
@@ -10848,6 +10548,10 @@
     "frequency": 11
   },
   {
+    "word": "SWAG",
+    "frequency": 11
+  },
+  {
     "word": "CRAP",
     "frequency": 11
   },
@@ -10872,7 +10576,15 @@
     "frequency": 11
   },
   {
+    "word": "MAPS",
+    "frequency": 11
+  },
+  {
     "word": "PAMS",
+    "frequency": 11
+  },
+  {
+    "word": "SPAM",
     "frequency": 11
   },
   {
@@ -10972,6 +10684,10 @@
     "frequency": 10
   },
   {
+    "word": "COLD",
+    "frequency": 10
+  },
+  {
     "word": "COPS",
     "frequency": 10
   },
@@ -10985,6 +10701,10 @@
   },
   {
     "word": "KILN",
+    "frequency": 10
+  },
+  {
+    "word": "BIRD",
     "frequency": 10
   },
   {
@@ -11012,6 +10732,22 @@
     "frequency": 10
   },
   {
+    "word": "GLAD",
+    "frequency": 10
+  },
+  {
+    "word": "GAPS",
+    "frequency": 10
+  },
+  {
+    "word": "WRAP",
+    "frequency": 10
+  },
+  {
+    "word": "GAZA",
+    "frequency": 10
+  },
+  {
     "word": "LADY",
     "frequency": 10
   },
@@ -11036,10 +10772,6 @@
     "frequency": 10
   },
   {
-    "word": "APPS",
-    "frequency": 10
-  },
-  {
     "word": "FRAY",
     "frequency": 10
   },
@@ -11053,6 +10785,10 @@
   },
   {
     "word": "FRAP",
+    "frequency": 10
+  },
+  {
+    "word": "KIDS",
     "frequency": 10
   },
   {
@@ -11096,11 +10832,19 @@
     "frequency": 10
   },
   {
+    "word": "CROP",
+    "frequency": 10
+  },
+  {
     "word": "BAMS",
     "frequency": 10
   },
   {
     "word": "CUSS",
+    "frequency": 10
+  },
+  {
+    "word": "MOLD",
     "frequency": 10
   },
   {
@@ -11132,6 +10876,10 @@
     "frequency": 10
   },
   {
+    "word": "GRAY",
+    "frequency": 10
+  },
+  {
     "word": "POWS",
     "frequency": 10
   },
@@ -11153,6 +10901,10 @@
   },
   {
     "word": "PRAY",
+    "frequency": 10
+  },
+  {
+    "word": "DUTY",
     "frequency": 10
   },
   {
@@ -11204,7 +10956,15 @@
     "frequency": 10
   },
   {
+    "word": "GROW",
+    "frequency": 10
+  },
+  {
     "word": "GLUT",
+    "frequency": 10
+  },
+  {
+    "word": "NAVY",
     "frequency": 10
   },
   {
@@ -11217,6 +10977,10 @@
   },
   {
     "word": "GNUS",
+    "frequency": 10
+  },
+  {
+    "word": "GUNS",
     "frequency": 10
   },
   {
@@ -11244,6 +11008,10 @@
     "frequency": 10
   },
   {
+    "word": "GOLD",
+    "frequency": 10
+  },
+  {
     "word": "KEMP",
     "frequency": 10
   },
@@ -11253,6 +11021,10 @@
   },
   {
     "word": "PROW",
+    "frequency": 10
+  },
+  {
+    "word": "CHIP",
     "frequency": 10
   },
   {
@@ -11320,6 +11092,10 @@
     "frequency": 10
   },
   {
+    "word": "MILD",
+    "frequency": 10
+  },
+  {
     "word": "FUSS",
     "frequency": 10
   },
@@ -11337,6 +11113,10 @@
   },
   {
     "word": "KNAP",
+    "frequency": 10
+  },
+  {
+    "word": "FIRM",
     "frequency": 10
   },
   {
@@ -11396,6 +11176,10 @@
     "frequency": 10
   },
   {
+    "word": "POLL",
+    "frequency": 10
+  },
+  {
     "word": "BOWS",
     "frequency": 10
   },
@@ -11408,7 +11192,15 @@
     "frequency": 10
   },
   {
+    "word": "GRAB",
+    "frequency": 10
+  },
+  {
     "word": "PROG",
+    "frequency": 10
+  },
+  {
+    "word": "MILL",
     "frequency": 10
   },
   {
@@ -11433,6 +11225,10 @@
   },
   {
     "word": "CLAM",
+    "frequency": 10
+  },
+  {
+    "word": "GRIM",
     "frequency": 10
   },
   {
@@ -11476,11 +11272,23 @@
     "frequency": 10
   },
   {
+    "word": "SURF",
+    "frequency": 10
+  },
+  {
     "word": "PRIM",
     "frequency": 10
   },
   {
     "word": "GILD",
+    "frequency": 10
+  },
+  {
+    "word": "NICK",
+    "frequency": 10
+  },
+  {
+    "word": "FILL",
     "frequency": 10
   },
   {
@@ -11560,6 +11368,18 @@
     "frequency": 10
   },
   {
+    "word": "PUSH",
+    "frequency": 10
+  },
+  {
+    "word": "BOYS",
+    "frequency": 10
+  },
+  {
+    "word": "BOLD",
+    "frequency": 10
+  },
+  {
     "word": "BOPS",
     "frequency": 10
   },
@@ -11569,6 +11389,10 @@
   },
   {
     "word": "GILL",
+    "frequency": 10
+  },
+  {
+    "word": "ROCK",
     "frequency": 10
   },
   {
@@ -11628,7 +11452,15 @@
     "frequency": 10
   },
   {
+    "word": "PILL",
+    "frequency": 10
+  },
+  {
     "word": "ACYL",
+    "frequency": 10
+  },
+  {
+    "word": "CLAY",
     "frequency": 10
   },
   {
@@ -11645,6 +11477,14 @@
   },
   {
     "word": "CLAP",
+    "frequency": 10
+  },
+  {
+    "word": "GRIP",
+    "frequency": 10
+  },
+  {
+    "word": "HULL",
     "frequency": 10
   },
   {
@@ -11680,11 +11520,19 @@
     "frequency": 10
   },
   {
+    "word": "BURN",
+    "frequency": 10
+  },
+  {
     "word": "FLAW",
     "frequency": 10
   },
   {
     "word": "PRUH",
+    "frequency": 10
+  },
+  {
+    "word": "DAMP",
     "frequency": 10
   },
   {
@@ -11744,11 +11592,27 @@
     "frequency": 10
   },
   {
+    "word": "LAMP",
+    "frequency": 10
+  },
+  {
+    "word": "SPOK",
+    "frequency": 10
+  },
+  {
     "word": "PAWL",
     "frequency": 10
   },
   {
+    "word": "BUSH",
+    "frequency": 10
+  },
+  {
     "word": "VAVS",
+    "frequency": 10
+  },
+  {
+    "word": "FLAG",
     "frequency": 10
   },
   {
@@ -11777,6 +11641,14 @@
   },
   {
     "word": "CLOG",
+    "frequency": 10
+  },
+  {
+    "word": "BILL",
+    "frequency": 10
+  },
+  {
+    "word": "KNOB",
     "frequency": 10
   },
   {
@@ -11816,11 +11688,19 @@
     "frequency": 10
   },
   {
+    "word": "FLOW",
+    "frequency": 10
+  },
+  {
     "word": "FOWL",
     "frequency": 10
   },
   {
     "word": "DOWY",
+    "frequency": 10
+  },
+  {
+    "word": "ROBB",
     "frequency": 10
   },
   {
@@ -11837,6 +11717,10 @@
   },
   {
     "word": "KILD",
+    "frequency": 10
+  },
+  {
+    "word": "CLIF",
     "frequency": 10
   },
   {
@@ -11860,6 +11744,10 @@
     "frequency": 10
   },
   {
+    "word": "GLOW",
+    "frequency": 10
+  },
+  {
     "word": "MOYL",
     "frequency": 10
   },
@@ -11873,6 +11761,10 @@
   },
   {
     "word": "KOBS",
+    "frequency": 10
+  },
+  {
+    "word": "LAMB",
     "frequency": 10
   },
   {
@@ -11892,7 +11784,19 @@
     "frequency": 10
   },
   {
+    "word": "PLOW",
+    "frequency": 10
+  },
+  {
+    "word": "KILL",
+    "frequency": 10
+  },
+  {
     "word": "FLOG",
+    "frequency": 10
+  },
+  {
+    "word": "GOLF",
     "frequency": 10
   },
   {
@@ -11908,6 +11812,10 @@
     "frequency": 10
   },
   {
+    "word": "LACK",
+    "frequency": 10
+  },
+  {
     "word": "MUDS",
     "frequency": 10
   },
@@ -11916,7 +11824,15 @@
     "frequency": 10
   },
   {
+    "word": "CLIP",
+    "frequency": 10
+  },
+  {
     "word": "FLOP",
+    "frequency": 10
+  },
+  {
+    "word": "BDAY",
     "frequency": 10
   },
   {
@@ -11925,6 +11841,10 @@
   },
   {
     "word": "DOPY",
+    "frequency": 10
+  },
+  {
+    "word": "FILM",
     "frequency": 10
   },
   {
@@ -11984,6 +11904,10 @@
     "frequency": 10
   },
   {
+    "word": "DRUM",
+    "frequency": 10
+  },
+  {
     "word": "PLOP",
     "frequency": 10
   },
@@ -12016,6 +11940,14 @@
     "frequency": 10
   },
   {
+    "word": "DOCK",
+    "frequency": 10
+  },
+  {
+    "word": "CAMP",
+    "frequency": 10
+  },
+  {
     "word": "DUPS",
     "frequency": 10
   },
@@ -12032,6 +11964,18 @@
     "frequency": 10
   },
   {
+    "word": "BLOW",
+    "frequency": 10
+  },
+  {
+    "word": "BOWL",
+    "frequency": 10
+  },
+  {
+    "word": "FLIP",
+    "frequency": 10
+  },
+  {
     "word": "GULS",
     "frequency": 10
   },
@@ -12044,6 +11988,18 @@
     "frequency": 10
   },
   {
+    "word": "LOCK",
+    "frequency": 10
+  },
+  {
+    "word": "DULL",
+    "frequency": 10
+  },
+  {
+    "word": "PLUS",
+    "frequency": 10
+  },
+  {
     "word": "PULS",
     "frequency": 10
   },
@@ -12053,6 +12009,10 @@
   },
   {
     "word": "DOBY",
+    "frequency": 10
+  },
+  {
+    "word": "DRUG",
     "frequency": 10
   },
   {
@@ -12100,6 +12060,10 @@
     "frequency": 10
   },
   {
+    "word": "LIMB",
+    "frequency": 10
+  },
+  {
     "word": "GAFF",
     "frequency": 10
   },
@@ -12121,6 +12085,14 @@
   },
   {
     "word": "GAMY",
+    "frequency": 10
+  },
+  {
+    "word": "LICK",
+    "frequency": 10
+  },
+  {
+    "word": "FOLK",
     "frequency": 10
   },
   {
@@ -12169,6 +12141,14 @@
   },
   {
     "word": "BLIP",
+    "frequency": 10
+  },
+  {
+    "word": "COPY",
+    "frequency": 10
+  },
+  {
+    "word": "MILK",
     "frequency": 10
   },
   {
@@ -12240,6 +12220,10 @@
     "frequency": 10
   },
   {
+    "word": "COCK",
+    "frequency": 10
+  },
+  {
     "word": "MIFF",
     "frequency": 10
   },
@@ -12281,6 +12265,10 @@
   },
   {
     "word": "HULK",
+    "frequency": 10
+  },
+  {
+    "word": "PACK",
     "frequency": 10
   },
   {
@@ -12380,6 +12368,10 @@
     "frequency": 9
   },
   {
+    "word": "GUYS",
+    "frequency": 9
+  },
+  {
     "word": "ALAE",
     "frequency": 9
   },
@@ -12409,6 +12401,10 @@
   },
   {
     "word": "PUYS",
+    "frequency": 9
+  },
+  {
+    "word": "FURY",
     "frequency": 9
   },
   {
@@ -12456,6 +12452,14 @@
     "frequency": 9
   },
   {
+    "word": "PULL",
+    "frequency": 9
+  },
+  {
+    "word": "BABY",
+    "frequency": 9
+  },
+  {
     "word": "BIFF",
     "frequency": 9
   },
@@ -12484,11 +12488,19 @@
     "frequency": 9
   },
   {
+    "word": "BOMB",
+    "frequency": 9
+  },
+  {
     "word": "ICKY",
     "frequency": 9
   },
   {
     "word": "KACK",
+    "frequency": 9
+  },
+  {
+    "word": "PICK",
     "frequency": 9
   },
   {
@@ -12508,6 +12520,10 @@
     "frequency": 9
   },
   {
+    "word": "BUSY",
+    "frequency": 9
+  },
+  {
     "word": "BUYS",
     "frequency": 9
   },
@@ -12524,6 +12540,10 @@
     "frequency": 9
   },
   {
+    "word": "PUNK",
+    "frequency": 9
+  },
+  {
     "word": "KIFF",
     "frequency": 9
   },
@@ -12537,6 +12557,10 @@
   },
   {
     "word": "BURG",
+    "frequency": 9
+  },
+  {
+    "word": "BYOB",
     "frequency": 9
   },
   {
@@ -12600,7 +12624,15 @@
     "frequency": 9
   },
   {
+    "word": "DUMP",
+    "frequency": 9
+  },
+  {
     "word": "BURB",
+    "frequency": 9
+  },
+  {
+    "word": "KICK",
     "frequency": 9
   },
   {
@@ -12616,7 +12648,19 @@
     "frequency": 9
   },
   {
+    "word": "LUMP",
+    "frequency": 9
+  },
+  {
     "word": "PLUM",
+    "frequency": 9
+  },
+  {
+    "word": "GULF",
+    "frequency": 9
+  },
+  {
+    "word": "CLUB",
     "frequency": 9
   },
   {
@@ -12644,6 +12688,18 @@
     "frequency": 9
   },
   {
+    "word": "PLUG",
+    "frequency": 9
+  },
+  {
+    "word": "DUMB",
+    "frequency": 9
+  },
+  {
+    "word": "KYIV",
+    "frequency": 9
+  },
+  {
     "word": "PREZ",
     "frequency": 9
   },
@@ -12660,11 +12716,19 @@
     "frequency": 9
   },
   {
+    "word": "DUCK",
+    "frequency": 9
+  },
+  {
     "word": "CUMM",
     "frequency": 9
   },
   {
     "word": "DITZ",
+    "frequency": 9
+  },
+  {
+    "word": "LUCK",
     "frequency": 9
   },
   {
@@ -12681,6 +12745,10 @@
   },
   {
     "word": "MUMM",
+    "frequency": 9
+  },
+  {
+    "word": "QUIZ",
     "frequency": 9
   },
   {
@@ -12728,7 +12796,19 @@
     "frequency": 9
   },
   {
+    "word": "GUMP",
+    "frequency": 9
+  },
+  {
+    "word": "FLEX",
+    "frequency": 9
+  },
+  {
     "word": "LANX",
+    "frequency": 9
+  },
+  {
+    "word": "PUMP",
     "frequency": 9
   },
   {
@@ -12764,6 +12844,10 @@
     "frequency": 9
   },
   {
+    "word": "OHIO",
+    "frequency": 8
+  },
+  {
     "word": "JOTS",
     "frequency": 8
   },
@@ -12777,6 +12861,10 @@
   },
   {
     "word": "CZAR",
+    "frequency": 8
+  },
+  {
+    "word": "MARX",
     "frequency": 8
   },
   {
@@ -12845,6 +12933,10 @@
   },
   {
     "word": "JOSH",
+    "frequency": 8
+  },
+  {
+    "word": "IOWA",
     "frequency": 8
   },
   {
@@ -12952,6 +13044,10 @@
     "frequency": 7
   },
   {
+    "word": "JOBS",
+    "frequency": 7
+  },
+  {
     "word": "JILL",
     "frequency": 7
   },
@@ -12961,6 +13057,10 @@
   },
   {
     "word": "JIBS",
+    "frequency": 7
+  },
+  {
+    "word": "MYTH",
     "frequency": 7
   },
   {
@@ -12980,6 +13080,10 @@
     "frequency": 7
   },
   {
+    "word": "EURO",
+    "frequency": 7
+  },
+  {
     "word": "OHIA",
     "frequency": 7
   },
@@ -12993,6 +13097,10 @@
   },
   {
     "word": "JAMB",
+    "frequency": 6
+  },
+  {
+    "word": "JACK",
     "frequency": 6
   },
   {
@@ -13016,7 +13124,19 @@
     "frequency": 6
   },
   {
+    "word": "HTTP",
+    "frequency": 6
+  },
+  {
     "word": "ILIA",
+    "frequency": 6
+  },
+  {
+    "word": "ACAI",
+    "frequency": 6
+  },
+  {
+    "word": "JURY",
     "frequency": 6
   },
   {
@@ -13033,6 +13153,10 @@
   },
   {
     "word": "CIAO",
+    "frequency": 6
+  },
+  {
+    "word": "JUNK",
     "frequency": 6
   },
   {
@@ -13053,10 +13177,6 @@
   },
   {
     "word": "PHIZ",
-    "frequency": 6
-  },
-  {
-    "word": "BEAU",
     "frequency": 6
   },
   {
@@ -13104,6 +13224,14 @@
     "frequency": 6
   },
   {
+    "word": "JUMP",
+    "frequency": 6
+  },
+  {
+    "word": "AUDI",
+    "frequency": 5
+  },
+  {
     "word": "DOXX",
     "frequency": 5
   },
@@ -13124,7 +13252,19 @@
     "frequency": 5
   },
   {
+    "word": "HTML",
+    "frequency": 5
+  },
+  {
     "word": "POXY",
+    "frequency": 5
+  },
+  {
+    "word": "SLYT",
+    "frequency": 5
+  },
+  {
+    "word": "IRAQ",
     "frequency": 5
   },
   {
@@ -13137,6 +13277,10 @@
   },
   {
     "word": "BOXY",
+    "frequency": 5
+  },
+  {
+    "word": "MAUI",
     "frequency": 5
   },
   {
@@ -13172,6 +13316,10 @@
     "frequency": 5
   },
   {
+    "word": "XBOX",
+    "frequency": 5
+  },
+  {
     "word": "JINX",
     "frequency": 5
   },
@@ -13181,6 +13329,10 @@
   },
   {
     "word": "QUAI",
+    "frequency": 5
+  },
+  {
+    "word": "SYNC",
     "frequency": 5
   },
   {
@@ -13205,6 +13357,10 @@
   },
   {
     "word": "MUZZ",
+    "frequency": 4
+  },
+  {
+    "word": "RSVP",
     "frequency": 4
   },
   {
@@ -13248,6 +13404,10 @@
     "frequency": 4
   },
   {
+    "word": "GRYF",
+    "frequency": 4
+  },
+  {
     "word": "KBPS",
     "frequency": 3
   },
@@ -13269,6 +13429,10 @@
   },
   {
     "word": "EAUX",
+    "frequency": 2
+  },
+  {
+    "word": "JAZZ",
     "frequency": 2
   },
   {

@@ -9,6 +9,7 @@ import BulkImport from '@/components/admin/BulkImport';
 import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
+import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import authService from '@/services/auth.service';
 
 export default function AdminDashboard() {
@@ -17,6 +18,9 @@ export default function AdminDashboard() {
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
+  const [submissionCounts, setSubmissionCounts] = useState(null);
+  // eslint-disable-next-line no-unused-vars
+  const [importedSubmission, setImportedSubmission] = useState(null);
 
   // Game selector modal state
   const [showGameSelector, setShowGameSelector] = useState(false);
@@ -117,7 +121,8 @@ export default function AdminDashboard() {
   const handleSaveReelPuzzle = async (puzzleData) => {
     setReelLoading(true);
     try {
-      const isEdit = !!editingPuzzle;
+      // Check for existing puzzle ID (not just editingPuzzle, which may be set for imports without an ID)
+      const isEdit = !!editingPuzzle?.id;
       const url = '/api/admin/reel-connections/puzzles';
       const method = isEdit ? 'PUT' : 'POST';
       const body = isEdit ? { ...puzzleData, id: editingPuzzle.id } : puzzleData;
@@ -293,6 +298,25 @@ export default function AdminDashboard() {
             Calendar
           </button>
           <button
+            onClick={() => setActiveTab('submissions')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
+              ${
+                activeTab === 'submissions'
+                  ? 'border-accent-green text-text-primary bg-accent-green/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/icons/ui/movie.png" alt="" width={20} height={20} />
+            Submissions
+            {submissionCounts?.pending > 0 && (
+              <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
+                {submissionCounts.pending}
+              </span>
+            )}
+          </button>
+          <button
             onClick={() => setActiveTab('feedback')}
             className={`
               py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2 relative
@@ -379,6 +403,38 @@ export default function AdminDashboard() {
           </>
         )}
         {activeTab === 'feedback' && <FeedbackDashboard onCountsChange={setFeedbackCounts} />}
+        {activeTab === 'submissions' && (
+          <SubmissionsDashboard
+            onCountsChange={setSubmissionCounts}
+            onImportToEditor={(submission) => {
+              // Convert submission to editor format and open Reel editor
+              setImportedSubmission(submission);
+              setActiveTab('calendar');
+              setSelectedDate(null); // No date pre-selected for imported submissions
+              setEditingPuzzle({
+                // Convert submission groups to editor format
+                groups: submission.groups.map((group) => ({
+                  connection: group.connection,
+                  difficulty: group.difficulty,
+                  order: group.order,
+                  movies: group.movies.map((movie) => ({
+                    imdbId: movie.imdbId,
+                    title: movie.title,
+                    year: movie.year,
+                    poster: movie.poster,
+                    order: movie.order,
+                  })),
+                })),
+                // Include creator info for attribution
+                creatorName: submission.isAnonymous
+                  ? 'An anonymous member'
+                  : submission.displayName,
+                isUserSubmitted: true,
+              });
+              setActiveEditor('reel');
+            }}
+          />
+        )}
       </div>
 
       {/* Game selector modal */}

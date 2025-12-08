@@ -29,7 +29,7 @@
   },
   {
     "word": "HIS",
-    "frequency": 94
+    "frequency": 95
   },
   {
     "word": "CAN",
@@ -49,11 +49,11 @@
   },
   {
     "word": "GET",
-    "frequency": 93
+    "frequency": 94
   },
   {
     "word": "NOT",
-    "frequency": 93
+    "frequency": 94
   },
   {
     "word": "NEW",
@@ -65,31 +65,31 @@
   },
   {
     "word": "SAW",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "NOW",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "OWN",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "SAY",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "HOW",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "WHO",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "OLD",
-    "frequency": 92
+    "frequency": 93
   },
   {
     "word": "DID",
@@ -121,11 +121,11 @@
   },
   {
     "word": "ARE",
-    "frequency": 89
+    "frequency": 90
   },
   {
     "word": "SEE",
-    "frequency": 88
+    "frequency": 89
   },
   {
     "word": "ONE",
@@ -133,7 +133,7 @@
   },
   {
     "word": "TOO",
-    "frequency": 87
+    "frequency": 88
   },
   {
     "word": "USE",
@@ -141,7 +141,7 @@
   },
   {
     "word": "OUT",
-    "frequency": 86
+    "frequency": 87
   },
   {
     "word": "OUR",
@@ -149,4242 +149,4242 @@
   },
   {
     "word": "YOU",
-    "frequency": 85
+    "frequency": 86
   },
   {
     "word": "WHY",
-    "frequency": 83
-  },
-  {
-    "word": "LOL",
-    "frequency": 75
-  },
-  {
-    "word": "OMG",
-    "frequency": 65
-  },
-  {
-    "word": "BTW",
-    "frequency": 65
-  },
-  {
-    "word": "FAQ",
-    "frequency": 65
-  },
-  {
-    "word": "CEO",
-    "frequency": 65
-  },
-  {
-    "word": "DNA",
-    "frequency": 65
-  },
-  {
-    "word": "FBI",
-    "frequency": 65
-  },
-  {
-    "word": "CIA",
-    "frequency": 65
-  },
-  {
-    "word": "NBA",
-    "frequency": 65
-  },
-  {
-    "word": "NFL",
-    "frequency": 65
-  },
-  {
-    "word": "NHL",
-    "frequency": 65
-  },
-  {
-    "word": "MLB",
-    "frequency": 65
-  },
-  {
-    "word": "GPS",
-    "frequency": 65
-  },
-  {
-    "word": "USB",
-    "frequency": 65
-  },
-  {
-    "word": "PDF",
-    "frequency": 65
-  },
-  {
-    "word": "GIF",
-    "frequency": 65
-  },
-  {
-    "word": "URL",
-    "frequency": 65
-  },
-  {
-    "word": "VIP",
-    "frequency": 65
-  },
-  {
-    "word": "DIY",
-    "frequency": 65
-  },
-  {
-    "word": "IRS",
-    "frequency": 65
-  },
-  {
-    "word": "EPA",
-    "frequency": 65
-  },
-  {
-    "word": "FDA",
-    "frequency": 65
-  },
-  {
-    "word": "DMV",
-    "frequency": 65
-  },
-  {
-    "word": "CPR",
-    "frequency": 65
-  },
-  {
-    "word": "MRI",
-    "frequency": 65
-  },
-  {
-    "word": "HIV",
-    "frequency": 65
-  },
-  {
-    "word": "BFF",
-    "frequency": 65
-  },
-  {
-    "word": "TMI",
-    "frequency": 65
-  },
-  {
-    "word": "IDK",
-    "frequency": 65
-  },
-  {
-    "word": "TBH",
-    "frequency": 65
-  },
-  {
-    "word": "IMO",
-    "frequency": 65
-  },
-  {
-    "word": "FYI",
-    "frequency": 65
-  },
-  {
-    "word": "MVP",
-    "frequency": 65
-  },
-  {
-    "word": "SUV",
-    "frequency": 65
-  },
-  {
-    "word": "LCD",
-    "frequency": 65
-  },
-  {
-    "word": "DVD",
-    "frequency": 65
-  },
-  {
-    "word": "CNN",
-    "frequency": 65
-  },
-  {
-    "word": "BBC",
-    "frequency": 65
-  },
-  {
-    "word": "MTV",
-    "frequency": 65
-  },
-  {
-    "word": "HBO",
-    "frequency": 65
-  },
-  {
-    "word": "UFC",
-    "frequency": 65
-  },
-  {
-    "word": "WWE",
-    "frequency": 65
-  },
-  {
-    "word": "MMA",
-    "frequency": 65
-  },
-  {
-    "word": "PGA",
-    "frequency": 65
-  },
-  {
-    "word": "IPO",
-    "frequency": 65
-  },
-  {
-    "word": "GDP",
-    "frequency": 65
-  },
-  {
-    "word": "GPA",
-    "frequency": 65
-  },
-  {
-    "word": "IOU",
-    "frequency": 65
-  },
-  {
-    "word": "RPM",
-    "frequency": 65
-  },
-  {
-    "word": "MPH",
-    "frequency": 65
-  },
-  {
-    "word": "SOS",
-    "frequency": 65
-  },
-  {
-    "word": "EMT",
-    "frequency": 65
-  },
-  {
-    "word": "ICU",
-    "frequency": 65
-  },
-  {
-    "word": "OCD",
-    "frequency": 65
-  },
-  {
-    "word": "IVF",
-    "frequency": 65
-  },
-  {
-    "word": "STD",
-    "frequency": 65
-  },
-  {
-    "word": "STI",
-    "frequency": 65
-  },
-  {
-    "word": "OTC",
-    "frequency": 65
-  },
-  {
-    "word": "TSA",
-    "frequency": 65
-  },
-  {
-    "word": "DOJ",
-    "frequency": 65
-  },
-  {
-    "word": "FCC",
-    "frequency": 65
-  },
-  {
-    "word": "FTC",
-    "frequency": 65
-  },
-  {
-    "word": "NSA",
-    "frequency": 65
-  },
-  {
-    "word": "DEA",
-    "frequency": 65
-  },
-  {
-    "word": "ATF",
-    "frequency": 65
-  },
-  {
-    "word": "SSA",
-    "frequency": 65
-  },
-  {
-    "word": "SSN",
-    "frequency": 65
-  },
-  {
-    "word": "DOB",
-    "frequency": 65
-  },
-  {
-    "word": "DOD",
-    "frequency": 65
-  },
-  {
-    "word": "HUD",
-    "frequency": 65
-  },
-  {
-    "word": "NIH",
-    "frequency": 65
-  },
-  {
-    "word": "CDC",
-    "frequency": 65
-  },
-  {
-    "word": "IMF",
-    "frequency": 65
-  },
-  {
-    "word": "WTO",
-    "frequency": 65
-  },
-  {
-    "word": "HAN",
-    "frequency": 65
-  },
-  {
-    "word": "REY",
-    "frequency": 65
-  },
-  {
-    "word": "POE",
-    "frequency": 65
-  },
-  {
-    "word": "QUI",
-    "frequency": 65
-  },
-  {
-    "word": "JYN",
-    "frequency": 65
-  },
-  {
-    "word": "MAZ",
-    "frequency": 65
-  },
-  {
-    "word": "NEO",
-    "frequency": 65
-  },
-  {
-    "word": "ZOD",
-    "frequency": 65
-  },
-  {
-    "word": "VIC",
-    "frequency": 65
-  },
-  {
-    "word": "ROY",
-    "frequency": 65
-  },
-  {
-    "word": "TIM",
-    "frequency": 65
-  },
-  {
-    "word": "FDR",
-    "frequency": 65
-  },
-  {
-    "word": "JFK",
-    "frequency": 65
-  },
-  {
-    "word": "LBJ",
-    "frequency": 65
-  },
-  {
-    "word": "RFK",
-    "frequency": 65
-  },
-  {
-    "word": "MLK",
-    "frequency": 65
-  },
-  {
-    "word": "RBG",
-    "frequency": 65
-  },
-  {
-    "word": "AOC",
-    "frequency": 65
-  },
-  {
-    "word": "GOP",
-    "frequency": 65
-  },
-  {
-    "word": "DEM",
-    "frequency": 65
-  },
-  {
-    "word": "BMW",
-    "frequency": 65
-  },
-  {
-    "word": "KIA",
-    "frequency": 65
-  },
-  {
-    "word": "API",
-    "frequency": 65
-  },
-  {
-    "word": "CSS",
-    "frequency": 65
-  },
-  {
-    "word": "PHP",
-    "frequency": 65
-  },
-  {
-    "word": "SQL",
-    "frequency": 65
-  },
-  {
-    "word": "SSD",
-    "frequency": 65
-  },
-  {
-    "word": "LAN",
-    "frequency": 65
-  },
-  {
-    "word": "VPN",
-    "frequency": 65
-  },
-  {
-    "word": "FTP",
-    "frequency": 65
-  },
-  {
-    "word": "SSH",
-    "frequency": 65
-  },
-  {
-    "word": "IOT",
-    "frequency": 65
-  },
-  {
-    "word": "NFT",
-    "frequency": 65
-  },
-  {
-    "word": "DAO",
-    "frequency": 65
-  },
-  {
-    "word": "DRM",
-    "frequency": 65
-  },
-  {
-    "word": "AES",
-    "frequency": 65
-  },
-  {
-    "word": "RSA",
-    "frequency": 65
-  },
-  {
-    "word": "GPT",
-    "frequency": 65
-  },
-  {
-    "word": "LLM",
-    "frequency": 65
-  },
-  {
-    "word": "IPA",
-    "frequency": 65
-  },
-  {
-    "word": "BLT",
-    "frequency": 65
-  },
-  {
-    "word": "PBJ",
-    "frequency": 65
-  },
-  {
-    "word": "RBI",
-    "frequency": 65
-  },
-  {
-    "word": "OTT",
-    "frequency": 65
-  },
-  {
-    "word": "USA",
-    "frequency": 65
-  },
-  {
-    "word": "UAE",
-    "frequency": 65
-  },
-  {
-    "word": "EDM",
-    "frequency": 65
-  },
-  {
-    "word": "RNB",
-    "frequency": 65
-  },
-  {
-    "word": "EMO",
-    "frequency": 65
+    "frequency": 84
   },
   {
     "word": "RED",
-    "frequency": 30
-  },
-  {
-    "word": "LED",
-    "frequency": 30
-  },
-  {
-    "word": "PER",
-    "frequency": 30
-  },
-  {
-    "word": "MED",
-    "frequency": 30
-  },
-  {
-    "word": "WED",
-    "frequency": 30
-  },
-  {
-    "word": "FED",
-    "frequency": 30
-  },
-  {
-    "word": "TEN",
-    "frequency": 30
-  },
-  {
-    "word": "BED",
-    "frequency": 30
-  },
-  {
-    "word": "REC",
-    "frequency": 30
-  },
-  {
-    "word": "REF",
-    "frequency": 30
-  },
-  {
-    "word": "REP",
-    "frequency": 30
-  },
-  {
-    "word": "HEN",
-    "frequency": 30
-  },
-  {
-    "word": "INN",
-    "frequency": 30
-  },
-  {
-    "word": "REV",
-    "frequency": 30
-  },
-  {
-    "word": "ANT",
-    "frequency": 30
-  },
-  {
-    "word": "END",
-    "frequency": 30
-  },
-  {
-    "word": "HAT",
-    "frequency": 30
-  },
-  {
-    "word": "TON",
-    "frequency": 30
-  },
-  {
-    "word": "TIN",
-    "frequency": 30
-  },
-  {
-    "word": "INK",
-    "frequency": 30
-  },
-  {
-    "word": "TAT",
-    "frequency": 30
-  },
-  {
-    "word": "LET",
-    "frequency": 30
-  },
-  {
-    "word": "TOT",
-    "frequency": 30
-  },
-  {
-    "word": "TAN",
-    "frequency": 30
-  },
-  {
-    "word": "DEN",
-    "frequency": 30
-  },
-  {
-    "word": "SAT",
-    "frequency": 30
-  },
-  {
-    "word": "RAT",
-    "frequency": 30
-  },
-  {
-    "word": "TAR",
-    "frequency": 30
-  },
-  {
-    "word": "NIT",
-    "frequency": 30
-  },
-  {
-    "word": "SIT",
-    "frequency": 30
-  },
-  {
-    "word": "HIT",
-    "frequency": 30
-  },
-  {
-    "word": "GEN",
-    "frequency": 30
-  },
-  {
-    "word": "YEN",
-    "frequency": 30
-  },
-  {
-    "word": "SEW",
-    "frequency": 30
-  },
-  {
-    "word": "PEN",
-    "frequency": 30
-  },
-  {
-    "word": "HEM",
-    "frequency": 30
-  },
-  {
-    "word": "YES",
-    "frequency": 30
-  },
-  {
-    "word": "RAN",
-    "frequency": 30
-  },
-  {
-    "word": "SON",
-    "frequency": 30
-  },
-  {
-    "word": "NOR",
-    "frequency": 30
-  },
-  {
-    "word": "KEN",
-    "frequency": 30
-  },
-  {
-    "word": "LIT",
-    "frequency": 30
-  },
-  {
-    "word": "SIN",
-    "frequency": 30
-  },
-  {
-    "word": "MAT",
-    "frequency": 30
-  },
-  {
-    "word": "SIS",
-    "frequency": 30
-  },
-  {
-    "word": "FAT",
-    "frequency": 30
-  },
-  {
-    "word": "PAT",
-    "frequency": 30
-  },
-  {
-    "word": "TOM",
-    "frequency": 30
-  },
-  {
-    "word": "TOW",
-    "frequency": 30
-  },
-  {
-    "word": "TIC",
-    "frequency": 30
-  },
-  {
-    "word": "OFT",
-    "frequency": 30
-  },
-  {
-    "word": "LEG",
-    "frequency": 30
-  },
-  {
-    "word": "TOG",
-    "frequency": 30
-  },
-  {
-    "word": "TOY",
-    "frequency": 30
-  },
-  {
-    "word": "HAD",
-    "frequency": 30
-  },
-  {
-    "word": "NET",
-    "frequency": 30
-  },
-  {
-    "word": "TOP",
-    "frequency": 30
-  },
-  {
-    "word": "WIT",
-    "frequency": 30
-  },
-  {
-    "word": "FIT",
-    "frequency": 30
-  },
-  {
-    "word": "VAT",
-    "frequency": 30
-  },
-  {
-    "word": "PIT",
-    "frequency": 30
-  },
-  {
-    "word": "TIP",
-    "frequency": 30
-  },
-  {
-    "word": "MAN",
-    "frequency": 30
-  },
-  {
-    "word": "FAN",
-    "frequency": 30
-  },
-  {
-    "word": "PAN",
-    "frequency": 30
-  },
-  {
-    "word": "KIT",
-    "frequency": 30
-  },
-  {
-    "word": "HAM",
-    "frequency": 30
-  },
-  {
-    "word": "WON",
-    "frequency": 30
-  },
-  {
-    "word": "MAR",
-    "frequency": 30
-  },
-  {
-    "word": "GAS",
-    "frequency": 30
-  },
-  {
-    "word": "WAR",
-    "frequency": 30
-  },
-  {
-    "word": "FAR",
-    "frequency": 30
-  },
-  {
-    "word": "HAY",
-    "frequency": 30
-  },
-  {
-    "word": "PAR",
-    "frequency": 30
-  },
-  {
-    "word": "WIN",
-    "frequency": 30
-  },
-  {
-    "word": "FIN",
-    "frequency": 30
-  },
-  {
-    "word": "VAN",
-    "frequency": 30
-  },
-  {
-    "word": "PIN",
-    "frequency": 30
-  },
-  {
-    "word": "ORB",
-    "frequency": 30
-  },
-  {
-    "word": "KIN",
-    "frequency": 30
-  },
-  {
-    "word": "GAL",
-    "frequency": 30
-  },
-  {
-    "word": "MET",
-    "frequency": 30
-  },
-  {
-    "word": "PAL",
-    "frequency": 30
-  },
-  {
-    "word": "WET",
-    "frequency": 30
-  },
-  {
-    "word": "YET",
-    "frequency": 30
-  },
-  {
-    "word": "PET",
-    "frequency": 30
-  },
-  {
-    "word": "BET",
-    "frequency": 30
-  },
-  {
-    "word": "SOT",
-    "frequency": 30
-  },
-  {
-    "word": "VET",
-    "frequency": 30
-  },
-  {
-    "word": "HOT",
-    "frequency": 30
-  },
-  {
-    "word": "ROT",
-    "frequency": 30
-  },
-  {
-    "word": "OFF",
-    "frequency": 30
-  },
-  {
-    "word": "TAD",
-    "frequency": 30
-  },
-  {
-    "word": "DOT",
-    "frequency": 30
-  },
-  {
-    "word": "RYE",
-    "frequency": 30
-  },
-  {
-    "word": "LOT",
-    "frequency": 30
-  },
-  {
-    "word": "COT",
-    "frequency": 30
-  },
-  {
-    "word": "TAG",
-    "frequency": 30
-  },
-  {
-    "word": "TAP",
-    "frequency": 30
-  },
-  {
-    "word": "ELM",
-    "frequency": 30
-  },
-  {
-    "word": "ELF",
-    "frequency": 30
-  },
-  {
-    "word": "DYE",
-    "frequency": 30
-  },
-  {
-    "word": "GEL",
-    "frequency": 30
-  },
-  {
-    "word": "SAD",
-    "frequency": 30
-  },
-  {
-    "word": "GOT",
-    "frequency": 30
-  },
-  {
-    "word": "NUT",
-    "frequency": 30
-  },
-  {
-    "word": "TAB",
-    "frequency": 30
-  },
-  {
-    "word": "NOD",
-    "frequency": 30
-  },
-  {
-    "word": "OPT",
-    "frequency": 30
-  },
-  {
-    "word": "POT",
-    "frequency": 30
-  },
-  {
-    "word": "SOD",
-    "frequency": 30
-  },
-  {
-    "word": "HUT",
-    "frequency": 30
-  },
-  {
-    "word": "HOD",
-    "frequency": 30
-  },
-  {
-    "word": "RUT",
-    "frequency": 30
-  },
-  {
-    "word": "NIL",
-    "frequency": 30
-  },
-  {
-    "word": "ROD",
-    "frequency": 30
-  },
-  {
-    "word": "ELK",
-    "frequency": 30
-  },
-  {
-    "word": "HID",
-    "frequency": 30
-  },
-  {
-    "word": "SAC",
-    "frequency": 30
-  },
-  {
-    "word": "RID",
-    "frequency": 30
-  },
-  {
-    "word": "GEM",
-    "frequency": 30
-  },
-  {
-    "word": "YEW",
-    "frequency": 30
-  },
-  {
-    "word": "PEW",
-    "frequency": 30
-  },
-  {
-    "word": "NAG",
-    "frequency": 30
-  },
-  {
-    "word": "NAY",
-    "frequency": 30
-  },
-  {
-    "word": "NAP",
-    "frequency": 30
-  },
-  {
-    "word": "EGG",
-    "frequency": 30
-  },
-  {
-    "word": "DAD",
-    "frequency": 30
-  },
-  {
-    "word": "PEG",
-    "frequency": 30
-  },
-  {
-    "word": "RAM",
-    "frequency": 30
-  },
-  {
-    "word": "PEP",
-    "frequency": 30
-  },
-  {
-    "word": "RAW",
-    "frequency": 30
-  },
-  {
-    "word": "SAG",
-    "frequency": 30
-  },
-  {
-    "word": "LAD",
-    "frequency": 30
-  },
-  {
-    "word": "SAP",
-    "frequency": 30
-  },
-  {
-    "word": "SPA",
-    "frequency": 30
-  },
-  {
-    "word": "NUN",
-    "frequency": 30
-  },
-  {
-    "word": "NAB",
-    "frequency": 30
-  },
-  {
-    "word": "SOW",
-    "frequency": 30
-  },
-  {
-    "word": "RAG",
-    "frequency": 30
-  },
-  {
-    "word": "RAY",
-    "frequency": 30
-  },
-  {
-    "word": "RAP",
-    "frequency": 30
-  },
-  {
-    "word": "ODD",
-    "frequency": 30
-  },
-  {
-    "word": "OHM",
-    "frequency": 30
-  },
-  {
-    "word": "ROW",
-    "frequency": 30
-  },
-  {
-    "word": "SUN",
-    "frequency": 30
-  },
-  {
-    "word": "SOY",
-    "frequency": 30
-  },
-  {
-    "word": "SOP",
-    "frequency": 30
-  },
-  {
-    "word": "NIP",
-    "frequency": 30
-  },
-  {
-    "word": "HOG",
-    "frequency": 30
-  },
-  {
-    "word": "NOB",
-    "frequency": 30
-  },
-  {
-    "word": "HOP",
-    "frequency": 30
-  },
-  {
-    "word": "RUN",
-    "frequency": 30
-  },
-  {
-    "word": "URN",
-    "frequency": 30
-  },
-  {
-    "word": "KEG",
-    "frequency": 30
-  },
-  {
-    "word": "KEY",
-    "frequency": 30
-  },
-  {
-    "word": "RIM",
-    "frequency": 30
-  },
-  {
-    "word": "LID",
-    "frequency": 30
-  },
-  {
-    "word": "SIP",
-    "frequency": 30
-  },
-  {
-    "word": "SOB",
-    "frequency": 30
-  },
-  {
-    "word": "ILL",
-    "frequency": 30
-  },
-  {
-    "word": "HIP",
-    "frequency": 30
-  },
-  {
-    "word": "LAC",
-    "frequency": 30
-  },
-  {
-    "word": "RIG",
-    "frequency": 30
-  },
-  {
-    "word": "HOB",
-    "frequency": 30
-  },
-  {
-    "word": "RIP",
-    "frequency": 30
-  },
-  {
-    "word": "DAM",
-    "frequency": 30
-  },
-  {
-    "word": "MAD",
-    "frequency": 30
-  },
-  {
-    "word": "ROB",
-    "frequency": 30
-  },
-  {
-    "word": "WAD",
-    "frequency": 30
-  },
-  {
-    "word": "FAD",
-    "frequency": 30
-  },
-  {
-    "word": "CUT",
-    "frequency": 30
-  },
-  {
-    "word": "LAW",
-    "frequency": 30
-  },
-  {
-    "word": "COD",
-    "frequency": 30
-  },
-  {
-    "word": "DOC",
-    "frequency": 30
-  },
-  {
-    "word": "PAD",
-    "frequency": 30
-  },
-  {
-    "word": "RIB",
-    "frequency": 30
-  },
-  {
-    "word": "LAG",
-    "frequency": 30
-  },
-  {
-    "word": "LAY",
-    "frequency": 30
-  },
-  {
-    "word": "MOD",
-    "frequency": 30
-  },
-  {
-    "word": "LAP",
-    "frequency": 30
-  },
-  {
-    "word": "SKI",
-    "frequency": 30
-  },
-  {
-    "word": "LOW",
-    "frequency": 30
-  },
-  {
-    "word": "OWL",
-    "frequency": 30
-  },
-  {
-    "word": "GUT",
-    "frequency": 30
-  },
-  {
-    "word": "TUG",
-    "frequency": 30
-  },
-  {
-    "word": "DOG",
-    "frequency": 30
-  },
-  {
-    "word": "GOD",
-    "frequency": 30
-  },
-  {
-    "word": "IRK",
-    "frequency": 30
-  },
-  {
-    "word": "DAB",
-    "frequency": 30
-  },
-  {
-    "word": "POD",
-    "frequency": 30
-  },
-  {
-    "word": "DIM",
-    "frequency": 30
-  },
-  {
-    "word": "LOG",
-    "frequency": 30
-  },
-  {
-    "word": "LAB",
-    "frequency": 30
-  },
-  {
-    "word": "DIP",
-    "frequency": 30
-  },
-  {
-    "word": "TUB",
-    "frequency": 30
-  },
-  {
-    "word": "MAW",
-    "frequency": 30
-  },
-  {
-    "word": "LIP",
-    "frequency": 30
-  },
-  {
-    "word": "COW",
-    "frequency": 30
-  },
-  {
-    "word": "WAG",
-    "frequency": 30
-  },
-  {
-    "word": "YAM",
-    "frequency": 30
-  },
-  {
-    "word": "MAP",
-    "frequency": 30
-  },
-  {
-    "word": "YAW",
-    "frequency": 30
-  },
-  {
-    "word": "PAW",
-    "frequency": 30
-  },
-  {
-    "word": "MOM",
-    "frequency": 30
-  },
-  {
-    "word": "COG",
-    "frequency": 30
-  },
-  {
-    "word": "MOW",
-    "frequency": 30
-  },
-  {
-    "word": "WOW",
-    "frequency": 30
-  },
-  {
-    "word": "COP",
-    "frequency": 30
-  },
-  {
-    "word": "GAG",
-    "frequency": 30
-  },
-  {
-    "word": "GAY",
-    "frequency": 30
-  },
-  {
-    "word": "GAP",
-    "frequency": 30
-  },
-  {
-    "word": "PAY",
-    "frequency": 30
-  },
-  {
-    "word": "YAP",
-    "frequency": 30
-  },
-  {
-    "word": "PAP",
-    "frequency": 30
-  },
-  {
-    "word": "KID",
-    "frequency": 30
-  },
-  {
-    "word": "MOP",
-    "frequency": 30
-  },
-  {
-    "word": "POW",
-    "frequency": 30
-  },
-  {
-    "word": "FOG",
-    "frequency": 30
-  },
-  {
-    "word": "FUN",
-    "frequency": 30
-  },
-  {
-    "word": "ICY",
-    "frequency": 30
-  },
-  {
-    "word": "FOP",
-    "frequency": 30
-  },
-  {
-    "word": "COB",
-    "frequency": 30
-  },
-  {
-    "word": "CUR",
-    "frequency": 30
-  },
-  {
-    "word": "GUN",
-    "frequency": 30
-  },
-  {
-    "word": "SUM",
-    "frequency": 30
-  },
-  {
-    "word": "GAB",
-    "frequency": 30
-  },
-  {
-    "word": "PUN",
-    "frequency": 30
-  },
-  {
-    "word": "POP",
-    "frequency": 30
-  },
-  {
-    "word": "WIG",
-    "frequency": 30
-  },
-  {
-    "word": "IMP",
-    "frequency": 30
-  },
-  {
-    "word": "DUD",
-    "frequency": 30
-  },
-  {
-    "word": "HUM",
-    "frequency": 30
-  },
-  {
-    "word": "FIG",
-    "frequency": 30
-  },
-  {
-    "word": "MOB",
-    "frequency": 30
-  },
-  {
-    "word": "RUM",
-    "frequency": 30
-  },
-  {
-    "word": "FOB",
-    "frequency": 30
-  },
-  {
-    "word": "PUS",
-    "frequency": 30
-  },
-  {
-    "word": "SUP",
-    "frequency": 30
-  },
-  {
-    "word": "FUR",
-    "frequency": 30
-  },
-  {
-    "word": "PIG",
-    "frequency": 30
-  },
-  {
-    "word": "YAK",
-    "frequency": 30
-  },
-  {
-    "word": "HUG",
-    "frequency": 30
-  },
-  {
-    "word": "VOW",
-    "frequency": 30
-  },
-  {
-    "word": "GOB",
-    "frequency": 30
-  },
-  {
-    "word": "NUB",
-    "frequency": 30
-  },
-  {
-    "word": "RUG",
-    "frequency": 30
-  },
-  {
-    "word": "WOK",
-    "frequency": 30
-  },
-  {
-    "word": "SUB",
-    "frequency": 30
-  },
-  {
-    "word": "HUB",
-    "frequency": 30
-  },
-  {
-    "word": "RUB",
-    "frequency": 30
-  },
-  {
-    "word": "IVY",
-    "frequency": 30
-  },
-  {
-    "word": "CUD",
-    "frequency": 30
-  },
-  {
-    "word": "ZEN",
-    "frequency": 30
-  },
-  {
-    "word": "MUD",
-    "frequency": 30
-  },
-  {
-    "word": "JAR",
-    "frequency": 30
-  },
-  {
-    "word": "DUG",
-    "frequency": 30
-  },
-  {
-    "word": "FLU",
-    "frequency": 30
-  },
-  {
-    "word": "LUG",
-    "frequency": 30
-  },
-  {
-    "word": "DUB",
-    "frequency": 30
-  },
-  {
-    "word": "MUM",
-    "frequency": 30
-  },
-  {
-    "word": "CUP",
-    "frequency": 30
-  },
-  {
-    "word": "GUM",
-    "frequency": 30
-  },
-  {
-    "word": "MUG",
-    "frequency": 30
-  },
-  {
-    "word": "JET",
-    "frequency": 30
-  },
-  {
-    "word": "CUB",
-    "frequency": 30
-  },
-  {
-    "word": "GUY",
-    "frequency": 30
-  },
-  {
-    "word": "PUG",
-    "frequency": 30
-  },
-  {
-    "word": "PUP",
-    "frequency": 30
-  },
-  {
-    "word": "ZIT",
-    "frequency": 30
-  },
-  {
-    "word": "PUB",
-    "frequency": 30
-  },
-  {
-    "word": "JOT",
-    "frequency": 30
-  },
-  {
-    "word": "TAX",
-    "frequency": 30
-  },
-  {
-    "word": "ORE",
-    "frequency": 30
-  },
-  {
-    "word": "JAM",
-    "frequency": 30
-  },
-  {
-    "word": "JAW",
-    "frequency": 30
-  },
-  {
-    "word": "JAG",
-    "frequency": 30
-  },
-  {
-    "word": "JAY",
-    "frequency": 30
-  },
-  {
-    "word": "JOG",
-    "frequency": 30
-  },
-  {
-    "word": "JOY",
-    "frequency": 30
-  },
-  {
-    "word": "JAB",
-    "frequency": 30
-  },
-  {
-    "word": "JIG",
-    "frequency": 30
-  },
-  {
-    "word": "JOB",
-    "frequency": 30
-  },
-  {
-    "word": "SIX",
-    "frequency": 30
-  },
-  {
-    "word": "LAX",
-    "frequency": 30
-  },
-  {
-    "word": "MAX",
-    "frequency": 30
-  },
-  {
-    "word": "WAX",
-    "frequency": 30
-  },
-  {
-    "word": "FAX",
-    "frequency": 30
-  },
-  {
-    "word": "ZAP",
-    "frequency": 30
-  },
-  {
-    "word": "EAT",
-    "frequency": 30
-  },
-  {
-    "word": "JUG",
-    "frequency": 30
-  },
-  {
-    "word": "TEA",
-    "frequency": 30
-  },
-  {
-    "word": "FOX",
-    "frequency": 30
-  },
-  {
-    "word": "FIX",
-    "frequency": 30
-  },
-  {
-    "word": "TOE",
-    "frequency": 30
-  },
-  {
-    "word": "ZIP",
-    "frequency": 30
-  },
-  {
-    "word": "TIE",
-    "frequency": 30
-  },
-  {
-    "word": "SEA",
-    "frequency": 30
-  },
-  {
-    "word": "EAR",
-    "frequency": 30
-  },
-  {
-    "word": "ERA",
-    "frequency": 30
-  },
-  {
-    "word": "LEA",
-    "frequency": 30
-  },
-  {
-    "word": "OAT",
-    "frequency": 30
-  },
-  {
-    "word": "SLY",
-    "frequency": 30
-  },
-  {
-    "word": "OAR",
-    "frequency": 30
-  },
-  {
-    "word": "EEL",
-    "frequency": 30
-  },
-  {
-    "word": "FLY",
-    "frequency": 30
-  },
-  {
-    "word": "PLY",
-    "frequency": 30
-  },
-  {
-    "word": "EWE",
-    "frequency": 30
-  },
-  {
-    "word": "EYE",
-    "frequency": 30
-  },
-  {
-    "word": "STY",
-    "frequency": 30
-  },
-  {
-    "word": "THY",
-    "frequency": 30
-  },
-  {
-    "word": "EVE",
-    "frequency": 30
-  },
-  {
-    "word": "ROE",
-    "frequency": 30
-  },
-  {
-    "word": "DOE",
-    "frequency": 30
-  },
-  {
-    "word": "ODE",
-    "frequency": 30
-  },
-  {
-    "word": "LIE",
-    "frequency": 30
-  },
-  {
-    "word": "PEA",
-    "frequency": 30
-  },
-  {
-    "word": "OWE",
-    "frequency": 30
-  },
-  {
-    "word": "WOE",
-    "frequency": 30
-  },
-  {
-    "word": "ICE",
-    "frequency": 30
-  },
-  {
-    "word": "FOE",
-    "frequency": 30
-  },
-  {
-    "word": "PIE",
-    "frequency": 30
-  },
-  {
-    "word": "HUE",
-    "frequency": 30
-  },
-  {
-    "word": "VIE",
-    "frequency": 30
-  },
-  {
-    "word": "DUE",
-    "frequency": 30
-  },
-  {
-    "word": "OIL",
-    "frequency": 30
-  },
-  {
-    "word": "EMU",
-    "frequency": 30
-  },
-  {
-    "word": "TRY",
-    "frequency": 30
-  },
-  {
-    "word": "OAK",
-    "frequency": 30
-  },
-  {
-    "word": "VIA",
-    "frequency": 30
-  },
-  {
-    "word": "SHY",
-    "frequency": 30
-  },
-  {
-    "word": "DRY",
-    "frequency": 30
-  },
-  {
-    "word": "CRY",
-    "frequency": 30
-  },
-  {
-    "word": "SPY",
-    "frequency": 30
-  },
-  {
-    "word": "FRY",
-    "frequency": 30
-  },
-  {
-    "word": "PRY",
-    "frequency": 30
-  },
-  {
-    "word": "SKY",
-    "frequency": 30
-  },
-  {
-    "word": "GYM",
-    "frequency": 30
-  },
-  {
-    "word": "ZOO",
-    "frequency": 30
+    "frequency": 26
   },
   {
     "word": "TED",
-    "frequency": 21
+    "frequency": 24
   },
   {
     "word": "SER",
-    "frequency": 21
+    "frequency": 24
+  },
+  {
+    "word": "LED",
+    "frequency": 23
   },
   {
     "word": "RES",
-    "frequency": 20
+    "frequency": 23
   },
   {
     "word": "RET",
-    "frequency": 19
+    "frequency": 22
   },
   {
     "word": "FER",
-    "frequency": 19
+    "frequency": 21
+  },
+  {
+    "word": "PER",
+    "frequency": 21
+  },
+  {
+    "word": "MED",
+    "frequency": 21
+  },
+  {
+    "word": "WED",
+    "frequency": 21
+  },
+  {
+    "word": "FED",
+    "frequency": 21
   },
   {
     "word": "GED",
-    "frequency": 18
+    "frequency": 21
   },
   {
     "word": "PED",
-    "frequency": 18
+    "frequency": 21
+  },
+  {
+    "word": "TEN",
+    "frequency": 21
+  },
+  {
+    "word": "BED",
+    "frequency": 21
+  },
+  {
+    "word": "REC",
+    "frequency": 21
   },
   {
     "word": "REM",
-    "frequency": 18
+    "frequency": 21
+  },
+  {
+    "word": "REF",
+    "frequency": 21
   },
   {
     "word": "SEN",
-    "frequency": 18
+    "frequency": 21
   },
   {
     "word": "REG",
-    "frequency": 18
+    "frequency": 21
+  },
+  {
+    "word": "REY",
+    "frequency": 21
+  },
+  {
+    "word": "REP",
+    "frequency": 21
+  },
+  {
+    "word": "HEN",
+    "frequency": 21
+  },
+  {
+    "word": "INN",
+    "frequency": 21
   },
   {
     "word": "HES",
-    "frequency": 18
+    "frequency": 21
   },
   {
     "word": "TIT",
-    "frequency": 18
+    "frequency": 21
   },
   {
     "word": "INS",
-    "frequency": 18
+    "frequency": 21
   },
   {
     "word": "REB",
-    "frequency": 18
+    "frequency": 21
+  },
+  {
+    "word": "REV",
+    "frequency": 21
+  },
+  {
+    "word": "ANT",
+    "frequency": 20
+  },
+  {
+    "word": "END",
+    "frequency": 20
+  },
+  {
+    "word": "HAT",
+    "frequency": 20
+  },
+  {
+    "word": "TON",
+    "frequency": 20
+  },
+  {
+    "word": "TIN",
+    "frequency": 20
   },
   {
     "word": "TOR",
-    "frequency": 17
+    "frequency": 20
+  },
+  {
+    "word": "STI",
+    "frequency": 20
   },
   {
     "word": "TIS",
-    "frequency": 17
+    "frequency": 20
   },
   {
     "word": "ENG",
-    "frequency": 17
+    "frequency": 20
+  },
+  {
+    "word": "HAN",
+    "frequency": 20
   },
   {
     "word": "TET",
-    "frequency": 17
+    "frequency": 20
+  },
+  {
+    "word": "INK",
+    "frequency": 20
   },
   {
     "word": "ETH",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "HET",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ATT",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "TAT",
+    "frequency": 19
+  },
+  {
+    "word": "LET",
+    "frequency": 19
   },
   {
     "word": "ENS",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "TOT",
+    "frequency": 19
   },
   {
     "word": "ERN",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ESS",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ERS",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "HEH",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ERR",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "TEW",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "TAN",
+    "frequency": 19
   },
   {
     "word": "TEG",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "DEN",
+    "frequency": 19
+  },
+  {
+    "word": "SAT",
+    "frequency": 19
   },
   {
     "word": "TAS",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ART",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "RAT",
+    "frequency": 19
+  },
+  {
+    "word": "TAR",
+    "frequency": 19
   },
   {
     "word": "SEL",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "EDH",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "NIT",
+    "frequency": 19
   },
   {
     "word": "THO",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "ORT",
-    "frequency": 16
+    "frequency": 19
+  },
+  {
+    "word": "SIT",
+    "frequency": 19
+  },
+  {
+    "word": "HIT",
+    "frequency": 19
   },
   {
     "word": "MEN",
-    "frequency": 16
+    "frequency": 19
   },
   {
     "word": "SEC",
-    "frequency": 15
+    "frequency": 19
   },
   {
     "word": "WEN",
-    "frequency": 15
+    "frequency": 19
   },
   {
     "word": "FEN",
-    "frequency": 15
+    "frequency": 19
   },
   {
     "word": "NAN",
-    "frequency": 15
+    "frequency": 19
+  },
+  {
+    "word": "GEN",
+    "frequency": 18
+  },
+  {
+    "word": "YEN",
+    "frequency": 18
+  },
+  {
+    "word": "SEW",
+    "frequency": 18
+  },
+  {
+    "word": "PEN",
+    "frequency": 18
   },
   {
     "word": "ALT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "FES",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LAT",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "HEM",
+    "frequency": 18
   },
   {
     "word": "HEW",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "SEG",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "YES",
+    "frequency": 18
   },
   {
     "word": "PES",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "RAN",
+    "frequency": 18
   },
   {
     "word": "UNS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ASS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "TOD",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HEY",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "BEN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HEP",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ERG",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ASH",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ONS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "SHA",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "SON",
+    "frequency": 18
   },
   {
     "word": "ARS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "RAS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HAH",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HON",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DIT",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "NOR",
+    "frequency": 18
+  },
+  {
+    "word": "KEN",
+    "frequency": 18
+  },
+  {
+    "word": "LIT",
+    "frequency": 18
   },
   {
     "word": "TIL",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "SIN",
+    "frequency": 18
   },
   {
     "word": "CAT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ORS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HIN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "RIN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ATM",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "MAT",
+    "frequency": 18
+  },
+  {
+    "word": "SIS",
+    "frequency": 18
   },
   {
     "word": "WAT",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "ATF",
+    "frequency": 18
+  },
+  {
+    "word": "FAT",
+    "frequency": 18
+  },
+  {
+    "word": "EDM",
+    "frequency": 18
   },
   {
     "word": "GAT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DAN",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "PAT",
+    "frequency": 18
+  },
+  {
+    "word": "TOM",
+    "frequency": 18
+  },
+  {
+    "word": "LAN",
+    "frequency": 18
+  },
+  {
+    "word": "TOW",
+    "frequency": 18
+  },
+  {
+    "word": "WTO",
+    "frequency": 18
+  },
+  {
+    "word": "TIC",
+    "frequency": 18
+  },
+  {
+    "word": "OFT",
+    "frequency": 18
+  },
+  {
+    "word": "LEG",
+    "frequency": 18
   },
   {
     "word": "LEY",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "TOG",
+    "frequency": 18
+  },
+  {
+    "word": "TOY",
+    "frequency": 18
   },
   {
     "word": "ALS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LAS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "SAL",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "BAT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DON",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "HAD",
+    "frequency": 18
+  },
+  {
+    "word": "NET",
+    "frequency": 18
+  },
+  {
+    "word": "TOP",
+    "frequency": 18
+  },
+  {
+    "word": "TIM",
+    "frequency": 18
+  },
+  {
+    "word": "WIT",
+    "frequency": 18
+  },
+  {
+    "word": "FIT",
+    "frequency": 18
+  },
+  {
+    "word": "VAT",
+    "frequency": 18
   },
   {
     "word": "LAR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "GIT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "KAT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DIN",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "PIT",
+    "frequency": 18
+  },
+  {
+    "word": "TIP",
+    "frequency": 18
   },
   {
     "word": "DOR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LIN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LEV",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DIS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LEK",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "LIS",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "MAN",
+    "frequency": 18
   },
   {
     "word": "BIT",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "WAN",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "FAN",
+    "frequency": 18
   },
   {
     "word": "ZED",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ARC",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "CAR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "GAN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "MAS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ANY",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "PAN",
+    "frequency": 18
+  },
+  {
+    "word": "KIT",
+    "frequency": 18
   },
   {
     "word": "FAS",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "HAM",
+    "frequency": 18
   },
   {
     "word": "MON",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HAW",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "WHA",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "WON",
+    "frequency": 18
   },
   {
     "word": "ARM",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "MAR",
+    "frequency": 18
+  },
+  {
+    "word": "GAS",
+    "frequency": 18
+  },
+  {
+    "word": "WAR",
+    "frequency": 18
   },
   {
     "word": "FON",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "DAL",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ASP",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "PAS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ARF",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "FAR",
+    "frequency": 18
   },
   {
     "word": "COR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HAG",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ORC",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "HAY",
+    "frequency": 18
   },
   {
     "word": "YON",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "BAN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "HAP",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "GAR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "YAR",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "PAR",
+    "frequency": 18
+  },
+  {
+    "word": "WIN",
+    "frequency": 18
+  },
+  {
+    "word": "FIN",
+    "frequency": 18
   },
   {
     "word": "MOR",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "VAN",
+    "frequency": 18
   },
   {
     "word": "BAS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "GIN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "ISM",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "MIS",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "YIN",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "WIS",
-    "frequency": 15
+    "frequency": 18
+  },
+  {
+    "word": "PIN",
+    "frequency": 18
+  },
+  {
+    "word": "OTT",
+    "frequency": 18
   },
   {
     "word": "GOR",
-    "frequency": 15
+    "frequency": 18
   },
   {
     "word": "VAS",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "BAR",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "ASK",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "KAS",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "PIS",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "VAR",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "BIN",
-    "frequency": 14
+    "frequency": 18
   },
   {
     "word": "ARK",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "ORB",
+    "frequency": 17
   },
   {
     "word": "BIS",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "KIN",
+    "frequency": 17
   },
   {
     "word": "VIS",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "KOR",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "GAL",
+    "frequency": 17
+  },
+  {
+    "word": "EMT",
+    "frequency": 17
+  },
+  {
+    "word": "MET",
+    "frequency": 17
   },
   {
     "word": "ALP",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "PAL",
+    "frequency": 17
+  },
+  {
+    "word": "WET",
+    "frequency": 17
   },
   {
     "word": "KIS",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "EFT",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "FET",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "REX",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "TYE",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "YET",
+    "frequency": 17
+  },
+  {
+    "word": "PET",
+    "frequency": 17
+  },
+  {
+    "word": "TSA",
+    "frequency": 17
   },
   {
     "word": "ALB",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "ELS",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "BET",
+    "frequency": 17
+  },
+  {
+    "word": "SOT",
+    "frequency": 17
+  },
+  {
+    "word": "VET",
+    "frequency": 17
+  },
+  {
+    "word": "HOT",
+    "frequency": 17
+  },
+  {
+    "word": "ROT",
+    "frequency": 17
+  },
+  {
+    "word": "OFF",
+    "frequency": 17
+  },
+  {
+    "word": "TAD",
+    "frequency": 17
   },
   {
     "word": "NEG",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "EMS",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "EFS",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "NSA",
+    "frequency": 17
   },
   {
     "word": "NAH",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "DEL",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "ELD",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "TUT",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "SSA",
+    "frequency": 17
+  },
+  {
+    "word": "DOT",
+    "frequency": 17
   },
   {
     "word": "ELL",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "YEH",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "NEB",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "PEH",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "RYE",
+    "frequency": 17
+  },
+  {
+    "word": "LOT",
+    "frequency": 17
   },
   {
     "word": "AHS",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "NOS",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "RSA",
+    "frequency": 17
   },
   {
     "word": "NOH",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "RAH",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "SOS",
+    "frequency": 17
   },
   {
     "word": "ACT",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "OHS",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "NIH",
+    "frequency": 17
   },
   {
     "word": "TAM",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "RHO",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "TAW",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "TWA",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "CEL",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "AFT",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "DEM",
+    "frequency": 17
+  },
+  {
+    "word": "COT",
+    "frequency": 17
+  },
+  {
+    "word": "OTC",
+    "frequency": 17
   },
   {
     "word": "DEW",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "IRS",
+    "frequency": 17
   },
   {
     "word": "SIR",
-    "frequency": 14
+    "frequency": 17
   },
   {
     "word": "SRI",
-    "frequency": 14
+    "frequency": 17
+  },
+  {
+    "word": "TAG",
+    "frequency": 17
   },
   {
     "word": "DEF",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "DNA",
+    "frequency": 17
   },
   {
     "word": "APT",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "TAP",
+    "frequency": 17
+  },
+  {
+    "word": "ELM",
+    "frequency": 17
   },
   {
     "word": "MEL",
-    "frequency": 13
+    "frequency": 17
   },
   {
     "word": "MOT",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "ELF",
+    "frequency": 17
   },
   {
     "word": "WOT",
-    "frequency": 13
+    "frequency": 17
   },
   {
     "word": "DEY",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "DYE",
+    "frequency": 17
   },
   {
     "word": "ADS",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "GEL",
+    "frequency": 17
+  },
+  {
+    "word": "SAD",
+    "frequency": 17
   },
   {
     "word": "LYE",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "GOT",
+    "frequency": 17
+  },
+  {
+    "word": "NUT",
+    "frequency": 17
   },
   {
     "word": "TUN",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "TAB",
+    "frequency": 17
   },
   {
     "word": "DAH",
-    "frequency": 13
+    "frequency": 17
+  },
+  {
+    "word": "NOD",
+    "frequency": 17
+  },
+  {
+    "word": "OPT",
+    "frequency": 17
+  },
+  {
+    "word": "POT",
+    "frequency": 17
+  },
+  {
+    "word": "TMI",
+    "frequency": 17
   },
   {
     "word": "RAD",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DEB",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "TAV",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "UTS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DOS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "ODS",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SOD",
+    "frequency": 16
   },
   {
     "word": "BEL",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DEV",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HUT",
+    "frequency": 16
   },
   {
     "word": "SOL",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "BOT",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HOD",
+    "frequency": 16
+  },
+  {
+    "word": "RUT",
+    "frequency": 16
+  },
+  {
+    "word": "NIL",
+    "frequency": 16
+  },
+  {
+    "word": "ROD",
+    "frequency": 16
   },
   {
     "word": "IDS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "MEM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "ELK",
+    "frequency": 16
   },
   {
     "word": "MEW",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "WWE",
+    "frequency": 16
   },
   {
     "word": "CEP",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "PEC",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "FEM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "NAM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HID",
+    "frequency": 16
   },
   {
     "word": "FEW",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "AWN",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "NAW",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SAC",
+    "frequency": 16
+  },
+  {
+    "word": "RID",
+    "frequency": 16
   },
   {
     "word": "EFF",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "GEM",
+    "frequency": 16
   },
   {
     "word": "WYE",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "YEW",
+    "frequency": 16
+  },
+  {
+    "word": "PEW",
+    "frequency": 16
+  },
+  {
+    "word": "NAG",
+    "frequency": 16
+  },
+  {
+    "word": "NAY",
+    "frequency": 16
+  },
+  {
+    "word": "NAP",
+    "frequency": 16
+  },
+  {
+    "word": "EGG",
+    "frequency": 16
   },
   {
     "word": "ADD",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DAD",
+    "frequency": 16
   },
   {
     "word": "NOM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "PEG",
+    "frequency": 16
   },
   {
     "word": "COS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "PYE",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "YEP",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "RAM",
+    "frequency": 16
+  },
+  {
+    "word": "PEP",
+    "frequency": 16
+  },
+  {
+    "word": "RAW",
+    "frequency": 16
+  },
+  {
+    "word": "SAG",
+    "frequency": 16
+  },
+  {
+    "word": "LAD",
+    "frequency": 16
+  },
+  {
+    "word": "SAP",
+    "frequency": 16
+  },
+  {
+    "word": "SPA",
+    "frequency": 16
   },
   {
     "word": "WEB",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "NOG",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "ROC",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "NUN",
+    "frequency": 16
   },
   {
     "word": "MOS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "OMS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "SOM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "YAH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "NAB",
+    "frequency": 16
+  },
+  {
+    "word": "NBA",
+    "frequency": 16
+  },
+  {
+    "word": "SOW",
+    "frequency": 16
   },
   {
     "word": "WOS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "PAH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "RAG",
+    "frequency": 16
   },
   {
     "word": "NIM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "RAY",
+    "frequency": 16
   },
   {
     "word": "RYA",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "RAP",
+    "frequency": 16
   },
   {
     "word": "SIC",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "BEG",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DOD",
+    "frequency": 16
   },
   {
     "word": "HOM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "MHO",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "ODD",
+    "frequency": 16
+  },
+  {
+    "word": "OHM",
+    "frequency": 16
   },
   {
     "word": "BEY",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "BYE",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "ROM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "NAV",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "ROW",
+    "frequency": 16
   },
   {
     "word": "CHI",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "HIC",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "ICH",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "NUS",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SUN",
+    "frequency": 16
   },
   {
     "word": "FOH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SOY",
+    "frequency": 16
   },
   {
     "word": "ABS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DOL",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "SAB",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "OPS",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SOP",
+    "frequency": 16
   },
   {
     "word": "FRO",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "SIM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "KEF",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "NIP",
+    "frequency": 16
+  },
+  {
+    "word": "HOG",
+    "frequency": 16
   },
   {
     "word": "HUN",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "HOY",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LOL",
+    "frequency": 16
   },
   {
     "word": "BAH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "NOB",
+    "frequency": 16
+  },
+  {
+    "word": "HOP",
+    "frequency": 16
   },
   {
     "word": "IFS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "POH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "RUN",
+    "frequency": 16
+  },
+  {
+    "word": "URN",
+    "frequency": 16
+  },
+  {
+    "word": "KEG",
+    "frequency": 16
+  },
+  {
+    "word": "ROY",
+    "frequency": 16
   },
   {
     "word": "BRA",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "KEY",
+    "frequency": 16
   },
   {
     "word": "PRO",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "KEP",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "MIR",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "MRI",
+    "frequency": 16
+  },
+  {
+    "word": "RIM",
+    "frequency": 16
   },
   {
     "word": "EBB",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "SKA",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LID",
+    "frequency": 16
   },
   {
     "word": "PSI",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SIP",
+    "frequency": 16
   },
   {
     "word": "CAD",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "FIR",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "RIF",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SOB",
+    "frequency": 16
   },
   {
     "word": "GHI",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "ILL",
+    "frequency": 16
   },
   {
     "word": "NIB",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HIP",
+    "frequency": 16
   },
   {
     "word": "PHI",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LAC",
+    "frequency": 16
+  },
+  {
+    "word": "RIG",
+    "frequency": 16
   },
   {
     "word": "HUH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HBO",
+    "frequency": 16
+  },
+  {
+    "word": "HOB",
+    "frequency": 16
+  },
+  {
+    "word": "RIP",
+    "frequency": 16
+  },
+  {
+    "word": "DAM",
+    "frequency": 16
+  },
+  {
+    "word": "MAD",
+    "frequency": 16
   },
   {
     "word": "BRO",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "ROB",
+    "frequency": 16
   },
   {
     "word": "DAW",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "WAD",
+    "frequency": 16
+  },
+  {
+    "word": "FAD",
+    "frequency": 16
+  },
+  {
+    "word": "FDA",
+    "frequency": 16
   },
   {
     "word": "KOS",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "LAM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "CUT",
+    "frequency": 16
   },
   {
     "word": "SIB",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "AWL",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LAW",
+    "frequency": 16
+  },
+  {
+    "word": "COD",
+    "frequency": 16
+  },
+  {
+    "word": "DOC",
+    "frequency": 16
+  },
+  {
+    "word": "OCD",
+    "frequency": 16
   },
   {
     "word": "DAG",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "GAD",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DAP",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "PAD",
+    "frequency": 16
+  },
+  {
+    "word": "RBI",
+    "frequency": 16
+  },
+  {
+    "word": "RIB",
+    "frequency": 16
   },
   {
     "word": "MUT",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LAG",
+    "frequency": 16
   },
   {
     "word": "DOM",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LAY",
+    "frequency": 16
+  },
+  {
+    "word": "MOD",
+    "frequency": 16
+  },
+  {
+    "word": "LAP",
+    "frequency": 16
   },
   {
     "word": "DOW",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "SKI",
+    "frequency": 16
+  },
+  {
+    "word": "HIV",
+    "frequency": 16
+  },
+  {
+    "word": "LOW",
+    "frequency": 16
+  },
+  {
+    "word": "OWL",
+    "frequency": 16
+  },
+  {
+    "word": "GUT",
+    "frequency": 16
+  },
+  {
+    "word": "TUG",
+    "frequency": 16
   },
   {
     "word": "KHI",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DOG",
+    "frequency": 16
+  },
+  {
+    "word": "GOD",
+    "frequency": 16
   },
   {
     "word": "DUN",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "TUP",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "IRK",
+    "frequency": 16
   },
   {
     "word": "KIR",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "YOD",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "BAD",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DAB",
+    "frequency": 16
+  },
+  {
+    "word": "POD",
+    "frequency": 16
+  },
+  {
+    "word": "DIM",
+    "frequency": 16
   },
   {
     "word": "MID",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "LOG",
+    "frequency": 16
+  },
+  {
+    "word": "LAB",
+    "frequency": 16
   },
   {
     "word": "LOP",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "POL",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "FID",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "MIL",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "CAM",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "MAC",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "CAW",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DIG",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "DAK",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DIY",
+    "frequency": 16
   },
   {
     "word": "YID",
-    "frequency": 13
+    "frequency": 16
   },
   {
     "word": "LAV",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DIP",
+    "frequency": 16
+  },
+  {
+    "word": "TUB",
+    "frequency": 16
   },
   {
     "word": "DUH",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "HUD",
+    "frequency": 16
   },
   {
     "word": "BOD",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "DOB",
+    "frequency": 16
   },
   {
     "word": "URD",
-    "frequency": 13
+    "frequency": 16
+  },
+  {
+    "word": "MMA",
+    "frequency": 16
+  },
+  {
+    "word": "MAW",
+    "frequency": 16
+  },
+  {
+    "word": "LIP",
+    "frequency": 16
   },
   {
     "word": "WAW",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "CAP",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "PAC",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "LOB",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "URL",
+    "frequency": 16
   },
   {
     "word": "MOC",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "COW",
+    "frequency": 16
   },
   {
     "word": "AFF",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "GAM",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "MAG",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "WAG",
+    "frequency": 16
+  },
+  {
+    "word": "YAM",
+    "frequency": 16
   },
   {
     "word": "AMP",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "BID",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "DIB",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "MAP",
+    "frequency": 16
   },
   {
     "word": "PAM",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "YAW",
+    "frequency": 16
+  },
+  {
+    "word": "PAW",
+    "frequency": 16
   },
   {
     "word": "WAP",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "FAG",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "FAY",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "MOM",
+    "frequency": 16
+  },
+  {
+    "word": "COG",
+    "frequency": 16
+  },
+  {
+    "word": "MOW",
+    "frequency": 16
   },
   {
     "word": "COY",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "CAB",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "WOW",
+    "frequency": 16
+  },
+  {
+    "word": "COP",
+    "frequency": 16
+  },
+  {
+    "word": "GAG",
+    "frequency": 16
   },
   {
     "word": "VID",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "GAY",
+    "frequency": 16
   },
   {
     "word": "MIC",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "GAP",
+    "frequency": 16
+  },
+  {
+    "word": "GPA",
+    "frequency": 16
+  },
+  {
+    "word": "PGA",
+    "frequency": 16
   },
   {
     "word": "YAY",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "PAY",
+    "frequency": 16
   },
   {
     "word": "PYA",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "YAP",
+    "frequency": 16
   },
   {
     "word": "APP",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "PAP",
+    "frequency": 16
+  },
+  {
+    "word": "IDK",
+    "frequency": 16
+  },
+  {
+    "word": "KID",
+    "frequency": 16
   },
   {
     "word": "MOG",
-    "frequency": 12
+    "frequency": 16
+  },
+  {
+    "word": "OMG",
+    "frequency": 16
   },
   {
     "word": "VAC",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "MUN",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "YOM",
-    "frequency": 12
+    "frequency": 16
   },
   {
     "word": "BAM",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "MOP",
+    "frequency": 15
   },
   {
     "word": "POM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "YOW",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "WAB",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "POW",
+    "frequency": 15
   },
   {
     "word": "WOP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "MIM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "ILK",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "FOG",
+    "frequency": 15
+  },
+  {
+    "word": "FUN",
+    "frequency": 15
+  },
+  {
+    "word": "ICY",
+    "frequency": 15
   },
   {
     "word": "FOY",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "FAB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "PIC",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "FOP",
+    "frequency": 15
+  },
+  {
+    "word": "IMF",
+    "frequency": 15
+  },
+  {
+    "word": "COB",
+    "frequency": 15
   },
   {
     "word": "CRU",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "CUR",
+    "frequency": 15
   },
   {
     "word": "GNU",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "GUN",
+    "frequency": 15
   },
   {
     "word": "VAW",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "GOY",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "MUS",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "SUM",
+    "frequency": 15
   },
   {
     "word": "UMS",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BAG",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "GAB",
+    "frequency": 15
+  },
+  {
+    "word": "GOP",
+    "frequency": 15
+  },
+  {
+    "word": "PUN",
+    "frequency": 15
   },
   {
     "word": "ABY",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BAY",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "IFF",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "MIG",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BAP",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "POP",
+    "frequency": 15
+  },
+  {
+    "word": "WIG",
+    "frequency": 15
+  },
+  {
+    "word": "IMP",
+    "frequency": 15
+  },
+  {
+    "word": "DUD",
+    "frequency": 15
+  },
+  {
+    "word": "HUM",
+    "frequency": 15
+  },
+  {
+    "word": "FIG",
+    "frequency": 15
+  },
+  {
+    "word": "GIF",
+    "frequency": 15
+  },
+  {
+    "word": "MOB",
+    "frequency": 15
+  },
+  {
+    "word": "FYI",
+    "frequency": 15
   },
   {
     "word": "KAF",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BOW",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "RUM",
+    "frequency": 15
   },
   {
     "word": "UGS",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "FOB",
+    "frequency": 15
+  },
+  {
+    "word": "PUS",
+    "frequency": 15
+  },
+  {
+    "word": "SUP",
+    "frequency": 15
   },
   {
     "word": "UPS",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "GIG",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "IGG",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "FUR",
+    "frequency": 15
+  },
+  {
+    "word": "PIG",
+    "frequency": 15
   },
   {
     "word": "KAY",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "YAK",
+    "frequency": 15
+  },
+  {
+    "word": "HUG",
+    "frequency": 15
   },
   {
     "word": "UGH",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "YIP",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "VOW",
+    "frequency": 15
   },
   {
     "word": "PIP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BOG",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "GOB",
+    "frequency": 15
   },
   {
     "word": "BUN",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "NUB",
+    "frequency": 15
   },
   {
     "word": "HUP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BOY",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "RUG",
+    "frequency": 15
   },
   {
     "word": "YOB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BOP",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "VIC",
+    "frequency": 15
   },
   {
     "word": "PUR",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "URP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "MIB",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "WOK",
+    "frequency": 15
   },
   {
     "word": "ICK",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "FBI",
+    "frequency": 15
   },
   {
     "word": "FIB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BUS",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "SUB",
+    "frequency": 15
+  },
+  {
+    "word": "USB",
+    "frequency": 15
   },
   {
     "word": "VIM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BIG",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "GIB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "YOK",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "KAB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "KOP",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "IVF",
+    "frequency": 15
+  },
+  {
+    "word": "HUB",
+    "frequency": 15
   },
   {
     "word": "VAV",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BOB",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "SUV",
+    "frequency": 15
+  },
+  {
+    "word": "RUB",
+    "frequency": 15
   },
   {
     "word": "URB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "KIF",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "VIG",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "IVY",
+    "frequency": 15
+  },
+  {
+    "word": "VIP",
+    "frequency": 15
   },
   {
     "word": "SUK",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "CUD",
+    "frequency": 15
   },
   {
     "word": "KIP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "KOB",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BIB",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "ZEN",
+    "frequency": 15
+  },
+  {
+    "word": "MUD",
+    "frequency": 15
   },
   {
     "word": "HAJ",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "WUD",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "JAR",
+    "frequency": 15
   },
   {
     "word": "FUD",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "LUM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "SUQ",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "SEX",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "DUG",
+    "frequency": 15
+  },
+  {
+    "word": "FLU",
+    "frequency": 15
   },
   {
     "word": "DUP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "HEX",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "PUD",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "JIN",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "GUL",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "LUG",
+    "frequency": 15
   },
   {
     "word": "PUL",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "BUD",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "DUB",
+    "frequency": 15
   },
   {
     "word": "CUM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "LUV",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "UFC",
+    "frequency": 15
+  },
+  {
+    "word": "MUM",
+    "frequency": 15
   },
   {
     "word": "UMM",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "CUP",
+    "frequency": 15
+  },
+  {
+    "word": "GUM",
+    "frequency": 15
+  },
+  {
+    "word": "MUG",
+    "frequency": 15
   },
   {
     "word": "YUM",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "UMP",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "FUG",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "JET",
+    "frequency": 15
   },
   {
     "word": "LEX",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "CUB",
+    "frequency": 15
   },
   {
     "word": "LEZ",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "GUY",
+    "frequency": 15
+  },
+  {
+    "word": "PUG",
+    "frequency": 15
   },
   {
     "word": "YUP",
-    "frequency": 12
+    "frequency": 15
+  },
+  {
+    "word": "PUP",
+    "frequency": 15
   },
   {
     "word": "BUM",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "REE",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "FUB",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "VUM",
-    "frequency": 11
+    "frequency": 15
+  },
+  {
+    "word": "ZIT",
+    "frequency": 15
   },
   {
     "word": "BUG",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "BUY",
-    "frequency": 11
+    "frequency": 15
+  },
+  {
+    "word": "PUB",
+    "frequency": 15
   },
   {
     "word": "GUV",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "VUG",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "YUK",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "BUB",
-    "frequency": 11
+    "frequency": 15
   },
   {
     "word": "ZIN",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "XIS",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "TAJ",
-    "frequency": 11
+    "frequency": 14
+  },
+  {
+    "word": "JOT",
+    "frequency": 14
   },
   {
     "word": "ERE",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "REI",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "JEW",
-    "frequency": 10
+    "frequency": 14
   },
   {
     "word": "ATE",
-    "frequency": 10
+    "frequency": 14
   },
   {
     "word": "RAJ",
-    "frequency": 10
+    "frequency": 14
+  },
+  {
+    "word": "TAX",
+    "frequency": 13
   },
   {
     "word": "DEX",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "JUT",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "DOJ",
+    "frequency": 13
+  },
+  {
+    "word": "ORE",
+    "frequency": 13
+  },
+  {
+    "word": "JAM",
+    "frequency": 13
+  },
+  {
+    "word": "JAW",
+    "frequency": 13
+  },
+  {
+    "word": "JAG",
+    "frequency": 13
+  },
+  {
+    "word": "JAY",
+    "frequency": 13
   },
   {
     "word": "JOW",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "FEZ",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "ALE",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "ZEP",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "JOG",
+    "frequency": 13
   },
   {
     "word": "JUN",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "SAX",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "JOY",
+    "frequency": 13
+  },
+  {
+    "word": "JAB",
+    "frequency": 13
   },
   {
     "word": "SAZ",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "TEE",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "RAX",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "JUS",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "JIG",
+    "frequency": 13
   },
   {
     "word": "SOX",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "JOB",
+    "frequency": 13
   },
   {
     "word": "NIX",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "VEX",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "ZEK",
-    "frequency": 9
+    "frequency": 13
+  },
+  {
+    "word": "SIX",
+    "frequency": 13
   },
   {
     "word": "JIB",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "ADZ",
-    "frequency": 9
+    "frequency": 13
+  },
+  {
+    "word": "LAX",
+    "frequency": 13
   },
   {
     "word": "TUX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "NTH",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "ZOD",
+    "frequency": 12
   },
   {
     "word": "LOX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ION",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "MAX",
+    "frequency": 12
+  },
+  {
+    "word": "WAX",
+    "frequency": 12
+  },
+  {
+    "word": "MAZ",
+    "frequency": 12
+  },
+  {
+    "word": "FAX",
+    "frequency": 12
   },
   {
     "word": "COX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "COZ",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ZAG",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "PAX",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "ZAP",
+    "frequency": 12
+  },
+  {
+    "word": "EAT",
+    "frequency": 12
+  },
+  {
+    "word": "JUG",
+    "frequency": 12
+  },
+  {
+    "word": "TEA",
+    "frequency": 12
+  },
+  {
+    "word": "FOX",
+    "frequency": 12
   },
   {
     "word": "GOX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OXY",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "POX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "MIX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "LEE",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "WIZ",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "FIX",
+    "frequency": 12
+  },
+  {
+    "word": "TOE",
+    "frequency": 12
   },
   {
     "word": "FIZ",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ZIG",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "PIX",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "ZIP",
+    "frequency": 12
   },
   {
     "word": "BOX",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "TIE",
+    "frequency": 12
   },
   {
     "word": "VOX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ZAX",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "BIZ",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ANE",
-    "frequency": 8
+    "frequency": 12
+  },
+  {
+    "word": "IOU",
+    "frequency": 12
+  },
+  {
+    "word": "AES",
+    "frequency": 12
+  },
+  {
+    "word": "SEA",
+    "frequency": 12
   },
   {
     "word": "EON",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "HAE",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "LUX",
-    "frequency": 8
+    "frequency": 12
+  },
+  {
+    "word": "EAR",
+    "frequency": 12
+  },
+  {
+    "word": "ERA",
+    "frequency": 12
   },
   {
     "word": "OES",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "OSE",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "SEI",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "IRE",
-    "frequency": 8
+    "frequency": 11
+  },
+  {
+    "word": "LEA",
+    "frequency": 11
+  },
+  {
+    "word": "OAT",
+    "frequency": 11
   },
   {
     "word": "UTE",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "OLE",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "AIT",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "LEI",
-    "frequency": 8
+    "frequency": 11
+  },
+  {
+    "word": "IOT",
+    "frequency": 11
   },
   {
     "word": "ANA",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "AAS",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "AHA",
-    "frequency": 8
+    "frequency": 11
+  },
+  {
+    "word": "SLY",
+    "frequency": 11
   },
   {
     "word": "NEE",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "AIN",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "ANI",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "HAO",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "ONO",
-    "frequency": 8
+    "frequency": 11
+  },
+  {
+    "word": "OAR",
+    "frequency": 11
   },
   {
     "word": "ORA",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "AIS",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "ALA",
-    "frequency": 7
+    "frequency": 11
   },
   {
     "word": "ETA",
-    "frequency": 7
+    "frequency": 11
   },
   {
     "word": "TAE",
-    "frequency": 7
+    "frequency": 11
   },
   {
     "word": "DEE",
-    "frequency": 7
+    "frequency": 11
+  },
+  {
+    "word": "STD",
+    "frequency": 11
   },
   {
     "word": "LEU",
-    "frequency": 7
+    "frequency": 11
   },
   {
     "word": "ULE",
-    "frequency": 7
+    "frequency": 11
+  },
+  {
+    "word": "EEL",
+    "frequency": 11
+  },
+  {
+    "word": "FLY",
+    "frequency": 10
   },
   {
     "word": "CEE",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "PLY",
+    "frequency": 10
   },
   {
     "word": "EME",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "EWE",
+    "frequency": 10
   },
   {
     "word": "WEE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "FEE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "NAE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "GEE",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "EYE",
+    "frequency": 10
+  },
+  {
+    "word": "STY",
+    "frequency": 10
   },
   {
     "word": "PEE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "QAT",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "PST",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "SAE",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "THY",
+    "frequency": 10
+  },
+  {
+    "word": "NEO",
+    "frequency": 10
   },
   {
     "word": "BEE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "SOU",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "EVE",
+    "frequency": 10
   },
   {
     "word": "VEE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "HOE",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "ROE",
+    "frequency": 10
   },
   {
     "word": "EEK",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "EKE",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "BIO",
-    "frequency": 7
+    "frequency": 10
   },
   {
     "word": "HIE",
-    "frequency": 7
+    "frequency": 10
+  },
+  {
+    "word": "DEA",
+    "frequency": 10
   },
   {
     "word": "TAO",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "OUD",
-    "frequency": 6
+    "frequency": 10
+  },
+  {
+    "word": "DOE",
+    "frequency": 10
+  },
+  {
+    "word": "ODE",
+    "frequency": 10
   },
   {
     "word": "OOT",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "DIE",
-    "frequency": 6
+    "frequency": 10
+  },
+  {
+    "word": "LIE",
+    "frequency": 10
   },
   {
     "word": "ACE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "EAU",
-    "frequency": 6
+    "frequency": 10
+  },
+  {
+    "word": "UAE",
+    "frequency": 10
   },
   {
     "word": "MAE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "AWE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "WAE",
-    "frequency": 6
+    "frequency": 10
+  },
+  {
+    "word": "CEO",
+    "frequency": 10
   },
   {
     "word": "AGE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "GAE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "AYE",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "YEA",
-    "frequency": 6
+    "frequency": 10
   },
   {
     "word": "APE",
-    "frequency": 6
+    "frequency": 10
+  },
+  {
+    "word": "EPA",
+    "frequency": 10
+  },
+  {
+    "word": "PEA",
+    "frequency": 10
+  },
+  {
+    "word": "EMO",
+    "frequency": 9
+  },
+  {
+    "word": "OWE",
+    "frequency": 9
+  },
+  {
+    "word": "WOE",
+    "frequency": 9
+  },
+  {
+    "word": "ICE",
+    "frequency": 9
+  },
+  {
+    "word": "FOE",
+    "frequency": 9
   },
   {
     "word": "AAH",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "EGO",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "OPE",
-    "frequency": 6
+    "frequency": 9
+  },
+  {
+    "word": "POE",
+    "frequency": 9
   },
   {
     "word": "FIE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "AVE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "SUE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "NOO",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "KAE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "KEA",
-    "frequency": 6
+    "frequency": 9
+  },
+  {
+    "word": "PIE",
+    "frequency": 9
+  },
+  {
+    "word": "HUE",
+    "frequency": 9
   },
   {
     "word": "OBE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "RUE",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "AHI",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "AIR",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "RAI",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "RIA",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "OHO",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "OOH",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "OKE",
-    "frequency": 6
+    "frequency": 9
+  },
+  {
+    "word": "VIE",
+    "frequency": 9
   },
   {
     "word": "TAU",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "UTA",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "ADO",
-    "frequency": 6
+    "frequency": 9
+  },
+  {
+    "word": "DAO",
+    "frequency": 9
+  },
+  {
+    "word": "DUE",
+    "frequency": 9
+  },
+  {
+    "word": "SSN",
+    "frequency": 9
   },
   {
     "word": "AID",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "LOO",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "TUI",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "AMA",
-    "frequency": 6
+    "frequency": 9
+  },
+  {
+    "word": "SSH",
+    "frequency": 9
+  },
+  {
+    "word": "OIL",
+    "frequency": 9
   },
   {
     "word": "SHH",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "AOC",
+    "frequency": 9
   },
   {
     "word": "OCA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "AGA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "CUE",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "ECU",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "MOA",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "NFT",
+    "frequency": 9
+  },
+  {
+    "word": "CIA",
+    "frequency": 9
   },
   {
     "word": "OAF",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "EMU",
+    "frequency": 9
   },
   {
     "word": "COO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "AGO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "GOA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "FEU",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "ABA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "BAA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "APO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "AIM",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "MOO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "WOO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "AVA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "SAU",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "USA",
+    "frequency": 9
   },
   {
     "word": "PHT",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "API",
+    "frequency": 9
+  },
+  {
+    "word": "IPA",
+    "frequency": 9
   },
   {
     "word": "PIA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "GOO",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "TRY",
+    "frequency": 9
   },
   {
     "word": "BOA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "POO",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "SSD",
+    "frequency": 9
+  },
+  {
+    "word": "IMO",
+    "frequency": 9
+  },
+  {
+    "word": "NHL",
+    "frequency": 9
   },
   {
     "word": "AVO",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "OVA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "KOA",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "OAK",
+    "frequency": 9
   },
   {
     "word": "OKA",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "TBH",
+    "frequency": 9
+  },
+  {
+    "word": "IPO",
+    "frequency": 9
   },
   {
     "word": "POI",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "CNN",
+    "frequency": 9
   },
   {
     "word": "KUE",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "UKE",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "TSK",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "VIA",
+    "frequency": 9
+  },
+  {
+    "word": "KIA",
+    "frequency": 8
   },
   {
     "word": "OBI",
-    "frequency": 5
+    "frequency": 8
+  },
+  {
+    "word": "CSS",
+    "frequency": 8
   },
   {
     "word": "KOI",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "OIK",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "SYN",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "DUO",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "UDO",
-    "frequency": 5
+    "frequency": 8
+  },
+  {
+    "word": "SHY",
+    "frequency": 8
+  },
+  {
+    "word": "BLT",
+    "frequency": 8
+  },
+  {
+    "word": "FTC",
+    "frequency": 8
+  },
+  {
+    "word": "RNB",
+    "frequency": 8
   },
   {
     "word": "DUI",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "AMU",
-    "frequency": 5
+    "frequency": 8
   },
   {
     "word": "BRR",
-    "frequency": 5
+    "frequency": 8
+  },
+  {
+    "word": "FTP",
+    "frequency": 8
+  },
+  {
+    "word": "GPT",
+    "frequency": 8
+  },
+  {
+    "word": "NFL",
+    "frequency": 8
+  },
+  {
+    "word": "BTW",
+    "frequency": 8
+  },
+  {
+    "word": "DRM",
+    "frequency": 8
+  },
+  {
+    "word": "ICU",
+    "frequency": 8
+  },
+  {
+    "word": "FDR",
+    "frequency": 8
+  },
+  {
+    "word": "MTV",
+    "frequency": 8
+  },
+  {
+    "word": "DRY",
+    "frequency": 8
   },
   {
     "word": "UPO",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "VAU",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "AUK",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "PIU",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "WYN",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "LCD",
+    "frequency": 8
   },
   {
     "word": "QUA",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "HMM",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "CRY",
+    "frequency": 8
+  },
+  {
+    "word": "CPR",
+    "frequency": 8
   },
   {
     "word": "JEE",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "FAQ",
+    "frequency": 8
+  },
+  {
+    "word": "LLM",
+    "frequency": 8
+  },
+  {
+    "word": "MPH",
+    "frequency": 8
+  },
+  {
+    "word": "RPM",
+    "frequency": 8
   },
   {
     "word": "WRY",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "GPS",
+    "frequency": 8
+  },
+  {
+    "word": "SPY",
+    "frequency": 8
+  },
+  {
+    "word": "FRY",
+    "frequency": 8
   },
   {
     "word": "HYP",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "PHP",
+    "frequency": 8
+  },
+  {
+    "word": "PRY",
+    "frequency": 8
+  },
+  {
+    "word": "QUI",
+    "frequency": 8
+  },
+  {
+    "word": "CDC",
+    "frequency": 8
+  },
+  {
+    "word": "VPN",
+    "frequency": 8
   },
   {
     "word": "BYS",
-    "frequency": 4
+    "frequency": 8
   },
   {
     "word": "ULU",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "DVD",
+    "frequency": 7
+  },
+  {
+    "word": "RBG",
+    "frequency": 7
+  },
+  {
+    "word": "SKY",
+    "frequency": 7
+  },
+  {
+    "word": "RFK",
+    "frequency": 7
+  },
+  {
+    "word": "PDF",
+    "frequency": 7
+  },
+  {
+    "word": "GDP",
+    "frequency": 7
+  },
+  {
+    "word": "FCC",
+    "frequency": 7
+  },
+  {
+    "word": "MLB",
+    "frequency": 7
+  },
+  {
+    "word": "DMV",
+    "frequency": 7
   },
   {
     "word": "CWM",
-    "frequency": 4
+    "frequency": 7
+  },
+  {
+    "word": "MLK",
+    "frequency": 7
+  },
+  {
+    "word": "GYM",
+    "frequency": 7
+  },
+  {
+    "word": "BMW",
+    "frequency": 7
   },
   {
     "word": "GYP",
-    "frequency": 3
+    "frequency": 7
+  },
+  {
+    "word": "BFF",
+    "frequency": 7
   },
   {
     "word": "ZEE",
-    "frequency": 3
+    "frequency": 7
+  },
+  {
+    "word": "BBC",
+    "frequency": 7
   },
   {
     "word": "JOE",
-    "frequency": 3
+    "frequency": 7
+  },
+  {
+    "word": "MVP",
+    "frequency": 7
   },
   {
     "word": "AXE",
-    "frequency": 3
+    "frequency": 6
   },
   {
     "word": "AZO",
-    "frequency": 2
+    "frequency": 5
   },
   {
     "word": "ZOA",
-    "frequency": 2
+    "frequency": 5
   },
   {
     "word": "OXO",
-    "frequency": 2
+    "frequency": 5
+  },
+  {
+    "word": "ZOO",
+    "frequency": 5
+  },
+  {
+    "word": "JYN",
+    "frequency": 5
+  },
+  {
+    "word": "LBJ",
+    "frequency": 5
+  },
+  {
+    "word": "PBJ",
+    "frequency": 4
+  },
+  {
+    "word": "JFK",
+    "frequency": 4
   },
   {
     "word": "PYX",
+    "frequency": 4
+  },
+  {
+    "word": "SQL",
     "frequency": 0
   }
 ]

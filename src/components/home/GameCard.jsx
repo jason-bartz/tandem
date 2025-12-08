@@ -22,6 +22,7 @@ export default function GameCard({
   title,
   description,
   puzzleNumber,
+  creator,
   onClick,
   loading = false,
   completed = false,
@@ -53,16 +54,18 @@ export default function GameCard({
         duration: reduceMotion ? 0 : 0.4,
         delay: reduceMotion ? 0 : animationDelay,
         ease: [0.25, 0.46, 0.45, 0.94],
-      }
+      },
     },
   };
 
   const tapVariants = {
-    tap: reduceMotion ? {} : {
-      scale: 0.98,
-      x: 2,
-      y: 2,
-    },
+    tap: reduceMotion
+      ? {}
+      : {
+          scale: 0.98,
+          x: 2,
+          y: 2,
+        },
   };
 
   return (
@@ -90,14 +93,7 @@ export default function GameCard({
               }`}
             />
           ) : (
-            <Image
-              src={icon}
-              alt=""
-              width={52}
-              height={52}
-              className="rounded-xl"
-              priority
-            />
+            <Image src={icon} alt="" width={52} height={52} className="rounded-xl" priority />
           )}
         </div>
 
@@ -106,9 +102,7 @@ export default function GameCard({
           {/* Title */}
           <h3
             className={`text-xl font-bold mb-1 ${
-              highContrast
-                ? 'text-hc-text'
-                : 'text-gray-900 dark:text-gray-100'
+              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
             }`}
           >
             {title}
@@ -117,20 +111,16 @@ export default function GameCard({
           {/* Description */}
           <p
             className={`text-sm leading-snug mb-2 ${
-              highContrast
-                ? 'text-hc-text opacity-80'
-                : 'text-gray-600 dark:text-gray-400'
+              highContrast ? 'text-hc-text opacity-80' : 'text-gray-600 dark:text-gray-400'
             }`}
           >
             {description}
           </p>
 
-          {/* Puzzle Number */}
-          <p
+          {/* Puzzle Number and Creator Attribution */}
+          <div
             className={`text-sm font-medium ${
-              highContrast
-                ? 'text-hc-text opacity-70'
-                : 'text-gray-500 dark:text-gray-500'
+              highContrast ? 'text-hc-text opacity-70' : 'text-gray-500 dark:text-gray-500'
             }`}
           >
             {loading ? (
@@ -138,30 +128,30 @@ export default function GameCard({
             ) : completed ? (
               <span className="text-green-600 dark:text-green-400">{completedMessage}</span>
             ) : (
-              `Puzzle #${puzzleNumber}`
+              <>
+                <span className="block">{`Puzzle #${puzzleNumber}`}</span>
+                {creator && (
+                  <span className="block text-xs text-accent-blue dark:text-accent-blue">
+                    By {creator}
+                  </span>
+                )}
+              </>
             )}
-          </p>
+          </div>
         </div>
 
         {/* Chevron indicator */}
         <div className="flex-shrink-0">
           <svg
             className={`w-5 h-5 ${
-              highContrast
-                ? 'text-hc-text opacity-60'
-                : 'text-gray-400 dark:text-gray-500'
+              highContrast ? 'text-hc-text opacity-60' : 'text-gray-400 dark:text-gray-500'
             }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             aria-hidden="true"
           >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M9 5l7 7-7 7"
-            />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </div>
       </div>

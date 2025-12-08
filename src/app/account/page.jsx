@@ -766,7 +766,15 @@ export default function AccountPage() {
                                   ✓
                                 </span>
                                 <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Hard Mode & exclusive features
+                                  Daily Tandem Hard Mode
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 dark:text-green-400 text-sm">
+                                  ✓
+                                </span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  Create & share Reel Connections puzzles
                                 </span>
                               </div>
                             </div>
@@ -808,9 +816,9 @@ export default function AccountPage() {
                             'Archive access for all past puzzles',
                             'Sync progress across devices',
                             'Ad-free experience',
-                            'Hard Mode & exclusive features',
+                            'Daily Tandem Hard Mode',
+                            'Create & share Reel Connections puzzles',
                             'Support solo developer',
-                            'Cancel anytime',
                           ].map((benefit, idx) => (
                             <div key={idx} className="flex items-start gap-2">
                               <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">

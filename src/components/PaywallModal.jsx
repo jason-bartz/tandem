@@ -383,22 +383,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       <LeftSidePanel
         isOpen={isOpen}
         onClose={onClose}
-        title="Tandem Unlimited"
+        title="Join Tandem Unlimited"
         subtitle="Subscribe to unlock access to all puzzles, Hard Mode, and future features!"
         maxWidth="520px"
         contentClassName="px-6 py-6"
-        footer={
-          <button
-            onClick={onClose}
-            className={`w-full py-3 sm:py-4 font-semibold text-base sm:text-lg rounded-2xl transition-all border-[3px] ${
-              highContrast
-                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                : 'bg-accent-pink text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-            }`}
-          >
-            Done
-          </button>
-        }
       >
         {/* Logo */}
         <div className="w-20 h-20 mx-auto mb-6 relative">
@@ -414,16 +402,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
         {/* Benefits list */}
         <div
-          className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] ${
+          className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] ${
             highContrast
               ? 'bg-hc-surface border-hc-border'
-              : 'bg-accent-blue/20 dark:bg-sky-900/40 border-accent-blue'
+              : 'bg-accent-blue/20 dark:bg-sky-900/40 border-black dark:border-gray-600'
           }`}
         >
           <h3
             className={`text-base font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
           >
-            What You Get
+            As a member, you&apos;ll get:
           </h3>
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -459,7 +447,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Keep Tandem an Ad-Free experience for everyone
+                Challenge yourself with access to Daily Tandem&apos;s Hard Mode
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -471,7 +459,19 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Access to Hard Mode and future exclusive features
+                Create your own Reel Connections puzzles and share with the world
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Keep Tandem an Ad-Free experience for everyone
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -588,16 +588,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(BUDDY_PASS)}
               disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
-              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all relative ${
                 buddyActive
-                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  ? 'opacity-60 cursor-not-allowed border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
                     ? highContrast
                       ? 'opacity-50 bg-hc-surface border-hc-border'
-                      : 'opacity-50 border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
+                      : 'opacity-50 border-black bg-[#ffce00]'
                     : highContrast
                       ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
-                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-700'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] border-black bg-[#ffce00]'
               }`}
             >
               {buddyActive && (
@@ -615,7 +615,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           ? 'text-gray-500 dark:text-gray-500'
                           : highContrast
                             ? 'text-hc-text'
-                            : 'text-gray-800 dark:text-gray-200'
+                            : 'text-gray-800'
                       }`}
                     >
                       Buddy Pass
@@ -623,9 +623,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                   </div>
                   <p
                     className={`text-sm mt-1 ${
-                      buddyActive
-                        ? 'text-gray-400 dark:text-gray-500'
-                        : 'text-gray-600 dark:text-gray-400'
+                      buddyActive ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700'
                     }`}
                   >
                     Monthly subscription • Auto-renews
@@ -638,12 +636,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-500 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-primary'
-                          : 'text-sky-600 dark:text-sky-400'
+                          : 'text-gray-800'
                     }`}
                   >
                     {getPrice(BUDDY_PASS) || '$1.99'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">per month</p>
+                  <p
+                    className={`text-xs ${buddyActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-600'}`}
+                  >
+                    per month
+                  </p>
                 </div>
               </div>
             </button>
@@ -652,22 +654,22 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(BEST_FRIENDS)}
               disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
-              className={`w-full p-4 pt-6 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+              className={`w-full p-4 pt-6 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] transition-all relative ${
                 bestFriendsActive
-                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  ? 'opacity-60 cursor-not-allowed border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
                     ? highContrast
                       ? 'opacity-50 bg-hc-surface border-hc-border'
-                      : 'opacity-50 border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
+                      : 'opacity-50 border-black bg-[#7ed957]'
                     : highContrast
-                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[4px]'
-                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.3)] border-accent-teal bg-accent-teal/20 dark:bg-teal-900/40'
+                      ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
+                      : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] border-black bg-[#7ed957]'
               }`}
             >
               {/* Best Value badge */}
               <div className="absolute -top-2.5 left-1/2 transform -translate-x-1/2 whitespace-nowrap">
-                <span className="bg-gradient-to-r from-teal-500 to-sky-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
-                  BEST VALUE • SAVE 37%
+                <span className="bg-[#a855f7] text-white text-xs font-bold px-3 py-1 rounded-full shadow-[2px_2px_0px_rgba(0,0,0,0.3)]">
+                  Best value • Save 37%
                 </span>
               </div>
 
@@ -687,7 +689,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           ? 'text-gray-500 dark:text-gray-500'
                           : highContrast
                             ? 'text-hc-text'
-                            : 'text-gray-800 dark:text-gray-200'
+                            : 'text-gray-800'
                       }`}
                     >
                       Best Friends
@@ -699,7 +701,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-400 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-text'
-                          : 'text-gray-600 dark:text-gray-400'
+                          : 'text-gray-700'
                     }`}
                   >
                     Yearly subscription • Auto-renews
@@ -712,12 +714,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-500 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-primary'
-                          : 'text-accent-teal dark:text-accent-teal'
+                          : 'text-gray-800'
                     }`}
                   >
                     {getPrice(BEST_FRIENDS) || '$14.99'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">per year</p>
+                  <p
+                    className={`text-xs ${bestFriendsActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-600'}`}
+                  >
+                    per year
+                  </p>
                 </div>
               </div>
             </button>
@@ -726,20 +732,20 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
             <button
               onClick={() => handlePurchase(SOULMATES)}
               disabled={loading || restoring || soulmatesActive}
-              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.3)] transition-all relative ${
+              className={`w-full p-4 rounded-2xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] transition-all relative ${
                 soulmatesActive
-                  ? 'opacity-60 cursor-not-allowed border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800'
+                  ? 'opacity-60 cursor-not-allowed border-gray-400 dark:border-gray-500 bg-gray-100 dark:bg-gray-800'
                   : loading || restoring
                     ? highContrast
                       ? 'opacity-50 bg-hc-surface border-hc-border'
-                      : 'opacity-50 border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
+                      : 'opacity-50 border-black bg-[#ff66c4]'
                     : currentSubscription && !soulmatesActive
                       ? highContrast
-                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-warning border-[4px]'
-                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/30 dark:bg-pink-900/50 border-[4px]'
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] border-black bg-[#ff66c4]'
                       : highContrast
-                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-primary border-[3px]'
-                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,0.3)] border-accent-pink bg-accent-pink/20 dark:bg-pink-900/40'
+                        ? 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] bg-hc-surface border-hc-border'
+                        : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)] border-black bg-[#ff66c4]'
               }`}
             >
               {soulmatesActive && (
@@ -764,7 +770,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                           ? 'text-gray-500 dark:text-gray-500'
                           : highContrast
                             ? 'text-hc-text'
-                            : 'text-gray-800 dark:text-gray-200'
+                            : 'text-gray-800'
                       }`}
                     >
                       Soulmates
@@ -776,7 +782,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-400 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-text'
-                          : 'text-gray-600 dark:text-gray-400'
+                          : 'text-gray-700'
                     }`}
                   >
                     {isIOS ? 'Lifetime • Shareable with Family' : 'Lifetime'}
@@ -789,12 +795,16 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                         ? 'text-gray-500 dark:text-gray-500'
                         : highContrast
                           ? 'text-hc-warning'
-                          : 'text-accent-pink dark:text-accent-pink'
+                          : 'text-gray-800'
                     }`}
                   >
                     {getPrice(SOULMATES) || '$29.99'}
                   </p>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">one time</p>
+                  <p
+                    className={`text-xs ${soulmatesActive ? 'text-gray-500 dark:text-gray-400' : 'text-gray-600'}`}
+                  >
+                    one time
+                  </p>
                 </div>
               </div>
             </button>

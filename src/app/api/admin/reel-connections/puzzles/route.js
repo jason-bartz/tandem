@@ -73,16 +73,22 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { date, groups } = body;
+    const { date, groups, creatorName, isUserSubmitted } = body;
 
     if (!date || !groups || groups.length !== 4) {
       return NextResponse.json({ error: 'Invalid puzzle data' }, { status: 400 });
     }
 
-    // Create puzzle
+    // Create puzzle with optional creator attribution
+    const puzzleData = { date };
+    if (isUserSubmitted) {
+      puzzleData.creator_name = creatorName;
+      puzzleData.is_user_submitted = true;
+    }
+
     const { data: puzzle, error: puzzleError } = await supabase
       .from('reel_connections_puzzles')
-      .insert({ date })
+      .insert(puzzleData)
       .select()
       .single();
 
