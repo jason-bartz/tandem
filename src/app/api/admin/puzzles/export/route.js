@@ -6,22 +6,28 @@ import { getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 import logger from '@/lib/logger';
 import fs from 'fs';
 import path from 'path';
+import { createClient } from 'redis';
 
-// Lazy load KV to avoid initialization errors when env vars are missing
-let kv = null;
-async function getKV() {
-  if (kv) return kv;
-  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
-    try {
-      const kvModule = await import('@vercel/kv');
-      kv = kvModule.kv;
-      return kv;
-    } catch (e) {
-      logger.warn('[export] Failed to initialize KV:', e.message);
-      return null;
-    }
+// Lazy load Redis client to avoid connection errors when env vars are missing
+let redisClient = null;
+async function getRedisClient() {
+  if (redisClient) return redisClient;
+
+  const url = process.env.REDIS_URL;
+  if (!url) {
+    logger.warn('[export] REDIS_URL not configured');
+    return null;
   }
-  return null;
+
+  try {
+    redisClient = createClient({ url });
+    await redisClient.connect();
+    logger.info('[export] Connected to Redis');
+    return redisClient;
+  } catch (e) {
+    logger.warn('[export] Failed to connect to Redis:', e.message);
+    return null;
+  }
 }
 
 // List of admin user IDs (add your Supabase user ID here)
@@ -93,17 +99,18 @@ export async function GET(request) {
     const puzzles = [];
     let source = 'none';
 
-    // Try Vercel KV first
-    const kvClient = await getKV();
-    if (kvClient) {
+    // Try Redis first
+    const redis = await getRedisClient();
+    if (redis) {
       try {
-        const keys = await kvClient.keys('puzzle:*');
-        logger.info(`[export] Found ${keys.length} puzzle keys in KV`);
+        const keys = await redis.keys('puzzle:*');
+        logger.info(`[export] Found ${keys.length} puzzle keys in Redis`);
 
         for (const key of keys) {
           try {
-            const data = await kvClient.get(key);
-            if (data) {
+            const rawData = await redis.get(key);
+            if (rawData) {
+              const data = JSON.parse(rawData);
               const date = key.replace('puzzle:', '');
               puzzles.push({
                 date,
@@ -115,9 +122,9 @@ export async function GET(request) {
             logger.error(`[export] Error fetching ${key}:`, error);
           }
         }
-        source = 'kv';
+        source = 'redis';
       } catch (error) {
-        logger.error('[export] KV fetch error:', error);
+        logger.error('[export] Redis fetch error:', error);
       }
     }
 
@@ -151,9 +158,9 @@ export async function GET(request) {
     if (puzzles.length === 0) {
       return NextResponse.json({
         success: false,
-        error: 'No puzzles found. KV not configured and no JSON files available.',
+        error: 'No puzzles found. Redis not configured and no JSON files available.',
         message:
-          'Please set KV_REST_API_URL and KV_REST_API_TOKEN in Vercel environment variables.',
+          'Please set REDIS_URL in Vercel environment variables (copy from your Redis Cloud dashboard or .env.local).',
       });
     }
 
