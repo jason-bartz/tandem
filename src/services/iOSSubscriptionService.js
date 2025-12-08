@@ -660,15 +660,15 @@ class SubscriptionService {
   }
 
   canAccessPuzzle(puzzleNumber) {
-    // Always allow access to the current puzzle and last 3 days (4 days total)
+    // Only today's puzzle is free - all archive puzzles require Tandem Unlimited
     const currentPuzzleNumber = getCurrentPuzzleNumber();
-    const oldestFreePuzzle = currentPuzzleNumber - 3; // current day + 3 days back = 4 days total
 
-    if (puzzleNumber >= oldestFreePuzzle && puzzleNumber <= currentPuzzleNumber) {
+    // Free access to today's puzzle only
+    if (puzzleNumber === currentPuzzleNumber) {
       return true;
     }
 
-    // Check subscription status for older puzzles
+    // All archive puzzles require subscription
     return this.isSubscriptionActive();
   }
 
