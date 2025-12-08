@@ -383,23 +383,22 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       <LeftSidePanel
         isOpen={isOpen}
         onClose={onClose}
-        title="Join Tandem Unlimited"
-        subtitle="Subscribe to unlock access to all puzzles, Hard Mode, and future features!"
+        title={
+          <div className="flex items-center gap-3">
+            <Image
+              src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
+              alt="Tandem Logo"
+              width={32}
+              height={32}
+              className="rounded-lg"
+              priority
+            />
+            <span>Join Tandem Unlimited</span>
+          </div>
+        }
         maxWidth="520px"
         contentClassName="px-6 py-6"
       >
-        {/* Logo */}
-        <div className="w-20 h-20 mx-auto mb-6 relative">
-          <Image
-            src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
-            alt="Tandem Logo"
-            width={80}
-            height={80}
-            className="rounded-2xl"
-            priority
-          />
-        </div>
-
         {/* Benefits list */}
         <div
           className={`rounded-2xl p-5 mb-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,1)] ${
@@ -471,31 +470,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Keep Tandem an Ad-Free experience for everyone
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span
-                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-              >
-                ✓
-              </span>
-              <span
-                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-              >
                 Support a solo developer to keep building great puzzles
-              </span>
-            </div>
-            <div className="flex items-start gap-3">
-              <span
-                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
-              >
-                ✓
-              </span>
-              <span
-                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
-              >
-                Cancel anytime
               </span>
             </div>
           </div>
@@ -514,7 +489,8 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
-            Tandem Unlimited members keep the daily puzzle free for everyone to play!
+            Tandem Unlimited members make the daily puzzle available for everyone and the game 100%
+            ad-free
           </p>
         </div>
 
