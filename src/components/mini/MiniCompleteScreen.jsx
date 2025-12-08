@@ -197,9 +197,7 @@ export default function MiniCompleteScreen({
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg text-text-secondary mb-8">
-            You solved Daily Mini #{puzzleNumber}
-          </p>
+          <p className="text-lg text-text-secondary mb-8">You solved Daily Mini #{puzzleNumber}</p>
 
           {/* Stats - Only Time with Best Time */}
           <div className="max-w-md mx-auto mb-8">
@@ -221,7 +219,10 @@ export default function MiniCompleteScreen({
               </div>
               {stats && stats.bestTime > 0 && (
                 <div className="text-sm text-text-secondary">
-                  Best Time: <span className="font-bold text-text-primary">{formatMiniTime(stats.bestTime)}</span>
+                  Best Time:{' '}
+                  <span className="font-bold text-text-primary">
+                    {formatMiniTime(stats.bestTime)}
+                  </span>
                 </div>
               )}
             </div>
@@ -242,7 +243,6 @@ export default function MiniCompleteScreen({
                   text-gray-900
                 "
               >
-                <span className="text-2xl">✨</span>
                 <span className="font-black text-lg">Perfect Solve - No Assists!</span>
               </div>
             </div>
@@ -351,7 +351,6 @@ export default function MiniCompleteScreen({
             </div>
           )}
         </div>
-
       </div>
 
       {/* Modals */}

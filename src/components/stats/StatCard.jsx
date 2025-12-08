@@ -16,13 +16,22 @@ export default function StatCard({ value, label, emoji = '', animate = true }) {
   const { highContrast, reduceMotion } = useTheme();
 
   // Determine font size based on value length to prevent overflow
-  // Values 6+ chars (like "152:04") use smaller text
+  // More aggressive scaling to fit in narrow 4-column grid
   const valueStr = String(value);
   const valueLength = valueStr.length;
-  const fontSizeClass = valueLength >= 6 ? 'text-xl' : valueLength >= 4 ? 'text-2xl' : 'text-3xl';
+  const fontSizeClass =
+    valueLength >= 6
+      ? 'text-base'
+      : valueLength >= 5
+        ? 'text-lg'
+        : valueLength >= 4
+          ? 'text-xl'
+          : valueLength >= 3
+            ? 'text-2xl'
+            : 'text-3xl';
 
   return (
-    <div className="text-center overflow-hidden">
+    <div className="text-center overflow-hidden min-w-0">
       <div className={`${fontSizeClass} font-extrabold mb-1 whitespace-nowrap`}>
         <span
           className={`${
