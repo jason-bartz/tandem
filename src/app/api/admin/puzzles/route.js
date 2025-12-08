@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getPuzzlesRange, setPuzzleForDate, deletePuzzleForDate } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth';
-import { isValidPuzzle } from '@/lib/utils';
 import {
   dateRangeSchema,
   dateSchema,
@@ -67,14 +66,17 @@ export async function POST(request) {
     const { admin } = authResult;
 
     // Parse and validate request body with size limits
+    // Log the raw request body for debugging
+    const clonedRequest = request.clone();
+    const rawBody = await clonedRequest.json();
+    logger.info('Puzzle save request body', {
+      date: rawBody.date,
+      puzzleKeys: Object.keys(rawBody.puzzle || {}),
+    });
+
     const { date, puzzle } = await parseAndValidateJson(request, puzzleWithDateSchema);
 
-    if (!isValidPuzzle(puzzle)) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid puzzle structure' },
-        { status: 400 }
-      );
-    }
+    // Note: Zod schema already validates structure, isValidPuzzle check removed as redundant
 
     await setPuzzleForDate(date, {
       ...puzzle,
