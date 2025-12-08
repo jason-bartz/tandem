@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import logger from '@/lib/logger';
-import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS } from '@/lib/constants';
+import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS, SUBMISSION_STATUS } from '@/lib/constants';
 
 // Constants for validation
 const MAX_STRING_LENGTH = 1000;
@@ -209,6 +209,59 @@ export const feedbackAdminUpdateSchema = z
   })
   .refine((data) => data.status || data.comment, {
     message: 'At least one update (status or comment) must be provided',
+    path: ['status'],
+  });
+
+// User-submitted puzzle validation schemas
+const SUBMISSION_STATUS_VALUES = Object.values(SUBMISSION_STATUS);
+const DIFFICULTY_VALUES = ['easiest', 'easy', 'medium', 'hardest'];
+
+// Movie schema for submissions
+const submissionMovieSchema = z.object({
+  imdbId: z.string().min(1, 'IMDb ID is required'),
+  title: z.string().min(1, 'Movie title is required').max(200),
+  year: z.string().optional(),
+  poster: z.string().optional(),
+  order: z.number().min(1).max(4),
+});
+
+// Group schema for submissions
+const submissionGroupSchema = z.object({
+  connection: z
+    .string()
+    .min(3, 'Connection must be at least 3 characters')
+    .max(100, 'Connection must be at most 100 characters')
+    .transform((val) => sanitizeString(val, 100)),
+  difficulty: z.enum(DIFFICULTY_VALUES, {
+    errorMap: () => ({ message: 'Invalid difficulty level' }),
+  }),
+  order: z.number().min(1).max(4),
+  movies: z.array(submissionMovieSchema).length(4, 'Each group must have exactly 4 movies'),
+});
+
+// Full puzzle submission schema
+export const puzzleSubmissionSchema = z.object({
+  isAnonymous: z.boolean().default(false),
+  groups: z.array(submissionGroupSchema).length(4, 'Puzzle must have exactly 4 groups'),
+});
+
+// Admin update schema for submissions
+export const submissionAdminUpdateSchema = z
+  .object({
+    id: z.string().uuid('Invalid submission ID'),
+    status: z
+      .enum(SUBMISSION_STATUS_VALUES, {
+        errorMap: () => ({ message: 'Invalid status value' }),
+      })
+      .optional(),
+    adminNotes: z
+      .string()
+      .max(2000, 'Admin notes must be at most 2000 characters')
+      .transform((val) => sanitizeString(val, 2000))
+      .optional(),
+  })
+  .refine((data) => data.status !== undefined || data.adminNotes !== undefined, {
+    message: 'At least one update (status or adminNotes) must be provided',
     path: ['status'],
   });
 

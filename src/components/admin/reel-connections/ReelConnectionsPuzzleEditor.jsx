@@ -160,9 +160,29 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
       movies: [null, null, null, null],
     }))
   );
+  const [selectedDate, setSelectedDate] = useState(date || '');
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [aiGeneratingForGroup, setAiGeneratingForGroup] = useState(null);
   const [aiLoading, setAiLoading] = useState(false);
+
+  // Track creator attribution for user-submitted puzzles
+  const [creatorName, setCreatorName] = useState(puzzle?.creatorName || null);
+  const [isUserSubmitted, setIsUserSubmitted] = useState(puzzle?.isUserSubmitted || false);
+
+  // Update selected date when prop changes
+  useEffect(() => {
+    if (date) {
+      setSelectedDate(date);
+    }
+  }, [date]);
+
+  // Update creator info when puzzle changes
+  useEffect(() => {
+    if (puzzle) {
+      setCreatorName(puzzle.creatorName || null);
+      setIsUserSubmitted(puzzle.isUserSubmitted || false);
+    }
+  }, [puzzle]);
 
   useEffect(() => {
     if (puzzle && puzzle.groups) {
@@ -213,6 +233,12 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
   };
 
   const handleSave = () => {
+    // Validate date is selected
+    if (!selectedDate) {
+      alert('Please select a date for this puzzle');
+      return;
+    }
+
     // Validate all groups have connections and 4 movies
     for (let i = 0; i < groups.length; i++) {
       const group = groups[i];
@@ -230,7 +256,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
     }
 
     const puzzleData = {
-      date,
+      date: selectedDate,
       groups: groups.map((group, index) => ({
         difficulty: group.difficulty,
         connection: group.connection,
@@ -240,6 +266,11 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
           order: movieIndex + 1,
         })),
       })),
+      // Include creator attribution if this is from a user submission
+      ...(isUserSubmitted && {
+        creatorName,
+        isUserSubmitted: true,
+      }),
     };
 
     onSave(puzzleData);
@@ -284,18 +315,52 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
   return (
     <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-4 sm:p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
       <div className="flex justify-between items-center mb-6">
-        <div>
-          <h3 className="text-lg font-bold text-text-primary">
-            {puzzle ? 'Edit Puzzle' : 'Create New Puzzle'}
-          </h3>
-          <p className="text-sm text-text-secondary font-medium">
-            {new Date(date + 'T00:00:00').toLocaleDateString('en-US', {
-              weekday: 'long',
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric',
-            })}
-          </p>
+        <div className="flex-1">
+          <div className="flex items-center gap-3 mb-1">
+            <h3 className="text-lg font-bold text-text-primary">
+              {puzzle ? 'Edit Puzzle' : 'Create New Puzzle'}
+            </h3>
+            {isUserSubmitted && (
+              <span className="px-2 py-1 bg-accent-green/20 text-accent-green text-xs font-bold rounded-lg border-[2px] border-accent-green">
+                User Submission
+              </span>
+            )}
+          </div>
+          {selectedDate ? (
+            <div className="flex items-center gap-2">
+              <p className="text-sm text-text-secondary font-medium">
+                {new Date(selectedDate + 'T00:00:00').toLocaleDateString('en-US', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                })}
+              </p>
+              {!date && (
+                <button
+                  onClick={() => setSelectedDate('')}
+                  className="text-xs text-accent-blue hover:underline font-medium"
+                >
+                  Change
+                </button>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <label className="text-sm text-text-secondary font-medium">Select date:</label>
+              <input
+                type="date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-3 py-1 border-[2px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium text-sm"
+              />
+            </div>
+          )}
+          {isUserSubmitted && creatorName && (
+            <p className="text-xs text-text-secondary mt-1">
+              Submitted by: <span className="font-bold">{creatorName}</span>
+            </p>
+          )}
         </div>
       </div>
 

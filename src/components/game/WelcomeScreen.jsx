@@ -197,6 +197,7 @@ export default function WelcomeScreen({
               title="Reel Connections"
               description="Group movies that share a common theme."
               puzzleNumber={reelPuzzle?.number || reelPuzzleNumber}
+              creator={reelPuzzle?.creator_name}
               onClick={handleReelClick}
               loading={reelLoading}
               completed={reelCompleted}

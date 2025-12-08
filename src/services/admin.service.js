@@ -275,6 +275,66 @@ class AdminService {
       throw error;
     }
   }
+
+  // ==========================================
+  // Puzzle Submissions
+  // ==========================================
+
+  async getSubmissions({ status } = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (status) {
+        params.append('status', status);
+      }
+
+      const url = `/api/admin/puzzle-submissions${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(getApiUrl(url), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Get submissions failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getSubmissions error', error);
+      throw error;
+    }
+  }
+
+  async updateSubmission(submissionId, updates) {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/puzzle-submissions'), {
+        method: 'PATCH',
+        headers: await this.getAuthHeaders(true),
+        body: JSON.stringify({ id: submissionId, ...updates }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        logger.error('Update submission failed', {
+          status: response.status,
+          statusText: response.statusText,
+          data,
+        });
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.updateSubmission error', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdminService();

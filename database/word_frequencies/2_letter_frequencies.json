@@ -73,11 +73,11 @@
   },
   {
     "word": "GO",
-    "frequency": 95
+    "frequency": 96
   },
   {
     "word": "IF",
-    "frequency": 95
+    "frequency": 96
   },
   {
     "word": "US",
@@ -96,543 +96,543 @@
     "frequency": 87
   },
   {
-    "word": "TV",
-    "frequency": 70
-  },
-  {
-    "word": "DJ",
-    "frequency": 70
-  },
-  {
-    "word": "PC",
-    "frequency": 70
-  },
-  {
-    "word": "CD",
-    "frequency": 70
-  },
-  {
-    "word": "AC",
-    "frequency": 70
-  },
-  {
-    "word": "DC",
-    "frequency": 70
-  },
-  {
-    "word": "PM",
-    "frequency": 70
-  },
-  {
-    "word": "IQ",
-    "frequency": 70
-  },
-  {
-    "word": "UK",
-    "frequency": 70
-  },
-  {
-    "word": "EU",
-    "frequency": 70
-  },
-  {
-    "word": "PR",
-    "frequency": 70
-  },
-  {
-    "word": "HR",
-    "frequency": 70
-  },
-  {
-    "word": "VR",
-    "frequency": 70
-  },
-  {
-    "word": "QR",
-    "frequency": 70
-  },
-  {
-    "word": "UV",
-    "frequency": 70
-  },
-  {
-    "word": "HD",
-    "frequency": 70
-  },
-  {
-    "word": "SD",
-    "frequency": 70
-  },
-  {
-    "word": "HP",
-    "frequency": 70
-  },
-  {
-    "word": "GM",
-    "frequency": 70
-  },
-  {
-    "word": "GE",
-    "frequency": 70
-  },
-  {
-    "word": "BP",
-    "frequency": 70
-  },
-  {
-    "word": "MD",
-    "frequency": 70
-  },
-  {
-    "word": "RV",
-    "frequency": 65
-  },
-  {
-    "word": "AP",
-    "frequency": 65
-  },
-  {
-    "word": "AV",
-    "frequency": 65
-  },
-  {
-    "word": "BC",
-    "frequency": 65
-  },
-  {
-    "word": "FL",
-    "frequency": 65
-  },
-  {
-    "word": "CA",
-    "frequency": 65
-  },
-  {
-    "word": "NY",
-    "frequency": 65
-  },
-  {
-    "word": "TX",
-    "frequency": 65
-  },
-  {
-    "word": "AZ",
-    "frequency": 65
-  },
-  {
-    "word": "NV",
-    "frequency": 65
-  },
-  {
-    "word": "CO",
-    "frequency": 65
-  },
-  {
-    "word": "WA",
-    "frequency": 65
-  },
-  {
-    "word": "GA",
-    "frequency": 65
-  },
-  {
-    "word": "NC",
-    "frequency": 65
-  },
-  {
-    "word": "SC",
-    "frequency": 65
-  },
-  {
-    "word": "VA",
-    "frequency": 65
-  },
-  {
-    "word": "NJ",
-    "frequency": 65
-  },
-  {
-    "word": "CT",
-    "frequency": 65
-  },
-  {
-    "word": "IL",
-    "frequency": 65
-  },
-  {
-    "word": "WI",
-    "frequency": 65
-  },
-  {
-    "word": "MN",
-    "frequency": 65
-  },
-  {
-    "word": "KS",
-    "frequency": 65
-  },
-  {
-    "word": "ND",
-    "frequency": 65
-  },
-  {
-    "word": "MT",
-    "frequency": 65
-  },
-  {
-    "word": "WY",
-    "frequency": 65
-  },
-  {
-    "word": "NM",
-    "frequency": 65
-  },
-  {
-    "word": "MS",
-    "frequency": 65
-  },
-  {
-    "word": "TN",
-    "frequency": 65
-  },
-  {
-    "word": "KY",
-    "frequency": 65
-  },
-  {
-    "word": "WV",
-    "frequency": 65
-  },
-  {
-    "word": "RI",
-    "frequency": 65
-  },
-  {
-    "word": "VT",
-    "frequency": 65
-  },
-  {
-    "word": "NH",
-    "frequency": 65
-  },
-  {
-    "word": "AK",
-    "frequency": 65
-  },
-  {
     "word": "ER",
-    "frequency": 30
+    "frequency": 18
   },
   {
     "word": "ED",
-    "frequency": 30
+    "frequency": 18
   },
   {
     "word": "RE",
-    "frequency": 30
+    "frequency": 17
   },
   {
     "word": "EN",
-    "frequency": 30
-  },
-  {
-    "word": "HA",
-    "frequency": 30
-  },
-  {
-    "word": "EH",
-    "frequency": 30
-  },
-  {
-    "word": "EM",
-    "frequency": 30
+    "frequency": 15
   },
   {
     "word": "ES",
-    "frequency": 12
+    "frequency": 15
   },
   {
     "word": "TI",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "UN",
-    "frequency": 11
+    "frequency": 14
+  },
+  {
+    "word": "HA",
+    "frequency": 14
   },
   {
     "word": "AR",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "AL",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "ET",
-    "frequency": 11
+    "frequency": 14
   },
   {
     "word": "NE",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "EH",
+    "frequency": 13
   },
   {
     "word": "TA",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "DE",
-    "frequency": 10
+    "frequency": 13
   },
   {
     "word": "EL",
-    "frequency": 10
+    "frequency": 13
+  },
+  {
+    "word": "EM",
+    "frequency": 13
   },
   {
     "word": "EF",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "NA",
-    "frequency": 9
+    "frequency": 13
+  },
+  {
+    "word": "GE",
+    "frequency": 13
   },
   {
     "word": "YE",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "PE",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "AH",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "OS",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "HO",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "OH",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "SI",
-    "frequency": 9
+    "frequency": 13
   },
   {
     "word": "HI",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "RI",
+    "frequency": 12
   },
   {
     "word": "AD",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "DA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "LA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "UT",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OD",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "LO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "ID",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "IL",
+    "frequency": 12
   },
   {
     "word": "LI",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "AC",
+    "frequency": 12
+  },
+  {
+    "word": "CA",
+    "frequency": 12
   },
   {
     "word": "MA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "AW",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "WA",
+    "frequency": 12
   },
   {
     "word": "FA",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "CO",
+    "frequency": 12
   },
   {
     "word": "AG",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "GA",
+    "frequency": 12
   },
   {
     "word": "AY",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "YA",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "AP",
+    "frequency": 12
   },
   {
     "word": "PA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "MO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OM",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OW",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "WO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "NU",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OY",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "YO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "AB",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "BA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OP",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "PO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "MI",
-    "frequency": 9
+    "frequency": 12
+  },
+  {
+    "word": "WI",
+    "frequency": 12
+  },
+  {
+    "word": "AV",
+    "frequency": 12
+  },
+  {
+    "word": "VA",
+    "frequency": 12
+  },
+  {
+    "word": "AK",
+    "frequency": 12
   },
   {
     "word": "KA",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "PI",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "UH",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "BO",
-    "frequency": 9
+    "frequency": 12
   },
   {
     "word": "OK",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "BI",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "KI",
-    "frequency": 8
+    "frequency": 12
   },
   {
     "word": "MU",
-    "frequency": 8
+    "frequency": 11
   },
   {
     "word": "UM",
-    "frequency": 8
+    "frequency": 11
+  },
+  {
+    "word": "UV",
+    "frequency": 11
+  },
+  {
+    "word": "UK",
+    "frequency": 11
   },
   {
     "word": "EX",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "JO",
-    "frequency": 6
+    "frequency": 9
   },
   {
     "word": "AX",
-    "frequency": 5
+    "frequency": 9
+  },
+  {
+    "word": "AZ",
+    "frequency": 9
   },
   {
     "word": "ZA",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "OX",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "XI",
-    "frequency": 5
+    "frequency": 9
   },
   {
     "word": "XU",
-    "frequency": 4
+    "frequency": 8
+  },
+  {
+    "word": "ND",
+    "frequency": 6
   },
   {
     "word": "AE",
-    "frequency": 3
+    "frequency": 6
   },
   {
     "word": "OE",
-    "frequency": 2
+    "frequency": 6
   },
   {
     "word": "AA",
-    "frequency": 2
+    "frequency": 5
+  },
+  {
+    "word": "TN",
+    "frequency": 5
+  },
+  {
+    "word": "EU",
+    "frequency": 5
   },
   {
     "word": "AI",
-    "frequency": 2
+    "frequency": 5
   },
   {
     "word": "OI",
-    "frequency": 2
+    "frequency": 5
+  },
+  {
+    "word": "NH",
+    "frequency": 5
   },
   {
     "word": "SH",
-    "frequency": 1
+    "frequency": 5
+  },
+  {
+    "word": "HR",
+    "frequency": 5
+  },
+  {
+    "word": "CT",
+    "frequency": 5
+  },
+  {
+    "word": "MT",
+    "frequency": 5
+  },
+  {
+    "word": "SD",
+    "frequency": 4
+  },
+  {
+    "word": "HD",
+    "frequency": 4
+  },
+  {
+    "word": "TV",
+    "frequency": 4
+  },
+  {
+    "word": "VT",
+    "frequency": 4
+  },
+  {
+    "word": "NC",
+    "frequency": 4
+  },
+  {
+    "word": "MN",
+    "frequency": 4
+  },
+  {
+    "word": "NM",
+    "frequency": 4
+  },
+  {
+    "word": "SC",
+    "frequency": 4
+  },
+  {
+    "word": "MS",
+    "frequency": 4
+  },
+  {
+    "word": "NY",
+    "frequency": 4
   },
   {
     "word": "HM",
-    "frequency": 1
+    "frequency": 4
+  },
+  {
+    "word": "HP",
+    "frequency": 4
+  },
+  {
+    "word": "PR",
+    "frequency": 4
+  },
+  {
+    "word": "NV",
+    "frequency": 4
+  },
+  {
+    "word": "KS",
+    "frequency": 4
+  },
+  {
+    "word": "IQ",
+    "frequency": 4
   },
   {
     "word": "QI",
-    "frequency": 0
+    "frequency": 4
+  },
+  {
+    "word": "CD",
+    "frequency": 4
+  },
+  {
+    "word": "DC",
+    "frequency": 4
+  },
+  {
+    "word": "RV",
+    "frequency": 4
+  },
+  {
+    "word": "VR",
+    "frequency": 4
+  },
+  {
+    "word": "MD",
+    "frequency": 4
+  },
+  {
+    "word": "FL",
+    "frequency": 4
   },
   {
     "word": "MM",
+    "frequency": 4
+  },
+  {
+    "word": "PC",
+    "frequency": 4
+  },
+  {
+    "word": "GM",
+    "frequency": 4
+  },
+  {
+    "word": "PM",
+    "frequency": 4
+  },
+  {
+    "word": "WY",
+    "frequency": 4
+  },
+  {
+    "word": "BC",
+    "frequency": 4
+  },
+  {
+    "word": "WV",
+    "frequency": 3
+  },
+  {
+    "word": "BP",
+    "frequency": 3
+  },
+  {
+    "word": "KY",
+    "frequency": 3
+  },
+  {
+    "word": "NJ",
+    "frequency": 2
+  },
+  {
+    "word": "DJ",
+    "frequency": 1
+  },
+  {
+    "word": "TX",
+    "frequency": 1
+  },
+  {
+    "word": "QR",
     "frequency": 0
   }
 ]
