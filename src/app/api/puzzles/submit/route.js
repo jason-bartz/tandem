@@ -6,11 +6,7 @@ import {
   parseAndValidateJson,
   sanitizeErrorMessage,
 } from '@/lib/security/validation';
-import {
-  checkUserSubscription,
-  getUserDailySubmissionCount,
-  createPuzzleSubmission,
-} from '@/lib/db';
+import { getUserDailySubmissionCount, createPuzzleSubmission } from '@/lib/db';
 import { SUBMISSION_LIMITS } from '@/lib/constants';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 import logger from '@/lib/logger';
@@ -33,8 +29,10 @@ async function getUserUsername(userId) {
  *
  * Requires:
  * - Authentication
- * - Active Tandem Unlimited subscription
  * - Less than 2 submissions today
+ *
+ * Note: Subscription check removed - iOS IAP subscriptions may not be in database
+ * The create-puzzle page already enforces subscription access via SubscriptionContext
  */
 export async function POST(request) {
   try {
@@ -48,19 +46,6 @@ export async function POST(request) {
 
     if (!user) {
       return response;
-    }
-
-    // Check subscription status
-    const subscription = await checkUserSubscription(user.id);
-
-    if (!subscription.isActive) {
-      return NextResponse.json(
-        {
-          success: false,
-          error: 'Tandem Unlimited subscription required to submit puzzles',
-        },
-        { status: 403 }
-      );
     }
 
     // Check daily submission limit
