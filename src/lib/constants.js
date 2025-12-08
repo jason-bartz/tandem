@@ -190,6 +190,26 @@ export const FEEDBACK_STATUS_OPTIONS = [
   { value: FEEDBACK_STATUS.ARCHIVED, label: 'Archived' },
 ];
 
+// User-submitted puzzle statuses
+export const SUBMISSION_STATUS = {
+  PENDING: 'pending',
+  APPROVED: 'approved',
+  NEEDS_EDIT: 'needs_edit',
+  ARCHIVED: 'archived',
+};
+
+export const SUBMISSION_STATUS_OPTIONS = [
+  { value: SUBMISSION_STATUS.PENDING, label: 'Pending' },
+  { value: SUBMISSION_STATUS.APPROVED, label: 'Approved' },
+  { value: SUBMISSION_STATUS.NEEDS_EDIT, label: 'Needs Edit' },
+  { value: SUBMISSION_STATUS.ARCHIVED, label: 'Archived' },
+];
+
+// Submission limits
+export const SUBMISSION_LIMITS = {
+  MAX_PER_DAY: 2,
+};
+
 export const VALIDATION_RULES = {
   ANSWER: {
     MIN_LENGTH: 2,
