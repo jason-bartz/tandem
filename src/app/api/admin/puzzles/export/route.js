@@ -6,12 +6,19 @@ import { createServerClient } from '@/lib/supabase/server';
 import { getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 import logger from '@/lib/logger';
 
+// List of admin user IDs (add your Supabase user ID here)
+const ADMIN_USER_IDS = [
+  process.env.ADMIN_USER_ID, // Set in Vercel env vars
+].filter(Boolean);
+
 /**
  * GET /api/admin/puzzles/export
  * Export all puzzles from Vercel KV for backup or migration
  *
  * Query params:
  *   - format: 'json' (default) or 'migrate' (migrate directly to Supabase)
+ *
+ * Auth: Supports both Bearer token (API) and Supabase session (browser)
  */
 export async function GET(request) {
   try {
@@ -20,9 +27,40 @@ export async function GET(request) {
       return rateLimitResponse;
     }
 
+    // Try Bearer token auth first
     const authResult = await requireAdmin(request);
+
+    // If Bearer auth fails, try Supabase session auth
     if (authResult.error) {
-      return authResult.error;
+      const supabase = createServerClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return NextResponse.json({ error: 'Unauthorized - Please log in' }, { status: 401 });
+      }
+
+      // Check if user is admin
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      const isAdmin =
+        userData?.role === 'admin' ||
+        ADMIN_USER_IDS.includes(user.id) ||
+        user.email?.endsWith('@playtandem.com');
+
+      if (!isAdmin) {
+        return NextResponse.json(
+          { error: 'Unauthorized - Admin access required' },
+          { status: 403 }
+        );
+      }
+
+      logger.info(`[export] Admin access granted via Supabase session: ${user.email}`);
     }
 
     const { searchParams } = new URL(request.url);
