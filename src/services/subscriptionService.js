@@ -90,11 +90,10 @@ class UnifiedSubscriptionService {
    * SYNCHRONOUS - Returns immediately using cached service
    */
   canAccessPuzzle(puzzleNumber) {
-    // If service not loaded yet, default to free window only
+    // If service not loaded yet, default to today's puzzle only
     if (!this.service) {
       const currentPuzzleNumber = getCurrentPuzzleNumber();
-      const oldestFreePuzzle = currentPuzzleNumber - 3;
-      return puzzleNumber >= oldestFreePuzzle && puzzleNumber <= currentPuzzleNumber;
+      return puzzleNumber === currentPuzzleNumber;
     }
     return this.service.canAccessPuzzle(puzzleNumber);
   }

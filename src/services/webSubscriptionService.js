@@ -206,18 +206,17 @@ class WebSubscriptionService {
 
   /**
    * Check if user can access a puzzle by number
-   * Same logic as iOS: current day + 3 days back = 4 days free
+   * Only today's puzzle is free - all archive puzzles require Tandem Unlimited
    */
   canAccessPuzzle(puzzleNumber) {
     const currentPuzzleNumber = getCurrentPuzzleNumber();
-    const oldestFreePuzzle = currentPuzzleNumber - 3;
 
-    // Free access to last 4 days
-    if (puzzleNumber >= oldestFreePuzzle && puzzleNumber <= currentPuzzleNumber) {
+    // Free access to today's puzzle only
+    if (puzzleNumber === currentPuzzleNumber) {
       return true;
     }
 
-    // Check subscription for older puzzles
+    // All archive puzzles require subscription
     return this.isSubscriptionActive();
   }
 
