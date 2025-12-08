@@ -1,8 +1,8 @@
 import ReelConnectionsGame from '@/components/reel-connections/ReelConnectionsGame';
-import { Barlow_Condensed } from 'next/font/google';
+import { Righteous } from 'next/font/google';
 
-const barlowCondensed = Barlow_Condensed({
-  weight: ['400', '600', '700'],
+const righteous = Righteous({
+  weight: '400',
   subsets: ['latin'],
   display: 'swap',
 });
@@ -39,11 +39,8 @@ export const metadata = {
 
 export default function ReelConnectionsPage() {
   return (
-    <div
-      className={`min-h-screen bg-[#1a1a2e] ${barlowCondensed.className}`}
-      style={{ backgroundColor: '#1a1a2e' }}
-    >
-      <ReelConnectionsGame />
+    <div className="min-h-screen bg-[#1a1a2e]" style={{ backgroundColor: '#1a1a2e' }}>
+      <ReelConnectionsGame titleFont={righteous.className} />
     </div>
   );
 }

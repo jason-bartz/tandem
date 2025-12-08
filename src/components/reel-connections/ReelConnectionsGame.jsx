@@ -14,6 +14,8 @@ import {
 import { playClapperSound } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
+import { Capacitor } from '@capacitor/core';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -102,7 +104,7 @@ const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
   >
     <div className="relative filter drop-shadow-[3px_3px_0px_rgba(0,0,0,1)]">
       <img src={icon} alt={label} className="w-24 h-12 sm:w-32 sm:h-14 object-contain" />
-      <span className="absolute inset-0 flex items-center justify-center font-black text-xs sm:text-sm tracking-wider text-[#2c2c2c] transform -rotate-1">
+      <span className="absolute inset-0 flex items-center justify-center font-bold text-xs sm:text-sm tracking-wide text-[#2c2c2c] transform -rotate-1">
         {label}
       </span>
     </div>
@@ -117,11 +119,12 @@ const getGroupColor = (difficulty, highContrast) => {
   return DIFFICULTY_COLORS[difficulty] || 'bg-gray-400';
 };
 
-const ReelConnectionsGame = () => {
+const ReelConnectionsGame = ({ titleFont = '' }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { lightTap } = useHaptics();
   const { reduceMotion, highContrast } = useTheme();
+  const { isActive: hasSubscription } = useSubscription();
 
   // Sidebar and unified modal states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -466,7 +469,7 @@ const ReelConnectionsGame = () => {
                     className="flex-shrink-0 sm:w-6 sm:h-6"
                   />
                   <h1
-                    className={`text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                    className={`${titleFont} text-xl sm:text-2xl tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
                   >
                     Reel Connections
                   </h1>
@@ -543,7 +546,7 @@ const ReelConnectionsGame = () => {
             <div className="mt-4 sm:mt-6">
               <button
                 onClick={handleViewResults}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
               >
                 Back to Results
               </button>
@@ -657,12 +660,12 @@ const ReelConnectionsGame = () => {
             </div>
 
             <h2
-              className={`text-4xl font-black mb-2 tracking-tight drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+              className={`text-4xl font-bold mb-2 tracking-tight drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
             >
               {isWin ? congratsMessage : 'Cut!'}
             </h2>
             <p
-              className={`text-lg mb-8 drop-shadow-md font-black ${highContrast ? 'text-hc-text/90' : 'text-white/90'}`}
+              className={`text-lg mb-8 drop-shadow-md font-semibold ${highContrast ? 'text-hc-text/90' : 'text-white/90'}`}
             >
               {isWin
                 ? isArchivePuzzle
@@ -676,12 +679,12 @@ const ReelConnectionsGame = () => {
                 className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
               >
                 <p
-                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {timeStr}
                 </p>
                 <p
-                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  className={`text-xs font-semibold capitalize tracking-wide ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
                 >
                   Time
                 </p>
@@ -690,12 +693,12 @@ const ReelConnectionsGame = () => {
                 className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
               >
                 <p
-                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {mistakes}/{REEL_CONFIG.MAX_MISTAKES}
                 </p>
                 <p
-                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  className={`text-xs font-semibold capitalize tracking-wide ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
                 >
                   Mistakes
                 </p>
@@ -704,12 +707,12 @@ const ReelConnectionsGame = () => {
                 className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
               >
                 <p
-                  className={`font-black text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {dateStr}
                 </p>
                 <p
-                  className={`text-xs font-bold capitalize tracking-wider ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                  className={`text-xs font-semibold capitalize tracking-wide ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
                 >
                   Date
                 </p>
@@ -719,23 +722,40 @@ const ReelConnectionsGame = () => {
             <div className="space-y-3 mb-4">
               <button
                 onClick={handleShare}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide animate-attention-pulse ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-[#4ade80] text-[#2c2c2c] border-black'}`}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide animate-attention-pulse ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-[#4ade80] text-[#2c2c2c] border-black'}`}
               >
                 Share Results
               </button>
 
               <button
-                onClick={handleViewPuzzle}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
+                onClick={() => setShowArchive(true)}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-[#2c2c2c] border-black'}`}
               >
-                Back To Puzzle
+                Play from Archive
               </button>
 
               <button
-                onClick={() => setShowArchive(true)}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-[#2c2c2c] border-black'}`}
+                onClick={() => {
+                  if (hasSubscription) {
+                    router.push('/create-puzzle');
+                  } else if (Capacitor.isNativePlatform()) {
+                    // On iOS, navigate to account page for subscription
+                    router.push('/account');
+                  } else {
+                    // On web, trigger paywall modal
+                    window.dispatchEvent(new CustomEvent('openPaywall'));
+                  }
+                }}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ef4444] text-white border-black'}`}
               >
-                Play the Archive
+                Create Your Own Puzzle
+              </button>
+
+              <button
+                onClick={handleViewPuzzle}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
+              >
+                Back To Puzzle
               </button>
             </div>
 
@@ -861,7 +881,7 @@ const ReelConnectionsGame = () => {
                   className="flex-shrink-0 sm:w-6 sm:h-6"
                 />
                 <h1
-                  className={`text-xl sm:text-2xl font-bold tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`${titleFont} text-xl sm:text-2xl tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   Reel Connections
                 </h1>
@@ -1150,18 +1170,13 @@ const ReelConnectionsGame = () => {
                       Ready to start?
                     </h3>
                     <p
-                      className={`text-xs sm:text-sm mb-1 sm:mb-2 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                      className={`text-xs sm:text-sm font-medium mb-3 sm:mb-4 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
                     >
                       Create four groups of four movies
                     </p>
-                    <p
-                      className={`text-[10px] sm:text-xs mb-3 sm:mb-4 ${highContrast ? 'text-hc-text/50' : 'text-white/50'}`}
-                    >
-                      Hold poster, then tap banner to enlarge
-                    </p>
                     <button
                       onClick={onStartGame}
-                      className={`flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 border-[2px] sm:border-[3px] rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-black text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black gold-glow'}`}
+                      className={`mx-auto flex items-center gap-2 px-6 sm:px-8 py-2.5 sm:py-3 border-[2px] sm:border-[3px] rounded-lg sm:rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] sm:shadow-[4px_4px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-base sm:text-lg tracking-wide ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black gold-glow'}`}
                     >
                       Action!
                       <Image

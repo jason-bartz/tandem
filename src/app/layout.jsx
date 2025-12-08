@@ -180,6 +180,10 @@ export default function RootLayout({ children }) {
 
         {/* Preload critical resources */}
         <link rel="preload" href="/images/main-logo.webp" as="image" type="image/webp" />
+        {/* Preload game icons for instant display on home page */}
+        <link rel="preload" href="/icons/ui/tandem.png" as="image" type="image/png" />
+        <link rel="preload" href="/icons/ui/mini.png" as="image" type="image/png" />
+        <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
 
         {/* Structured Data */}
         <script
