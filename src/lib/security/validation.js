@@ -14,7 +14,7 @@ const MAX_FEEDBACK_LENGTH = 2000;
 const PATTERNS = {
   date: /^\d{4}-\d{2}-\d{2}$/,
   safeString: /^[a-zA-Z0-9\s\-_.,:!?'"]+$/, // Alphanumeric and common punctuation
-  alphaOnly: /^[A-Z0-9\s,'\-.!&]+$/, // Capital letters, numbers, spaces, and common punctuation for answers
+  alphaOnly: /^[A-Za-z0-9\s,'\-.!&]+$/i, // Letters, numbers, spaces, and common punctuation for answers
   username: /^[a-zA-Z0-9_-]{3,20}$/, // Username pattern
   emoji:
     /^[\u{1F300}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F000}-\u{1F02F}\u{1F0A0}-\u{1F0FF}\u{1F100}-\u{1F64F}\u{1F680}-\u{1F6FF}\u{1F900}-\u{1F9FF}\s]+$/u,
@@ -158,6 +158,7 @@ export const puzzleSchema = z.object({
       emojiClarity: z.number().min(1).max(5),
       hintDirectness: z.number().min(1).max(5).optional(),
     })
+    .passthrough() // Allow extra properties from old puzzles
     .optional()
     .nullable(),
 });
