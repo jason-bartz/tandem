@@ -20,6 +20,45 @@ function getGreeting() {
 }
 
 /**
+ * Get a random time-based call to action message
+ * @returns {string} A motivational message based on time of day
+ */
+function getCallToAction() {
+  const hour = new Date().getHours();
+
+  const morningMessages = [
+    'Start your day with a puzzle?',
+    'Coffee and crosswords?',
+    'Morning brain warm-up?',
+    "Ready to solve the day's puzzles?",
+  ];
+
+  const afternoonMessages = [
+    'Need a midday reset?',
+    'Time for an afternoon break?',
+    'Ready for a puzzle break?',
+  ];
+
+  const eveningMessages = [
+    'Wind down with a puzzle?',
+    'Evening brain teaser time?',
+    'Ready to unwind?',
+    "Solve today's puzzles before bed?",
+  ];
+
+  let messages;
+  if (hour >= 5 && hour < 12) {
+    messages = morningMessages;
+  } else if (hour >= 12 && hour < 17) {
+    messages = afternoonMessages;
+  } else {
+    messages = eveningMessages;
+  }
+
+  return messages[Math.floor(Math.random() * messages.length)];
+}
+
+/**
  * Get ordinal suffix for a day number
  * @param {number} day - The day of the month
  * @returns {string} The ordinal suffix (st, nd, rd, or th)
@@ -63,12 +102,14 @@ export default function Greeting() {
   const { highContrast } = useTheme();
   const [greeting, setGreeting] = useState('');
   const [formattedDate, setFormattedDate] = useState('');
+  const [callToAction, setCallToAction] = useState('');
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
     setGreeting(getGreeting());
     setFormattedDate(getFormattedDate());
+    setCallToAction(getCallToAction());
 
     // Update greeting every minute to handle time transitions
     const interval = setInterval(() => {
@@ -110,7 +151,7 @@ export default function Greeting() {
           highContrast ? 'text-hc-text opacity-80' : 'text-gray-700 dark:text-gray-300'
         }`}
       >
-        Ready to solve today&apos;s puzzles?
+        {callToAction}
       </p>
     </div>
   );
