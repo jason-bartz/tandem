@@ -704,10 +704,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </p>
               </div>
               <div
-                className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
+                className={`backdrop-blur-sm border-[3px] rounded-xl p-3 shadow-[3px_3px_0px_rgba(0,0,0,0.8)] flex flex-col justify-center items-center min-w-0 ${highContrast ? 'bg-hc-background border-hc-border' : 'bg-ghost-white/10 border-black'}`}
               >
                 <p
-                  className={`font-bold text-xl mb-1 drop-shadow ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  className={`font-bold text-sm sm:text-lg mb-1 drop-shadow whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
                 >
                   {dateStr}
                 </p>
