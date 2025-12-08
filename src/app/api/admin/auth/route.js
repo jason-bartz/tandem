@@ -14,7 +14,7 @@ import {
   clearFailedAttempts,
   withRateLimit,
 } from '@/lib/security/rateLimiter';
-import { generateCSRFToken } from '@/lib/security/csrf';
+import { generateCSRFToken, getOrGenerateCSRFToken } from '@/lib/security/csrf';
 import { logFailedLogin, logSuccessfulLogin } from '@/lib/security/auditLog';
 import logger from '@/lib/logger';
 
@@ -139,8 +139,8 @@ export async function GET(request) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      // Generate new CSRF token on token validation
-      const csrfToken = await generateCSRFToken();
+      // Get existing CSRF token or generate if missing (don't regenerate on every verification)
+      const csrfToken = await getOrGenerateCSRFToken();
 
       return NextResponse.json({
         success: true,
