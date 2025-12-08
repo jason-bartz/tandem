@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth/verify';
 import { withRateLimit } from '@/lib/security/rateLimiter';
-import { checkUserSubscription } from '@/lib/db';
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
@@ -9,7 +8,8 @@ const OMDB_BASE_URL = 'http://www.omdbapi.com/';
 /**
  * Movie search API for puzzle submissions
  * Searches OMDb API for movies by title
- * Requires authentication and active subscription
+ * Requires authentication (subscription check is done client-side via IAP on iOS)
+ * The create-puzzle page gates access, so this endpoint just needs auth to prevent abuse
  */
 export async function GET(request) {
   try {
@@ -24,14 +24,9 @@ export async function GET(request) {
       return authResponse;
     }
 
-    // Check subscription status
-    const subscription = await checkUserSubscription(user.id);
-    if (!subscription.isActive) {
-      return NextResponse.json(
-        { error: 'Tandem Unlimited subscription required' },
-        { status: 403 }
-      );
-    }
+    // Note: Subscription check removed - iOS IAP subscriptions may not be in database
+    // The create-puzzle page already enforces subscription access via SubscriptionContext
+    // Rate limiting + auth is sufficient protection for movie search
 
     const { searchParams } = new URL(request.url);
     const query = searchParams.get('q');
