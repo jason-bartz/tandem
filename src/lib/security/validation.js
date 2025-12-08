@@ -247,7 +247,12 @@ export async function parseAndValidateJson(request, schema) {
     return schema.parse(body);
   } catch (error) {
     if (error instanceof z.ZodError) {
-      throw new Error(`Validation error: ${error.errors.map((e) => e.message).join(', ')}`);
+      // Include field path in error message for better debugging
+      const errorDetails = error.errors.map((e) => {
+        const path = e.path.length > 0 ? `${e.path.join('.')}: ` : '';
+        return `${path}${e.message}`;
+      });
+      throw new Error(`Validation error: ${errorDetails.join(', ')}`);
     }
     throw error;
   }
