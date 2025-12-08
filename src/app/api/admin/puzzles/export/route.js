@@ -29,14 +29,18 @@ export async function GET(request) {
 
     // Try Bearer token auth first
     const authResult = await requireAdmin(request);
+    logger.info('[export] Bearer auth result:', { hasError: !!authResult.error });
 
     // If Bearer auth fails, try Supabase session auth
     if (authResult.error) {
+      logger.info('[export] Trying Supabase session auth...');
       // Use createServerComponentClient to read session cookies
       const supabaseAuth = await createServerComponentClient();
       const {
         data: { user },
       } = await supabaseAuth.auth.getUser();
+
+      logger.info('[export] Supabase user:', { userId: user?.id, email: user?.email });
 
       if (!user) {
         return NextResponse.json({ error: 'Unauthorized - Please log in' }, { status: 401 });
