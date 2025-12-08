@@ -90,17 +90,18 @@ export async function POST(request) {
   } catch (error) {
     logger.error('POST /api/admin/puzzles error', error);
 
-    const message = sanitizeErrorMessage(error);
-
+    // For admin endpoints, show actual validation errors to help debugging
     if (error.message.includes('Validation error') || error.message.includes('Invalid')) {
       return NextResponse.json(
         {
           success: false,
-          error: message,
+          error: error.message, // Show actual error for admin debugging
         },
         { status: 400 }
       );
     }
+
+    const message = sanitizeErrorMessage(error);
 
     if (error.message.includes('too large')) {
       return NextResponse.json({ success: false, error: message }, { status: 413 });
