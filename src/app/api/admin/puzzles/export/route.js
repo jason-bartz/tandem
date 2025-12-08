@@ -1,10 +1,28 @@
 import { NextResponse } from 'next/server';
-import { kv } from '@vercel/kv';
 import { requireAdmin } from '@/lib/auth';
 import { withRateLimit } from '@/lib/security/rateLimiter';
 import { createServerClient, createServerComponentClient } from '@/lib/supabase/server';
 import { getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 import logger from '@/lib/logger';
+import fs from 'fs';
+import path from 'path';
+
+// Lazy load KV to avoid initialization errors when env vars are missing
+let kv = null;
+async function getKV() {
+  if (kv) return kv;
+  if (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN) {
+    try {
+      const kvModule = await import('@vercel/kv');
+      kv = kvModule.kv;
+      return kv;
+    } catch (e) {
+      logger.warn('[export] Failed to initialize KV:', e.message);
+      return null;
+    }
+  }
+  return null;
+}
 
 // List of admin user IDs (add your Supabase user ID here)
 const ADMIN_USER_IDS = [
@@ -72,39 +90,76 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const format = searchParams.get('format') || 'json';
 
-    // Fetch all puzzle keys from Vercel KV
-    const keys = await kv.keys('puzzle:*');
-    logger.info(`[export] Found ${keys.length} puzzle keys in KV`);
+    const puzzles = [];
+    let source = 'none';
 
-    if (keys.length === 0) {
-      return NextResponse.json({
-        success: true,
-        message: 'No puzzles found in Vercel KV',
-        count: 0,
-        puzzles: [],
-      });
+    // Try Vercel KV first
+    const kvClient = await getKV();
+    if (kvClient) {
+      try {
+        const keys = await kvClient.keys('puzzle:*');
+        logger.info(`[export] Found ${keys.length} puzzle keys in KV`);
+
+        for (const key of keys) {
+          try {
+            const data = await kvClient.get(key);
+            if (data) {
+              const date = key.replace('puzzle:', '');
+              puzzles.push({
+                date,
+                puzzleNumber: getPuzzleNumberForDate(date),
+                ...data,
+              });
+            }
+          } catch (error) {
+            logger.error(`[export] Error fetching ${key}:`, error);
+          }
+        }
+        source = 'kv';
+      } catch (error) {
+        logger.error('[export] KV fetch error:', error);
+      }
     }
 
-    // Fetch all puzzles
-    const puzzles = [];
-    for (const key of keys) {
+    // Fall back to JSON files if KV didn't work
+    if (puzzles.length === 0) {
+      logger.info('[export] Trying JSON files fallback...');
       try {
-        const data = await kv.get(key);
-        if (data) {
-          const date = key.replace('puzzle:', '');
-          puzzles.push({
-            date,
-            puzzleNumber: getPuzzleNumberForDate(date),
-            ...data,
-          });
+        const allPuzzlesPath = path.join(process.cwd(), 'public', 'puzzles', 'all-puzzles.json');
+        if (fs.existsSync(allPuzzlesPath)) {
+          const data = JSON.parse(fs.readFileSync(allPuzzlesPath, 'utf8'));
+          if (data.puzzles && Array.isArray(data.puzzles)) {
+            for (const puzzle of data.puzzles) {
+              if (puzzle.date) {
+                puzzles.push({
+                  date: puzzle.date,
+                  puzzleNumber: getPuzzleNumberForDate(puzzle.date),
+                  theme: puzzle.theme,
+                  puzzles: puzzle.puzzles,
+                });
+              }
+            }
+            source = 'json';
+            logger.info(`[export] Loaded ${puzzles.length} puzzles from all-puzzles.json`);
+          }
         }
       } catch (error) {
-        logger.error(`[export] Error fetching ${key}:`, error);
+        logger.error('[export] JSON file error:', error);
       }
+    }
+
+    if (puzzles.length === 0) {
+      return NextResponse.json({
+        success: false,
+        error: 'No puzzles found. KV not configured and no JSON files available.',
+        message:
+          'Please set KV_REST_API_URL and KV_REST_API_TOKEN in Vercel environment variables.',
+      });
     }
 
     // Sort by date
     puzzles.sort((a, b) => a.date.localeCompare(b.date));
+    logger.info(`[export] Total puzzles to process: ${puzzles.length} (source: ${source})`);
 
     // If format is 'migrate', write directly to Supabase
     if (format === 'migrate') {
@@ -145,19 +200,21 @@ export async function GET(request) {
 
       return NextResponse.json({
         success: true,
-        message: `Migrated ${results.success} puzzles to Supabase`,
+        message: `Migrated ${results.success} puzzles to Supabase (source: ${source})`,
         migrated: results.success,
         failed: results.failed,
         errors: results.errors.slice(0, 10), // Limit error output
-        totalInKV: puzzles.length,
+        totalFound: puzzles.length,
+        source,
       });
     }
 
     // Default: return as JSON export
     return NextResponse.json({
       success: true,
-      message: `Exported ${puzzles.length} puzzles from Vercel KV`,
+      message: `Exported ${puzzles.length} puzzles (source: ${source})`,
       count: puzzles.length,
+      source,
       exportedAt: new Date().toISOString(),
       puzzles,
     });
