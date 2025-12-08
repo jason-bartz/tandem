@@ -59,12 +59,24 @@ export async function GET(request) {
       crypto.randomBytes(16).toString('hex');
     await trackUniquePlayer(sessionId);
 
-    return NextResponse.json({
-      success: true,
-      puzzle: puzzle || null,
-      puzzleNumber: puzzle?.puzzleNumber || puzzleNumber,
-      date: puzzle?.date || date,
-    });
+    // Return puzzle with edge caching headers
+    // Industry standard: Cache at edge, serve stale while revalidating
+    return NextResponse.json(
+      {
+        success: true,
+        puzzle: puzzle || null,
+        puzzleNumber: puzzle?.puzzleNumber || puzzleNumber,
+        date: puzzle?.date || date,
+      },
+      {
+        headers: {
+          // Cache at edge for 1 hour, serve stale while revalidating for 24h
+          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
+          // Vary by date/number parameter to cache different puzzles separately
+          Vary: 'x-puzzle-date, x-puzzle-number',
+        },
+      }
+    );
   } catch (error) {
     logger.error('GET /api/puzzle error', error);
 
