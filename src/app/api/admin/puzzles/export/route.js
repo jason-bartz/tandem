@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { kv } from '@vercel/kv';
 import { requireAdmin } from '@/lib/auth';
 import { withRateLimit } from '@/lib/security/rateLimiter';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerClient, createServerComponentClient } from '@/lib/supabase/server';
 import { getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 import logger from '@/lib/logger';
 
@@ -32,17 +32,19 @@ export async function GET(request) {
 
     // If Bearer auth fails, try Supabase session auth
     if (authResult.error) {
-      const supabase = createServerClient();
+      // Use createServerComponentClient to read session cookies
+      const supabaseAuth = await createServerComponentClient();
       const {
         data: { user },
-      } = await supabase.auth.getUser();
+      } = await supabaseAuth.auth.getUser();
 
       if (!user) {
         return NextResponse.json({ error: 'Unauthorized - Please log in' }, { status: 401 });
       }
 
-      // Check if user is admin
-      const { data: userData } = await supabase
+      // Check if user is admin (use service role client to bypass RLS)
+      const supabaseService = createServerClient();
+      const { data: userData } = await supabaseService
         .from('users')
         .select('role')
         .eq('id', user.id)
