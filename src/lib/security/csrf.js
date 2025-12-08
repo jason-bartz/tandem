@@ -41,6 +41,18 @@ export async function getCSRFToken() {
 }
 
 /**
+ * Get existing CSRF token or generate a new one if none exists
+ * This prevents token regeneration issues on page refreshes
+ */
+export async function getOrGenerateCSRFToken() {
+  const existingToken = await getCSRFToken();
+  if (existingToken) {
+    return existingToken;
+  }
+  return generateCSRFToken();
+}
+
+/**
  * Validate a CSRF token from a request
  */
 export async function validateCSRFToken(request) {
