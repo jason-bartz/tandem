@@ -3,6 +3,7 @@ import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/lib/storage
 // gameCenterService removed - Game Center integration deprecated
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 class StatsService {
   /**
@@ -90,7 +91,7 @@ class StatsService {
         const leaderboardsEnabled = await this._hasLeaderboardsEnabled();
 
         if (hasConsent && leaderboardsEnabled) {
-          const response = await fetch(API_ENDPOINTS.PUZZLE, {
+          const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.PUZZLE), {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

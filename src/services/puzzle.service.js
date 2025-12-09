@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import platformService from './platform';
 import logger from '@/lib/logger';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 class PuzzleService {
   async getPuzzle(identifier = null) {
@@ -17,7 +18,7 @@ class PuzzleService {
 
   async submitCompletion(data) {
     try {
-      const response = await fetch(API_ENDPOINTS.PUZZLE, {
+      const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.PUZZLE), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
