@@ -436,6 +436,35 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
+                ? 'bg-hc-success text-white border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <Image
+                src="/icons/ui/hint.png"
+                alt="Hint"
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+              Hint System
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
+              Stuck? You get <strong>one hint per game</strong>. Tap the Hint button to reveal the
+              theme for a category.
+            </p>
+            <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
+              The hint always reveals the <strong>easiest unsolved category</strong> first (Matinee
+              → Feature → Premiere → Gala).
+            </p>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700'
             }`}
