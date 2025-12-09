@@ -23,7 +23,7 @@ import { validateUsername } from '@/utils/profanityFilter';
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, loading: authLoading, signOut, refreshProfile } = useAuth();
+  const { user, loading: authLoading, signOut, refreshProfile, userProfile } = useAuth();
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -77,7 +77,7 @@ export default function AccountPage() {
     }
   }, [user]);
 
-  // Load user avatar and username
+  // Load user avatar and username from local fetch
   useEffect(() => {
     const loadAvatar = async () => {
       if (!user?.id) return;
@@ -105,6 +105,25 @@ export default function AccountPage() {
       loadAvatar();
     }
   }, [user]);
+
+  // Sync with AuthContext userProfile when it changes (e.g., after first-time setup)
+  // This ensures the account page shows fresh data after username/avatar selection
+  useEffect(() => {
+    if (userProfile) {
+      // Update local avatar state from AuthContext profile
+      setUserAvatar((prev) => ({
+        ...prev,
+        selected_avatar_id: userProfile.selected_avatar_id,
+        avatar_image_path: userProfile.avatar_image_path,
+        avatar_display_name: userProfile.avatar_display_name,
+      }));
+
+      // Update username from AuthContext profile
+      if (userProfile.username) {
+        setUsername(userProfile.username);
+      }
+    }
+  }, [userProfile]);
 
   const handleAvatarChange = async (avatarId) => {
     setShowAvatarModal(false);
