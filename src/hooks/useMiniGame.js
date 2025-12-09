@@ -677,7 +677,8 @@ export function useMiniGame(providedDate = null) {
     if (isComplete) return;
 
     setIsComplete(true);
-    setGameState(MINI_GAME_STATES.COMPLETE);
+    // Note: Don't set game state to COMPLETE yet - wait until stats are updated
+    // to prevent race condition where MiniCompleteScreen loads stats before they're saved
 
     // Stop timer
     if (timerRef.current) {
@@ -701,7 +702,7 @@ export function useMiniGame(providedDate = null) {
 
     await saveMiniPuzzleProgress(currentPuzzleDate, completionData);
 
-    // Update stats
+    // Update stats BEFORE transitioning to complete screen
     await updateMiniStatsAfterCompletion(
       currentPuzzleDate,
       finalTime,
@@ -710,6 +711,9 @@ export function useMiniGame(providedDate = null) {
       mistakes,
       isArchive
     );
+
+    // Now transition to complete screen - stats are saved
+    setGameState(MINI_GAME_STATES.COMPLETE);
 
     // Submit to leaderboard if not archive and time is valid
     if (!isArchive && finalTime > 0 && currentPuzzleDate) {
