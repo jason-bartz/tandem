@@ -73,7 +73,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 
-    const supabase = await createServerComponentClient();
+    // Use service client for public leaderboard data
+    const supabase = createServerClient();
 
     // Call the database function to get streak leaderboard
     const { data, error: leaderboardError } = await supabase.rpc('get_streak_leaderboard', {
@@ -130,10 +131,8 @@ export async function GET(request) {
       }
     }
 
-    // Also fetch current user's rank/streak if authenticated
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Also fetch current user's rank/streak if authenticated (supports both cookie and Bearer token for iOS)
+    const { user } = await getAuthenticatedUser(request);
     let userEntry = null;
 
     if (user) {
