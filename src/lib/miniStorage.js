@@ -18,6 +18,7 @@ import { getCurrentMiniPuzzleInfo } from './miniUtils';
 import logger from './logger';
 import cloudKitService from '@/services/cloudkit.service';
 import storageService from '@/core/storage/storageService';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 // =====================================================
 // PLATFORM-AGNOSTIC STORAGE HELPERS
@@ -81,13 +82,13 @@ async function isUserAuthenticated() {
 
 /**
  * Fetch user mini stats from database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function fetchUserMiniStatsFromDatabase() {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_MINI_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_MINI_STATS), {
       method: 'GET',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -107,16 +108,16 @@ async function fetchUserMiniStatsFromDatabase() {
 
 /**
  * Save user mini stats to database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function saveUserMiniStatsToDatabase(stats) {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_MINI_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_MINI_STATS), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify({
         totalCompleted: stats.totalCompleted || 0,
         currentStreak: stats.currentStreak || 0,
