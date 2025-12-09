@@ -79,7 +79,8 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid date format (use YYYY-MM-DD)' }, { status: 400 });
     }
 
-    const supabase = await createServerComponentClient();
+    // Use service client for public leaderboard data
+    const supabase = createServerClient();
 
     // Call the database function to get leaderboard
     const { data, error: leaderboardError } = await supabase.rpc('get_daily_leaderboard', {
@@ -137,10 +138,8 @@ export async function GET(request) {
       }
     }
 
-    // Also fetch current user's rank if authenticated
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    // Also fetch current user's rank if authenticated (supports both cookie and Bearer token for iOS)
+    const { user } = await getAuthenticatedUser(request);
     let userRank = null;
 
     if (user) {
