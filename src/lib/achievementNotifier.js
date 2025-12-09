@@ -2,6 +2,10 @@
  * Achievement Notification System
  * Triggers in-app toast notifications when new achievements are unlocked
  * Works on both web and iOS platforms
+ *
+ * Achievements are:
+ * 1. Stored locally for offline access
+ * 2. Synced to database for cross-device persistence (authenticated users)
  */
 
 import {
@@ -12,6 +16,28 @@ import {
 import storageService from '@/core/storage/storageService';
 
 const UNLOCKED_ACHIEVEMENTS_KEY = 'tandem_unlocked_achievements';
+
+/**
+ * Sync achievements to database (fire-and-forget)
+ * Non-blocking - failures are logged but don't affect local storage
+ * @private
+ */
+async function syncAchievementsToDb(achievementIds) {
+  try {
+    // Dynamic import to avoid circular dependencies and reduce initial bundle
+    const { syncAchievementToDatabase } = await import('@/services/achievementSync.service');
+
+    // Sync each achievement (fire-and-forget, non-blocking)
+    for (const id of achievementIds) {
+      syncAchievementToDatabase(id).catch((err) => {
+        console.warn('[AchievementNotifier] DB sync failed for:', id, err);
+      });
+    }
+  } catch (error) {
+    // Non-critical - local storage already saved
+    console.warn('[AchievementNotifier] Failed to sync to database:', error);
+  }
+}
 
 /**
  * Get the set of already-unlocked achievement IDs from storage
@@ -87,6 +113,10 @@ export async function checkAndNotifyTandemAchievements(stats) {
     }
     await saveUnlockedAchievements(unlockedSet);
 
+    // Sync to database for cross-device persistence (fire-and-forget)
+    const newIds = newAchievements.map((ach) => ach.id);
+    syncAchievementsToDb(newIds);
+
     if (shown) {
       console.log('[AchievementNotifier] Tandem achievement unlocked:', achievementToShow.name);
     }
@@ -127,6 +157,10 @@ export async function checkAndNotifyMiniAchievements(stats) {
     }
     await saveUnlockedAchievements(unlockedSet);
 
+    // Sync to database for cross-device persistence (fire-and-forget)
+    const newIds = newAchievements.map((ach) => ach.id);
+    syncAchievementsToDb(newIds);
+
     if (shown) {
       console.log('[AchievementNotifier] Mini achievement unlocked:', achievementToShow.name);
     }
@@ -166,6 +200,10 @@ export async function checkAndNotifyReelAchievements(stats) {
       unlockedSet.add(ach.id);
     }
     await saveUnlockedAchievements(unlockedSet);
+
+    // Sync to database for cross-device persistence (fire-and-forget)
+    const newIds = newAchievements.map((ach) => ach.id);
+    syncAchievementsToDb(newIds);
 
     if (shown) {
       console.log('[AchievementNotifier] Reel achievement unlocked:', achievementToShow.name);

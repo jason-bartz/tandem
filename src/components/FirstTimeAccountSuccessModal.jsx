@@ -122,23 +122,6 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
   };
 
   /**
-   * Handle skip button click - complete setup without avatar
-   */
-  const handleSkip = async () => {
-    lightTap();
-
-    // Mark first-time setup as complete without selecting avatar
-    try {
-      await avatarService.markFirstTimeSetupComplete(userId);
-    } catch (err) {
-      console.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete:', err);
-    }
-
-    // Close modal
-    onClose();
-  };
-
-  /**
    * Handle avatar selection completion
    * @param {string} avatarId - Selected avatar ID
    */
@@ -195,13 +178,14 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
     <>
       <BottomPanel
         isOpen={isOpen && !showAvatarSelection}
-        onClose={handleSkip}
+        onClose={() => {}} // Modal is non-skippable - users must complete setup
         title="Account Created Successfully!"
         maxHeight="80vh"
         maxWidth="440px"
-        disableSwipe={false}
-        disableBackdropClick={false}
-        disableEscape={false}
+        showCloseButton={false}
+        disableSwipe={true}
+        disableBackdropClick={true}
+        disableEscape={true}
       >
         <div className="px-4 pb-6">
           {/* Subheading */}
@@ -384,45 +368,27 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col gap-3">
-            {/* Primary CTA - Save Username and Select Avatar */}
-            <button
-              onClick={handleSaveAndSelectAvatar}
-              disabled={isSaving || !username.trim()}
-              className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
-                isSaving || !username.trim() ? 'opacity-50 cursor-not-allowed' : ''
-              } ${
-                highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              }`}
-            >
-              {isSaving ? (
-                <span className="flex items-center justify-center gap-2">
-                  <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
-                  Saving...
-                </span>
-              ) : (
-                'Save & Select Avatar'
-              )}
-            </button>
-
-            {/* Secondary CTA - Skip */}
-            <button
-              onClick={handleSkip}
-              disabled={isSaving}
-              className={`w-full py-3 px-6 rounded-2xl font-medium text-sm transition-all ${
-                isSaving ? 'opacity-50 cursor-not-allowed' : ''
-              } ${
-                highContrast
-                  ? 'text-hc-text/70 hover:text-hc-text hover:underline'
-                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:underline'
-              }`}
-            >
-              Skip for now
-            </button>
-          </div>
+          {/* CTA Button */}
+          <button
+            onClick={handleSaveAndSelectAvatar}
+            disabled={isSaving || !username.trim()}
+            className={`w-full py-3.5 px-6 rounded-2xl border-[3px] font-bold text-base transition-all ${
+              isSaving || !username.trim() ? 'opacity-50 cursor-not-allowed' : ''
+            } ${
+              highContrast
+                ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-gradient-to-r from-purple-500 to-pink-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+            }`}
+          >
+            {isSaving ? (
+              <span className="flex items-center justify-center gap-2">
+                <span className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></span>
+                Saving...
+              </span>
+            ) : (
+              'Save & Select Avatar'
+            )}
+          </button>
         </div>
       </BottomPanel>
 

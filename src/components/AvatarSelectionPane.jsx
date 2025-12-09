@@ -138,7 +138,7 @@ export default function AvatarSelectionPane({
   return (
     <BottomPanel
       isOpen={isOpen}
-      onClose={handleClose}
+      onClose={isFirstTime ? () => {} : handleClose} // Non-skippable for first-time users
       title={
         expandedAvatar
           ? expandedAvatarData?.display_name || 'Avatar'
@@ -148,8 +148,10 @@ export default function AvatarSelectionPane({
       }
       maxHeight="85vh"
       maxWidth="600px"
-      disableBackdropClick={isFirstTime && !expandedAvatar}
-      showCloseButton={!isFirstTime || expandedAvatar}
+      showCloseButton={!isFirstTime}
+      disableBackdropClick={isFirstTime}
+      disableSwipe={isFirstTime}
+      disableEscape={isFirstTime}
     >
       {/* Error Message */}
       {error && (

@@ -194,6 +194,18 @@ export function AuthProvider({ children }) {
             console.error('[AuthProvider] Failed to sync stats to leaderboard:', error);
           }
         })();
+
+        // Sync achievements when user signs in (non-blocking)
+        // This merges local achievements with database for cross-device persistence
+        (async () => {
+          try {
+            const { syncAllAchievements } = await import('@/services/achievementSync.service');
+            await syncAllAchievements();
+            console.log('[AuthProvider] Achievement sync completed');
+          } catch (error) {
+            console.error('[AuthProvider] Achievement sync failed:', error);
+          }
+        })();
       }
     });
 
