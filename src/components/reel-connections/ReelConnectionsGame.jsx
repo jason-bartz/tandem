@@ -10,6 +10,7 @@ import {
   REEL_CONFIG,
   DIFFICULTY_COLORS,
   DIFFICULTY_COLORS_HC,
+  DIFFICULTY_ORDER,
 } from '@/lib/reel-connections.constants';
 import { playClapperSound } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -92,6 +93,117 @@ const PosterModal = ({ movie, onClose, reduceMotion = false, highContrast = fals
   return typeof document !== 'undefined' ? createPortal(modal, document.body) : null;
 };
 
+// Difficulty display names for hints
+const DIFFICULTY_NAMES = {
+  easiest: 'Matinee',
+  easy: 'Feature',
+  medium: 'Premiere',
+  hardest: 'Blockbuster',
+};
+
+// HintModal component for showing category hints
+const HintModal = ({
+  isOpen,
+  onClose,
+  hintCategory,
+  reduceMotion = false,
+  highContrast = false,
+}) => {
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleEscape);
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.removeEventListener('keydown', handleEscape);
+      document.body.style.overflow = '';
+    };
+  }, [isOpen, onClose]);
+
+  if (!isOpen || !hintCategory) return null;
+
+  const difficultyName = DIFFICULTY_NAMES[hintCategory.difficulty] || 'Category';
+  const groupColor = highContrast
+    ? DIFFICULTY_COLORS_HC[hintCategory.difficulty]
+    : DIFFICULTY_COLORS[hintCategory.difficulty];
+
+  const modal = (
+    <div
+      className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center ${reduceMotion ? '' : 'animate-backdrop-enter'}`}
+      role="dialog"
+      aria-modal="true"
+      aria-label="Hint"
+      onClick={onClose}
+    >
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
+
+      {/* Modal Content - Slide up from bottom */}
+      <div
+        ref={modalRef}
+        className={`relative w-full max-w-md mx-4 mb-0 sm:mb-0 ${reduceMotion ? '' : 'animate-slide-up'}`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div
+          className={`rounded-t-2xl sm:rounded-2xl border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-[#ffce00]'}`}
+        >
+          {/* Header */}
+          <div
+            className={`flex items-center gap-3 px-5 py-4 border-b-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}
+          >
+            <Image
+              src="/icons/ui/hint.png"
+              alt="Hint"
+              width={28}
+              height={28}
+              className="flex-shrink-0"
+            />
+            <h2
+              className={`text-xl font-bold drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+            >
+              Hint
+            </h2>
+          </div>
+
+          {/* Content */}
+          <div className="px-5 py-6">
+            <p
+              className={`text-sm font-medium mb-3 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+            >
+              Category Clue ({difficultyName}):
+            </p>
+            <div
+              className={`${groupColor} rounded-xl px-4 py-3 border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)]`}
+            >
+              <p
+                className={`text-lg font-bold text-center ${highContrast ? 'text-white' : 'text-black'}`}
+              >
+                {hintCategory.connection}
+              </p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-5 pb-6">
+            <button
+              onClick={onClose}
+              className={`w-full py-3 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
+            >
+              Got it!
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return typeof document !== 'undefined' ? createPortal(modal, document.body) : null;
+};
+
 const TicketButton = ({ icon, label, onClick, disabled, className = '' }) => (
   <button
     onClick={onClick}
@@ -135,6 +247,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const [enlargedMovie, setEnlargedMovie] = useState(null);
   const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
+
+  // Hint system state
+  const [hintUsed, setHintUsed] = useState(false);
+  const [showHintModal, setShowHintModal] = useState(false);
 
   // Long press refs
   const longPressTimerRef = useRef(null);
@@ -181,6 +297,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     formatTime,
     getCompletedGroupsSorted,
   } = useReelConnectionsGame();
+
+  // Reset hint state when puzzle changes
+  useEffect(() => {
+    setHintUsed(false);
+    setShowHintModal(false);
+  }, [puzzle?.date, archiveDate]);
 
   // Track if we've already loaded an archive puzzle from URL
   const archiveLoadedRef = useRef(false);
@@ -258,6 +380,31 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     },
     [toggleMovieSelection]
   );
+
+  // Get the lowest unsolved difficulty category for hints
+  const getLowestUnsolvedCategory = useCallback(() => {
+    if (!puzzle) return null;
+    const solvedGroupIds = solvedGroups.map((g) => g.id);
+    const unsolvedGroups = puzzle.groups.filter((g) => !solvedGroupIds.includes(g.id));
+    if (unsolvedGroups.length === 0) return null;
+
+    // Sort by difficulty order and return the easiest unsolved
+    return unsolvedGroups.sort((a, b) => {
+      const aIndex = DIFFICULTY_ORDER.indexOf(a.difficulty);
+      const bIndex = DIFFICULTY_ORDER.indexOf(b.difficulty);
+      return aIndex - bIndex;
+    })[0];
+  }, [puzzle, solvedGroups]);
+
+  // Handle hint button click
+  const handleHintClick = useCallback(() => {
+    if (hintUsed) return;
+    const category = getLowestUnsolvedCategory();
+    if (category) {
+      setHintUsed(true);
+      setShowHintModal(true);
+    }
+  }, [hintUsed, getLowestUnsolvedCategory]);
 
   // Reveal phase - showing groups one by one after game over
   if (isRevealing && gameOver) {
@@ -1213,6 +1360,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 disabled={selectedMovies.length === 0 || !!solvingGroup}
               />
               <TicketButton
+                icon="/icons/buttons/hint.svg"
+                label="Hint"
+                onClick={handleHintClick}
+                disabled={hintUsed || !!solvingGroup}
+              />
+              <TicketButton
                 icon="/icons/buttons/submit.svg"
                 label="Submit"
                 onClick={handleSubmit}
@@ -1255,6 +1408,15 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       <PosterModal
         movie={enlargedMovie}
         onClose={() => setEnlargedMovie(null)}
+        reduceMotion={reduceMotion}
+        highContrast={highContrast}
+      />
+
+      {/* Hint Modal */}
+      <HintModal
+        isOpen={showHintModal}
+        onClose={() => setShowHintModal(false)}
+        hintCategory={getLowestUnsolvedCategory()}
         reduceMotion={reduceMotion}
         highContrast={highContrast}
       />

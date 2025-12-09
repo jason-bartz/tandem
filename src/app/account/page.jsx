@@ -550,7 +550,7 @@ export default function AccountPage() {
                         <div className="flex-1 min-w-0">
                           {/* Greeting */}
                           <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-3">
-                            Hey {username || 'there'} 👋
+                            👋 Hey {username || 'there'}
                           </h3>
 
                           {/* Username */}
