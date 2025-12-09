@@ -3,6 +3,7 @@ import cloudKitService from '@/services/cloudkit.service';
 import localDateService from '@/services/localDateService';
 import logger from '@/lib/logger';
 import storageService from '@/core/storage/storageService';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 // Platform-agnostic storage helpers
 // Delegates to storageService which provides: localStorage → IndexedDB → in-memory fallback
@@ -268,13 +269,13 @@ async function isUserAuthenticated() {
 
 /**
  * Fetch user stats from database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function fetchUserStatsFromDatabase() {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_STATS), {
       method: 'GET',
-      credentials: 'include', // Important for cookie-based auth
     });
 
     if (!response.ok) {
@@ -295,16 +296,16 @@ async function fetchUserStatsFromDatabase() {
 
 /**
  * Save user stats to database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function saveUserStatsToDatabase(stats) {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_STATS), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include', // Important for cookie-based auth
       body: JSON.stringify({
         played: stats.played || 0,
         wins: stats.wins || 0,

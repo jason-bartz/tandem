@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { API_ENDPOINTS } from '@/lib/constants';
 import storageService from '@/core/storage/storageService';
+import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 
 const STORAGE_KEY = 'reel-connections-stats';
 const USER_STORAGE_KEY_PREFIX = 'reel-connections-stats-user-';
@@ -29,13 +30,13 @@ function getStorageKey(userId) {
 
 /**
  * Fetch user reel stats from database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function fetchUserReelStatsFromDatabase() {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_REEL_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_REEL_STATS), {
       method: 'GET',
-      credentials: 'include',
     });
 
     if (!response.ok) {
@@ -55,16 +56,16 @@ async function fetchUserReelStatsFromDatabase() {
 
 /**
  * Save user reel stats to database
+ * Uses capacitorFetch for iOS compatibility (proper auth headers)
  * @private
  */
 async function saveUserReelStatsToDatabase(stats) {
   try {
-    const response = await fetch(API_ENDPOINTS.USER_REEL_STATS, {
+    const response = await capacitorFetch(getApiUrl(API_ENDPOINTS.USER_REEL_STATS), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      credentials: 'include',
       body: JSON.stringify({
         gamesPlayed: stats.gamesPlayed || 0,
         gamesWon: stats.gamesWon || 0,
