@@ -8,7 +8,8 @@ import { createServerClient } from '@/lib/supabase/server';
 import { extractWordsFromPuzzles } from '@/lib/miniUtils';
 
 // Default lookback period for word deduplication (in days)
-const DEDUP_LOOKBACK_DAYS = 45;
+// Reduced from 45 to 30 days to allow more word variety with expanded database
+const DEDUP_LOOKBACK_DAYS = 30;
 
 // Mark as dynamic route (skip for static export/iOS builds)
 export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
