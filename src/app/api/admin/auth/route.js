@@ -48,10 +48,12 @@ export async function POST(request) {
     // Parse and validate request body
     const { username, password } = await parseAndValidateJson(request, authCredentialsSchema);
 
-    // LOCALHOST ONLY: Bypass for development
+    // DEVELOPMENT ONLY: Bypass for local testing
+    // This bypass is disabled in production regardless of Host header
+    const isDevMode = process.env.NODE_ENV === 'development';
     const isLocalhost = request.headers.get('host')?.includes('localhost');
     const localhostBypass =
-      isLocalhost && username === 'delta_overseer_8688' && password === 'localhost123';
+      isDevMode && isLocalhost && username === 'delta_overseer_8688' && password === 'localhost123';
 
     // Check credentials
     const isValidUsername = username === process.env.ADMIN_USERNAME;
