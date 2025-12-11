@@ -1,202 +1,197 @@
-# Tandem - Daily Emoji Word Puzzle Game
+# Tandem Daily - Three Daily Puzzle Games
 
-A progressive web application (PWA) and native iOS game where players solve emoji-based word puzzles. Built with Next.js 14 and Capacitor 5 for seamless cross-platform deployment.
+A progressive web application (PWA) and native iOS app featuring three daily puzzle games: Daily Tandem (emoji word puzzles), Daily Mini (5x5 crossword), and Reel Connections (movie trivia). Built with Next.js 14, Supabase, and Capacitor 5 for seamless cross-platform deployment.
 
-## 📱 Features
+**Live at:** [www.tandemdaily.com](https://www.tandemdaily.com)
 
-### Core Gameplay
+## Games
 
-- **Daily Puzzle:** New puzzle every day at midnight Eastern Time with automatic rotation
-- **Archive Mode:** Access and play previous puzzles with pagination
-- **Smart Input System:** On-screen keyboard with multiple layouts (QWERTY, QWERTZ, AZERTY)
-- **Single-Press Delete:** Simple, reliable backspace functionality
-- **Hint System:** One hint per puzzle revealing the first letter
-- **Answer Validation:** Smart checking with support for variations and alternate forms
-- **Statistics Tracking:** Comprehensive stats including wins, streaks, solve times, and accuracy
+### Daily Tandem
+
+The original emoji word puzzle game. Decode four emoji clues to reveal words that share a common theme.
+
+- **4 puzzles per day** with emoji clues
+- **4 mistakes allowed** before game over
+- **Hint system** with progressive unlocks
+- **Hard Mode** with 3-minute time limit
+
+### Daily Mini
+
+A 5x5 mini crossword puzzle with AI-generated clues.
+
+- **Quick 5x5 grid** perfect for a coffee break
+- **AI-generated clues** using Claude
+- **Check and reveal** features for hints
+- **Speed-based scoring** for leaderboards
+
+### Reel Connections
+
+Group 16 movies into four categories that share something in common.
+
+- **Movie trivia** meets Connections-style gameplay
+- **4 difficulty tiers** (Easy to Tricky)
+- **Hint system** reveals category themes
+- **Film buff challenge** with deep cuts and classics
+
+## Features
+
+### Gameplay
+
+- **Daily puzzles** rotate at midnight Eastern Time
+- **Archive access** to play past puzzles (subscription for older archives)
+- **Statistics tracking** for each game type
+- **Streak tracking** with streak protection alerts
+- **Share results** with emoji-based share cards
+
+### Leaderboards
+
+- **Daily speed leaderboards** for each game
+- **Best streak leaderboards** tracking longest win streaks
+- **Cross-device sync** of leaderboard positions
+- **Opt-in participation** via settings
+
+### Achievements
+
+- **40+ achievements** across all three games
+- **Cross-device sync** via Supabase
+- **Achievement notifications** with celebration animations
+- **Progress tracking** for multi-tier achievements
 
 ### User Experience
 
-- **Responsive Design:** Unified layout across all devices with mobile-first approach
-- **Dark Mode:** Automatic theme switching based on system preferences with manual override
-- **High Contrast Mode:** Color blind friendly mode with enhanced patterns
-- **Offline Support:** Full PWA support with service workers and offline caching
-- **Sound Effects:** Optional keyboard sounds and game feedback
-- **Haptic Feedback:** Native haptics on iOS for enhanced tactile experience
+- **Dark/Light mode** with system preference detection
+- **High contrast mode** for accessibility
+- **Sound effects** and haptic feedback
+- **Offline support** via PWA service worker
+- **Responsive design** for all screen sizes
 
 ### iOS Native Features
 
-- **iCloud Sync:** Automatic stats and progress synchronization across devices
-- **Push Notifications:** Daily puzzle reminders and streak protection alerts
-- **Share Functionality:** Native iOS share sheet integration
-- **In-App Subscriptions:** Three-tier subscription system (Buddy Pass, Best Friends, Soulmates)
-- **App Lifecycle Management:** Proper timer handling during background/foreground transitions
-- **Status Bar Theming:** Dynamic status bar styling based on theme
+- **iCloud sync** for stats and progress
+- **Push notifications** for daily reminders and streak alerts
+- **Apple Sign In** for quick account creation
+- **In-app purchases** for Tandem Unlimited subscription
+- **Haptic feedback** throughout gameplay
+- **Native share sheet** integration
 
-### Admin Panel
+### Account System
 
-- **Puzzle Management:** Create, edit, and delete puzzles
-- **Bulk Import:** CSV/JSON import for batch puzzle creation
-- **Analytics Dashboard:** View play statistics and user engagement metrics
-- **Theme Management:** Organize puzzles by categories
-- **Manual Rotation:** Force puzzle updates when needed
+- **Free tier** includes daily puzzles for all games
+- **Tandem Unlimited** subscription unlocks full archive access
+- **Cross-device sync** of all progress and stats
+- **Avatar selection** with unlockable avatars
 
-## 🏗️ Architecture
+## Tech Stack
 
-### Technology Stack
+### Frontend
 
-**Frontend:**
+- **Next.js 14** (App Router)
+- **React 18** with hooks
+- **Tailwind CSS** for styling
+- **Framer Motion** for animations
+- **Zustand** for state management
+- **Lucide React** for icons
 
-- Next.js 14 (App Router)
-- React 18
-- Tailwind CSS for styling
-- Zustand for state management
+### Backend
 
-**Mobile:**
+- **Supabase** (PostgreSQL database + Auth)
+- **Vercel KV** (Redis for caching)
+- **Next.js API Routes** for serverless functions
+- **Anthropic Claude AI** for puzzle generation
 
-- Capacitor 5 (iOS native integration)
-- Native plugins: Haptics, Notifications, Share, Keyboard, Status Bar, Preferences
-- In-App Purchase plugin (cordova-plugin-purchase)
+### Mobile
 
-**Backend:**
+- **Capacitor 5** for iOS native integration
+- **Native plugins:** Haptics, Notifications, Share, Keyboard, Preferences
+- **cordova-plugin-purchase** for In-App Purchases
+- **Apple Sign In** via Capacitor plugin
 
-- Next.js API Routes
-- Vercel KV (Redis) for data persistence
-- JWT authentication for admin panel
-- Bcrypt for password hashing
+### Payments
 
-**Development Tools:**
+- **Stripe** for web subscriptions
+- **StoreKit** for iOS In-App Purchases
 
-- Jest + React Testing Library
-- ESLint + Prettier (with pre-commit hooks via Husky)
-- Lint-staged for staged file linting
-- Playwright for E2E testing
+### Infrastructure
 
-### Project Structure
+- **Vercel** for hosting and deployment
+- **Supabase** for database and auth
+- **Resend** for transactional emails
+
+## Project Structure
 
 ```
 tandem/
 ├── src/
-│   ├── app/                    # Next.js App Router
-│   │   ├── api/                # API routes
-│   │   │   ├── puzzles/        # Puzzle CRUD endpoints
-│   │   │   ├── stats/          # Statistics endpoints
-│   │   │   ├── admin/          # Admin authentication & management
-│   │   │   └── version/        # Version checking
-│   │   ├── admin/              # Admin panel UI
-│   │   │   ├── login/          # Admin login page
-│   │   │   └── page.jsx        # Admin dashboard
-│   │   ├── support/            # Support page
-│   │   ├── terms/              # Terms of service
-│   │   ├── privacypolicy/      # Privacy policy
-│   │   ├── page.jsx            # Main game page
-│   │   ├── layout.jsx          # Root layout with metadata
-│   │   └── globals.css         # Global styles & Tailwind
-│   ├── components/             # React components
-│   │   ├── game/               # Game components
-│   │   │   ├── GameContainerClient.jsx  # Main game container
-│   │   │   ├── WelcomeScreen.jsx        # Welcome/home screen
-│   │   │   ├── PlayingScreen.jsx        # Active game screen
-│   │   │   ├── CompleteScreen.jsx       # Game completion screen
-│   │   │   ├── OnScreenKeyboard.jsx     # Virtual keyboard
-│   │   │   ├── PuzzleRow.jsx            # Individual puzzle input
-│   │   │   ├── StatsBar.jsx             # Timer/mistakes display
-│   │   │   └── [modals]                 # Various modal dialogs
-│   │   ├── admin/              # Admin components
-│   │   │   ├── PuzzleEditor.jsx         # Puzzle creation/editing
-│   │   │   ├── BulkImport.jsx           # Bulk puzzle import
-│   │   │   └── ThemeTracker.jsx         # Theme statistics
-│   │   ├── shared/             # Reusable components
-│   │   │   ├── LoadingSpinner.jsx
-│   │   │   └── VersionChecker.jsx       # iOS version management
-│   │   ├── Settings.jsx        # Settings modal
-│   │   ├── PaywallModal.jsx    # Subscription paywall (iOS)
-│   │   └── SEOHead.jsx         # SEO metadata
-│   ├── hooks/                  # Custom React hooks
-│   │   ├── useGame.js          # Core game logic
-│   │   ├── useGameLogic.js     # Game state management
-│   │   ├── useGameWithInitialData.js
-│   │   ├── useTimer.js         # Timer functionality
-│   │   ├── useHaptics.js       # Haptic feedback
-│   │   ├── useSound.js         # Sound effects
-│   │   ├── useTheme.js         # Theme management (deprecated - use context)
-│   │   ├── useCloudKitSync.js  # iCloud synchronization
-│   │   ├── useMidnightRefresh.js  # Auto-refresh at midnight
-│   │   └── usePerformanceOptimizations.js
-│   ├── services/               # Business logic & API clients
-│   │   ├── api.js              # API client wrapper
-│   │   ├── platform.js         # Platform detection & services
-│   │   ├── cloudkit.service.js # iCloud/CloudKit integration
-│   │   ├── notificationService.js  # Push notifications
-│   │   ├── subscriptionService.js  # In-app purchases
-│   │   ├── puzzle.service.js   # Puzzle data management
-│   │   ├── stats.service.js    # Statistics management
-│   │   ├── admin.service.js    # Admin operations
-│   │   └── auth.service.js     # Authentication
-│   ├── lib/                    # Utilities & helpers
-│   │   ├── security/           # Security utilities
-│   │   │   ├── csrf.js         # CSRF protection
-│   │   │   ├── rateLimiter.js  # Rate limiting
-│   │   │   └── headers.js      # Security headers
-│   │   ├── db.js               # Database operations (Vercel KV)
-│   │   ├── auth.js             # JWT authentication
-│   │   ├── validation.js       # Zod schemas for validation
-│   │   ├── storage.js          # Local/iCloud storage management
-│   │   ├── sounds.js           # Sound effect management
-│   │   ├── deviceDetection.js  # Device type detection
-│   │   ├── puzzleNumber.js     # Puzzle numbering logic
-│   │   ├── constants.js        # App-wide constants
-│   │   ├── utils.js            # General utilities
-│   │   ├── analytics.js        # Google Analytics
-│   │   ├── errorHandler.js     # Error handling
-│   │   ├── logger.js           # Logging utilities
-│   │   └── notificationMessages.js  # Notification templates
-│   ├── contexts/               # React contexts
-│   │   └── ThemeContext.js     # Theme provider (auto/manual modes)
-│   ├── data/                   # Static data
-│   │   └── puzzle-templates/   # Template puzzles
-│   └── styles/                 # Additional styles
-├── ios/                        # iOS native app (Capacitor)
+│   ├── app/                      # Next.js App Router
+│   │   ├── api/                  # API routes
+│   │   │   ├── admin/            # Admin endpoints (puzzles, generation)
+│   │   │   ├── leaderboard/      # Leaderboard endpoints
+│   │   │   ├── mini/             # Mini crossword API
+│   │   │   ├── reel-connections/ # Reel Connections API
+│   │   │   ├── user-stats/       # User statistics
+│   │   │   └── ...
+│   │   ├── admin/                # Admin panel UI
+│   │   ├── dailymini/            # Daily Mini game page
+│   │   ├── reel-connections/     # Reel Connections game page
+│   │   ├── account/              # User account page
+│   │   ├── how-to-play/          # Game instructions
+│   │   └── page.jsx              # Main Tandem game
+│   ├── components/
+│   │   ├── game/                 # Tandem game components
+│   │   ├── mini/                 # Mini crossword components
+│   │   ├── reel-connections/     # Reel Connections components
+│   │   ├── leaderboard/          # Leaderboard UI
+│   │   ├── achievements/         # Achievement system UI
+│   │   ├── stats/                # Statistics displays
+│   │   ├── admin/                # Admin panel components
+│   │   └── shared/               # Reusable components
+│   ├── hooks/
+│   │   ├── useGameWithInitialData.js  # Tandem game logic
+│   │   ├── useMiniGame.js             # Mini crossword logic
+│   │   ├── useReelConnectionsGame.js  # Reel Connections logic
+│   │   ├── useCloudKitSync.js         # iCloud sync
+│   │   └── ...
+│   ├── services/
+│   │   ├── ai.service.js         # Claude AI integration
+│   │   ├── stats.service.js      # Statistics management
+│   │   ├── puzzle.service.js     # Puzzle data management
+│   │   └── ...
+│   ├── contexts/
+│   │   ├── AuthContext.js        # Authentication state
+│   │   ├── SubscriptionContext.js # Subscription state
+│   │   └── ThemeContext.js       # Theme management
+│   └── lib/
+│       ├── supabase/             # Supabase client configuration
+│       ├── server/               # Server-side utilities
+│       │   ├── CrosswordGenerator.js  # Mini puzzle generator
+│       │   └── TrieGenerator.js       # Word lookup trie
+│       ├── constants.js          # App-wide constants
+│       ├── storage.js            # Local storage management
+│       └── ...
+├── database/
+│   ├── *_letter_words.txt        # Word lists for Mini generator
+│   ├── word_frequencies/         # Word frequency scores
+│   └── *.sql                     # Database schema files
+├── ios/                          # iOS native app (Capacitor)
 │   └── App/
-│       ├── App/                # iOS native code
-│       │   ├── AppDelegate.swift
-│       │   ├── Info.plist
-│       │   ├── PrivacyInfo.xcprivacy
-│       │   ├── capacitor.config.json
-│       │   └── Plugins/        # Native plugin implementations
-│       ├── Podfile             # CocoaPods dependencies
-│       └── App.xcworkspace     # Xcode workspace
-├── public/                     # Static assets
-│   ├── puzzles/                # Puzzle JSON files
-│   ├── images/                 # Images & backgrounds
-│   ├── icons/                  # PWA & app icons
-│   ├── sounds/                 # Sound effects
-│   ├── manifest.json           # PWA manifest
-│   └── sw.js                   # Service worker
-├── scripts/                    # Utility scripts
-│   ├── admin/                  # Admin & setup scripts
-│   │   ├── hash-password.js    # Password hash generator
-│   │   ├── seed-puzzles.js     # Puzzle seeding script
-│   │   └── [others]            # JWT, passwords, achievements
-│   ├── maintenance/            # Data migration & fixes
-│   └── README.md               # Scripts documentation
-├── docs/                       # Documentation
-│   ├── setup/                  # Setup & configuration guides
-│   ├── features/               # Feature documentation
-│   ├── development/            # Developer guides
-│   └── README.md               # Documentation index
-├── supabase/                   # Supabase project files
-│   └── migrations/             # Database migrations
-└── tests/                      # Test files
+│       ├── App/                  # Native Swift code
+│       └── Podfile               # CocoaPods dependencies
+├── public/
+│   ├── images/                   # Static images
+│   ├── sounds/                   # Sound effects
+│   └── manifest.json             # PWA manifest
+└── docs/                         # Documentation
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 18+
 - Xcode 14+ (for iOS development)
-- CocoaPods (for iOS dependencies): `sudo gem install cocoapods`
-- Vercel account (for KV database)
+- CocoaPods: `sudo gem install cocoapods`
+- Supabase account
+- Vercel account
 
 ### Installation
 
@@ -215,8 +210,6 @@ tandem/
 
 3. **Set up environment variables**
 
-   Create `.env.local`:
-
    ```bash
    cp .env.example .env.local
    ```
@@ -224,38 +217,38 @@ tandem/
    Required environment variables:
 
    ```env
-   # Vercel KV (Redis) - Required for production
+   # Supabase
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+   # Vercel KV (Redis)
    KV_URL=your_redis_url
    KV_REST_API_URL=your_redis_rest_url
    KV_REST_API_TOKEN=your_redis_token
-   KV_REST_API_READ_ONLY_TOKEN=your_redis_readonly_token
 
    # Admin Authentication
    JWT_SECRET=your_jwt_secret_key
    ADMIN_PASSWORD_HASH=your_bcrypt_hash
 
-   # API Configuration
+   # AI (for puzzle generation)
+   ANTHROPIC_API_KEY=your_anthropic_key
+
+   # Stripe (optional, for web payments)
+   STRIPE_SECRET_KEY=your_stripe_secret
+   NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your_stripe_public
+
+   # Email (optional)
+   RESEND_API_KEY=your_resend_key
+
+   # API URL
    NEXT_PUBLIC_API_URL=https://www.tandemdaily.com
-
-   # Optional: Google Analytics
-   NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-
-   # Optional: Logging level
-   NEXT_PUBLIC_LOG_LEVEL=WARN
-
-   # Environment
-   NODE_ENV=development
    ```
 
-4. **Generate admin credentials**
-
-   ```bash
-   # Generate password hash
-   npm run hash-password
-   # Copy the hash to ADMIN_PASSWORD_HASH in .env.local
-
-   # JWT_SECRET can be any secure random string
-   ```
+4. **Set up the database**
+   - Create a Supabase project
+   - Run the SQL schemas in `database/` directory
+   - Configure Row Level Security policies
 
 ### Development
 
@@ -270,451 +263,121 @@ Visit `http://localhost:3000`
 **iOS Development:**
 
 ```bash
-# Build for iOS with Capacitor target
-npm run build:ios
-
-# Sync with Capacitor
-npm run cap:sync
-
-# Open in Xcode
-npm run cap:open
-
-# Or run all steps at once
-npm run ios:dev
+npm run ios:dev  # Build, sync, and open Xcode
 ```
 
 ### Building for Production
 
-**Web Build:**
+**Web:**
 
 ```bash
 npm run build
-npm start
 ```
 
-**iOS Build:**
+**iOS:**
 
 ```bash
-# Build and sync for iOS
-npm run ios:build
-
-# Then open in Xcode and:
-# 1. Select "Any iOS Device (arm64)"
-# 2. Product → Archive
-# 3. Validate and distribute to App Store
+npm run ios:build  # Build and sync for iOS
+# Then archive in Xcode for App Store
 ```
 
-## 🧪 Testing
+## API Endpoints
 
-```bash
-# Run tests in watch mode
-npm test
+### Public APIs
 
-# Run tests once (CI)
-npm run test:ci
+- `GET /api/puzzle` - Get today's Tandem puzzle
+- `GET /api/mini/puzzle` - Get today's Mini puzzle
+- `GET /api/reel-connections/puzzle` - Get today's Reel Connections puzzle
+- `GET /api/leaderboard/daily` - Get daily leaderboard
+- `GET /api/leaderboard/streak` - Get streak leaderboard
 
-# Generate coverage report
-npm run test:coverage
+### Authenticated APIs
 
-# E2E tests with Playwright
-npx playwright test
-```
+- `GET/POST /api/user-stats` - User statistics for Tandem
+- `GET/POST /api/user-mini-stats` - User statistics for Mini
+- `GET/POST /api/user-reel-stats` - User statistics for Reel Connections
+- `GET/POST /api/user-achievements` - User achievements
 
-## 📝 Code Quality
+### Admin APIs (JWT Required)
 
-**Linting:**
+- `POST /api/admin/puzzles` - Manage Tandem puzzles
+- `POST /api/admin/mini/generate` - Generate Mini puzzles
+- `POST /api/admin/reel-connections/generate` - Generate Reel puzzles
 
-```bash
-npm run lint          # Check for issues
-npm run lint:fix      # Auto-fix issues
-```
+## Game Configurations
 
-**Formatting:**
+### Daily Tandem
 
-```bash
-npm run format        # Format all files
-npm run format:check  # Check formatting
-```
+- 4 emoji-word puzzles per day
+- 4 mistakes allowed
+- 2 hints available (unlock at 2 correct answers)
+- Hard mode: 3-minute time limit
 
-**Pre-commit Hooks:**
-Husky automatically runs ESLint and Prettier on staged files before each commit.
+### Daily Mini
 
-**Security Audit:**
+- 5x5 crossword grid
+- Check feature to validate answers
+- Reveal feature for stuck players
+- AI-generated clues via Claude
 
-```bash
-npm run audit         # Check for vulnerabilities
-npm run audit:fix     # Attempt to fix vulnerabilities
-npm run security:check # Run audit + lint
-```
+### Reel Connections
 
-## 🔒 Security Features
+- 16 movies in 4 groups
+- 4 difficulty tiers per puzzle
+- 4 mistakes allowed
+- Hint reveals category theme
 
-- **CSRF Protection:** Token-based protection for all state-changing operations
-- **Rate Limiting:** Prevents brute force attacks
-  - Auth endpoints: 5 attempts per 15 minutes
-  - General API: 30 requests per minute
-  - Write operations: 10 requests per minute
-- **Input Validation:** Zod schemas validate all user input
-- **JWT Authentication:** Secure admin panel access with token expiration
-- **Security Headers:** Comprehensive headers via Next.js middleware
-- **Content Security Policy:** Strict CSP for admin routes
-- **Password Security:** Bcrypt hashing with salt rounds
+## Deployment
 
-## 🎮 Game Logic
+### Vercel (Web)
 
-### Puzzle Structure
-
-Each puzzle contains:
-
-- **Theme:** Category hint (e.g., "Kitchen Appliances", "Sports Equipment")
-- **4 Emoji-Word Pairs:** Emoji clues with corresponding answers
-- **Date:** ISO date string (YYYY-MM-DD)
-- **Puzzle Number:** Sequential numbering from app launch date
-
-### Game Rules
-
-- **Mistakes:** 4 incorrect answers allowed before game over
-- **Hints:** 1 hint per puzzle (reveals first letter of random unsolved answer)
-- **Answer Checking:** Individual answer validation on Enter key
-- **Timer:** Tracks solve time, pauses when app backgrounded
-- **Variations:** Accepts plurals and common alternate forms
-- **Statistics:** Tracks wins, losses, streaks, average time, accuracy
-
-### Puzzle Rotation
-
-Puzzles rotate daily at **midnight Eastern Time (ET)**. The system:
-
-1. Checks Vercel KV/Redis for custom puzzles by date
-2. Falls back to local JSON files in `/public/puzzles/`
-3. Uses template puzzles if no puzzle exists for the date
-4. Auto-refreshes on iOS apps at midnight
-
-### Keyboard Layouts
-
-Supports three keyboard layouts:
-
-- **QWERTY** (English, default)
-- **QWERTZ** (German)
-- **AZERTY** (French)
-
-## 📊 Admin Panel
-
-Access at `/admin` (web only - not available in iOS app)
-
-### Features
-
-- **Puzzle Management:** Create, edit, delete, and preview puzzles
-- **Bulk Import:** Import multiple puzzles via CSV or JSON
-- **Analytics Dashboard:**
-  - Total plays, wins, completion rate
-  - Average solve time and mistake rate
-  - Theme distribution and popularity
-- **Theme Management:** Organize and categorize puzzles
-- **Manual Rotation:** Force immediate puzzle update
-- **Statistics Viewer:** View global and per-puzzle stats
-
-### Authentication
-
-```bash
-# Generate admin password hash
-npm run hash-password
-# Enter password when prompted
-# Add hash to .env.local as ADMIN_PASSWORD_HASH
-
-# JWT_SECRET should be a secure random string (min 32 chars)
-```
-
-Login at `/admin/login` with your configured password.
-
-## 📱 iOS-Specific Features
-
-### Native Capabilities
-
-- **Haptic Feedback:** Light, medium, heavy, success, error, warning patterns
-- **Local Notifications:**
-  - Daily puzzle reminder (6:00 AM ET)
-  - Streak protection alert (8:00 PM ET if puzzle not completed)
-- **Share Functionality:** Native iOS share sheet for results
-- **Status Bar Theming:** Matches light/dark mode
-- **Keyboard Management:** Auto-resize handling for on-screen keyboard
-- **iCloud Sync:** CloudKit-based stats and progress synchronization
-- **App Lifecycle:** Proper pause/resume timer management
-
-### In-App Subscriptions
-
-Three subscription tiers:
-
-- **Buddy Pass:** Basic premium features
-- **Best Friends:** Enhanced features + archive access
-- **Soulmates:** Lifetime access with all features
-
-Managed via `subscriptionService.js` and iOS StoreKit.
-
-### Configuration
-
-- **Bundle ID:** `com.tandemdaily.app`
-- **Min iOS Version:** 13.0
-- **Deployment Target:** iOS 13.0+
-- **Supported Devices:** iPhone, iPad
-- **Orientation:** Portrait only
-- **Entitlements:**
-  - CloudKit
-  - iCloud Key-Value Storage
-  - Push Notifications
-  - In-App Purchase
-
-### Privacy
-
-The app includes a comprehensive `PrivacyInfo.xcprivacy` file detailing:
-
-- Data collection practices
-- Third-party SDK usage
-- API endpoints accessed
-- Required by Apple for App Store submission
-
-## 🌐 API Endpoints
-
-### Public API
-
-**Puzzles:**
-
-- `GET /api/puzzles` - Get today's puzzle
-- `GET /api/puzzles?date=YYYY-MM-DD` - Get puzzle by date
-- `POST /api/puzzles/batch` - Get multiple puzzles
-- `GET /api/puzzles/paginated?page=1&limit=10` - Paginated puzzle list
-
-**Statistics:**
-
-- `GET /api/stats` - Get global statistics
-- `POST /api/stats` - Update user statistics
-
-**System:**
-
-- `GET /api/version` - Get API version for update checking
-
-### Admin API (JWT Required)
-
-**Authentication:**
-
-- `POST /api/admin/auth` - Login (returns JWT token)
-
-**Puzzle Management:**
-
-- `GET /api/admin/puzzles` - List all puzzles
-- `POST /api/admin/puzzles` - Create puzzle
-- `PUT /api/admin/puzzles` - Update puzzle
-- `DELETE /api/admin/puzzles?id=puzzle-id` - Delete puzzle
-- `POST /api/admin/bulk-import` - Bulk import puzzles
-- `POST /api/admin/rotate-puzzle` - Force puzzle rotation
-
-**Rate Limits:**
-
-- Auth endpoints: 5 requests/15 minutes
-- Read operations: 30 requests/minute
-- Write operations: 10 requests/minute
-
-### CSRF Protection
-
-All state-changing operations require a valid CSRF token in the `X-CSRF-Token` header.
-
-## 🚢 Deployment
-
-### Vercel (Web/PWA)
-
-1. **Connect Repository**
-   - Import repository in Vercel dashboard
-   - Select the `main` branch for production
-
-2. **Configure Environment Variables**
-   - Add all variables from `.env.example` to Vercel
-   - Ensure `NEXT_PUBLIC_API_URL` points to your production domain
-
-3. **Configure Vercel KV**
-   - Create a KV database in Vercel dashboard
-   - Copy connection strings to environment variables
-
-4. **Deploy**
-   - Push to `main` branch triggers automatic deployment
-   - Preview deployments created for pull requests
-
-**Custom Domain:**
-
-- Add domain in Vercel dashboard
-- Update `NEXT_PUBLIC_API_URL` to match custom domain
+1. Connect repository to Vercel
+2. Configure environment variables
+3. Deploy from `main` branch
 
 ### App Store (iOS)
 
-1. **Prepare for Build**
+1. Build with `npm run ios:build`
+2. Open in Xcode and archive
+3. Upload to App Store Connect
+4. Submit for review
 
-   ```bash
-   # Ensure version is updated in package.json and Info.plist
-   npm run ios:build
-   ```
-
-2. **Build in Xcode**
-   - Open `ios/App/App.xcworkspace`
-   - Select "Any iOS Device (arm64)"
-   - Product → Archive
-   - Wait for archive to complete
-
-3. **Validate & Upload**
-   - Click "Validate App" in Organizer
-   - Fix any issues found
-   - Click "Distribute App"
-   - Select "App Store Connect"
-   - Upload to App Store Connect
-
-4. **App Store Connect**
-   - Complete app metadata
-   - Upload screenshots (required sizes)
-   - Submit for review
-
-**Pre-submission Checklist:**
-
-- ✅ Privacy policy URL updated in Info.plist
-- ✅ PrivacyInfo.xcprivacy is complete
-- ✅ All entitlements configured
-- ✅ In-app purchases tested in sandbox
-- ✅ Push notifications working
-- ✅ iCloud sync functional
-- ✅ No console warnings in production build
-
-### Environment-Specific Builds
-
-**Development:**
+## Testing
 
 ```bash
-npm run dev
+npm test              # Run tests in watch mode
+npm run test:ci       # Run tests once
+npm run test:coverage # Generate coverage report
 ```
 
-**Production Web:**
+## Code Quality
 
 ```bash
-npm run build
+npm run lint          # Check for lint issues
+npm run lint:fix      # Auto-fix lint issues
+npm run format        # Format with Prettier
 ```
 
-**Production iOS:**
+Pre-commit hooks run ESLint and Prettier automatically.
 
-```bash
-BUILD_TARGET=capacitor npm run build
-```
+## Documentation
 
-The `BUILD_TARGET=capacitor` environment variable ensures:
+See the [docs/](docs/) directory for detailed documentation:
 
-- Static export for Capacitor
-- Proper asset paths
-- iOS-optimized builds
+- Setup guides for CloudKit, Supabase, etc.
+- Feature documentation
+- Development guides and troubleshooting
 
-## 📚 Documentation
-
-Comprehensive documentation is available in the [docs/](docs/) directory:
-
-- **[Setup Guides](docs/setup/)** - CloudKit, Supabase, Game Center configuration
-- **[Feature Documentation](docs/features/)** - Detailed feature implementations
-- **[Development Guides](docs/development/)** - Architecture and troubleshooting
-- **[Scripts Documentation](scripts/README.md)** - Utility scripts reference
-
-See [docs/README.md](docs/README.md) for a complete documentation index.
-
-## 🐛 Troubleshooting
-
-### iOS Build Issues
-
-**Build fails in Xcode:**
-
-```bash
-# Clean build folder
-xcodebuild clean -workspace ios/App/App.xcworkspace -scheme App
-
-# Reinstall pods
-cd ios/App
-pod deintegrate
-pod install
-cd ../..
-
-# Rebuild
-npm run ios:build
-```
-
-**Capacitor sync fails:**
-
-```bash
-# Remove and re-add iOS platform
-npx cap remove ios
-npx cap add ios
-npm run cap:sync
-```
-
-**Code signing errors:**
-
-- Verify team and bundle ID in Xcode
-- Check provisioning profiles in Apple Developer portal
-- Clean build folder and retry
-
-### Database Issues
-
-**KV connection fails:**
-
-- Verify credentials in `.env.local`
-- Check Vercel KV dashboard for status
-- App falls back to in-memory storage if KV unavailable
-
-**Data not persisting:**
-
-- Check browser localStorage permissions
-- Verify iCloud is enabled (iOS)
-- Check network connection for KV sync
-
-### Puzzle Loading Issues
-
-**Puzzle not appearing:**
-
-- Check `/public/puzzles/` for puzzle file
-- Verify date format is YYYY-MM-DD
-- Check browser console for errors
-- Ensure puzzle JSON is valid
-
-**Wrong puzzle showing:**
-
-- Verify timezone (app uses Eastern Time)
-- Check system date/time settings
-- Clear browser cache and reload
-
-### Performance Issues
-
-**Slow loading:**
-
-- Check network connection
-- Verify assets are properly optimized
-- Check browser DevTools Performance tab
-
-**Memory leaks:**
-
-- Ensure proper cleanup in useEffect hooks
-- Verify service worker is not holding stale data
-- Check for infinite re-renders in React DevTools
-
-## 📄 License
+## License
 
 © 2025 Good Vibes Games. All rights reserved.
 
-## 🤝 Contributing
-
-This is a private repository. For internal development guidelines:
-
-1. Create feature branches from `main`
-2. Follow existing code style (enforced by ESLint/Prettier)
-3. Write tests for new features
-4. Ensure all tests pass before PR
-5. Use conventional commit messages
-
-## 📞 Support
+## Support
 
 - **In-App:** Settings → Support
 - **Web:** [www.tandemdaily.com/support](https://www.tandemdaily.com/support)
 - **Email:** support@goodvibesgames.com
-- **Privacy Policy:** [www.tandemdaily.com/privacypolicy](https://www.tandemdaily.com/privacypolicy)
 
 ---
 
-**Built with ❤️ for puzzle enthusiasts worldwide**
+**Built with love for puzzle enthusiasts worldwide**
