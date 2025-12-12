@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -62,7 +63,7 @@ export async function GET(request) {
       .single();
 
     if (error) {
-      console.error('Database error:', error);
+      logger.error('Database error:', error);
       return NextResponse.json({ error: 'Failed to fetch horoscope' }, { status: 500 });
     }
 
@@ -87,7 +88,7 @@ export async function GET(request) {
       }
     );
   } catch (error) {
-    console.error('Error fetching horoscope:', error);
+    logger.error('Error fetching horoscope:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

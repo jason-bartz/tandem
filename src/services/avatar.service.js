@@ -1,4 +1,5 @@
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import logger from '@/lib/logger';
 
 class AvatarService {
   /**
@@ -17,13 +18,13 @@ class AvatarService {
         .order('sort_order');
 
       if (error) {
-        console.error('[AvatarService] Failed to fetch avatars:', error);
+        logger.error('[AvatarService] Failed to fetch avatars', error);
         throw new Error('Failed to load avatars. Please try again.');
       }
 
       return data || [];
     } catch (error) {
-      console.error('[AvatarService] getAllAvatars error:', error);
+      logger.error('[AvatarService] getAllAvatars error', error);
       throw error;
     }
   }
@@ -50,13 +51,13 @@ class AvatarService {
           // No rows returned
           return null;
         }
-        console.error('[AvatarService] Failed to fetch avatar:', error);
+        logger.error('[AvatarService] Failed to fetch avatar', error);
         throw new Error('Failed to load avatar details.');
       }
 
       return data;
     } catch (error) {
-      console.error('[AvatarService] getAvatarById error:', error);
+      logger.error('[AvatarService] getAvatarById error', error);
       throw error;
     }
   }
@@ -87,24 +88,24 @@ class AvatarService {
       const { data: authData, error: authError } = await supabase.auth.getUser();
 
       if (authError) {
-        console.error('[AvatarService] Auth error:', authError);
+        logger.error('[AvatarService] Auth error', authError);
         throw new Error('Authentication error. Please sign in again.');
       }
 
       if (!authData?.user) {
-        console.error('[AvatarService] No authenticated user found');
+        logger.error('[AvatarService] No authenticated user found', null);
         throw new Error('Not authenticated. Please sign in again.');
       }
 
       if (authData.user.id !== userId) {
-        console.error('[AvatarService] User ID mismatch:', {
+        logger.error('[AvatarService] User ID mismatch', null, {
           authUserId: authData.user.id,
           passedUserId: userId,
         });
         throw new Error('Authentication mismatch. Please sign in again.');
       }
 
-      console.log('[AvatarService] Auth verified for user:', userId);
+      logger.debug('[AvatarService] Auth verified for user', userId);
 
       // First verify the avatar exists and is active
       const avatar = await this.getAvatarById(avatarId);
@@ -119,13 +120,13 @@ class AvatarService {
         .maybeSingle();
 
       if (userCheckError) {
-        console.error('[AvatarService] Error checking user:', userCheckError);
+        logger.error('[AvatarService] Error checking user', userCheckError);
       }
 
-      console.log('[AvatarService] User check result:', { existingUser, userCheckError });
+      logger.debug('[AvatarService] User check result', { existingUser, userCheckError });
 
       if (!existingUser) {
-        console.warn('[AvatarService] User not found in users table, creating...:', userId);
+        logger.warn('[AvatarService] User not found in users table, creating...', { userId });
         // Try to create the user first
         const { error: createError } = await supabase.from('users').insert({
           id: userId,
@@ -134,18 +135,18 @@ class AvatarService {
         });
 
         if (createError && createError.code !== '23505') {
-          console.error('[AvatarService] Failed to create user:', createError);
+          logger.error('[AvatarService] Failed to create user', createError);
           // If insert fails, the database trigger should handle it
           // Wait a moment for trigger to complete then retry
           await new Promise((resolve) => setTimeout(resolve, 500));
         } else {
-          console.log('[AvatarService] User created successfully or already exists');
+          logger.debug('[AvatarService] User created successfully or already exists');
         }
       } else {
-        console.log('[AvatarService] User exists in database');
+        logger.debug('[AvatarService] User exists in database');
       }
 
-      console.log('[AvatarService] Updating avatar to:', avatarId);
+      logger.debug('[AvatarService] Updating avatar to', avatarId);
 
       const { data, error } = await supabase
         .from('users')
@@ -158,8 +159,7 @@ class AvatarService {
         .maybeSingle();
 
       if (error) {
-        console.error('[AvatarService] Failed to update avatar - Full error:', {
-          error,
+        logger.error('[AvatarService] Failed to update avatar - Full error', error, {
           code: error.code,
           message: error.message,
           details: error.details,
@@ -171,13 +171,13 @@ class AvatarService {
       }
 
       if (!data) {
-        console.error('[AvatarService] No user found to update avatar for:', userId);
+        logger.error('[AvatarService] No user found to update avatar for', null, { userId });
         throw new Error('User profile not found. Please try signing in again.');
       }
 
       return data;
     } catch (error) {
-      console.error('[AvatarService] updateUserAvatar error:', error);
+      logger.error('[AvatarService] updateUserAvatar error', error);
       throw error;
     }
   }
@@ -207,7 +207,7 @@ class AvatarService {
         .maybeSingle();
 
       if (userError) {
-        console.error('[AvatarService] Failed to fetch user profile:', userError);
+        logger.error('[AvatarService] Failed to fetch user profile', userError);
         throw new Error('Failed to load user profile.');
       }
 
@@ -237,7 +237,7 @@ class AvatarService {
         avatar_image_path: avatarData?.image_path || null,
       };
     } catch (error) {
-      console.error('[AvatarService] getUserProfileWithAvatar error:', error);
+      logger.error('[AvatarService] getUserProfileWithAvatar error', error);
       throw error;
     }
   }
@@ -267,13 +267,13 @@ class AvatarService {
         .single();
 
       if (error) {
-        console.error('[AvatarService] Failed to clear avatar:', error);
+        logger.error('[AvatarService] Failed to clear avatar', error);
         throw new Error('Failed to clear avatar selection.');
       }
 
       return data;
     } catch (error) {
-      console.error('[AvatarService] clearUserAvatar error:', error);
+      logger.error('[AvatarService] clearUserAvatar error', error);
       throw error;
     }
   }
@@ -293,7 +293,7 @@ class AvatarService {
       const profile = await this.getUserProfileWithAvatar(userId);
       return !!profile?.selected_avatar_id;
     } catch (error) {
-      console.error('[AvatarService] hasAvatar error:', error);
+      logger.error('[AvatarService] hasAvatar error', error);
       return false;
     }
   }
@@ -317,13 +317,13 @@ class AvatarService {
       const { data: authData, error: authError } = await supabase.auth.getUser();
 
       if (authError || !authData?.user) {
-        console.error('[AvatarService] Auth not available for markFirstTimeSetupComplete');
+        logger.warn('[AvatarService] Auth not available for markFirstTimeSetupComplete');
         // Non-critical - return silently as this is a nice-to-have flag
         return;
       }
 
       if (authData.user.id !== userId) {
-        console.error('[AvatarService] User ID mismatch in markFirstTimeSetupComplete');
+        logger.warn('[AvatarService] User ID mismatch in markFirstTimeSetupComplete');
         return;
       }
 
@@ -333,13 +333,13 @@ class AvatarService {
         .eq('id', userId);
 
       if (error) {
-        console.error('[AvatarService] Failed to mark first-time setup complete:', error);
+        logger.error('[AvatarService] Failed to mark first-time setup complete', error);
         // Don't throw - this is a non-critical update
       } else {
-        console.log('[AvatarService] First-time setup marked complete');
+        logger.debug('[AvatarService] First-time setup marked complete');
       }
     } catch (error) {
-      console.error('[AvatarService] markFirstTimeSetupComplete error:', error);
+      logger.error('[AvatarService] markFirstTimeSetupComplete error', error);
       // Don't throw - this is a non-critical update
     }
   }
@@ -364,7 +364,7 @@ class AvatarService {
         .maybeSingle();
 
       if (error) {
-        console.error('[AvatarService] Failed to check first-time setup status:', error);
+        logger.error('[AvatarService] Failed to check first-time setup status', error);
         // If column doesn't exist (migration not run), fall back to checking if they have an avatar
         if (error.code === '42703') {
           return await this.hasSelectedAvatar(userId);
@@ -381,7 +381,7 @@ class AvatarService {
 
       return result;
     } catch (error) {
-      console.error('[AvatarService] hasCompletedFirstTimeSetup error:', error);
+      logger.error('[AvatarService] hasCompletedFirstTimeSetup error', error);
       return false;
     }
   }
@@ -403,13 +403,13 @@ class AvatarService {
         .maybeSingle();
 
       if (error) {
-        console.error('[AvatarService] Failed to check if user has avatar:', error);
+        logger.error('[AvatarService] Failed to check if user has avatar', error);
         return false;
       }
 
       return !!data?.selected_avatar_id;
     } catch (error) {
-      console.error('[AvatarService] hasSelectedAvatar error:', error);
+      logger.error('[AvatarService] hasSelectedAvatar error', error);
       return false;
     }
   }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
 import { requireAdmin } from '@/lib/auth';
+import logger from '@/lib/logger';
 
 // Mark as dynamic route (skip for static export/iOS builds)
 export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
@@ -40,7 +41,7 @@ export async function GET(request) {
       },
     });
   } catch (error) {
-    console.error('[WordList API] Error reading word list:', error);
+    logger.error('[WordList API] Error reading word list:', error);
     return NextResponse.json({ error: 'Failed to load word list' }, { status: 500 });
   }
 }

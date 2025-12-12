@@ -8,6 +8,7 @@
 import { createServerComponentClient, createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 /**
  * Get authenticated user from either cookies or Authorization header
@@ -93,7 +94,7 @@ export async function GET(request) {
         });
       }
 
-      console.error('[User Stats API] Failed to fetch stats:', error);
+      logger.error('[User Stats API] Failed to fetch stats:', error);
       return NextResponse.json({ error: 'Failed to fetch stats' }, { status: 500 });
     }
 
@@ -107,7 +108,7 @@ export async function GET(request) {
       },
     });
   } catch (error) {
-    console.error('[User Stats API] GET error:', error);
+    logger.error('[User Stats API] GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -190,7 +191,7 @@ export async function POST(request) {
       .single();
 
     if (error) {
-      console.error('[User Stats API] Failed to update stats:', error);
+      logger.error('[User Stats API] Failed to update stats:', error);
       return NextResponse.json({ error: 'Failed to update stats' }, { status: 500 });
     }
 
@@ -205,7 +206,7 @@ export async function POST(request) {
       },
     });
   } catch (error) {
-    console.error('[User Stats API] POST error:', error);
+    logger.error('[User Stats API] POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

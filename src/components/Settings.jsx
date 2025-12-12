@@ -31,6 +31,7 @@ import notificationService from '@/services/notificationService';
 import avatarService from '@/services/avatar.service';
 import { useUnifiedSync } from '@/hooks/useUnifiedSync';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import logger from '@/lib/logger';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
   const [showPaywall, setShowPaywall] = useState(openPaywall);
@@ -123,7 +124,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           }
         } catch (e) {
           // Invalid cache, continue with network fetch
-          console.warn('[Settings] Invalid avatar cache:', e);
+          logger.warn('[Settings] Invalid avatar cache');
         }
       }
 
@@ -143,11 +144,11 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           );
         } catch (e) {
           // Storage quota exceeded - non-critical, just log
-          console.warn('[Settings] Failed to cache avatar data:', e);
+          logger.warn('[Settings] Failed to cache avatar data');
         }
       }
     } catch (error) {
-      console.error('[Settings] Failed to load user avatar:', error);
+      logger.error('[Settings] Failed to load user avatar', error);
       // Fail silently - avatar is non-critical feature
     }
   };
@@ -245,7 +246,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       const hasPermission = await notificationService.checkPermission();
       setNotificationPermission(hasPermission);
     } catch (error) {
-      console.error('Failed to load notification settings:', error);
+      logger.error('Failed to load notification settings', error);
     }
   };
 

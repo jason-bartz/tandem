@@ -4,6 +4,8 @@
  * Adapted from prefix tree algorithm with performance enhancements
  */
 
+import logger from '@/lib/logger';
+
 export class TrieNode {
   constructor() {
     this.children = {};
@@ -21,7 +23,7 @@ export class Trie {
     this.cacheStats = {
       hits: 0,
       misses: 0,
-      totalSearches: 0
+      totalSearches: 0,
     };
   }
 
@@ -91,11 +93,9 @@ export class Trie {
     const candidates = this.getWordsByLength(length);
 
     // Filter by pattern
-    const regex = new RegExp(
-      '^' + upperPattern.replace(/[\.\s]/g, '[A-Z]') + '$'
-    );
+    const regex = new RegExp('^' + upperPattern.replace(/[\.\s]/g, '[A-Z]') + '$');
 
-    return candidates.filter(word => regex.test(word));
+    return candidates.filter((word) => regex.test(word));
   }
 
   /**
@@ -136,7 +136,7 @@ export class Trie {
    * @returns {string[]} Array of words with specified length
    */
   getWordsByLength(length) {
-    return this.allWords.filter(word => word.length === length);
+    return this.allWords.filter((word) => word.length === length);
   }
 
   /**
@@ -210,13 +210,13 @@ export class Trie {
    * @returns {string[]} Array of words meeting frequency threshold
    */
   getWordsByFrequency(minFrequency = 0, length = null) {
-    let words = length ? this.getWordsByLength(length) : this.allWords;
+    const words = length ? this.getWordsByLength(length) : this.allWords;
 
     if (minFrequency === 0) {
       return words; // No filtering needed
     }
 
-    return words.filter(word => this.getWordFrequency(word) >= minFrequency);
+    return words.filter((word) => this.getWordFrequency(word) >= minFrequency);
   }
 
   /**
@@ -244,9 +244,10 @@ export class Trie {
     const matches = this.searchByPattern(pattern);
 
     // Filter by frequency
-    const filtered = minFrequency > 0
-      ? matches.filter(word => this.getWordFrequency(word) >= minFrequency)
-      : matches;
+    const filtered =
+      minFrequency > 0
+        ? matches.filter((word) => this.getWordFrequency(word) >= minFrequency)
+        : matches;
 
     // Cache the result
     this.patternCache.set(cacheKey, filtered);
@@ -262,7 +263,7 @@ export class Trie {
     this.cacheStats = {
       hits: 0,
       misses: 0,
-      totalSearches: 0
+      totalSearches: 0,
     };
   }
 
@@ -287,8 +288,8 @@ export class Trie {
       cacheStats: {
         ...this.cacheStats,
         hitRate: this.getCacheHitRate().toFixed(2) + '%',
-        cacheSize: this.patternCache.size
-      }
+        cacheSize: this.patternCache.size,
+      },
     };
 
     for (let len = 2; len <= 5; len++) {
@@ -308,8 +309,8 @@ export class Trie {
  * @returns {Promise<Trie>} Populated Trie instance
  */
 export async function buildTrieFromFiles(databasePath, loadFrequencies = true) {
-  const fs = await import('fs').then(m => m.promises);
-  const path = await import('path').then(m => m.default);
+  const fs = await import('fs').then((m) => m.promises);
+  const path = await import('path').then((m) => m.default);
   const trie = new Trie();
 
   const wordLengths = [2, 3, 4, 5];
@@ -322,14 +323,14 @@ export async function buildTrieFromFiles(databasePath, loadFrequencies = true) {
       const content = await fs.readFile(filePath, 'utf-8');
       const words = content
         .split('\n')
-        .map(w => w.trim())
-        .filter(w => w.length === length);
+        .map((w) => w.trim())
+        .filter((w) => w.length === length);
 
-      words.forEach(word => trie.insert(word));
+      words.forEach((word) => trie.insert(word));
 
-      console.log(`Loaded ${words.length} words of length ${length}`);
+      logger.info(`Loaded ${words.length} words of length ${length}`);
     } catch (error) {
-      console.error(`Error loading ${length}-letter words:`, error.message);
+      logger.error(`Error loading ${length}-letter words:`, error.message);
     }
   }
 
@@ -346,9 +347,9 @@ export async function buildTrieFromFiles(databasePath, loadFrequencies = true) {
 
         trie.loadFrequencies(frequencyData);
 
-        console.log(`Loaded ${frequencyData.length} frequency scores for ${length}-letter words`);
+        logger.info(`Loaded ${frequencyData.length} frequency scores for ${length}-letter words`);
       } catch (error) {
-        console.warn(`Could not load frequencies for ${length}-letter words:`, error.message);
+        logger.warn(`Could not load frequencies for ${length}-letter words:`, error.message);
       }
     }
   }

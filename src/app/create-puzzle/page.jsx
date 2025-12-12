@@ -16,6 +16,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import logger from '@/lib/logger';
 
 export default function CreatePuzzlePage() {
   const router = useRouter();
@@ -61,7 +62,7 @@ export default function CreatePuzzlePage() {
 
       setSubmitted(true);
     } catch (err) {
-      console.error('Submission error:', err);
+      logger.error('Submission error', err);
       setError(err.message || 'Failed to submit puzzle. Please try again.');
     } finally {
       setSubmitting(false);

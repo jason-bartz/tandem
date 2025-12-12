@@ -16,6 +16,7 @@ import {
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import { Capacitor } from '@capacitor/core';
 import notificationService from '@/services/notificationService';
+import logger from '@/lib/logger';
 
 export function useGame() {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -222,11 +223,7 @@ export function useGame() {
           isFirstAttempt, // Pass the first attempt flag directly
         });
       } catch (err) {
-        console.error('[useGame] statsService.updateStats failed:', err);
-        console.error('[useGame] Error details:', {
-          message: err?.message,
-          stack: err?.stack,
-        });
+        logger.error('[useGame] statsService.updateStats failed', err);
       }
 
       // Save the final result AFTER updating stats
@@ -248,7 +245,7 @@ export function useGame() {
         try {
           await notificationService.onPuzzleCompleted();
         } catch (err) {
-          console.error('Failed to handle notification on puzzle completion:', err);
+          logger.error('Failed to handle notification on puzzle completion', err);
         }
       }
     },

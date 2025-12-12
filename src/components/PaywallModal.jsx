@@ -29,6 +29,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import PostPurchaseAccountPrompt from '@/components/PostPurchaseAccountPrompt';
 import { ASSET_VERSION } from '@/lib/constants';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import logger from '@/lib/logger';
 
 export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [loading, setLoading] = useState(false);
@@ -293,7 +294,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
       if (!result.user) {
         // No error message but also no user - silent failure, just log
         if (result.error) {
-          console.error('[PaywallModal] Sign in error (no message):', result.error);
+          logger.error('[PaywallModal] Sign in error (no message)', result.error);
         }
         setLoading(false);
         return;
@@ -307,11 +308,11 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         await refreshStatus();
       } catch (refreshError) {
         // Log but don't show error - sign-in was successful
-        console.error('[PaywallModal] Failed to refresh subscription after sign-in:', refreshError);
+        logger.error('[PaywallModal] Failed to refresh subscription after sign-in', refreshError);
         // Subscription will be refreshed on next app interaction
       }
     } catch (err) {
-      console.error('[PaywallModal] Sign in error:', err);
+      logger.error('[PaywallModal] Sign in error', err);
       if (err.message) {
         setError(err.message);
       } else {

@@ -9,10 +9,10 @@
 
 import { gameEventStore, EventTypes } from '../events/GameEventStore';
 import { ConflictResolver } from './ConflictResolver';
-// GameCenterProvider removed - Game Center integration deprecated
 import { CloudKitProvider } from './providers/CloudKitProvider';
 import { LocalStorageProvider } from './providers/LocalStorageProvider';
 import { KeyValueStoreProvider } from './providers/KeyValueStoreProvider';
+import logger from '@/lib/logger';
 
 // Stats manager states
 export const SyncState = {
@@ -99,7 +99,7 @@ class UnifiedStatsManager {
         setTimeout(() => this.sync(SyncPriority.LOW), 2000);
       }
     } catch (error) {
-      console.error('[UnifiedStatsManager] Initialization failed:', error);
+      logger.error('[UnifiedStatsManager] Initialization failed', error);
       this.stats.lastError = error;
       this.updateSyncState(SyncState.ERROR);
       throw error;
@@ -121,7 +121,7 @@ class UnifiedStatsManager {
       try {
         await provider.initialize();
       } catch (error) {
-        console.error(`[UnifiedStatsManager] Failed to initialize ${name}:`, error);
+        logger.error(`[UnifiedStatsManager] Failed to initialize ${name}`, error);
         provider.available = false;
       }
     });
@@ -184,7 +184,7 @@ class UnifiedStatsManager {
         }
       }
     } catch (error) {
-      console.error('[UnifiedStatsManager] Failed to load initial data:', error);
+      logger.error('[UnifiedStatsManager] Failed to load initial data', error);
       // Continue anyway - we'll work with local data
     }
   }
@@ -271,7 +271,7 @@ class UnifiedStatsManager {
         conflicts: conflicts.length,
       };
     } catch (error) {
-      console.error('[UnifiedStatsManager] Sync failed:', error);
+      logger.error('[UnifiedStatsManager] Sync failed', error);
 
       // Record sync failure
       await gameEventStore.createEvent(EventTypes.SYNC_FAILED, {
@@ -312,7 +312,7 @@ class UnifiedStatsManager {
         sources.primary = await this.primary.fetch();
       }
     } catch (error) {
-      console.error('[UnifiedStatsManager] Failed to fetch from primary:', error);
+      logger.error('[UnifiedStatsManager] Failed to fetch from primary', error);
     }
 
     // Fetch from secondary
@@ -321,7 +321,7 @@ class UnifiedStatsManager {
         sources.secondary = await this.secondary.fetch();
       }
     } catch (error) {
-      console.error('[UnifiedStatsManager] Failed to fetch from secondary:', error);
+      logger.error('[UnifiedStatsManager] Failed to fetch from secondary', error);
     }
 
     // Fetch from tertiary
@@ -330,7 +330,7 @@ class UnifiedStatsManager {
         sources.tertiary = await this.tertiary.fetch();
       }
     } catch (error) {
-      console.error('[UnifiedStatsManager] Failed to fetch from tertiary:', error);
+      logger.error('[UnifiedStatsManager] Failed to fetch from tertiary', error);
     }
 
     // Always include local data
@@ -496,7 +496,7 @@ class UnifiedStatsManager {
     if (this.primary) {
       savePromises.push(
         this.primary.save(saveData).catch((error) => {
-          console.error('[UnifiedStatsManager] Failed to save to primary:', error);
+          logger.error('[UnifiedStatsManager] Failed to save to primary', error);
           return { success: false, error };
         })
       );
@@ -506,7 +506,7 @@ class UnifiedStatsManager {
     if (this.secondary && this.secondary !== this.primary) {
       savePromises.push(
         this.secondary.save(saveData).catch((error) => {
-          console.error('[UnifiedStatsManager] Failed to save to secondary:', error);
+          logger.error('[UnifiedStatsManager] Failed to save to secondary', error);
           return { success: false, error };
         })
       );
@@ -516,7 +516,7 @@ class UnifiedStatsManager {
     if (this.tertiary) {
       savePromises.push(
         this.tertiary.save(saveData).catch((error) => {
-          console.error('[UnifiedStatsManager] Failed to save to tertiary:', error);
+          logger.error('[UnifiedStatsManager] Failed to save to tertiary', error);
           return { success: false, error };
         })
       );
@@ -565,7 +565,7 @@ class UnifiedStatsManager {
       // Schedule retry
       setTimeout(() => this.processRetryQueue(), this.config.retryInterval);
     } else {
-      console.error('[UnifiedStatsManager] Max retries exceeded');
+      logger.error('[UnifiedStatsManager] Max retries exceeded', null);
     }
   }
 
@@ -742,11 +742,11 @@ class UnifiedStatsManager {
    * Clear all data (use with caution!)
    */
   async clearAllData() {
-    console.warn('[UnifiedStatsManager] Clearing all data...');
+    logger.warn('[UnifiedStatsManager] Clearing all data...');
 
     const clearPromises = Object.values(this.providers).map((provider) =>
       provider.clear().catch((error) => {
-        console.error(`Failed to clear ${provider.name}:`, error);
+        logger.error(`Failed to clear ${provider.name}`, error);
       })
     );
 
@@ -765,7 +765,7 @@ class UnifiedStatsManager {
       averageSyncTime: 0,
     };
 
-    console.warn('[UnifiedStatsManager] All data cleared');
+    logger.warn('[UnifiedStatsManager] All data cleared');
   }
 
   /**
@@ -798,7 +798,7 @@ class UnifiedStatsManager {
         try {
           callback(...args);
         } catch (error) {
-          console.error(`[UnifiedStatsManager] Event listener error:`, error);
+          logger.error('[UnifiedStatsManager] Event listener error', error);
         }
       });
     }

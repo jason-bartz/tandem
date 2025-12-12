@@ -9,6 +9,7 @@ import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
 import subscriptionService from '@/services/subscriptionService';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 /**
  * ArchiveCalendar Component
@@ -158,7 +159,7 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
       setPuzzleAccessMap(accessMap);
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('[ArchiveCalendar] Failed to load month data:', error);
+        logger.error('[ArchiveCalendar] Failed to load month data:', error);
       }
     } finally {
       setIsLoading(false);

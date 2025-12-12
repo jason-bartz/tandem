@@ -3,6 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { API_ENDPOINTS } from '@/lib/constants';
 import storageService from '@/core/storage/storageService';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 const STORAGE_KEY = 'reel-connections-stats';
 const USER_STORAGE_KEY_PREFIX = 'reel-connections-stats-user-';
@@ -49,7 +50,7 @@ async function fetchUserReelStatsFromDatabase() {
     const data = await response.json();
     return data.stats || null;
   } catch (error) {
-    console.error('[ReelConnectionsStats] Failed to fetch stats from database:', error);
+    logger.error('[ReelConnectionsStats] Failed to fetch stats from database', error);
     return null;
   }
 }
@@ -87,7 +88,7 @@ async function saveUserReelStatsToDatabase(stats) {
     const data = await response.json();
     return data.stats || null;
   } catch (error) {
-    console.error('[ReelConnectionsStats] Failed to save stats to database:', error);
+    logger.error('[ReelConnectionsStats] Failed to save stats to database', error);
     return null;
   }
 }
@@ -137,7 +138,7 @@ async function triggerAchievementCheck(updatedStats) {
     const { checkAndNotifyReelAchievements } = await import('@/lib/achievementNotifier');
     await checkAndNotifyReelAchievements(updatedStats);
   } catch (error) {
-    console.error('[ReelConnectionsStats] Failed to check achievements:', error);
+    logger.error('[ReelConnectionsStats] Failed to check achievements', error);
   }
 }
 
@@ -153,7 +154,7 @@ async function triggerLeaderboardSync(updatedStats) {
       'reel'
     );
   } catch (error) {
-    console.error('[ReelConnectionsStats] Failed to sync streak to leaderboard:', error);
+    logger.error('[ReelConnectionsStats] Failed to sync streak to leaderboard', error);
   }
 }
 
@@ -226,7 +227,7 @@ export function useReelConnectionsStats() {
 
             // Save merged stats to database (fire-and-forget)
             saveUserReelStatsToDatabase(mergedStats).catch((err) => {
-              console.error('[ReelConnectionsStats] Failed to save merged stats to db:', err);
+              logger.error('[ReelConnectionsStats] Failed to save merged stats to db', err);
             });
 
             setStats(mergedStats);
@@ -237,7 +238,7 @@ export function useReelConnectionsStats() {
             // Sync local stats to database if we have any data
             if (localStats.gamesPlayed > 0) {
               saveUserReelStatsToDatabase(localStats).catch((err) => {
-                console.error('[ReelConnectionsStats] Failed to sync local stats to db:', err);
+                logger.error('[ReelConnectionsStats] Failed to sync local stats to db', err);
               });
             }
           }
@@ -245,7 +246,7 @@ export function useReelConnectionsStats() {
           setStats(localStats);
         }
       } catch (error) {
-        console.error('[ReelConnectionsStats] Error loading stats:', error);
+        logger.error('[ReelConnectionsStats] Error loading stats', error);
         setStats(DEFAULT_STATS);
       }
       setIsLoaded(true);
@@ -273,14 +274,14 @@ export function useReelConnectionsStats() {
           isSyncingRef.current = true;
           saveUserReelStatsToDatabase(stats)
             .catch((err) => {
-              console.error('[ReelConnectionsStats] Failed to sync stats to database:', err);
+              logger.error('[ReelConnectionsStats] Failed to sync stats to database', err);
             })
             .finally(() => {
               isSyncingRef.current = false;
             });
         }
       } catch (error) {
-        console.error('[ReelConnectionsStats] Error saving stats:', error);
+        logger.error('[ReelConnectionsStats] Error saving stats', error);
       }
     };
 
@@ -417,7 +418,7 @@ export function useReelConnectionsStats() {
     // Also clear from database if user is authenticated
     if (user?.id) {
       saveUserReelStatsToDatabase(DEFAULT_STATS).catch((err) => {
-        console.error('[ReelConnectionsStats] Failed to reset stats in database:', err);
+        logger.error('[ReelConnectionsStats] Failed to reset stats in database', err);
       });
     }
   }, [user?.id]);

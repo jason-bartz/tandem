@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 /**
  * Custom hook for fetching and caching daily horoscopes
@@ -36,7 +37,7 @@ export function useHoroscope(sign, timezone = 'UTC') {
       const dateString = `${year}-${month}-${day}`;
       return `horoscope_${sign}_${dateString}`;
     } catch (error) {
-      console.error('Error generating cache key:', error);
+      logger.error('Error generating cache key', error);
       return null;
     }
   }, [sign, timezone]);
@@ -70,7 +71,7 @@ export function useHoroscope(sign, timezone = 'UTC') {
           }
         } catch (cacheError) {
           // Silently fail cache read, continue to fetch
-          console.warn('Cache read error:', cacheError);
+          logger.warn('Cache read error', cacheError);
         }
       }
 
@@ -117,11 +118,11 @@ export function useHoroscope(sign, timezone = 'UTC') {
           }
         } catch (cacheError) {
           // Silently fail cache write (e.g., quota exceeded)
-          console.warn('Cache write error:', cacheError);
+          logger.warn('Cache write error', cacheError);
         }
       }
     } catch (err) {
-      console.error('Error fetching horoscope:', err);
+      logger.error('Error fetching horoscope', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -159,7 +160,7 @@ export function useHoroscope(sign, timezone = 'UTC') {
 
         return secondsUntilMidnight * 1000;
       } catch (error) {
-        console.error('Error calculating midnight:', error);
+        logger.error('Error calculating midnight', error);
         // Default to 1 hour if calculation fails
         return 60 * 60 * 1000;
       }

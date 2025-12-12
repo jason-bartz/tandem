@@ -9,6 +9,7 @@
  */
 
 const { format, parse, subDays, addDays, isValid, startOfDay } = require('date-fns');
+const logger = require('@/lib/logger').default;
 
 /**
  * LocalDateService class for handling all date operations in user's local timezone
@@ -122,7 +123,7 @@ class LocalDateService {
 
       return dateString;
     } catch (error) {
-      console.error('[LocalDateService] Error getting current date string:', error);
+      logger.error('[LocalDateService] Error getting current date string', error);
 
       // Fallback: use basic Date methods
       const now = new Date();
@@ -161,7 +162,7 @@ class LocalDateService {
 
       return result;
     } catch (error) {
-      console.error('[LocalDateService] Error getting yesterday date string:', error);
+      logger.error('[LocalDateService] Error getting yesterday date string', error);
 
       // Fallback calculation using native Date
       const [year, month, day] = dateString.split('-').map(Number);
@@ -199,7 +200,7 @@ class LocalDateService {
 
       return result;
     } catch (error) {
-      console.error('[LocalDateService] Error getting tomorrow date string:', error);
+      logger.error('[LocalDateService] Error getting tomorrow date string', error);
 
       // Fallback calculation
       const [year, month, day] = dateString.split('-').map(Number);
@@ -270,7 +271,7 @@ class LocalDateService {
 
       return days;
     } catch (error) {
-      console.error('[LocalDateService] Error calculating days between:', error);
+      logger.error('[LocalDateService] Error calculating days between', error);
 
       // Fallback calculation
       const [startYear, startMonth, startDay] = startDate.split('-').map(Number);
@@ -327,7 +328,7 @@ class LocalDateService {
 
       return format(date, displayFormat);
     } catch (error) {
-      console.error('[LocalDateService] Error formatting date for display:', error);
+      logger.error('[LocalDateService] Error formatting date for display', error);
 
       // Fallback: return a basic formatted string
       const [year, month, day] = dateString.split('-');
@@ -413,7 +414,7 @@ class LocalDateService {
 
     // Log for development
     if (this.debugMode) {
-      console.error(`[LocalDateService.${method}] Error reported:`, error);
+      logger.error(`[LocalDateService.${method}] Error reported`, error);
     }
   }
 

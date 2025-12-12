@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import LeaderboardEntry from './LeaderboardEntry';
 import Image from 'next/image';
+import logger from '@/lib/logger';
 
 /**
  * DailyLeaderboard - Displays top 10 players for today's daily puzzle
@@ -45,10 +46,10 @@ export default function DailyLeaderboard({ gameType }) {
         setLeaderboard(data.leaderboard || []);
         setUserRank(data.userRank);
       } else {
-        console.error('[DailyLeaderboard] API returned success=false:', data);
+        logger.error('[DailyLeaderboard] API returned success=false:', null, data);
       }
     } catch (err) {
-      console.error('[DailyLeaderboard] Fetch error:', err);
+      logger.error('[DailyLeaderboard] Fetch error:', err);
     } finally {
       setLoading(false);
     }

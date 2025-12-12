@@ -15,6 +15,7 @@ import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 
@@ -187,7 +188,7 @@ export default function UnifiedArchiveCalendar({
       return { monthData, accessMap };
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('[UnifiedArchiveCalendar] Failed to load Tandem month data:', error);
+        logger.error('[UnifiedArchiveCalendar] Failed to load Tandem month data:', error);
       }
       return { monthData: {}, accessMap: {} };
     }
@@ -235,7 +236,7 @@ export default function UnifiedArchiveCalendar({
       return { monthData, accessMap: {} };
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('[UnifiedArchiveCalendar] Failed to load Mini month data:', error);
+        logger.error('[UnifiedArchiveCalendar] Failed to load Mini month data:', error);
       }
       return { monthData: {}, accessMap: {} };
     }
@@ -274,7 +275,7 @@ export default function UnifiedArchiveCalendar({
           setCompletedReelPuzzles(new Set());
         }
       } catch (storageError) {
-        console.error('[UnifiedArchiveCalendar] Error loading Reel history:', storageError);
+        logger.error('[UnifiedArchiveCalendar] Error loading Reel history:', storageError);
         setCompletedReelPuzzles(new Set());
       }
 
@@ -300,7 +301,7 @@ export default function UnifiedArchiveCalendar({
       return { monthData, accessMap: {} };
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('[UnifiedArchiveCalendar] Failed to load Reel month data:', error);
+        logger.error('[UnifiedArchiveCalendar] Failed to load Reel month data:', error);
       }
       return { monthData: {}, accessMap: {} };
     }

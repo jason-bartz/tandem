@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState, useEffect, useCallback } from 'react';
 import { GAME_CONFIG, GAME_STATES } from '@/lib/constants';
 import puzzleService from '@/services/puzzle.service';
@@ -13,6 +12,7 @@ import {
 import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import statsService from '@/services/stats.service';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 export function useGameWithInitialData(initialPuzzleData) {
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
@@ -159,14 +159,12 @@ export function useGameWithInitialData(initialPuzzleData) {
         setLockedLetters([null, null, null, null]);
         return true;
       } else {
-        console.error('[useGameWithInitialData] No response or empty response');
+        logger.error('[useGameWithInitialData] No response or empty response', null);
         setError('No puzzle available');
         return false;
       }
     } catch (err) {
-      console.error('[useGameWithInitialData] Error loading puzzle:', err);
-      console.error('[useGameWithInitialData] Error message:', err.message);
-      console.error('[useGameWithInitialData] Error stack:', err.stack);
+      logger.error('[useGameWithInitialData] Error loading puzzle', err);
       setError(`Failed to load puzzle: ${err.message}`);
       return false;
     } finally {
@@ -266,7 +264,7 @@ export function useGameWithInitialData(initialPuzzleData) {
           isFirstAttempt,
         });
       } catch (err) {
-        console.error('[useGameWithInitialData] statsService.updateStats failed:', err);
+        logger.error('[useGameWithInitialData] statsService.updateStats failed', err);
         // Fall back to direct storage update if service fails
         updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
       }
@@ -282,7 +280,7 @@ export function useGameWithInitialData(initialPuzzleData) {
             mistakes: mistakes,
           });
         } catch (err) {
-          console.error('Failed to submit completion:', err);
+          logger.error('Failed to submit completion', err);
         }
 
         // Submit to leaderboard if won and time is valid
@@ -306,10 +304,10 @@ export function useGameWithInitialData(initialPuzzleData) {
             const result = await response.json();
 
             if (!response.ok) {
-              console.error('[useGameWithInitialData] Leaderboard submission failed:', result);
+              logger.error('[useGameWithInitialData] Leaderboard submission failed', null, result);
             }
           } catch (err) {
-            console.error('[useGameWithInitialData] Failed to submit to leaderboard:', err);
+            logger.error('[useGameWithInitialData] Failed to submit to leaderboard', err);
             // Fail silently - leaderboard submission is not critical
           }
 
@@ -338,7 +336,7 @@ export function useGameWithInitialData(initialPuzzleData) {
                 await streakResponse.json();
               }
             } catch (err) {
-              console.error('[useGameWithInitialData] Failed to submit streak:', err);
+              logger.error('[useGameWithInitialData] Failed to submit streak', err);
               // Fail silently
             }
           }

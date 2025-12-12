@@ -3,6 +3,7 @@
 import { useState, useCallback } from 'react';
 import { recoverStreak, debugStreakStatus } from '@/lib/fixStreak';
 import { loadStats } from '@/lib/storage';
+import logger from '@/lib/logger';
 
 export function useStreakRecovery() {
   const [isRecovering, setIsRecovering] = useState(false);
@@ -21,7 +22,7 @@ export function useStreakRecovery() {
         message: `Streak recovered: ${result.currentStreak}`,
       });
     } catch (error) {
-      console.error('[useStreakRecovery] Recovery failed:', error);
+      logger.error('[useStreakRecovery] Recovery failed', error);
       setRecoveryResult({
         success: false,
         error: error.message,
@@ -38,7 +39,7 @@ export function useStreakRecovery() {
       setDebugInfo(info);
       return info;
     } catch (error) {
-      console.error('[useStreakRecovery] Debug failed:', error);
+      logger.error('[useStreakRecovery] Debug failed', error);
       return null;
     }
   }, []);
@@ -63,7 +64,7 @@ export function useStreakRecovery() {
           : [],
       };
     } catch (error) {
-      console.error('[useStreakRecovery] Health check failed:', error);
+      logger.error('[useStreakRecovery] Health check failed', error);
       return { isHealthy: false, error: error.message };
     }
   }, []);

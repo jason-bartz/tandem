@@ -7,6 +7,7 @@ import { generateRandomUsername } from '@/utils/usernameGenerator';
 import { validateUsername } from '@/utils/profanityFilter';
 import Image from 'next/image';
 import ReelConnectionsModal from './ReelConnectionsModal';
+import logger from '@/lib/logger';
 
 /**
  * ReelConnectionsAuthModal - Cinema-themed authentication modal
@@ -140,7 +141,7 @@ export default function ReelConnectionsAuthModal({
         onClose();
       }
     } catch (err) {
-      console.error('Apple sign in error:', err);
+      logger.error('Apple sign in error:', err);
       setError('Unable to sign in with Apple. Please try again or use email.');
       setLoading(false);
     }

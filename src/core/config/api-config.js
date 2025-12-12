@@ -10,6 +10,7 @@
  */
 
 import { Capacitor } from '@capacitor/core';
+import logger from '@/lib/logger';
 
 /**
  * Get the base API URL based on the platform
@@ -74,7 +75,7 @@ export async function getAuthHeaders() {
 
     return {};
   } catch (error) {
-    console.error('[API Config] Failed to get auth headers:', error);
+    logger.error('[API Config] Failed to get auth headers', error);
     return {};
   }
 }
@@ -133,7 +134,7 @@ export async function capacitorFetch(url, options = {}, includeAuth = true) {
         url: response.url || url,
       };
     } catch (error) {
-      console.error('[CapacitorFetch] Error:', error);
+      logger.error('[CapacitorFetch] Error', error);
       throw error;
     }
   }

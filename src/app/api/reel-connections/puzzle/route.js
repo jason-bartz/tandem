@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import logger from '@/lib/logger';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -66,7 +67,7 @@ export async function GET(request) {
 
     return NextResponse.json({ puzzle: formattedPuzzle });
   } catch (error) {
-    console.error('Error fetching puzzle:', error);
+    logger.error('Error fetching puzzle:', error);
     return NextResponse.json({ error: 'Failed to fetch puzzle' }, { status: 500 });
   }
 }

@@ -4,6 +4,7 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { STORAGE_KEYS } from '@/lib/constants';
 import NotificationPermissionScreen from './NotificationPermissionScreen';
+import logger from '@/lib/logger';
 
 const ONBOARDING_STEPS = {
   NOTIFICATIONS: 'notifications',
@@ -38,7 +39,7 @@ export default function OnboardingFlow({ onComplete }) {
         localStorage.setItem(STORAGE_KEYS.HAS_SEEN_ONBOARDING, 'true');
       }
     } catch (error) {
-      console.error('Failed to save onboarding completion status:', error);
+      logger.error('Failed to save onboarding completion status:', error);
     }
   };
 

@@ -28,6 +28,7 @@ import avatarService from '@/services/avatar.service';
 import { generateRandomUsername } from '@/utils/usernameGenerator';
 import { validateUsername } from '@/utils/profanityFilter';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }) {
   const { refreshProfile } = useAuth();
@@ -114,7 +115,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
       successHaptic();
       setShowAvatarSelection(true);
     } catch (error) {
-      console.error('[FirstTimeAccountSuccessModal] Failed to save username:', error);
+      logger.error('[FirstTimeAccountSuccessModal] Failed to save username', error);
       setUsernameError('An unexpected error occurred. Please try again.');
     } finally {
       setIsSaving(false);
@@ -147,7 +148,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
       await avatarService.markFirstTimeSetupComplete(userId);
     } catch (err) {
       // Non-critical error - avatar is already saved, continue anyway
-      console.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete:', err);
+      logger.error('[FirstTimeAccountSuccessModal] Failed to mark setup complete', err);
     }
   };
 

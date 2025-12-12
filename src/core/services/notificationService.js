@@ -10,6 +10,7 @@ import {
   WEEKLY_SUMMARY,
 } from '@/lib/notificationMessages';
 import { loadStats, hasPlayedToday, getWeeklyPuzzleStats } from '@/core/storage/storage';
+import logger from '@/lib/logger';
 
 const NOTIFICATION_IDS = {
   DAILY_REMINDER: 1,
@@ -64,7 +65,7 @@ class NotificationService {
 
       this.initialized = true;
     } catch (error) {
-      console.error('Failed to initialize notifications:', error);
+      logger.error('Failed to initialize notifications', error);
     }
   }
 
@@ -93,7 +94,7 @@ class NotificationService {
 
       return display === 'granted';
     } catch (error) {
-      console.error('Failed to request permission:', error);
+      logger.error('Failed to request permission', error);
       return false;
     }
   }
@@ -106,7 +107,7 @@ class NotificationService {
       this.permissionStatus = display;
       return display === 'granted';
     } catch (error) {
-      console.error('Failed to check permission:', error);
+      logger.error('Failed to check permission', error);
       return false;
     }
   }
@@ -124,7 +125,7 @@ class NotificationService {
         return value;
       }
     } catch (error) {
-      console.error(`Failed to get preference ${key}:`, error);
+      logger.error(`Failed to get preference ${key}`, error);
       return defaultValue;
     }
   }
@@ -135,7 +136,7 @@ class NotificationService {
       await Preferences.set({ key, value: stringValue });
       return true;
     } catch (error) {
-      console.error(`Failed to set preference ${key}:`, error);
+      logger.error(`Failed to set preference ${key}`, error);
       return false;
     }
   }
@@ -480,7 +481,7 @@ class NotificationService {
     try {
       await LocalNotifications.cancel({ notifications: [{ id }] });
     } catch (error) {
-      console.error(`Failed to cancel notification ${id}:`, error);
+      logger.error(`Failed to cancel notification ${id}`, error);
     }
   }
 
@@ -495,7 +496,7 @@ class NotificationService {
         });
       }
     } catch (error) {
-      console.error('Failed to cancel all notifications:', error);
+      logger.error('Failed to cancel all notifications', error);
     }
   }
 
@@ -586,7 +587,7 @@ class NotificationService {
         await LocalNotifications.setBadgeCount({ count: 0 });
       }
     } catch (error) {
-      console.error('Failed to clear badge:', error);
+      logger.error('Failed to clear badge', error);
     }
   }
 

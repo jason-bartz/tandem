@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 const DIFFICULTY_LEVELS = [
   {
@@ -84,7 +85,7 @@ function MovieSearchInput({ value, onChange, groupColor }) {
         setResults(data.movies || []);
         setShowResults(true);
       } catch (error) {
-        console.error('Search error:', error);
+        logger.error('Search error', error);
         setResults([]);
       } finally {
         setLoading(false);

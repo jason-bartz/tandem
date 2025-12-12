@@ -122,7 +122,7 @@ class PlatformService {
         try {
           data = typeof response.data === 'string' ? JSON.parse(response.data) : response.data;
         } catch (parseError) {
-          console.error('[PlatformService] Failed to parse puzzle response:', parseError);
+          logger.error('[PlatformService] Failed to parse puzzle response', parseError);
           throw new Error('Invalid response format from server');
         }
       } else {

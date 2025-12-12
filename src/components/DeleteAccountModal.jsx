@@ -6,6 +6,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import logger from '@/lib/logger';
 
 /**
  * DeleteAccountModal
@@ -99,10 +100,8 @@ export default function DeleteAccountModal({
           confirmationText: 'DELETE',
         }),
       }).catch((fetchError) => {
-        console.error('[DeleteAccount] Fetch error:', {
-          message: fetchError.message,
+        logger.error('[DeleteAccount] Fetch error', fetchError, {
           name: fetchError.name,
-          stack: fetchError.stack,
           type: fetchError.constructor.name,
         });
         throw fetchError;
@@ -115,8 +114,7 @@ export default function DeleteAccountModal({
       try {
         data = JSON.parse(responseText);
       } catch (parseErr) {
-        console.error('[DeleteAccount] Failed to parse response:', {
-          error: parseErr,
+        logger.error('[DeleteAccount] Failed to parse response', parseErr, {
           responseText: responseText.substring(0, 200), // First 200 chars
         });
         throw new Error('Invalid response from server');
@@ -124,7 +122,7 @@ export default function DeleteAccountModal({
 
       if (!response.ok) {
         const errorMsg = data.error || data.details || 'Failed to delete account';
-        console.error('[DeleteAccount] API error:', errorMsg);
+        logger.error('[DeleteAccount] API error', null, { errorMsg });
         throw new Error(errorMsg);
       }
 
@@ -133,11 +131,8 @@ export default function DeleteAccountModal({
       // Call success callback (will sign out and redirect)
       onSuccess?.(data);
     } catch (err) {
-      console.error('[DeleteAccount] Error:', {
-        message: err.message,
-        stack: err.stack,
+      logger.error('[DeleteAccount] Error', err, {
         name: err.name,
-        error: err,
       });
       setError(err.message || 'Failed to delete account');
       incorrectAnswer();

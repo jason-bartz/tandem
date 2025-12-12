@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { promises as fs } from 'fs';
 import path from 'path';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/admin/mini/word-frequencies
@@ -38,10 +39,10 @@ export async function GET(request) {
         const frequencies = JSON.parse(fileContent);
 
         // Filter by threshold
-        const filtered = frequencies.filter(item => item.frequency >= threshold);
+        const filtered = frequencies.filter((item) => item.frequency >= threshold);
         allFrequencies.push(...filtered);
       } catch (err) {
-        console.warn(`Could not load frequencies for length ${len}:`, err.message);
+        logger.warn(`Could not load frequencies for length ${len}:`, err.message);
       }
     }
 
@@ -51,25 +52,27 @@ export async function GET(request) {
     // Apply limit if specified
     const result = limit ? allFrequencies.slice(0, limit) : allFrequencies;
 
-    return NextResponse.json({
-      success: true,
-      count: result.length,
-      totalAvailable: allFrequencies.length,
-      threshold,
-      data: result
-    }, {
-      headers: {
-        'Cache-Control': 'public, max-age=86400, immutable', // Cache for 24 hours
+    return NextResponse.json(
+      {
+        success: true,
+        count: result.length,
+        totalAvailable: allFrequencies.length,
+        threshold,
+        data: result,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, max-age=86400, immutable', // Cache for 24 hours
+        },
       }
-    });
-
+    );
   } catch (error) {
-    console.error('Error fetching word frequencies:', error);
+    logger.error('Error fetching word frequencies:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to fetch word frequencies',
-        message: error.message
+        message: error.message,
       },
       { status: 500 }
     );
@@ -104,28 +107,29 @@ export async function POST(request) {
         const fileContent = await fs.readFile(filePath, 'utf-8');
         const frequencies = JSON.parse(fileContent);
 
-        frequencies.forEach(item => {
+        frequencies.forEach((item) => {
           frequencyMap.set(item.word, item.frequency);
         });
       } catch (err) {
-        console.warn(`Could not load frequencies for length ${len}:`, err.message);
+        logger.warn(`Could not load frequencies for length ${len}:`, err.message);
       }
     }
 
     // Calculate statistics for provided words
-    const results = words.map(word => {
+    const results = words.map((word) => {
       const upperWord = word.toUpperCase();
       return {
         word: upperWord,
         frequency: frequencyMap.get(upperWord) || 0,
-        found: frequencyMap.has(upperWord)
+        found: frequencyMap.has(upperWord),
       };
     });
 
-    const foundWords = results.filter(r => r.found);
-    const averageFrequency = foundWords.length > 0
-      ? foundWords.reduce((sum, r) => sum + r.frequency, 0) / foundWords.length
-      : 0;
+    const foundWords = results.filter((r) => r.found);
+    const averageFrequency =
+      foundWords.length > 0
+        ? foundWords.reduce((sum, r) => sum + r.frequency, 0) / foundWords.length
+        : 0;
 
     return NextResponse.json({
       success: true,
@@ -134,18 +138,17 @@ export async function POST(request) {
         totalWords: words.length,
         foundWords: foundWords.length,
         averageFrequency: Math.round(averageFrequency * 100) / 100,
-        minFrequency: foundWords.length > 0 ? Math.min(...foundWords.map(r => r.frequency)) : 0,
-        maxFrequency: foundWords.length > 0 ? Math.max(...foundWords.map(r => r.frequency)) : 0
-      }
+        minFrequency: foundWords.length > 0 ? Math.min(...foundWords.map((r) => r.frequency)) : 0,
+        maxFrequency: foundWords.length > 0 ? Math.max(...foundWords.map((r) => r.frequency)) : 0,
+      },
     });
-
   } catch (error) {
-    console.error('Error calculating word statistics:', error);
+    logger.error('Error calculating word statistics:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to calculate statistics',
-        message: error.message
+        message: error.message,
       },
       { status: 500 }
     );

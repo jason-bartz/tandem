@@ -9,6 +9,7 @@ import { useReelConnectionsStats } from '@/hooks/useReelConnectionsStats';
 import { useAuth } from '@/contexts/AuthContext';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import { Trophy, Clock, Flame, Target, User } from 'lucide-react';
+import logger from '@/lib/logger';
 
 /**
  * StatsModal - Statistics modal for Reel Connections game
@@ -55,7 +56,7 @@ export default function StatsModal({ isOpen, onClose }) {
         setUserRank(activeTab === 'daily' ? data.userRank : data.userEntry);
       }
     } catch (err) {
-      console.error('[ReelConnectionsLeaderboard] Fetch error:', err);
+      logger.error('[ReelConnectionsLeaderboard] Fetch error:', err);
     } finally {
       setLeaderboardLoading(false);
     }

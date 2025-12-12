@@ -5,6 +5,7 @@
  */
 
 import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
+import logger from '@/lib/logger';
 
 // Initialization states (matching iOS interface)
 const INIT_STATE = {
@@ -46,7 +47,7 @@ class WebSubscriptionService {
         this.subscriptionStatus = parsed;
       }
     } catch (error) {
-      console.error('[WebSubscriptionService] Failed to hydrate from cache:', error);
+      logger.error('[WebSubscriptionService] Failed to hydrate from cache', error);
       this.subscriptionStatus = null;
     }
   }
@@ -142,7 +143,7 @@ class WebSubscriptionService {
 
       this.updateCache(newStatus);
     } catch (error) {
-      console.error('[WebSubscriptionService] Failed to load subscription status:', error);
+      logger.error('[WebSubscriptionService] Failed to load subscription status', error);
 
       // On error, keep cached status if available, otherwise mark as inactive
       if (!this.subscriptionStatus) {
@@ -165,7 +166,7 @@ class WebSubscriptionService {
       };
       localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
     } catch (error) {
-      console.error('[WebSubscriptionService] Failed to update cache:', error);
+      logger.error('[WebSubscriptionService] Failed to update cache', error);
     }
   }
 
@@ -178,7 +179,7 @@ class WebSubscriptionService {
     try {
       localStorage.removeItem(CACHE_KEY);
     } catch (error) {
-      console.error('[WebSubscriptionService] Failed to clear cache:', error);
+      logger.error('[WebSubscriptionService] Failed to clear cache', error);
     }
   }
 

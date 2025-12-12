@@ -1,9 +1,9 @@
 import { API_ENDPOINTS, STORAGE_KEYS } from '@/lib/constants';
 import { updateGameStats, saveTodayResult, hasPlayedPuzzle } from '@/lib/storage';
-// gameCenterService removed - Game Center integration deprecated
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 class StatsService {
   /**
@@ -19,7 +19,7 @@ class StatsService {
         return localStorage.getItem(STORAGE_KEYS.HAS_SEEN_ONBOARDING) === 'true';
       }
     } catch (error) {
-      console.error('Failed to check user consent:', error);
+      logger.error('Failed to check user consent', error);
       // Default to false if check fails
       return false;
     }
@@ -41,7 +41,7 @@ class StatsService {
         return value !== 'false';
       }
     } catch (error) {
-      console.error('Failed to check leaderboard preference:', error);
+      logger.error('Failed to check leaderboard preference', error);
       // Default to true if check fails
       return true;
     }
@@ -57,7 +57,7 @@ class StatsService {
       const data = await response.json();
       return data.stats;
     } catch (error) {
-      console.error('StatsService.getGlobalStats error:', error);
+      logger.error('StatsService.getGlobalStats error', error);
       throw error;
     }
   }
@@ -104,11 +104,8 @@ class StatsService {
           });
 
           if (!response.ok) {
-            console.warn('Failed to update server stats:', response.status);
+            logger.warn('Failed to update server stats', { status: response.status });
           }
-        } else {
-          // User has not consented or has disabled leaderboards - skip upload
-          // eslint-disable-next-line no-console
         }
       }
 
@@ -116,15 +113,15 @@ class StatsService {
       try {
         const { checkAndNotifyTandemAchievements } = await import('@/lib/achievementNotifier');
         checkAndNotifyTandemAchievements(localStats).catch((error) => {
-          console.error('StatsService: Failed to check achievements:', error);
+          logger.error('StatsService: Failed to check achievements', error);
         });
       } catch (error) {
-        console.error('StatsService: Failed to import achievement notifier:', error);
+        logger.error('StatsService: Failed to import achievement notifier', error);
       }
 
       return localStats;
     } catch (error) {
-      console.error('StatsService.updateStats error:', error);
+      logger.error('StatsService.updateStats error', error);
       return await updateGameStats(
         gameResult.completed,
         !(await hasPlayedPuzzle(gameResult.puzzleDate || '')),
@@ -144,7 +141,7 @@ class StatsService {
 
       return await response.json();
     } catch (error) {
-      console.error('StatsService.getLeaderboard error:', error);
+      logger.error('StatsService.getLeaderboard error', error);
       throw error;
     }
   }

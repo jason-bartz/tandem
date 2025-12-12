@@ -6,6 +6,7 @@ import { buildTrieFromFiles } from '@/lib/server/TrieGenerator.js';
 import CrosswordGenerator from '@/lib/server/CrosswordGenerator.js';
 import { createServerClient } from '@/lib/supabase/server';
 import { extractWordsFromPuzzles } from '@/lib/miniUtils';
+import logger from '@/lib/logger';
 
 // Default lookback period for word deduplication (in days)
 // Reduced from 45 to 30 days to allow more word variety with expanded database
@@ -72,7 +73,7 @@ async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
 
     const startDateStr = startDate.toISOString().split('T')[0];
 
-    console.log(
+    logger.info(
       `[Generator API] Fetching words from puzzles since ${startDateStr} (${lookbackDays} days)`
     );
 
@@ -84,20 +85,20 @@ async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
       .order('date', { ascending: false });
 
     if (error) {
-      console.error('[Generator API] Error fetching recent puzzles:', error);
+      logger.error('[Generator API] Error fetching recent puzzles:', error);
       return [];
     }
 
     // Extract all words from these puzzles
     const words = extractWordsFromPuzzles(puzzles);
 
-    console.log(
+    logger.info(
       `[Generator API] Found ${words.length} unique words from ${puzzles.length} recent puzzles`
     );
 
     return words;
   } catch (error) {
-    console.error('[Generator API] Error in getRecentlyUsedWords:', error);
+    logger.error('[Generator API] Error in getRecentlyUsedWords:', error);
     return [];
   }
 }
@@ -108,19 +109,19 @@ async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
 async function getTrie() {
   // If already cached, return it
   if (cachedTrie) {
-    console.log('[Generator API] Using cached Trie');
+    logger.debug('[Generator API] Using cached Trie');
     return cachedTrie;
   }
 
   // If currently loading, wait for that promise
   if (trieLoadPromise) {
-    console.log('[Generator API] Waiting for Trie to finish loading...');
+    logger.debug('[Generator API] Waiting for Trie to finish loading...');
     return await trieLoadPromise;
   }
 
   // Start loading
   trieLoadPromise = (async () => {
-    console.log('[Generator API] Building Trie from word lists with frequencies...');
+    logger.info('[Generator API] Building Trie from word lists with frequencies...');
     const startTime = Date.now();
     const databasePath = path.join(process.cwd(), 'database');
 
@@ -129,7 +130,7 @@ async function getTrie() {
 
     const stats = cachedTrie.getStats();
     const duration = Date.now() - startTime;
-    console.log(`[Generator API] Trie built successfully in ${duration}ms:`, stats);
+    logger.info(`[Generator API] Trie built successfully in ${duration}ms:`, stats);
 
     return cachedTrie;
   })();
@@ -219,49 +220,49 @@ export async function POST(request) {
       );
     }
 
-    console.log(
+    logger.info(
       `[Generator API] Starting generation - mode: ${mode}, symmetry: ${symmetry}, minFrequency: ${actualMinFrequency}`
     );
 
     // Load Trie (cached after first load)
-    console.log('[Generator API] Step 1: Loading Trie with frequencies...');
+    logger.info('[Generator API] Step 1: Loading Trie with frequencies...');
     const trie = await getTrie();
 
     // Clear pattern cache for fresh generation
     trie.clearCache();
-    console.log('[Generator API] Step 1: Trie loaded ✓');
+    logger.info('[Generator API] Step 1: Trie loaded ✓');
 
     // Fetch recently used words to exclude from generation
-    console.log('[Generator API] Step 1.5: Fetching recently used words...');
+    logger.info('[Generator API] Step 1.5: Fetching recently used words...');
     const excludeWords = await getRecentlyUsedWords();
-    console.log(
+    logger.info(
       `[Generator API] Step 1.5: Will exclude ${excludeWords.length} recently used words ✓`
     );
 
     // Create generator instance with frequency threshold and word exclusion
-    console.log('[Generator API] Step 2: Creating generator instance...');
+    logger.info('[Generator API] Step 2: Creating generator instance...');
     const generator = new CrosswordGenerator(trie, {
       maxRetries,
       minFrequency: actualMinFrequency,
       excludeWords,
     });
-    console.log('[Generator API] Step 2: Generator created ✓');
+    logger.info('[Generator API] Step 2: Generator created ✓');
 
     // Generate puzzle
-    console.log('[Generator API] Step 3: Generating puzzle...');
+    logger.info('[Generator API] Step 3: Generating puzzle...');
     const result = generator.generate(mode, existingGrid, symmetry);
 
-    console.log(
+    logger.info(
       `[Generator API] Step 3: Generation successful - ${result.words.length} words placed ✓`
     );
-    console.log(`[Generator API] Stats:`, result.stats);
+    logger.info(`[Generator API] Stats:`, result.stats);
 
     // Generate AI clues for all words
     const clues = { across: [], down: [] };
 
     try {
       if (aiService.isEnabled()) {
-        console.log('[Generator API] Generating AI clues...');
+        logger.info('[Generator API] Generating AI clues...');
 
         const generatedClues = await aiService.generateCrosswordClues(result.words);
 
@@ -297,12 +298,12 @@ export async function POST(request) {
         clues.across.sort((a, b) => a.number - b.number);
         clues.down.sort((a, b) => b.number - b.number);
 
-        console.log(`[Generator API] AI clues generated - ${clueIndex} clues`);
+        logger.info(`[Generator API] AI clues generated - ${clueIndex} clues`);
       } else {
-        console.log('[Generator API] AI disabled, skipping clue generation');
+        logger.info('[Generator API] AI disabled, skipping clue generation');
       }
     } catch (error) {
-      console.error('[Generator API] AI clue generation failed:', error);
+      logger.error('[Generator API] AI clue generation failed:', error);
       // Continue without AI clues - return puzzle anyway
     }
 
@@ -319,7 +320,7 @@ export async function POST(request) {
       minFrequency: actualMinFrequency,
     });
   } catch (error) {
-    console.error('[Generator API] Error:', error);
+    logger.error('[Generator API] Error:', error);
     return NextResponse.json(
       {
         success: false,
@@ -349,7 +350,7 @@ export async function GET(request) {
       stats,
     });
   } catch (error) {
-    console.error('[Generator API] Status check error:', error);
+    logger.error('[Generator API] Status check error:', error);
     return NextResponse.json({ error: 'Failed to check status' }, { status: 500 });
   }
 }

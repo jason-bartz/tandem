@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import { createServerClient } from '@/lib/supabase/server';
 import { getMiniPuzzleNumber } from '@/lib/miniUtils';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/admin/mini/puzzles
@@ -44,13 +45,13 @@ export async function GET(request) {
     const { data: puzzles, error } = await query;
 
     if (error) {
-      console.error('Error fetching mini puzzles:', error);
+      logger.error('Error fetching mini puzzles:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ puzzles }, { status: 200 });
   } catch (error) {
-    console.error('Error in GET /api/admin/mini/puzzles:', error);
+    logger.error('Error in GET /api/admin/mini/puzzles:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -86,7 +87,11 @@ export async function POST(request) {
     const number = getMiniPuzzleNumber(date);
 
     // Validate grid structure (5x5)
-    if (!Array.isArray(grid) || grid.length !== 5 || !grid.every((row) => Array.isArray(row) && row.length === 5)) {
+    if (
+      !Array.isArray(grid) ||
+      grid.length !== 5 ||
+      !grid.every((row) => Array.isArray(row) && row.length === 5)
+    ) {
       return NextResponse.json({ error: 'Grid must be a 5x5 array' }, { status: 400 });
     }
 
@@ -101,7 +106,10 @@ export async function POST(request) {
 
     // Validate clues structure
     if (!clues.across || !clues.down) {
-      return NextResponse.json({ error: 'Clues must have "across" and "down" arrays' }, { status: 400 });
+      return NextResponse.json(
+        { error: 'Clues must have "across" and "down" arrays' },
+        { status: 400 }
+      );
     }
 
     // Convert all letters to uppercase in grid and solution
@@ -122,16 +130,20 @@ export async function POST(request) {
       clues,
     };
 
-    const { data: puzzle, error } = await supabase.from('mini_puzzles').insert(insertData).select().single();
+    const { data: puzzle, error } = await supabase
+      .from('mini_puzzles')
+      .insert(insertData)
+      .select()
+      .single();
 
     if (error) {
-      console.error('Error creating mini puzzle:', error);
+      logger.error('Error creating mini puzzle:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ puzzle }, { status: 201 });
   } catch (error) {
-    console.error('Error in POST /api/admin/mini/puzzles:', error);
+    logger.error('Error in POST /api/admin/mini/puzzles:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -189,13 +201,13 @@ export async function PUT(request) {
       .single();
 
     if (error) {
-      console.error('Error updating mini puzzle:', error);
+      logger.error('Error updating mini puzzle:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ puzzle }, { status: 200 });
   } catch (error) {
-    console.error('Error in PUT /api/admin/mini/puzzles:', error);
+    logger.error('Error in PUT /api/admin/mini/puzzles:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -226,13 +238,13 @@ export async function DELETE(request) {
     const { error } = await supabase.from('mini_puzzles').delete().eq('id', id);
 
     if (error) {
-      console.error('Error deleting mini puzzle:', error);
+      logger.error('Error deleting mini puzzle:', error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
-    console.error('Error in DELETE /api/admin/mini/puzzles:', error);
+    logger.error('Error in DELETE /api/admin/mini/puzzles:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

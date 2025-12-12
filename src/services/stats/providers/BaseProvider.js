@@ -5,6 +5,8 @@
  * Provides common functionality and error handling.
  */
 
+import logger from '@/lib/logger';
+
 export class BaseProvider {
   constructor(name) {
     this.name = name;
@@ -60,7 +62,7 @@ export class BaseProvider {
    * Optional - subclasses can override
    */
   async clear() {
-    console.warn(`[${this.name}] Clear not implemented`);
+    logger.warn(`[${this.name}] Clear not implemented`);
     return false;
   }
 
@@ -69,7 +71,7 @@ export class BaseProvider {
    * Optional - subclasses can override
    */
   async delete(_ids) {
-    console.warn(`[${this.name}] Delete not implemented`);
+    logger.warn(`[${this.name}] Delete not implemented`);
     return false;
   }
 
@@ -201,7 +203,7 @@ export class BaseProvider {
    * Handle provider-specific errors
    */
   handleError(error, operation) {
-    console.error(`[${this.name}] ${operation} failed:`, error);
+    logger.error(`[${this.name}] ${operation} failed`, error);
 
     if (operation === 'fetch') {
       this.recordFetchError(error);

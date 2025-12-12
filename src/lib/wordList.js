@@ -3,6 +3,8 @@
  * Loads word lists from database folder and provides matching functionality
  */
 
+import logger from '@/lib/logger';
+
 class WordListService {
   constructor() {
     this.wordLists = {
@@ -34,7 +36,8 @@ class WordListService {
       const loadPromises = lengths.map(async (length) => {
         try {
           // Get admin token from localStorage
-          const adminToken = typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
+          const adminToken =
+            typeof window !== 'undefined' ? localStorage.getItem('adminToken') : null;
 
           const headers = {
             'Content-Type': 'application/json',
@@ -51,9 +54,11 @@ class WordListService {
           });
 
           if (!response.ok) {
-            console.error(`[WordList] Failed to load ${length}-letter words: ${response.status} ${response.statusText}`);
+            logger.error(
+              `[WordList] Failed to load ${length}-letter words: ${response.status} ${response.statusText}`
+            );
             const errorText = await response.text();
-            console.error(`[WordList] Error response:`, errorText);
+            logger.error(`[WordList] Error response:`, errorText);
             return;
           }
 
@@ -63,18 +68,18 @@ class WordListService {
             .map((word) => word.trim().toUpperCase())
             .filter((word) => word.length > 0);
           this.wordLists[length] = new Set(words);
-          console.log(`[WordList] Loaded ${words.length} ${length}-letter words`);
+          logger.info(`[WordList] Loaded ${words.length} ${length}-letter words`);
         } catch (error) {
-          console.error(`[WordList] Failed to load ${length}-letter words:`, error);
+          logger.error(`[WordList] Failed to load ${length}-letter words:`, error);
         }
       });
 
       await Promise.all(loadPromises);
       this.loaded = true;
       this.loading = false;
-      console.log('[WordList] All word lists loaded');
+      logger.info('[WordList] All word lists loaded');
     } catch (error) {
-      console.error('[WordList] Error loading word lists:', error);
+      logger.error('[WordList] Error loading word lists:', error);
       this.loading = false;
     }
   }
@@ -116,9 +121,7 @@ class WordListService {
     }
 
     const upperPattern = pattern.toUpperCase();
-    const regex = new RegExp(
-      '^' + upperPattern.replace(/\./g, '[A-Z]') + '$'
-    );
+    const regex = new RegExp('^' + upperPattern.replace(/\./g, '[A-Z]') + '$');
 
     return Array.from(wordList).filter((word) => regex.test(word));
   }
@@ -130,7 +133,7 @@ class WordListService {
    */
   findWordsForPartial(partial) {
     // Convert partial to pattern ('' becomes '.')
-    const pattern = partial.map(char => char || '.').join('');
+    const pattern = partial.map((char) => char || '.').join('');
     return this.findMatchingWords(pattern);
   }
 
@@ -172,16 +175,16 @@ class WordListService {
     }
 
     // Extract current pattern
-    let pattern = [];
+    const pattern = [];
     if (direction === 'across') {
       for (let c = startCol; c <= endCol; c++) {
         const cell = grid[row][c];
-        pattern.push(cell === '■' ? '■' : (cell || '.'));
+        pattern.push(cell === '■' ? '■' : cell || '.');
       }
     } else {
       for (let r = startRow; r <= endRow; r++) {
         const cell = grid[r][col];
-        pattern.push(cell === '■' ? '■' : (cell || '.'));
+        pattern.push(cell === '■' ? '■' : cell || '.');
       }
     }
 
@@ -196,9 +199,10 @@ class WordListService {
     return {
       pattern: patternStr,
       matches: matches.slice(0, 200), // Limit to 200 suggestions
-      position: direction === 'across'
-        ? { startRow: row, startCol, endRow: row, endCol }
-        : { startRow, startCol: col, endRow, endCol: col }
+      position:
+        direction === 'across'
+          ? { startRow: row, startCol, endRow: row, endCol }
+          : { startRow, startCol: col, endRow, endCol: col },
     };
   }
 
@@ -260,7 +264,7 @@ class WordListService {
       });
 
       if (!response.ok) {
-        console.error(`[WordList] Failed to load word frequencies: ${response.status}`);
+        logger.error(`[WordList] Failed to load word frequencies: ${response.status}`);
         return;
       }
 
@@ -272,14 +276,14 @@ class WordListService {
           this.wordFrequencies.set(word.toUpperCase(), frequency);
         });
 
-        console.log(`[WordList] Loaded ${result.data.length} word frequencies`);
+        logger.info(`[WordList] Loaded ${result.data.length} word frequencies`);
 
         if (!length) {
           this.frequenciesLoaded = true;
         }
       }
     } catch (error) {
-      console.error('[WordList] Error loading word frequencies:', error);
+      logger.error('[WordList] Error loading word frequencies:', error);
     } finally {
       this.loadingFrequencies = false;
     }
@@ -307,7 +311,7 @@ class WordListService {
       return allWords;
     }
 
-    return allWords.filter(word => this.getWordFrequency(word) >= minFrequency);
+    return allWords.filter((word) => this.getWordFrequency(word) >= minFrequency);
   }
 
   /**
@@ -323,7 +327,7 @@ class WordListService {
       return matches;
     }
 
-    return matches.filter(word => this.getWordFrequency(word) >= minFrequency);
+    return matches.filter((word) => this.getWordFrequency(word) >= minFrequency);
   }
 
   /**
@@ -339,9 +343,10 @@ class WordListService {
     const suggestions = this.getWordSuggestionsForCell(grid, row, col, direction);
 
     // Filter and sort by frequency
-    let matches = minFrequency > 0
-      ? suggestions.matches.filter(word => this.getWordFrequency(word) >= minFrequency)
-      : suggestions.matches;
+    let matches =
+      minFrequency > 0
+        ? suggestions.matches.filter((word) => this.getWordFrequency(word) >= minFrequency)
+        : suggestions.matches;
 
     // Sort by frequency (descending)
     matches = matches.sort((a, b) => {
@@ -353,7 +358,7 @@ class WordListService {
     return {
       ...suggestions,
       matches: matches.slice(0, 200), // Limit to 200
-      sorted: true
+      sorted: true,
     };
   }
 

@@ -4,6 +4,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
 import notificationService from '@/services/notificationService';
+import logger from '@/lib/logger';
 
 export default function NotificationPermissionScreen({ onContinue, onSkip }) {
   const { highContrast } = useTheme();
@@ -26,7 +27,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
       // Continue regardless of permission result
       onContinue();
     } catch (error) {
-      console.error('Failed to request notification permission:', error);
+      logger.error('Failed to request notification permission:', error);
       // Continue anyway - user can enable later in settings
       onContinue();
     } finally {

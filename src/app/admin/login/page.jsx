@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import authService from '@/services/auth.service';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 export default function AdminLogin() {
   const [username, setUsername] = useState('');
@@ -31,7 +32,7 @@ export default function AdminLogin() {
       }
     } catch (err) {
       setError('Login failed. Please try again.');
-      console.error('Login error:', err);
+      logger.error('Login error', err);
     } finally {
       setLoading(false);
     }

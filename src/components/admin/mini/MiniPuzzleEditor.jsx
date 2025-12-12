@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import wordListService from '@/lib/wordList';
 import authService from '@/services/auth.service';
+import logger from '@/lib/logger';
 
 /**
  * Symmetry types for crossword puzzles
@@ -49,19 +50,19 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
   // Load word lists on mount
   useEffect(() => {
-    console.log('[MiniPuzzleEditor] Starting to load word lists...');
+    logger.info('[MiniPuzzleEditor] Starting to load word lists...');
     wordListService
       .loadWordLists()
       .then(() => {
         setWordsLoaded(true);
-        console.log('[MiniPuzzleEditor] Word lists loaded successfully');
-        console.log(
+        logger.info('[MiniPuzzleEditor] Word lists loaded successfully');
+        logger.info(
           '[MiniPuzzleEditor] Sample 5-letter words:',
           wordListService.getWordsByLength(5).slice(0, 5)
         );
       })
       .catch((error) => {
-        console.error('[MiniPuzzleEditor] Failed to load word lists:', error);
+        logger.error('[MiniPuzzleEditor] Failed to load word lists:', error);
       });
   }, []);
 
@@ -275,7 +276,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       return;
     }
 
-    console.log(
+    logger.debug(
       '[MiniPuzzleEditor] Getting suggestions for cell',
       selectedCell,
       'direction:',
@@ -288,7 +289,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       currentDirection
     );
 
-    console.log('[MiniPuzzleEditor] Suggestions:', {
+    logger.debug('[MiniPuzzleEditor] Suggestions:', {
       pattern: suggestions.pattern,
       matchCount: suggestions.matches?.length || 0,
       firstFew: suggestions.matches?.slice(0, 5) || [],
@@ -343,7 +344,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
     setIsGenerating(true);
     setGenerationStats(null); // Clear previous stats
-    console.log(`[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}...`);
+    logger.info(`[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}...`);
 
     try {
       // Add timeout to prevent hanging forever
@@ -372,8 +373,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       const result = await response.json();
 
       if (result.success) {
-        console.log(`[Generator] Success! ${result.words.length} words placed`);
-        console.log('[Generator] Stats:', result.stats);
+        logger.info(`[Generator] Success! ${result.words.length} words placed`);
+        logger.info('[Generator] Stats:', result.stats);
 
         // Store generation statistics
         setGenerationStats(result.stats);
@@ -394,7 +395,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         throw new Error('Generation failed');
       }
     } catch (error) {
-      console.error('[Generator] Error:', error);
+      logger.error('[Generator] Error:', error);
 
       if (error.name === 'AbortError') {
         alert(

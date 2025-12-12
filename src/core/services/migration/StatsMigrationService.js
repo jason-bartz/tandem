@@ -8,6 +8,7 @@
 import { gameEventStore, EventTypes } from '@/core/services/events/GameEventStore';
 import { unifiedStatsManager } from '../stats/UnifiedStatsManager';
 import { v4 as uuidv4 } from 'uuid';
+import logger from '@/lib/logger';
 
 // Migration versions
 const MIGRATION_VERSIONS = {
@@ -53,7 +54,7 @@ export class StatsMigrationService {
         return false;
       }
     } catch (error) {
-      console.error('[Migration] Initialization failed:', error);
+      logger.error('[Migration] Initialization failed', error);
       this.log(`Initialization error: ${error.message}`, 'error');
       throw error;
     }
@@ -172,7 +173,7 @@ export class StatsMigrationService {
         log: this.migrationLog,
       };
     } catch (error) {
-      console.error('[Migration] Migration failed:', error);
+      logger.error('[Migration] Migration failed', error);
       this.log(`Migration failed: ${error.message}`, 'error');
 
       this.migrationStatus = MigrationStatus.FAILED;
@@ -424,7 +425,7 @@ export class StatsMigrationService {
 
       return true;
     } catch (error) {
-      console.error('[Migration] Rollback failed:', error);
+      logger.error('[Migration] Rollback failed', error);
       this.log(`Rollback failed: ${error.message}`, 'error');
       throw error;
     }

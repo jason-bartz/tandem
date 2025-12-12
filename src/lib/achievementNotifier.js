@@ -14,6 +14,7 @@ import {
   getNewlyUnlockedReelAchievements,
 } from './achievementChecker';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 const UNLOCKED_ACHIEVEMENTS_KEY = 'tandem_unlocked_achievements';
 
@@ -30,12 +31,12 @@ async function syncAchievementsToDb(achievementIds) {
     // Sync each achievement (fire-and-forget, non-blocking)
     for (const id of achievementIds) {
       syncAchievementToDatabase(id).catch((err) => {
-        console.warn('[AchievementNotifier] DB sync failed for:', id, err);
+        logger.warn('[AchievementNotifier] DB sync failed for:', id, err);
       });
     }
   } catch (error) {
     // Non-critical - local storage already saved
-    console.warn('[AchievementNotifier] Failed to sync to database:', error);
+    logger.warn('[AchievementNotifier] Failed to sync to database:', error);
   }
 }
 
@@ -50,7 +51,7 @@ async function getUnlockedAchievements() {
       return new Set(JSON.parse(stored));
     }
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to load unlocked achievements:', error);
+    logger.error('[AchievementNotifier] Failed to load unlocked achievements:', error);
   }
   return new Set();
 }
@@ -63,7 +64,7 @@ async function saveUnlockedAchievements(unlockedSet) {
   try {
     await storageService.set(UNLOCKED_ACHIEVEMENTS_KEY, JSON.stringify([...unlockedSet]));
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to save unlocked achievements:', error);
+    logger.error('[AchievementNotifier] Failed to save unlocked achievements:', error);
   }
 }
 
@@ -118,12 +119,12 @@ export async function checkAndNotifyTandemAchievements(stats) {
     syncAchievementsToDb(newIds);
 
     if (shown) {
-      console.log('[AchievementNotifier] Tandem achievement unlocked:', achievementToShow.name);
+      logger.info('[AchievementNotifier] Tandem achievement unlocked:', achievementToShow.name);
     }
 
     return newAchievements;
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to check Tandem achievements:', error);
+    logger.error('[AchievementNotifier] Failed to check Tandem achievements:', error);
     return [];
   }
 }
@@ -162,12 +163,12 @@ export async function checkAndNotifyMiniAchievements(stats) {
     syncAchievementsToDb(newIds);
 
     if (shown) {
-      console.log('[AchievementNotifier] Mini achievement unlocked:', achievementToShow.name);
+      logger.info('[AchievementNotifier] Mini achievement unlocked:', achievementToShow.name);
     }
 
     return newAchievements;
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to check Mini achievements:', error);
+    logger.error('[AchievementNotifier] Failed to check Mini achievements:', error);
     return [];
   }
 }
@@ -206,12 +207,12 @@ export async function checkAndNotifyReelAchievements(stats) {
     syncAchievementsToDb(newIds);
 
     if (shown) {
-      console.log('[AchievementNotifier] Reel achievement unlocked:', achievementToShow.name);
+      logger.info('[AchievementNotifier] Reel achievement unlocked:', achievementToShow.name);
     }
 
     return newAchievements;
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to check Reel achievements:', error);
+    logger.error('[AchievementNotifier] Failed to check Reel achievements:', error);
     return [];
   }
 }
@@ -240,7 +241,7 @@ export async function getUnlockedAchievementCounts() {
 
     return { tandem, mini, reel, total: tandem + mini + reel };
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to get achievement counts:', error);
+    logger.error('[AchievementNotifier] Failed to get achievement counts:', error);
     return { tandem: 0, mini: 0, reel: 0, total: 0 };
   }
 }
@@ -251,8 +252,8 @@ export async function getUnlockedAchievementCounts() {
 export async function resetUnlockedAchievements() {
   try {
     await storageService.remove(UNLOCKED_ACHIEVEMENTS_KEY);
-    console.log('[AchievementNotifier] Reset unlocked achievements');
+    logger.info('[AchievementNotifier] Reset unlocked achievements');
   } catch (error) {
-    console.error('[AchievementNotifier] Failed to reset:', error);
+    logger.error('[AchievementNotifier] Failed to reset:', error);
   }
 }

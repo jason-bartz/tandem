@@ -11,6 +11,7 @@ import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/Ree
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import authService from '@/services/auth.service';
+import logger from '@/lib/logger';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
@@ -89,7 +90,7 @@ export default function AdminDashboard() {
         alert(`Error: ${error.error || 'Failed to save puzzle'}`);
       }
     } catch (error) {
-      console.error('Error saving mini puzzle:', error);
+      logger.error('Error saving mini puzzle', error);
       alert('Failed to save puzzle. Please try again.');
     } finally {
       setMiniLoading(false);
@@ -112,7 +113,7 @@ export default function AdminDashboard() {
         alert('Failed to delete puzzle. Please try again.');
       }
     } catch (error) {
-      console.error('Error deleting mini puzzle:', error);
+      logger.error('Error deleting mini puzzle', error);
       alert('Failed to delete puzzle. Please try again.');
     }
   };
@@ -140,7 +141,7 @@ export default function AdminDashboard() {
         alert(`Error: ${error.error || 'Failed to save puzzle'}`);
       }
     } catch (error) {
-      console.error('Error saving Reel Connections puzzle:', error);
+      logger.error('Error saving Reel Connections puzzle', error);
       alert('Failed to save puzzle. Please try again.');
     } finally {
       setReelLoading(false);
@@ -163,7 +164,7 @@ export default function AdminDashboard() {
         alert('Failed to delete puzzle. Please try again.');
       }
     } catch (error) {
-      console.error('Error deleting Reel Connections puzzle:', error);
+      logger.error('Error deleting Reel Connections puzzle', error);
       alert('Failed to delete puzzle. Please try again.');
     }
   };

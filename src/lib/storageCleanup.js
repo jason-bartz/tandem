@@ -4,6 +4,8 @@
  * Provides functions to clean up localStorage and prevent quota errors
  */
 
+import logger from '@/lib/logger';
+
 /**
  * Check current localStorage usage
  */
@@ -81,7 +83,7 @@ export async function cleanupGameEvents() {
       message: `Cleaned up ${removedCount} old events, kept ${eventsToKeep.length}`,
     };
   } catch (error) {
-    console.error('[StorageCleanup] Failed to cleanup game events:', error);
+    logger.error('[StorageCleanup] Failed to cleanup game events:', error);
     return {
       success: false,
       error: error.message,
@@ -130,7 +132,7 @@ export async function cleanupGameData() {
       message: cleanedAny ? 'Game data cleaned up' : 'No game data to clean up',
     };
   } catch (error) {
-    console.error('[StorageCleanup] Failed to cleanup game data:', error);
+    logger.error('[StorageCleanup] Failed to cleanup game data:', error);
     return {
       success: false,
       error: error.message,
@@ -167,18 +169,14 @@ export async function autoCleanupIfNeeded() {
 
     // Run cleanup if over 3MB (conservative threshold)
     if (usageMB > 3) {
-      console.warn(
-        '[StorageCleanup] High storage usage detected:',
-        usageMB,
-        'MB - running cleanup'
-      );
+      logger.warn('[StorageCleanup] High storage usage detected:', usageMB, 'MB - running cleanup');
       await emergencyCleanup();
       return true;
     }
 
     return false;
   } catch (error) {
-    console.error('[StorageCleanup] Auto cleanup failed:', error);
+    logger.error('[StorageCleanup] Auto cleanup failed:', error);
     return false;
   }
 }

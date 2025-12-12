@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import logger from '@/lib/logger';
 
 /**
  * Reset Password Page
@@ -35,7 +36,7 @@ export default function ResetPasswordPage() {
         } = await supabase.auth.getSession();
 
         if (sessionError) {
-          console.error('Session error:', sessionError);
+          logger.error('Session error', sessionError);
           setError('Invalid or expired reset link. Please request a new one.');
           return;
         }
@@ -58,7 +59,7 @@ export default function ResetPasswordPage() {
           });
 
           if (error) {
-            console.error('Session setup error:', error);
+            logger.error('Session setup error', error);
             setError('Invalid or expired reset link. Please request a new one.');
             return;
           }
@@ -75,7 +76,7 @@ export default function ResetPasswordPage() {
           setError('Invalid or expired reset link. Please request a new one.');
         }
       } catch (err) {
-        console.error('Error setting up password reset:', err);
+        logger.error('Error setting up password reset', err);
         setError('An error occurred. Please try again.');
       }
     };
@@ -142,7 +143,7 @@ export default function ResetPasswordPage() {
         router.push('/');
       }, 2000);
     } catch (err) {
-      console.error('Password update error:', err);
+      logger.error('Password update error', err);
       setError(err.message || 'Failed to update password. Please try again.');
       setLoading(false);
     }
