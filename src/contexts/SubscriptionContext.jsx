@@ -3,6 +3,7 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import subscriptionService from '@/services/subscriptionService';
+import logger from '@/lib/logger';
 
 const CACHE_KEY = 'tandem_subscription_cache';
 
@@ -58,7 +59,7 @@ export function SubscriptionProvider({ children }) {
             loading: false, // Show cached state immediately
           };
         } catch (error) {
-          console.error('[SubscriptionContext] Failed to parse cached subscription:', error);
+          logger.error('[SubscriptionContext] Failed to parse cached subscription', error);
         }
       }
     }
@@ -93,7 +94,7 @@ export function SubscriptionProvider({ children }) {
       try {
         localStorage.removeItem(CACHE_KEY);
       } catch (error) {
-        console.error('[SubscriptionContext] Failed to clear cache:', error);
+        logger.error('[SubscriptionContext] Failed to clear cache', error);
       }
 
       return;
@@ -123,10 +124,10 @@ export function SubscriptionProvider({ children }) {
         };
         localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
       } catch (error) {
-        console.error('[SubscriptionContext] Failed to cache subscription:', error);
+        logger.error('[SubscriptionContext] Failed to cache subscription', error);
       }
     } catch (error) {
-      console.error('[SubscriptionContext] Failed to refresh subscription:', error);
+      logger.error('[SubscriptionContext] Failed to refresh subscription', error);
 
       // On error, keep cached state but mark as not loading
       setSubscription((prev) => ({ ...prev, loading: false }));

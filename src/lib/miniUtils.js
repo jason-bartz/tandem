@@ -8,6 +8,8 @@
  * - Cell state calculations
  */
 
+import logger from '@/lib/logger';
+
 // Constants
 export const GRID_SIZE = 5;
 export const BLACK_SQUARE = '■';
@@ -142,7 +144,7 @@ export function generateClueNumbers(grid) {
 export function getWordCellsFromPosition(grid, startRow, startCol, direction) {
   const cells = [];
 
-  console.log(
+  logger.debug(
     `[getWordCellsFromPosition] Called with startRow=${startRow}, startCol=${startCol}, direction=${direction}`
   );
 
@@ -153,7 +155,7 @@ export function getWordCellsFromPosition(grid, startRow, startCol, direction) {
       cells.push({ row, col: startCol });
       row++;
     }
-    console.log(`[getWordCellsFromPosition] DOWN cells:`, JSON.stringify(cells));
+    logger.debug(`[getWordCellsFromPosition] DOWN cells:`, JSON.stringify(cells));
   } else {
     // ACROSS - iterate through columns (horizontal)
     let col = startCol;
@@ -161,7 +163,7 @@ export function getWordCellsFromPosition(grid, startRow, startCol, direction) {
       cells.push({ row: startRow, col });
       col++;
     }
-    console.log(`[getWordCellsFromPosition] ACROSS cells:`, JSON.stringify(cells));
+    logger.debug(`[getWordCellsFromPosition] ACROSS cells:`, JSON.stringify(cells));
   }
 
   return cells;
@@ -239,7 +241,7 @@ export function getClueForCell(grid, clueNumbers, row, col, preferredDirection =
   if (preferredDirection) {
     const clue = getClue(preferredDirection);
     if (clue) {
-      console.log(`[getClueForCell] Found preferred ${preferredDirection}:`, JSON.stringify(clue));
+      logger.debug(`[getClueForCell] Found preferred ${preferredDirection}:`, JSON.stringify(clue));
       return clue;
     }
   }
@@ -247,14 +249,14 @@ export function getClueForCell(grid, clueNumbers, row, col, preferredDirection =
   // 2. Fallback: Try Across
   const acrossClue = getClue(DIRECTION.ACROSS);
   if (acrossClue) {
-    console.log('[getClueForCell] Fallback Across:', JSON.stringify(acrossClue));
+    logger.debug('[getClueForCell] Fallback Across:', JSON.stringify(acrossClue));
     return acrossClue;
   }
 
   // 3. Fallback: Try Down
   const downClue = getClue(DIRECTION.DOWN);
   if (downClue) {
-    console.log('[getClueForCell] Fallback Down:', JSON.stringify(downClue));
+    logger.debug('[getClueForCell] Fallback Down:', JSON.stringify(downClue));
     return downClue;
   }
 

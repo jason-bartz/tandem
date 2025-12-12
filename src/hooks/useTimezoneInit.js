@@ -238,7 +238,7 @@ function sendTimezonetelemetry(data) {
     }
   } catch (error) {
     // Silent fail for telemetry
-    console.error('[Timezone Telemetry Error]', error);
+    logger.error('[Timezone Telemetry Error]', error);
   }
 }
 

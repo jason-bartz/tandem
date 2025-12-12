@@ -20,6 +20,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { validateUsername } from '@/utils/profanityFilter';
+import logger from '@/lib/logger';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -66,7 +67,7 @@ export default function AccountPage() {
         const status = await subscriptionService.getSubscriptionStatus();
         setSubscription(status);
       } catch (error) {
-        console.error('Failed to load subscription:', error);
+        logger.error('Failed to load subscription', error);
       } finally {
         setLoading(false);
       }
@@ -93,8 +94,7 @@ export default function AccountPage() {
         }
       } catch (error) {
         // Fail silently - avatar and username loading is non-critical
-        // eslint-disable-next-line no-console
-        console.error('[Account] Failed to load user avatar:', error);
+        logger.error('[Account] Failed to load user avatar', error);
         // Fail silently - avatar is non-critical feature
       } finally {
         setLoadingAvatar(false);
@@ -138,7 +138,7 @@ export default function AccountPage() {
       avatarService
         .getUserProfileWithAvatar(user.id)
         .then(setUserAvatar)
-        .catch((error) => console.error('[Account] Failed to reload avatar:', error));
+        .catch((error) => logger.error('[Account] Failed to reload avatar', error));
     }
   };
 
@@ -204,7 +204,7 @@ export default function AccountPage() {
         setUsernameSuccess('');
       }, 3000);
     } catch (error) {
-      console.error('[Account] Failed to update username:', error);
+      logger.error('[Account] Failed to update username', error);
       setUsernameError('An unexpected error occurred. Please try again.');
     } finally {
       setLoadingUsername(false);
@@ -221,7 +221,7 @@ export default function AccountPage() {
       await signOut();
       router.push('/');
     } catch (error) {
-      console.error('Failed to sign out:', error);
+      logger.error('Failed to sign out', error);
       // Force clear on iOS if normal sign out fails
       if (!isWeb) {
         await forceLogout();
@@ -234,7 +234,7 @@ export default function AccountPage() {
     try {
       const { Preferences } = await import('@capacitor/preferences');
       await Preferences.clear();
-      console.log('[Account] Force cleared all preferences');
+      logger.info('[Account] Force cleared all preferences');
       // Clear localStorage too
       if (typeof localStorage !== 'undefined') {
         localStorage.clear();
@@ -243,7 +243,7 @@ export default function AccountPage() {
       // Force reload to clear React state
       window.location.reload();
     } catch (error) {
-      console.error('[Account] Force logout failed:', error);
+      logger.error('[Account] Force logout failed', error);
       // Last resort - just reload
       window.location.reload();
     }
@@ -261,7 +261,7 @@ export default function AccountPage() {
             setAppleRefreshToken(result.value); // Using same state for authorization code
           }
         } catch (error) {
-          console.error('[Account] Failed to get Apple authorization code:', error);
+          logger.error('[Account] Failed to get Apple authorization code', error);
         }
       }
 
@@ -273,7 +273,7 @@ export default function AccountPage() {
 
       setShowDeleteModal(true);
     } catch (error) {
-      console.error('[Account] Failed to prepare deletion:', error);
+      logger.error('[Account] Failed to prepare deletion', error);
       alert('Failed to open account deletion. Please try again.');
     }
   };
@@ -301,7 +301,7 @@ export default function AccountPage() {
       setSubscription(status);
       setShowPaywall(false);
     } catch (error) {
-      console.error('Failed to reload subscription:', error);
+      logger.error('Failed to reload subscription', error);
     }
   };
 
@@ -980,7 +980,7 @@ function IOSSignInPage() {
       }
       // Success will trigger auth state change and redirect
     } catch (err) {
-      console.error('[IOSSignIn] Apple sign in error:', err);
+      logger.error('[IOSSignIn] Apple sign in error', err);
       setError('Unable to sign in with Apple. Please try again.');
       setLoading(false);
     }

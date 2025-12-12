@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import { migrationService } from '../services/migration/StatsMigrationService';
 import { unifiedStatsManager } from '../services/stats/UnifiedStatsManager';
+import logger from '@/lib/logger';
 
 const MigrationStatus = {
   CHECKING: 'checking',
@@ -47,7 +48,7 @@ export function MigrationUI({ onComplete, onSkip }) {
         }, 2000);
       }
     } catch (error) {
-      console.error('Migration check failed:', error);
+      logger.error('Migration check failed', error);
       setError(error.message);
       setStatus(MigrationStatus.FAILED);
     }
@@ -98,7 +99,7 @@ export function MigrationUI({ onComplete, onSkip }) {
         throw new Error('Migration failed');
       }
     } catch (error) {
-      console.error('Migration failed:', error);
+      logger.error('Migration failed', error);
       setError(error.message);
       setStatus(MigrationStatus.FAILED);
       setBackupAvailable(true);
@@ -113,7 +114,7 @@ export function MigrationUI({ onComplete, onSkip }) {
       setStatus(MigrationStatus.READY);
       setCurrentStep('Rollback completed');
     } catch (error) {
-      console.error('Rollback failed:', error);
+      logger.error('Rollback failed', error);
       setError(`Rollback failed: ${error.message}`);
     }
   };
@@ -131,7 +132,7 @@ export function MigrationUI({ onComplete, onSkip }) {
       document.body.removeChild(a);
       URL.revokeObjectURL(backup.url);
     } catch (error) {
-      console.error('Export failed:', error);
+      logger.error('Export failed', error);
       setError(`Export failed: ${error.message}`);
     }
   };
@@ -315,7 +316,7 @@ export function MigrationBanner({ onDismiss }) {
       const needs = await migrationService.initialize();
       setNeedsMigration(needs);
     } catch (error) {
-      console.error('Migration check failed:', error);
+      logger.error('Migration check failed', error);
     }
   };
 
@@ -364,7 +365,7 @@ export function useMigration() {
       setNeedsMigration(needs);
       setStatus(migrationService.getStatus());
     } catch (error) {
-      console.error('Migration status check failed:', error);
+      logger.error('Migration status check failed', error);
     }
   };
 
@@ -374,7 +375,7 @@ export function useMigration() {
       setStatus(migrationService.getStatus());
       return result;
     } catch (error) {
-      console.error('Migration failed:', error);
+      logger.error('Migration failed', error);
       throw error;
     }
   };
@@ -384,7 +385,7 @@ export function useMigration() {
       await migrationService.rollback();
       setStatus(migrationService.getStatus());
     } catch (error) {
-      console.error('Rollback failed:', error);
+      logger.error('Rollback failed', error);
       throw error;
     }
   };

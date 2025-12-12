@@ -11,6 +11,7 @@
 
 import { createServerComponentClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import logger from '@/lib/logger';
 
 /**
  * GET /api/user-achievements
@@ -43,7 +44,7 @@ export async function GET() {
       .order('unlocked_at', { ascending: true });
 
     if (error) {
-      console.error('[User Achievements API] Failed to fetch achievements:', error);
+      logger.error('[User Achievements API] Failed to fetch achievements:', error);
       return NextResponse.json({ error: 'Failed to fetch achievements' }, { status: 500 });
     }
 
@@ -52,7 +53,7 @@ export async function GET() {
 
     return NextResponse.json({ achievements });
   } catch (error) {
-    console.error('[User Achievements API] GET error:', error);
+    logger.error('[User Achievements API] GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -131,7 +132,7 @@ export async function POST(request) {
     });
 
     if (insertError) {
-      console.error('[User Achievements API] Failed to save achievements:', insertError);
+      logger.error('[User Achievements API] Failed to save achievements:', insertError);
       return NextResponse.json({ error: 'Failed to save achievements' }, { status: 500 });
     }
 
@@ -142,7 +143,7 @@ export async function POST(request) {
       .eq('user_id', user.id);
 
     if (fetchError) {
-      console.error('[User Achievements API] Failed to fetch merged achievements:', fetchError);
+      logger.error('[User Achievements API] Failed to fetch merged achievements:', fetchError);
       return NextResponse.json({ error: 'Failed to fetch achievements' }, { status: 500 });
     }
 
@@ -154,7 +155,7 @@ export async function POST(request) {
       added: validAchievements.length, // Approximate - some may have been duplicates
     });
   } catch (error) {
-    console.error('[User Achievements API] POST error:', error);
+    logger.error('[User Achievements API] POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

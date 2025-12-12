@@ -1,6 +1,7 @@
 import { getPuzzleForDate } from '@/lib/db';
 import { getCurrentPuzzleInfo } from '@/lib/utils';
 import GameContainerClient from '@/components/game/GameContainerClient';
+import logger from '@/lib/logger';
 
 async function getTodaysPuzzle() {
   try {
@@ -22,7 +23,7 @@ async function getTodaysPuzzle() {
       displayDate: currentInfo.date,
     };
   } catch (error) {
-    console.error('Failed to fetch initial puzzle:', error);
+    logger.error('Failed to fetch initial puzzle', error);
     return null;
   }
 }

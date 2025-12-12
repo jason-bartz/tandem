@@ -9,6 +9,7 @@
 
 const { format, parse, subDays, addDays, isValid } = require('date-fns');
 const { toZonedTime, formatInTimeZone } = require('date-fns-tz');
+const logger = require('@/lib/logger').default;
 
 /**
  * DateService class for handling all date operations with timezone awareness
@@ -32,7 +33,7 @@ class DateService {
       // Use formatInTimeZone to get the correct date string in the timezone
       return formatInTimeZone(new Date(), this.timezone, this.dateFormat);
     } catch (error) {
-      console.error('[DateService] Error getting current date string:', error);
+      logger.error('[DateService] Error getting current date string', error);
       // Fallback to local date if timezone conversion fails
       const localDate = new Date();
       return format(localDate, this.dateFormat);
@@ -56,7 +57,7 @@ class DateService {
       const yesterday = subDays(date, 1);
       return format(yesterday, this.dateFormat);
     } catch (error) {
-      console.error('[DateService] Error getting yesterday date string:', error);
+      logger.error('[DateService] Error getting yesterday date string', error);
       // Fallback calculation
       const date = new Date(dateString + 'T12:00:00');
       date.setDate(date.getDate() - 1);
@@ -80,7 +81,7 @@ class DateService {
       const tomorrow = addDays(date, 1);
       return format(tomorrow, this.dateFormat);
     } catch (error) {
-      console.error('[DateService] Error getting tomorrow date string:', error);
+      logger.error('[DateService] Error getting tomorrow date string', error);
       const date = new Date(dateString + 'T12:00:00');
       date.setDate(date.getDate() + 1);
       return format(date, this.dateFormat);
@@ -135,7 +136,7 @@ class DateService {
       const diffTime = Math.abs(end.getTime() - start.getTime());
       return Math.floor(diffTime / (1000 * 60 * 60 * 24));
     } catch (error) {
-      console.error('[DateService] Error calculating days between:', error);
+      logger.error('[DateService] Error calculating days between', error);
       return 0;
     }
   }
@@ -179,7 +180,7 @@ class DateService {
 
       return format(date, displayFormat);
     } catch (error) {
-      console.error('[DateService] Error formatting date for display:', error);
+      logger.error('[DateService] Error formatting date for display', error);
       return dateString; // Return original string if formatting fails
     }
   }

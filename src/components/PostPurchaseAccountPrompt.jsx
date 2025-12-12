@@ -7,6 +7,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import subscriptionService from '@/services/subscriptionService';
 import { getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 /**
  * PostPurchaseAccountPrompt
@@ -72,7 +73,7 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
       const expiryDate = expiryResult.value;
 
       if (!originalTransactionId || !productId) {
-        console.warn('[PostPurchasePrompt] No transaction data to link');
+        logger.warn('[PostPurchasePrompt] No transaction data to link');
         successHaptic();
         onSuccess?.();
         onClose();
@@ -119,7 +120,7 @@ export default function PostPurchaseAccountPrompt({ isOpen, onClose, onSuccess }
       onSuccess?.();
       onClose();
     } catch (err) {
-      console.error('[PostPurchasePrompt] Failed to link purchase', err);
+      logger.error('[PostPurchasePrompt] Failed to link purchase', err);
       setError('Failed to link your purchase. Contact support if this persists.');
       errorHaptic();
     }

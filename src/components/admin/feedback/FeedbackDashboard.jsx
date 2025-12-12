@@ -5,6 +5,7 @@ import adminService from '@/services/admin.service';
 import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS, FEEDBACK_STATUS_OPTIONS } from '@/lib/constants';
 import FeedbackDashboardSkeleton from '@/components/shared/FeedbackDashboardSkeleton';
 import { useUIIcon } from '@/hooks/useUIIcon';
+import logger from '@/lib/logger';
 
 const categoryLookup = FEEDBACK_CATEGORIES.reduce((acc, category) => {
   acc[category.value] = category;
@@ -91,7 +92,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
         onCountsChange(data.counts || null);
       }
     } catch (fetchError) {
-      console.error('[FeedbackDashboard] Error loading feedback:', fetchError);
+      logger.error('[FeedbackDashboard] Error loading feedback:', fetchError);
       setError(fetchError.message || 'Failed to load feedback');
     } finally {
       setLoading(false);

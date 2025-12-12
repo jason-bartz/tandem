@@ -20,6 +20,7 @@ import { getPuzzleResult } from '@/lib/storage';
 import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
 import miniService from '@/services/mini.service';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 export default function WelcomeScreen({
   onStart,
@@ -90,7 +91,7 @@ export default function WelcomeScreen({
         }
         setReelLoading(false);
       } catch (err) {
-        console.error('Failed to load completion status:', err);
+        logger.error('Failed to load completion status', err);
         setMiniLoading(false);
         setReelLoading(false);
       }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import logger from '@/lib/logger';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -39,7 +40,7 @@ export async function GET(request) {
       puzzles: puzzles || [],
     });
   } catch (error) {
-    console.error('Error fetching Reel Connections archive:', error);
+    logger.error('Error fetching Reel Connections archive:', error);
     return NextResponse.json({ success: false, error: 'Failed to fetch archive' }, { status: 500 });
   }
 }

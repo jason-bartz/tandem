@@ -14,6 +14,7 @@ import { createServerComponentClient, createServerClient } from '@/lib/supabase/
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import { validateUsernameForAPI } from '@/utils/profanityFilter';
+import logger from '@/lib/logger';
 
 /**
  * Get authenticated user from either cookies or Authorization header
@@ -88,13 +89,13 @@ export async function GET(request) {
       .single();
 
     if (error) {
-      console.error('[Username API] Failed to fetch username:', error);
+      logger.error('[Username API] Failed to fetch username:', error);
       return NextResponse.json({ error: 'Failed to fetch username' }, { status: 500 });
     }
 
     return NextResponse.json({ username: data?.username || null });
   } catch (error) {
-    console.error('[Username API] GET error:', error);
+    logger.error('[Username API] GET error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -142,7 +143,7 @@ export async function POST(request) {
       .single();
 
     if (error) {
-      console.error('[Username API] Failed to update username:', error);
+      logger.error('[Username API] Failed to update username:', error);
 
       if (error.code === '23505') {
         return NextResponse.json(
@@ -166,7 +167,7 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true, username: data.username });
   } catch (error) {
-    console.error('[Username API] POST error:', error);
+    logger.error('[Username API] POST error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

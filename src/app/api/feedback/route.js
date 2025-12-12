@@ -141,8 +141,6 @@ export async function POST(request) {
     return NextResponse.json({ success: true, feedback: createdEntry });
   } catch (error) {
     logger.error('POST /api/feedback error', error);
-    console.error('[Feedback API] Full error:', error);
-    console.error('[Feedback API] Error stack:', error.stack);
     const message = sanitizeErrorMessage(error);
     const status = error.status || (message?.toLowerCase().includes('invalid') ? 400 : 500);
     return NextResponse.json({ success: false, error: message }, { status });

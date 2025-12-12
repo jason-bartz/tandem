@@ -17,6 +17,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { formatMiniTime } from '@/lib/miniUtils';
 import { formatDateShort } from '@/lib/utils';
+import logger from '@/lib/logger';
 
 /**
  * MiniGameScreen Component
@@ -212,7 +213,7 @@ export default function MiniGameScreen({
     );
   }
 
-  console.log('[MiniGameScreen] Rendering with currentClue:', JSON.stringify(currentClue));
+  logger.debug('[MiniGameScreen] Rendering with currentClue:', JSON.stringify(currentClue));
 
   return (
     <>

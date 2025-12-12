@@ -1,6 +1,7 @@
 import { API_ENDPOINTS } from '@/lib/constants';
 import { getApiUrl } from '@/lib/api-helper';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 class AuthService {
   constructor() {
@@ -62,7 +63,7 @@ class AuthService {
         error: data.error || 'Login failed',
       };
     } catch (error) {
-      console.error('AuthService.login error:', error);
+      logger.error('AuthService.login error', error);
       throw error;
     }
   }
@@ -81,7 +82,7 @@ class AuthService {
         if (data.csrfToken) {
           this.setCSRFToken(data.csrfToken);
         } else {
-          console.warn('No CSRF token received from token verification');
+          logger.warn('No CSRF token received from token verification');
         }
         // Cache the verified token
         this.cachedToken = token;
@@ -90,7 +91,7 @@ class AuthService {
 
       return false;
     } catch (error) {
-      console.error('AuthService.verifyToken error:', error);
+      logger.error('AuthService.verifyToken error', error);
       return false;
     }
   }
@@ -138,7 +139,10 @@ class AuthService {
       if (this.csrfToken) {
         headers['x-csrf-token'] = this.csrfToken;
       } else {
-        console.error('CSRF token requested but not available! This will cause request to fail.');
+        logger.error(
+          'CSRF token requested but not available! This will cause request to fail',
+          null
+        );
       }
     }
 

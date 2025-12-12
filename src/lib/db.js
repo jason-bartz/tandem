@@ -1063,7 +1063,6 @@ export async function createFeedbackEntry(entry) {
 
   if (error) {
     logger.error('Failed to create feedback entry in Supabase', error);
-    console.error('[createFeedbackEntry] Full error details:', error);
     throw new Error(`Failed to create feedback entry: ${error.message}`);
   }
 

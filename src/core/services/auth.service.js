@@ -1,4 +1,4 @@
-import logger from '@/utils/helpers/logger';
+import logger from '@/lib/logger';
 import { API_ENDPOINTS } from '@/core/config/constants';
 import { getApiUrl } from '@/lib/api-helper';
 import storageService from '@/core/storage/storageService';
@@ -122,7 +122,10 @@ class AuthService {
       if (this.csrfToken) {
         headers['x-csrf-token'] = this.csrfToken;
       } else {
-        console.error('CSRF token requested but not available! This will cause request to fail.');
+        logger.error(
+          'CSRF token requested but not available! This will cause request to fail.',
+          null
+        );
       }
     }
 

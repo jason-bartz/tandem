@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
 import { getHolidaysForMonth } from '@/lib/holidays';
+import logger from '@/lib/logger';
 
 // Game configuration for easy extensibility
 const GAMES = {
@@ -143,7 +144,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
 
       setPuzzleData(merged);
     } catch (error) {
-      console.error('Error loading puzzle data:', error);
+      logger.error('Error loading puzzle data:', error);
     } finally {
       setLoading(false);
     }

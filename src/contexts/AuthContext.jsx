@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 const AuthContext = createContext({
   user: null,
@@ -85,7 +86,7 @@ export function AuthProvider({ children }) {
       const profile = await avatarService.getUserProfileWithAvatar(userId);
       setUserProfile(profile);
     } catch (error) {
-      console.error('[AuthContext] Failed to load user profile:', error);
+      logger.error('[AuthContext] Failed to load user profile', error);
 
       setUserProfile({
         id: userId,
@@ -110,11 +111,11 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     // Initialize unified storage service (loads IndexedDB key tracking, runs health check)
     storageService.initialize().catch((error) => {
-      console.error('[AuthProvider] Storage service initialization failed:', error);
+      logger.error('[AuthProvider] Storage service initialization failed', error);
     });
 
     autoCleanupIfNeeded().catch((error) => {
-      console.error('[AuthProvider] Auto cleanup failed:', error);
+      logger.error('[AuthProvider] Auto cleanup failed', error);
     });
 
     // Get initial session
@@ -157,7 +158,7 @@ export function AuthProvider({ children }) {
             } else {
             }
           } catch (error) {
-            console.error('[AuthProvider] Failed to check first-time setup status:', error);
+            logger.error('[AuthProvider] Failed to check first-time setup status', error);
           }
         })();
 
@@ -183,15 +184,15 @@ export function AuthProvider({ children }) {
                 reelStats = JSON.parse(reelStatsRaw);
               }
             } catch (e) {
-              console.error('[AuthProvider] Failed to load reel-connections stats:', e);
+              logger.error('[AuthProvider] Failed to load reel-connections stats', e);
             }
 
             // Sync to leaderboard (non-blocking, fails silently)
             syncStatsToLeaderboardOnAuth(tandemStats, null, miniStats, reelStats).catch((error) => {
-              console.error('[AuthProvider] Leaderboard sync failed:', error);
+              logger.error('[AuthProvider] Leaderboard sync failed', error);
             });
           } catch (error) {
-            console.error('[AuthProvider] Failed to sync stats to leaderboard:', error);
+            logger.error('[AuthProvider] Failed to sync stats to leaderboard', error);
           }
         })();
 
@@ -201,9 +202,9 @@ export function AuthProvider({ children }) {
           try {
             const { syncAllAchievements } = await import('@/services/achievementSync.service');
             await syncAllAchievements();
-            console.log('[AuthProvider] Achievement sync completed');
+            logger.debug('[AuthProvider] Achievement sync completed');
           } catch (error) {
-            console.error('[AuthProvider] Achievement sync failed:', error);
+            logger.error('[AuthProvider] Achievement sync failed', error);
           }
         })();
       }
@@ -243,13 +244,11 @@ export function AuthProvider({ children }) {
 
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
-      console.error('Sign up error:', error);
+      logger.error('Sign up error', error);
 
       // If quota exceeded, try emergency cleanup and retry once
       if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        console.warn(
-          '[Auth] Storage quota exceeded during signup, attempting emergency cleanup...'
-        );
+        logger.warn('[Auth] Storage quota exceeded during signup, attempting emergency cleanup...');
         try {
           const { emergencyCleanup } = await import('@/lib/storageCleanup');
           await emergencyCleanup();
@@ -270,7 +269,7 @@ export function AuthProvider({ children }) {
 
           return { user: data.user, session: data.session, error: null };
         } catch (cleanupError) {
-          console.error('[Auth] Emergency cleanup/retry failed:', cleanupError);
+          logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
         }
       }
 
@@ -299,11 +298,11 @@ export function AuthProvider({ children }) {
 
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
-      console.error('Sign in error:', error);
+      logger.error('Sign in error', error);
 
       // If quota exceeded, try emergency cleanup and retry once
       if (error.message?.includes('quota') || error.message?.includes('QuotaExceededError')) {
-        console.warn('[Auth] Storage quota exceeded, attempting emergency cleanup...');
+        logger.warn('[Auth] Storage quota exceeded, attempting emergency cleanup...');
         try {
           const { emergencyCleanup } = await import('@/lib/storageCleanup');
           await emergencyCleanup();
@@ -318,7 +317,7 @@ export function AuthProvider({ children }) {
 
           return { user: data.user, session: data.session, error: null };
         } catch (cleanupError) {
-          console.error('[Auth] Emergency cleanup/retry failed:', cleanupError);
+          logger.error('[Auth] Emergency cleanup/retry failed', cleanupError);
         }
       }
 
@@ -346,7 +345,7 @@ export function AuthProvider({ children }) {
 
       return { error: null };
     } catch (error) {
-      console.error('Google sign in error:', error);
+      logger.error('Google sign in error', error);
       return { error };
     }
   };
@@ -409,7 +408,7 @@ export function AuthProvider({ children }) {
       });
 
       if (error) {
-        console.error('[Auth] Supabase signInWithIdToken error:', error);
+        logger.error('[Auth] Supabase signInWithIdToken error', error);
         throw error;
       }
 
@@ -424,7 +423,7 @@ export function AuthProvider({ children }) {
             value: result.response.authorizationCode,
           });
         } catch (prefError) {
-          console.error('[Auth] Failed to store Apple authorization code:', prefError);
+          logger.error('[Auth] Failed to store Apple authorization code', prefError);
           // Non-critical error - continue with sign in
         }
       }
@@ -438,7 +437,7 @@ export function AuthProvider({ children }) {
             value: result.response.user,
           });
         } catch (prefError) {
-          console.error('[Auth] Failed to store Apple user ID:', prefError);
+          logger.error('[Auth] Failed to store Apple user ID', prefError);
         }
       }
 
@@ -448,7 +447,7 @@ export function AuthProvider({ children }) {
 
       return { user: data.user, session: data.session, error: null };
     } catch (error) {
-      console.error('[Auth] Apple sign-in failed:', error);
+      logger.error('[Auth] Apple sign-in failed', error);
       return { user: null, session: null, error };
     }
   };
@@ -470,18 +469,18 @@ export function AuthProvider({ children }) {
           // Clear Apple Sign-In stored data
           await Preferences.remove({ key: 'apple_authorization_code' });
           await Preferences.remove({ key: 'apple_user_id' });
-          console.log('[Auth] Cleared iOS auth preferences');
+          logger.debug('[Auth] Cleared iOS auth preferences');
         }
       } catch (clearError) {
         // Non-critical - continue with sign out
-        console.warn('[Auth] Could not clear iOS preferences:', clearError);
+        logger.warn('[Auth] Could not clear iOS preferences', clearError);
       }
 
       if (error) throw error;
 
       return { error: null };
     } catch (error) {
-      console.error('Sign out error:', error);
+      logger.error('Sign out error', error);
       // Even if sign out fails, force clear local state
       setUser(null);
       setSession(null);
@@ -509,7 +508,7 @@ export function AuthProvider({ children }) {
 
       return { error: null };
     } catch (error) {
-      console.error('Password reset error:', error);
+      logger.error('Password reset error', error);
       return { error };
     }
   };

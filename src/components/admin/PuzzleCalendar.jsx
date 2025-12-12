@@ -4,6 +4,7 @@ import adminService from '@/services/admin.service';
 import { formatDate } from '@/lib/utils';
 import { getHolidaysForMonth } from '@/lib/holidays';
 import AdminPuzzleCalendarSkeleton from '@/components/shared/AdminPuzzleCalendarSkeleton';
+import logger from '@/lib/logger';
 
 export default function PuzzleCalendar({
   onEditPuzzle,
@@ -47,7 +48,7 @@ export default function PuzzleCalendar({
         setPuzzles(result.puzzles || {});
       }
     } catch (error) {
-      console.error('Failed to load puzzles:', error);
+      logger.error('Failed to load puzzles:', error);
     } finally {
       setLoading(false);
     }
@@ -95,7 +96,7 @@ export default function PuzzleCalendar({
         loadMonthPuzzles();
       }
     } catch (error) {
-      console.error('Failed to delete puzzle:', error);
+      logger.error('Failed to delete puzzle:', error);
     }
   };
 

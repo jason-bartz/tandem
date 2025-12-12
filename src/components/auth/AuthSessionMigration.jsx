@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import logger from '@/lib/logger';
 
 /**
  * AuthSessionMigration - Handles migration from localStorage to cookie-based auth
@@ -35,7 +36,7 @@ export default function AuthSessionMigration() {
 
         setMigrated(true);
       } catch (error) {
-        console.error('[AuthSessionMigration] Migration failed:', error);
+        logger.error('[AuthSessionMigration] Migration failed', error);
         setMigrated(true);
       }
     }

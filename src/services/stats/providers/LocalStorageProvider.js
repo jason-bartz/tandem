@@ -7,6 +7,7 @@
 
 import { BaseProvider } from './BaseProvider';
 import { Preferences } from '@capacitor/preferences';
+import logger from '@/lib/logger';
 
 export class LocalStorageProvider extends BaseProvider {
   constructor() {
@@ -36,7 +37,7 @@ export class LocalStorageProvider extends BaseProvider {
       // Migrate old data if needed
       await this.migrateOldData();
     } catch (error) {
-      console.error('[LocalStorageProvider] Initialization failed:', error);
+      logger.error('[LocalStorageProvider] Initialization failed', error);
       this.available = false;
       throw error;
     }
@@ -212,7 +213,7 @@ export class LocalStorageProvider extends BaseProvider {
         } catch (retryError) {
           // Silently fail on quota errors - primary storageService handles this
           if (process.env.NODE_ENV === 'development') {
-            console.debug('[LocalStorageProvider] Emergency save failed:', retryError);
+            logger.debug('[LocalStorageProvider] Emergency save failed', retryError);
           }
           // Return gracefully instead of throwing
           return { success: false, error: 'quota_exceeded' };
@@ -228,7 +229,7 @@ export class LocalStorageProvider extends BaseProvider {
         await this.restoreFromBackup();
         // Only log non-quota errors in development
         if (process.env.NODE_ENV === 'development') {
-          console.debug('[LocalStorageProvider] Save failed:', error);
+          logger.debug('[LocalStorageProvider] Save failed', error);
         }
         this.handleError(error, 'save');
       }
@@ -252,7 +253,7 @@ export class LocalStorageProvider extends BaseProvider {
 
       return true;
     } catch (error) {
-      console.error('[LocalStorageProvider] Failed to clear data:', error);
+      logger.error('[LocalStorageProvider] Failed to clear data', error);
       return false;
     }
   }
@@ -327,7 +328,7 @@ export class LocalStorageProvider extends BaseProvider {
 
       return true;
     } catch (error) {
-      console.error('[LocalStorageProvider] Failed to restore from backup:', error);
+      logger.error('[LocalStorageProvider] Failed to restore from backup', error);
       return false;
     }
   }
@@ -371,7 +372,7 @@ export class LocalStorageProvider extends BaseProvider {
         }
       }
     } catch (error) {
-      console.error('[LocalStorageProvider] Migration failed:', error);
+      logger.error('[LocalStorageProvider] Migration failed', error);
       // Continue anyway - migration is not critical
     }
   }
@@ -460,7 +461,7 @@ export class LocalStorageProvider extends BaseProvider {
         events: eventsToKeep,
       };
     } catch (error) {
-      console.error('[LocalStorageProvider] Cleanup failed:', error);
+      logger.error('[LocalStorageProvider] Cleanup failed', error);
       return data; // Return original data on error
     }
   }
@@ -570,7 +571,7 @@ export class LocalStorageProvider extends BaseProvider {
         info.model = deviceInfo.model;
         info.osVersion = deviceInfo.osVersion;
       } catch (error) {
-        console.error('[LocalStorageProvider] Failed to get device info:', error);
+        logger.error('[LocalStorageProvider] Failed to get device info', error);
       }
     } else {
       info.platform = 'web';
@@ -604,7 +605,7 @@ export class LocalStorageProvider extends BaseProvider {
         size: blob.size,
       };
     } catch (error) {
-      console.error('[LocalStorageProvider] Failed to export data:', error);
+      logger.error('[LocalStorageProvider] Failed to export data', error);
       return null;
     }
   }
@@ -628,7 +629,7 @@ export class LocalStorageProvider extends BaseProvider {
         eventCount: data.events?.length || 0,
       };
     } catch (error) {
-      console.error('[LocalStorageProvider] Failed to import data:', error);
+      logger.error('[LocalStorageProvider] Failed to import data', error);
       throw error;
     }
   }

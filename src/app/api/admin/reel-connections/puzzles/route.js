@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import logger from '@/lib/logger';
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -56,7 +57,7 @@ export async function GET(request) {
 
     return NextResponse.json({ puzzles: formattedPuzzles });
   } catch (error) {
-    console.error('Error fetching puzzles:', error);
+    logger.error('Error fetching puzzles:', error);
     return NextResponse.json({ error: 'Failed to fetch puzzles' }, { status: 500 });
   }
 }
@@ -128,7 +129,7 @@ export async function POST(request) {
 
     return NextResponse.json({ success: true, puzzle });
   } catch (error) {
-    console.error('Error creating puzzle:', error);
+    logger.error('Error creating puzzle:', error);
     return NextResponse.json({ error: 'Failed to create puzzle' }, { status: 500 });
   }
 }
@@ -195,7 +196,7 @@ export async function PUT(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating puzzle:', error);
+    logger.error('Error updating puzzle:', error);
     return NextResponse.json({ error: 'Failed to update puzzle' }, { status: 500 });
   }
 }
@@ -224,7 +225,7 @@ export async function DELETE(request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting puzzle:', error);
+    logger.error('Error deleting puzzle:', error);
     return NextResponse.json({ error: 'Failed to delete puzzle' }, { status: 500 });
   }
 }

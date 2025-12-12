@@ -11,6 +11,7 @@
  */
 
 import jwt from 'jsonwebtoken';
+import logger from '@/lib/logger';
 
 /**
  * Generate client secret for Apple Sign In REST API
@@ -93,14 +94,14 @@ export async function getRefreshToken(authorizationCode) {
     }
 
     const errorText = await response.text();
-    console.error('[AppleAuth] Token exchange failed:', errorText);
+    logger.error('[AppleAuth] Token exchange failed:', errorText);
 
     return {
       success: false,
       error: `Failed to exchange authorization code: ${response.status}`,
     };
   } catch (error) {
-    console.error('[AppleAuth] Token exchange error:', error);
+    logger.error('[AppleAuth] Token exchange error:', error);
     return {
       success: false,
       error: error.message || 'Token exchange failed',
@@ -129,7 +130,7 @@ export async function revokeAppleToken(token, tokenTypeHint = 'refresh_token') {
       const exchangeResult = await getRefreshToken(token);
 
       if (!exchangeResult.success) {
-        console.error('[AppleAuth] Failed to exchange authorization code:', exchangeResult.error);
+        logger.error('[AppleAuth] Failed to exchange authorization code:', exchangeResult.error);
         // Try to revoke the authorization code directly as fallback
         tokenToRevoke = token;
         tokenTypeHint = 'access_token'; // Treat as access token
@@ -163,14 +164,14 @@ export async function revokeAppleToken(token, tokenTypeHint = 'refresh_token') {
     }
 
     const errorText = await response.text();
-    console.error('[AppleAuth] Token revocation failed:', errorText);
+    logger.error('[AppleAuth] Token revocation failed:', errorText);
 
     return {
       success: false,
       error: `Failed to revoke Apple token: ${response.status}`,
     };
   } catch (error) {
-    console.error('[AppleAuth] Token revocation error:', error);
+    logger.error('[AppleAuth] Token revocation error:', error);
     return {
       success: false,
       error: error.message || 'Token revocation failed',
@@ -214,7 +215,7 @@ export async function validateAppleIdToken(idToken) {
       email: email || null,
     };
   } catch (error) {
-    console.error('[AppleAuth] Token validation error:', error);
+    logger.error('[AppleAuth] Token validation error:', error);
     return {
       valid: false,
       error: error.message || 'Token validation failed',

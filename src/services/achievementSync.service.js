@@ -9,6 +9,7 @@
 
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 const UNLOCKED_ACHIEVEMENTS_KEY = 'tandem_unlocked_achievements';
 const SYNC_IN_PROGRESS_KEY = 'achievement_sync_in_progress';
@@ -41,7 +42,7 @@ async function getLocalAchievements() {
       return new Set(JSON.parse(stored));
     }
   } catch (error) {
-    console.error('[AchievementSync] Failed to load local achievements:', error);
+    logger.error('[AchievementSync] Failed to load local achievements', error);
   }
   return new Set();
 }
@@ -54,7 +55,7 @@ async function saveLocalAchievements(achievementSet) {
   try {
     await storageService.set(UNLOCKED_ACHIEVEMENTS_KEY, JSON.stringify([...achievementSet]));
   } catch (error) {
-    console.error('[AchievementSync] Failed to save local achievements:', error);
+    logger.error('[AchievementSync] Failed to save local achievements', error);
   }
 }
 
@@ -75,14 +76,16 @@ async function fetchAchievementsFromDatabase() {
         // Not authenticated - this is expected for guest users
         return null;
       }
-      console.error('[AchievementSync] Failed to fetch from database:', response.status);
+      logger.error('[AchievementSync] Failed to fetch from database', null, {
+        status: response.status,
+      });
       return null;
     }
 
     const data = await response.json();
     return data.achievements || [];
   } catch (error) {
-    console.error('[AchievementSync] Database fetch error:', error);
+    logger.error('[AchievementSync] Database fetch error', error);
     return null;
   }
 }
@@ -106,14 +109,16 @@ async function saveAchievementsToDatabase(achievements) {
         // Not authenticated - this is expected for guest users
         return null;
       }
-      console.error('[AchievementSync] Failed to save to database:', response.status);
+      logger.error('[AchievementSync] Failed to save to database', null, {
+        status: response.status,
+      });
       return null;
     }
 
     const data = await response.json();
     return data.achievements || null;
   } catch (error) {
-    console.error('[AchievementSync] Database save error:', error);
+    logger.error('[AchievementSync] Database save error', error);
     return null;
   }
 }
@@ -136,12 +141,12 @@ export async function syncAchievementToDatabase(achievementId) {
     // Save single achievement to database (will merge with existing)
     const result = await saveAchievementsToDatabase([achievementId]);
     if (result) {
-      console.log('[AchievementSync] Achievement synced to database:', achievementId);
+      logger.debug('[AchievementSync] Achievement synced to database', achievementId);
       return true;
     }
     return false;
   } catch (error) {
-    console.error('[AchievementSync] Failed to sync achievement:', error);
+    logger.error('[AchievementSync] Failed to sync achievement', error);
     return false;
   }
 }
@@ -161,7 +166,7 @@ export async function syncAllAchievements() {
     // Prevent concurrent syncs
     const syncInProgress = await storageService.get(SYNC_IN_PROGRESS_KEY);
     if (syncInProgress === 'true') {
-      console.log('[AchievementSync] Sync already in progress, skipping');
+      logger.debug('[AchievementSync] Sync already in progress, skipping');
       const local = await getLocalAchievements();
       return local;
     }
@@ -172,7 +177,7 @@ export async function syncAllAchievements() {
       // Check if authenticated
       const authenticated = await isAuthenticated();
       if (!authenticated) {
-        console.log('[AchievementSync] Not authenticated, using local only');
+        logger.debug('[AchievementSync] Not authenticated, using local only');
         return await getLocalAchievements();
       }
 
@@ -184,7 +189,7 @@ export async function syncAllAchievements() {
 
       // If database fetch failed, just use local
       if (dbAchievements === null) {
-        console.log('[AchievementSync] Database unavailable, using local only');
+        logger.debug('[AchievementSync] Database unavailable, using local only');
         return localAchievements;
       }
 
@@ -197,23 +202,27 @@ export async function syncAllAchievements() {
 
       // Update local storage with merged achievements
       if (newForLocal.length > 0) {
-        console.log('[AchievementSync] Adding from database to local:', newForLocal.length);
+        logger.debug('[AchievementSync] Adding from database to local', {
+          count: newForLocal.length,
+        });
         await saveLocalAchievements(mergedSet);
       }
 
       // Update database with any achievements only in local
       if (newForDatabase.length > 0) {
-        console.log('[AchievementSync] Syncing local to database:', newForDatabase.length);
+        logger.debug('[AchievementSync] Syncing local to database', {
+          count: newForDatabase.length,
+        });
         await saveAchievementsToDatabase(newForDatabase);
       }
 
-      console.log('[AchievementSync] Sync complete. Total achievements:', mergedSet.size);
+      logger.debug('[AchievementSync] Sync complete', { totalAchievements: mergedSet.size });
       return mergedSet;
     } finally {
       await storageService.remove(SYNC_IN_PROGRESS_KEY);
     }
   } catch (error) {
-    console.error('[AchievementSync] Full sync failed:', error);
+    logger.error('[AchievementSync] Full sync failed', error);
     await storageService.remove(SYNC_IN_PROGRESS_KEY);
     return await getLocalAchievements();
   }
@@ -238,7 +247,7 @@ export async function loadAchievementsOnStartup() {
     // Return local achievements for guests
     return await getLocalAchievements();
   } catch (error) {
-    console.error('[AchievementSync] Startup load failed:', error);
+    logger.error('[AchievementSync] Startup load failed', error);
     return await getLocalAchievements();
   }
 }

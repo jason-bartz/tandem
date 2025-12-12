@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import adminService from '@/services/admin.service';
 import { SUBMISSION_STATUS, SUBMISSION_STATUS_OPTIONS } from '@/lib/constants';
+import logger from '@/lib/logger';
 
 const DIFFICULTY_COLORS = {
   easiest: 'bg-yellow-300 text-gray-900',
@@ -80,7 +81,7 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
         onCountsChange(data.counts || null);
       }
     } catch (fetchError) {
-      console.error('[SubmissionsDashboard] Error loading submissions:', fetchError);
+      logger.error('[SubmissionsDashboard] Error loading submissions:', fetchError);
       setError(fetchError.message || 'Failed to load submissions');
     } finally {
       setLoading(false);

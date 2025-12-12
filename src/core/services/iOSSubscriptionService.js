@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
 import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 import { getApiUrl } from '@/core/config/api-config';
+import logger from '@/lib/logger';
 
 // Product IDs - must match App Store Connect configuration
 const PRODUCTS = {
@@ -270,7 +271,7 @@ class SubscriptionService {
 
     this.store.when().unverified(() => {
       // Unverified receipt - log for debugging
-      console.warn('[SubscriptionService] Unverified receipt detected');
+      logger.warn('[SubscriptionService] Unverified receipt detected');
     });
   }
 
@@ -376,13 +377,13 @@ class SubscriptionService {
 
       if (!response.ok) {
         const error = await response.json();
-        console.error('[iOSSubscription] Failed to link purchase to account', error);
+        logger.error('[iOSSubscription] Failed to link purchase to account', error);
         return;
       }
 
       await response.json();
     } catch (error) {
-      console.error('[iOSSubscription] Error linking purchase to account', error);
+      logger.error('[iOSSubscription] Error linking purchase to account', error);
       // Don't throw - linking is optional and shouldn't break the purchase flow
     }
   }

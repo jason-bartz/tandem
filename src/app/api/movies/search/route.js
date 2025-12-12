@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth/verify';
 import { withRateLimit } from '@/lib/security/rateLimiter';
+import logger from '@/lib/logger';
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
@@ -71,7 +72,7 @@ export async function GET(request) {
 
     return NextResponse.json({ movies });
   } catch (error) {
-    console.error('Movie search error:', error);
+    logger.error('Movie search error:', error);
     return NextResponse.json({ error: 'Failed to search movies' }, { status: 500 });
   }
 }

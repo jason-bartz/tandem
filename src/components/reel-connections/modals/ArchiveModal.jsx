@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import ReelConnectionsModal from './ReelConnectionsModal';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 const STORAGE_KEY = 'reel-connections-stats';
 
@@ -73,7 +74,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
           setCompletedDates(new Set());
         }
       } catch (error) {
-        console.error('Error loading Reel Connections history:', error);
+        logger.error('Error loading Reel Connections history:', error);
         setCompletedDates(new Set());
       }
     }, 50);
@@ -121,7 +122,7 @@ export default function ArchiveModal({ isOpen, onClose, onSelectDate }) {
       setPuzzleData(monthData);
     } catch (error) {
       if (error.name !== 'AbortError') {
-        console.error('Error loading Reel Connections archive:', error);
+        logger.error('Error loading Reel Connections archive:', error);
       }
     } finally {
       setIsLoading(false);

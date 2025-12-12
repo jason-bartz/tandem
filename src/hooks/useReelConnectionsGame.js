@@ -24,6 +24,7 @@ import {
   REEL_API,
   REEL_GAME_TYPE,
 } from '@/lib/reel-connections.constants';
+import logger from '@/lib/logger';
 
 /**
  * Sort groups by difficulty order (easiest to hardest)
@@ -233,13 +234,13 @@ export function useReelConnectionsGame() {
             syncCurrentStreakToLeaderboard(
               { currentStreak: stats.currentStreak, bestStreak: stats.bestStreak },
               REEL_GAME_TYPE
-            ).catch(console.error);
+            ).catch((err) => logger.error('Failed to sync current streak to leaderboard', err));
           }
         }
 
         setLeaderboardSubmitted(true);
       } catch (error) {
-        console.error('[ReelConnectionsGame] Failed to submit to leaderboard:', error);
+        logger.error('[ReelConnectionsGame] Failed to submit to leaderboard', error);
       }
     };
 
@@ -350,7 +351,7 @@ export function useReelConnectionsGame() {
       setStartTime(null);
       setCurrentTime(0);
     } catch (error) {
-      console.error('Error loading puzzle:', error);
+      logger.error('Error loading puzzle', error);
       // Show error state - no fallback puzzle
       setPuzzle(null);
       setMovies([]);
@@ -566,7 +567,7 @@ export function useReelConnectionsGame() {
       await navigator.clipboard.writeText(shareText);
       alert('Results copied to clipboard!');
     } catch (err) {
-      console.error('Failed to copy:', err);
+      logger.error('Failed to copy', err);
     }
   }, [archiveDate, guessHistory]);
 

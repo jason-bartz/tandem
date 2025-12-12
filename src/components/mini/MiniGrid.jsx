@@ -3,6 +3,7 @@
 import React from 'react';
 import { isBlackSquare, isEditableCell } from '@/lib/miniUtils';
 import { useTheme } from '@/contexts/ThemeContext';
+import logger from '@/lib/logger';
 
 /**
  * MiniGrid Component
@@ -46,7 +47,7 @@ export default function MiniGrid({
 
   // Get cells in current word for highlighting
   const highlightedCells = currentClue?.cells || [];
-  console.log('[MiniGrid] Highlighted Cells:', JSON.stringify(highlightedCells));
+  logger.debug('[MiniGrid] Highlighted Cells:', JSON.stringify(highlightedCells));
   const highlightedSet = new Set(highlightedCells.map((cell) => `${cell.row},${cell.col}`));
 
   const getCellClasses = (row, col) => {

@@ -3,6 +3,8 @@
  * Server-side only - API key is kept secure
  */
 
+import logger from '@/lib/logger';
+
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
 const POSTER_BASE_URL = 'http://img.omdbapi.com/';
@@ -42,7 +44,7 @@ export async function getMovieById(imdbId) {
       rating: data.imdbRating,
     };
   } catch (error) {
-    console.error(`Error fetching movie ${imdbId}:`, error);
+    logger.error(`Error fetching movie ${imdbId}:`, error);
     throw error;
   }
 }

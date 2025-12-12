@@ -7,6 +7,7 @@ import { generateRandomUsername } from '@/utils/usernameGenerator';
 import { validateUsername } from '@/utils/profanityFilter';
 import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import logger from '@/lib/logger';
 
 /**
  * AuthModal - Unified authentication left panel
@@ -162,7 +163,7 @@ export default function AuthModal({
         onClose();
       }
     } catch (err) {
-      console.error('Apple sign in error:', err);
+      logger.error('Apple sign in error', err);
       setError('Unable to sign in with Apple. Please try again or use email.');
       setLoading(false);
     }

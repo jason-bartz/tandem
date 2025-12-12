@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import aiService from '@/services/ai.service';
+import logger from '@/lib/logger';
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
@@ -73,7 +74,7 @@ export async function POST(request) {
           poster: movie.Poster,
         });
       } catch (error) {
-        console.error(`Error verifying movie "${movieTitle}":`, error);
+        logger.error(`Error verifying movie "${movieTitle}":`, error);
         failedMovies.push({ title: movieTitle, reason: error.message });
       }
     }
@@ -109,7 +110,7 @@ export async function POST(request) {
       movies: verifiedMovies,
     });
   } catch (error) {
-    console.error('AI generation error:', error);
+    logger.error('AI generation error:', error);
 
     // Handle specific AI errors
     if (error.message?.includes('rate_limit')) {

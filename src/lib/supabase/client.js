@@ -1,6 +1,7 @@
 import { createBrowserClient as createBrowserClientSSR } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { Capacitor } from '@capacitor/core';
+import logger from '@/lib/logger';
 
 /**
  * Create Supabase client for browser use with platform-appropriate storage
@@ -30,7 +31,7 @@ export function createBrowserClient() {
   const isNative = Capacitor.isNativePlatform();
 
   if (isNative) {
-    console.log('[Supabase] Creating native client with localStorage');
+    logger.debug('[Supabase] Creating native client with localStorage');
     // Use standard Supabase JS client for native - works better in WKWebView
     return createClient(supabaseUrl, supabaseAnonKey, {
       auth: {

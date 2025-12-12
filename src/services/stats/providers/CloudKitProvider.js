@@ -7,6 +7,7 @@
 
 import { BaseProvider } from './BaseProvider';
 import { registerPlugin } from '@capacitor/core';
+import logger from '@/lib/logger';
 
 // Register the native plugin
 const CloudKitSync = registerPlugin('CloudKitSyncPlugin', {
@@ -44,7 +45,7 @@ export class CloudKitProvider extends BaseProvider {
         this.initialized = true;
       }
     } catch (error) {
-      console.error('[CloudKitProvider] Initialization failed:', error);
+      logger.error('[CloudKitProvider] Initialization failed', error);
       this.available = false;
       this.initialized = false;
     }
@@ -58,7 +59,7 @@ export class CloudKitProvider extends BaseProvider {
       const result = await CloudKitSync.checkAccountStatus();
       return result;
     } catch (error) {
-      console.error('[CloudKitProvider] Account status check failed:', error);
+      logger.error('[CloudKitProvider] Account status check failed', error);
       return { available: false, status: 'error' };
     }
   }
@@ -127,7 +128,7 @@ export class CloudKitProvider extends BaseProvider {
       this.recordFetchError(error);
 
       if (this.isQuotaError(error)) {
-        console.error('[CloudKitProvider] CloudKit quota exceeded');
+        logger.error('[CloudKitProvider] CloudKit quota exceeded', null);
         // Try to clean up old data
         await this.cleanupOldData();
       }
@@ -233,7 +234,7 @@ export class CloudKitProvider extends BaseProvider {
           result: puzzleResult,
         });
       } catch (error) {
-        console.error('[CloudKitProvider] Failed to save puzzle result:', error);
+        logger.error('[CloudKitProvider] Failed to save puzzle result', error);
         // Continue with other events
       }
     }
@@ -309,7 +310,7 @@ export class CloudKitProvider extends BaseProvider {
 
       return true;
     } catch (error) {
-      console.error('[CloudKitProvider] Failed to clear data:', error);
+      logger.error('[CloudKitProvider] Failed to clear data', error);
       return false;
     }
   }
@@ -337,7 +338,7 @@ export class CloudKitProvider extends BaseProvider {
       try {
         await this.save(item.data);
       } catch (error) {
-        console.error('[CloudKitProvider] Failed to process queued sync:', error);
+        logger.error('[CloudKitProvider] Failed to process queued sync', error);
 
         // Re-queue if retry count not exceeded
         if (item.retryCount < this.maxRetries) {
@@ -365,7 +366,7 @@ export class CloudKitProvider extends BaseProvider {
 
     this.retryTimer = setTimeout(() => {
       this.save(data).catch((error) => {
-        console.error('[CloudKitProvider] Retry failed:', error);
+        logger.error('[CloudKitProvider] Retry failed', error);
       });
     }, delay);
   }
@@ -390,7 +391,7 @@ export class CloudKitProvider extends BaseProvider {
         // Would need to enhance native plugin for cleanup
       }
     } catch (error) {
-      console.error('[CloudKitProvider] Cleanup failed:', error);
+      logger.error('[CloudKitProvider] Cleanup failed', error);
     }
   }
 
@@ -403,7 +404,7 @@ export class CloudKitProvider extends BaseProvider {
 
       return result;
     } catch (error) {
-      console.error('[CloudKitProvider] Full sync failed:', error);
+      logger.error('[CloudKitProvider] Full sync failed', error);
       throw error;
     }
   }

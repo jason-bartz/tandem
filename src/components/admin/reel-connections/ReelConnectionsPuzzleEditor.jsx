@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import authService from '@/services/auth.service';
 import ReelConnectionsAIGenerator from './ReelConnectionsAIGenerator';
+import logger from '@/lib/logger';
 
 const DIFFICULTY_LEVELS = [
   {
@@ -64,7 +65,7 @@ function MovieSearchInput({ value, onChange, groupColor }) {
         setResults(data.movies || []);
         setShowResults(true);
       } catch (error) {
-        console.error('Search error:', error);
+        logger.error('Search error:', error);
         setResults([]);
       } finally {
         setLoading(false);
@@ -300,7 +301,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
       setShowAIGenerator(false);
       setAiGeneratingForGroup(null);
     } catch (error) {
-      console.error('AI generation error:', error);
+      logger.error('AI generation error:', error);
       alert(error.message || 'Failed to generate movies. Please try again.');
     } finally {
       setAiLoading(false);

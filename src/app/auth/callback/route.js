@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerComponentClient } from '@/lib/supabase/server';
 import { createServerClient } from '@/lib/supabase/server';
+import logger from '@/lib/logger';
 
 // For static export (Capacitor builds), we can't have dynamic routes
 // This route is only needed for web OAuth, not native iOS
@@ -33,7 +34,7 @@ export async function GET(request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (error) {
-      console.error('OAuth callback error:', error);
+      logger.error('OAuth callback error', error);
       // Redirect to home with error
       return NextResponse.redirect(`${requestUrl.origin}/?auth_error=true`);
     }
@@ -60,7 +61,7 @@ export async function GET(request) {
       );
 
       if (profileError) {
-        console.error('Failed to create user profile:', profileError);
+        logger.error('Failed to create user profile', profileError);
       }
     }
 

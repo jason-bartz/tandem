@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import LeaderboardEntry from './LeaderboardEntry';
 import Image from 'next/image';
+import logger from '@/lib/logger';
 
 /**
  * StreakLeaderboard - Displays top 10 players by best streak
@@ -40,10 +41,10 @@ export default function StreakLeaderboard({ gameType }) {
         setLeaderboard(data.leaderboard || []);
         setUserEntry(data.userEntry);
       } else {
-        console.error('[StreakLeaderboard] API returned success=false:', data);
+        logger.error('[StreakLeaderboard] API returned success=false:', null, data);
       }
     } catch (err) {
-      console.error('[StreakLeaderboard] Fetch error:', err);
+      logger.error('[StreakLeaderboard] Fetch error:', err);
     } finally {
       setLoading(false);
     }

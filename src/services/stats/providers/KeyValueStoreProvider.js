@@ -7,6 +7,7 @@
 
 import { BaseProvider } from './BaseProvider';
 import { registerPlugin } from '@capacitor/core';
+import logger from '@/lib/logger';
 
 // Register the native plugin for KeyValueStore
 const KeyValueStore = registerPlugin('KeyValueStorePlugin', {
@@ -72,7 +73,7 @@ export class KeyValueStoreProvider extends BaseProvider {
         this.initialized = false;
       }
     } catch (error) {
-      console.error('[KeyValueStoreProvider] Initialization failed:', error);
+      logger.error('[KeyValueStoreProvider] Initialization failed', error);
       this.available = false;
       this.initialized = false;
     }
@@ -118,7 +119,7 @@ export class KeyValueStoreProvider extends BaseProvider {
             values[name] = this.parseValue(result.value);
           }
         } catch (error) {
-          console.error(`[KeyValueStoreProvider] Failed to fetch ${name}:`, error);
+          logger.error(`[KeyValueStoreProvider] Failed to fetch ${name}`, error);
         }
       }
 
@@ -245,7 +246,7 @@ export class KeyValueStoreProvider extends BaseProvider {
       this.recordSaveError(error);
 
       if (this.isQuotaError(error)) {
-        console.error('[KeyValueStoreProvider] Quota exceeded, cleaning up...');
+        logger.error('[KeyValueStoreProvider] Quota exceeded, cleaning up...', null);
         await this.cleanup();
       }
 
@@ -317,7 +318,7 @@ export class KeyValueStoreProvider extends BaseProvider {
     try {
       await KeyValueStore.synchronize();
     } catch (error) {
-      console.error('[KeyValueStoreProvider] Synchronization failed:', error);
+      logger.error('[KeyValueStoreProvider] Synchronization failed', error);
     }
   }
 
@@ -355,7 +356,7 @@ export class KeyValueStoreProvider extends BaseProvider {
 
       case 'quotaViolation':
         // Quota exceeded
-        console.error('[KeyValueStoreProvider] Quota violation');
+        logger.error('[KeyValueStoreProvider] Quota violation', null);
         this.handleQuotaViolation();
         break;
 
@@ -382,7 +383,7 @@ export class KeyValueStoreProvider extends BaseProvider {
         const result = await KeyValueStore.getValue({ key });
         changes[key] = this.parseValue(result.value);
       } catch (error) {
-        console.error(`[KeyValueStoreProvider] Failed to fetch changed key ${key}:`, error);
+        logger.error(`[KeyValueStoreProvider] Failed to fetch changed key ${key}`, error);
       }
     }
 
@@ -400,7 +401,7 @@ export class KeyValueStoreProvider extends BaseProvider {
         this.notifyChangeHandlers('initialData', data);
       }
     } catch (error) {
-      console.error('[KeyValueStoreProvider] Failed to load initial data:', error);
+      logger.error('[KeyValueStoreProvider] Failed to load initial data', error);
     }
   }
 
@@ -408,7 +409,7 @@ export class KeyValueStoreProvider extends BaseProvider {
    * Handle quota violation
    */
   async handleQuotaViolation() {
-    console.error('[KeyValueStoreProvider] Handling quota violation');
+    logger.error('[KeyValueStoreProvider] Handling quota violation', null);
 
     // Clean up old or less important data
     await this.cleanup();
@@ -439,7 +440,7 @@ export class KeyValueStoreProvider extends BaseProvider {
       try {
         await KeyValueStore.removeValue({ key });
       } catch (error) {
-        console.error(`[KeyValueStoreProvider] Failed to remove ${key}:`, error);
+        logger.error(`[KeyValueStoreProvider] Failed to remove ${key}`, error);
       }
     }
   }
@@ -457,7 +458,7 @@ export class KeyValueStoreProvider extends BaseProvider {
 
       return true;
     } catch (error) {
-      console.error('[KeyValueStoreProvider] Failed to clear data:', error);
+      logger.error('[KeyValueStoreProvider] Failed to clear data', error);
       return false;
     }
   }
@@ -499,7 +500,7 @@ export class KeyValueStoreProvider extends BaseProvider {
       try {
         handler(reason, data);
       } catch (error) {
-        console.error('[KeyValueStoreProvider] Change handler error:', error);
+        logger.error('[KeyValueStoreProvider] Change handler error', error);
       }
     }
   }

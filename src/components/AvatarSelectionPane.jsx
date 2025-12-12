@@ -22,6 +22,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import avatarService from '@/services/avatar.service';
 import BottomPanel from '@/components/shared/BottomPanel';
+import logger from '@/lib/logger';
 
 export default function AvatarSelectionPane({
   isOpen,
@@ -58,7 +59,7 @@ export default function AvatarSelectionPane({
       const data = await avatarService.getAllAvatars();
       setAvatars(data);
     } catch (err) {
-      console.error('[AvatarSelectionPane] Failed to load avatars:', err);
+      logger.error('[AvatarSelectionPane] Failed to load avatars', err);
       setError('Failed to load avatars. Please try again.');
       errorHaptic();
     } finally {
@@ -106,11 +107,11 @@ export default function AvatarSelectionPane({
       // Close pane and pass selected avatar back
       onClose(expandedAvatar);
     } catch (err) {
-      console.error('[AvatarSelectionPane] Failed to save avatar:', err);
+      logger.error('[AvatarSelectionPane] Failed to save avatar', err);
 
       if (err.message && err.message.includes('quota')) {
         // Avatar was likely saved to DB, just local storage failed
-        console.warn('[AvatarSelectionPane] Storage quota warning (non-critical)');
+        logger.warn('[AvatarSelectionPane] Storage quota warning (non-critical)');
         // Still consider it a success - avatar is saved in database
         successHaptic();
         onClose(expandedAvatar);

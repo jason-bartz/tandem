@@ -6,6 +6,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
 import { FEEDBACK_CATEGORIES } from '@/lib/constants';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
+import logger from '@/lib/logger';
 
 export default function FeedbackPane({ isOpen, onClose }) {
   const { user } = useAuth();
@@ -65,7 +66,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
         onClose();
       }, 2000);
     } catch (submitError) {
-      console.error('Feedback submission error:', submitError);
+      logger.error('Feedback submission error', submitError);
       const errorMessage = submitError.message || 'Something went wrong. Please try again.';
       setError(errorMessage);
     } finally {

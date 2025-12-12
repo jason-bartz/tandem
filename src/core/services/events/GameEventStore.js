@@ -9,6 +9,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
+import logger from '@/lib/logger';
 
 // Event types enumeration
 export const EventTypes = {
@@ -82,7 +83,7 @@ class GameEventStore {
 
       this.isInitialized = true;
     } catch (error) {
-      console.error('[GameEventStore] Initialization failed:', error);
+      logger.error('[GameEventStore] Initialization failed', error);
       throw error;
     }
   }
@@ -167,7 +168,7 @@ class GameEventStore {
       try {
         await handler(event);
       } catch (error) {
-        console.error(`[GameEventStore] Handler failed for ${event.type}:`, error);
+        logger.error(`[GameEventStore] Handler failed for ${event.type}`, error);
         // Continue processing other handlers
       }
     }
@@ -403,7 +404,7 @@ class GameEventStore {
       try {
         callback(event);
       } catch (error) {
-        console.error('[GameEventStore] Subscriber notification failed:', error);
+        logger.error('[GameEventStore] Subscriber notification failed', error);
       }
     }
   }
@@ -423,7 +424,7 @@ class GameEventStore {
         await this.cleanupOldEvents();
       }
     } catch (error) {
-      console.error('[GameEventStore] Failed to load events:', error);
+      logger.error('[GameEventStore] Failed to load events', error);
       this.events = [];
     }
   }
@@ -444,7 +445,7 @@ class GameEventStore {
       // Also queue for cloud sync
       await this.queueForSync(event);
     } catch (error) {
-      console.error('[GameEventStore] Failed to persist event:', error);
+      logger.error('[GameEventStore] Failed to persist event', error);
     }
   }
 
@@ -478,7 +479,7 @@ class GameEventStore {
    */
   async importEvents(backup) {
     if (backup.version > this.version) {
-      console.warn('[GameEventStore] Importing newer version:', backup.version);
+      logger.warn('[GameEventStore] Importing newer version', backup.version);
     }
 
     // Merge with existing events
@@ -643,7 +644,7 @@ class GameEventStore {
 
       localStorage.setItem('gameEvents', JSON.stringify(stored));
     } catch (error) {
-      console.error('[GameEventStore] Cleanup failed:', error);
+      logger.error('[GameEventStore] Cleanup failed', error);
       // Don't throw - continue with existing events
     }
   }
@@ -666,7 +667,7 @@ class GameEventStore {
         formattedSize: sizeInMB > 1 ? `${sizeInMB} MB` : `${sizeInKB} KB`,
       };
     } catch (error) {
-      console.error('[GameEventStore] Failed to get storage stats:', error);
+      logger.error('[GameEventStore] Failed to get storage stats', error);
       return null;
     }
   }
@@ -677,7 +678,7 @@ class GameEventStore {
   async clearAllEvents() {
     this.events = [];
     localStorage.removeItem('gameEvents');
-    console.warn('[GameEventStore] All events cleared');
+    logger.warn('[GameEventStore] All events cleared');
   }
 }
 

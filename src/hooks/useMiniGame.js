@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { MINI_GAME_STATES } from '@/lib/constants';
 import miniService from '@/services/mini.service';
@@ -141,12 +140,7 @@ export function useMiniGame(providedDate = null) {
   useEffect(() => {
     if (!solutionGrid || !clueNumbers) return;
 
-    console.log(
-      '[useMiniGame] useEffect triggered - selectedCell:',
-      selectedCell,
-      'direction:',
-      direction
-    );
+    logger.debug('[useMiniGame] useEffect triggered', { selectedCell, direction });
 
     const clue = getClueForCell(
       solutionGrid,
@@ -157,11 +151,11 @@ export function useMiniGame(providedDate = null) {
     );
 
     if (!clue) {
-      console.warn('[useMiniGame] getClueForCell returned null');
+      logger.warn('[useMiniGame] getClueForCell returned null');
       return;
     }
 
-    console.log('[useMiniGame] getClueForCell returned:', JSON.stringify(clue));
+    logger.debug('[useMiniGame] getClueForCell returned', JSON.stringify(clue));
 
     // Always update the current clue with what getClueForCell returned
     setCurrentClue(clue);
@@ -170,12 +164,10 @@ export function useMiniGame(providedDate = null) {
     // update the direction state (this happens when the preferred direction doesn't exist)
     // This will trigger this useEffect again, but with the correct direction
     if (clue.direction && clue.direction !== direction) {
-      console.log(
-        '[useMiniGame] Direction mismatch - updating from',
-        direction,
-        'to',
-        clue.direction
-      );
+      logger.debug('[useMiniGame] Direction mismatch - updating', {
+        from: direction,
+        to: clue.direction,
+      });
       setDirection(clue.direction);
     }
   }, [selectedCell, direction, solutionGrid, clueNumbers]);
@@ -405,12 +397,12 @@ export function useMiniGame(providedDate = null) {
 
       // If clicking the same cell, toggle direction
       if (row === selectedCell.row && col === selectedCell.col) {
-        console.log('[useMiniGame] Toggling direction on same cell');
+        logger.debug('[useMiniGame] Toggling direction on same cell');
         setDirection((prev) => (prev === DIRECTION.ACROSS ? DIRECTION.DOWN : DIRECTION.ACROSS));
       } else {
         // When selecting a new cell, default to ACROSS
         // The useEffect will call getClueForCell which will determine the actual valid direction
-        console.log('[useMiniGame] Selecting new cell:', { row, col }, 'defaulting to ACROSS');
+        logger.debug('[useMiniGame] Selecting new cell', { row, col });
         setSelectedCell({ row, col });
         setDirection(DIRECTION.ACROSS);
       }

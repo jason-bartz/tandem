@@ -26,6 +26,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import logger from '@/lib/logger';
 
 // Memoized puzzle item component for performance
 const PuzzleItem = memo(
@@ -339,9 +340,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
       } catch (error) {
         if (error.name !== 'AbortError') {
           // Log error for debugging in development
-          if (process.env.NODE_ENV === 'development') {
-            console.error('[ArchiveModal] Failed to load puzzles:', error);
-          }
+          logger.error('[ArchiveModal] Failed to load puzzles:', error);
           setError(error.message || 'Failed to load puzzles. Please try again.');
         }
       } finally {

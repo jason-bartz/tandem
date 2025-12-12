@@ -5,6 +5,7 @@ import Image from 'next/image';
 import authService from '@/services/auth.service';
 import LoadingSpinner from '@/components/shared/LoadingSpinner';
 import storageService from '@/core/storage/storageService';
+import logger from '@/lib/logger';
 
 export default function AdminLayout({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -72,7 +73,7 @@ export default function AdminLayout({ children }) {
         // Verify that CSRF token was set
         const csrfToken = authService.getCSRFToken();
         if (!csrfToken) {
-          console.warn('CSRF token not set after verification');
+          logger.warn('CSRF token not set after verification', null);
         }
         setIsAuthenticated(true);
       } else {
@@ -80,7 +81,7 @@ export default function AdminLayout({ children }) {
         router.push('/admin/login');
       }
     } catch (error) {
-      console.error('Auth check failed:', error);
+      logger.error('Auth check failed', error);
       await storageService.remove('adminToken');
       router.push('/admin/login');
     } finally {

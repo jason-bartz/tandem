@@ -14,6 +14,7 @@
  */
 
 // import { Trie } from './TrieGenerator.js';
+import logger from '@/lib/logger';
 
 const BLACK_SQUARE = '■';
 const EMPTY_CELL = '';
@@ -72,7 +73,7 @@ export default class CrosswordGenerator {
 
         success = this.complete;
       } catch (error) {
-        console.log(`Attempt ${attempts} failed:`, error.message);
+        logger.debug(`Attempt ${attempts} failed:`, error.message);
         this.reset();
       }
     }
@@ -82,8 +83,8 @@ export default class CrosswordGenerator {
     }
 
     const elapsedTime = Date.now() - this.generationStats.startTime;
-    console.log(`Successfully generated puzzle in ${attempts} attempt(s) (${elapsedTime}ms)`);
-    console.log(`Cache stats:`, this.trie.getStats().cacheStats);
+    logger.info(`Successfully generated puzzle in ${attempts} attempt(s) (${elapsedTime}ms)`);
+    logger.debug(`Cache stats:`, this.trie.getStats().cacheStats);
 
     return {
       success: true,
@@ -270,7 +271,7 @@ export default class CrosswordGenerator {
 
     // Validate pattern quality
     if (!this.isPatternValid()) {
-      console.log('[Generator] Pattern quality check failed, using minimal pattern');
+      logger.debug('[Generator] Pattern quality check failed, using minimal pattern');
       // Fallback to minimal pattern (center black only)
       this.grid = Array(5)
         .fill(null)
@@ -295,28 +296,28 @@ export default class CrosswordGenerator {
 
     // Reject if too many blacks (more than 40% of grid)
     if (blackCount > 10) {
-      console.log(`[Quality] Too many black squares: ${blackCount}`);
+      logger.debug(`[Quality] Too many black squares: ${blackCount}`);
       return false;
     }
 
     // Check for entire rows or columns of blacks
     for (let row = 0; row < 5; row++) {
       if (this.grid[row].every((cell) => cell === BLACK_SQUARE)) {
-        console.log(`[Quality] Entire row ${row} is black`);
+        logger.debug(`[Quality] Entire row ${row} is black`);
         return false;
       }
     }
 
     for (let col = 0; col < 5; col++) {
       if (this.grid.every((row) => row[col] === BLACK_SQUARE)) {
-        console.log(`[Quality] Entire column ${col} is black`);
+        logger.debug(`[Quality] Entire column ${col} is black`);
         return false;
       }
     }
 
     // Check connectivity (no sections isolated by blacks)
     if (!this.isGridConnected()) {
-      console.log('[Quality] Grid not fully connected');
+      logger.debug('[Quality] Grid not fully connected');
       return false;
     }
 
@@ -467,7 +468,7 @@ export default class CrosswordGenerator {
       }
     }
 
-    console.log(`Detected ${this.wordSlots.length} word slots`);
+    logger.debug(`Detected ${this.wordSlots.length} word slots`);
   }
 
   /**
@@ -555,7 +556,7 @@ export default class CrosswordGenerator {
 
     // Calculate quality score
     const quality = this.calculatePuzzleQuality();
-    console.log('[Generator] Puzzle quality:', quality);
+    logger.debug('[Generator] Puzzle quality:', quality);
 
     // Reject low-quality puzzles (too many 2-letter words)
     // Relaxed thresholds to allow generation while still maintaining quality
