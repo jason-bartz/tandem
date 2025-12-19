@@ -288,8 +288,19 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
 
       const data = await response.json();
 
+      // Handle error responses
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate movies');
+      }
+
+      // Handle partial success (206) - API returns verifiedMovies instead of movies
+      if (response.status === 206) {
+        throw new Error(data.details || 'Some movies could not be verified. Please try again.');
+      }
+
+      // Validate response has required data
+      if (!data.movies || !Array.isArray(data.movies) || data.movies.length !== 4) {
+        throw new Error('Invalid response from AI - expected 4 movies');
       }
 
       // Update the group with AI-generated data
