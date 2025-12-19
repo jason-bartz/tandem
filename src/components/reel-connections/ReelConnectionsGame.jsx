@@ -133,7 +133,7 @@ const HintModal = ({
 
   const modal = (
     <div
-      className={`fixed inset-0 z-50 flex items-end sm:items-center justify-center ${reduceMotion ? '' : 'animate-backdrop-enter'}`}
+      className={`fixed inset-0 z-50 flex items-center justify-center ${reduceMotion ? '' : 'animate-backdrop-enter'}`}
       role="dialog"
       aria-modal="true"
       aria-label="Hint"
@@ -142,14 +142,14 @@ const HintModal = ({
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
 
-      {/* Modal Content - Slide up from bottom */}
+      {/* Modal Content */}
       <div
         ref={modalRef}
-        className={`relative w-full max-w-md mx-4 mb-0 sm:mb-0 ${reduceMotion ? '' : 'animate-slide-up'}`}
+        className={`relative w-full max-w-md mx-4 ${reduceMotion ? '' : 'animate-slide-up'}`}
         onClick={(e) => e.stopPropagation()}
       >
         <div
-          className={`rounded-t-2xl sm:rounded-2xl border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-[#ffce00]'}`}
+          className={`rounded-2xl border-[3px] shadow-[6px_6px_0px_rgba(0,0,0,0.8)] overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-[#ffce00]'}`}
         >
           {/* Header */}
           <div
