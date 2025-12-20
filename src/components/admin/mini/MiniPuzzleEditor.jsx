@@ -41,10 +41,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const [wordSuggestions, setWordSuggestions] = useState([]);
   const [currentDirection, setCurrentDirection] = useState('across');
   const [wordsLoaded, setWordsLoaded] = useState(false);
-  const [generationMode, setGenerationMode] = useState('fill'); // 'fill' or 'scratch'
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStats, setGenerationStats] = useState(null);
-  const [showDebugPanel, setShowDebugPanel] = useState(false);
+  const [theme, setTheme] = useState(''); // Optional theme for AI generation
   // eslint-disable-next-line no-unused-vars
   const [cellConstraints, setCellConstraints] = useState(null); // For visual feedback
 
@@ -337,28 +336,25 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   };
 
   /**
-   * Generate/Autofill using Trie-based API with enhanced algorithm
+   * Generate puzzle using AI
    */
   const autofillGrid = async () => {
     if (isGenerating) return;
 
     setIsGenerating(true);
     setGenerationStats(null); // Clear previous stats
-    logger.info(`[Generator] Starting ${generationMode} mode with symmetry: ${symmetryType}...`);
+    logger.info(`[Generator] Starting AI generation${theme ? ` with theme: "${theme}"` : ''}...`);
 
     try {
-      // Add timeout to prevent hanging forever
+      // Add timeout to prevent hanging forever (AI might take longer)
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 90000); // 90 second timeout for AI
 
       const response = await fetch('/api/admin/mini/generate', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true), // Include auth + CSRF token
         body: JSON.stringify({
-          mode: generationMode,
-          existingGrid: generationMode === 'fill' ? formData.grid : null,
-          symmetry: symmetryType,
-          maxRetries: 100,
+          theme: theme.trim() || null,
         }),
         signal: controller.signal,
       });
@@ -388,9 +384,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
         // Show success message with stats
         const statsMsg = result.stats
-          ? `\n\nGeneration Stats:\n- Time: ${result.stats.elapsedTime}ms\n- Attempts: ${result.stats.totalAttempts}\n- Backtracks: ${result.stats.backtrackCount}\n- Cache Hit Rate: ${result.stats.cacheHitRate?.toFixed(1)}%`
+          ? `\n\nGeneration Time: ${result.stats.elapsedTime}ms${result.stats.theme ? `\nTheme: ${result.stats.theme}` : ''}`
           : '';
-        alert(`Puzzle generated successfully with ${result.words.length} words!${statsMsg}`);
+        alert(`AI puzzle generated successfully with ${result.words.length} words!${statsMsg}`);
       } else {
         throw new Error('Generation failed');
       }
@@ -399,11 +395,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
       if (error.name === 'AbortError') {
         alert(
-          'Generation timed out after 60 seconds. This might indicate a server issue. Please check the server console for errors.'
+          'AI generation timed out after 90 seconds. Please try again or check the server console for errors.'
         );
       } else {
         alert(
-          `Generation failed: ${error.message}\n\nPlease check the server console for more details.`
+          `AI generation failed: ${error.message}\n\nPlease try again or check the server console for more details.`
         );
       }
     } finally {
@@ -416,9 +412,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     if (!newClues[direction][index]) {
       newClues[direction][index] = {};
     }
+    // Ensure number is stored as integer, not string
+    const processedValue = field === 'number' ? parseInt(value, 10) || 0 : value;
     newClues[direction][index] = {
       ...newClues[direction][index],
-      [field]: value,
+      [field]: processedValue,
     };
     setFormData((prev) => ({ ...prev, clues: newClues }));
   };
@@ -580,16 +578,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         <div className="flex gap-2">
           <button
             onClick={autofillGrid}
-            disabled={loading || !wordsLoaded || isGenerating}
+            disabled={loading || isGenerating}
             className="px-3 py-1.5 text-xs font-bold bg-accent-blue text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            title={
-              generationMode === 'fill'
-                ? 'Fill current pattern with valid words'
-                : 'Generate entire puzzle from scratch'
-            }
+            title="Generate complete puzzle using AI"
           >
-            {isGenerating ? 'Generating...' : generationMode === 'fill' ? 'Autofill' : 'Generate'}
+            {isGenerating ? '🤖 Generating...' : '🤖 AI Generate'}
           </button>
           <button
             onClick={clearGrid}
@@ -614,65 +608,36 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
       </div>
 
-      {/* Generation Controls Panel */}
+      {/* AI Generation Controls Panel */}
       <div className="mb-4 p-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg border-[3px] border-black">
-        <h3 className="text-lg font-black text-text-primary mb-4">⚙️ Generation Controls</h3>
+        <h3 className="text-lg font-black text-text-primary mb-4">🤖 AI Generation</h3>
 
-        {/* Generation Mode Toggle */}
+        {/* Theme Input (Optional) */}
         <div className="mb-4">
-          <label className="block text-sm font-bold text-text-primary mb-3">Generation Mode</label>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setGenerationMode('fill')}
-              disabled={isGenerating}
-              className={`flex-1 px-4 py-2 text-sm font-bold rounded-lg border-[2px] transition-all ${
-                generationMode === 'fill'
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={generationMode === 'fill' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}}
-            >
-              <div className="text-left">
-                <div className="font-bold">Fill Pattern</div>
-                <div className="text-xs opacity-80">Fill existing black squares</div>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => setGenerationMode('scratch')}
-              disabled={isGenerating}
-              className={`flex-1 px-4 py-2 text-sm font-bold rounded-lg border-[2px] transition-all ${
-                generationMode === 'scratch'
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-              style={
-                generationMode === 'scratch' ? { boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' } : {}
-              }
-            >
-              <div className="text-left">
-                <div className="font-bold">Generate from Scratch</div>
-                <div className="text-xs opacity-80">Create new pattern & fill</div>
-              </div>
-            </button>
-          </div>
+          <label className="block text-sm font-bold text-text-primary mb-2">Theme (Optional)</label>
+          <input
+            type="text"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+            placeholder="e.g., Food, Movies, Sports, Animals..."
+            disabled={isGenerating}
+            className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary placeholder-gray-400"
+          />
+          <p className="text-xs text-text-secondary mt-1">
+            Leave empty for a general puzzle, or enter a theme to create a themed crossword
+          </p>
         </div>
 
         {/* Generation Statistics */}
         {generationStats && (
           <div className="mt-4 p-3 bg-ghost-white dark:bg-gray-800 rounded-lg border-[2px] border-green-500">
             <div className="flex justify-between items-center mb-2">
-              <h4 className="text-sm font-bold text-text-primary">📊 Last Generation Stats</h4>
-              <button
-                type="button"
-                onClick={() => setShowDebugPanel(!showDebugPanel)}
-                className="text-xs font-bold text-blue-600 hover:text-blue-800"
-              >
-                {showDebugPanel ? 'Hide' : 'Show'} Details
-              </button>
+              <h4 className="text-sm font-bold text-text-primary">📊 Last Generation</h4>
+              <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">
+                ✓ AI Generated
+              </span>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs mb-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs mb-2">
               <div className="p-2 bg-blue-50 dark:bg-gray-700 rounded">
                 <div className="font-bold text-gray-600 dark:text-gray-400">Time</div>
                 <div className="text-lg font-black text-blue-600">
@@ -680,92 +645,18 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 </div>
               </div>
               <div className="p-2 bg-purple-50 dark:bg-gray-700 rounded">
-                <div className="font-bold text-gray-600 dark:text-gray-400">Attempts</div>
+                <div className="font-bold text-gray-600 dark:text-gray-400">Words Excluded</div>
                 <div className="text-lg font-black text-purple-600">
-                  {generationStats.totalAttempts}
+                  {generationStats.excludedWordsCount || 0}
                 </div>
               </div>
-              <div className="p-2 bg-orange-50 dark:bg-gray-700 rounded">
-                <div className="font-bold text-gray-600 dark:text-gray-400">Backtracks</div>
-                <div className="text-lg font-black text-orange-600">
-                  {generationStats.backtrackCount}
+              {generationStats.theme && (
+                <div className="p-2 bg-yellow-50 dark:bg-gray-700 rounded">
+                  <div className="font-bold text-gray-600 dark:text-gray-400">Theme</div>
+                  <div className="text-sm font-black text-yellow-600">{generationStats.theme}</div>
                 </div>
-              </div>
-              <div className="p-2 bg-green-50 dark:bg-gray-700 rounded">
-                <div className="font-bold text-gray-600 dark:text-gray-400">Cache Hit</div>
-                <div className="text-lg font-black text-green-600">
-                  {generationStats.cacheHitRate?.toFixed(1)}%
-                </div>
-              </div>
+              )}
             </div>
-
-            {/* Quality Metrics */}
-            {generationStats.qualityScore !== undefined && (
-              <div className="mt-2 p-2 bg-gradient-to-r from-green-50 to-blue-50 dark:from-gray-700 dark:to-gray-800 rounded border border-green-300">
-                <h5 className="text-xs font-bold mb-1 text-green-700 dark:text-green-400">
-                  ✨ Puzzle Quality
-                </h5>
-                <div className="grid grid-cols-4 gap-2 text-xs">
-                  <div>
-                    <div className="font-bold text-gray-600 dark:text-gray-400">Score</div>
-                    <div className="text-base font-black text-green-600">
-                      {generationStats.qualityScore}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-600 dark:text-gray-400">2-letter</div>
-                    <div
-                      className={`text-base font-black ${generationStats.twoLetterWords === 0 ? 'text-green-600' : 'text-orange-600'}`}
-                    >
-                      {generationStats.twoLetterWords}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-600 dark:text-gray-400">3-letter</div>
-                    <div className="text-base font-black text-blue-600">
-                      {generationStats.threeLetterWords}
-                    </div>
-                  </div>
-                  <div>
-                    <div className="font-bold text-gray-600 dark:text-gray-400">4+ letter</div>
-                    <div className="text-base font-black text-purple-600">
-                      {generationStats.fourPlusWords}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Debug Panel */}
-            {showDebugPanel && (
-              <div className="mt-3 p-3 bg-gray-50 dark:bg-gray-900 rounded border border-gray-300 dark:border-gray-600">
-                <h5 className="text-xs font-bold mb-2">🐛 Debug Information</h5>
-                <div className="text-xs font-mono space-y-1">
-                  <div>
-                    <span className="font-bold">Pattern Searches:</span>{' '}
-                    {generationStats.patternSearches || 'N/A'}
-                  </div>
-                  <div>
-                    <span className="font-bold">Flexibility Calculations:</span>{' '}
-                    {generationStats.flexibilityCalculations || 'N/A'}
-                  </div>
-                  <div>
-                    <span className="font-bold">Slots Filled:</span>{' '}
-                    {generationStats.slotsFilled || 'N/A'}
-                  </div>
-                  <div>
-                    <span className="font-bold">Cache Size:</span>{' '}
-                    {generationStats.cacheSize || 'N/A'} entries
-                  </div>
-                  <div className="mt-2 pt-2 border-t border-gray-300 dark:border-gray-600">
-                    <span className="font-bold">Algorithm:</span> Two-level heuristic (MCV + LCV)
-                  </div>
-                  <div className="text-[10px] opacity-70 mt-1">
-                    MCV = Most Constrained Variable, LCV = Least Constraining Value
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         )}
       </div>

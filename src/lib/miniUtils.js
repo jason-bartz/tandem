@@ -313,12 +313,12 @@ export function getNextClue(
   // Build ordered list: all across clues, then all down clues
   if (clues.across) {
     clues.across.forEach((clue) => {
-      allClues.push({ ...clue, direction: DIRECTION.ACROSS });
+      allClues.push({ ...clue, number: parseInt(clue.number, 10), direction: DIRECTION.ACROSS });
     });
   }
   if (clues.down) {
     clues.down.forEach((clue) => {
-      allClues.push({ ...clue, direction: DIRECTION.DOWN });
+      allClues.push({ ...clue, number: parseInt(clue.number, 10), direction: DIRECTION.DOWN });
     });
   }
 
@@ -353,11 +353,19 @@ export function getNextClueInSection(
   grid = null,
   clueNumbers = null
 ) {
-  // Get clues for the current section only
+  // Get clues for the current section only (parseInt handles string/int mismatch)
   const sectionClues =
     currentDirection === DIRECTION.ACROSS
-      ? (clues.across || []).map((clue) => ({ ...clue, direction: DIRECTION.ACROSS }))
-      : (clues.down || []).map((clue) => ({ ...clue, direction: DIRECTION.DOWN }));
+      ? (clues.across || []).map((clue) => ({
+          ...clue,
+          number: parseInt(clue.number, 10),
+          direction: DIRECTION.ACROSS,
+        }))
+      : (clues.down || []).map((clue) => ({
+          ...clue,
+          number: parseInt(clue.number, 10),
+          direction: DIRECTION.DOWN,
+        }));
 
   if (sectionClues.length === 0) return null;
 
@@ -391,15 +399,15 @@ export function getPreviousClue(
 ) {
   const allClues = [];
 
-  // Build ordered list: all across clues, then all down clues
+  // Build ordered list: all across clues, then all down clues (parseInt handles string/int mismatch)
   if (clues.across) {
     clues.across.forEach((clue) => {
-      allClues.push({ ...clue, direction: DIRECTION.ACROSS });
+      allClues.push({ ...clue, number: parseInt(clue.number, 10), direction: DIRECTION.ACROSS });
     });
   }
   if (clues.down) {
     clues.down.forEach((clue) => {
-      allClues.push({ ...clue, direction: DIRECTION.DOWN });
+      allClues.push({ ...clue, number: parseInt(clue.number, 10), direction: DIRECTION.DOWN });
     });
   }
 
