@@ -446,6 +446,19 @@ export function isCellCorrect(userGrid, solutionGrid, row, col) {
 }
 
 /**
+ * Check if an entire word is filled (all cells have letters, regardless of correctness)
+ * Used for auto-advancing to next clue when word is complete
+ */
+export function isWordFilled(userGrid, cells) {
+  if (!userGrid || !cells || cells.length === 0) return false;
+
+  return cells.every((cell) => {
+    const value = userGrid[cell.row]?.[cell.col];
+    return value && value !== '' && value !== '■';
+  });
+}
+
+/**
  * Check if an entire word is correct
  */
 export function isWordCorrect(userGrid, solutionGrid, clueNumbers, clueNumber, direction) {

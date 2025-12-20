@@ -21,6 +21,7 @@ import {
   getPreviousClue,
   isCellCorrect,
   isWordCorrect,
+  isWordFilled,
   isPuzzleComplete,
   getFirstEditableCell,
   isEditableCell,
@@ -340,14 +341,36 @@ export function useMiniGame(providedDate = null) {
 
       if (!isEditableCell(solutionGrid, row, col)) return;
 
-      // Update grid
+      // Update grid with the new letter
       const newGrid = cloneGrid(userGrid);
       newGrid[row][col] = letter.toUpperCase();
       setUserGrid(newGrid);
 
-      // Auto-advance to next cell
+      // Check if we should advance to next cell or next clue
       const nextCell = getNextCell(solutionGrid, clueNumbers, row, col, direction, true);
-      if (nextCell.row !== row || nextCell.col !== col) {
+      const isAtLastCell = nextCell.row === row && nextCell.col === col;
+
+      if (isAtLastCell && currentClue?.cells && puzzle?.clues) {
+        // We're at the last cell of the word - check if word is now complete
+        // Use newGrid (with the letter we just typed) to check if word is filled
+        if (isWordFilled(newGrid, currentClue.cells)) {
+          // Word is complete! Advance to next clue in the same section (Across/Down)
+          const nextClue = getNextClueInSection(
+            puzzle.clues,
+            currentClue.clueNumber,
+            direction,
+            solutionGrid,
+            clueNumbers
+          );
+
+          if (nextClue?.cells?.length > 0) {
+            // Move to the first cell of the next clue
+            setSelectedCell(nextClue.cells[0]);
+            // Direction stays the same (same section)
+          }
+        }
+      } else if (!isAtLastCell) {
+        // Not at last cell - advance to next cell in the word
         setSelectedCell(nextCell);
       }
     },
@@ -360,6 +383,7 @@ export function useMiniGame(providedDate = null) {
       hasStarted,
       gameState,
       currentClue,
+      puzzle,
     ]
   );
 

@@ -81,8 +81,8 @@ export default function MiniGrid({
         ? 'bg-hc-success text-black'
         : 'bg-accent-green dark:bg-accent-green text-gray-900';
     } else if (isHighlighted) {
-      // Highlighted cells (rest of current word) are grey
-      bgClass = highContrast ? 'bg-gray-300 text-black' : 'bg-gray-200 dark:bg-gray-700';
+      // Highlighted cells (rest of current word) are light blue
+      bgClass = highContrast ? 'bg-blue-200 text-black' : 'bg-blue-100 dark:bg-blue-900/40';
     }
     // REMOVED: Row/column highlighting that was confusing the visual presentation
     // The word highlighting is sufficient and more clear
