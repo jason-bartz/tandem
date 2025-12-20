@@ -31,7 +31,7 @@ const REEL_STORAGE_KEY = 'reel-connections-stats';
  * - Color-coded status indicators (green/yellow/red/grey dots)
  * - Month/year navigation with iOS-style picker
  * - Minimal design (no puzzle numbers or themes in calendar view)
- * - Subscription paywall integration (Tandem/Mini only - Reel archive is free)
+ * - Subscription paywall integration (archive puzzles require subscription for all games)
  * - Works identically on web and iOS native
  * - Uses LeftSidePanel for consistent slide-in behavior
  *
@@ -297,7 +297,6 @@ export default function UnifiedArchiveCalendar({
         }
       }
 
-      // Reel archive is free - no access map needed
       return { monthData, accessMap: {} };
     } catch (error) {
       if (error.name !== 'AbortError') {
@@ -441,7 +440,13 @@ export default function UnifiedArchiveCalendar({
       onClose?.();
       router.push(`/dailymini?date=${puzzle.date}`);
     } else {
-      // Reel Connections - archive is free, no paywall needed
+      // Reel Connections - same paywall as Mini (archive puzzles require subscription)
+      const isArchivePuzzle = !isToday;
+      if (isArchivePuzzle && !hasSubscription) {
+        setShowPaywall(true);
+        return;
+      }
+
       onClose?.();
       router.push(`/reel-connections?date=${puzzle.date}`);
     }
@@ -522,8 +527,9 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
 
-        // Reel archive is free - no locking
-        shouldBeLocked = false;
+        // Reel archive requires subscription (same as Mini)
+        const isArchivePuzzle = puzzle && !isToday;
+        shouldBeLocked = !hasSubscription && isArchivePuzzle;
       }
 
       days.push(
