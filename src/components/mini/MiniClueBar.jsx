@@ -34,8 +34,9 @@ export default function MiniClueBar({
   const { clueNumber, direction, clue } = currentClue;
 
   // Find the actual clue text from the puzzle
+  // Note: c.number might be string or int depending on how puzzle was created
   const clueList = direction === 'across' ? puzzle.clues?.across : puzzle.clues?.down;
-  const clueEntry = clueList?.find((c) => c.number === clueNumber);
+  const clueEntry = clueList?.find((c) => parseInt(c.number, 10) === clueNumber);
   const clueText = clueEntry?.clue || clue || '';
 
   return (

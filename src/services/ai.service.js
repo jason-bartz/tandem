@@ -5,7 +5,7 @@ class AIService {
   constructor() {
     this.client = null;
     this.enabled = process.env.AI_GENERATION_ENABLED !== 'false';
-    this.model = process.env.AI_MODEL || 'claude-sonnet-4-5-20250514';
+    this.model = process.env.AI_MODEL || 'claude-sonnet-4-20250514';
     this.maxRetries = 2;
     this.timeout = 30000; // 30 seconds
     this.generationCount = 0; // Track for analytics
@@ -2113,6 +2113,636 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
     if (errors.length > 0) {
       throw new Error(`Puzzle validation failed: ${errors.join(', ')}`);
     }
+  }
+
+  /**
+   * Generate a complete Mini crossword puzzle using AI
+   * @param {Object} options - Generation options
+   * @param {Array<string>} options.excludeWords - Words to avoid (from recent puzzles)
+   * @param {string} options.theme - Optional theme for themed puzzles
+   * @returns {Promise<{grid, solution, words, clues}>}
+   */
+  async generateMiniCrossword({ excludeWords = [], theme = null }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // More retries for mini crossword since grid structure is complex
+    const maxMiniRetries = 5;
+
+    // Retry logic for production reliability
+    for (let attempt = 0; attempt <= maxMiniRetries; attempt++) {
+      try {
+        const prompt = this.buildMiniCrosswordPrompt({ excludeWords, theme });
+        const genInfo = {
+          excludeWordsCount: excludeWords.length,
+          hasTheme: !!theme,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: maxMiniRetries + 1,
+        };
+
+        logger.info('Generating Mini crossword with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 2048,
+          temperature: 0.9, // Higher creativity for varied puzzles
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        const responseInfo = {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        };
+
+        logger.info('AI Mini crossword response received', responseInfo);
+
+        const puzzle = this.parseMiniCrosswordResponse(responseText);
+
+        this.generationCount++;
+        const successInfo = {
+          wordCount: puzzle.words.length,
+          duration,
+          totalGenerations: this.generationCount,
+        };
+
+        logger.info('Mini crossword generated successfully', successInfo);
+
+        return puzzle;
+      } catch (error) {
+        lastError = error;
+
+        // Enhanced error logging
+        logger.error('AI Mini crossword generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          errorStatus: error.status,
+          errorCode: error.error?.type,
+          willRetry: attempt < maxMiniRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          logger.warn('Rate limit hit, will retry after delay', {
+            retryAfter,
+            attempt: attempt + 1,
+          });
+
+          if (attempt < maxMiniRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        // Don't retry on authentication errors
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          logger.error('Authentication error - not retrying', { error: error.message });
+          throw error;
+        }
+
+        // Service overloaded - retry with longer backoff
+        if (error.status === 529) {
+          logger.warn('Service overloaded, will retry with longer delay', { attempt: attempt + 1 });
+          if (attempt < maxMiniRetries) {
+            await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+            continue;
+          }
+        }
+
+        // Validation/parsing errors - retry with fresh generation
+        if (
+          error.message.includes('Invalid') ||
+          error.message.includes('validation') ||
+          error.message.includes('Grid has') ||
+          error.message.includes('parse')
+        ) {
+          if (attempt < maxMiniRetries) {
+            logger.warn('Grid validation error, retrying with fresh generation', {
+              error: error.message,
+              attempt: attempt + 1,
+            });
+            await new Promise((resolve) => setTimeout(resolve, 500));
+            continue;
+          }
+        }
+
+        if (attempt === maxMiniRetries) {
+          break;
+        }
+
+        // Brief delay before retry (exponential backoff)
+        const backoffMs = Math.pow(2, attempt) * 500; // Shorter backoff for faster retries
+        logger.info('Waiting before retry', { backoffMs, attempt: attempt + 1 });
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    // All retries failed
+    logger.error('AI Mini crossword generation failed after all retries', {
+      attempts: maxMiniRetries + 1,
+      error: lastError,
+    });
+    throw new Error(
+      `AI Mini crossword generation failed after ${maxMiniRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build the prompt for Mini crossword generation
+   */
+  buildMiniCrosswordPrompt({ excludeWords, theme }) {
+    const excludeWordsSection =
+      excludeWords.length > 0
+        ? `
+WORDS TO AVOID (recently used):
+${excludeWords.slice(0, 100).join(', ')}${excludeWords.length > 100 ? '...' : ''}
+
+Avoid these if possible, but one or two is okay if necessary for a valid grid.`
+        : '';
+
+    const themeSection = theme
+      ? `
+THEME: "${theme}"
+All or most words should relate to this theme. Make it subtle - players should have an "aha!" moment.`
+      : '';
+
+    return `Generate a 5x5 Mini crossword puzzle.
+
+## MOST IMPORTANT: ALL WORDS MUST BE REAL
+Every word in your puzzle MUST be a REAL word, name, or abbreviation that people actually use.
+
+ACCEPTABLE WORDS:
+- Common English words: BREAD, HOUSE, RIVER, PHONE, STOVE, CHAIR, MUSIC
+- Proper names (people): EMMA, BRAD, ELVIS, OPRAH, BEYONCE
+- Proper names (places): PARIS, TEXAS, ITALY, MIAMI
+- Pop culture/fiction: SHREK, ELSA, YODA, MARIO, ZELDA
+- Brand names: UBER, LYFT, IKEA, LEGO, NIKE
+- Abbreviations: NASA, ASAP, RSVP, TGIF, WIFI
+- Slang: VIBE, FLEX, FOMO, YOLO, EPIC
+- Onomatopoeia: BOOM, BUZZ, BEEP, ZOOM, SNAP
+
+NEVER USE random letter combinations like: UWLS, IVL, CES, XQZ, BRLK
+If you can't think of a real word that fits, restructure your grid!
+
+## CROSSWORD STRUCTURE
+Each continuous run of white cells = EXACTLY ONE WORD.
+
+CORRECT example:
+S T A R ■
+H O P E S
+O R B ■ A
+P ■ I ■ L
+S K I T S
+
+- Row 0: STAR (ends at ■)
+- Row 1: HOPES (full row)
+- Column 0: SHOPS (full column)
+- Column 2: RBI then ITS is WRONG - one continuous column must be ONE word
+
+WRONG example - DO NOT DO:
+B R I C K
+L O V E D
+U W L S ■   ← "UWLS" is NOT a real word!
+E ■ ■ ■ C
+S U G A R
+
+## CLUE REQUIREMENTS - CRITICAL
+You MUST provide a real, descriptive clue for EVERY word. Never use placeholder text.
+
+GOOD clues:
+- "Building block made of clay" for BRICK
+- "Feeling of affection" for LOVED
+- "Sweet white crystals" for SUGAR
+
+BAD clues (NEVER DO THIS):
+- "Clue for BRICK" ← REJECTED
+- "Word meaning brick" ← REJECTED
+- Any clue that just restates the answer
+
+## GRID REQUIREMENTS
+- 5x5 grid with 2-6 black squares (■)
+- Symmetric black square placement preferred
+- All white cells must be connected
+- Word length: 3-5 letters only
+- 6-10 total words (across + down)
+${excludeWordsSection}
+${themeSection}
+
+## RESPONSE FORMAT
+Return ONLY valid JSON:
+{
+  "grid": [
+    ["S", "T", "A", "R", "■"],
+    ["H", "O", "P", "E", "S"],
+    ["O", "R", "B", "■", "A"],
+    ["P", "■", "I", "■", "L"],
+    ["S", "K", "I", "T", "S"]
+  ],
+  "solution": [same as grid],
+  "words": [
+    {"word": "STAR", "direction": "across", "startRow": 0, "startCol": 0},
+    {"word": "HOPES", "direction": "across", "startRow": 1, "startCol": 0},
+    {"word": "SHOPS", "direction": "down", "startRow": 0, "startCol": 0}
+  ],
+  "clues": {
+    "across": [
+      {"number": 1, "clue": "Celestial body that twinkles", "answer": "STAR"},
+      {"number": 5, "clue": "Wishes for the future", "answer": "HOPES"}
+    ],
+    "down": [
+      {"number": 1, "clue": "Retail stores", "answer": "SHOPS"}
+    ]
+  }
+}
+
+BEFORE SUBMITTING, verify:
+1. Every word is a REAL word/name/abbreviation
+2. Every clue is descriptive (not "Clue for X")
+3. Grid structure is valid (each continuous run = one word)
+4. All words 3-5 letters, no duplicates
+
+Generate puzzle now. JSON only.`;
+  }
+
+  /**
+   * Parse AI Mini crossword response into puzzle format
+   */
+  parseMiniCrosswordResponse(responseText) {
+    try {
+      // Try to extract JSON from the response
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const puzzle = JSON.parse(jsonMatch[0]);
+
+      // Validate basic structure
+      if (!puzzle.grid || !Array.isArray(puzzle.grid) || puzzle.grid.length !== 5) {
+        throw new Error('Invalid grid structure: must be 5x5 array');
+      }
+
+      for (let i = 0; i < 5; i++) {
+        if (!Array.isArray(puzzle.grid[i]) || puzzle.grid[i].length !== 5) {
+          throw new Error(`Invalid grid row ${i}: must have 5 cells`);
+        }
+      }
+
+      if (!puzzle.solution || !Array.isArray(puzzle.solution) || puzzle.solution.length !== 5) {
+        throw new Error('Invalid solution structure: must be 5x5 array');
+      }
+
+      if (!puzzle.words || !Array.isArray(puzzle.words) || puzzle.words.length < 4) {
+        throw new Error('Invalid words array: must have at least 4 words');
+      }
+
+      if (!puzzle.clues || !puzzle.clues.across || !puzzle.clues.down) {
+        throw new Error('Invalid clues structure: must have across and down arrays');
+      }
+
+      // Normalize grid and solution
+      const normalizedGrid = puzzle.grid.map((row) =>
+        row.map((cell) => {
+          if (cell === '■' || cell === '#' || cell === '.') return '■';
+          return cell.toUpperCase();
+        })
+      );
+
+      const normalizedSolution = puzzle.solution.map((row) =>
+        row.map((cell) => {
+          if (cell === '■' || cell === '#' || cell === '.') return '■';
+          return cell.toUpperCase();
+        })
+      );
+
+      // Validate words
+      const wordSet = new Set();
+      for (const wordObj of puzzle.words) {
+        if (!wordObj.word || wordObj.word.length < 3 || wordObj.word.length > 5) {
+          throw new Error(`Invalid word length: "${wordObj.word}" must be 3-5 letters`);
+        }
+        if (!/^[A-Z]+$/.test(wordObj.word.toUpperCase())) {
+          throw new Error(`Invalid word characters: "${wordObj.word}" must be letters only`);
+        }
+        const upperWord = wordObj.word.toUpperCase();
+        if (wordSet.has(upperWord)) {
+          throw new Error(`Duplicate word in puzzle: "${upperWord}"`);
+        }
+        wordSet.add(upperWord);
+      }
+
+      // Validate grid connectivity (all white cells connected)
+      if (!this.isGridConnected(normalizedGrid)) {
+        throw new Error('Grid validation failed: not all white cells are connected');
+      }
+
+      // Extract word slots from grid - this is the source of truth
+      const wordSlots = this.extractWordSlots(normalizedGrid);
+
+      // Auto-fix words array by extracting from grid (more forgiving)
+      const fixedWords = wordSlots.map((slot) => ({
+        word: slot.expectedWord,
+        direction: slot.direction,
+        startRow: slot.startRow,
+        startCol: slot.startCol,
+      }));
+
+      // Generate clue numbers based on grid structure
+      const clueNumbers = this.generateClueNumbers(normalizedGrid);
+
+      // Check for likely non-words (no vowels, or obviously invalid)
+      const hasVowel = (word) => /[AEIOU]/i.test(word);
+      const isLikelyNonWord = (word) => {
+        // No vowels (except short abbreviations)
+        if (word.length >= 4 && !hasVowel(word)) return true;
+        // Triple consonants in a row (rare in English)
+        if (/[BCDFGHJKLMNPQRSTVWXYZ]{4,}/i.test(word)) return true;
+        // Starts with unlikely patterns
+        if (/^[XZQJ][BCDFGHJKLMNPQRSTVWXYZ]/i.test(word)) return true;
+        return false;
+      };
+
+      // Check all words for validity
+      const invalidWords = [];
+      for (const slot of wordSlots) {
+        if (isLikelyNonWord(slot.expectedWord)) {
+          invalidWords.push(slot.expectedWord);
+        }
+      }
+
+      if (invalidWords.length > 0) {
+        throw new Error(
+          `Grid contains likely non-words: ${invalidWords.join(', ')}. All words must be real.`
+        );
+      }
+
+      // Build clues from AI-provided clues, matching by word
+      const acrossClues = [];
+      const downClues = [];
+      const missingClues = [];
+
+      for (const slot of wordSlots) {
+        const clueNumber = clueNumbers[slot.startRow][slot.startCol];
+        if (clueNumber === 0) continue;
+
+        // Try to find matching clue from AI response
+        const aiClueArray = slot.direction === 'across' ? puzzle.clues?.across : puzzle.clues?.down;
+        const matchingClue = aiClueArray?.find(
+          (c) => c.answer?.toUpperCase() === slot.expectedWord || c.number === clueNumber
+        );
+
+        const clueText = matchingClue?.clue?.trim();
+
+        // Check for placeholder clues
+        const isPlaceholder =
+          !clueText ||
+          clueText.toLowerCase().startsWith('clue for') ||
+          clueText.toLowerCase().startsWith('word for') ||
+          clueText.toLowerCase().startsWith('word meaning') ||
+          clueText.toLowerCase() === slot.expectedWord.toLowerCase();
+
+        if (isPlaceholder) {
+          missingClues.push(slot.expectedWord);
+        }
+
+        const clueObj = {
+          number: clueNumber,
+          clue: isPlaceholder ? `[MISSING: ${slot.expectedWord}]` : clueText,
+          answer: slot.expectedWord,
+          row: slot.startRow,
+          col: slot.startCol,
+          length: slot.length,
+        };
+
+        if (slot.direction === 'across') {
+          acrossClues.push(clueObj);
+        } else {
+          downClues.push(clueObj);
+        }
+      }
+
+      // Reject puzzles with missing/placeholder clues
+      if (missingClues.length > 0) {
+        throw new Error(
+          `Missing or placeholder clues for: ${missingClues.join(', ')}. All words need real clues.`
+        );
+      }
+
+      // Sort clues by number
+      acrossClues.sort((a, b) => a.number - b.number);
+      downClues.sort((a, b) => a.number - b.number);
+
+      // Log if we had to fix things
+      if (fixedWords.length !== puzzle.words?.length) {
+        logger.warn('Auto-fixed words array', {
+          originalCount: puzzle.words?.length || 0,
+          fixedCount: fixedWords.length,
+        });
+      }
+
+      // Normalize the structure
+      return {
+        grid: normalizedGrid,
+        solution: normalizedSolution,
+        words: fixedWords,
+        clues: {
+          across: acrossClues,
+          down: downClues,
+        },
+      };
+    } catch (error) {
+      logger.error('Failed to parse AI Mini crossword response', { error, responseText });
+      throw new Error(`Failed to parse AI Mini crossword response: ${error.message}`);
+    }
+  }
+
+  /**
+   * Check if all white cells in a 5x5 grid are connected (flood fill)
+   * @param {Array<Array<string>>} grid - 5x5 grid
+   * @returns {boolean} - true if all white cells are connected
+   */
+  isGridConnected(grid) {
+    const visited = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(false));
+    let whiteSquares = 0;
+    let startRow = -1;
+    let startCol = -1;
+
+    // Count white squares and find starting position
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (grid[row][col] !== '■') {
+          whiteSquares++;
+          if (startRow === -1) {
+            startRow = row;
+            startCol = col;
+          }
+        }
+      }
+    }
+
+    if (whiteSquares === 0) return false;
+
+    // Flood fill from starting position
+    const stack = [[startRow, startCol]];
+    let visitedCount = 0;
+
+    while (stack.length > 0) {
+      const [row, col] = stack.pop();
+
+      if (row < 0 || row >= 5 || col < 0 || col >= 5) continue;
+      if (visited[row][col]) continue;
+      if (grid[row][col] === '■') continue;
+
+      visited[row][col] = true;
+      visitedCount++;
+
+      // Add neighbors
+      stack.push([row - 1, col], [row + 1, col], [row, col - 1], [row, col + 1]);
+    }
+
+    return visitedCount === whiteSquares;
+  }
+
+  /**
+   * Generate clue numbers for a crossword grid
+   * A cell gets a number if it starts an across word OR a down word
+   * @param {Array<Array<string>>} grid - 5x5 grid
+   * @returns {Array<Array<number>>} Grid with clue numbers (0 = no number)
+   */
+  generateClueNumbers(grid) {
+    const numbers = Array(5)
+      .fill(null)
+      .map(() => Array(5).fill(0));
+    const BLACK = '■';
+    let currentNumber = 1;
+
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 5; col++) {
+        if (grid[row][col] === BLACK) {
+          continue;
+        }
+
+        // Check if this cell starts an across word (3+ letters)
+        const startsAcross =
+          (col === 0 || grid[row][col - 1] === BLACK) &&
+          col <= 2 && // Must have room for 3+ letters
+          grid[row][col + 1] !== BLACK &&
+          grid[row][col + 2] !== BLACK;
+
+        // Check if this cell starts a down word (3+ letters)
+        const startsDown =
+          (row === 0 || grid[row - 1][col] === BLACK) &&
+          row <= 2 && // Must have room for 3+ letters
+          grid[row + 1][col] !== BLACK &&
+          grid[row + 2][col] !== BLACK;
+
+        if (startsAcross || startsDown) {
+          numbers[row][col] = currentNumber;
+          currentNumber++;
+        }
+      }
+    }
+
+    return numbers;
+  }
+
+  /**
+   * Extract all word slots from a grid
+   * A slot is a continuous run of white cells (horizontal or vertical)
+   * @param {Array<Array<string>>} grid - 5x5 grid
+   * @returns {Array<{direction, startRow, startCol, length, expectedWord}>}
+   */
+  extractWordSlots(grid) {
+    const slots = [];
+    const BLACK = '■';
+
+    // Find all ACROSS slots (horizontal runs)
+    for (let row = 0; row < 5; row++) {
+      let col = 0;
+      while (col < 5) {
+        // Skip black squares
+        if (grid[row][col] === BLACK) {
+          col++;
+          continue;
+        }
+
+        // Found start of a word - find its end
+        const startCol = col;
+        let word = '';
+        while (col < 5 && grid[row][col] !== BLACK) {
+          word += grid[row][col];
+          col++;
+        }
+
+        // Only count if 3+ letters (valid crossword word)
+        if (word.length >= 3) {
+          slots.push({
+            direction: 'across',
+            startRow: row,
+            startCol: startCol,
+            length: word.length,
+            expectedWord: word,
+          });
+        }
+      }
+    }
+
+    // Find all DOWN slots (vertical runs)
+    for (let col = 0; col < 5; col++) {
+      let row = 0;
+      while (row < 5) {
+        // Skip black squares
+        if (grid[row][col] === BLACK) {
+          row++;
+          continue;
+        }
+
+        // Found start of a word - find its end
+        const startRow = row;
+        let word = '';
+        while (row < 5 && grid[row][col] !== BLACK) {
+          word += grid[row][col];
+          row++;
+        }
+
+        // Only count if 3+ letters (valid crossword word)
+        if (word.length >= 3) {
+          slots.push({
+            direction: 'down',
+            startRow: startRow,
+            startCol: col,
+            length: word.length,
+            expectedWord: word,
+          });
+        }
+      }
+    }
+
+    return slots;
   }
 }
 

@@ -1,67 +1,23 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
 import { requireAdmin } from '@/lib/auth';
 import aiService from '@/services/ai.service';
-import { buildTrieFromFiles } from '@/lib/server/TrieGenerator.js';
-import CrosswordGenerator from '@/lib/server/CrosswordGenerator.js';
 import { createServerClient } from '@/lib/supabase/server';
 import { extractWordsFromPuzzles } from '@/lib/miniUtils';
 import logger from '@/lib/logger';
 
 // Default lookback period for word deduplication (in days)
-// Reduced from 45 to 30 days to allow more word variety with expanded database
 const DEDUP_LOOKBACK_DAYS = 30;
+
+// Percentage of recent words to exclude (80% = exclude most, allow some flexibility)
+const EXCLUSION_PERCENTAGE = 0.8;
 
 // Mark as dynamic route (skip for static export/iOS builds)
 export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
 
-// Cache the Trie in memory for performance
-let cachedTrie = null;
-let trieLoadPromise = null;
-
-/**
- * Generate clue numbers for a crossword grid
- * @param {Array<Array<string>>} grid - The solution grid
- * @returns {Array<Array<number>>} Grid with clue numbers
- */
-function generateClueNumbers(grid) {
-  const numbers = Array(5)
-    .fill(null)
-    .map(() => Array(5).fill(0));
-  const BLACK_SQUARE = '■';
-  let currentNumber = 1;
-
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 5; col++) {
-      if (grid[row][col] === BLACK_SQUARE) {
-        continue;
-      }
-
-      // Check if this cell starts an across word
-      const startsAcross =
-        (col === 0 || grid[row][col - 1] === BLACK_SQUARE) &&
-        col < 4 &&
-        grid[row][col + 1] !== BLACK_SQUARE;
-
-      // Check if this cell starts a down word
-      const startsDown =
-        (row === 0 || grid[row - 1][col] === BLACK_SQUARE) &&
-        row < 4 &&
-        grid[row + 1][col] !== BLACK_SQUARE;
-
-      if (startsAcross || startsDown) {
-        numbers[row][col] = currentNumber;
-        currentNumber++;
-      }
-    }
-  }
-
-  return numbers;
-}
-
 /**
  * Fetch words from recent mini puzzles to exclude from generation
  * This prevents repetition of words across puzzles
+ * Returns ~80% of words to allow AI some flexibility
  */
 async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
   try {
@@ -90,13 +46,18 @@ async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
     }
 
     // Extract all words from these puzzles
-    const words = extractWordsFromPuzzles(puzzles);
+    const allWords = extractWordsFromPuzzles(puzzles);
+
+    // Return ~80% of words (shuffled) to give AI some flexibility
+    const shuffled = allWords.sort(() => Math.random() - 0.5);
+    const excludeCount = Math.ceil(shuffled.length * EXCLUSION_PERCENTAGE);
+    const excludeWords = shuffled.slice(0, excludeCount);
 
     logger.info(
-      `[Generator API] Found ${words.length} unique words from ${puzzles.length} recent puzzles`
+      `[Generator API] Found ${allWords.length} unique words from ${puzzles.length} puzzles, excluding ${excludeWords.length} (${Math.round(EXCLUSION_PERCENTAGE * 100)}%)`
     );
 
-    return words;
+    return excludeWords;
   } catch (error) {
     logger.error('[Generator API] Error in getRecentlyUsedWords:', error);
     return [];
@@ -104,67 +65,30 @@ async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
 }
 
 /**
- * Load and cache the Trie with word frequencies
- */
-async function getTrie() {
-  // If already cached, return it
-  if (cachedTrie) {
-    logger.debug('[Generator API] Using cached Trie');
-    return cachedTrie;
-  }
-
-  // If currently loading, wait for that promise
-  if (trieLoadPromise) {
-    logger.debug('[Generator API] Waiting for Trie to finish loading...');
-    return await trieLoadPromise;
-  }
-
-  // Start loading
-  trieLoadPromise = (async () => {
-    logger.info('[Generator API] Building Trie from word lists with frequencies...');
-    const startTime = Date.now();
-    const databasePath = path.join(process.cwd(), 'database');
-
-    // Load Trie with frequency data
-    cachedTrie = await buildTrieFromFiles(databasePath, true); // true = load frequencies
-
-    const stats = cachedTrie.getStats();
-    const duration = Date.now() - startTime;
-    logger.info(`[Generator API] Trie built successfully in ${duration}ms:`, stats);
-
-    return cachedTrie;
-  })();
-
-  return await trieLoadPromise;
-}
-
-/**
  * POST /api/admin/mini/generate
- * Generate a crossword puzzle using enhanced two-level heuristic algorithm
+ * Generate a crossword puzzle using AI
  *
  * Request body:
  * {
- *   mode: 'scratch' | 'fill',      // Generate from scratch or fill existing pattern
- *   existingGrid?: Array<Array>,    // Required if mode='fill'
- *   symmetry?: string,              // 'none', 'rotational', 'horizontal', 'vertical'
- *   maxRetries?: number,            // Max attempts (default: 100)
- *   minFrequency?: number,          // Minimum word frequency threshold (0-100, default: 0)
- *   difficulty?: string             // 'easy' (70), 'medium' (40), 'hard' (20), 'expert' (0)
+ *   theme?: string    // Optional theme for themed puzzles
  * }
  *
  * Response:
  * {
  *   success: true,
- *   grid: Array<Array>,             // Grid with black squares only
- *   solution: Array<Array>,         // Complete solution grid
+ *   grid: Array<Array>,             // Grid with black squares and letters
+ *   solution: Array<Array>,         // Complete solution grid (same as grid)
  *   words: [{word, direction, startRow, startCol}],
- *   stats: {                        // Generation statistics
- *     totalAttempts, backtrackCount, slotsFilled,
- *     elapsedTime, cacheHitRate, cacheSize
+ *   clues: {across: [...], down: [...]},
+ *   stats: {
+ *     excludedWordsCount,
+ *     elapsedTime
  *   }
  * }
  */
 export async function POST(request) {
+  const startTime = Date.now();
+
   try {
     // Check admin authentication
     const authResult = await requireAdmin(request);
@@ -173,158 +97,70 @@ export async function POST(request) {
     }
 
     // Parse request body
-    const body = await request.json();
-    const {
-      mode = 'scratch',
-      existingGrid = null,
-      symmetry = 'none',
-      maxRetries = 100,
-      minFrequency = null,
-    } = body;
+    const body = await request.json().catch(() => ({}));
+    const { theme = null } = body;
 
-    // Use minFrequency threshold for NYT Mini-style common vocabulary
-    // Score of 20+ filters out the most obscure/archaic words while keeping
-    // enough variety for puzzle generation (~500 words across all lengths)
-    // This prevents words like "nerts", "utile", "paps" while allowing common vocabulary
-    const actualMinFrequency = minFrequency !== null ? minFrequency : 20;
+    logger.info(`[Generator API] Starting AI generation${theme ? ` with theme: "${theme}"` : ''}`);
 
-    // Validate mode
-    if (!['scratch', 'fill'].includes(mode)) {
+    // Check if AI is enabled
+    if (!aiService.isEnabled()) {
+      logger.error('[Generator API] AI service is not enabled');
       return NextResponse.json(
-        { error: 'Invalid mode. Must be "scratch" or "fill"' },
-        { status: 400 }
+        {
+          success: false,
+          error: 'AI generation is not enabled. Please configure ANTHROPIC_API_KEY.',
+        },
+        { status: 503 }
       );
     }
-
-    // Validate existing grid for fill mode
-    if (mode === 'fill' && !existingGrid) {
-      return NextResponse.json(
-        { error: 'existingGrid required when mode is "fill"' },
-        { status: 400 }
-      );
-    }
-
-    // Validate symmetry
-    const validSymmetries = [
-      'none',
-      'rotational',
-      'horizontal',
-      'vertical',
-      'diagonal-ne-sw',
-      'diagonal-nw-se',
-    ];
-    if (!validSymmetries.includes(symmetry)) {
-      return NextResponse.json(
-        { error: `Invalid symmetry. Must be one of: ${validSymmetries.join(', ')}` },
-        { status: 400 }
-      );
-    }
-
-    logger.info(
-      `[Generator API] Starting generation - mode: ${mode}, symmetry: ${symmetry}, minFrequency: ${actualMinFrequency}`
-    );
-
-    // Load Trie (cached after first load)
-    logger.info('[Generator API] Step 1: Loading Trie with frequencies...');
-    const trie = await getTrie();
-
-    // Clear pattern cache for fresh generation
-    trie.clearCache();
-    logger.info('[Generator API] Step 1: Trie loaded ✓');
 
     // Fetch recently used words to exclude from generation
-    logger.info('[Generator API] Step 1.5: Fetching recently used words...');
+    logger.info('[Generator API] Step 1: Fetching recently used words...');
     const excludeWords = await getRecentlyUsedWords();
-    logger.info(
-      `[Generator API] Step 1.5: Will exclude ${excludeWords.length} recently used words ✓`
-    );
+    logger.info(`[Generator API] Step 1: Will exclude ${excludeWords.length} words ✓`);
 
-    // Create generator instance with frequency threshold and word exclusion
-    logger.info('[Generator API] Step 2: Creating generator instance...');
-    const generator = new CrosswordGenerator(trie, {
-      maxRetries,
-      minFrequency: actualMinFrequency,
+    // Generate puzzle using AI
+    logger.info('[Generator API] Step 2: Generating puzzle with AI...');
+    const result = await aiService.generateMiniCrossword({
       excludeWords,
+      theme,
     });
-    logger.info('[Generator API] Step 2: Generator created ✓');
 
-    // Generate puzzle
-    logger.info('[Generator API] Step 3: Generating puzzle...');
-    const result = generator.generate(mode, existingGrid, symmetry);
+    const elapsedTime = Date.now() - startTime;
 
     logger.info(
-      `[Generator API] Step 3: Generation successful - ${result.words.length} words placed ✓`
+      `[Generator API] Step 2: AI generation successful - ${result.words.length} words placed ✓`
     );
-    logger.info(`[Generator API] Stats:`, result.stats);
+    logger.info(`[Generator API] Total time: ${elapsedTime}ms`);
 
-    // Generate AI clues for all words
-    const clues = { across: [], down: [] };
-
-    try {
-      if (aiService.isEnabled()) {
-        logger.info('[Generator API] Generating AI clues...');
-
-        const generatedClues = await aiService.generateCrosswordClues(result.words);
-
-        // Format clues into across/down structure with numbering
-        const clueNumbers = generateClueNumbers(result.solution);
-        let clueIndex = 0;
-
-        for (const wordInfo of result.words) {
-          const { word, direction, startRow, startCol } = wordInfo;
-          const clueNumber = clueNumbers[startRow][startCol];
-
-          if (clueNumber > 0) {
-            const clue = {
-              number: clueNumber,
-              clue: generatedClues[clueIndex] || `Clue for ${word}`,
-              answer: word,
-              row: startRow,
-              col: startCol,
-              length: word.length,
-            };
-
-            if (direction === 'across') {
-              clues.across.push(clue);
-            } else {
-              clues.down.push(clue);
-            }
-
-            clueIndex++;
-          }
-        }
-
-        // Sort clues by number
-        clues.across.sort((a, b) => a.number - b.number);
-        clues.down.sort((a, b) => b.number - b.number);
-
-        logger.info(`[Generator API] AI clues generated - ${clueIndex} clues`);
-      } else {
-        logger.info('[Generator API] AI disabled, skipping clue generation');
-      }
-    } catch (error) {
-      logger.error('[Generator API] AI clue generation failed:', error);
-      // Continue without AI clues - return puzzle anyway
-    }
+    // Create empty grid (for display - only black squares)
+    const displayGrid = result.grid.map((row) => row.map((cell) => (cell === '■' ? '■' : '')));
 
     return NextResponse.json({
       success: true,
-      grid: result.grid,
+      grid: displayGrid,
       solution: result.solution,
       words: result.words,
-      clues,
+      clues: result.clues,
       stats: {
-        ...result.stats,
         excludedWordsCount: excludeWords.length,
+        elapsedTime,
+        generationType: 'ai',
+        theme: theme || null,
       },
-      minFrequency: actualMinFrequency,
     });
   } catch (error) {
+    const elapsedTime = Date.now() - startTime;
     logger.error('[Generator API] Error:', error);
+
     return NextResponse.json(
       {
         success: false,
         error: error.message || 'Failed to generate puzzle',
+        stats: {
+          elapsedTime,
+          generationType: 'ai',
+        },
       },
       { status: 500 }
     );
@@ -333,7 +169,7 @@ export async function POST(request) {
 
 /**
  * GET /api/admin/mini/generate/status
- * Check if Trie is loaded and ready
+ * Check if AI generation is available
  */
 export async function GET(request) {
   try {
@@ -342,12 +178,14 @@ export async function GET(request) {
       return authResult.error;
     }
 
-    const isLoaded = cachedTrie !== null;
-    const stats = isLoaded ? cachedTrie.getStats() : null;
+    const isEnabled = aiService.isEnabled();
 
     return NextResponse.json({
-      loaded: isLoaded,
-      stats,
+      enabled: isEnabled,
+      generationType: 'ai',
+      message: isEnabled
+        ? 'AI generation is available'
+        : 'AI generation is disabled. Please configure ANTHROPIC_API_KEY.',
     });
   } catch (error) {
     logger.error('[Generator API] Status check error:', error);
