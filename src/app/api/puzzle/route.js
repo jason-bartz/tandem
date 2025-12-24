@@ -59,8 +59,8 @@ export async function GET(request) {
       crypto.randomBytes(16).toString('hex');
     await trackUniquePlayer(sessionId);
 
-    // Return puzzle with edge caching headers
-    // Industry standard: Cache at edge, serve stale while revalidating
+    // Return puzzle - no edge caching to ensure fresh data from Supabase
+    // In-memory cache in db.js handles performance (5-min TTL)
     return NextResponse.json(
       {
         success: true,
@@ -70,10 +70,8 @@ export async function GET(request) {
       },
       {
         headers: {
-          // Cache at edge for 1 hour, serve stale while revalidating for 24h
-          'Cache-Control': 'public, s-maxage=3600, stale-while-revalidate=86400',
-          // Vary by date/number parameter to cache different puzzles separately
-          Vary: 'x-puzzle-date, x-puzzle-number',
+          // No caching - always fetch fresh from Supabase
+          'Cache-Control': 'no-store, must-revalidate',
         },
       }
     );
