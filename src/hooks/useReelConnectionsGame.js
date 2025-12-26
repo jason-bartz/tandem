@@ -552,7 +552,10 @@ export function useReelConnectionsGame() {
       .map((guess) => guess.map((difficulty) => DIFFICULTY_EMOJIS[difficulty] || '⬜').join(''))
       .join('\n');
 
-    const shareText = `Reel Connections\n${dateStr}\n${emojiGrid}`;
+    // Format completion time
+    const timeStr = startTime && endTime ? `⏱️ ${formatTime(endTime - startTime)}\n` : '';
+
+    const shareText = `Reel Connections\n${dateStr}\n${timeStr}${emojiGrid}`;
 
     if (navigator.share) {
       try {
@@ -569,7 +572,7 @@ export function useReelConnectionsGame() {
     } catch (err) {
       logger.error('Failed to copy', err);
     }
-  }, [archiveDate, guessHistory]);
+  }, [archiveDate, guessHistory, startTime, endTime]);
 
   // Helper functions
   const isSelected = useCallback(
