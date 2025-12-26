@@ -19,6 +19,50 @@ import logger from '@/lib/logger';
 const UNLOCKED_ACHIEVEMENTS_KEY = 'tandem_unlocked_achievements';
 
 /**
+ * Check if user is authenticated
+ * @private
+ */
+async function isAuthenticated() {
+  try {
+    if (typeof window === 'undefined') return false;
+    const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+    const supabase = getSupabaseBrowserClient();
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    return !!session?.user;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Fetch achievements from database for authenticated users
+ * @private
+ */
+async function fetchAchievementsFromDb() {
+  try {
+    const { capacitorFetch, getApiUrl } = await import('@/lib/api-config');
+    const response = await capacitorFetch(getApiUrl('/api/user-achievements'), {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) return null; // Not authenticated
+      logger.warn('[AchievementNotifier] Failed to fetch from DB:', response.status);
+      return null;
+    }
+
+    const data = await response.json();
+    return data.achievements || [];
+  } catch (error) {
+    logger.warn('[AchievementNotifier] DB fetch error:', error);
+    return null;
+  }
+}
+
+/**
  * Sync achievements to database (fire-and-forget)
  * Non-blocking - failures are logged but don't affect local storage
  * @private
@@ -41,15 +85,39 @@ async function syncAchievementsToDb(achievementIds) {
 }
 
 /**
- * Get the set of already-unlocked achievement IDs from storage
+ * Get the set of already-unlocked achievement IDs
+ * For authenticated users, merges local + database (DB is source of truth)
  * @private
  */
 async function getUnlockedAchievements() {
   try {
+    // Get local achievements
     const stored = await storageService.get(UNLOCKED_ACHIEVEMENTS_KEY);
-    if (stored) {
-      return new Set(JSON.parse(stored));
+    const localSet = stored ? new Set(JSON.parse(stored)) : new Set();
+
+    // For authenticated users, also fetch from database and merge
+    const authenticated = await isAuthenticated();
+    if (authenticated) {
+      const dbAchievements = await fetchAchievementsFromDb();
+      if (dbAchievements && dbAchievements.length > 0) {
+        // Merge DB achievements into local set
+        const mergedSet = new Set([...localSet, ...dbAchievements]);
+
+        // If DB had achievements not in local, update local storage
+        if (mergedSet.size > localSet.size) {
+          logger.info(
+            '[AchievementNotifier] Syncing',
+            mergedSet.size - localSet.size,
+            'achievements from DB to local'
+          );
+          await saveUnlockedAchievements(mergedSet);
+        }
+
+        return mergedSet;
+      }
     }
+
+    return localSet;
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to load unlocked achievements:', error);
   }
