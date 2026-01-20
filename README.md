@@ -370,7 +370,7 @@ See the [docs/](docs/) directory for detailed documentation:
 
 ## License
 
-© 2025 Good Vibes Games. All rights reserved.
+© 2026 Good Vibes Games. All rights reserved.
 
 ## Support
 

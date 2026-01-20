@@ -271,7 +271,7 @@ export function playClapperSound() {
   if (typeof window === 'undefined') return;
 
   const audio = new Audio('/sounds/clapper.wav');
-  audio.volume = 0.7; // 30% volume reduction
+  audio.volume = 0.35; // 30% volume reduction
   audio.play().catch(() => {
     // Ignore autoplay errors
   });
