@@ -261,6 +261,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
   // Game hook
   const {
+    error,
     selectedMovies,
     solvedGroups,
     mistakes,
@@ -286,6 +287,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     toggleMovieSelection,
     handleSubmit,
     handleShuffle,
+    loadPuzzle,
     handleDeselect,
     handleArchiveSelect,
     handleStartGame,
@@ -957,6 +959,31 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   // Loading state
   if (loading) {
     return <ReelConnectionsLoadingSkeleton />;
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div
+        className={`!fixed inset-0 w-full h-full flex items-center justify-center ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e]'}`}
+      >
+        <div
+          className={`rounded-2xl border-[3px] p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-[#2a2a4a] border-[#ffce00]'}`}
+        >
+          <div className="text-6xl mb-4">🎬</div>
+          <h2 className={`text-2xl font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-white'}`}>
+            Oops!
+          </h2>
+          <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>{error}</p>
+          <button
+            onClick={() => loadPuzzle(true)}
+            className={`px-6 py-3 rounded-xl transition-colors ${highContrast ? 'bg-hc-primary text-hc-background' : 'bg-[#ffce00] text-gray-900 hover:bg-[#ffd633]'}`}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Main game screen

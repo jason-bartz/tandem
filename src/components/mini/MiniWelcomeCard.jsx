@@ -83,7 +83,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         const progress = await loadMiniPuzzleProgress(puzzleInfo.isoDate);
         setTodayCompleted(progress?.completed || false);
       } else {
-        setError('No puzzle available today');
+        setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
       }
     } catch (err) {
       logger.error('[MiniWelcomeCard] Error loading puzzle preview', {

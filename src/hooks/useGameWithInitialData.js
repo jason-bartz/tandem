@@ -71,7 +71,7 @@ export function useGameWithInitialData(initialPuzzleData) {
             setCurrentPuzzleDate(response.date);
             setError(null);
           } else {
-            setError('No puzzle available');
+            setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
           }
         } catch (err) {
           setError('Failed to load puzzle');
@@ -160,7 +160,7 @@ export function useGameWithInitialData(initialPuzzleData) {
         return true;
       } else {
         logger.error('[useGameWithInitialData] No response or empty response', null);
-        setError('No puzzle available');
+        setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
         return false;
       }
     } catch (err) {
