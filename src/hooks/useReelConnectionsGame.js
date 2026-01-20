@@ -118,6 +118,7 @@ export function useReelConnectionsGame() {
 
   // UI state
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [congratsMessage, setCongratsMessage] = useState("That's a Wrap!");
   const [isRevealing, setIsRevealing] = useState(false);
   const [revealedGroups, setRevealedGroups] = useState([]);
@@ -323,6 +324,7 @@ export function useReelConnectionsGame() {
         throw new Error('Failed to load puzzle');
       }
 
+      setError(null);
       const puzzleToUse = data.puzzle;
       setPuzzle(puzzleToUse);
 
@@ -352,6 +354,7 @@ export function useReelConnectionsGame() {
       setCurrentTime(0);
     } catch (error) {
       logger.error('Error loading puzzle', error);
+      setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
       // Show error state - no fallback puzzle
       setPuzzle(null);
       setMovies([]);
@@ -587,6 +590,7 @@ export function useReelConnectionsGame() {
 
   return {
     // State
+    error,
     selectedMovies,
     solvedGroups,
     mistakes,
@@ -616,6 +620,7 @@ export function useReelConnectionsGame() {
     handleSubmit,
     handleShuffle,
     handleDeselect,
+    loadPuzzle,
     resetGame,
     handleArchiveSelect,
     handleStartGame,

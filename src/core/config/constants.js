@@ -171,7 +171,7 @@ export const MESSAGES = {
     STATS_UPDATED: 'Statistics updated',
   },
   INFO: {
-    NO_PUZZLE: 'No puzzle available for today',
+    NO_PUZZLE: 'It seems our Puzzlemaster is a little behind. Come back shortly!',
     LOADING: 'Loading puzzle...',
     CHECKING: 'Checking answers...',
   },
