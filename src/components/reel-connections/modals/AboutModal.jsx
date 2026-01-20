@@ -57,7 +57,7 @@ export default function AboutModal({ isOpen, onClose }) {
 
         {/* Copyright */}
         <div className="text-center pt-2">
-          <p className="text-xs text-white/40">© 2025 Good Vibes Games</p>
+          <p className="text-xs text-white/40">© 2026 Good Vibes Games</p>
         </div>
       </div>
     </ReelConnectionsModal>

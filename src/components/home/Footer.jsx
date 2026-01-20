@@ -44,7 +44,7 @@ export default function Footer() {
             highContrast ? 'text-hc-text opacity-70' : 'text-text-primary'
           }`}
         >
-          © 2025 Good Vibes Games
+          © 2026 Good Vibes Games
         </p>
 
         <p

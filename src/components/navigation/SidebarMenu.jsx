@@ -554,7 +554,7 @@ export default function SidebarMenu({
               {/* Copyright and Social Section */}
               <section className="pt-4">
                 <div className="text-center">
-                  <p className="text-xs text-text-secondary mb-2">© 2025 Good Vibes Games</p>
+                  <p className="text-xs text-text-secondary mb-2">© 2026 Good Vibes Games</p>
 
                   {/* Social Media Section */}
                   <div>
