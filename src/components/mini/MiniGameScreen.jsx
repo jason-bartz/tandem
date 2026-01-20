@@ -17,11 +17,13 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { formatMiniTime } from '@/lib/miniUtils';
 import { formatDateShort } from '@/lib/utils';
+import { playButtonTone } from '@/lib/sounds';
 import logger from '@/lib/logger';
 
 /**
  * MiniGameScreen Component
  * Main crossword gameplay screen with fixed layout (no scrolling)
+ * Supports a "ready to solve" overlay that blurs the game content until started
  */
 export default function MiniGameScreen({
   puzzle,
@@ -54,6 +56,8 @@ export default function MiniGameScreen({
   revealWord,
   revealPuzzle,
   toggleAutoCheck,
+  gameStarted = true,
+  onStart,
 }) {
   const router = useRouter();
   const { highContrast, reduceMotion } = useTheme();
@@ -68,9 +72,23 @@ export default function MiniGameScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
+  // Handle start button click
+  const handleStartClick = () => {
+    try {
+      playButtonTone();
+      mediumTap();
+    } catch (e) {
+      // Sound might fail
+    }
+    onStart?.();
+  };
+
   // Physical keyboard support
   useEffect(() => {
     const handlePhysicalKeyboard = (e) => {
+      // Ignore if game hasn't started
+      if (!gameStarted) return;
+
       // Ignore if modal is open
       if (showCheckModal || showRevealModal) return;
 
@@ -110,6 +128,7 @@ export default function MiniGameScreen({
     document.addEventListener('keydown', handlePhysicalKeyboard);
     return () => document.removeEventListener('keydown', handlePhysicalKeyboard);
   }, [
+    gameStarted,
     showCheckModal,
     showRevealModal,
     selectedCell,
@@ -227,7 +246,7 @@ export default function MiniGameScreen({
                 : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
             }`}
           >
-            {/* Header - back button, title/date, and hamburger menu */}
+            {/* Header - back button, title/date, and hamburger menu - ALWAYS VISIBLE */}
             <header
               className={`pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
                 highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
@@ -274,13 +293,16 @@ export default function MiniGameScreen({
               </div>
             </header>
 
-            {/* Content Area */}
-            <div className="flex-1 flex flex-col p-4 sm:p-6 overflow-hidden">
+            {/* Content Area - BLURRED when not started */}
+            <div
+              className={`flex-1 flex flex-col p-4 sm:p-6 overflow-hidden relative ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+            >
               {/* Timer and Check/Reveal Buttons */}
               <div className="flex items-center justify-between mb-3">
                 {/* Check Button */}
                 <button
                   onClick={handleCheckClick}
+                  disabled={!gameStarted}
                   className="flex items-center gap-1 px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   title="Check answers"
                 >
@@ -302,6 +324,7 @@ export default function MiniGameScreen({
                 {/* Reveal Button */}
                 <button
                   onClick={handleRevealClick}
+                  disabled={!gameStarted}
                   className="flex items-center gap-1 px-2 py-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
                   title="Reveal answers"
                 >
@@ -327,7 +350,7 @@ export default function MiniGameScreen({
                   currentClue={currentClue}
                   correctCells={correctCells}
                   onCellClick={selectCell}
-                  disabled={false}
+                  disabled={!gameStarted}
                 />
               </div>
 
@@ -342,14 +365,70 @@ export default function MiniGameScreen({
                 />
               </div>
             </div>
+
+            {/* Ready to Solve Modal Overlay - positioned over the card */}
+            {!gameStarted && (
+              <div
+                className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none"
+                style={{ top: '60px' }}
+              >
+                <div
+                  className={`
+                    rounded-[32px]
+                    border-[3px] border-black dark:border-gray-600
+                    shadow-[6px_6px_0px_rgba(0,0,0,1)]
+                    dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
+                    p-8
+                    pointer-events-auto
+                    ${reduceMotion ? '' : 'animate-fade-in-up'}
+                    ${highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-gray-800'}
+                  `}
+                >
+                  <div className="text-center mb-6">
+                    <h2 className="text-2xl font-black text-text-primary mb-2">Ready to solve?</h2>
+                    <p className="text-sm text-text-secondary">Click Start to begin the timer</p>
+                  </div>
+
+                  <button
+                    onClick={handleStartClick}
+                    className={`
+                      w-full px-12 py-4
+                      rounded-[20px]
+                      border-[3px] border-black dark:border-gray-600
+                      shadow-[4px_4px_0px_rgba(0,0,0,1)]
+                      dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                      font-black text-lg
+                      tracking-wider
+                      transition-all
+                      ${
+                        highContrast
+                          ? 'bg-hc-primary text-white'
+                          : 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
+                      }
+                      ${
+                        !reduceMotion &&
+                        `hover:translate-x-[2px] hover:translate-y-[2px]
+                        hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
+                        active:translate-x-[4px] active:translate-y-[4px]
+                        active:shadow-none`
+                      }
+                    `}
+                  >
+                    Start
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Keyboard - outside the card */}
-        <div className="safe-area-bottom pb-4">
+        {/* Keyboard - outside the card, BLURRED when not started */}
+        <div
+          className={`safe-area-bottom pb-4 ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+        >
           <OnScreenKeyboard
             onKeyPress={handleKeyPress}
-            disabled={false}
+            disabled={!gameStarted}
             checkButtonColor="#ffce00"
             actionKeyType="tab"
           />
