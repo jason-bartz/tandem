@@ -7,7 +7,6 @@ import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import useMiniGame from '@/hooks/useMiniGame';
-import MiniStartScreen from '@/components/mini/MiniStartScreen';
 import MiniGameScreen from '@/components/mini/MiniGameScreen';
 import MiniCompleteScreen from '@/components/mini/MiniCompleteScreen';
 import MiniAdmireScreen from '@/components/mini/MiniAdmireScreen';
@@ -256,9 +255,9 @@ export default function DailyMiniPage() {
       return null;
 
     case MINI_GAME_STATES.START:
-      return <MiniStartScreen puzzle={game.puzzle} onStart={game.startGame} />;
-
     case MINI_GAME_STATES.PLAYING:
+      // Both START and PLAYING use MiniGameScreen
+      // START state shows blurred overlay with "Ready to solve?" button
       return (
         <MiniGameScreen
           puzzle={game.puzzle}
@@ -291,6 +290,8 @@ export default function DailyMiniPage() {
           revealWord={game.revealWord}
           revealPuzzle={game.revealPuzzle}
           toggleAutoCheck={game.toggleAutoCheck}
+          gameStarted={game.hasStarted}
+          onStart={game.startGame}
         />
       );
 
