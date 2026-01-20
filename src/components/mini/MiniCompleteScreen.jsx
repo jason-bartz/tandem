@@ -326,22 +326,23 @@ export default function MiniCompleteScreen({
           {!user && (
             <div className="mt-8 pt-6 border-t-[2px] border-gray-200 dark:border-gray-700">
               <p className="text-sm text-text-secondary mb-3">
-                Create an account to join the leaderboard and track your stats across devices
+                Your progress will be lost! Create a free account to join the leaderboard, track
+                your stats, and sync across devices!
               </p>
               <button
                 onClick={() => router.push('/?signup=true')}
                 className="
-                  px-6 py-2
+                  px-6 py-2.5
                   rounded-[12px]
-                  border-[2px] border-black dark:border-gray-600
-                  shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                  dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]
+                  border-[3px] border-black dark:border-gray-600
+                  shadow-[3px_3px_0px_rgba(0,0,0,1)]
+                  dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
                   bg-accent-blue dark:bg-accent-blue
                   text-white
                   font-bold text-sm
                   hover:translate-x-[1px] hover:translate-y-[1px]
-                  hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]
-                  active:translate-x-[2px] active:translate-y-[2px]
+                  hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
+                  active:translate-x-[3px] active:translate-y-[3px]
                   active:shadow-none
                   transition-all
                 "
