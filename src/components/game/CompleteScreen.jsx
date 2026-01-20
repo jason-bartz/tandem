@@ -392,19 +392,24 @@ export default function CompleteScreen({
 
             {/* Account CTA for non-logged-in users */}
             {!user && !authLoading && (
-              <div className="mt-4 text-center">
-                <p className="text-sm text-gray-600 dark:text-gray-400">
-                  <button
-                    onClick={() => {
-                      lightTap();
-                      setShowAuthModal(true);
-                    }}
-                    className="font-semibold text-accent-blue hover:text-accent-blue/80 dark:text-accent-blue dark:hover:text-accent-blue/80 transition-colors underline decoration-1 underline-offset-2"
-                  >
-                    Create a free account
-                  </button>{' '}
-                  to join the leaderboard
+              <div className="mt-6 pt-6 border-t-[2px] border-gray-200 dark:border-gray-700">
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                  Your progress will be lost! Create a free account to join the leaderboard, track
+                  your stats, and sync across devices!
                 </p>
+                <button
+                  onClick={() => {
+                    lightTap();
+                    setShowAuthModal(true);
+                  }}
+                  className={`px-6 py-2.5 rounded-2xl font-bold text-sm transition-all border-[3px] ${
+                    highContrast
+                      ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  }`}
+                >
+                  Create Free Account
+                </button>
               </div>
             )}
           </div>

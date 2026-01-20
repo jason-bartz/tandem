@@ -23,6 +23,8 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
+import AuthModal from '@/components/auth/AuthModal';
+import { useAuth } from '@/contexts/AuthContext';
 
 // Long press duration in milliseconds
 const LONG_PRESS_DURATION = 650;
@@ -237,6 +239,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const { lightTap } = useHaptics();
   const { reduceMotion, highContrast } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
+  const { user } = useAuth();
 
   // Sidebar and unified modal states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -244,6 +247,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
   const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
@@ -908,6 +912,27 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               </button>
             </div>
 
+            {/* Account CTA for non-logged-in users */}
+            {!user && (
+              <div
+                className={`mt-4 pt-4 border-t-2 ${highContrast ? 'border-hc-border' : 'border-white/20'}`}
+              >
+                <p className={`text-sm mb-3 ${highContrast ? 'text-hc-text/80' : 'text-white/80'}`}>
+                  Your progress will be lost! Create a free account to join the leaderboard, track
+                  your stats, and sync across devices!
+                </p>
+                <button
+                  onClick={() => {
+                    lightTap();
+                    setShowAuthModal(true);
+                  }}
+                  className={`px-6 py-2.5 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-sm ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-white border-black'}`}
+                >
+                  Create Free Account
+                </button>
+              </div>
+            )}
+
             {/* Bottom Marquee Lights */}
             <div className="absolute bottom-0 left-0 right-0 flex justify-around py-2">
               {[...Array(8)].map((_, i) => (
@@ -952,6 +977,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           defaultTab="reel"
         />
         <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+        <AuthModal
+          isOpen={showAuthModal}
+          onClose={() => setShowAuthModal(false)}
+          initialMode="signup"
+          onSuccess={() => setShowAuthModal(false)}
+        />
       </div>
     );
   }
