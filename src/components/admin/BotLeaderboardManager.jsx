@@ -318,9 +318,9 @@ export default function BotLeaderboardManager() {
           {/* Info */}
           <div className="bg-accent-yellow/20 border-[2px] border-accent-yellow rounded-lg p-4">
             <p className="text-sm text-text-primary">
-              <strong>Note:</strong> Bot entries are automatically generated every 2 hours when
-              enabled. Use &quot;Generate Now&quot; to manually trigger generation for today&apos;s
-              puzzles.
+              <strong>Note:</strong> Bot entries are automatically generated once daily at 2 AM UTC
+              when enabled. Use &quot;Generate Now&quot; to manually trigger generation for
+              today&apos;s puzzles.
             </p>
           </div>
         </div>

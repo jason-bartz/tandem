@@ -1,0 +1,26 @@
+{
+  "version": 4,
+  "routes": {
+    "/App/public/sitemap.xml": {
+      "initialHeaders": {
+        "cache-control": "public, immutable, no-transform, max-age=31536000",
+        "content-type": "application/xml",
+        "x-next-cache-tags": "_N_T_/layout,_N_T_/App/layout,_N_T_/App/public/layout,_N_T_/App/public/sitemap.xml/layout,_N_T_/App/public/sitemap.xml/route,_N_T_/App/public/sitemap.xml"
+      },
+      "experimentalBypassFor": [
+        { "type": "header", "key": "Next-Action" },
+        { "type": "header", "key": "content-type", "value": "multipart/form-data;.*" }
+      ],
+      "initialRevalidateSeconds": false,
+      "srcRoute": "/App/public/sitemap.xml",
+      "dataRoute": null
+    }
+  },
+  "dynamicRoutes": {},
+  "notFoundRoutes": [],
+  "preview": {
+    "previewModeId": "b141b383bb1094580b38da73717a140f",
+    "previewModeSigningKey": "879cdb20883cc9a42e1e59c4220e88e61887526bfb2f5c04a0842e29b0f216fb",
+    "previewModeEncryptionKey": "63ce2d8cacfcc601bee9087534cdbf3d1aa3bdbcaa523942d90d0a71a6537d3f"
+  }
+}

@@ -53,14 +53,14 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 
 ### 3. Deploy to Vercel
 
-The `vercel.json` configuration is already updated to run the cron job every 2 hours:
+The `vercel.json` configuration is already updated to run the cron job once daily at 2 AM UTC:
 
 ```json
 {
   "crons": [
     {
       "path": "/api/cron/bot-leaderboard",
-      "schedule": "0 */2 * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }
@@ -145,7 +145,7 @@ Authorization: Bearer <admin_token>
 
 ### Cron Endpoint
 
-The automated cron job runs every 2 hours:
+The automated cron job runs once daily at 2 AM UTC:
 
 ```bash
 GET /api/cron/bot-leaderboard
