@@ -102,8 +102,6 @@ export default function DailyMiniPage() {
             text-center
           "
         >
-          <div className="text-6xl mb-4">😞</div>
-          <h1 className="text-2xl font-black text-text-primary mb-3">Oops!</h1>
           <p className="text-text-secondary mb-6">{game.error}</p>
           <button
             onClick={() => router.push('/')}
