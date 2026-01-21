@@ -95,10 +95,27 @@ function getFormattedDate() {
  * Features:
  * - Updates greeting based on user's local time
  * - Shows current date
- * - Displays motivational message
+ * - Displays motivational message or completion status
  * - High contrast and dark mode support
+ *
+ * @param {Object} props
+ * @param {boolean} props.tandemCompleted - Whether Tandem puzzle is won
+ * @param {boolean} props.miniCompleted - Whether Mini puzzle is won
+ * @param {boolean} props.reelCompleted - Whether Reel Connections is won
+ * @param {boolean} props.tandemPlayed - Whether Tandem puzzle has been played
+ * @param {boolean} props.miniPlayed - Whether Mini puzzle has been played
+ * @param {boolean} props.reelPlayed - Whether Reel Connections has been played
+ * @param {boolean} props.isLoading - Whether game completion data is still loading
  */
-export default function Greeting() {
+export default function Greeting({
+  tandemCompleted = false,
+  miniCompleted = false,
+  reelCompleted = false,
+  tandemPlayed = false,
+  miniPlayed = false,
+  reelPlayed = false,
+  isLoading = false,
+}) {
   const { highContrast } = useTheme();
   const [greeting, setGreeting] = useState('');
   const [formattedDate, setFormattedDate] = useState('');
@@ -118,6 +135,25 @@ export default function Greeting() {
 
     return () => clearInterval(interval);
   }, []);
+
+  // Determine the status message based on completion state
+  const getStatusMessage = () => {
+    // Don't show status while loading
+    if (isLoading) {
+      return callToAction;
+    }
+
+    const allPlayed = tandemPlayed && miniPlayed && reelPlayed;
+    const allSolved = tandemCompleted && miniCompleted && reelCompleted;
+
+    if (allPlayed && allSolved) {
+      return "You solved today's puzzles! Nice work.";
+    } else if (allPlayed && !allSolved) {
+      return "You've played today's puzzles. Try the archive?";
+    }
+
+    return callToAction;
+  };
 
   // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
@@ -151,7 +187,7 @@ export default function Greeting() {
           highContrast ? 'text-hc-text opacity-80' : 'text-gray-700 dark:text-gray-300'
         }`}
       >
-        {callToAction}
+        {getStatusMessage()}
       </p>
     </div>
   );
