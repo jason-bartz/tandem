@@ -17,8 +17,8 @@
 
   /* Background colors - solid, no gradients */
   --bg-primary: #ffce00;
-  --bg-surface: #F4F5F9;
-  --bg-card: #F4F5F9;
+  --bg-surface: #f4f5f9;
+  --bg-card: #f4f5f9;
 
   /* Text colors */
   --text-primary: #2c2c2c;
@@ -1391,6 +1391,87 @@ body {
   animation: marqueeLights 1.5s ease-in-out infinite;
 }
 
+/* ============================================
+   REEL CONNECTIONS FLOATING STATS BAR
+   iOS-style floating header with gestures
+   ============================================ */
+
+/* Slide down animation - stats bar enters from top */
+@keyframes statsBarSlideDown {
+  from {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-stats-bar-slide-down {
+  animation: statsBarSlideDown 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Smooth easeOutQuad curve */
+}
+
+/* Slide up animation - stats bar hides to top */
+@keyframes statsBarSlideUp {
+  from {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateY(-100%);
+    opacity: 0;
+  }
+}
+
+.animate-stats-bar-slide-up {
+  animation: statsBarSlideUp 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  /* Smooth easeOutQuad curve */
+}
+
+/* Spring bounce for gesture release */
+@keyframes statsBarSpringBounce {
+  0% {
+    transform: translateY(var(--stats-bar-offset, 0));
+  }
+  40% {
+    transform: translateY(calc(var(--stats-bar-offset, 0) * -0.1));
+  }
+  70% {
+    transform: translateY(calc(var(--stats-bar-offset, 0) * 0.05));
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.animate-stats-bar-spring {
+  animation: statsBarSpringBounce 350ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Elastic bounce */
+}
+
+/* Backdrop blur support */
+.stats-bar-backdrop {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Reduce motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  .animate-stats-bar-slide-down,
+  .animate-stats-bar-slide-up,
+  .animate-stats-bar-spring {
+    animation-duration: 0.01ms !important;
+  }
+}
+
+.reduce-motion .animate-stats-bar-slide-down,
+.reduce-motion .animate-stats-bar-slide-up,
+.reduce-motion .animate-stats-bar-spring {
+  animation-duration: 0.01ms !important;
+}
+
 .film-grain {
   position: relative;
 }
@@ -1555,7 +1636,7 @@ body {
   /* Purple - 7.02:1 on white, more attractive than brown */
   --hc-warning-text: #ffffff;
   /* White text on dark purple backgrounds */
-  --hc-background: #F4F5F9;
+  --hc-background: #f4f5f9;
   --hc-surface: #f5f5f5;
   --hc-text: #000000;
   --hc-border: #000000;

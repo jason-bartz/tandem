@@ -25,6 +25,9 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import AuthModal from '@/components/auth/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
+import FloatingStatsBar from './FloatingStatsBar';
+import FixedButtonBar from './FixedButtonBar';
+import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 
 // Long press duration in milliseconds
 const LONG_PRESS_DURATION = 650;
@@ -100,7 +103,15 @@ const DIFFICULTY_NAMES = {
   easiest: 'Matinee',
   easy: 'Feature',
   medium: 'Premiere',
-  hardest: 'Blockbuster',
+  hardest: 'Gala',
+};
+
+// Difficulty tier labels
+const DIFFICULTY_TIERS = {
+  easiest: 'Easiest',
+  easy: 'Easy',
+  medium: 'Medium',
+  hardest: 'Hardest',
 };
 
 // HintModal component for showing category hints
@@ -129,6 +140,7 @@ const HintModal = ({
   if (!isOpen || !hintCategory) return null;
 
   const difficultyName = DIFFICULTY_NAMES[hintCategory.difficulty] || 'Category';
+  const difficultyTier = DIFFICULTY_TIERS[hintCategory.difficulty] || '';
   const groupColor = highContrast
     ? DIFFICULTY_COLORS_HC[hintCategory.difficulty]
     : DIFFICULTY_COLORS[hintCategory.difficulty];
@@ -176,7 +188,7 @@ const HintModal = ({
             <p
               className={`text-sm font-medium mb-3 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
             >
-              Category Clue ({difficultyName}):
+              Category Difficulty: {difficultyName} ({difficultyTier})
             </p>
             <div
               className={`${groupColor} rounded-xl px-4 py-3 border-[3px] border-black shadow-[3px_3px_0px_rgba(0,0,0,0.5)]`}
@@ -256,6 +268,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const [hintUsed, setHintUsed] = useState(false);
   const [showHintModal, setShowHintModal] = useState(false);
 
+  // Completion flow state
+  const [showingCompletedPuzzle, setShowingCompletedPuzzle] = useState(false);
+  const [showCompleteScreen, setShowCompleteScreen] = useState(false);
+
   // Long press refs
   const longPressTimerRef = useRef(null);
   const longPressTriggeredRef = useRef(false);
@@ -304,11 +320,125 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     getCompletedGroupsSorted,
   } = useReelConnectionsGame();
 
+  // Floating stats bar state
+  const {
+    scrollContainerRef,
+    showStatsBar,
+    hideStatsBar,
+    showNavRow,
+    isCompactVisible,
+    isCompactHidden,
+    isFullHeader,
+  } = useFloatingStatsBar({
+    gameStarted,
+    gameWon,
+    gameOver,
+  });
+
+  // Elastic pull-down state
+  const [pullOffset, setPullOffset] = useState(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const pullStartRef = useRef(null);
+  const pullStartScrollRef = useRef(0);
+
+  // Rubber-band resistance function (iOS-style)
+  const rubberBand = useCallback((distance, dimension = 300) => {
+    const constant = 0.55;
+    return (distance * dimension * constant) / (dimension + constant * distance);
+  }, []);
+
+  // Handle elastic pull gesture
+  const handlePullStart = useCallback(
+    (e) => {
+      const container = scrollContainerRef.current;
+      if (!container || !gameStarted || gameWon || gameOver) return;
+
+      // Only allow pulling when at the top AND compact bar is visible
+      if (container.scrollTop === 0 && isCompactVisible) {
+        pullStartRef.current = {
+          y: e.touches[0].clientY,
+          time: Date.now(),
+        };
+        pullStartScrollRef.current = container.scrollTop;
+        setIsPulling(true);
+      }
+    },
+    [gameStarted, gameWon, gameOver, isCompactVisible, scrollContainerRef]
+  );
+
+  const handlePullMove = useCallback(
+    (e) => {
+      if (!pullStartRef.current || !isPulling) return;
+
+      const container = scrollContainerRef.current;
+      if (!container) return;
+
+      // Only allow pulling down (positive delta)
+      const deltaY = e.touches[0].clientY - pullStartRef.current.y;
+
+      if (deltaY > 0 && container.scrollTop === 0) {
+        // Apply rubber-band resistance
+        const resistedPull = rubberBand(deltaY);
+        setPullOffset(resistedPull);
+
+        // Prevent default scrolling
+        e.preventDefault();
+      }
+    },
+    [isPulling, rubberBand, scrollContainerRef]
+  );
+
+  const handlePullEnd = useCallback(() => {
+    if (!pullStartRef.current || !isPulling) return;
+
+    const threshold = 60; // Trigger threshold
+
+    if (pullOffset > threshold) {
+      // Trigger full header reveal
+      lightTap();
+      const container = scrollContainerRef.current;
+      if (container) {
+        container.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    // Reset pull state
+    setPullOffset(0);
+    setIsPulling(false);
+    pullStartRef.current = null;
+  }, [isPulling, pullOffset, lightTap, scrollContainerRef]);
+
   // Reset hint state when puzzle changes
   useEffect(() => {
     setHintUsed(false);
     setShowHintModal(false);
   }, [puzzle?.date, archiveDate]);
+
+  // Handle completion flow - show completed puzzle view after last group locks in
+  useEffect(() => {
+    if (gameWon) {
+      // Immediately show completed puzzle view (no delay)
+      setShowingCompletedPuzzle(true);
+      setShowCompleteScreen(false);
+
+      // Play clapping sound
+      const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
+      clappingAudio.volume = 0.26;
+      clappingAudio.play().catch(() => {});
+
+      // After 2 seconds, transition to celebration screen
+      const timer = setTimeout(() => {
+        setShowingCompletedPuzzle(false);
+        setShowCompleteScreen(true);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    } else if (!gameWon) {
+      // Reset states when game resets
+      setShowingCompletedPuzzle(false);
+      setShowCompleteScreen(false);
+    }
+  }, [gameWon]);
 
   // Track if we've already loaded an archive puzzle from URL
   const archiveLoadedRef = useRef(false);
@@ -336,15 +466,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       handleStartGame();
       setClapperClosed(false); // Reset for next time
 
-      // Auto-scroll to game area on mobile after a short delay for state to update
-      setTimeout(() => {
-        if (gameAreaRef.current) {
-          gameAreaRef.current.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          });
-        }
-      }, 100);
+      // Note: Auto-scroll disabled - compact bar will appear in place
+      // The top padding on main content prevents grid cutoff
     }, 400);
   }, [handleStartGame]);
 
@@ -534,7 +657,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   }
 
   // Completed puzzle view - shows all groups in difficulty order
-  if ((gameWon || gameOver) && !isRevealing && viewingCompletedPuzzle) {
+  // Show if: user manually viewing (!isRevealing required) OR auto-showing after win (isRevealing can be true)
+  if ((viewingCompletedPuzzle && !isRevealing) || showingCompletedPuzzle) {
     const completedGroups = getCompletedGroupsSorted();
     const dateStr = archiveDate
       ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
@@ -739,7 +863,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   }
 
   // Game complete screen
-  if ((gameWon || gameOver) && !isRevealing) {
+  if (
+    (gameWon && showCompleteScreen) ||
+    (gameOver && !isRevealing && !viewingCompletedPuzzle && !showingCompletedPuzzle)
+  ) {
     const timeStr = endTime && startTime ? formatTime(endTime - startTime) : '0:00';
     const dateStr = archiveDate
       ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US')
@@ -1016,188 +1143,244 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   // Main game screen
   return (
     <div
+      ref={scrollContainerRef}
       className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
+      onTouchStart={handlePullStart}
+      onTouchMove={handlePullMove}
+      onTouchEnd={handlePullEnd}
+      onTouchCancel={handlePullEnd}
     >
-      <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
-        <div className="w-full max-w-md sm:max-w-lg pb-8">
-          {/* Header with Back Button and Hamburger Menu */}
-          <div className="flex items-center justify-between px-2 mb-3">
-            <button
-              onClick={() => {
-                lightTap();
-                router.push('/');
-              }}
-              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
-              aria-label="Back to home"
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-            >
-              <ChevronLeft className="w-8 h-8" />
-            </button>
-            <button
-              onClick={() => {
-                lightTap();
-                setIsSidebarOpen(true);
-              }}
-              className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
-              aria-label="Open menu"
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-            >
-              <Menu className="w-7 h-7" />
-            </button>
-          </div>
+      {/* Header with Back Button and Hamburger Menu - Conditionally visible */}
+      <div
+        className={`flex items-center justify-between px-4 pt-safe pt-4 pb-2 fixed top-0 left-0 right-0 z-30 ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e]/90 to-transparent'} ${!showNavRow ? 'pointer-events-none' : ''}`}
+        style={{
+          transform: showNavRow
+            ? `translateY(${pullOffset}px)`
+            : `translateY(calc(-100% + ${pullOffset}px))`,
+          opacity: showNavRow ? 1 : 0,
+          transition:
+            isPulling || reduceMotion
+              ? 'none'
+              : 'transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 300ms ease',
+        }}
+      >
+        <button
+          onClick={() => {
+            lightTap();
+            router.push('/');
+          }}
+          className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
+          aria-label="Back to home"
+          style={{
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'manipulation',
+          }}
+        >
+          <ChevronLeft className="w-8 h-8" />
+        </button>
+        <button
+          onClick={() => {
+            lightTap();
+            setIsSidebarOpen(true);
+          }}
+          className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
+          aria-label="Open menu"
+          style={{
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'manipulation',
+          }}
+        >
+          <Menu className="w-7 h-7" />
+        </button>
+      </div>
 
-          {/* Cinematic Marquee Header */}
-          <div
-            className={`relative rounded-2xl border-[3px] sm:border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
-          >
-            {/* Top Marquee Lights */}
-            <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
-              {[...Array(12)].map((_, i) => (
-                <Image
-                  key={`top-${i}`}
-                  src="/icons/ui/marquee-light.webp"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={reduceMotion ? '' : 'marquee-lights'}
-                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
-                />
-              ))}
-            </div>
+      {/* Floating Stats Bar - Below nav row */}
+      {gameStarted && !gameWon && !gameOver && (
+        <FloatingStatsBar
+          mistakes={mistakes}
+          currentTime={currentTime}
+          archiveDate={archiveDate}
+          puzzleDate={puzzle?.date}
+          isVisible={isCompactVisible}
+          isHidden={isCompactHidden}
+          onShow={showStatsBar}
+          onHide={hideStatsBar}
+          showNavRow={showNavRow}
+          pullOffset={pullOffset}
+          isPulling={isPulling}
+          reduceMotion={reduceMotion}
+          highContrast={highContrast}
+        />
+      )}
 
-            {/* Header Content */}
-            <div className="mt-5 sm:mt-6 mb-3 sm:mb-4 text-center">
-              <div className="flex items-center justify-center gap-2 mb-0.5">
-                <Image
-                  src="/icons/ui/movie.png"
-                  alt="Movie icon"
-                  width={20}
-                  height={20}
-                  className="flex-shrink-0 sm:w-6 sm:h-6"
-                />
-                <h1
-                  className={`${titleFont} text-xl sm:text-2xl tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
-                >
-                  Reel Connections
-                </h1>
-              </div>
-              <p
-                className={`text-xs sm:text-sm font-medium ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
-              >
-                Group movies that share a common theme
-              </p>
-            </div>
-
-            {/* Stats Row */}
+      <div
+        className="flex items-start justify-center p-2 sm:p-4"
+        style={{
+          transform: `translateY(${pullOffset}px)`,
+          transition: isPulling ? 'none' : 'transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1)',
+        }}
+      >
+        <div
+          className={`w-full max-w-md sm:max-w-lg transition-[padding] duration-300 ease-out`}
+          style={{
+            paddingTop: isCompactVisible
+              ? showNavRow
+                ? 'calc(64px + 44px + env(safe-area-inset-top, 0px) + 24px)' // Nav + compact bar
+                : 'calc(44px + env(safe-area-inset-top, 0px) + 40px)' // Just compact bar - more space
+              : showNavRow
+                ? 'calc(64px + env(safe-area-inset-top, 0px) + 24px)' // Just nav
+                : 'calc(env(safe-area-inset-top, 0px) + 24px)', // Neither visible
+            paddingBottom: 'calc(140px + env(safe-area-inset-bottom, 0px))',
+          }}
+        >
+          {/* Cinematic Marquee Header - Show only when at top or game not started */}
+          {isFullHeader && (
             <div
-              className={`rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative ${highContrast ? 'bg-hc-background' : 'bg-black/20'}`}
+              className={`relative rounded-2xl border-[3px] sm:border-[4px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 mb-4 sm:mb-6 overflow-hidden ${highContrast ? 'bg-hc-surface border-hc-border' : 'cinema-gradient border-[#ffce00]'}`}
             >
-              <div className="flex items-center justify-between">
-                {/* Mistakes */}
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex gap-1 sm:gap-1.5">
-                    {[0, 1, 2, 3].map((i) => {
-                      const isMistake = i < mistakes;
-                      return (
-                        <div
-                          key={i}
-                          className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center transition-all"
-                        >
-                          {isMistake ? (
-                            <Image
-                              src="/icons/ui/wrong.png"
-                              alt="Mistake"
-                              width={20}
-                              height={20}
-                              className="w-full h-full object-contain drop-shadow-md"
-                            />
-                          ) : (
-                            <Image
-                              src="/icons/ui/popcorn.png"
-                              alt="Remaining"
-                              width={20}
-                              height={20}
-                              className="w-full h-full object-contain drop-shadow-md"
-                            />
-                          )}
-                        </div>
-                      );
-                    })}
+              {/* Top Marquee Lights */}
+              <div className="absolute top-0 left-0 right-0 flex justify-around py-2">
+                {[...Array(12)].map((_, i) => (
+                  <Image
+                    key={`top-${i}`}
+                    src="/icons/ui/marquee-light.webp"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1}s` }}
+                  />
+                ))}
+              </div>
+
+              {/* Header Content */}
+              <div className="mt-5 sm:mt-6 mb-3 sm:mb-4 text-center">
+                <div className="flex items-center justify-center gap-2 mb-0.5">
+                  <Image
+                    src="/icons/ui/movie.png"
+                    alt="Movie icon"
+                    width={20}
+                    height={20}
+                    className="flex-shrink-0 sm:w-6 sm:h-6"
+                  />
+                  <h1
+                    className={`${titleFont} text-xl sm:text-2xl tracking-tight whitespace-nowrap drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                  >
+                    Reel Connections
+                  </h1>
+                </div>
+                <p
+                  className={`text-xs sm:text-sm font-medium ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                >
+                  Group movies that share a common theme
+                </p>
+              </div>
+
+              {/* Stats Row */}
+              <div
+                className={`rounded-xl sm:rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3 mb-4 sm:mb-5 mx-1 sm:mx-2 relative ${highContrast ? 'bg-hc-background' : 'bg-black/20'}`}
+              >
+                <div className="flex items-center justify-between">
+                  {/* Mistakes */}
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex gap-1 sm:gap-1.5">
+                      {[0, 1, 2, 3].map((i) => {
+                        const isMistake = i < mistakes;
+                        return (
+                          <div
+                            key={i}
+                            className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center transition-all"
+                          >
+                            {isMistake ? (
+                              <Image
+                                src="/icons/ui/wrong.png"
+                                alt="Mistake"
+                                width={20}
+                                height={20}
+                                className="w-full h-full object-contain drop-shadow-md"
+                              />
+                            ) : (
+                              <Image
+                                src="/icons/ui/popcorn.png"
+                                alt="Remaining"
+                                width={20}
+                                height={20}
+                                className="w-full h-full object-contain drop-shadow-md"
+                              />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                    <p
+                      className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                    >
+                      Mistakes Left
+                    </p>
                   </div>
-                  <p
-                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
-                  >
-                    Mistakes Left
-                  </p>
-                </div>
 
-                {/* Timer - Center */}
-                <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
-                  <p
-                    className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
-                  >
-                    {formatTime(currentTime)}
-                  </p>
-                  <p
-                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
-                  >
-                    Time
-                  </p>
-                </div>
+                  {/* Timer - Center */}
+                  <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col items-center gap-1">
+                    <p
+                      className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                    >
+                      {formatTime(currentTime)}
+                    </p>
+                    <p
+                      className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                    >
+                      Time
+                    </p>
+                  </div>
 
-                {/* Date - Right */}
-                <div className="flex flex-col items-center gap-1">
-                  <p
-                    className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
-                  >
-                    {archiveDate
-                      ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })
-                      : puzzle?.date
-                        ? new Date(puzzle.date + 'T00:00:00').toLocaleDateString('en-US', {
+                  {/* Date - Right */}
+                  <div className="flex flex-col items-center gap-1">
+                    <p
+                      className={`text-lg sm:text-xl font-bold tabular-nums drop-shadow-lg whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                    >
+                      {archiveDate
+                        ? new Date(archiveDate + 'T00:00:00').toLocaleDateString('en-US', {
                             month: 'short',
                             day: 'numeric',
                             year: 'numeric',
                           })
-                        : new Date().toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                          })}
-                  </p>
-                  <p
-                    className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
-                  >
-                    Date
-                  </p>
+                        : puzzle?.date
+                          ? new Date(puzzle.date + 'T00:00:00').toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })
+                          : new Date().toLocaleDateString('en-US', {
+                              month: 'short',
+                              day: 'numeric',
+                              year: 'numeric',
+                            })}
+                    </p>
+                    <p
+                      className={`text-[10px] sm:text-xs font-bold ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                    >
+                      Date
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Bottom Marquee Lights */}
-            <div className="absolute bottom-0 left-0 right-0 flex justify-around py-2">
-              {[...Array(12)].map((_, i) => (
-                <Image
-                  key={`bottom-${i}`}
-                  src="/icons/ui/marquee-light.webp"
-                  alt=""
-                  width={16}
-                  height={16}
-                  className={reduceMotion ? '' : 'marquee-lights'}
-                  style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
-                />
-              ))}
+              {/* Bottom Marquee Lights */}
+              <div className="absolute bottom-0 left-0 right-0 flex justify-around py-2">
+                {[...Array(12)].map((_, i) => (
+                  <Image
+                    key={`bottom-${i}`}
+                    src="/icons/ui/marquee-light.webp"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className={reduceMotion ? '' : 'marquee-lights'}
+                    style={reduceMotion ? {} : { animationDelay: `${i * 0.1 + 0.05}s` }}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Solved Groups */}
           {solvedGroups.map((group, idx) => {
@@ -1258,7 +1441,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           {/* Duplicate Guess Warning Toast */}
           {showDuplicateWarning && (
             <div
-              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg ${reduceMotion ? '' : 'animate-one-away'}`}
+              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg text-center whitespace-nowrap ${reduceMotion ? '' : 'animate-one-away'}`}
               role="status"
               aria-live="polite"
             >
@@ -1268,7 +1451,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
           {/* Movie Grid with Ready Modal */}
           {!gameWon && !gameOver && (
-            <div className="relative" ref={gameAreaRef}>
+            <div className="relative pb-[140px] sm:pb-[160px]" ref={gameAreaRef}>
               {/* Movie Grid */}
               <div
                 className={`grid grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6 ${shakeGrid && !reduceMotion ? 'animate-error-shake' : ''} ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
@@ -1372,12 +1555,15 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
               {/* Ready to Start Modal Overlay */}
               {!gameStarted && (
-                <div className="fixed inset-0 flex items-center justify-center z-10 pointer-events-none">
+                <div
+                  className="fixed z-10 pointer-events-none"
+                  style={{ left: '50%', top: '50vh', transform: 'translate(-50%, -50%)' }}
+                >
                   <div
                     className={`rounded-xl sm:rounded-2xl border-[2px] sm:border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,0.8)] sm:shadow-[6px_6px_0px_rgba(0,0,0,0.8)] p-4 sm:p-6 text-center ${reduceMotion ? '' : 'animate-fade-in-up'} mx-4 pointer-events-auto ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-gradient-to-b from-[#1a1a2e] to-[#0f0f1e] border-[#ffce00]'}`}
                   >
                     <h3
-                      className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+                      className={`text-lg sm:text-xl font-bold mb-1 sm:mb-2 drop-shadow-lg whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
                     >
                       Ready to start?
                     </h3>
@@ -1406,12 +1592,14 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               )}
             </div>
           )}
+        </div>
+      </div>
 
-          {/* Controls */}
-          {!gameWon && !gameOver && gameStarted && (
-            <div
-              className={`flex gap-3 sm:gap-6 justify-center mb-4 sm:mb-6 items-center transition-opacity ${solvingGroup ? 'opacity-50 pointer-events-none' : ''}`}
-            >
+      {/* Controls - Fixed at bottom */}
+      {!gameWon && !gameOver && gameStarted && (
+        <FixedButtonBar highContrast={highContrast}>
+          <div className={`${solvingGroup ? 'pointer-events-none' : ''}`}>
+            <div className="flex gap-3 sm:gap-4 items-center">
               <TicketButton
                 icon="/icons/buttons/shuffle.svg"
                 label="Shuffle"
@@ -1437,9 +1625,9 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 disabled={selectedMovies.length !== REEL_CONFIG.GROUP_SIZE || !!solvingGroup}
               />
             </div>
-          )}
-        </div>
-      </div>
+          </div>
+        </FixedButtonBar>
+      )}
 
       {/* Sidebar Menu */}
       <SidebarMenu
