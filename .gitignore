@@ -29,6 +29,12 @@ yarn-error.log*
 # local env files
 .env*.local
 
+# test/debug scripts
+test-streak-insert.js
+check-bot-streaks.js
+manual-generate-bots.js
+delete-todays-bots.js
+
 # vercel
 .vercel
 
