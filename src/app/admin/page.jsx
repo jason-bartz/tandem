@@ -348,7 +348,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/user.png" alt="" width={20} height={20} />
+            <Image src="/icons/ui/leaderboard.png" alt="" width={20} height={20} />
             Leaderboards
           </button>
         </nav>
