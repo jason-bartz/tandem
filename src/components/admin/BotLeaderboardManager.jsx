@@ -58,6 +58,8 @@ export default function BotLeaderboardManager() {
           reel_max_score: data.config.reel_max_score,
           spread_throughout_day: data.config.spread_throughout_day,
         });
+      } else if (response.status === 401) {
+        showMessage('Authentication expired - please log in again at /admin/login', 'error');
       } else {
         showMessage('Failed to load configuration', 'error');
       }
@@ -80,6 +82,8 @@ export default function BotLeaderboardManager() {
 
       if (response.ok) {
         showMessage('Configuration saved successfully', 'success');
+      } else if (response.status === 401) {
+        showMessage('Authentication expired - please log in again at /admin/login', 'error');
       } else {
         const error = await response.json();
         showMessage(`Error: ${error.error}`, 'error');
@@ -111,6 +115,8 @@ export default function BotLeaderboardManager() {
         } else {
           showMessage(data.message || 'No entries generated', 'info');
         }
+      } else if (response.status === 401) {
+        showMessage('Authentication expired - please log in again at /admin/login', 'error');
       } else {
         const error = await response.json();
         showMessage(`Error: ${error.error}`, 'error');
