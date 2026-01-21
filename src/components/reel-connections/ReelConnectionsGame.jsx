@@ -1001,10 +1001,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         <div
           className={`rounded-2xl border-[3px] p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-[#2a2a4a] border-[#ffce00]'}`}
         >
-          <div className="text-6xl mb-4">🎬</div>
-          <h2 className={`text-2xl font-bold mb-4 ${highContrast ? 'text-hc-text' : 'text-white'}`}>
-            Oops!
-          </h2>
           <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>{error}</p>
           <button
             onClick={() => router.push('/')}
