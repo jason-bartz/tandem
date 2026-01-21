@@ -12,6 +12,10 @@ ADD COLUMN IF NOT EXISTS is_bot BOOLEAN DEFAULT FALSE NOT NULL;
 ALTER TABLE leaderboard_entries
 ADD COLUMN IF NOT EXISTS bot_username TEXT;
 
+-- Add bot_avatar_id column to store avatar for bot entries
+ALTER TABLE leaderboard_entries
+ADD COLUMN IF NOT EXISTS bot_avatar_id UUID REFERENCES avatars(id);
+
 -- Make user_id nullable to allow bot entries
 ALTER TABLE leaderboard_entries
 ALTER COLUMN user_id DROP NOT NULL;
@@ -74,8 +78,9 @@ ON leaderboard_entries(is_bot);
 DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
 DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
 DROP FUNCTION IF EXISTS insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, JSONB);
+DROP FUNCTION IF EXISTS insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, UUID, JSONB);
 
--- Update get_daily_leaderboard to include bot entries
+-- Update get_daily_leaderboard to include bot entries with avatars
 CREATE FUNCTION get_daily_leaderboard(
   p_game_type TEXT,
   p_puzzle_date DATE,
@@ -90,7 +95,7 @@ RETURNS TABLE (
   submitted_at TIMESTAMPTZ,
   metadata JSONB,
   is_bot BOOLEAN,
-  avatar_url TEXT
+  avatar_image_path TEXT
 ) AS $$
 BEGIN
   RETURN QUERY
@@ -98,15 +103,17 @@ BEGIN
     SELECT
       le.id as entry_id,
       le.user_id,
-      COALESCE(le.bot_username, u.display_name, u.username) as display_name,
+      COALESCE(le.bot_username, u.username) as display_name,
       le.score,
       RANK() OVER (ORDER BY le.score ASC) as rank,
       le.created_at as submitted_at,
       le.metadata,
       le.is_bot,
-      u.avatar_url
+      COALESCE(bot_av.image_path, user_av.image_path) as avatar_image_path
     FROM leaderboard_entries le
     LEFT JOIN users u ON le.user_id = u.id
+    LEFT JOIN avatars user_av ON u.selected_avatar_id = user_av.id
+    LEFT JOIN avatars bot_av ON le.bot_avatar_id = bot_av.id
     WHERE le.game_type = p_game_type
       AND le.leaderboard_type = 'daily_speed'
       AND le.puzzle_date = p_puzzle_date
@@ -130,7 +137,7 @@ RETURNS TABLE (
   rank INTEGER,
   submitted_at TIMESTAMPTZ,
   metadata JSONB,
-  avatar_url TEXT
+  avatar_image_path TEXT
 ) AS $$
 BEGIN
   RETURN QUERY
@@ -138,14 +145,15 @@ BEGIN
     SELECT
       le.id as entry_id,
       le.user_id,
-      COALESCE(u.display_name, u.username) as display_name,
+      u.username as display_name,
       le.score,
       RANK() OVER (ORDER BY le.score DESC) as rank,
       le.created_at as submitted_at,
       le.metadata,
-      u.avatar_url
+      av.image_path as avatar_image_path
     FROM leaderboard_entries le
     LEFT JOIN users u ON le.user_id = u.id
+    LEFT JOIN avatars av ON u.selected_avatar_id = av.id
     WHERE le.game_type = p_game_type
       AND le.leaderboard_type = 'best_streak'
       AND le.is_bot = FALSE  -- Exclude bots from streak leaderboard
@@ -156,12 +164,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create function to insert bot leaderboard entries
+-- Create function to insert bot leaderboard entries with avatar
 CREATE FUNCTION insert_bot_leaderboard_score(
   p_game_type TEXT,
   p_puzzle_date DATE,
   p_score INTEGER,
   p_bot_username TEXT,
+  p_bot_avatar_id UUID,
   p_metadata JSONB DEFAULT '{}'::jsonb
 )
 RETURNS UUID AS $$
@@ -182,7 +191,8 @@ BEGIN
     score,
     metadata,
     is_bot,
-    bot_username
+    bot_username,
+    bot_avatar_id
   ) VALUES (
     NULL,  -- No user_id for bots
     p_game_type,
@@ -191,7 +201,8 @@ BEGIN
     p_score,
     p_metadata,
     TRUE,
-    p_bot_username
+    p_bot_username,
+    p_bot_avatar_id
   )
   RETURNING id INTO v_entry_id;
 

@@ -95,6 +95,17 @@ export async function generateBotEntries({ gameType, date, count, config }) {
   const dateStr = date.toISOString().split('T')[0];
   const entries = [];
 
+  // Fetch available avatars
+  const { data: avatars, error: avatarError } = await supabase
+    .from('avatars')
+    .select('id')
+    .limit(100);
+
+  if (avatarError || !avatars || avatars.length === 0) {
+    logger.error('[Bot Leaderboard] Error fetching avatars:', avatarError);
+    throw new Error('Could not fetch avatars for bot entries');
+  }
+
   // Generate unique usernames
   const usernames = new Set();
   while (usernames.size < count) {
@@ -107,12 +118,15 @@ export async function generateBotEntries({ gameType, date, count, config }) {
     const score = generateRealisticScore(gameType, config);
     const username = usernameArray[i];
     const submittedAt = generateSubmissionTime(date, config.spread_throughout_day);
+    // Assign random avatar
+    const avatarId = avatars[Math.floor(Math.random() * avatars.length)].id;
 
     entries.push({
       gameType,
       dateStr,
       score,
       username,
+      avatarId,
       submittedAt,
     });
   }
@@ -136,6 +150,7 @@ export async function generateBotEntries({ gameType, date, count, config }) {
         p_puzzle_date: entry.dateStr,
         p_score: entry.score,
         p_bot_username: entry.username,
+        p_bot_avatar_id: entry.avatarId,
         p_metadata: {
           generated_at: new Date().toISOString(),
           submitted_at: entry.submittedAt.toISOString(),
