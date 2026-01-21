@@ -97,23 +97,29 @@ export async function GET(request) {
 
     // Enrich leaderboard with avatar data
     if (leaderboard && leaderboard.length > 0) {
-      const userIds = leaderboard.map((entry) => entry.user_id);
+      // Filter out null user_ids (bot entries)
+      const userIds = leaderboard
+        .map((entry) => entry.user_id)
+        .filter((id) => id !== null && id !== undefined);
 
       // Fetch avatar data for all users in the leaderboard
       // Use service role client to bypass RLS for reading public leaderboard avatar data
       const adminClient = createServerClient();
-      const { data: usersWithAvatars, error: avatarError } = await adminClient
-        .from('users')
-        .select(
-          `
+      const { data: usersWithAvatars, error: avatarError } =
+        userIds.length > 0
+          ? await adminClient
+              .from('users')
+              .select(
+                `
           id,
           selected_avatar_id,
           avatars:selected_avatar_id (
             image_path
           )
         `
-        )
-        .in('id', userIds);
+              )
+              .in('id', userIds)
+          : { data: [], error: null };
 
       if (!avatarError && usersWithAvatars) {
         // Create a map of user_id -> avatar_image_path
@@ -127,12 +133,13 @@ export async function GET(request) {
         // Enrich leaderboard entries with avatar data
         // Note: We explicitly remove avatar_url from RPC response as it may have incorrect paths
         // and replace it with the correct avatar_image_path from the avatars table
+        // Bot entries (with null user_id) will have null avatar_image_path
         leaderboard = leaderboard.map((entry) => {
           // eslint-disable-next-line no-unused-vars
           const { avatar_url, ...entryWithoutAvatarUrl } = entry;
           return {
             ...entryWithoutAvatarUrl,
-            avatar_image_path: avatarMap[entry.user_id] || null,
+            avatar_image_path: entry.user_id ? avatarMap[entry.user_id] || null : null,
           };
         });
       }
