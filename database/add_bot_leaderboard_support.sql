@@ -12,9 +12,9 @@ ADD COLUMN IF NOT EXISTS is_bot BOOLEAN DEFAULT FALSE NOT NULL;
 ALTER TABLE leaderboard_entries
 ADD COLUMN IF NOT EXISTS bot_username TEXT;
 
--- Add bot_avatar_id column to store avatar for bot entries
+-- Add bot_avatar_id column to store avatar for bot entries (TEXT type to match avatars.id)
 ALTER TABLE leaderboard_entries
-ADD COLUMN IF NOT EXISTS bot_avatar_id UUID REFERENCES avatars(id);
+ADD COLUMN IF NOT EXISTS bot_avatar_id TEXT REFERENCES avatars(id);
 
 -- Make user_id nullable to allow bot entries
 ALTER TABLE leaderboard_entries
@@ -79,6 +79,7 @@ DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
 DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
 DROP FUNCTION IF EXISTS insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, JSONB);
 DROP FUNCTION IF EXISTS insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, UUID, JSONB);
+DROP FUNCTION IF EXISTS insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, TEXT, JSONB);
 
 -- Update get_daily_leaderboard to include bot entries with avatars
 CREATE FUNCTION get_daily_leaderboard(
@@ -170,7 +171,7 @@ CREATE FUNCTION insert_bot_leaderboard_score(
   p_puzzle_date DATE,
   p_score INTEGER,
   p_bot_username TEXT,
-  p_bot_avatar_id UUID,
+  p_bot_avatar_id TEXT,
   p_metadata JSONB DEFAULT '{}'::jsonb
 )
 RETURNS UUID AS $$
