@@ -10,6 +10,7 @@ import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
+import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
@@ -336,6 +337,20 @@ export default function AdminDashboard() {
               </span>
             )}
           </button>
+          <button
+            onClick={() => setActiveTab('leaderboards')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'leaderboards'
+                  ? 'border-accent-purple text-text-primary bg-accent-purple/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/icons/ui/user.png" alt="" width={20} height={20} />
+            Leaderboards
+          </button>
         </nav>
       </div>
 
@@ -436,6 +451,7 @@ export default function AdminDashboard() {
             }}
           />
         )}
+        {activeTab === 'leaderboards' && <BotLeaderboardManager />}
       </div>
 
       {/* Game selector modal */}

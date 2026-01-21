@@ -1,0 +1,72 @@
+import { NextResponse } from 'next/server';
+import authService from '@/services/auth.service';
+import {
+  generateDailyBotEntries,
+  generateBotEntries,
+  getBotConfig,
+} from '@/services/botLeaderboard.service';
+import logger from '@/lib/logger';
+
+/**
+ * POST /api/admin/bot-leaderboard/generate
+ * Manually trigger bot entry generation
+ *
+ * Body: {
+ *   date?: string (YYYY-MM-DD, defaults to today),
+ *   gameType?: string (tandem|cryptic|mini|reel, optional - if not provided, generates for all),
+ *   count?: number (optional - overrides config)
+ * }
+ */
+export async function POST(request) {
+  try {
+    // Verify admin authentication
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authService.verifyAdminToken(authHeader.replace('Bearer ', ''))) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { date: dateStr, gameType, count } = body;
+
+    // Parse date
+    const date = dateStr ? new Date(dateStr) : new Date();
+    if (isNaN(date.getTime())) {
+      return NextResponse.json({ error: 'Invalid date format' }, { status: 400 });
+    }
+
+    // Validate game type if provided
+    if (gameType && !['tandem', 'cryptic', 'mini', 'reel'].includes(gameType)) {
+      return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
+    }
+
+    // If no specific game type, generate for all
+    if (!gameType) {
+      const result = await generateDailyBotEntries();
+      return NextResponse.json(result);
+    }
+
+    // Generate for specific game
+    const config = await getBotConfig();
+    if (!config) {
+      return NextResponse.json({ error: 'Configuration not found' }, { status: 404 });
+    }
+
+    const entryCount = count || config.min_scores_per_day;
+    const generated = await generateBotEntries({
+      gameType,
+      date,
+      count: entryCount,
+      config,
+    });
+
+    return NextResponse.json({
+      success: true,
+      gameType,
+      date: date.toISOString().split('T')[0],
+      generated,
+    });
+  } catch (error) {
+    logger.error('[POST /api/admin/bot-leaderboard/generate] Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
