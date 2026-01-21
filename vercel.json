@@ -1,5 +1,11 @@
 {
   "framework": "nextjs",
+  "crons": [
+    {
+      "path": "/api/cron/bot-leaderboard",
+      "schedule": "0 */2 * * *"
+    }
+  ],
   "headers": [
     {
       "source": "/api/(.*)",
