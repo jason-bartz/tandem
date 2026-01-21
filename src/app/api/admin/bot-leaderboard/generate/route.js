@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import authService from '@/services/auth.service';
+import { verifyAdminToken } from '@/lib/auth';
 import {
   generateDailyBotEntries,
   generateBotEntries,
@@ -21,7 +21,7 @@ export async function POST(request) {
   try {
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authService.verifyAdminToken(authHeader.replace('Bearer ', ''))) {
+    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -67,6 +67,13 @@ export async function POST(request) {
     });
   } catch (error) {
     logger.error('[POST /api/admin/bot-leaderboard/generate] Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+      { status: 500 }
+    );
   }
 }

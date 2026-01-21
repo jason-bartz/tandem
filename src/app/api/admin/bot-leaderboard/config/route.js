@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import authService from '@/services/auth.service';
+import { verifyAdminToken } from '@/lib/auth';
 import { getBotConfig, updateBotConfig } from '@/services/botLeaderboard.service';
 import logger from '@/lib/logger';
 
@@ -11,8 +11,26 @@ export async function GET(request) {
   try {
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authService.verifyAdminToken(authHeader.replace('Bearer ', ''))) {
+    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Debug: Check environment variables
+    const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const hasSupabaseUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL;
+
+    if (!hasServiceKey || !hasSupabaseUrl) {
+      logger.error('[GET /api/admin/bot-leaderboard/config] Missing env vars:', {
+        hasServiceKey,
+        hasSupabaseUrl,
+      });
+      return NextResponse.json(
+        {
+          error: 'Server configuration error',
+          details: { hasServiceKey, hasSupabaseUrl },
+        },
+        { status: 500 }
+      );
     }
 
     const config = await getBotConfig();
@@ -24,7 +42,14 @@ export async function GET(request) {
     return NextResponse.json({ success: true, config });
   } catch (error) {
     logger.error('[GET /api/admin/bot-leaderboard/config] Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json(
+      {
+        error: 'Internal server error',
+        message: error.message,
+        stack: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      },
+      { status: 500 }
+    );
   }
 }
 
@@ -51,7 +76,7 @@ export async function PUT(request) {
   try {
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authService.verifyAdminToken(authHeader.replace('Bearer ', ''))) {
+    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
