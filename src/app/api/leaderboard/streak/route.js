@@ -76,65 +76,18 @@ export async function GET(request) {
     // Use service client for public leaderboard data
     const supabase = createServerClient();
 
-    // Call the database function to get streak leaderboard
-    const { data, error: leaderboardError } = await supabase.rpc('get_streak_leaderboard', {
-      p_game_type: gameType,
-      p_limit: limit,
-    });
-    let leaderboard = data;
+    // Call the database function to get streak leaderboard (includes avatar_image_path)
+    const { data: leaderboard, error: leaderboardError } = await supabase.rpc(
+      'get_streak_leaderboard',
+      {
+        p_game_type: gameType,
+        p_limit: limit,
+      }
+    );
 
     if (leaderboardError) {
       logger.error('[GET /api/leaderboard/streak] Error fetching leaderboard:', leaderboardError);
       return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
-    }
-
-    // Enrich leaderboard with avatar data
-    if (leaderboard && leaderboard.length > 0) {
-      // Filter out null user_ids (should not happen for streak leaderboard, but defensive)
-      const userIds = leaderboard
-        .map((entry) => entry.user_id)
-        .filter((id) => id !== null && id !== undefined);
-
-      // Fetch avatar data for all users in the leaderboard
-      // Use service role client to bypass RLS for reading public leaderboard avatar data
-      const adminClient = createServerClient();
-      const { data: usersWithAvatars, error: avatarError } =
-        userIds.length > 0
-          ? await adminClient
-              .from('users')
-              .select(
-                `
-          id,
-          selected_avatar_id,
-          avatars:selected_avatar_id (
-            image_path
-          )
-        `
-              )
-              .in('id', userIds)
-          : { data: [], error: null };
-
-      if (!avatarError && usersWithAvatars) {
-        // Create a map of user_id -> avatar_image_path
-        const avatarMap = {};
-        usersWithAvatars.forEach((user) => {
-          if (user.avatars && user.avatars.image_path) {
-            avatarMap[user.id] = user.avatars.image_path;
-          }
-        });
-
-        // Enrich leaderboard entries with avatar data
-        // Note: We explicitly remove avatar_url from RPC response as it may have incorrect paths
-        // and replace it with the correct avatar_image_path from the avatars table
-        leaderboard = leaderboard.map((entry) => {
-          // eslint-disable-next-line no-unused-vars
-          const { avatar_url, ...entryWithoutAvatarUrl } = entry;
-          return {
-            ...entryWithoutAvatarUrl,
-            avatar_image_path: avatarMap[entry.user_id] || null,
-          };
-        });
-      }
     }
 
     // Also fetch current user's rank/streak if authenticated (supports both cookie and Bearer token for iOS)
