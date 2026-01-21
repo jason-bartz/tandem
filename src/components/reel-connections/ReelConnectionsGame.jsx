@@ -283,6 +283,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     revealedGroups,
     gameStarted,
     showOneAway,
+    showDuplicateWarning,
     oneAwayMessage,
     archiveDate,
     solvingGroup,
@@ -1256,6 +1257,17 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               aria-live="polite"
             >
               {oneAwayMessage}
+            </div>
+          )}
+
+          {/* Duplicate Guess Warning Toast */}
+          {showDuplicateWarning && (
+            <div
+              className={`fixed top-1/3 left-1/2 -translate-x-1/2 z-50 bg-black/85 text-white px-6 py-3 rounded-full font-bold text-lg shadow-lg ${reduceMotion ? '' : 'animate-one-away'}`}
+              role="status"
+              aria-live="polite"
+            >
+              Already guessed!
             </div>
           )}
 
