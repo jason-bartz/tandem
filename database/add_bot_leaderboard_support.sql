@@ -12,6 +12,28 @@ ADD COLUMN IF NOT EXISTS is_bot BOOLEAN DEFAULT FALSE NOT NULL;
 ALTER TABLE leaderboard_entries
 ADD COLUMN IF NOT EXISTS bot_username TEXT;
 
+-- Make user_id nullable to allow bot entries
+ALTER TABLE leaderboard_entries
+ALTER COLUMN user_id DROP NOT NULL;
+
+-- Drop the old unique constraint that included user_id
+ALTER TABLE leaderboard_entries
+DROP CONSTRAINT IF EXISTS leaderboard_entries_user_id_game_type_leaderboard_type_puzz_key;
+
+-- Create a partial unique index that only applies to real users (not bots)
+-- This ensures real users can only have one entry per game/type/date, but bots can have many
+CREATE UNIQUE INDEX IF NOT EXISTS leaderboard_entries_user_unique_idx
+ON leaderboard_entries (user_id, game_type, leaderboard_type, puzzle_date)
+WHERE user_id IS NOT NULL;
+
+-- Add a check constraint to ensure either user_id is set OR is_bot is true (but not both)
+ALTER TABLE leaderboard_entries
+ADD CONSTRAINT IF NOT EXISTS leaderboard_entries_user_or_bot_check
+CHECK (
+  (user_id IS NOT NULL AND is_bot = FALSE) OR
+  (user_id IS NULL AND is_bot = TRUE)
+);
+
 -- Create bot_leaderboard_config table to store settings
 CREATE TABLE IF NOT EXISTS bot_leaderboard_config (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
