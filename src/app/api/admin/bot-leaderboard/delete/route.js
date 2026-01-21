@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import authService from '@/services/auth.service';
+import { verifyAdminToken } from '@/lib/auth';
 import { deleteBotEntries } from '@/services/botLeaderboard.service';
 import logger from '@/lib/logger';
 
@@ -15,7 +15,7 @@ export async function DELETE(request) {
   try {
     // Verify admin authentication
     const authHeader = request.headers.get('authorization');
-    if (!authHeader || !authService.verifyAdminToken(authHeader.replace('Bearer ', ''))) {
+    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
