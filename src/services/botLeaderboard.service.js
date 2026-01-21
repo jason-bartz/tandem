@@ -124,7 +124,14 @@ export async function generateBotEntries({ gameType, date, count, config }) {
 
   for (const entry of entries) {
     try {
-      const { error } = await supabase.rpc('insert_bot_leaderboard_score', {
+      logger.info('[Bot Leaderboard] Attempting to insert:', {
+        gameType: entry.gameType,
+        date: entry.dateStr,
+        username: entry.username,
+        score: entry.score,
+      });
+
+      const { data, error } = await supabase.rpc('insert_bot_leaderboard_score', {
         p_game_type: entry.gameType,
         p_puzzle_date: entry.dateStr,
         p_score: entry.score,
@@ -136,8 +143,16 @@ export async function generateBotEntries({ gameType, date, count, config }) {
       });
 
       if (error) {
-        logger.error('[Bot Leaderboard] Error inserting bot entry:', error);
+        logger.error('[Bot Leaderboard] Error inserting bot entry:', {
+          error,
+          entry: {
+            gameType: entry.gameType,
+            date: entry.dateStr,
+            username: entry.username,
+          },
+        });
       } else {
+        logger.info('[Bot Leaderboard] Successfully inserted entry:', data);
         successCount++;
       }
     } catch (err) {
@@ -213,6 +228,8 @@ export async function generateDailyBotEntries() {
 
       const existingCount = existing?.length || 0;
 
+      logger.info(`[Bot Leaderboard] ${game} - existing: ${existingCount}, target: ${count}`);
+
       if (existingCount >= count) {
         logger.info(`[Bot Leaderboard] Already have ${existingCount} bot entries for ${game}`);
         results[game] = { generated: 0, existing: existingCount };
@@ -221,6 +238,8 @@ export async function generateDailyBotEntries() {
 
       // Generate remaining entries
       const toGenerate = count - existingCount;
+      logger.info(`[Bot Leaderboard] Generating ${toGenerate} entries for ${game}`);
+
       const generated = await generateBotEntries({
         gameType: game,
         date: today,
@@ -228,6 +247,7 @@ export async function generateDailyBotEntries() {
         config: configs,
       });
 
+      logger.info(`[Bot Leaderboard] Generated ${generated}/${toGenerate} entries for ${game}`);
       results[game] = { generated, existing: existingCount, total: existingCount + generated };
     }
 
