@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
@@ -46,10 +46,16 @@ export default function WelcomeScreen({
   const [tandemCompleted, setTandemCompleted] = useState(false);
   const [miniCompleted, setMiniCompleted] = useState(false);
   const [reelCompleted, setReelCompleted] = useState(false);
+  const [tandemPlayed, setTandemPlayed] = useState(false);
+  const [miniPlayed, setMiniPlayed] = useState(false);
+  const [reelPlayed, setReelPlayed] = useState(false);
   const [miniLoading, setMiniLoading] = useState(true);
   const [reelLoading, setReelLoading] = useState(true);
   const [miniPuzzle, setMiniPuzzle] = useState(null);
   const [reelPuzzle, setReelPuzzle] = useState(null);
+
+  // Track if welcome sound has been played this session (persists across navigations)
+  const hasPlayedWelcomeSound = useRef(false);
 
   // Load completion status for all games
   useEffect(() => {
@@ -58,11 +64,13 @@ export default function WelcomeScreen({
         // Check Tandem completion
         if (puzzle?.date) {
           const result = await getPuzzleResult(puzzle.date);
+          setTandemPlayed(!!result);
           setTandemCompleted(result?.won || false);
         }
 
         // Check Mini completion
         const miniProgress = await loadMiniPuzzleProgress(miniPuzzleInfo.isoDate);
+        setMiniPlayed(!!miniProgress);
         setMiniCompleted(miniProgress?.completed || false);
 
         // Load Mini puzzle
@@ -78,6 +86,7 @@ export default function WelcomeScreen({
           const parsed = JSON.parse(reelStats);
           const today = getLocalDateString();
           const todayGame = parsed.gameHistory?.find((g) => g.date === today);
+          setReelPlayed(!!todayGame);
           setReelCompleted(todayGame?.won || false);
         }
 
@@ -100,9 +109,10 @@ export default function WelcomeScreen({
     loadCompletionStatus();
   }, [puzzle?.date, miniPuzzleInfo.isoDate]);
 
-  // Play welcome sound on native app
+  // Play welcome sound on native app (only on initial app open, not on navigation back)
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
+    if (Capacitor.isNativePlatform() && !hasPlayedWelcomeSound.current) {
+      hasPlayedWelcomeSound.current = true;
       const timer = setTimeout(() => {
         try {
           playStartSound();
@@ -162,7 +172,15 @@ export default function WelcomeScreen({
       >
         <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6">
           {/* Greeting */}
-          <Greeting />
+          <Greeting
+            tandemCompleted={tandemCompleted}
+            miniCompleted={miniCompleted}
+            reelCompleted={reelCompleted}
+            tandemPlayed={tandemPlayed}
+            miniPlayed={miniPlayed}
+            reelPlayed={reelPlayed}
+            isLoading={!puzzle || miniLoading || reelLoading}
+          />
 
           {/* Game Cards */}
           <div className="space-y-4">
