@@ -101,7 +101,7 @@ export default function DailyLeaderboard({ gameType }) {
         <div className="space-y-2">
           {leaderboard.map((entry, idx) => (
             <LeaderboardEntry
-              key={entry.user_id}
+              key={entry.entry_id}
               entry={entry}
               rank={idx + 1}
               isCurrentUser={user?.id === entry.user_id}

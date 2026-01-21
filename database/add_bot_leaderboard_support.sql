@@ -31,8 +31,12 @@ ON leaderboard_entries (user_id, game_type, leaderboard_type, puzzle_date)
 WHERE user_id IS NOT NULL;
 
 -- Add a check constraint to ensure either user_id is set OR is_bot is true (but not both)
+-- Drop first in case it exists
 ALTER TABLE leaderboard_entries
-ADD CONSTRAINT IF NOT EXISTS leaderboard_entries_user_or_bot_check
+DROP CONSTRAINT IF EXISTS leaderboard_entries_user_or_bot_check;
+
+ALTER TABLE leaderboard_entries
+ADD CONSTRAINT leaderboard_entries_user_or_bot_check
 CHECK (
   (user_id IS NOT NULL AND is_bot = FALSE) OR
   (user_id IS NULL AND is_bot = TRUE)
@@ -44,6 +48,11 @@ CREATE TABLE IF NOT EXISTS bot_leaderboard_config (
   enabled BOOLEAN DEFAULT FALSE NOT NULL,
   min_scores_per_day INTEGER DEFAULT 10 NOT NULL,
   max_scores_per_day INTEGER DEFAULT 30 NOT NULL,
+
+  -- Per-game entry counts
+  tandem_entries_per_day INTEGER DEFAULT 20 NOT NULL,
+  mini_entries_per_day INTEGER DEFAULT 20 NOT NULL,
+  reel_entries_per_day INTEGER DEFAULT 20 NOT NULL,
 
   -- Score ranges for each game (in seconds)
   tandem_min_score INTEGER DEFAULT 30 NOT NULL,
@@ -58,6 +67,9 @@ CREATE TABLE IF NOT EXISTS bot_leaderboard_config (
   reel_min_score INTEGER DEFAULT 90 NOT NULL,
   reel_max_score INTEGER DEFAULT 900 NOT NULL,
 
+  -- Carryover settings for creating streaks
+  carryover_bot_count INTEGER DEFAULT 5 NOT NULL,
+
   -- Timing
   spread_throughout_day BOOLEAN DEFAULT TRUE NOT NULL,
 
@@ -65,9 +77,30 @@ CREATE TABLE IF NOT EXISTS bot_leaderboard_config (
   updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
+-- Add new columns if they don't exist (for existing installations)
+ALTER TABLE bot_leaderboard_config
+ADD COLUMN IF NOT EXISTS tandem_entries_per_day INTEGER DEFAULT 20 NOT NULL;
+
+ALTER TABLE bot_leaderboard_config
+ADD COLUMN IF NOT EXISTS mini_entries_per_day INTEGER DEFAULT 20 NOT NULL;
+
+ALTER TABLE bot_leaderboard_config
+ADD COLUMN IF NOT EXISTS reel_entries_per_day INTEGER DEFAULT 20 NOT NULL;
+
+ALTER TABLE bot_leaderboard_config
+ADD COLUMN IF NOT EXISTS carryover_bot_count INTEGER DEFAULT 5 NOT NULL;
+
 -- Insert default configuration
-INSERT INTO bot_leaderboard_config (enabled, min_scores_per_day, max_scores_per_day)
-VALUES (FALSE, 10, 30)
+INSERT INTO bot_leaderboard_config (
+  enabled,
+  min_scores_per_day,
+  max_scores_per_day,
+  tandem_entries_per_day,
+  mini_entries_per_day,
+  reel_entries_per_day,
+  carryover_bot_count
+)
+VALUES (FALSE, 10, 30, 20, 20, 20, 5)
 ON CONFLICT DO NOTHING;
 
 -- Create index on is_bot for filtering
@@ -92,7 +125,7 @@ RETURNS TABLE (
   user_id UUID,
   display_name TEXT,
   score INTEGER,
-  rank INTEGER,
+  rank BIGINT,
   submitted_at TIMESTAMPTZ,
   metadata JSONB,
   is_bot BOOLEAN,
@@ -135,7 +168,7 @@ RETURNS TABLE (
   user_id UUID,
   display_name TEXT,
   score INTEGER,
-  rank INTEGER,
+  rank BIGINT,
   submitted_at TIMESTAMPTZ,
   metadata JSONB,
   avatar_image_path TEXT

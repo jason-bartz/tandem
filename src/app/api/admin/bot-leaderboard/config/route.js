@@ -59,8 +59,10 @@ export async function GET(request) {
  *
  * Body: {
  *   enabled?: boolean,
- *   min_scores_per_day?: number,
- *   max_scores_per_day?: number,
+ *   tandem_entries_per_day?: number,
+ *   mini_entries_per_day?: number,
+ *   reel_entries_per_day?: number,
+ *   carryover_bot_count?: number,
  *   tandem_min_score?: number,
  *   tandem_max_score?: number,
  *   cryptic_min_score?: number,
@@ -85,8 +87,10 @@ export async function PUT(request) {
     // Validate updates
     const allowedFields = [
       'enabled',
-      'min_scores_per_day',
-      'max_scores_per_day',
+      'tandem_entries_per_day',
+      'mini_entries_per_day',
+      'reel_entries_per_day',
+      'carryover_bot_count',
       'tandem_min_score',
       'tandem_max_score',
       'cryptic_min_score',

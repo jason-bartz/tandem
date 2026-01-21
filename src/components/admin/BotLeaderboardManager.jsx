@@ -13,8 +13,10 @@ export default function BotLeaderboardManager() {
   // Form state
   const [formData, setFormData] = useState({
     enabled: false,
-    min_scores_per_day: 10,
-    max_scores_per_day: 30,
+    tandem_entries_per_day: 20,
+    mini_entries_per_day: 20,
+    reel_entries_per_day: 20,
+    carryover_bot_count: 5,
     tandem_min_score: 30,
     tandem_max_score: 300,
     cryptic_min_score: 45,
@@ -42,8 +44,10 @@ export default function BotLeaderboardManager() {
         const data = await response.json();
         setFormData({
           enabled: data.config.enabled,
-          min_scores_per_day: data.config.min_scores_per_day,
-          max_scores_per_day: data.config.max_scores_per_day,
+          tandem_entries_per_day: data.config.tandem_entries_per_day,
+          mini_entries_per_day: data.config.mini_entries_per_day,
+          reel_entries_per_day: data.config.reel_entries_per_day,
+          carryover_bot_count: data.config.carryover_bot_count,
           tandem_min_score: data.config.tandem_min_score,
           tandem_max_score: data.config.tandem_max_score,
           cryptic_min_score: data.config.cryptic_min_score,
@@ -142,7 +146,7 @@ export default function BotLeaderboardManager() {
       <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
           <div className="flex items-center gap-3">
-            <Image src="/icons/ui/user.png" alt="" width={24} height={24} />
+            <Image src="/icons/ui/leaderboard.png" alt="" width={24} height={24} />
             <h3 className="text-lg font-bold text-text-primary">Bot Leaderboard Manager</h3>
           </div>
           <p className="text-sm text-text-secondary mt-2">
@@ -195,38 +199,21 @@ export default function BotLeaderboardManager() {
           <div className="bg-bg-card rounded-lg border-[2px] border-black dark:border-white p-4 space-y-4">
             <h4 className="font-bold text-text-primary">General Settings</h4>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Min Scores Per Day
-                </label>
-                <input
-                  type="number"
-                  value={formData.min_scores_per_day}
-                  onChange={(e) =>
-                    handleInputChange('min_scores_per_day', parseInt(e.target.value))
-                  }
-                  className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                  min="0"
-                  max="100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-text-primary mb-2">
-                  Max Scores Per Day
-                </label>
-                <input
-                  type="number"
-                  value={formData.max_scores_per_day}
-                  onChange={(e) =>
-                    handleInputChange('max_scores_per_day', parseInt(e.target.value))
-                  }
-                  className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                  min="0"
-                  max="100"
-                />
-              </div>
+            <div>
+              <label className="block text-sm font-medium text-text-primary mb-2">
+                Carryover Bots (for streaks)
+              </label>
+              <input
+                type="number"
+                value={formData.carryover_bot_count}
+                onChange={(e) => handleInputChange('carryover_bot_count', parseInt(e.target.value))}
+                className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                min="0"
+                max="50"
+              />
+              <p className="text-xs text-text-secondary mt-1">
+                Number of bot usernames to reuse from the previous day to create realistic streaks
+              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -245,7 +232,7 @@ export default function BotLeaderboardManager() {
 
           {/* Score Ranges */}
           <div className="space-y-4">
-            <h4 className="font-bold text-text-primary">Score Ranges (seconds)</h4>
+            <h4 className="font-bold text-text-primary">Per-Game Settings</h4>
 
             {[
               { name: 'Daily Tandem', key: 'tandem', icon: '/icons/ui/tandem.png' },
@@ -261,35 +248,53 @@ export default function BotLeaderboardManager() {
                   <h5 className="font-bold text-text-primary">{game.name}</h5>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-text-secondary mb-2">
-                      Min Score
+                      Entries Per Day
                     </label>
                     <input
                       type="number"
-                      value={formData[`${game.key}_min_score`]}
+                      value={formData[`${game.key}_entries_per_day`]}
                       onChange={(e) =>
-                        handleInputChange(`${game.key}_min_score`, parseInt(e.target.value))
+                        handleInputChange(`${game.key}_entries_per_day`, parseInt(e.target.value))
                       }
                       className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                      min="1"
+                      min="0"
+                      max="100"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-text-secondary mb-2">
-                      Max Score
-                    </label>
-                    <input
-                      type="number"
-                      value={formData[`${game.key}_max_score`]}
-                      onChange={(e) =>
-                        handleInputChange(`${game.key}_max_score`, parseInt(e.target.value))
-                      }
-                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                      min="1"
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Min Score (seconds)
+                      </label>
+                      <input
+                        type="number"
+                        value={formData[`${game.key}_min_score`]}
+                        onChange={(e) =>
+                          handleInputChange(`${game.key}_min_score`, parseInt(e.target.value))
+                        }
+                        className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                        min="1"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Max Score (seconds)
+                      </label>
+                      <input
+                        type="number"
+                        value={formData[`${game.key}_max_score`]}
+                        onChange={(e) =>
+                          handleInputChange(`${game.key}_max_score`, parseInt(e.target.value))
+                        }
+                        className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                        min="1"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>

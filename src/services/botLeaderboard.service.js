@@ -49,6 +49,44 @@ function generateRealisticScore(gameType, config) {
 }
 
 /**
+ * Generate realistic hints used for a game
+ * Each game has different hint limits
+ *
+ * @param {string} gameType - Game type (tandem, cryptic, mini, reel)
+ * @returns {number} Number of hints used
+ */
+function generateHintsUsed(gameType) {
+  // Mini doesn't use hints
+  if (gameType === 'mini') {
+    return 0;
+  }
+
+  // Reel Connections has only 1 hint available
+  if (gameType === 'reel') {
+    // 60% chance of no hint, 40% chance of using the hint
+    return Math.random() < 0.6 ? 0 : 1;
+  }
+
+  // Daily Tandem has maximum 2 hints (one per puzzle pair)
+  if (gameType === 'tandem') {
+    const rand = Math.random();
+    // 40% chance of 0 hints
+    // 35% chance of 1 hint
+    // 25% chance of 2 hints
+    if (rand < 0.4) return 0;
+    if (rand < 0.75) return 1;
+    return 2;
+  }
+
+  // Cryptic (if it exists) - assume similar to tandem
+  // Default: 0-2 hints
+  const rand = Math.random();
+  if (rand < 0.4) return 0;
+  if (rand < 0.75) return 1;
+  return 2;
+}
+
+/**
  * Generate a random timestamp within the day
  * If spreadThroughoutDay is true, spread evenly; otherwise cluster near puzzle release
  *
@@ -80,9 +118,16 @@ function generateSubmissionTime(date, spreadThroughoutDay = true) {
  * @param {Date} options.date - Target date
  * @param {number} options.count - Number of bot entries to generate
  * @param {object} options.config - Bot configuration
+ * @param {string[]} options.carryoverUsernames - Usernames to reuse from previous day
  * @returns {Promise<number>} Number of entries created
  */
-export async function generateBotEntries({ gameType, date, count, config }) {
+export async function generateBotEntries({
+  gameType,
+  date,
+  count,
+  config,
+  carryoverUsernames = [],
+}) {
   if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
     throw new Error('SUPABASE_SERVICE_ROLE_KEY not configured');
   }
@@ -106,18 +151,38 @@ export async function generateBotEntries({ gameType, date, count, config }) {
     throw new Error('Could not fetch avatars for bot entries');
   }
 
-  // Generate unique usernames
-  const usernames = new Set();
-  while (usernames.size < count) {
-    usernames.add(generateRandomUsername());
+  // Generate usernames: use carryover first, then generate new ones
+  const usernameArray = [];
+
+  // Add carryover usernames first (up to count)
+  const carryoverCount = Math.min(carryoverUsernames.length, count);
+  for (let i = 0; i < carryoverCount; i++) {
+    usernameArray.push(carryoverUsernames[i]);
   }
 
-  const usernameArray = Array.from(usernames);
+  // Generate additional unique usernames if needed
+  const newUsernamesToGenerate = count - carryoverCount;
+  if (newUsernamesToGenerate > 0) {
+    const newUsernames = new Set();
+    while (newUsernames.size < newUsernamesToGenerate) {
+      const username = generateRandomUsername();
+      // Make sure we don't duplicate carryover usernames
+      if (!carryoverUsernames.includes(username)) {
+        newUsernames.add(username);
+      }
+    }
+    usernameArray.push(...Array.from(newUsernames));
+  }
+
+  logger.info(
+    `[Bot Leaderboard] Using ${carryoverCount} carryover usernames and ${newUsernamesToGenerate} new usernames`
+  );
 
   for (let i = 0; i < count; i++) {
     const score = generateRealisticScore(gameType, config);
     const username = usernameArray[i];
     const submittedAt = generateSubmissionTime(date, config.spread_throughout_day);
+    const hintsUsed = generateHintsUsed(gameType);
     // Assign random avatar
     const avatarId = avatars[Math.floor(Math.random() * avatars.length)].id;
 
@@ -128,6 +193,7 @@ export async function generateBotEntries({ gameType, date, count, config }) {
       username,
       avatarId,
       submittedAt,
+      hintsUsed,
     });
   }
 
@@ -154,6 +220,7 @@ export async function generateBotEntries({ gameType, date, count, config }) {
         p_metadata: {
           generated_at: new Date().toISOString(),
           submitted_at: entry.submittedAt.toISOString(),
+          hintsUsed: entry.hintsUsed,
         },
       });
 
@@ -219,15 +286,37 @@ export async function generateDailyBotEntries() {
     const today = new Date();
     const dateStr = today.toISOString().split('T')[0];
 
-    // Random count between min and max
-    const count =
-      configs.min_scores_per_day +
-      Math.floor(Math.random() * (configs.max_scores_per_day - configs.min_scores_per_day + 1));
+    // Get yesterday's date for carryover
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
     const games = ['tandem', 'mini', 'reel'];
     const results = {};
 
+    // Fetch carryover bot usernames from yesterday (shared across all games)
+    let carryoverUsernames = [];
+    if (configs.carryover_bot_count > 0) {
+      const { data: yesterdayBots, error: carryoverError } = await supabase
+        .from('leaderboard_entries')
+        .select('bot_username')
+        .eq('puzzle_date', yesterdayStr)
+        .eq('is_bot', true)
+        .not('bot_username', 'is', null)
+        .limit(configs.carryover_bot_count);
+
+      if (!carryoverError && yesterdayBots && yesterdayBots.length > 0) {
+        carryoverUsernames = yesterdayBots.map((entry) => entry.bot_username);
+        logger.info(
+          `[Bot Leaderboard] Carrying over ${carryoverUsernames.length} bot usernames from ${yesterdayStr}`
+        );
+      }
+    }
+
     for (const game of games) {
+      // Get per-game target count
+      const targetCount = configs[`${game}_entries_per_day`] || 20;
+
       // Check if we already have bot entries for today
       const { data: existing, error: checkError } = await supabase
         .from('leaderboard_entries')
@@ -243,16 +332,16 @@ export async function generateDailyBotEntries() {
 
       const existingCount = existing?.length || 0;
 
-      logger.info(`[Bot Leaderboard] ${game} - existing: ${existingCount}, target: ${count}`);
+      logger.info(`[Bot Leaderboard] ${game} - existing: ${existingCount}, target: ${targetCount}`);
 
-      if (existingCount >= count) {
+      if (existingCount >= targetCount) {
         logger.info(`[Bot Leaderboard] Already have ${existingCount} bot entries for ${game}`);
         results[game] = { generated: 0, existing: existingCount };
         continue;
       }
 
       // Generate remaining entries
-      const toGenerate = count - existingCount;
+      const toGenerate = targetCount - existingCount;
       logger.info(`[Bot Leaderboard] Generating ${toGenerate} entries for ${game}`);
 
       const generated = await generateBotEntries({
@@ -260,6 +349,7 @@ export async function generateDailyBotEntries() {
         date: today,
         count: toGenerate,
         config: configs,
+        carryoverUsernames, // Pass carryover usernames
       });
 
       logger.info(`[Bot Leaderboard] Generated ${generated}/${toGenerate} entries for ${game}`);
