@@ -240,10 +240,10 @@ export default function GameContainerClient({ initialPuzzleData }) {
           <h2 className="text-2xl font-bold mb-4 text-gray-800 dark:text-gray-200">Oops!</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
           <button
-            onClick={game.loadPuzzle}
+            onClick={() => (window.location.href = '/')}
             className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
           >
-            Try Again
+            Go Back
           </button>
         </div>
       </div>

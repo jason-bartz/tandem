@@ -292,7 +292,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     toggleMovieSelection,
     handleSubmit,
     handleShuffle,
-    loadPuzzle,
     handleDeselect,
     handleArchiveSelect,
     handleStartGame,
@@ -1008,10 +1007,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           </h2>
           <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>{error}</p>
           <button
-            onClick={() => loadPuzzle(true)}
+            onClick={() => router.push('/')}
             className={`px-6 py-3 rounded-xl transition-colors ${highContrast ? 'bg-hc-primary text-hc-background' : 'bg-[#ffce00] text-gray-900 hover:bg-[#ffd633]'}`}
           >
-            Try Again
+            Go Back
           </button>
         </div>
       </div>
