@@ -932,3 +932,32 @@ export function extractWordsFromPuzzles(puzzles) {
 
   return Array.from(allWords);
 }
+
+/**
+ * Extract clue texts from puzzle clues object
+ * Used for providing thematic context to AI generation
+ *
+ * @param {string|object} clues - Clues JSON string or object
+ * @returns {string[]} Array of clue texts
+ */
+export function extractClueTexts(clues) {
+  try {
+    const parsed = typeof clues === 'string' ? JSON.parse(clues) : clues;
+    const texts = [];
+
+    for (const clue of parsed.across || []) {
+      if (clue.clue) {
+        texts.push(clue.clue);
+      }
+    }
+    for (const clue of parsed.down || []) {
+      if (clue.clue) {
+        texts.push(clue.clue);
+      }
+    }
+
+    return texts;
+  } catch {
+    return [];
+  }
+}

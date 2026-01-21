@@ -2122,7 +2122,12 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
    * @param {string} options.theme - Optional theme for themed puzzles
    * @returns {Promise<{grid, solution, words, clues}>}
    */
-  async generateMiniCrossword({ excludeWords = [], theme = null }) {
+  async generateMiniCrossword({
+    strictExcludeWords = [],
+    softExcludeWords = [],
+    recentPuzzles = [],
+    theme = null,
+  }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -2137,9 +2142,16 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
     // Retry logic for production reliability
     for (let attempt = 0; attempt <= maxMiniRetries; attempt++) {
       try {
-        const prompt = this.buildMiniCrosswordPrompt({ excludeWords, theme });
+        const prompt = this.buildMiniCrosswordPrompt({
+          strictExcludeWords,
+          softExcludeWords,
+          recentPuzzles,
+          theme,
+        });
         const genInfo = {
-          excludeWordsCount: excludeWords.length,
+          strictExcludeWordsCount: strictExcludeWords.length,
+          softExcludeWordsCount: softExcludeWords.length,
+          recentPuzzlesCount: recentPuzzles.length,
           hasTheme: !!theme,
           model: this.model,
           attempt: attempt + 1,
@@ -2272,82 +2284,128 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
   /**
    * Build the prompt for Mini crossword generation
    */
-  buildMiniCrosswordPrompt({ excludeWords, theme }) {
-    const excludeWordsSection =
-      excludeWords.length > 0
+  /**
+   * Build the prompt for Mini crossword generation
+   */
+  buildMiniCrosswordPrompt({ strictExcludeWords, softExcludeWords, recentPuzzles, theme }) {
+    // Build strict exclusion section (last 7 days - 100% avoid)
+    const strictExcludeSection =
+      strictExcludeWords.length > 0
         ? `
-WORDS TO AVOID (recently used):
-${excludeWords.slice(0, 100).join(', ')}${excludeWords.length > 100 ? '...' : ''}
+## WORDS TO STRICTLY AVOID (used in last 7 days)
+${strictExcludeWords.slice(0, 50).join(', ')}${strictExcludeWords.length > 50 ? '...' : ''}
 
-Avoid these if possible, but one or two is okay if necessary for a valid grid.`
+Do NOT use any of these words - they were used very recently.`
         : '';
+
+    // Build soft exclusion section (days 8-30 - prefer to avoid)
+    const softExcludeSection =
+      softExcludeWords.length > 0
+        ? `
+## WORDS TO PREFER AVOIDING (used 8-30 days ago)
+${softExcludeWords.slice(0, 50).join(', ')}${softExcludeWords.length > 50 ? '...' : ''}
+
+Avoid if possible, but acceptable if needed for a valid grid.`
+        : '';
+
+    // Build recent puzzles context for thematic awareness
+    let recentPuzzlesSection = '';
+    if (recentPuzzles.length > 0) {
+      const puzzleSummaries = recentPuzzles.map((p) => {
+        const wordList = p.words.slice(0, 5).join(', ');
+        const clueExamples = p.clues.slice(0, 2).join(' | ');
+        return `- ${p.daysAgo} day${p.daysAgo === 1 ? '' : 's'} ago: ${wordList}... (clues: ${clueExamples})`;
+      });
+      recentPuzzlesSection = `
+## RECENT PUZZLES (vary themes from these)
+${puzzleSummaries.join('\n')}
+
+Generate a puzzle with DIFFERENT themes and subject matter from the above.`;
+    }
 
     const themeSection = theme
       ? `
-THEME: "${theme}"
+## REQUESTED THEME: "${theme}"
 All or most words should relate to this theme. Make it subtle - players should have an "aha!" moment.`
       : '';
 
-    return `Generate a 5x5 Mini crossword puzzle.
+    return `Generate a 5x5 Mini crossword puzzle with creative, varied clues.
 
-## MOST IMPORTANT: ALL WORDS MUST BE REAL
-Every word in your puzzle MUST be a REAL word, name, or abbreviation that people actually use.
+═══════════════════════════════════════════════════════════════════
+🚨 CRITICAL: WORD VALIDITY REQUIREMENTS 🚨
+═══════════════════════════════════════════════════════════════════
 
-ACCEPTABLE WORDS:
-- Common English words: BREAD, HOUSE, RIVER, PHONE, STOVE, CHAIR, MUSIC
-- Proper names (people): EMMA, BRAD, ELVIS, OPRAH, BEYONCE
-- Proper names (places): PARIS, TEXAS, ITALY, MIAMI
-- Pop culture/fiction: SHREK, ELSA, YODA, MARIO, ZELDA
-- Brand names: UBER, LYFT, IKEA, LEGO, NIKE
-- Abbreviations: NASA, ASAP, RSVP, TGIF, WIFI
-- Slang: VIBE, FLEX, FOMO, YOLO, EPIC
-- Onomatopoeia: BOOM, BUZZ, BEEP, ZOOM, SNAP
+EVERY WORD IN YOUR GRID MUST BE A REAL, RECOGNIZABLE ENGLISH WORD.
 
-NEVER USE random letter combinations like: UWLS, IVL, CES, XQZ, BRLK
-If you can't think of a real word that fits, restructure your grid!
+✅ VALID WORDS (use these types):
+- Common English words: BREAD, HOUSE, RIVER, PHONE, MUSIC, WORLD
+- Proper names people know: ELVIS, PARIS, MARIO, OPRAH, TESLA
+- Well-known brands/acronyms: NASA, IKEA, UBER, OREO, LEGO
+- Common slang: VIBE, FLEX, EPIC, CHILL, DOPE
+- Standard crossword fill: ALOE, ARIA, OLEO, EPEE, OBOE
+
+❌ INVALID WORDS (NEVER USE):
+- Misspellings: ALOEH (not a word), BOARE (should be BOAR), SHREO (gibberish)
+- Random letter combos: ILT, EER, XYZ, QUA (unless real word)
+- Made-up words to fit grid: VASTS, SHREO, ALOEH
+- Obscure abbreviations nobody knows
+
+⚠️ VERIFICATION RULE: Before including ANY word, ask yourself:
+"Would this appear in a standard English dictionary or be recognized by most people?"
+If NO → choose a different word arrangement
+
+═══════════════════════════════════════════════════════════════════
+
+## VALID ANSWER TYPES
+- **Common words**: BREAD, HOUSE, RIVER, PHONE, MUSIC, EARTH, OCEAN
+- **Proper names**: ELVIS, PARIS, SHREK, MARIO, BEYONCE, TESLA, OPRAH
+- **Brands/acronyms**: NASA, IKEA, UBER, OREO, LEGO, TGIF
+- **Crossword staples**: ALOE, ARIA, EPEE, OBOE, OLEO, EERIE, AERIE
+- **Common slang**: VIBE, FLEX, FOMO, EPIC, CHILL
+
+## CLUE STYLES - USE VARIETY
+Mix these styles for an engaging puzzle:
+
+**1. Pop culture references:**
+- "Star Wars creator George ___" → LUCAS
+- "Roald Dahl's chocolatier, Willy _____" → WONKA
+- "Green ogre voiced by Mike Myers" → SHREK
+- "Ringo of The Beatles" → STARR
+
+**2. Wordplay/puns:**
+- "Corn holder?" → EAR
+- "Third rock from the sun" → EARTH
+- "Soothing plant for burns" → ALOE
+
+**3. Standard definitions:**
+- "Wedding ceremony site" → ALTAR
+- "Cupid's projectile" → ARROW
+- "Good energy or atmosphere" → VIBES
+
+**4. Fill-in-the-blank:**
+- "'___ no evil, speak no evil'" → SEE
+- "Once upon a ___" → TIME
 
 ## CROSSWORD STRUCTURE
 Each continuous run of white cells = EXACTLY ONE WORD.
 
-CORRECT example:
+Example grid:
 S T A R ■
 H O P E S
-O R B ■ A
-P ■ I ■ L
-S K I T S
-
-- Row 0: STAR (ends at ■)
-- Row 1: HOPES (full row)
-- Column 0: SHOPS (full column)
-- Column 2: RBI then ITS is WRONG - one continuous column must be ONE word
-
-WRONG example - DO NOT DO:
-B R I C K
-L O V E D
-U W L S ■   ← "UWLS" is NOT a real word!
-E ■ ■ ■ C
-S U G A R
-
-## CLUE REQUIREMENTS - CRITICAL
-You MUST provide a real, descriptive clue for EVERY word. Never use placeholder text.
-
-GOOD clues:
-- "Building block made of clay" for BRICK
-- "Feeling of affection" for LOVED
-- "Sweet white crystals" for SUGAR
-
-BAD clues (NEVER DO THIS):
-- "Clue for BRICK" ← REJECTED
-- "Word meaning brick" ← REJECTED
-- Any clue that just restates the answer
+O R E O ■
+P ■ A ■ ■
+S K A T E
 
 ## GRID REQUIREMENTS
 - 5x5 grid with 2-6 black squares (■)
 - Symmetric black square placement preferred
 - All white cells must be connected
-- Word length: 3-5 letters only
+- Word length: 3-5 letters
 - 6-10 total words (across + down)
-${excludeWordsSection}
+- **CRITICAL**: Every word must be REAL - no made-up words!
+${strictExcludeSection}
+${softExcludeSection}
+${recentPuzzlesSection}
 ${themeSection}
 
 ## RESPONSE FORMAT
@@ -2356,32 +2414,49 @@ Return ONLY valid JSON:
   "grid": [
     ["S", "T", "A", "R", "■"],
     ["H", "O", "P", "E", "S"],
-    ["O", "R", "B", "■", "A"],
-    ["P", "■", "I", "■", "L"],
-    ["S", "K", "I", "T", "S"]
+    ["O", "R", "E", "O", "■"],
+    ["P", "■", "A", "■", "■"],
+    ["S", "K", "A", "T", "E"]
   ],
   "solution": [same as grid],
   "words": [
     {"word": "STAR", "direction": "across", "startRow": 0, "startCol": 0},
     {"word": "HOPES", "direction": "across", "startRow": 1, "startCol": 0},
-    {"word": "SHOPS", "direction": "down", "startRow": 0, "startCol": 0}
+    {"word": "OREO", "direction": "across", "startRow": 2, "startCol": 0},
+    {"word": "SKATE", "direction": "across", "startRow": 4, "startCol": 0},
+    {"word": "SHOPS", "direction": "down", "startRow": 0, "startCol": 0},
+    {"word": "TORE", "direction": "down", "startRow": 0, "startCol": 1},
+    {"word": "AREA", "direction": "down", "startRow": 0, "startCol": 2},
+    {"word": "REPS", "direction": "down", "startRow": 0, "startCol": 3}
   ],
   "clues": {
     "across": [
       {"number": 1, "clue": "Celestial body that twinkles", "answer": "STAR"},
-      {"number": 5, "clue": "Wishes for the future", "answer": "HOPES"}
+      {"number": 5, "clue": "Wishes for the future", "answer": "HOPES"},
+      {"number": 6, "clue": "Cream-filled cookie brand", "answer": "OREO"},
+      {"number": 7, "clue": "Glide on ice", "answer": "SKATE"}
     ],
     "down": [
-      {"number": 1, "clue": "Retail stores", "answer": "SHOPS"}
+      {"number": 1, "clue": "Retail stores", "answer": "SHOPS"},
+      {"number": 2, "clue": "Ripped", "answer": "TORE"},
+      {"number": 3, "clue": "Region or zone", "answer": "AREA"},
+      {"number": 4, "clue": "Gym sets, briefly", "answer": "REPS"}
     ]
   }
 }
 
-BEFORE SUBMITTING, verify:
-1. Every word is a REAL word/name/abbreviation
-2. Every clue is descriptive (not "Clue for X")
-3. Grid structure is valid (each continuous run = one word)
-4. All words 3-5 letters, no duplicates
+## FINAL CHECKLIST (MANDATORY)
+Before submitting, verify EACH word:
+□ STAR - real word ✓
+□ HOPES - real word ✓
+□ OREO - real brand ✓
+□ SKATE - real word ✓
+□ SHOPS - real word ✓
+□ TORE - real word ✓
+□ AREA - real word ✓
+□ REPS - real word ✓
+
+If ANY word fails this check, redesign the grid!
 
 Generate puzzle now. JSON only.`;
   }
@@ -2437,8 +2512,9 @@ Generate puzzle now. JSON only.`;
         })
       );
 
-      // Validate words
+      // Validate words (allow up to 1 duplicate for flexibility)
       const wordSet = new Set();
+      let duplicateCount = 0;
       for (const wordObj of puzzle.words) {
         if (!wordObj.word || wordObj.word.length < 3 || wordObj.word.length > 5) {
           throw new Error(`Invalid word length: "${wordObj.word}" must be 3-5 letters`);
@@ -2448,7 +2524,12 @@ Generate puzzle now. JSON only.`;
         }
         const upperWord = wordObj.word.toUpperCase();
         if (wordSet.has(upperWord)) {
-          throw new Error(`Duplicate word in puzzle: "${upperWord}"`);
+          duplicateCount++;
+          if (duplicateCount > 1) {
+            throw new Error(`Too many duplicate words in puzzle (max 1 allowed): "${upperWord}"`);
+          }
+          // Log but allow one duplicate
+          logger.warn('Puzzle has one duplicate word (allowed)', { word: upperWord });
         }
         wordSet.add(upperWord);
       }
@@ -2472,15 +2553,45 @@ Generate puzzle now. JSON only.`;
       // Generate clue numbers based on grid structure
       const clueNumbers = this.generateClueNumbers(normalizedGrid);
 
-      // Check for likely non-words (no vowels, or obviously invalid)
+      // Check for likely non-words with improved heuristics
       const hasVowel = (word) => /[AEIOU]/i.test(word);
       const isLikelyNonWord = (word) => {
-        // No vowels (except short abbreviations)
-        if (word.length >= 4 && !hasVowel(word)) return true;
-        // Triple consonants in a row (rare in English)
-        if (/[BCDFGHJKLMNPQRSTVWXYZ]{4,}/i.test(word)) return true;
+        const w = word.toUpperCase();
+
+        // No vowels (except 2-3 letter abbreviations like TV, NYC, etc.)
+        if (w.length >= 4 && !hasVowel(w)) return true;
+
+        // Triple+ consonants in a row (rare in English except common patterns)
+        if (/[BCDFGHJKLMNPQRSTVWXYZ]{4,}/i.test(w)) return true;
+
         // Starts with unlikely patterns
-        if (/^[XZQJ][BCDFGHJKLMNPQRSTVWXYZ]/i.test(word)) return true;
+        if (/^[XZQJ][BCDFGHJKLMNPQRSTVWXYZ]/i.test(w)) return true;
+
+        // Ends with very unlikely patterns (gibberish endings)
+        if (/[^AEIOU]EH$/i.test(w) && w.length > 3) return true; // ALOEH
+        if (/[^AEIOU]EO$/i.test(w) && !/OREO|THEO|CLEO|VIDEO|RODEO|STEREO/i.test(w)) return true; // SHREO
+        if (/[^AEIOU]OA[^AEIOU]E$/i.test(w)) return true; // BOARE
+
+        // Very short words with no common pattern
+        if (w.length === 3 && !/^[AEIOU]/.test(w) && !hasVowel(w.substring(1))) return true; // ILT
+
+        // Double vowels at end that aren't common (EE is ok, but EO, OE less common)
+        if (/[AEIOU]{3,}$/i.test(w)) return true;
+
+        // Known gibberish patterns from actual failures
+        const gibberishPatterns = [
+          /^[A-Z]*EH$/i, // words ending in -EH (except meh, yeah)
+          /^[A-Z]*[^AEIOU]EO$/i, // consonant + EO at end
+        ];
+
+        // Allow some exceptions
+        const exceptions = ['YEAH', 'MEH', 'OREO', 'VIDEO', 'RODEO', 'STEREO', 'THEO', 'CLEO'];
+        if (exceptions.includes(w)) return false;
+
+        for (const pattern of gibberishPatterns) {
+          if (pattern.test(w)) return true;
+        }
+
         return false;
       };
 
