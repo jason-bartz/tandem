@@ -211,6 +211,7 @@ export async function generateBotEntries({
         score: entry.score,
       });
 
+      // Insert daily leaderboard entry
       const { data, error } = await supabase.rpc('insert_bot_leaderboard_score', {
         p_game_type: entry.gameType,
         p_puzzle_date: entry.dateStr,
@@ -234,7 +235,36 @@ export async function generateBotEntries({
           },
         });
       } else {
-        logger.info('[Bot Leaderboard] Successfully inserted entry:', data);
+        logger.info('[Bot Leaderboard] Successfully inserted daily entry:', data);
+
+        // Also insert streak entry with streak = 1
+        const { data: streakData, error: streakError } = await supabase.rpc(
+          'insert_bot_streak_entry',
+          {
+            p_game_type: entry.gameType,
+            p_streak_days: 1,
+            p_bot_username: entry.username,
+            p_bot_avatar_id: entry.avatarId,
+            p_puzzle_date: entry.dateStr,
+            p_metadata: {
+              generated_at: new Date().toISOString(),
+              last_played: entry.dateStr,
+            },
+          }
+        );
+
+        if (streakError) {
+          logger.error('[Bot Leaderboard] Error inserting bot streak entry:', {
+            streakError,
+            entry: {
+              gameType: entry.gameType,
+              username: entry.username,
+            },
+          });
+        } else {
+          logger.info('[Bot Leaderboard] Successfully inserted streak entry:', streakData);
+        }
+
         successCount++;
       }
     } catch (err) {
