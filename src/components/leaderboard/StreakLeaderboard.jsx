@@ -93,17 +93,22 @@ export default function StreakLeaderboard({ gameType }) {
     <div className="p-6">
       {/* Traditional row-style leaderboard */}
       {leaderboard.length > 0 && (
-        <div className="space-y-2">
-          {leaderboard.map((entry, idx) => (
-            <LeaderboardEntry
-              key={entry.entry_id}
-              entry={entry}
-              rank={idx + 1}
-              isCurrentUser={user?.id === entry.user_id}
-              isStreak={true}
-            />
-          ))}
-        </div>
+        <>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3 uppercase tracking-wide">
+            Top Ten Players
+          </p>
+          <div className="space-y-2">
+            {leaderboard.map((entry, idx) => (
+              <LeaderboardEntry
+                key={entry.entry_id}
+                entry={entry}
+                rank={idx + 1}
+                isCurrentUser={user?.id === entry.user_id}
+                isStreak={true}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {/* User's rank if not in top 10 */}
