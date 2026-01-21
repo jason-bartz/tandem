@@ -53,7 +53,7 @@ export default function TandemStatsSection({ stats, animationKey }) {
           className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
             highContrast
               ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-              : 'bg-sky-700 text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
+              : 'bg-sky-500 dark:bg-sky-600 text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
           }`}
         >
           View Leaderboard
