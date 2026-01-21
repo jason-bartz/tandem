@@ -68,35 +68,44 @@ export default function WelcomeScreen({
           setTandemCompleted(result?.won || false);
         }
 
-        // Check Mini completion
-        const miniProgress = await loadMiniPuzzleProgress(miniPuzzleInfo.isoDate);
-        setMiniPlayed(!!miniProgress);
-        setMiniCompleted(miniProgress?.completed || false);
+        // Load Mini and Reel data in parallel for faster loading
+        const [miniProgressResult, miniPuzzleResult, reelStatsResult, reelPuzzleResult] =
+          await Promise.allSettled([
+            loadMiniPuzzleProgress(miniPuzzleInfo.isoDate),
+            miniService.getPuzzle(miniPuzzleInfo.isoDate),
+            storageService.get('reel-connections-stats'),
+            fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`).then((res) =>
+              res.json()
+            ),
+          ]);
 
-        // Load Mini puzzle
-        const miniResponse = await miniService.getPuzzle(miniPuzzleInfo.isoDate);
-        if (miniResponse.success && miniResponse.puzzle) {
-          setMiniPuzzle(miniResponse.puzzle);
+        // Process Mini completion and puzzle data
+        if (miniProgressResult.status === 'fulfilled') {
+          const miniProgress = miniProgressResult.value;
+          setMiniPlayed(!!miniProgress);
+          setMiniCompleted(miniProgress?.completed || false);
+        }
+
+        if (
+          miniPuzzleResult.status === 'fulfilled' &&
+          miniPuzzleResult.value?.success &&
+          miniPuzzleResult.value?.puzzle
+        ) {
+          setMiniPuzzle(miniPuzzleResult.value.puzzle);
         }
         setMiniLoading(false);
 
-        // Check Reel Connections completion (uses storageService for IndexedDB fallback)
-        const reelStats = await storageService.get('reel-connections-stats');
-        if (reelStats) {
-          const parsed = JSON.parse(reelStats);
+        // Process Reel Connections completion and puzzle data
+        if (reelStatsResult.status === 'fulfilled' && reelStatsResult.value) {
+          const parsed = JSON.parse(reelStatsResult.value);
           const today = getLocalDateString();
           const todayGame = parsed.gameHistory?.find((g) => g.date === today);
           setReelPlayed(!!todayGame);
           setReelCompleted(todayGame?.won || false);
         }
 
-        // Load Reel puzzle
-        const reelResponse = await fetch(
-          `/api/reel-connections/puzzle?date=${getLocalDateString()}`
-        );
-        const reelData = await reelResponse.json();
-        if (reelData.puzzle) {
-          setReelPuzzle(reelData.puzzle);
+        if (reelPuzzleResult.status === 'fulfilled' && reelPuzzleResult.value?.puzzle) {
+          setReelPuzzle(reelPuzzleResult.value.puzzle);
         }
         setReelLoading(false);
       } catch (err) {
