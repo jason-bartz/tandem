@@ -160,6 +160,13 @@ function showAchievementToast(achievement) {
  */
 export async function checkAndNotifyTandemAchievements(stats) {
   try {
+    // Only track achievements for authenticated users
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      logger.debug('[AchievementNotifier] Skipping Tandem achievements - user not authenticated');
+      return [];
+    }
+
     const unlockedSet = await getUnlockedAchievements();
 
     // Get all qualifying achievements
@@ -204,6 +211,13 @@ export async function checkAndNotifyTandemAchievements(stats) {
  */
 export async function checkAndNotifyMiniAchievements(stats) {
   try {
+    // Only track achievements for authenticated users
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      logger.debug('[AchievementNotifier] Skipping Mini achievements - user not authenticated');
+      return [];
+    }
+
     const unlockedSet = await getUnlockedAchievements();
 
     // Get all qualifying achievements
@@ -248,6 +262,13 @@ export async function checkAndNotifyMiniAchievements(stats) {
  */
 export async function checkAndNotifyReelAchievements(stats) {
   try {
+    // Only track achievements for authenticated users
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      logger.debug('[AchievementNotifier] Skipping Reel achievements - user not authenticated');
+      return [];
+    }
+
     const unlockedSet = await getUnlockedAchievements();
 
     // Get all qualifying achievements

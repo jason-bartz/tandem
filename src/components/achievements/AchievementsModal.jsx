@@ -3,10 +3,12 @@
 import { useState } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useAuth } from '@/contexts/AuthContext';
 import useAchievementStatus from '@/hooks/useAchievementStatus';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import AchievementCard from './AchievementCard';
 import AchievementsModalSkeleton from '@/components/shared/AchievementsModalSkeleton';
+import { LockKeyholeIcon } from 'lucide-react';
 
 /**
  * AchievementsModal - Display all achievements left panel with filtering
@@ -18,6 +20,7 @@ import AchievementsModalSkeleton from '@/components/shared/AchievementsModalSkel
 export default function AchievementsModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('tandem');
 
   // Load achievement status for all game modes
@@ -82,11 +85,45 @@ export default function AchievementsModal({ isOpen, onClose }) {
       contentClassName="px-6 py-4"
       zIndex={60}
     >
+      {/* Not Authenticated State */}
+      {!user && (
+        <div
+          className={`p-6 rounded-2xl border-[3px] text-center ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-amber-50 dark:bg-amber-900/20 border-amber-500 shadow-[4px_4px_0px_rgba(0,0,0,0.1)]'
+          }`}
+        >
+          <div className="flex justify-center mb-4">
+            <LockKeyholeIcon
+              className={`w-12 h-12 ${
+                highContrast ? 'text-hc-text' : 'text-amber-600 dark:text-amber-400'
+              }`}
+            />
+          </div>
+          <h3
+            className={`text-lg font-bold mb-2 ${
+              highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+            }`}
+          >
+            Sign In to Track Achievements
+          </h3>
+          <p
+            className={`text-sm mb-4 ${
+              highContrast ? 'text-hc-text' : 'text-gray-600 dark:text-gray-400'
+            }`}
+          >
+            Achievements are only available for signed-in users. Sign in to unlock achievements,
+            track your progress, and sync across devices.
+          </p>
+        </div>
+      )}
+
       {/* Loading State */}
-      {loading && <AchievementsModalSkeleton />}
+      {user && loading && <AchievementsModalSkeleton />}
 
       {/* Error State */}
-      {error && !loading && (
+      {user && error && !loading && (
         <div
           className={`p-4 rounded-2xl border-[3px] mb-4 ${
             highContrast
@@ -105,7 +142,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
       )}
 
       {/* Content */}
-      {!loading && !error && (
+      {user && !loading && !error && (
         <>
           {/* Summary Stats */}
           <div
