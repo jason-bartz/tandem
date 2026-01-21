@@ -105,50 +105,28 @@ export default function DailyMiniPage() {
           <div className="text-6xl mb-4">😞</div>
           <h1 className="text-2xl font-black text-text-primary mb-3">Oops!</h1>
           <p className="text-text-secondary mb-6">{game.error}</p>
-          <div className="space-y-3">
-            <button
-              onClick={() => game.loadPuzzle(dateParam)}
-              className="
-                w-full h-14
-                rounded-[20px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
-                bg-accent-yellow dark:bg-accent-yellow
-                text-gray-900
-                font-black
-                tracking-wider
-                uppercase
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[4px] active:translate-y-[4px]
-                active:shadow-none
-                transition-all
-              "
-            >
-              Try Again
-            </button>
-            <button
-              onClick={() => router.push('/')}
-              className="
-                w-full h-12
-                rounded-[16px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                bg-ghost-white dark:bg-gray-700
-                text-text-primary
-                font-bold
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[3px] active:translate-y-[3px]
-                active:shadow-none
-                transition-all
-              "
-            >
-              Go Home
-            </button>
-          </div>
+          <button
+            onClick={() => router.push('/')}
+            className="
+              w-full h-14
+              rounded-[20px]
+              border-[3px] border-black dark:border-gray-600
+              shadow-[4px_4px_0px_rgba(0,0,0,1)]
+              dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+              bg-accent-yellow dark:bg-accent-yellow
+              text-gray-900
+              font-black
+              tracking-wider
+              uppercase
+              hover:translate-x-[2px] hover:translate-y-[2px]
+              hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
+              active:translate-x-[4px] active:translate-y-[4px]
+              active:shadow-none
+              transition-all
+            "
+          >
+            Go Back
+          </button>
         </div>
       </div>
     );
