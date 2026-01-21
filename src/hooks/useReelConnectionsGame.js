@@ -128,6 +128,9 @@ export function useReelConnectionsGame() {
   const [showOneAway, setShowOneAway] = useState(false);
   const [oneAwayMessage, setOneAwayMessage] = useState('');
 
+  // Duplicate guess warning
+  const [showDuplicateWarning, setShowDuplicateWarning] = useState(false);
+
   // Solve animation state
   const [solvingGroup, setSolvingGroup] = useState(null);
   const [solvingMovies, setSolvingMovies] = useState([]);
@@ -137,6 +140,9 @@ export function useReelConnectionsGame() {
 
   // Guess history for share text (tracks difficulty of each movie in each guess)
   const [guessHistory, setGuessHistory] = useState([]);
+
+  // Track previous guesses by movie IDs to detect duplicates
+  const [previousGuesses, setPreviousGuesses] = useState([]);
 
   // Viewing completed puzzle state
   const [viewingCompletedPuzzle, setViewingCompletedPuzzle] = useState(false);
@@ -346,6 +352,8 @@ export function useReelConnectionsGame() {
         setLeaderboardSubmitted(false);
         setArchiveDate(specificDate);
         setGuessHistory([]);
+        setPreviousGuesses([]);
+        setShowDuplicateWarning(false);
         setViewingCompletedPuzzle(false);
       }
 
@@ -400,6 +408,21 @@ export function useReelConnectionsGame() {
   const handleSubmit = useCallback(() => {
     if (selectedMovies.length !== REEL_CONFIG.GROUP_SIZE) return;
     if (solvingGroup) return; // Don't allow submit during animation
+
+    // Check for duplicate guess
+    const currentGuessKey = selectedMovies
+      .map((m) => m.imdbId)
+      .sort()
+      .join(',');
+
+    if (previousGuesses.includes(currentGuessKey)) {
+      setShowDuplicateWarning(true);
+      setTimeout(() => setShowDuplicateWarning(false), REEL_CONFIG.ONE_AWAY_DISPLAY_MS);
+      return; // Don't count as mistake
+    }
+
+    // Record this guess to prevent duplicates
+    setPreviousGuesses((prev) => [...prev, currentGuessKey]);
 
     // Record this guess to history (map each movie to its group's difficulty)
     const guessDifficulties = selectedMovies.map((movie) => {
@@ -464,7 +487,7 @@ export function useReelConnectionsGame() {
         startReveal(false);
       }
     }
-  }, [selectedMovies, puzzle, solvedGroups, mistakes, startReveal, solvingGroup]);
+  }, [selectedMovies, puzzle, solvedGroups, mistakes, startReveal, solvingGroup, previousGuesses]);
 
   // Handle shuffle
   const handleShuffle = useCallback(() => {
@@ -495,6 +518,8 @@ export function useReelConnectionsGame() {
     setSolvingGroup(null);
     setSolvingMovies([]);
     setGuessHistory([]);
+    setPreviousGuesses([]);
+    setShowDuplicateWarning(false);
     setViewingCompletedPuzzle(false);
 
     const allMovies = flattenPuzzleMovies(puzzle);
@@ -608,6 +633,7 @@ export function useReelConnectionsGame() {
     revealedGroups,
     gameStarted,
     showOneAway,
+    showDuplicateWarning,
     oneAwayMessage,
     archiveDate,
     user,
