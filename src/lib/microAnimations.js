@@ -514,15 +514,17 @@ export const EMPTY_STATE_ANIMATIONS = {
 // ============================================
 
 export const SHARE_ANIMATIONS = {
-  // Attention pulse
+  // Attention pulse with glow
   attentionPulse: {
     keyframes: `
       @keyframes attentionPulse {
         0%, 100% {
           transform: scale(1);
+          box-shadow: 3px 3px 0px rgba(0,0,0,1);
         }
         50% {
-          transform: scale(1.05);
+          transform: scale(1.02);
+          box-shadow: 3px 3px 0px rgba(0,0,0,1), 0 0 20px rgba(74, 222, 128, 0.5);
         }
       }
     `,

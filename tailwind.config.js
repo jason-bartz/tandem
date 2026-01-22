@@ -392,8 +392,14 @@ module.exports = {
           '100%': { opacity: '1', transform: 'translateY(0)' },
         },
         attentionPulse: {
-          '0%, 100%': { transform: 'scale(1)' },
-          '50%': { transform: 'scale(1.05)' },
+          '0%, 100%': {
+            transform: 'scale(1)',
+            boxShadow: '3px 3px 0px rgba(0,0,0,1)',
+          },
+          '50%': {
+            transform: 'scale(1.02)',
+            boxShadow: '3px 3px 0px rgba(0,0,0,1), 0 0 20px rgba(74, 222, 128, 0.5)',
+          },
         },
         hoverShine: {
           '0%': { backgroundPosition: '-100% center' },
