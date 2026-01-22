@@ -5,7 +5,7 @@
  * Bots have realistic usernames and scores, and submissions are spread throughout the day.
  */
 
-import { generateRandomUsername } from '@/utils/usernameGenerator';
+import { generateRealisticUsername } from '@/utils/realisticUsernameGenerator';
 import { createClient } from '@supabase/supabase-js';
 import logger from '@/lib/logger';
 
@@ -197,7 +197,7 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
     const newUsernames = new Set();
 
     while (newUsernames.size < newBotsToGenerate) {
-      const username = generateRandomUsername();
+      const username = generateRealisticUsername();
       // Make sure we don't duplicate carryover usernames
       if (!carryoverUsernameSet.has(username) && !newUsernames.has(username)) {
         newUsernames.add(username);
