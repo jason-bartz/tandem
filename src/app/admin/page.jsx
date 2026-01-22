@@ -11,6 +11,7 @@ import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/Ree
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
+import AvatarManager from '@/components/admin/AvatarManager';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
@@ -351,6 +352,20 @@ export default function AdminDashboard() {
             <Image src="/icons/ui/leaderboard.png" alt="" width={20} height={20} />
             Leaderboards
           </button>
+          <button
+            onClick={() => setActiveTab('avatars')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'avatars'
+                  ? 'border-accent-pink text-text-primary bg-accent-pink/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <span className="text-lg">🐾</span>
+            Avatars
+          </button>
         </nav>
       </div>
 
@@ -452,6 +467,7 @@ export default function AdminDashboard() {
           />
         )}
         {activeTab === 'leaderboards' && <BotLeaderboardManager />}
+        {activeTab === 'avatars' && <AvatarManager />}
       </div>
 
       {/* Game selector modal */}
