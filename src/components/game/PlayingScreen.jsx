@@ -421,7 +421,7 @@ export default function PlayingScreen({
             >
               {/* Header - back button, date, and hamburger menu in one row */}
               <div
-                className={`pt-4 pb-4 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
+                className={`pt-4 pb-2 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
                   highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
                 }`}
               >
@@ -475,7 +475,7 @@ export default function PlayingScreen({
               </div>
 
               {/* Content Area */}
-              <div className="flex-1 p-4 sm:p-6" ref={contentRef}>
+              <div className="flex-1 pt-2 px-4 pb-4 sm:pt-3 sm:px-6 sm:pb-6" ref={contentRef}>
                 <div className="max-w-lg mx-auto">
                   <StatsBar
                     time={formatTime(time)}
