@@ -1,5 +1,7 @@
 'use client';
 
+import { Capacitor } from '@capacitor/core';
+import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -48,6 +50,30 @@ export default function AboutSection({ onSubscribe }) {
         >
           Subscribe to Tandem Unlimited &rarr;
         </button>
+      )}
+
+      {!Capacitor.isNativePlatform() && (
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <h2
+            className={`text-sm font-bold mb-3 ${highContrast ? 'text-hc-text' : 'text-text-primary'}`}
+          >
+            Download the Tandem Daily Games App
+          </h2>
+          <a
+            href="https://apps.apple.com/us/app/tandem-daily-games/id6753114083"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={lightTap}
+          >
+            <Image
+              src="/icons/buttons/Download_on_the_App_Store_Badge_US-UK_RGB_blk_092917.svg"
+              alt="Download on the App Store"
+              width={120}
+              height={40}
+              className="hover:opacity-80 transition-opacity"
+            />
+          </a>
+        </div>
       )}
     </section>
   );
