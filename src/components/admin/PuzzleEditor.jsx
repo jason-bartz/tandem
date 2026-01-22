@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import adminService from '@/services/admin.service';
+import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
 export default function PuzzleEditor({ initialPuzzle, onClose }) {
@@ -24,6 +25,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   const [difficultyFactors, setDifficultyFactors] = useState(
     initialPuzzle?.difficultyFactors || null
   );
+  const [themeSuggestions, setThemeSuggestions] = useState([]);
+  const [suggestingThemes, setSuggestingThemes] = useState(false);
 
   useEffect(() => {
     if (initialPuzzle) {
@@ -230,6 +233,42 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
     }
   };
 
+  const handleSuggestThemes = async () => {
+    setSuggestingThemes(true);
+    setThemeSuggestions([]);
+    setMessage('💡 Getting theme suggestions...');
+
+    try {
+      const response = await fetch('/api/admin/tandem/suggest-themes', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({}),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to get suggestions');
+      }
+
+      setThemeSuggestions(data.suggestions || []);
+      setMessage(
+        `✨ Generated ${data.suggestions?.length || 0} theme ideas (analyzed ${data.recentThemesCount} recent themes)`
+      );
+    } catch (error) {
+      setMessage(`❌ ${error.message || 'Failed to get theme suggestions'}`);
+      logger.error('Theme suggestion error', error);
+    } finally {
+      setSuggestingThemes(false);
+    }
+  };
+
+  const handleSelectThemeSuggestion = (suggestion) => {
+    setTheme(suggestion.theme);
+    setThemeSuggestions([]); // Clear suggestions after selection
+    setMessage(`Selected theme: "${suggestion.theme}" - Click AI Generate to create the puzzle.`);
+  };
+
   // Format date as "Day MM/DD/YYYY"
   const formatDateDisplay = (dateString) => {
     const date = new Date(dateString + 'T00:00:00');
@@ -274,9 +313,54 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           </div>
 
           <div>
-            <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
-              Theme
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-xs sm:text-sm font-bold text-text-primary">Theme</label>
+              <button
+                type="button"
+                onClick={handleSuggestThemes}
+                disabled={suggestingThemes || generating || loading}
+                className="text-xs sm:text-sm text-accent-pink hover:text-accent-pink/80 font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {suggestingThemes ? (
+                  <>
+                    <svg className="animate-spin h-3 w-3 sm:h-4 sm:w-4" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                        fill="none"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    <span>Getting ideas...</span>
+                  </>
+                ) : (
+                  <>
+                    <svg
+                      className="h-3 w-3 sm:h-4 sm:w-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      />
+                    </svg>
+                    <span>Suggest Themes</span>
+                  </>
+                )}
+              </button>
+            </div>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -290,7 +374,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
               <button
                 type="button"
                 onClick={handleGenerateWithAI}
-                disabled={generating || loading}
+                disabled={generating || loading || suggestingThemes}
                 className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ boxShadow: 'var(--shadow-button)' }}
                 title="Generate puzzle with AI"
@@ -323,6 +407,33 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 )}
               </button>
             </div>
+            {/* Theme Suggestions */}
+            {themeSuggestions.length > 0 && (
+              <div className="mt-3 space-y-2">
+                <label className="block text-xs font-bold text-text-secondary">
+                  Click to use a suggestion:
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {themeSuggestions.map((suggestion, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => handleSelectThemeSuggestion(suggestion)}
+                      disabled={generating || loading}
+                      className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-accent-pink hover:bg-accent-pink/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ boxShadow: 'var(--shadow-small)' }}
+                    >
+                      <div className="font-bold text-xs sm:text-sm text-text-primary">
+                        {suggestion.theme}
+                      </div>
+                      <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
+                        {suggestion.description}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
