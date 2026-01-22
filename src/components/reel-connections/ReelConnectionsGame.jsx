@@ -1568,7 +1568,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                       Ready to start?
                     </h3>
                     <p
-                      className={`text-xs sm:text-sm font-medium mb-3 sm:mb-4 ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
+                      className={`text-xs sm:text-sm font-medium mb-3 sm:mb-4 whitespace-nowrap ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}
                     >
                       Create four groups of four movies
                     </p>
