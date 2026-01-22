@@ -313,7 +313,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     handleStartGame,
     handleShare,
     handleViewPuzzle,
-    handleViewResults,
     isSelected,
     isSolved,
     formatTime,
@@ -818,16 +817,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </div>
               );
             })}
-
-            {/* Back to Results button */}
-            <div className="mt-4 sm:mt-6">
-              <button
-                onClick={handleViewResults}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
-              >
-                Back to Results
-              </button>
-            </div>
           </div>
         </div>
 
@@ -940,7 +929,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
             </div>
 
             <h2
-              className={`text-4xl font-bold mb-2 tracking-tight drop-shadow-lg ${highContrast ? 'text-hc-text' : 'text-white'}`}
+              className={`text-2xl sm:text-4xl font-bold mb-2 tracking-tight drop-shadow-lg whitespace-nowrap ${highContrast ? 'text-hc-text' : 'text-white'}`}
             >
               {isWin ? congratsMessage : 'Cut!'}
             </h2>
