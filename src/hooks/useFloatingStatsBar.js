@@ -13,7 +13,7 @@ const SCROLL_THRESHOLD_UP = 10; // Show full when scrolling to very top (must be
 export function useFloatingStatsBar({ gameStarted, gameWon, gameOver }) {
   const [headerState, setHeaderState] = useState(HEADER_STATE.FULL_HEADER);
   const [scrollY, setScrollY] = useState(0);
-  const [showNavRow, setShowNavRow] = useState(true); // Track nav row visibility
+  const [showNavRow, setShowNavRow] = useState(false); // Track nav row visibility - hidden by default
   const scrollContainerRef = useRef(null);
   const rafIdRef = useRef(null);
   const headerStateRef = useRef(HEADER_STATE.FULL_HEADER); // Track state without causing re-renders
@@ -24,28 +24,39 @@ export function useFloatingStatsBar({ gameStarted, gameWon, gameOver }) {
     headerStateRef.current = headerState;
   }, [headerState]);
 
-  // Reset to full header when game ends or hasn't started
+  // Handle header/nav state based on game status
   useEffect(() => {
-    if (!gameStarted || gameWon || gameOver) {
+    // When game ends, reset to full header with nav row visible
+    if (gameWon || gameOver) {
       setHeaderState(HEADER_STATE.FULL_HEADER);
-      setShowNavRow(true); // Show nav row when game not active
+      setShowNavRow(true); // Show nav row when game ended
       scrollDetectionEnabledRef.current = false;
       return;
     }
 
-    // Show compact bar after brief delay when game starts
-    scrollDetectionEnabledRef.current = false;
-    const cooldownTimer = setTimeout(() => {
-      scrollDetectionEnabledRef.current = true;
-      // Always show compact bar after game starts (no scroll needed)
-      setHeaderState(HEADER_STATE.COMPACT_VISIBLE);
-      setShowNavRow(false); // Hide nav row when compact bar appears
-    }, 500); // 500ms delay for smooth transition
-
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    let cooldownTimer = null;
+
+    if (!gameStarted) {
+      // Before game starts: full header at top, nav row hidden initially
+      setHeaderState(HEADER_STATE.FULL_HEADER);
+      setShowNavRow(false); // Hide nav row for cleaner initial appearance
+      scrollDetectionEnabledRef.current = true; // Enable scroll detection to reveal nav
+    } else {
+      // Show compact bar after brief delay when game starts
+      scrollDetectionEnabledRef.current = false;
+      cooldownTimer = setTimeout(() => {
+        scrollDetectionEnabledRef.current = true;
+        // Always show compact bar after game starts (no scroll needed)
+        setHeaderState(HEADER_STATE.COMPACT_VISIBLE);
+        setShowNavRow(false); // Hide nav row when compact bar appears
+      }, 500); // 500ms delay for smooth transition
+    }
+
     let lastScrollY = container.scrollTop;
+    let hasScrolled = false; // Track if user has scrolled at all
 
     const handleScroll = () => {
       if (rafIdRef.current) return;
@@ -57,12 +68,21 @@ export function useFloatingStatsBar({ gameStarted, gameWon, gameOver }) {
 
         setScrollY(currentScrollY);
 
+        // Mark that user has scrolled
+        if (!hasScrolled && Math.abs(currentScrollY - lastScrollY) > 2) {
+          hasScrolled = true;
+        }
+
         // Only perform state transitions if cooldown period is over
         if (scrollDetectionEnabledRef.current) {
           // Hysteresis logic to prevent flickering
           if (currentState === HEADER_STATE.FULL_HEADER) {
-            // Only transition to compact when scrolled down past threshold
-            if (scrollingDown && currentScrollY > SCROLL_THRESHOLD_DOWN) {
+            // Show nav row when at very top and user has interacted
+            if (currentScrollY < SCROLL_THRESHOLD_UP && hasScrolled) {
+              setShowNavRow(true);
+            }
+            // Only transition to compact when scrolled down past threshold (and game started)
+            if (gameStarted && scrollingDown && currentScrollY > SCROLL_THRESHOLD_DOWN) {
               setHeaderState(HEADER_STATE.COMPACT_VISIBLE);
               setShowNavRow(false); // Hide nav row when switching to compact
             }
@@ -92,7 +112,7 @@ export function useFloatingStatsBar({ gameStarted, gameWon, gameOver }) {
     container.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      clearTimeout(cooldownTimer);
+      if (cooldownTimer) clearTimeout(cooldownTimer);
       container.removeEventListener('scroll', handleScroll);
       if (rafIdRef.current) {
         cancelAnimationFrame(rafIdRef.current);
