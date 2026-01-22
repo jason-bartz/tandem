@@ -562,15 +562,6 @@ export default function AvatarManager() {
               No avatars found. Click &quot;Add Avatar&quot; to create one.
             </div>
           )}
-
-          {/* Info */}
-          <div className="bg-accent-yellow/20 border-[2px] border-accent-yellow rounded-lg p-4 mt-6">
-            <p className="text-sm text-text-primary">
-              <strong>Note:</strong> You need to create a Supabase Storage bucket named
-              &quot;avatars&quot; with public access for image uploads to work. Existing avatars
-              using local paths will continue to work.
-            </p>
-          </div>
         </div>
       </div>
     </div>
