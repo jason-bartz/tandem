@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import authService from '@/services/auth.service';
 
 const DIFFICULTY_LEVELS = [
   { value: 'easiest', label: 'Easiest', description: 'Very well-known, popular movies' },
@@ -22,6 +23,8 @@ export default function ReelConnectionsAIGenerator({
   const [connection, setConnection] = useState(initialConnection);
   const [difficulty, setDifficulty] = useState(initialDifficulty);
   const [error, setError] = useState(null);
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
 
   const handleGenerate = async () => {
     setError(null);
@@ -36,6 +39,37 @@ export default function ReelConnectionsAIGenerator({
     } catch (err) {
       setError(err.message || 'Failed to generate movies');
     }
+  };
+
+  const handleSuggest = async () => {
+    setError(null);
+    setSuggestions([]);
+    setSuggestionsLoading(true);
+
+    try {
+      const response = await fetch('/api/admin/reel-connections/suggest-connections', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ difficulty }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to get suggestions');
+      }
+
+      const data = await response.json();
+      setSuggestions(data.suggestions || []);
+    } catch (err) {
+      setError(err.message || 'Failed to get suggestions');
+    } finally {
+      setSuggestionsLoading(false);
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setConnection(suggestion.connection);
+    setSuggestions([]); // Clear suggestions after selection
   };
 
   return (
@@ -114,12 +148,53 @@ export default function ReelConnectionsAIGenerator({
 
           {/* Connection Input */}
           <div>
-            <label
-              htmlFor="connection-input"
-              className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2"
-            >
-              Connection
-            </label>
+            <div className="flex items-center justify-between mb-2">
+              <label
+                htmlFor="connection-input"
+                className="block text-sm font-semibold text-gray-700 dark:text-gray-300"
+              >
+                Connection
+              </label>
+              <button
+                type="button"
+                onClick={handleSuggest}
+                disabled={loading || suggestionsLoading}
+                className="text-sm text-accent-red hover:text-accent-red/80 font-medium flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {suggestionsLoading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                    Getting ideas...
+                  </>
+                ) : (
+                  <>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                      />
+                    </svg>
+                    Suggest Ideas
+                  </>
+                )}
+              </button>
+            </div>
             <input
               id="connection-input"
               type="text"
@@ -127,13 +202,41 @@ export default function ReelConnectionsAIGenerator({
               onChange={(e) => setConnection(e.target.value)}
               placeholder="e.g., Best Picture nominees, Spielberg movies, superhero films..."
               maxLength={100}
-              disabled={loading}
+              disabled={loading || suggestionsLoading}
               className="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-lg bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-2 focus:ring-accent-red focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             />
             <p className="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
-              Describe what connects the 4 movies (e.g., director, genre, theme, awards)
+              Describe what connects the 4 movies, or click &quot;Suggest Ideas&quot; for
+              inspiration
             </p>
           </div>
+
+          {/* Suggestions */}
+          {suggestions.length > 0 && (
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
+                Click to use a suggestion
+              </label>
+              <div className="space-y-2">
+                {suggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleSelectSuggestion(suggestion)}
+                    disabled={loading}
+                    className="w-full p-3 text-left rounded-lg border-2 border-gray-200 dark:border-gray-700 hover:border-accent-red hover:bg-accent-red/5 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <div className="font-medium text-gray-900 dark:text-white">
+                      {suggestion.connection}
+                    </div>
+                    <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                      {suggestion.description}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Difficulty Selector */}
           <div>

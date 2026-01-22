@@ -1967,6 +1967,203 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
   }
 
   /**
+   * Suggest connection ideas for Reel Connections puzzle
+   * @param {Object} options - Suggestion options
+   * @param {string} options.difficulty - Difficulty level (easiest, easy, medium, hardest)
+   * @param {string[]} options.recentConnections - Recent connections to avoid (last 90 days)
+   * @returns {Promise<{suggestions: Array<{connection: string, description: string}>}>}
+   */
+  async suggestReelConnections({ difficulty = 'medium', recentConnections = [] }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildReelConnectionsSuggestionPrompt({ difficulty, recentConnections });
+        const genInfo = {
+          difficulty,
+          recentConnectionsCount: recentConnections.length,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Suggesting Reel Connections ideas with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 512,
+          temperature: 1.0, // High temperature for creative variety
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI Reel Connections suggestions received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseReelConnectionsSuggestions(responseText);
+
+        this.generationCount++;
+        logger.info('Reel Connections suggestions generated successfully', {
+          suggestionCount: result.suggestions.length,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI Reel Connections suggestion attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI Reel Connections suggestion failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build prompt for Reel Connections suggestion generation
+   */
+  buildReelConnectionsSuggestionPrompt({ difficulty, recentConnections }) {
+    const difficultyGuidance = {
+      easiest:
+        'Suggest connections that involve very well-known, mainstream movies. Think blockbusters, Oscar winners, iconic franchises.',
+      easy: 'Suggest connections involving popular, widely recognized movies. Most casual moviegoers should know these films.',
+      medium:
+        'Suggest connections with a mix of popular and moderately known movies. Requires some movie knowledge.',
+      hardest:
+        'Suggest connections that can include less mainstream films, cult classics, or more obscure categories. For movie enthusiasts.',
+    };
+
+    const recentConnectionsList =
+      recentConnections.length > 0
+        ? `\n\nRECENT CONNECTIONS TO AVOID (used in the last 90 days):\n${recentConnections.map((c) => `- ${c}`).join('\n')}`
+        : '';
+
+    return `You are suggesting connection ideas for a Reel Connections puzzle game (similar to NYT Connections but with movies).
+
+DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
+
+Generate 4 UNIQUE and CREATIVE connection ideas that would work well for this difficulty level.
+${recentConnectionsList}
+
+REQUIREMENTS:
+1. Each connection should be interesting and have an "aha!" moment
+2. Connections should have at least 4 well-known movies that fit
+3. Avoid overly generic connections like "Action Movies" or "Oscar Winners"
+4. Think creatively: themes, settings, actor connections, title patterns, time periods, etc.
+5. DO NOT repeat or closely resemble any of the recent connections listed above
+6. Use proper Title Case formatting
+
+GOOD CONNECTION EXAMPLES:
+- "Movies With Colors In The Title" (Blue Velvet, The Green Mile, etc.)
+- "Films Set During World War II"
+- "Movies Where The Dog Dies"
+- "Tom Hanks Filmography"
+- "Movies Based On Stephen King Novels"
+- "Films With One-Word Titles That Are Names"
+- "Movies That Take Place On A Single Day"
+- "Directorial Debuts"
+
+RESPONSE FORMAT (JSON only):
+{
+  "suggestions": [
+    { "connection": "Connection Title In Title Case", "description": "Brief explanation of what movies fit this" },
+    { "connection": "Another Connection", "description": "Brief explanation" },
+    { "connection": "Third Connection", "description": "Brief explanation" },
+    { "connection": "Fourth Connection", "description": "Brief explanation" }
+  ]
+}
+
+Return ONLY the JSON.`;
+  }
+
+  /**
+   * Parse Reel Connections suggestion response
+   */
+  parseReelConnectionsSuggestions(responseText) {
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      if (!Array.isArray(result.suggestions) || result.suggestions.length < 3) {
+        throw new Error('Must have at least 3 suggestions');
+      }
+
+      // Validate each suggestion
+      result.suggestions.forEach((suggestion, index) => {
+        if (!suggestion.connection || typeof suggestion.connection !== 'string') {
+          throw new Error(`Suggestion ${index + 1} missing connection`);
+        }
+        if (!suggestion.description || typeof suggestion.description !== 'string') {
+          throw new Error(`Suggestion ${index + 1} missing description`);
+        }
+      });
+
+      return {
+        suggestions: result.suggestions.slice(0, 4).map((s) => ({
+          connection: s.connection.trim(),
+          description: s.description.trim(),
+        })),
+      };
+    } catch (error) {
+      logger.error('Failed to parse Reel Connections suggestions', { error, responseText });
+      throw new Error('Failed to parse AI suggestions. Please try again.');
+    }
+  }
+
+  /**
    * Parse AI crossword clues response
    */
   parseCrosswordCluesResponse(responseText, expectedCount) {
