@@ -12,7 +12,12 @@ const nextConfig = {
   productionBrowserSourceMaps: false,
 
   images: {
-    domains: ['localhost', 'tandemdaily.com', 'www.tandemdaily.com'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'localhost' },
+      { protocol: 'https', hostname: 'tandemdaily.com' },
+      { protocol: 'https', hostname: 'www.tandemdaily.com' },
+      { protocol: 'https', hostname: '*.supabase.co' },
+    ],
     unoptimized: isCapacitorBuild,
   },
   eslint: {
