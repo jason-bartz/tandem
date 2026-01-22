@@ -10,6 +10,37 @@ import { createClient } from '@supabase/supabase-js';
 import logger from '@/lib/logger';
 
 /**
+ * Generate a simple hash from a string
+ * Used for deterministic avatar assignment based on username
+ *
+ * @param {string} str - String to hash
+ * @returns {number} Hash value
+ */
+function simpleHash(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = (hash << 5) - hash + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash);
+}
+
+/**
+ * Get a deterministic avatar ID for a username
+ * Same username always gets the same avatar across all games
+ *
+ * @param {string} username - Bot username
+ * @param {Array<{id: string}>} avatars - Available avatars
+ * @returns {string} Avatar ID
+ */
+function getAvatarForUsername(username, avatars) {
+  const hash = simpleHash(username);
+  const index = hash % avatars.length;
+  return avatars[index].id;
+}
+
+/**
  * Generate a realistic score for a given game type
  * Uses a weighted distribution to favor mid-range scores
  *
@@ -145,21 +176,18 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
     throw new Error('Could not fetch avatars for bot entries');
   }
 
-  // Build a map of carryover usernames to their avatars for quick lookup
-  const carryoverAvatarMap = new Map();
-  for (const bot of carryoverBots) {
-    carryoverAvatarMap.set(bot.username, bot.avatarId);
-  }
-
-  // Generate bot entries: use carryover first, then generate new ones
+  // Generate bot entries: use carryover usernames first, then generate new ones
   const botEntryData = [];
+  const carryoverUsernameSet = new Set(carryoverBots.map((b) => b.username));
 
   // Add carryover bots first (up to count)
+  // Use deterministic avatar based on username to ensure consistency across games
   const carryoverCount = Math.min(carryoverBots.length, count);
   for (let i = 0; i < carryoverCount; i++) {
+    const username = carryoverBots[i].username;
     botEntryData.push({
-      username: carryoverBots[i].username,
-      avatarId: carryoverBots[i].avatarId, // Preserve their avatar
+      username,
+      avatarId: getAvatarForUsername(username, avatars), // Deterministic avatar
     });
   }
 
@@ -167,7 +195,6 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
   const newBotsToGenerate = count - carryoverCount;
   if (newBotsToGenerate > 0) {
     const newUsernames = new Set();
-    const carryoverUsernameSet = new Set(carryoverBots.map((b) => b.username));
 
     while (newUsernames.size < newBotsToGenerate) {
       const username = generateRandomUsername();
@@ -177,9 +204,9 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
       }
     }
 
-    // Assign random avatars to new bots
+    // Assign deterministic avatars to new bots (same username = same avatar)
     for (const username of newUsernames) {
-      const avatarId = avatars[Math.floor(Math.random() * avatars.length)].id;
+      const avatarId = getAvatarForUsername(username, avatars);
       botEntryData.push({ username, avatarId });
     }
   }
