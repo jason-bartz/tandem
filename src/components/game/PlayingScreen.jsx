@@ -404,8 +404,11 @@ export default function PlayingScreen({
 
         {/* Main game card - centered vertically in space above keyboard */}
         <div
-          className="flex-1 flex flex-col items-center justify-center pb-safe pt-4 pt-safe-ios px-4"
-          style={{ paddingBottom: 'max(200px, env(safe-area-inset-bottom, 0px) + 180px)' }}
+          className="flex flex-col items-center justify-center px-4 pt-4 pt-safe-ios"
+          style={{
+            minHeight: 'calc(100dvh / 0.85 - 220px)',
+            paddingBottom: 'calc(220px / 0.85)',
+          }}
         >
           <div className="max-w-md w-full mx-auto flex flex-col">
             <div
