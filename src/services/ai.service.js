@@ -2164,6 +2164,204 @@ Return ONLY the JSON.`;
   }
 
   /**
+   * Suggest theme ideas for Daily Tandem puzzles
+   * @param {Object} options - Suggestion options
+   * @param {string[]} options.recentThemes - Recent themes to avoid (last 120 days)
+   * @returns {Promise<{suggestions: Array<{theme: string, description: string}>}>}
+   */
+  async suggestTandemThemes({ recentThemes = [] }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildTandemThemeSuggestionPrompt({ recentThemes });
+        const genInfo = {
+          recentThemesCount: recentThemes.length,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Suggesting Tandem themes with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 512,
+          temperature: 1.0, // High temperature for creative variety
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI Tandem theme suggestions received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseTandemThemeSuggestions(responseText);
+
+        this.generationCount++;
+        logger.info('Tandem theme suggestions generated successfully', {
+          suggestionCount: result.suggestions.length,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI Tandem theme suggestion attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI Tandem theme suggestion failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build prompt for Tandem theme suggestion generation
+   */
+  buildTandemThemeSuggestionPrompt({ recentThemes }) {
+    const recentThemesList =
+      recentThemes.length > 0
+        ? `\n\nRECENT THEMES TO AVOID (used in the last 120 days):\n${recentThemes.map((t) => `- ${t}`).join('\n')}`
+        : '';
+
+    return `You are suggesting theme ideas for a Daily Tandem emoji puzzle game.
+
+In this game:
+- Each puzzle has a THEME that connects 4 words
+- Players see emoji pairs and must guess the words
+- The theme is revealed AFTER solving - creating an "aha!" moment
+
+Generate 4 UNIQUE and CREATIVE theme suggestions.
+${recentThemesList}
+
+REQUIREMENTS:
+1. Themes should be specific enough to be interesting but broad enough to have 4 clear answers
+2. Avoid overly generic themes like "Things" or "Stuff"
+3. DO NOT repeat or closely resemble any recent themes listed above
+4. Think creatively across different pattern types
+
+THEME PATTERN TYPES (use variety):
+- Direct categories: "Musical Instruments", "Kitchen Appliances"
+- Descriptive phrases: "Things That Bounce", "Items in a Toolbox"
+- Word relationships: "Words Starting With 'S'", "Compound Words With 'Fire'"
+- Conceptual links: "New Year's Resolutions", "Things at a Wedding"
+- Cultural references: "Game of Thrones Houses", "Beatles Songs"
+- Wordplay potential: "Words That Sound Like Animals", "Homophones"
+
+GOOD THEME EXAMPLES:
+- "Things That Spin"
+- "Red Foods"
+- "Items in a First Aid Kit"
+- "Card Games"
+- "Things With Wheels"
+- "Beach Essentials"
+- "Words Containing Double Letters"
+
+BAD THEMES (avoid these patterns):
+- Too vague: "Nice Things", "Good Stuff"
+- Too narrow: "Things in My Kitchen Drawer" (too personal)
+- Too obscure: "Obscure 1920s Jazz Musicians"
+
+RESPONSE FORMAT (JSON only):
+{
+  "suggestions": [
+    { "theme": "Theme Title", "description": "Brief explanation with example answers" },
+    { "theme": "Another Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Third Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Fourth Theme", "description": "Brief explanation with example answers" }
+  ]
+}
+
+Return ONLY the JSON.`;
+  }
+
+  /**
+   * Parse Tandem theme suggestion response
+   */
+  parseTandemThemeSuggestions(responseText) {
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      if (!Array.isArray(result.suggestions) || result.suggestions.length < 3) {
+        throw new Error('Must have at least 3 suggestions');
+      }
+
+      // Validate each suggestion
+      result.suggestions.forEach((suggestion, index) => {
+        if (!suggestion.theme || typeof suggestion.theme !== 'string') {
+          throw new Error(`Suggestion ${index + 1} missing theme`);
+        }
+        if (!suggestion.description || typeof suggestion.description !== 'string') {
+          throw new Error(`Suggestion ${index + 1} missing description`);
+        }
+      });
+
+      return {
+        suggestions: result.suggestions.slice(0, 4).map((s) => ({
+          theme: s.theme.trim(),
+          description: s.description.trim(),
+        })),
+      };
+    } catch (error) {
+      logger.error('Failed to parse Tandem theme suggestions', { error, responseText });
+      throw new Error('Failed to parse AI suggestions. Please try again.');
+    }
+  }
+
+  /**
    * Parse AI crossword clues response
    */
   parseCrosswordCluesResponse(responseText, expectedCount) {
