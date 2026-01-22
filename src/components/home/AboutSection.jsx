@@ -43,7 +43,7 @@ export default function AboutSection({ onSubscribe }) {
           className={`mt-3 text-sm font-medium transition-colors ${
             highContrast
               ? 'text-hc-primary hover:text-hc-primary/80'
-              : 'text-accent-blue hover:text-accent-blue/80'
+              : 'text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300'
           }`}
         >
           Subscribe to Tandem Unlimited &rarr;
