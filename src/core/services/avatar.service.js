@@ -15,7 +15,7 @@ class AvatarService {
         .from('avatars')
         .select('*')
         .eq('is_active', true)
-        .order('sort_order');
+        .order('display_name');
 
       if (error) {
         logger.error('Failed to fetch avatars', error);
