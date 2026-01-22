@@ -402,12 +402,15 @@ export default function PlayingScreen({
         {/* Hint Earned Toast */}
         <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
 
-        {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
-        <div className="flex-1 flex flex-col pb-safe pb-[200px] pt-4 pt-safe-ios">
-          <div className="max-w-md w-full h-full mx-auto flex flex-col px-4">
+        {/* Main game card - centered vertically in space above keyboard */}
+        <div
+          className="flex-1 flex flex-col items-center justify-center pb-safe pt-4 pt-safe-ios px-4"
+          style={{ paddingBottom: 'max(200px, env(safe-area-inset-bottom, 0px) + 180px)' }}
+        >
+          <div className="max-w-md w-full mx-auto flex flex-col">
             <div
               ref={puzzleContainerRef}
-              className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col relative z-20 ${
+              className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col relative z-20 ${
                 highContrast
                   ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                   : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
