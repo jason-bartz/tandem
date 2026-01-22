@@ -120,9 +120,7 @@ export default function MiniAdmireScreen({
                 <div className="text-2xl font-black text-text-primary mb-1">
                   {perfectSolve ? 'Perfect Solve!' : 'Completed!'}
                 </div>
-                <div className="text-sm text-text-secondary">
-                  Daily Mini #{puzzleNumber}
-                </div>
+                <div className="text-sm text-text-secondary">Daily Mini #{puzzleNumber}</div>
               </div>
 
               {/* Stats - Time */}
@@ -146,27 +144,6 @@ export default function MiniAdmireScreen({
                   </div>
                 </div>
               </div>
-
-              {/* Perfect solve badge */}
-              {perfectSolve && (
-                <div className="mb-4 text-center">
-                  <div
-                    className="
-                      inline-flex items-center gap-2
-                      px-4 py-2
-                      rounded-[12px]
-                      border-[2px] border-black dark:border-gray-600
-                      shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                      dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                      bg-accent-green dark:bg-accent-green
-                      text-gray-900
-                    "
-                  >
-                    <span className="text-lg">✨</span>
-                    <span className="font-black text-sm">No Assists!</span>
-                  </div>
-                </div>
-              )}
 
               {/* Completed Grid - Read-only view */}
               <div className="flex items-center justify-center mb-4">
