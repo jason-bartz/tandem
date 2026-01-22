@@ -199,54 +199,48 @@ export default function MiniCompleteScreen({
           {/* Subtitle */}
           <p className="text-lg text-text-secondary mb-8">You solved Daily Mini #{puzzleNumber}</p>
 
-          {/* Stats - Only Time with Best Time */}
+          {/* Stats - Time and Best Time side by side */}
           <div className="max-w-md mx-auto mb-8">
-            <div
-              className="
-                rounded-[20px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
-                bg-accent-yellow/20 dark:bg-accent-yellow/10
-                p-6
-              "
-            >
-              <div className="text-sm font-bold text-text-tertiary uppercase tracking-wide mb-2">
-                Time
-              </div>
-              <div className="text-3xl font-black text-text-primary mb-3">
-                {formatMiniTime(elapsedTime)}
-              </div>
-              {stats && stats.bestTime > 0 && (
-                <div className="text-sm text-text-secondary">
-                  Best Time:{' '}
-                  <span className="font-bold text-text-primary">
-                    {formatMiniTime(stats.bestTime)}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Perfect solve badge */}
-          {perfectSolve && (
-            <div className="mb-8">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Time box */}
               <div
                 className="
-                  inline-flex items-center gap-2
-                  px-6 py-3
-                  rounded-[16px]
+                  rounded-[20px]
                   border-[3px] border-black dark:border-gray-600
                   shadow-[4px_4px_0px_rgba(0,0,0,1)]
                   dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
-                  bg-accent-green dark:bg-accent-green
-                  text-gray-900
+                  bg-accent-yellow/20 dark:bg-accent-yellow/10
+                  p-4
                 "
               >
-                <span className="font-black text-lg">Perfect Solve - No Assists!</span>
+                <div className="text-sm font-bold text-text-tertiary uppercase tracking-wide mb-2">
+                  Time
+                </div>
+                <div className="text-2xl font-black text-text-primary">
+                  {formatMiniTime(elapsedTime)}
+                </div>
+              </div>
+
+              {/* Best Time box */}
+              <div
+                className="
+                  rounded-[20px]
+                  border-[3px] border-black dark:border-gray-600
+                  shadow-[4px_4px_0px_rgba(0,0,0,1)]
+                  dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
+                  bg-accent-yellow/20 dark:bg-accent-yellow/10
+                  p-4
+                "
+              >
+                <div className="text-sm font-bold text-text-tertiary uppercase tracking-wide mb-2">
+                  Best
+                </div>
+                <div className="text-2xl font-black text-text-primary">
+                  {stats && stats.bestTime > 0 ? formatMiniTime(stats.bestTime) : '--'}
+                </div>
               </div>
             </div>
-          )}
+          </div>
 
           {/* Share button */}
           <div className="mb-6">
