@@ -26,7 +26,12 @@ export default function LeaderboardModal({
   const [activeTab, setActiveTab] = useState(initialTab);
   const { highContrast } = useTheme();
 
-  const gameName = gameType === 'tandem' ? 'Daily Tandem' : 'Daily Mini';
+  const gameName =
+    gameType === 'tandem'
+      ? 'Daily Tandem'
+      : gameType === 'reel-connections'
+        ? 'Reel Connections'
+        : 'Daily Mini';
 
   return (
     <LeftSidePanel
