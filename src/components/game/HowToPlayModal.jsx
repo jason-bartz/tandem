@@ -344,6 +344,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
+          {/* Demo GIF */}
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+            <img
+              src="/screenshots/dailymini-howto.gif"
+              alt="Daily Mini gameplay demo"
+              className="w-full h-auto"
+            />
+          </div>
+
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
