@@ -858,7 +858,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             title="Generate complete puzzle using AI"
           >
-            {isGenerating ? '🤖 Generating...' : '🤖 AI Generate'}
+            {isGenerating ? 'Generating...' : 'AI Generate'}
           </button>
           <button
             onClick={clearGrid}
@@ -1159,7 +1159,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
                 title="Get AI-powered creative suggestions"
               >
-                {isLoadingAiSuggestions ? '🤖 Loading...' : '🤖 AI Suggest'}
+                {isLoadingAiSuggestions ? 'Loading...' : 'Suggest Words'}
               </button>
             </div>
 
@@ -1262,11 +1262,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               isGeneratingClues ||
               (gridWords.across.length === 0 && gridWords.down.length === 0)
             }
-            className="px-4 py-2 text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg border-[2px] border-black hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="px-4 py-2 text-sm font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
             title="Generate AI clues for all words"
           >
-            {isGeneratingClues ? '🤖 Generating...' : '🤖 Generate All Clues'}
+            {isGeneratingClues ? 'Generating...' : 'Generate All Clues'}
           </button>
         </div>
 
