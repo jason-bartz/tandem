@@ -118,26 +118,26 @@ function generateHintsUsed(gameType) {
 }
 
 /**
- * Generate a random timestamp within the day
- * If spreadThroughoutDay is true, spread evenly; otherwise cluster near puzzle release
+ * Generate a random timestamp for bot submission
+ * Now that we generate bots throughout the day via cron, timestamps should be
+ * close to the current time (with some variance) for a natural appearance.
  *
- * @param {Date} date - Target date
- * @param {boolean} spreadThroughoutDay - Whether to spread throughout the day
- * @returns {Date} Random timestamp
+ * @param {Date} date - Target date (unused now, kept for API compatibility)
+ * @param {boolean} spreadThroughoutDay - If true, add variance; if false, cluster tighter
+ * @returns {Date} Submission timestamp
  */
-function generateSubmissionTime(date, spreadThroughoutDay = true) {
-  const dayStart = new Date(date);
-  dayStart.setHours(0, 0, 0, 0);
+function generateSubmissionTime(_date, spreadThroughoutDay = true) {
+  const now = new Date();
 
   if (spreadThroughoutDay) {
-    // Random time throughout the entire day
-    const randomMs = Math.random() * 24 * 60 * 60 * 1000;
-    return new Date(dayStart.getTime() + randomMs);
+    // Add random variance: -60 to +30 minutes from now
+    // Slightly biased to the past so entries appear to have just happened
+    const varianceMs = (Math.random() * 90 - 60) * 60 * 1000;
+    return new Date(now.getTime() + varianceMs);
   } else {
-    // Cluster submissions in first few hours (realistic for daily puzzle players)
-    const hoursRange = 6; // First 6 hours of the day
-    const randomMs = Math.random() * hoursRange * 60 * 60 * 1000;
-    return new Date(dayStart.getTime() + randomMs);
+    // Tighter clustering: -15 to +5 minutes from now
+    const varianceMs = (Math.random() * 20 - 15) * 60 * 1000;
+    return new Date(now.getTime() + varianceMs);
   }
 }
 
@@ -149,7 +149,7 @@ function generateSubmissionTime(date, spreadThroughoutDay = true) {
  * @param {Date} options.date - Target date
  * @param {number} options.count - Number of bot entries to generate
  * @param {object} options.config - Bot configuration
- * @param {Array<{username: string, avatarId: string}>} options.carryoverBots - Bots to reuse from previous day (with preserved avatars)
+ * @param {Array<{username: string, avatarId: string, currentStreak: number}>} options.carryoverBots - Bots to reuse from previous day (with preserved avatars and streaks)
  * @returns {Promise<number>} Number of entries created
  */
 export async function generateBotEntries({ gameType, date, count, config, carryoverBots = [] }) {
@@ -182,12 +182,15 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
 
   // Add carryover bots first (up to count)
   // Use deterministic avatar based on username to ensure consistency across games
+  // Preserve their current streak so we can increment it
   const carryoverCount = Math.min(carryoverBots.length, count);
   for (let i = 0; i < carryoverCount; i++) {
-    const username = carryoverBots[i].username;
+    const { username, currentStreak = 0 } = carryoverBots[i];
     botEntryData.push({
       username,
       avatarId: getAvatarForUsername(username, avatars), // Deterministic avatar
+      currentStreak, // Track their existing streak to increment
+      isCarryover: true,
     });
   }
 
@@ -205,9 +208,10 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
     }
 
     // Assign deterministic avatars to new bots (same username = same avatar)
+    // New bots start with streak = 0 (will become 1 when inserted)
     for (const username of newUsernames) {
       const avatarId = getAvatarForUsername(username, avatars);
-      botEntryData.push({ username, avatarId });
+      botEntryData.push({ username, avatarId, currentStreak: 0, isCarryover: false });
     }
   }
 
@@ -217,9 +221,11 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
 
   for (let i = 0; i < count; i++) {
     const score = generateRealisticScore(gameType, config);
-    const { username, avatarId } = botEntryData[i];
+    const { username, avatarId, currentStreak, isCarryover } = botEntryData[i];
     const submittedAt = generateSubmissionTime(date, config.spread_throughout_day);
     const hintsUsed = generateHintsUsed(gameType);
+    // Carryover bots increment their streak, new bots start at 1
+    const newStreak = currentStreak + 1;
 
     entries.push({
       gameType,
@@ -229,6 +235,8 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
       avatarId,
       submittedAt,
       hintsUsed,
+      newStreak,
+      isCarryover,
     });
   }
 
@@ -272,32 +280,38 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
       } else {
         logger.info('[Bot Leaderboard] Successfully inserted daily entry:', data);
 
-        // Also insert streak entry with streak = 1
+        // Upsert streak entry - carryover bots get their streak incremented,
+        // new bots start at 1. The upsert function will update existing entries.
         const { data: streakData, error: streakError } = await supabase.rpc(
-          'insert_bot_streak_entry',
+          'upsert_bot_streak_entry',
           {
             p_game_type: entry.gameType,
-            p_streak_days: 1,
+            p_streak_days: entry.newStreak,
             p_bot_username: entry.username,
             p_bot_avatar_id: entry.avatarId,
-            p_puzzle_date: entry.dateStr,
             p_metadata: {
               generated_at: new Date().toISOString(),
               last_played: entry.dateStr,
+              is_carryover: entry.isCarryover,
             },
           }
         );
 
         if (streakError) {
-          logger.error('[Bot Leaderboard] Error inserting bot streak entry:', {
+          logger.error('[Bot Leaderboard] Error upserting bot streak entry:', {
             streakError,
             entry: {
               gameType: entry.gameType,
               username: entry.username,
+              newStreak: entry.newStreak,
             },
           });
         } else {
-          logger.info('[Bot Leaderboard] Successfully inserted streak entry:', streakData);
+          logger.info('[Bot Leaderboard] Successfully upserted streak entry:', {
+            ...streakData,
+            streak: entry.newStreak,
+            isCarryover: entry.isCarryover,
+          });
         }
 
         successCount++;
@@ -377,26 +391,83 @@ export async function generateDailyBotEntries() {
         if (!carryoverError && yesterdayBots && yesterdayBots.length > 0) {
           // Deduplicate by username (in case there are somehow duplicates)
           const seenUsernames = new Set();
-          carryoverBots = yesterdayBots
-            .filter((entry) => {
-              if (seenUsernames.has(entry.bot_username)) {
-                return false;
-              }
-              seenUsernames.add(entry.bot_username);
-              return true;
-            })
-            .map((entry) => ({
-              username: entry.bot_username,
-              avatarId: entry.bot_avatar_id,
-            }));
+          const uniqueYesterdayBots = yesterdayBots.filter((entry) => {
+            if (seenUsernames.has(entry.bot_username)) {
+              return false;
+            }
+            seenUsernames.add(entry.bot_username);
+            return true;
+          });
+
+          // Now fetch the current streak for each carryover bot
+          const usernames = uniqueYesterdayBots.map((b) => b.bot_username);
+          const { data: streakEntries, error: streakError } = await supabase
+            .from('leaderboard_entries')
+            .select('bot_username, score')
+            .eq('game_type', game)
+            .eq('leaderboard_type', 'best_streak')
+            .eq('is_bot', true)
+            .in('bot_username', usernames);
+
+          // Create a map of username -> current streak
+          const streakMap = new Map();
+          if (!streakError && streakEntries) {
+            for (const entry of streakEntries) {
+              // If multiple entries exist for same bot, take the highest streak
+              const existing = streakMap.get(entry.bot_username) || 0;
+              streakMap.set(entry.bot_username, Math.max(existing, entry.score));
+            }
+          }
+
+          carryoverBots = uniqueYesterdayBots.map((entry) => ({
+            username: entry.bot_username,
+            avatarId: entry.bot_avatar_id,
+            currentStreak: streakMap.get(entry.bot_username) || 0,
+          }));
 
           logger.info(
-            `[Bot Leaderboard] Carrying over ${carryoverBots.length} bots for ${game} from ${yesterdayStr}`
+            `[Bot Leaderboard] Carrying over ${carryoverBots.length} bots for ${game} from ${yesterdayStr}`,
+            { streaks: carryoverBots.map((b) => ({ name: b.username, streak: b.currentStreak })) }
           );
         }
       }
       // Get per-game target count
       const targetCount = configs[`${game}_entries_per_day`] || 20;
+
+      // Calculate how many entries should exist by this point in the day
+      // This spreads generation throughout the day instead of all at once
+      const now = new Date();
+
+      // Use date + game as seed for daily randomization
+      // This creates a consistent but different offset each day per game
+      const seedString = `${dateStr}-${game}`;
+      const dailySeed = simpleHash(seedString);
+
+      // Random daily offset: shifts the "day start" by 0-3 hours
+      // This makes generation windows different each day
+      const dailyOffsetHours = (dailySeed % 180) / 60; // 0 to 3 hours
+
+      // Also randomize the "pace" - some days bots join faster, some slower
+      // Pace factor between 0.7 and 1.3
+      const paceFactor = 0.7 + (dailySeed % 60) / 100;
+
+      const hourOfDay = now.getUTCHours() + now.getUTCMinutes() / 60;
+      // Apply the daily offset (wrap around at 24)
+      const adjustedHour = (hourOfDay + 24 - dailyOffsetHours) % 24;
+      const dayProgress = Math.min(1, (adjustedHour / 24) * paceFactor); // Cap at 1
+
+      // Carryover bots should be generated ASAP (in first run of the day)
+      // to maintain their streaks. New bots are spread throughout the day.
+      const carryoverCount = carryoverBots.length;
+      const newBotsTarget = targetCount - carryoverCount;
+
+      // Target for this point in time (with additional per-run randomness)
+      // Add a small random factor (±10%) to make each run slightly unpredictable
+      const runRandomFactor = 0.9 + Math.random() * 0.2;
+      const newBotsExpectedByNow = Math.floor(newBotsTarget * dayProgress * runRandomFactor);
+
+      // Total expected: all carryover bots (always) + portion of new bots based on time
+      const expectedByNow = carryoverCount + newBotsExpectedByNow;
 
       // Check if we already have bot entries for today
       const { data: existing, error: checkError } = await supabase
@@ -413,16 +484,20 @@ export async function generateDailyBotEntries() {
 
       const existingCount = existing?.length || 0;
 
-      logger.info(`[Bot Leaderboard] ${game} - existing: ${existingCount}, target: ${targetCount}`);
+      logger.info(
+        `[Bot Leaderboard] ${game} - existing: ${existingCount}, expected by now: ${expectedByNow} (${carryoverCount} carryover + ${newBotsExpectedByNow} new), daily target: ${targetCount}, day progress: ${(dayProgress * 100).toFixed(1)}% (offset: ${dailyOffsetHours.toFixed(1)}h, pace: ${paceFactor.toFixed(2)}x)`
+      );
 
-      if (existingCount >= targetCount) {
-        logger.info(`[Bot Leaderboard] Already have ${existingCount} bot entries for ${game}`);
-        results[game] = { generated: 0, existing: existingCount };
+      if (existingCount >= expectedByNow) {
+        logger.info(
+          `[Bot Leaderboard] Already have ${existingCount} bot entries for ${game}, expected ${expectedByNow} by now`
+        );
+        results[game] = { generated: 0, existing: existingCount, expectedByNow };
         continue;
       }
 
-      // Generate remaining entries
-      const toGenerate = targetCount - existingCount;
+      // Generate entries to reach expected count for this time of day
+      const toGenerate = expectedByNow - existingCount;
       logger.info(`[Bot Leaderboard] Generating ${toGenerate} entries for ${game}`);
 
       const generated = await generateBotEntries({
