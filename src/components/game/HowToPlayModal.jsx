@@ -123,6 +123,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </ul>
           </div>
 
+          {/* Demo GIF */}
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+            <img
+              src="/screenshots/tandem-howto.gif"
+              alt="Tandem gameplay demo"
+              className="w-full h-auto"
+            />
+          </div>
+
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h3>
             <div
@@ -402,6 +411,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 <span>Find all four groups to win!</span>
               </li>
             </ul>
+          </div>
+
+          {/* Demo GIF */}
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+            <img
+              src="/screenshots/reel-connections-howto.gif"
+              alt="Reel Connections gameplay demo"
+              className="w-full h-auto"
+            />
           </div>
 
           <div
