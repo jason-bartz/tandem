@@ -615,8 +615,8 @@ export default function PlayingScreen({
                         } disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden whitespace-nowrap`}
                         disabled={focusedIndex === null || correctAnswers[focusedIndex]}
                         aria-label={`Use hint. ${unlockedHints - hintsUsed} of ${unlockedHints} hints available`}
-                        // Animated layout when celebrating - expand left to fill full width
-                        layout
+                        // Animated when celebrating - expand left to fill full width
+                        // Note: Removed 'layout' prop to prevent conflicts with Check button animation
                         animate={
                           showSecondHintCelebration
                             ? {
@@ -630,7 +630,6 @@ export default function PlayingScreen({
                               }
                         }
                         transition={{
-                          layout: { duration: 0.3, ease: 'easeInOut' },
                           flex: { duration: 0.3, ease: 'easeInOut' },
                           width: { duration: 0.3, ease: 'easeInOut' },
                           scale: { duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }, // iOS spring curve
