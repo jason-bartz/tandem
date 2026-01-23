@@ -15,7 +15,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 
 export default function Support() {
   useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem' or 'mini'
+  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'mini', or 'reel'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,26 +39,31 @@ export default function Support() {
             <p className="text-sm">Tandem is a daily word puzzle game where you:</p>
             <ol className="list-decimal list-inside text-sm mt-2 space-y-1">
               <li>
-                <strong>Look at 4 emoji pairs</strong> - Each pair represents a single word
+                <strong>Look at the 4 emoji pairs</strong> - Each pair represents a single word. All
+                words are connected by a hidden theme
               </li>
               <li>
-                <strong>Guess what they represent</strong> - Type your answer for each pair
-                (character count is shown)
+                <strong>Guess what they represent</strong> - Type your answer for each pair, then
+                press &quot;Check&quot;
               </li>
               <li>
-                <strong>Progressive hints on mistakes</strong> - Letters in correct positions turn
-                green and stay locked, helping you narrow down the answer
+                <strong>Letter reveals on mistakes</strong> - Letters in correct positions turn
+                green and stay in place, helping you narrow down the answer
+              </li>
+              <li>
+                <strong>Progressive hint unlocking</strong> - Start with 1 hint, unlock a 2nd after
+                solving 2 puzzles
               </li>
               <li>
                 <strong>Solve all 4 puzzles</strong> - Complete all answers to discover the hidden
                 theme
               </li>
               <li>
-                <strong>Theme revealed upon completion</strong> - The connecting theme is shown only
-                after solving
+                <strong>Complete within 4 mistakes</strong> - You can make up to 4 incorrect guesses
               </li>
               <li>
-                <strong>Complete within 4 mistakes</strong> - You can make up to 4 incorrect guesses
+                <strong>Theme revealed upon completion</strong> - The connecting theme is shown only
+                after solving
               </li>
               <li>
                 <strong>Maintain your streak</strong> - Come back daily for new puzzles!
@@ -73,7 +78,7 @@ export default function Support() {
                 time)
               </li>
               <li>
-                <strong>Puzzle Archive</strong>: Access and play previous puzzles
+                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Unlimited feature)
               </li>
               <li>
                 <strong>Streak Tracking</strong>: Build consecutive days of completed puzzles
@@ -82,23 +87,15 @@ export default function Support() {
                 <strong>Statistics</strong>: Track your performance over time
               </li>
               <li>
-                <strong>Hint System</strong>: Progressive hint unlocking - start with 1 hint, unlock
-                a 2nd after solving 2 puzzles. Select an answer and tap the hint button to reveal
-                contextual text below that specific answer
-              </li>
-              <li>
                 <strong>Dark Mode</strong>: Easy on the eyes for night play
               </li>
               <li>
-                <strong>Colorblind/High Contrast Mode</strong>: Accessible colors and patterns for
-                better visibility
+                <strong>High Contrast Mode</strong>: Accessible colors and patterns for better
+                visibility
               </li>
               <li>
                 <strong>Reduced Motion Mode</strong>: Minimizes animations for improved
                 accessibility
-              </li>
-              <li>
-                <strong>Offline Play</strong>: Available in iOS native app only
               </li>
             </ul>
           </div>
@@ -670,6 +667,270 @@ export default function Support() {
     },
   ];
 
+  // Reel Connections sections
+  const reelSections = [
+    {
+      id: 'reel-getting-started',
+      title: 'Getting Started',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">How to Play Reel Connections</h4>
+            <p className="text-sm mb-3">
+              Reel Connections is a movie-themed puzzle game where you group 16 movies into 4
+              categories of 4 movies each. Find all four groups without making four mistakes!
+            </p>
+            <ol className="list-decimal list-inside text-sm space-y-1">
+              <li>
+                <strong>Look at the 16 movie posters</strong> - Each movie belongs to one of four
+                hidden categories
+              </li>
+              <li>
+                <strong>Select four movies</strong> - Tap movies you think share a common connection
+              </li>
+              <li>
+                <strong>Tap Submit</strong> - Check if your guess is correct
+              </li>
+              <li>
+                <strong>Find all four groups</strong> - Complete all categories to win
+              </li>
+              <li>
+                <strong>Complete within 4 mistakes</strong> - You can make up to 4 incorrect guesses
+              </li>
+              <li>
+                <strong>Maintain your streak</strong> - Come back daily for new puzzles!
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Game Features</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Daily Puzzles</strong>: One new puzzle every day at midnight (your local
+                time)
+              </li>
+              <li>
+                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Unlimited feature)
+              </li>
+              <li>
+                <strong>Hint System</strong>: One hint per game reveals the easiest unsolved
+                category
+              </li>
+              <li>
+                <strong>Streak Tracking</strong>: Build consecutive days of completed puzzles
+              </li>
+              <li>
+                <strong>Statistics</strong>: Track your performance over time
+              </li>
+              <li>
+                <strong>Dark Mode</strong>: Easy on the eyes for night play
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'reel-difficulty',
+      title: 'Difficulty Levels',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Category Difficulty</h4>
+            <p className="text-sm mb-3">
+              Categories are color-coded by difficulty. Start with the easier categories to build
+              momentum!
+            </p>
+            <div className="space-y-3 text-sm">
+              <div className="p-3 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg border-2 border-yellow-400">
+                <p className="font-semibold mb-1">MATINEE — Easiest</p>
+                <p>Straightforward connections, commonly known movies and themes.</p>
+              </div>
+              <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg border-2 border-blue-400">
+                <p className="font-semibold mb-1">FEATURE — Easy</p>
+                <p>Moderate difficulty, requires some movie knowledge.</p>
+              </div>
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/30 rounded-lg border-2 border-purple-400">
+                <p className="font-semibold mb-1">PREMIERE — Medium</p>
+                <p>Tricky connections that require careful thinking.</p>
+              </div>
+              <div className="p-3 bg-red-100 dark:bg-red-900/30 rounded-lg border-2 border-red-500">
+                <p className="font-semibold mb-1">GALA — Hardest</p>
+                <p>Challenging themes, obscure connections, or wordplay involved.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'reel-hints',
+      title: 'Hint System',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Using Hints</h4>
+            <p className="text-sm mb-3">
+              Stuck on a puzzle? You get <strong>one hint per game</strong>. Use it wisely!
+            </p>
+            <ul className="list-disc list-inside text-sm space-y-2">
+              <li>
+                <strong>Tap the Hint button</strong> to reveal the theme for a category
+              </li>
+              <li>
+                <strong>Hints reveal the easiest unsolved category first</strong> (Matinee → Feature
+                → Premiere → Gala)
+              </li>
+              <li>
+                <strong>The hint shows the category name</strong>, but you still need to identify
+                which movies belong
+              </li>
+              <li>
+                <strong>Using a hint does not count as a mistake</strong>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Strategy Tips</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>Start with movies you&apos;re confident about</li>
+              <li>Look for obvious patterns first (same director, same decade, etc.)</li>
+              <li>
+                Be careful of &quot;red herring&quot; movies that could fit multiple categories
+              </li>
+              <li>Save your hint for when you&apos;re truly stuck</li>
+              <li>Hold any poster and tap the banner to enlarge it for a better view</li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'reel-examples',
+      title: 'Example Connections',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Types of Connections</h4>
+            <p className="text-sm mb-3">
+              Categories can be based on many different types of connections:
+            </p>
+            <ul className="list-disc list-inside text-sm space-y-2">
+              <li>
+                <strong>Director:</strong> Movies Directed by Christopher Nolan
+              </li>
+              <li>
+                <strong>Time Period:</strong> 80&apos;s Fantasy Movies
+              </li>
+              <li>
+                <strong>Theme:</strong> Movies Starring a Furry Friend
+              </li>
+              <li>
+                <strong>Music:</strong> Soundtracks That Produced a Billboard #1 Hit
+              </li>
+              <li>
+                <strong>Actor:</strong> Movies Starring Tom Hanks
+              </li>
+              <li>
+                <strong>Genre:</strong> Romantic Comedies Set in New York
+              </li>
+              <li>
+                <strong>Wordplay:</strong> Movies with Colors in the Title
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'reel-faq',
+      title: 'Frequently Asked Questions',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-1">General Questions</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Q: Is Reel Connections free to play?</p>
+                <p>
+                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Unlimited
+                  subscriptions unlock access to all archived puzzles.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: When do new puzzles become available?</p>
+                <p>A: A new puzzle is released daily at midnight in your local timezone.</p>
+              </div>
+              <div>
+                <p className="font-medium">Q: How many guesses do I get?</p>
+                <p>
+                  A: You can make up to 4 mistakes. The game ends if you exceed this limit without
+                  finding all four categories.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What if I get 3 out of 4 movies right?</p>
+                <p>
+                  A: The game will tell you &quot;One away!&quot; if you have exactly 3 correct
+                  movies selected. This doesn&apos;t count as a mistake, but you need to figure out
+                  which movie to swap.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Can I deselect a movie?</p>
+                <p>
+                  A: Yes! Tap a selected movie again to deselect it. You can also use the Deselect
+                  All button to clear your selection.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'reel-troubleshooting',
+      title: 'Troubleshooting',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Common Issues and Solutions</h4>
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">Problem: Movie posters not loading</p>
+                <p className="italic">
+                  Solution: Check your internet connection. Posters are loaded from the server and
+                  require connectivity.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Can&apos;t see the full movie title</p>
+                <p className="italic">
+                  Solution: Hold any poster and tap the banner to enlarge it for a better view of
+                  the title and poster.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Streak reset unexpectedly</p>
+                <p className="italic">
+                  Solution: Streaks reset if you miss a day. For PWA users, clearing browser data
+                  will also reset streaks.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Game shows yesterday&apos;s puzzle</p>
+                <p className="italic">
+                  Solution: Hard refresh the page (Ctrl+F5 on desktop, pull down to refresh on
+                  mobile) or force quit and reopen the app.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   // Shared sections (platforms, account, contact)
   const sharedSections = [
     {
@@ -827,7 +1088,9 @@ export default function Support() {
   const currentSections =
     activeGame === 'tandem'
       ? [...tandemSections, ...sharedSections]
-      : [...miniSections, ...sharedSections];
+      : activeGame === 'mini'
+        ? [...miniSections, ...sharedSections]
+        : [...reelSections, ...sharedSections];
 
   // Simulate initial loading
   useEffect(() => {
@@ -882,7 +1145,7 @@ export default function Support() {
 
                   {/* Game Toggle */}
                   <div className="p-6 pb-4">
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <button
                         onClick={() => {
                           setActiveGame('tandem');
@@ -925,6 +1188,28 @@ export default function Support() {
                             className="w-5 h-5 rounded-lg"
                           />
                           <span className="hidden sm:inline">Mini</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
+                          setActiveGame('reel');
+                          setActiveSection(null);
+                        }}
+                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          activeGame === 'reel'
+                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-1.5">
+                          <Image
+                            src="/icons/ui/movie.png"
+                            alt="Reel Connections"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
+                          />
+                          <span className="hidden sm:inline">Reel</span>
                         </div>
                       </button>
                     </div>
