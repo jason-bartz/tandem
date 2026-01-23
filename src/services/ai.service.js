@@ -3250,6 +3250,204 @@ Generate puzzle now. JSON only.`;
 
     return slots;
   }
+
+  /**
+   * Generate AI-powered word suggestions for a crossword position
+   * Returns creative fill options including words, phrases, and clue-able entries
+   *
+   * @param {Object} options
+   * @param {number} options.wordLength - Required word length
+   * @param {string} options.pattern - Pattern with known letters (e.g., "A..LE")
+   * @param {Array} options.constraints - Array of position constraints
+   * @param {Array<Array<string>>} options.grid - Current grid state (for context)
+   * @param {string} options.direction - 'across' or 'down'
+   * @returns {Promise<{suggestions: Array<{word: string, clue: string}>}>}
+   */
+  async suggestCrosswordWords({ wordLength, pattern, constraints, grid, direction }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    // Format constraints for the prompt
+    const knownLetters = constraints
+      .filter((c) => c.letter)
+      .map((c) => `Position ${c.position + 1}: ${c.letter}`)
+      .join(', ');
+
+    const crossingConstraints = constraints
+      .filter((c) => c.crossingWord)
+      .map((c) => {
+        const cw = c.crossingWord;
+        return `Position ${c.position + 1} crosses a ${cw.direction} word with pattern "${cw.pattern}" at position ${cw.crossPosition + 1}`;
+      })
+      .join('\n');
+
+    // Build grid visualization for context
+    const gridVisualization = grid
+      .map((row) => row.map((cell) => (cell === '■' ? '█' : cell || '.')).join(' '))
+      .join('\n');
+
+    const prompt = `You are helping create a crossword puzzle. I need word suggestions for a ${wordLength}-letter ${direction} entry.
+
+CURRENT GRID STATE:
+${gridVisualization}
+
+CONSTRAINTS:
+- Word length: ${wordLength} letters
+- Pattern: ${pattern} (where . means unknown letter)
+${knownLetters ? `- Known letters: ${knownLetters}` : ''}
+${crossingConstraints ? `- Crossing word constraints:\n${crossingConstraints}` : ''}
+
+Generate 10-15 creative word suggestions that:
+1. Are EXACTLY ${wordLength} letters long
+2. Match the pattern "${pattern}" (letters must align with known positions)
+3. Work with any crossing word constraints
+4. Include a mix of:
+   - Common words (APPLE, HOUSE, etc.)
+   - Proper nouns (OBAMA, TESLA, etc.)
+   - Creative fills like:
+     * Time expressions: ONEAM (1 AM), SIXPM (6 PM)
+     * Phrases: UPONA ("Once upon a time"), ONEUP ("outdo, ___ __")
+     * Abbreviations: ASAP, NATO
+     * Fill-in-blanks: ENOLA ("___ Gay" - famous WWII plane), INEAR ("__ one ___, out the other")
+     * Pop culture: movie/book/song references
+   - Less common but valid crossword entries
+
+For each suggestion, provide a SHORT, CLEVER crossword-style clue (3-10 words max).
+
+IMPORTANT: Every word MUST be exactly ${wordLength} letters and match the pattern "${pattern}".
+
+Respond in JSON format:
+{
+  "suggestions": [
+    {"word": "WORD1", "clue": "Short clever clue here"},
+    {"word": "WORD2", "clue": "Another witty clue"},
+    ...
+  ]
+}`;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        logger.info('Generating crossword word suggestions with AI', {
+          wordLength,
+          pattern,
+          attempt: attempt + 1,
+        });
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 1024,
+          temperature: 1.0, // Higher for creative variety
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI suggestions response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        // Parse response
+        const result = this.parseSuggestionsResponse(responseText, wordLength, pattern);
+
+        logger.info('Crossword suggestions generated successfully', {
+          count: result.suggestions.length,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI suggestions attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          }
+        }
+
+        if (error.status === 401) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
+      }
+    }
+
+    throw new Error(
+      `AI suggestions failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Parse AI suggestions response
+   */
+  parseSuggestionsResponse(responseText, expectedLength, pattern) {
+    try {
+      // Extract JSON from response (handle markdown code blocks)
+      let jsonStr = responseText;
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1].trim();
+      } else {
+        // Try to find raw JSON
+        const startIdx = responseText.indexOf('{');
+        const endIdx = responseText.lastIndexOf('}');
+        if (startIdx !== -1 && endIdx !== -1) {
+          jsonStr = responseText.slice(startIdx, endIdx + 1);
+        }
+      }
+
+      const result = JSON.parse(jsonStr);
+
+      if (!Array.isArray(result.suggestions)) {
+        throw new Error('Invalid response format');
+      }
+
+      // Filter and validate suggestions
+      const validSuggestions = result.suggestions
+        .filter((s) => {
+          if (!s.word || !s.clue) return false;
+          const word = s.word.toUpperCase().replace(/[^A-Z]/g, '');
+          if (word.length !== expectedLength) return false;
+
+          // Check pattern match
+          for (let i = 0; i < pattern.length; i++) {
+            if (pattern[i] !== '.' && pattern[i] !== word[i]) {
+              return false;
+            }
+          }
+          return true;
+        })
+        .map((s) => ({
+          word: s.word.toUpperCase().replace(/[^A-Z]/g, ''),
+          clue: s.clue.trim(),
+        }));
+
+      return { suggestions: validSuggestions };
+    } catch (error) {
+      logger.error('Failed to parse AI suggestions response', { error, responseText });
+      throw new Error('Failed to parse AI suggestions. Please try again.');
+    }
+  }
 }
 
 export default new AIService();
