@@ -90,43 +90,37 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {/* Daily Tandem Content */}
       {activeGame === 'tandem' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              How to Play Tandem
-            </h3>
-            <p className="text-sm mb-3">Tandem is a daily word puzzle game where you:</p>
-            <ol className="text-sm space-y-2 list-decimal list-inside">
-              <li>
-                <strong>Look at the 4 emoji pairs</strong> - Each pair represents a single word. All
-                words are connected by a hidden theme
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  1
+                </span>
+                <span>
+                  Look at the 4 emoji pairs — each represents a single word connected by a hidden
+                  theme.
+                </span>
               </li>
-              <li>
-                <strong>Guess what they represent</strong> - Type your answer for each pair, then
-                press &quot;Check&quot;
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  2
+                </span>
+                <span>Type your guess and tap Check to submit.</span>
               </li>
-              <li>
-                <strong>Letter reveals on mistakes</strong> - Letters in correct positions turn
-                green and stay in place, helping you narrow down the answer
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  3
+                </span>
+                <span>Solve all 4 puzzles within 4 mistakes to win!</span>
               </li>
-              <li>
-                <strong>Progressive hint unlocking</strong> - Start with 1 hint, unlock a 2nd after
-                solving 2 puzzles
-              </li>
-              <li>
-                <strong>Solve all 4 puzzles</strong> - Complete all answers to discover the hidden
-                theme
-              </li>
-              <li>
-                <strong>Complete within 4 mistakes</strong> - You can make up to 4 incorrect guesses
-              </li>
-              <li>
-                <strong>Theme revealed upon completion</strong> - The connecting theme is shown only
-                after solving
-              </li>
-              <li>
-                <strong>Maintain your streak</strong> - Come back daily for new puzzles!
-              </li>
-            </ol>
+            </ul>
           </div>
 
           <div>
@@ -300,38 +294,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </p>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Game Features</h3>
-            <ul className="text-sm space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Daily Puzzles:</span>
-                <span>One new puzzle every day at midnight (your local time)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Puzzle Archive:</span>
-                <span>Play previous puzzles (Tandem Unlimited feature)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Streak Tracking:</span>
-                <span>Build consecutive days of completed puzzles</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Statistics:</span>
-                <span>Track your performance over time</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Dark Mode:</span>
-                <span>Easy on the eyes for night play</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">High Contrast:</span>
-                <span>Accessible colors and patterns for better visibility</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[140px]">Reduced Motion:</span>
-                <span>Minimizes animations for improved accessibility</span>
-              </li>
-            </ul>
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new puzzle is available every day at midnight. Come back tomorrow!
+            </p>
           </div>
         </div>
       )}
@@ -339,42 +305,34 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {/* Daily Mini Content */}
       {activeGame === 'mini' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              How to Play Daily Mini
-            </h3>
-            <p className="text-sm mb-3">
-              Daily Mini is a quick 5×5 crossword puzzle designed to be solved in just a few
-              minutes. Perfect for a quick brain teaser during your coffee break!
-            </p>
-            <ol className="text-sm space-y-2 list-decimal list-inside">
-              <li>
-                <strong>Select a cell</strong> - Tap any white square to begin typing
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                  1
+                </span>
+                <span>Tap a cell and type to fill in letters. Tap again to switch direction.</span>
               </li>
-              <li>
-                <strong>Switch directions</strong> - Tap the same cell again to toggle between
-                Across and Down
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                  2
+                </span>
+                <span>Read the clue above the keyboard and fill in your answer.</span>
               </li>
-              <li>
-                <strong>Read the clue</strong> - The current clue appears in the bar above the
-                keyboard
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
+                  3
+                </span>
+                <span>Complete all squares correctly to finish the puzzle!</span>
               </li>
-              <li>
-                <strong>Type your answer</strong> - Use the on-screen keyboard or your physical
-                keyboard
-              </li>
-              <li>
-                <strong>Navigate with arrows</strong> - Use arrow keys or swipe to move between
-                cells
-              </li>
-              <li>
-                <strong>Check your work</strong> - Use the check feature to verify squares, words,
-                or the whole puzzle
-              </li>
-              <li>
-                <strong>Complete the puzzle</strong> - Fill in all squares correctly to finish!
-              </li>
-            </ol>
+            </ul>
           </div>
 
           <div
@@ -394,73 +352,21 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-black' : ''}`}>
               <li>
-                • <strong>Check Square/Word/Puzzle:</strong> Verify your answers - incorrect letters
-                will be cleared
+                • <strong>Check Square/Word/Puzzle:</strong> Verify your answers
               </li>
               <li>
                 • <strong>Reveal Square/Word/Puzzle:</strong> Show the correct solution
               </li>
               <li>
-                • <strong>Auto-Check:</strong> Automatically highlight incorrect letters as you type
+                • <strong>Auto-Check:</strong> Highlight incorrect letters as you type
               </li>
             </ul>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-              Statistics & Streaks
-            </h3>
-            <p className="text-sm mb-2">Daily Mini tracks your performance with these metrics:</p>
-            <ul className="text-sm space-y-1">
-              <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
-                <span>
-                  <strong>Current/Longest Streak:</strong> Consecutive days with completed puzzles
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
-                <span>
-                  <strong>Average/Best Time:</strong> Track your solving speed
-                </span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-yellow-600 dark:text-yellow-400 font-bold">•</span>
-                <span>
-                  <strong>Perfect Solves:</strong> Puzzles completed without checks or reveals
-                </span>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Game Features</h3>
-            <ul className="text-sm space-y-2">
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Daily Puzzles:</span>
-                <span>One new 5×5 crossword every day at midnight</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Timer:</span>
-                <span>Track your solving time (starts when you begin playing)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Archive Access:</span>
-                <span>Play previous puzzles (4-day free window)</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Stats Tracking:</span>
-                <span>Monitor your average time, streaks, and perfect solves</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Dark Mode:</span>
-                <span>Comfortable solving in any lighting</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="font-semibold min-w-[130px]">Keyboard Support:</span>
-                <span>Full physical keyboard shortcuts for desktop</span>
-              </li>
-            </ul>
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new puzzle is available every day at midnight. Come back tomorrow!
+            </p>
           </div>
         </div>
       )}
@@ -468,17 +374,6 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       {/* Reel Connections Content */}
       {activeGame === 'reel' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">The Basics</h3>
-            <p className="text-sm mb-2">
-              Find groups of four movies that share something in common. Select four movie posters
-              and tap Submit to check if your guess is correct.
-            </p>
-            <p className="text-sm">
-              Find all four groups without making four mistakes. A new puzzle is released daily!
-            </p>
-          </div>
-
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
