@@ -132,39 +132,40 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div>
             <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h3>
             <div
-              className={`rounded-xl p-4 space-y-2 ${
+              className={`rounded-xl p-4 space-y-3 ${
                 highContrast
                   ? 'bg-hc-surface border-2 border-hc-border'
                   : 'bg-gray-50 dark:bg-gray-700'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <span className="text-2xl">☀️🔥</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= SUN</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🌅☀️</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  SUN
+                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Star → hot in the sky</p>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">🌶️🔥</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= PEPPER</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🍞🔥</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  DOUGH
+                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Spice → burns your mouth</p>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">☕🍵</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= COFFEE</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">📈💹</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  STOCKS
+                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Drink → served hot</p>
-
-              <div className="flex items-center justify-between pt-2">
-                <span className="text-2xl">🏜️🌡️</span>
-                <span className="font-mono text-sm text-gray-700 dark:text-gray-300">= DESERT</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl">🎈🎉</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  BALLOONS
+                </span>
               </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Climate → scorching heat</p>
 
-              <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-600">
+              <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gray-600">
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
-                  Theme revealed: Things That Are Hot 🔥
+                  Theme: Things That Rise
                 </p>
               </div>
             </div>
