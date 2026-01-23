@@ -27,6 +27,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import FloatingStatsBar from './FloatingStatsBar';
 import FixedButtonBar from './FixedButtonBar';
+import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 
 // Long press duration in milliseconds
@@ -1200,6 +1201,11 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           reduceMotion={reduceMotion}
           highContrast={highContrast}
         />
+      )}
+
+      {/* Learn How to Play Banner */}
+      {gameStarted && !gameWon && !gameOver && (
+        <LearnToPlayBanner gameType="reel" onOpenHowToPlay={() => setShowHowToPlay(true)} />
       )}
 
       <div

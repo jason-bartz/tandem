@@ -5,6 +5,7 @@ import { playHintSound, playCorrectSound, playErrorSound } from '@/lib/sounds';
 import PuzzleRow from './PuzzleRow';
 import HintDisplay from './HintDisplay';
 import HintEarnedToast from './HintEarnedToast';
+import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import StatsBar from './StatsBar';
 import RulesModal from './RulesModal';
 import HowToPlayModal from './HowToPlayModal';
@@ -401,6 +402,9 @@ export default function PlayingScreen({
       >
         {/* Hint Earned Toast */}
         <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
+
+        {/* Learn How to Play Banner */}
+        <LearnToPlayBanner gameType="tandem" onOpenHowToPlay={() => setShowHowToPlay(true)} />
 
         {/* Main game card - centered vertically in space above keyboard */}
         <div
