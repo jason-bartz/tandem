@@ -46,6 +46,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const [theme, setTheme] = useState(''); // Optional theme for AI generation
   // eslint-disable-next-line no-unused-vars
   const [cellConstraints, setCellConstraints] = useState(null); // For visual feedback
+  const [aiSuggestions, setAiSuggestions] = useState([]); // AI-powered word suggestions
+  const [isLoadingAiSuggestions, setIsLoadingAiSuggestions] = useState(false);
 
   // Load word lists on mount
   useEffect(() => {
@@ -113,6 +115,56 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     },
     [formData.grid, applySymmetry]
   );
+
+  /**
+   * Get all cells for the current word based on selected cell and direction
+   * Returns array of {row, col} coordinates
+   */
+  const getCurrentWordCells = useCallback(() => {
+    if (!selectedCell) return [];
+
+    const { row, col } = selectedCell;
+    const grid = formData.grid;
+    const cells = [];
+
+    if (currentDirection === 'across') {
+      // Find start of word (scan left until black square or edge)
+      let startCol = col;
+      while (startCol > 0 && grid[row][startCol - 1] !== '■') {
+        startCol--;
+      }
+      // Find end of word (scan right until black square or edge)
+      let endCol = col;
+      while (endCol < 4 && grid[row][endCol + 1] !== '■') {
+        endCol++;
+      }
+      // Collect all cells in word
+      for (let c = startCol; c <= endCol; c++) {
+        cells.push({ row, col: c });
+      }
+    } else {
+      // Find start of word (scan up until black square or edge)
+      let startRow = row;
+      while (startRow > 0 && grid[startRow - 1][col] !== '■') {
+        startRow--;
+      }
+      // Find end of word (scan down until black square or edge)
+      let endRow = row;
+      while (endRow < 4 && grid[endRow + 1][col] !== '■') {
+        endRow++;
+      }
+      // Collect all cells in word
+      for (let r = startRow; r <= endRow; r++) {
+        cells.push({ row: r, col });
+      }
+    }
+
+    return cells;
+  }, [selectedCell, formData.grid, currentDirection]);
+
+  // Get current word cells for highlighting
+  const currentWordCells = getCurrentWordCells();
+  const currentWordCellsSet = new Set(currentWordCells.map((c) => `${c.row},${c.col}`));
 
   const toggleBlackSquare = useCallback(
     (row, col) => {
@@ -296,6 +348,53 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
     setWordSuggestions(suggestions.matches || []);
   }, [selectedCell, formData.grid, currentDirection]);
+
+  /**
+   * Fetch AI-powered word suggestions
+   */
+  const fetchAiSuggestions = useCallback(async () => {
+    if (!selectedCell || isLoadingAiSuggestions) return;
+
+    // Check if current cell is a black square
+    if (formData.grid[selectedCell.row][selectedCell.col] === '■') {
+      return;
+    }
+
+    setIsLoadingAiSuggestions(true);
+    setAiSuggestions([]);
+
+    try {
+      const response = await fetch('/api/admin/mini/suggest', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({
+          grid: formData.grid,
+          row: selectedCell.row,
+          col: selectedCell.col,
+          direction: currentDirection,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to get suggestions');
+      }
+
+      const result = await response.json();
+      if (result.success) {
+        setAiSuggestions(result.suggestions || []);
+        logger.info('[MiniPuzzleEditor] AI suggestions received:', {
+          count: result.suggestions?.length || 0,
+          pattern: result.pattern,
+        });
+      }
+    } catch (error) {
+      logger.error('[MiniPuzzleEditor] AI suggestion error:', error);
+      alert(`AI suggestion failed: ${error.message}`);
+    } finally {
+      setIsLoadingAiSuggestions(false);
+    }
+  }, [selectedCell, formData.grid, currentDirection, isLoadingAiSuggestions]);
 
   /**
    * Fill selected word position with suggested word
@@ -518,7 +617,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     if (selectedCell && wordsLoaded) {
       updateWordSuggestions();
     }
-  }, [selectedCell, wordsLoaded, updateWordSuggestions]);
+    // Clear AI suggestions when selection changes
+    setAiSuggestions([]);
+  }, [selectedCell, wordsLoaded, updateWordSuggestions, currentDirection]);
 
   // Auto-focus selected cell for better typing experience
   useEffect(() => {
@@ -846,11 +947,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                       className={`grid-cell w-12 h-12 text-center text-lg font-bold uppercase border-[2px] ${
                         cell === '■'
                           ? 'bg-black text-white border-black'
-                          : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-white'
-                      } ${
-                        selectedCell?.row === rowIndex && selectedCell?.col === colIndex
-                          ? 'ring-2 ring-yellow-500'
-                          : ''
+                          : selectedCell?.row === rowIndex && selectedCell?.col === colIndex
+                            ? 'bg-accent-blue text-white border-black ring-2 ring-yellow-400'
+                            : currentWordCellsSet.has(`${rowIndex},${colIndex}`)
+                              ? 'bg-blue-100 dark:bg-blue-900/40 border-black dark:border-white'
+                              : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-white'
                       }`}
                       disabled={loading}
                     />
@@ -860,51 +961,110 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             </div>
             <p className="text-xs text-text-secondary mt-2">
               Tip: Type to fill letters and auto-advance. Type <strong>.</strong> (period) for black
-              squares. Use arrows to navigate, Space to toggle direction.
+              squares. Use arrows to navigate, Space to toggle direction. Current word is
+              highlighted in blue.
             </p>
             {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
           </div>
 
           {/* Word Suggestions Panel */}
           <div className="lg:col-span-1">
-            <label className="block text-sm font-bold text-text-primary mb-2">
-              Word Suggestions ({currentDirection})
-              {wordsLoaded && <span className="text-xs text-green-600 ml-2">✓ Loaded</span>}
-            </label>
-            <div className="bg-gray-50 dark:bg-gray-900 border-[2px] border-black dark:border-white rounded-lg p-3 max-h-[400px] overflow-y-auto">
-              {!wordsLoaded ? (
-                <div>
-                  <p className="text-xs text-text-secondary">Loading word lists...</p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Check browser console for details
-                  </p>
-                </div>
-              ) : !selectedCell ? (
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-bold text-text-primary">
+                Suggestions ({currentDirection})
+              </label>
+              <button
+                type="button"
+                onClick={fetchAiSuggestions}
+                disabled={
+                  !selectedCell ||
+                  isLoadingAiSuggestions ||
+                  formData.grid[selectedCell?.row]?.[selectedCell?.col] === '■'
+                }
+                className="px-2 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+                title="Get AI-powered creative suggestions"
+              >
+                {isLoadingAiSuggestions ? '🤖 Loading...' : '🤖 AI Suggest'}
+              </button>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-900 border-[2px] border-black dark:border-white rounded-lg p-3 max-h-[500px] overflow-y-auto">
+              {!selectedCell ? (
                 <p className="text-xs text-text-secondary">Select a cell to see suggestions</p>
-              ) : wordSuggestions.length === 0 ? (
-                <div>
-                  <p className="text-xs text-text-secondary">
-                    No valid words found for this pattern
-                  </p>
-                  <p className="text-xs text-text-secondary mt-1">
-                    Try filling more letters or check console
-                  </p>
-                </div>
+              ) : formData.grid[selectedCell.row][selectedCell.col] === '■' ? (
+                <p className="text-xs text-text-secondary">
+                  Black square selected - no suggestions
+                </p>
               ) : (
-                <div className="space-y-1">
-                  <p className="text-xs text-text-secondary mb-2">
-                    {wordSuggestions.length} word{wordSuggestions.length !== 1 ? 's' : ''} found
-                  </p>
-                  {wordSuggestions.map((word, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => fillWord(word)}
-                      className="w-full text-left px-2 py-1 text-sm font-mono bg-ghost-white dark:bg-gray-800 hover:bg-accent-yellow dark:hover:bg-accent-yellow hover:text-gray-900 border border-gray-300 rounded transition-colors"
-                    >
-                      {word}
-                    </button>
-                  ))}
+                <div className="space-y-4">
+                  {/* Current word info */}
+                  <div className="text-xs text-text-secondary border-b border-gray-300 dark:border-gray-700 pb-2">
+                    <span className="font-bold">{currentWordCells.length} letters</span>
+                    {' • '}
+                    <span className="font-mono">
+                      {currentWordCells.map((c) => formData.grid[c.row][c.col] || '.').join('')}
+                    </span>
+                  </div>
+
+                  {/* AI Suggestions */}
+                  {aiSuggestions.length > 0 && (
+                    <div>
+                      <p className="text-xs font-bold text-purple-600 mb-2">
+                        🤖 AI Suggestions ({aiSuggestions.length})
+                      </p>
+                      <div className="space-y-1">
+                        {aiSuggestions.map((suggestion, index) => (
+                          <button
+                            key={`ai-${index}`}
+                            type="button"
+                            onClick={() => fillWord(suggestion.word)}
+                            className="w-full text-left px-2 py-2 text-sm bg-purple-50 dark:bg-purple-900/30 hover:bg-purple-200 dark:hover:bg-purple-800/50 border border-purple-300 dark:border-purple-700 rounded transition-colors"
+                          >
+                            <span className="font-mono font-bold text-purple-700 dark:text-purple-300">
+                              {suggestion.word}
+                            </span>
+                            <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                              {suggestion.clue}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Dictionary Suggestions */}
+                  <div>
+                    <p className="text-xs font-bold text-text-secondary mb-2">
+                      📖 Dictionary ({wordSuggestions.length})
+                      {wordsLoaded && <span className="text-green-600 ml-1">✓</span>}
+                    </p>
+                    {!wordsLoaded ? (
+                      <p className="text-xs text-text-secondary">Loading word lists...</p>
+                    ) : wordSuggestions.length === 0 ? (
+                      <p className="text-xs text-text-secondary">
+                        No dictionary matches for this pattern
+                      </p>
+                    ) : (
+                      <div className="space-y-1 max-h-[200px] overflow-y-auto">
+                        {wordSuggestions.slice(0, 50).map((word, index) => (
+                          <button
+                            key={`dict-${index}`}
+                            type="button"
+                            onClick={() => fillWord(word)}
+                            className="w-full text-left px-2 py-1 text-sm font-mono bg-ghost-white dark:bg-gray-800 hover:bg-accent-yellow dark:hover:bg-accent-yellow hover:text-gray-900 border border-gray-300 rounded transition-colors"
+                          >
+                            {word}
+                          </button>
+                        ))}
+                        {wordSuggestions.length > 50 && (
+                          <p className="text-xs text-text-secondary text-center py-1">
+                            +{wordSuggestions.length - 50} more...
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
