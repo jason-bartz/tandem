@@ -48,6 +48,89 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const [cellConstraints, setCellConstraints] = useState(null); // For visual feedback
   const [aiSuggestions, setAiSuggestions] = useState([]); // AI-powered word suggestions
   const [isLoadingAiSuggestions, setIsLoadingAiSuggestions] = useState(false);
+  const [isGeneratingClues, setIsGeneratingClues] = useState(false);
+
+  /**
+   * Calculate clue numbers and extract words from the grid
+   * Returns { clueNumbers: 2D array, words: { across: [], down: [] } }
+   */
+  const extractGridWords = useCallback((grid) => {
+    const clueNumbers = Array(5)
+      .fill()
+      .map(() => Array(5).fill(null));
+    const words = { across: [], down: [] };
+    let currentNumber = 1;
+
+    for (let row = 0; row < 5; row++) {
+      for (let col = 0; col < 5; col++) {
+        const cell = grid[row][col];
+        if (cell === '■' || cell === '') continue;
+
+        // Check if this cell starts an across word
+        const startsAcross =
+          (col === 0 || grid[row][col - 1] === '■') &&
+          col < 4 &&
+          grid[row][col + 1] !== '■' &&
+          grid[row][col + 1] !== '';
+
+        // Check if this cell starts a down word
+        const startsDown =
+          (row === 0 || grid[row - 1][col] === '■') &&
+          row < 4 &&
+          grid[row + 1][col] !== '■' &&
+          grid[row + 1][col] !== '';
+
+        if (startsAcross || startsDown) {
+          clueNumbers[row][col] = currentNumber;
+
+          if (startsAcross) {
+            // Extract across word
+            let word = '';
+            let c = col;
+            while (c < 5 && grid[row][c] !== '■' && grid[row][c] !== '') {
+              word += grid[row][c];
+              c++;
+            }
+            if (word.length >= 2) {
+              words.across.push({
+                number: currentNumber,
+                word: word.toUpperCase(),
+                row,
+                col,
+                direction: 'across',
+              });
+            }
+          }
+
+          if (startsDown) {
+            // Extract down word
+            let word = '';
+            let r = row;
+            while (r < 5 && grid[r][col] !== '■' && grid[r][col] !== '') {
+              word += grid[r][col];
+              r++;
+            }
+            if (word.length >= 2) {
+              words.down.push({
+                number: currentNumber,
+                word: word.toUpperCase(),
+                row,
+                col,
+                direction: 'down',
+              });
+            }
+          }
+
+          currentNumber++;
+        }
+      }
+    }
+
+    return { clueNumbers, words };
+  }, []);
+
+  // Extract current words from grid
+  const { words: gridWords } = extractGridWords(formData.grid);
 
   // Load word lists on mount
   useEffect(() => {
@@ -520,21 +603,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     setFormData((prev) => ({ ...prev, clues: newClues }));
   };
 
-  const addClue = (direction) => {
-    const newClues = { ...formData.clues };
-    newClues[direction] = [
-      ...newClues[direction],
-      { number: newClues[direction].length + 1, clue: '', answer: '' },
-    ];
-    setFormData((prev) => ({ ...prev, clues: newClues }));
-  };
-
-  const removeClue = (direction, index) => {
-    const newClues = { ...formData.clues };
-    newClues[direction] = newClues[direction].filter((_, i) => i !== index);
-    setFormData((prev) => ({ ...prev, clues: newClues }));
-  };
-
   const validate = () => {
     const newErrors = {};
 
@@ -611,6 +679,112 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       setFormData((prev) => ({ ...prev, date }));
     }
   }, [puzzle, date]);
+
+  // Auto-sync clues with grid changes - update numbers and answers
+  useEffect(() => {
+    // Build new clues arrays preserving existing clue text where possible
+    const newAcross = gridWords.across.map((wordInfo) => {
+      // Find existing clue with same answer
+      const existingClue = formData.clues.across.find(
+        (c) => c.answer === wordInfo.word || c.number === wordInfo.number
+      );
+      return {
+        number: wordInfo.number,
+        clue: existingClue?.clue || '',
+        answer: wordInfo.word,
+      };
+    });
+
+    const newDown = gridWords.down.map((wordInfo) => {
+      // Find existing clue with same answer
+      const existingClue = formData.clues.down.find(
+        (c) => c.answer === wordInfo.word || c.number === wordInfo.number
+      );
+      return {
+        number: wordInfo.number,
+        clue: existingClue?.clue || '',
+        answer: wordInfo.word,
+      };
+    });
+
+    // Only update if clues have actually changed
+    const cluesChanged =
+      JSON.stringify(newAcross) !== JSON.stringify(formData.clues.across) ||
+      JSON.stringify(newDown) !== JSON.stringify(formData.clues.down);
+
+    if (cluesChanged && (newAcross.length > 0 || newDown.length > 0)) {
+      setFormData((prev) => ({
+        ...prev,
+        clues: { across: newAcross, down: newDown },
+      }));
+    }
+  }, [gridWords.across, gridWords.down]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  /**
+   * Generate AI clues for all words in the grid
+   */
+  const generateAiClues = async () => {
+    const allWords = [...gridWords.across, ...gridWords.down];
+    if (allWords.length === 0) {
+      alert('No words in the grid to generate clues for.');
+      return;
+    }
+
+    // Check if all words are complete (no empty cells)
+    const hasIncompleteWords = allWords.some((w) => !w.word || w.word.includes('.'));
+    if (hasIncompleteWords) {
+      alert('Please fill in all words completely before generating clues.');
+      return;
+    }
+
+    setIsGeneratingClues(true);
+
+    try {
+      const response = await fetch('/api/admin/mini/clues', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ words: allWords }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to generate clues');
+      }
+
+      const result = await response.json();
+
+      if (result.success && result.clues) {
+        // Update clues with AI-generated text
+        const newAcross = formData.clues.across.map((clue) => {
+          const generated = result.clues.find(
+            (c) => c.word === clue.answer && c.direction === 'across'
+          );
+          return generated ? { ...clue, clue: generated.clue } : clue;
+        });
+
+        const newDown = formData.clues.down.map((clue) => {
+          const generated = result.clues.find(
+            (c) => c.word === clue.answer && c.direction === 'down'
+          );
+          return generated ? { ...clue, clue: generated.clue } : clue;
+        });
+
+        setFormData((prev) => ({
+          ...prev,
+          clues: { across: newAcross, down: newDown },
+        }));
+
+        logger.info('[MiniPuzzleEditor] AI clues generated:', {
+          count: result.clues.length,
+        });
+      }
+    } catch (error) {
+      logger.error('[MiniPuzzleEditor] AI clue generation error:', error);
+      alert(`Failed to generate clues: ${error.message}`);
+    } finally {
+      setIsGeneratingClues(false);
+    }
+  };
 
   // Update word suggestions when cell selection changes
   useEffect(() => {
@@ -1071,113 +1245,98 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           </div>
         </div>
 
+        {/* Clues Header with Generate Button */}
+        <div className="flex justify-between items-center py-3 border-t-2 border-black dark:border-white">
+          <div>
+            <h3 className="text-lg font-black text-text-primary">Clues</h3>
+            <p className="text-xs text-text-secondary">
+              {gridWords.across.length + gridWords.down.length} words detected • Clues auto-sync
+              with grid
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={generateAiClues}
+            disabled={
+              loading ||
+              isGeneratingClues ||
+              (gridWords.across.length === 0 && gridWords.down.length === 0)
+            }
+            className="px-4 py-2 text-sm font-bold bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg border-[2px] border-black hover:from-purple-700 hover:to-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            title="Generate AI clues for all words"
+          >
+            {isGeneratingClues ? '🤖 Generating...' : '🤖 Generate All Clues'}
+          </button>
+        </div>
+
         {/* Across Clues */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-bold text-text-primary">Across Clues</label>
-            <button
-              type="button"
-              onClick={() => addClue('across')}
-              className="px-2 py-1 text-xs font-bold bg-accent-green text-white rounded-lg border-[2px] border-black"
-              disabled={loading}
-            >
-              + Add
-            </button>
+            <label className="text-sm font-bold text-text-primary">
+              Across ({formData.clues.across.length})
+            </label>
           </div>
           <div className="space-y-2">
-            {formData.clues.across.map((clue, index) => (
-              <div key={index} className="grid grid-cols-12 gap-2 items-start">
-                <input
-                  type="number"
-                  placeholder="#"
-                  value={clue.number || ''}
-                  onChange={(e) => handleClueChange('across', index, 'number', e.target.value)}
-                  className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
-                  disabled={loading}
-                />
-                <input
-                  type="text"
-                  placeholder="Clue text"
-                  value={clue.clue || ''}
-                  onChange={(e) => handleClueChange('across', index, 'clue', e.target.value)}
-                  className="col-span-7 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
-                  disabled={loading}
-                />
-                <input
-                  type="text"
-                  placeholder="ANSWER"
-                  value={clue.answer || ''}
-                  onChange={(e) =>
-                    handleClueChange('across', index, 'answer', e.target.value.toUpperCase())
-                  }
-                  className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm uppercase"
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeClue('across', index)}
-                  className="col-span-1 px-2 py-2 text-xs font-bold bg-red-500 text-white rounded-lg border-[2px] border-black"
-                  disabled={loading}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+            {formData.clues.across.length === 0 ? (
+              <p className="text-xs text-text-secondary italic">
+                No across words detected. Fill in the grid to create words.
+              </p>
+            ) : (
+              formData.clues.across.map((clue, index) => (
+                <div key={index} className="grid grid-cols-12 gap-2 items-start">
+                  <div className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-center font-bold">
+                    {clue.number}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter clue..."
+                    value={clue.clue || ''}
+                    onChange={(e) => handleClueChange('across', index, 'clue', e.target.value)}
+                    className="col-span-8 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
+                    disabled={loading}
+                  />
+                  <div className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm uppercase font-mono font-bold text-center">
+                    {clue.answer}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
         {/* Down Clues */}
         <div>
           <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-bold text-text-primary">Down Clues</label>
-            <button
-              type="button"
-              onClick={() => addClue('down')}
-              className="px-2 py-1 text-xs font-bold bg-accent-green text-white rounded-lg border-[2px] border-black"
-              disabled={loading}
-            >
-              + Add
-            </button>
+            <label className="text-sm font-bold text-text-primary">
+              Down ({formData.clues.down.length})
+            </label>
           </div>
           <div className="space-y-2">
-            {formData.clues.down.map((clue, index) => (
-              <div key={index} className="grid grid-cols-12 gap-2 items-start">
-                <input
-                  type="number"
-                  placeholder="#"
-                  value={clue.number || ''}
-                  onChange={(e) => handleClueChange('down', index, 'number', e.target.value)}
-                  className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
-                  disabled={loading}
-                />
-                <input
-                  type="text"
-                  placeholder="Clue text"
-                  value={clue.clue || ''}
-                  onChange={(e) => handleClueChange('down', index, 'clue', e.target.value)}
-                  className="col-span-7 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
-                  disabled={loading}
-                />
-                <input
-                  type="text"
-                  placeholder="ANSWER"
-                  value={clue.answer || ''}
-                  onChange={(e) =>
-                    handleClueChange('down', index, 'answer', e.target.value.toUpperCase())
-                  }
-                  className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm uppercase"
-                  disabled={loading}
-                />
-                <button
-                  type="button"
-                  onClick={() => removeClue('down', index)}
-                  className="col-span-1 px-2 py-2 text-xs font-bold bg-red-500 text-white rounded-lg border-[2px] border-black"
-                  disabled={loading}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
+            {formData.clues.down.length === 0 ? (
+              <p className="text-xs text-text-secondary italic">
+                No down words detected. Fill in the grid to create words.
+              </p>
+            ) : (
+              formData.clues.down.map((clue, index) => (
+                <div key={index} className="grid grid-cols-12 gap-2 items-start">
+                  <div className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-center font-bold">
+                    {clue.number}
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Enter clue..."
+                    value={clue.clue || ''}
+                    onChange={(e) => handleClueChange('down', index, 'clue', e.target.value)}
+                    className="col-span-8 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
+                    disabled={loading}
+                  />
+                  <div className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm uppercase font-mono font-bold text-center">
+                    {clue.answer}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
           {errors.clues && <p className="text-red-500 text-xs mt-1">{errors.clues}</p>}
         </div>
