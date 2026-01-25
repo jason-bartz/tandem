@@ -455,6 +455,11 @@ module.exports = {
             transform: 'translateY(0)',
           },
         },
+        // Gold shimmer for first discoveries
+        shimmer: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
       },
     },
   },

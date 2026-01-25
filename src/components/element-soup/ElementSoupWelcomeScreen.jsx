@@ -83,7 +83,10 @@ export function ElementSoupWelcomeScreen({
         </div>
 
         {/* Par Display */}
-        <p className="text-sm text-gray-600 dark:text-gray-400">Par: {parMoves} moves</p>
+        <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
+          <Image src="/icons/ui/par.png" alt="" width={16} height={16} />
+          <span>Par: {parMoves} moves</span>
+        </div>
       </motion.div>
 
       {/* How to Play Section - Persistent */}
@@ -119,7 +122,7 @@ export function ElementSoupWelcomeScreen({
         onClick={onStart}
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4',
-          'bg-soup-primary text-white',
+          'bg-soup-primary text-black',
           'border-[3px] border-black',
           'rounded-xl font-bold text-lg',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
@@ -134,7 +137,7 @@ export function ElementSoupWelcomeScreen({
         transition={{ delay: 0.45 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        <Image src="/icons/ui/cauldron.png" alt="" width={24} height={24} />
+        <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
         <span>Start Mixing</span>
       </motion.button>
 
