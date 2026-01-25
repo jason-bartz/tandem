@@ -8,8 +8,11 @@ import {
   Check,
   AlertCircle,
   ChevronRight,
+  ChevronDown,
   Plus,
   Beaker,
+  BookOpen,
+  GitBranch,
 } from 'lucide-react';
 import logger from '@/lib/logger';
 import authService from '@/services/auth.service';
@@ -22,12 +25,12 @@ import { STARTER_ELEMENTS } from '@/lib/element-soup.constants';
  * - Manually add individual combinations
  */
 export default function ElementManager() {
-  const [activeSection, setActiveSection] = useState('generator'); // 'generator' or 'manual'
+  const [activeSection, setActiveSection] = useState('generator'); // 'generator', 'manual', or 'review'
 
   return (
     <div className="space-y-6">
       {/* Section Tabs */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 flex-wrap">
         <button
           onClick={() => setActiveSection('generator')}
           className={`px-4 py-2 font-bold rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-2 ${
@@ -50,11 +53,23 @@ export default function ElementManager() {
           <Beaker className="w-4 h-4" />
           Manual Entry
         </button>
+        <button
+          onClick={() => setActiveSection('review')}
+          className={`px-4 py-2 font-bold rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-2 ${
+            activeSection === 'review'
+              ? 'bg-blue-500 text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+              : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
+          }`}
+        >
+          <BookOpen className="w-4 h-4" />
+          Review
+        </button>
       </div>
 
       {/* Content */}
       {activeSection === 'generator' && <MultiPathGenerator />}
       {activeSection === 'manual' && <ManualComboEntry />}
+      {activeSection === 'review' && <CombinationReview />}
     </div>
   );
 }
@@ -903,6 +918,345 @@ function ManualComboEntry() {
           ))}
         </div>
       </div>
+    </div>
+  );
+}
+
+/**
+ * CombinationReview - Search and view existing combinations with pathways
+ */
+function CombinationReview() {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchResults, setSearchResults] = useState(null);
+  const [error, setError] = useState(null);
+  const [expandedPathways, setExpandedPathways] = useState(new Set());
+  const [loadingPathways, setLoadingPathways] = useState(false);
+
+  // Search for element and its combinations
+  const searchElement = useCallback(async () => {
+    if (!searchQuery.trim()) {
+      setError('Please enter an element name to search');
+      return;
+    }
+
+    setIsSearching(true);
+    setError(null);
+    setSearchResults(null);
+    setExpandedPathways(new Set());
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/element-soup/review?element=${encodeURIComponent(searchQuery.trim())}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Search failed');
+      }
+
+      setSearchResults(data);
+      logger.info('[CombinationReview] Search results', {
+        element: data.element,
+        combinations: data.combinations?.length || 0,
+      });
+    } catch (err) {
+      logger.error('[CombinationReview] Search error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsSearching(false);
+    }
+  }, [searchQuery]);
+
+  // Load pathways for a specific combination
+  const loadPathways = useCallback(async () => {
+    if (!searchResults?.element) return;
+
+    setLoadingPathways(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/element-soup/review?element=${encodeURIComponent(searchResults.element)}&pathways=true`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to load pathways');
+      }
+
+      setSearchResults((prev) => ({
+        ...prev,
+        pathways: data.pathways,
+      }));
+    } catch (err) {
+      logger.error('[CombinationReview] Pathway error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setLoadingPathways(false);
+    }
+  }, [searchResults?.element]);
+
+  const togglePathway = useCallback(
+    (idx) => {
+      setExpandedPathways((prev) => {
+        const next = new Set(prev);
+        if (next.has(idx)) {
+          next.delete(idx);
+        } else {
+          next.add(idx);
+          // Load pathways if not already loaded
+          if (!searchResults?.pathways) {
+            loadPathways();
+          }
+        }
+        return next;
+      });
+    },
+    [searchResults?.pathways, loadPathways]
+  );
+
+  return (
+    <div className="space-y-6">
+      {/* Search Section */}
+      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-xl border-[3px] border-blue-500 p-6">
+        <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400 mb-4 flex items-center gap-2">
+          <BookOpen className="w-5 h-5" />
+          Review Combinations & Pathways
+        </h3>
+
+        <p className="text-sm text-text-secondary mb-4">
+          Search for any element to see how it can be created and trace the pathway back to starter
+          elements.
+        </p>
+
+        {/* Search Input */}
+        <div className="flex gap-3">
+          <div className="flex-1 relative">
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && !isSearching && searchElement()}
+              placeholder="Search for an element (e.g., Batman, Robot, Pizza)"
+              className="w-full px-4 py-3 pl-10 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary text-lg"
+              disabled={isSearching}
+            />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          </div>
+          <button
+            onClick={searchElement}
+            disabled={isSearching || !searchQuery.trim()}
+            className="px-6 py-3 bg-blue-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-blue-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+          >
+            {isSearching ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Searching...
+              </>
+            ) : (
+              <>
+                <Search className="w-5 h-5" />
+                Search
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="p-4 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-start gap-3">
+          <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="font-bold text-red-600 dark:text-red-400">Error</p>
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Search Results */}
+      {searchResults && (
+        <div className="space-y-4">
+          {/* Element Header */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
+            <div className="flex items-center gap-4">
+              <span className="text-5xl">{searchResults.emoji || '✨'}</span>
+              <div>
+                <h2 className="text-2xl font-bold text-text-primary">{searchResults.element}</h2>
+                {searchResults.isStarter ? (
+                  <p className="text-sm text-green-600 dark:text-green-400 font-bold flex items-center gap-1">
+                    <Check className="w-4 h-4" />
+                    Starter Element
+                  </p>
+                ) : (
+                  <p className="text-sm text-text-secondary">
+                    {searchResults.combinations?.length || 0} way
+                    {searchResults.combinations?.length !== 1 ? 's' : ''} to create this element
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Combinations List */}
+          {searchResults.combinations && searchResults.combinations.length > 0 && (
+            <div className="space-y-3">
+              <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                <GitBranch className="w-5 h-5" />
+                Combinations
+              </h3>
+
+              {searchResults.combinations.map((combo, idx) => (
+                <CombinationCard
+                  key={idx}
+                  combo={combo}
+                  result={searchResults.element}
+                  resultEmoji={searchResults.emoji}
+                  pathway={searchResults.pathways?.[idx]}
+                  isExpanded={expandedPathways.has(idx)}
+                  isLoading={loadingPathways && expandedPathways.has(idx)}
+                  onToggle={() => togglePathway(idx)}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* No Combinations Message */}
+          {!searchResults.isStarter && searchResults.combinations?.length === 0 && (
+            <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600">
+              <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+              <p className="text-text-secondary font-medium">
+                No combinations found for &quot;{searchResults.element}&quot;
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                This element may not exist in the database yet.
+              </p>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isSearching && !searchResults && !error && (
+        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600">
+          <Search className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+          <p className="text-lg font-bold text-text-secondary">Search for an element</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Enter an element name to see all the ways it can be created
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * CombinationCard - Display a single combination with expandable pathway
+ */
+function CombinationCard({ combo, result, resultEmoji, pathway, isExpanded, isLoading, onToggle }) {
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black dark:border-white overflow-hidden">
+      {/* Combination Header */}
+      <button
+        onClick={onToggle}
+        className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+      >
+        <div className="flex items-center gap-3 text-lg">
+          <span className="font-bold text-text-primary">{combo.elementA}</span>
+          <span className="text-blue-500 font-bold">+</span>
+          <span className="font-bold text-text-primary">{combo.elementB}</span>
+          <span className="text-blue-500 font-bold">=</span>
+          <span className="text-2xl">{resultEmoji}</span>
+          <span className="font-bold text-text-primary">{result}</span>
+        </div>
+        <div className="flex items-center gap-3">
+          {combo.useCount > 0 && (
+            <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+              Used {combo.useCount}×
+            </span>
+          )}
+          {isLoading ? (
+            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+          ) : isExpanded ? (
+            <ChevronDown className="w-5 h-5 text-blue-500" />
+          ) : (
+            <ChevronRight className="w-5 h-5 text-text-secondary" />
+          )}
+        </div>
+      </button>
+
+      {/* Expanded Pathway */}
+      {isExpanded && (
+        <div className="border-t-[2px] border-black/10 dark:border-white/10 p-4 bg-blue-50 dark:bg-blue-900/20">
+          <h4 className="text-sm font-bold text-blue-600 dark:text-blue-400 mb-3 flex items-center gap-2">
+            <GitBranch className="w-4 h-4" />
+            Pathway to Starter Elements
+          </h4>
+
+          {isLoading ? (
+            <div className="flex items-center gap-2 text-text-secondary">
+              <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              Loading pathway...
+            </div>
+          ) : pathway?.steps && pathway.steps.length > 0 ? (
+            <div className="space-y-2">
+              {pathway.steps.map((step, idx) => (
+                <PathwayStep key={idx} step={step} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-sm text-text-secondary">
+              Both {combo.elementA} and {combo.elementB} are starter elements or their pathways
+              could not be traced.
+            </p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * PathwayStep - Display a single step in the pathway
+ */
+function PathwayStep({ step }) {
+  const starterNames = new Set(['earth', 'water', 'fire', 'wind']);
+  const isAStarter = starterNames.has(step.elementA.toLowerCase());
+  const isBStarter = starterNames.has(step.elementB.toLowerCase());
+
+  return (
+    <div className="flex items-center gap-2 text-sm bg-white dark:bg-gray-800 rounded-lg p-3 border border-black/10 dark:border-white/10">
+      <span className="text-xs font-bold text-gray-400 w-6">{step.step}.</span>
+      <span className="text-lg">{step.emojiA}</span>
+      <span
+        className={`font-medium ${isAStarter ? 'text-green-600 dark:text-green-400' : 'text-text-primary'}`}
+      >
+        {step.elementA}
+        {isAStarter && <span className="text-xs ml-1">★</span>}
+      </span>
+      <span className="text-gray-400">+</span>
+      <span className="text-lg">{step.emojiB}</span>
+      <span
+        className={`font-medium ${isBStarter ? 'text-green-600 dark:text-green-400' : 'text-text-primary'}`}
+      >
+        {step.elementB}
+        {isBStarter && <span className="text-xs ml-1">★</span>}
+      </span>
+      <span className="text-gray-400">=</span>
+      <span className="text-lg">{step.resultEmoji}</span>
+      <span className="font-bold text-text-primary">{step.result}</span>
     </div>
   );
 }
