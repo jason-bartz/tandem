@@ -498,8 +498,8 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               Hint System
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
-              Stuck? You get <strong>two hints per puzzle</strong>. Tap a hint icon in the stats bar
-              to get help.
+              Stuck? You get <strong>four hints per puzzle</strong>. Tap a hint icon in the stats
+              bar to get help.
             </p>
             <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
               Each hint will <strong>select an element</strong> that's part of the solution path,
