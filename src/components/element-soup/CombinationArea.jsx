@@ -182,9 +182,25 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
         highContrast && 'border-[4px]'
       )}
       animate={
-        !reduceMotion && isCombining ? { x: bangDirection, scale: 0.95 } : { x: 0, scale: 1 }
+        !reduceMotion && isCombining
+          ? {
+              x: [
+                0,
+                bangDirection * 0.3,
+                -bangDirection * 0.2,
+                bangDirection * 0.4,
+                -bangDirection * 0.15,
+                bangDirection * 0.5,
+              ],
+              scale: [1, 0.97, 0.98, 0.96, 0.97, 0.95],
+            }
+          : { x: 0, scale: 1 }
       }
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+      transition={
+        isCombining
+          ? { repeat: Infinity, duration: 0.5, ease: 'easeInOut' }
+          : { type: 'spring', stiffness: 300, damping: 20 }
+      }
       whileHover={!reduceMotion && !isCombining ? { scale: 1.02 } : undefined}
       whileTap={!reduceMotion && !isCombining ? { scale: 0.98 } : undefined}
       aria-label={
@@ -339,7 +355,10 @@ export function CombinationArea({
           )}
           animate={
             isCombining && !reduceMotion
-              ? { scale: [1, 1.02, 1], transition: { repeat: Infinity, duration: 1.2 } }
+              ? {
+                  scale: [1, 1.08, 1],
+                  transition: { repeat: Infinity, duration: 0.6, ease: 'easeInOut' },
+                }
               : { scale: 1 }
           }
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
