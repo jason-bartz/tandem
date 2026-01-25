@@ -426,7 +426,7 @@ VALUES
   -- Self-combinations
   ('earth|earth', 'Earth', 'Earth', 'Mountain', '⛰️', false, NULL),
   ('fire|fire', 'Fire', 'Fire', 'Inferno', '🔥', false, NULL),
-  ('water|water', 'Water', 'Water', 'Ocean', '🌊', false, NULL),
+  ('water|water', 'Water', 'Water', 'Lake', '🏞️', false, NULL),
   ('wind|wind', 'Wind', 'Wind', 'Tornado', '🌪️', false, NULL)
 ON CONFLICT (combination_key) DO NOTHING;
 
