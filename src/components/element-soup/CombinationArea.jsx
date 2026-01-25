@@ -157,11 +157,11 @@ function countGraphemes(str) {
 /**
  * SelectionSlot - Individual slot for selected element
  */
-function SelectionSlot({ element, position, onClick, isCombining = false }) {
+function SelectionSlot({ element, position, onClick, isShaking = false }) {
   const { highContrast, reduceMotion } = useTheme();
 
-  // Wiggle animation for combining
-  const bangDirection = position === 'first' ? 20 : -20;
+  // Wobble animation - alternates left/right with rotation
+  const wobbleDirection = position === 'first' ? 1 : -1;
 
   // Determine emoji size based on grapheme count
   const emojiCount = element?.emoji ? countGraphemes(element.emoji) : 1;
@@ -182,27 +182,35 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
         highContrast && 'border-[4px]'
       )}
       animate={
-        !reduceMotion && isCombining
+        !reduceMotion && isShaking
           ? {
               x: [
                 0,
-                bangDirection * 0.3,
-                -bangDirection * 0.2,
-                bangDirection * 0.4,
-                -bangDirection * 0.15,
-                bangDirection * 0.5,
+                6 * wobbleDirection,
+                -6 * wobbleDirection,
+                5 * wobbleDirection,
+                -5 * wobbleDirection,
+                0,
               ],
-              scale: [1, 0.97, 0.98, 0.96, 0.97, 0.95],
+              rotate: [
+                0,
+                3 * wobbleDirection,
+                -3 * wobbleDirection,
+                2 * wobbleDirection,
+                -2 * wobbleDirection,
+                0,
+              ],
+              scale: [1, 0.98, 0.98, 0.97, 0.98, 0.97],
             }
-          : { x: 0, scale: 1 }
+          : { x: 0, rotate: 0, scale: 1 }
       }
       transition={
-        isCombining
-          ? { repeat: Infinity, duration: 0.5, ease: 'easeInOut' }
+        isShaking
+          ? { repeat: Infinity, duration: 0.4, ease: 'easeInOut' }
           : { type: 'spring', stiffness: 300, damping: 20 }
       }
-      whileHover={!reduceMotion && !isCombining ? { scale: 1.02 } : undefined}
-      whileTap={!reduceMotion && !isCombining ? { scale: 0.98 } : undefined}
+      whileHover={!reduceMotion && !isShaking ? { scale: 1.02 } : undefined}
+      whileTap={!reduceMotion && !isShaking ? { scale: 0.98 } : undefined}
       aria-label={
         element ? `Selected: ${element.name}. Click to deselect.` : `Select ${position} element`
       }
@@ -283,14 +291,16 @@ export function CombinationArea({
           element={selectedA}
           position="first"
           onClick={onClearA}
-          isCombining={isAnimating}
+          isShaking={isCombining || isAnimating}
         />
 
         {/* Plus Sign */}
         <motion.div
           className="flex items-center justify-center w-8 h-8"
           animate={
-            !reduceMotion && isAnimating ? { scale: 1.3, rotate: 180 } : { scale: 1, rotate: 0 }
+            !reduceMotion && (isCombining || isAnimating)
+              ? { scale: 1.3, rotate: 180 }
+              : { scale: 1, rotate: 0 }
           }
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
@@ -298,7 +308,7 @@ export function CombinationArea({
             className={cn(
               'w-6 h-6 sm:w-8 sm:h-8',
               'text-gray-400 dark:text-gray-500',
-              isAnimating && 'text-soup-primary',
+              (isCombining || isAnimating) && 'text-soup-primary',
               highContrast && 'text-hc-text'
             )}
             aria-hidden="true"
@@ -309,7 +319,7 @@ export function CombinationArea({
           element={selectedB}
           position="second"
           onClick={onClearB}
-          isCombining={isAnimating}
+          isShaking={isCombining || isAnimating}
         />
       </div>
 
@@ -338,7 +348,7 @@ export function CombinationArea({
 
         <motion.button
           onClick={() => canCombine && onCombine()}
-          disabled={!canCombine && !isCombining}
+          disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
             'flex-1 py-3',
             'bg-soup-primary text-white',
@@ -354,7 +364,7 @@ export function CombinationArea({
             highContrast && 'border-[4px]'
           )}
           animate={
-            isCombining && !reduceMotion
+            isCombining && !isAnimating && !reduceMotion
               ? {
                   scale: [1, 1.08, 1],
                   transition: { repeat: Infinity, duration: 0.6, ease: 'easeInOut' },
@@ -363,7 +373,7 @@ export function CombinationArea({
           }
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
           aria-label={
-            isCombining
+            isCombining || isAnimating
               ? 'Combining...'
               : canCombine
                 ? `Combine ${selectedA?.name} and ${selectedB?.name}`
