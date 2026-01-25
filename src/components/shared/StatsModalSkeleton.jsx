@@ -15,6 +15,8 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
       return 'bg-sky-500 dark:bg-sky-600 border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'yellow') {
       return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[4px_4px_0px_#000]';
+    } else if (themeColor === 'green') {
+      return 'bg-emerald-500 dark:bg-emerald-600 border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
     }
@@ -31,6 +33,8 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
       return 'bg-sky-500 dark:bg-sky-600 border-black shadow-[3px_3px_0px_#000]';
     } else if (themeColor === 'yellow') {
       return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[3px_3px_0px_#000]';
+    } else if (themeColor === 'green') {
+      return 'bg-emerald-500 dark:bg-emerald-600 border-black shadow-[3px_3px_0px_#000]';
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[3px_3px_0px_#000]';
     }
@@ -120,12 +124,20 @@ export default function StatsModalSkeleton() {
         index={1}
       />
 
+      {/* Element Soup Section (Green) */}
+      <SectionSkeleton
+        themeColor="green"
+        reduceMotion={reduceMotion}
+        highContrast={highContrast}
+        index={2}
+      />
+
       {/* Reel Connections Section (Red) */}
       <SectionSkeleton
         themeColor="red"
         reduceMotion={reduceMotion}
         highContrast={highContrast}
-        index={2}
+        index={3}
       />
 
       {/* Action Buttons */}
@@ -137,7 +149,7 @@ export default function StatsModalSkeleton() {
               ? 'bg-hc-primary border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
               : 'bg-sky-500 dark:bg-sky-600 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
-          style={{ animationDelay: '600ms' }}
+          style={{ animationDelay: '800ms' }}
         />
 
         {/* Share Results Button Skeleton */}
@@ -147,7 +159,7 @@ export default function StatsModalSkeleton() {
               ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
               : 'bg-ghost-white dark:bg-gray-800 border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
-          style={{ animationDelay: '650ms' }}
+          style={{ animationDelay: '850ms' }}
         />
       </div>
     </div>

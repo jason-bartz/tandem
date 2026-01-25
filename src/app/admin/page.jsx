@@ -8,6 +8,8 @@ import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
 import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
+import ElementSoupPuzzleEditor from '@/components/admin/element-soup/ElementSoupPuzzleEditor';
+import ElementManager from '@/components/admin/element-soup/ElementManager';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
@@ -17,7 +19,7 @@ import logger from '@/lib/logger';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
-  const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
+  const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes', 'elements'
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
@@ -37,6 +39,7 @@ export default function AdminDashboard() {
   // Loading states for save operations
   const [miniLoading, setMiniLoading] = useState(false);
   const [reelLoading, setReelLoading] = useState(false);
+  const [soupLoading, setSoupLoading] = useState(false);
 
   // Calendar refresh function reference
   const refreshCalendarRef = useRef(null);
@@ -171,6 +174,56 @@ export default function AdminDashboard() {
     }
   };
 
+  // Soup puzzle save handler
+  const handleSaveSoupPuzzle = async (puzzleData) => {
+    setSoupLoading(true);
+    try {
+      const isEdit = !!editingPuzzle?.id;
+      const url = '/api/admin/element-soup/puzzles';
+      const method = isEdit ? 'PUT' : 'POST';
+      const body = isEdit ? { ...puzzleData, id: editingPuzzle.id } : puzzleData;
+
+      const response = await fetch(url, {
+        method,
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        handleCloseEditor();
+      } else {
+        const error = await response.json();
+        alert(`Error: ${error.error || 'Failed to save puzzle'}`);
+      }
+    } catch (error) {
+      logger.error('Error saving Element Soup puzzle', error);
+      alert('Failed to save puzzle. Please try again.');
+    } finally {
+      setSoupLoading(false);
+    }
+  };
+
+  // Soup puzzle delete handler
+  const handleDeleteSoupPuzzle = async (puzzleId) => {
+    if (!confirm('Are you sure you want to delete this puzzle?')) return;
+
+    try {
+      const response = await fetch(`/api/admin/element-soup/puzzles?id=${puzzleId}`, {
+        method: 'DELETE',
+        headers: await authService.getAuthHeaders(true),
+      });
+
+      if (response.ok) {
+        handleCloseEditor();
+      } else {
+        alert('Failed to delete puzzle. Please try again.');
+      }
+    } catch (error) {
+      logger.error('Error deleting Element Soup puzzle', error);
+      alert('Failed to delete puzzle. Please try again.');
+    }
+  };
+
   // Render the appropriate editor based on activeEditor
   const renderEditor = () => {
     if (!activeEditor) return null;
@@ -252,6 +305,35 @@ export default function AdminDashboard() {
               onSave={handleSaveReelPuzzle}
               onCancel={handleCloseEditor}
               loading={reelLoading}
+            />
+          </div>
+        );
+
+      case 'soup':
+        return (
+          <div className="space-y-4 overflow-visible">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Image src="/icons/ui/element-soup.png" alt="" width={24} height={24} />
+                <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                  {editingPuzzle ? 'Edit' : 'Create'} Element Soup Puzzle
+                </h3>
+              </div>
+              {editingPuzzle?.id && (
+                <button
+                  onClick={() => handleDeleteSoupPuzzle(editingPuzzle.id)}
+                  className="px-4 py-2 bg-accent-red text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                >
+                  Delete Puzzle
+                </button>
+              )}
+            </div>
+            <ElementSoupPuzzleEditor
+              puzzle={editingPuzzle}
+              date={selectedDate}
+              onSave={handleSaveSoupPuzzle}
+              onCancel={handleCloseEditor}
+              loading={soupLoading}
             />
           </div>
         );
@@ -381,7 +463,11 @@ export default function AdminDashboard() {
                 <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <h3 className="text-base sm:text-lg font-bold text-text-primary">
-                      {calendarSubTab === 'calendar' ? 'All Games Calendar' : 'Theme Tracker'}
+                      {calendarSubTab === 'calendar'
+                        ? 'All Games Calendar'
+                        : calendarSubTab === 'themes'
+                          ? 'Theme Tracker'
+                          : 'Element Manager'}
                     </h3>
                     <div className="flex items-center space-x-1 sm:space-x-2">
                       <button
@@ -406,6 +492,17 @@ export default function AdminDashboard() {
                         <Image src="/icons/ui/theme.png" alt="" width={16} height={16} />
                         <span className="hidden sm:inline">Themes</span>
                       </button>
+                      <button
+                        onClick={() => setCalendarSubTab('elements')}
+                        className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 ${
+                          calendarSubTab === 'elements'
+                            ? 'bg-green-500 border-black dark:border-white text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                            : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-green-500/20'
+                        }`}
+                      >
+                        <Image src="/icons/ui/element-soup.png" alt="" width={16} height={16} />
+                        <span className="hidden sm:inline">Elements</span>
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -428,6 +525,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   )}
+                  {calendarSubTab === 'elements' && <ElementManager />}
                 </div>
               </div>
             )}

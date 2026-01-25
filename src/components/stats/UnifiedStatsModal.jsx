@@ -8,6 +8,7 @@ import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import TandemStatsSection from './TandemStatsSection';
 import MiniStatsSection from './MiniStatsSection';
 import ReelStatsSection from './ReelStatsSection';
+import SoupStatsSection from './SoupStatsSection';
 import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
@@ -26,7 +27,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const [showAchievements, setShowAchievements] = useState(false);
 
   // Load stats for all games
-  const { tandemStats, miniStats, reelStats, loading, error } = useUnifiedStats(isOpen);
+  const { tandemStats, miniStats, reelStats, soupStats, loading, error } = useUnifiedStats(isOpen);
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -48,6 +49,10 @@ Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '
 📝 Daily Mini
 Played: ${miniStats.totalCompleted} | Best Streak: ${miniStats.longestStreak || 0}
 Current Streak: ${miniStats.currentStreak} ${miniStats.currentStreak > 0 ? '🔥' : ''}
+
+🧪 Element Soup
+Played: ${soupStats.totalCompleted} | Discoveries: ${soupStats.totalDiscoveries || 0}
+Current Streak: ${soupStats.currentStreak} ${soupStats.currentStreak > 0 ? '🔥' : ''}
 
 🎬 Reel Connections
 Played: ${reelStats.gamesPlayed} | Win Rate: ${reelWinRate}%
@@ -106,6 +111,7 @@ Play at tandemdaily.com
           <>
             <TandemStatsSection stats={tandemStats} animationKey={animationKey} />
             <MiniStatsSection stats={miniStats} animationKey={animationKey} />
+            <SoupStatsSection stats={soupStats} animationKey={animationKey} />
             <ReelStatsSection stats={reelStats} animationKey={animationKey} />
 
             {/* Action Buttons - scrollable with content */}

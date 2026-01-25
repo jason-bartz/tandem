@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { playButtonTone } from '@/lib/sounds';
+import { ASSET_VERSION } from '@/lib/constants';
 
 /**
  * GameCard - Clickable card for game selection on the home page
@@ -93,7 +94,14 @@ export default function GameCard({
               }`}
             />
           ) : (
-            <Image src={icon} alt="" width={52} height={52} className="rounded-xl" priority />
+            <Image
+              src={`${icon}?v=${ASSET_VERSION}`}
+              alt=""
+              width={52}
+              height={52}
+              className="rounded-xl"
+              priority
+            />
           )}
         </div>
 

@@ -6,7 +6,7 @@ import LeftSidePanel from '@/components/shared/LeftSidePanel';
 
 export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' }) {
   const { highContrast } = useTheme();
-  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem', 'mini', or 'reel'
+  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem', 'mini', 'soup', or 'reel'
   const [, setExpandedSection] = useState(null);
 
   // Reset to default tab when modal opens
@@ -16,10 +16,6 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       setExpandedSection(null);
     }
   }, [isOpen, defaultTab]);
-
-  const tandemIcon = '/icons/ui/tandem.png';
-  const miniIcon = '/icons/ui/mini.png';
-  const reelIcon = '/icons/ui/movie.png';
 
   return (
     <LeftSidePanel
@@ -42,10 +38,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-1.5">
-            <Image src={tandemIcon} alt="Daily Tandem" width={20} height={20} className="w-5 h-5" />
-            <span>Tandem</span>
-          </div>
+          Tandem
         </button>
         <button
           onClick={() => {
@@ -58,10 +51,20 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-1.5">
-            <Image src={miniIcon} alt="Daily Mini" width={20} height={20} className="w-5 h-5" />
-            <span>Mini</span>
-          </div>
+          Mini
+        </button>
+        <button
+          onClick={() => {
+            setActiveGame('soup');
+            setExpandedSection(null);
+          }}
+          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+            activeGame === 'soup'
+              ? 'bg-green-500 text-white border-black shadow-[3px_3px_0px_#000]'
+              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+          }`}
+        >
+          Soup
         </button>
         <button
           onClick={() => {
@@ -74,16 +77,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          <div className="flex items-center justify-center gap-1.5">
-            <Image
-              src={reelIcon}
-              alt="Reel Connections"
-              width={20}
-              height={20}
-              className="w-5 h-5"
-            />
-            <span>Reel</span>
-          </div>
+          Reel
         </button>
       </div>
 
@@ -378,6 +372,153 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               <li>
                 • <strong>Auto-Check:</strong> Highlight incorrect letters as you type
               </li>
+            </ul>
+          </div>
+
+          <div className="text-center py-2">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              A new puzzle is available every day at midnight. Come back tomorrow!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* Element Soup Content */}
+      {activeGame === 'soup' && (
+        <div className="space-y-4 text-gray-600 dark:text-gray-400">
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <ul className="space-y-3 text-sm">
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  1
+                </span>
+                <span>Start with four basic elements: Earth, Water, Fire, and Wind.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  2
+                </span>
+                <span>Select two elements and tap Combine to create something new!</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  3
+                </span>
+                <span>Create the daily target element to win. Can you beat par?</span>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">
+              Example Combinations
+            </h3>
+            <div
+              className={`rounded-xl p-4 space-y-3 ${
+                highContrast
+                  ? 'bg-hc-surface border-2 border-hc-border'
+                  : 'bg-gray-50 dark:bg-gray-700'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🔥</span>
+                <span className="text-gray-400">+</span>
+                <span className="text-xl">💧</span>
+                <span className="text-gray-400">=</span>
+                <span className="text-xl">♨️</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Steam
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🌍</span>
+                <span className="text-gray-400">+</span>
+                <span className="text-xl">💧</span>
+                <span className="text-gray-400">=</span>
+                <span className="text-xl">🌱</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Plant
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <span className="text-xl">🔥</span>
+                <span className="text-gray-400">+</span>
+                <span className="text-xl">🌍</span>
+                <span className="text-gray-400">=</span>
+                <span className="text-xl">🌋</span>
+                <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  Lava
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-success text-white border-hc-border'
+                : 'bg-green-50 dark:bg-green-900/20 border-green-500'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              First Discoveries
+            </h4>
+            <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
+              Be the first player to discover a new combination and get credited forever! First
+              discoveries are tracked globally — can you find one no one else has found?
+            </p>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-warning text-black border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              Par System
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
+              Each puzzle has a <strong>par value</strong> — the minimum number of moves needed to
+              reach the target.
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-black' : ''}`}>
+              <li>
+                • <strong>Under par:</strong> Excellent! You found an efficient path
+              </li>
+              <li>
+                • <strong>At par:</strong> Great job matching the benchmark
+              </li>
+              <li>
+                • <strong>Over par:</strong> You still won — every path is valid!
+              </li>
+            </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">Tips</h4>
+            <ul className="text-sm space-y-1">
+              <li>• Use the search bar to find elements quickly</li>
+              <li>• Combine the same element with itself for interesting results</li>
+              <li>• Think creatively — pop culture, history, and science all work!</li>
             </ul>
           </div>
 

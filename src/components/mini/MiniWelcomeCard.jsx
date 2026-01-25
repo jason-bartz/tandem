@@ -141,7 +141,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         {/* Logo */}
         <div className="w-20 h-20 mx-auto mb-5">
           <Image
-            src={isDark ? '/images/mini-logo-dark.png' : '/images/mini-logo.png'}
+            src={isDark ? '/icons/ui/mini-dark.png' : '/icons/ui/mini.png'}
             alt="Daily Mini"
             width={80}
             height={80}
@@ -194,7 +194,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       <div className="flex flex-col items-center justify-center mb-6">
         <div className="w-20 h-20 relative mb-3">
           <Image
-            src={isDark ? '/images/mini-logo-dark.png' : '/images/mini-logo.png'}
+            src={isDark ? '/icons/ui/mini-dark.png' : '/icons/ui/mini.png'}
             alt="Daily Mini"
             width={80}
             height={80}

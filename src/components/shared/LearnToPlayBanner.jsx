@@ -14,7 +14,7 @@ import { useHaptics } from '@/hooks/useHaptics';
  * Appears 1 second after the game starts, only for first-time players.
  * Persists across sessions until the user interacts with it.
  *
- * @param {string} gameType - 'tandem' or 'reel' to determine styling and localStorage key
+ * @param {string} gameType - 'tandem', 'soup', or 'reel' to determine styling and localStorage key
  * @param {function} onOpenHowToPlay - Callback to open the How to Play modal
  */
 export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay }) {
@@ -80,6 +80,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
 
   // Styling based on game type
   const isTandem = gameType === 'tandem';
+  const isSoup = gameType === 'soup';
 
   if (!shouldRender) return null;
 
@@ -93,7 +94,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
           exit="hidden"
           className={`
             fixed left-0 right-0 z-[100] flex justify-center
-            ${isTandem ? 'top-[calc(env(safe-area-inset-top,0px)+12px)]' : 'top-[calc(env(safe-area-inset-top,0px)+68px)]'}
+            ${isTandem ? 'top-[calc(env(safe-area-inset-top,0px)+12px)]' : isSoup ? 'top-[calc(env(safe-area-inset-top,0px)+68px)]' : 'top-[calc(env(safe-area-inset-top,0px)+68px)]'}
           `}
           role="banner"
           aria-label="Learn how to play prompt"
@@ -110,7 +111,9 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
                   ? 'bg-hc-surface border-hc-border'
                   : isTandem
                     ? 'bg-white/95 dark:bg-gray-800/95 border-blue-400 dark:border-blue-500'
-                    : 'bg-[#1a1a2e]/95 border-[#ffce00]'
+                    : isSoup
+                      ? 'bg-white/95 dark:bg-gray-800/95 border-green-500 dark:border-green-400'
+                      : 'bg-[#1a1a2e]/95 border-[#ffce00]'
               }
             `}
             style={{
@@ -118,7 +121,9 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
                 ? '0 4px 12px rgba(0,0,0,0.3)'
                 : isTandem
                   ? '0 4px 16px rgba(59, 130, 246, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
-                  : '0 4px 16px rgba(255, 206, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3)',
+                  : isSoup
+                    ? '0 4px 16px rgba(34, 197, 94, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)'
+                    : '0 4px 16px rgba(255, 206, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.3)',
             }}
           >
             {/* Hint Icon */}
@@ -137,7 +142,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
                 ${
                   highContrast
                     ? 'text-hc-text'
-                    : isTandem
+                    : isTandem || isSoup
                       ? 'text-gray-800 dark:text-gray-100'
                       : 'text-white'
                 }
@@ -155,7 +160,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
                 ${
                   highContrast
                     ? 'hover:bg-hc-border/30 text-hc-text'
-                    : isTandem
+                    : isTandem || isSoup
                       ? 'hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500 dark:text-gray-400'
                       : 'hover:bg-white/10 text-white/70'
                 }

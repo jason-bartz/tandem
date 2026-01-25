@@ -141,7 +141,7 @@ export const THEME_CONFIG = {
   DEFAULT: 'light',
 };
 
-export const ASSET_VERSION = '1.0.1'; // Increment this when assets change to bust cache
+export const ASSET_VERSION = '1.0.2'; // Increment this when assets change to bust cache
 
 export const ADMIN_CONFIG = {
   SESSION_DURATION: '7d',

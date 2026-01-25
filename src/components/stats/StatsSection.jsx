@@ -30,6 +30,8 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
       return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
+    } else if (themeColor === 'green') {
+      return 'bg-green-500 dark:bg-green-600 border-black shadow-[4px_4px_0px_#000]';
     }
 
     // Default fallback
@@ -41,7 +43,12 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
       return 'text-hc-text';
     }
 
-    if (themeColor === 'blue' || themeColor === 'purple' || themeColor === 'red') {
+    if (
+      themeColor === 'blue' ||
+      themeColor === 'purple' ||
+      themeColor === 'red' ||
+      themeColor === 'green'
+    ) {
       return 'text-white';
     } else if (themeColor === 'yellow') {
       return 'text-gray-900 dark:text-gray-900';

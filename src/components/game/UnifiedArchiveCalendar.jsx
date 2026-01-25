@@ -585,9 +585,9 @@ export default function UnifiedArchiveCalendar({
         contentClassName="px-6"
         headerClassName={
           activeTab === 'tandem'
-            ? 'bg-accent-blue/30 dark:bg-accent-blue/30'
+            ? 'bg-sky-400/30 dark:bg-sky-400/30'
             : activeTab === 'mini'
-              ? 'bg-accent-yellow/30 dark:bg-accent-yellow/30'
+              ? 'bg-yellow-400/30 dark:bg-yellow-400/30'
               : 'bg-red-500/30 dark:bg-red-500/30'
         }
         footer={

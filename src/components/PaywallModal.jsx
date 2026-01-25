@@ -41,7 +41,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showPostPurchasePrompt, setShowPostPurchasePrompt] = useState(false);
   const { correctAnswer: successHaptic, incorrectAnswer: errorHaptic } = useHaptics();
-  const { theme, highContrast, reduceMotion } = useTheme();
+  const { highContrast, reduceMotion } = useTheme();
   const { user, signInWithApple } = useAuth();
   const { refreshStatus } = useSubscription();
 
@@ -387,8 +387,8 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         title={
           <div className="flex items-center gap-3">
             <Image
-              src={`${theme === 'dark' ? '/images/dark-mode-logo.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
-              alt="Tandem Logo"
+              src={`/icons/ui/tandem-unlimited.png?v=${ASSET_VERSION}`}
+              alt="Tandem Unlimited"
               width={32}
               height={32}
               className="rounded-lg"
@@ -460,6 +460,18 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
                 Create your own Reel Connections puzzles and share with the world
+              </span>
+            </div>
+            <div className="flex items-start gap-3">
+              <span
+                className={`text-lg font-bold mt-0.5 ${highContrast ? 'text-hc-success' : 'text-accent-blue dark:text-accent-blue'}`}
+              >
+                ✓
+              </span>
+              <span
+                className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Access to Element Soup Free Play Mode
               </span>
             </div>
             <div className="flex items-start gap-3">

@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { getCurrentReelPuzzleNumber, getLocalDateString } from '@/lib/reelConnectionsUtils';
+import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
 import { playStartSound } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
@@ -48,13 +49,17 @@ export default function WelcomeScreen({
   // Loading and completion states
   const [tandemCompleted, setTandemCompleted] = useState(false);
   const [miniCompleted, setMiniCompleted] = useState(false);
+  const [soupCompleted, setSoupCompleted] = useState(false);
   const [reelCompleted, setReelCompleted] = useState(false);
   const [tandemPlayed, setTandemPlayed] = useState(false);
   const [miniPlayed, setMiniPlayed] = useState(false);
+  const [soupPlayed, setSoupPlayed] = useState(false);
   const [reelPlayed, setReelPlayed] = useState(false);
   const [miniLoading, setMiniLoading] = useState(true);
+  const [soupLoading, setSoupLoading] = useState(true);
   const [reelLoading, setReelLoading] = useState(true);
   const [miniPuzzle, setMiniPuzzle] = useState(null);
+  const [soupPuzzle, setSoupPuzzle] = useState(null);
   const [reelPuzzle, setReelPuzzle] = useState(null);
 
   // Track if welcome sound has been played this session (persists across navigations)
@@ -71,16 +76,24 @@ export default function WelcomeScreen({
           setTandemCompleted(result?.won || false);
         }
 
-        // Load Mini and Reel data in parallel for faster loading
-        const [miniProgressResult, miniPuzzleResult, reelStatsResult, reelPuzzleResult] =
-          await Promise.allSettled([
-            loadMiniPuzzleProgress(miniPuzzleInfo.isoDate),
-            miniService.getPuzzle(miniPuzzleInfo.isoDate),
-            storageService.get('reel-connections-stats'),
-            fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`).then((res) =>
-              res.json()
-            ),
-          ]);
+        // Load Mini, Soup, and Reel data in parallel for faster loading
+        const [
+          miniProgressResult,
+          miniPuzzleResult,
+          soupProgressResult,
+          soupPuzzleResult,
+          reelStatsResult,
+          reelPuzzleResult,
+        ] = await Promise.allSettled([
+          loadMiniPuzzleProgress(miniPuzzleInfo.isoDate),
+          miniService.getPuzzle(miniPuzzleInfo.isoDate),
+          storageService.get(`${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${getLocalDateString()}`),
+          fetch(`/api/element-soup/puzzle?date=${getLocalDateString()}`).then((res) => res.json()),
+          storageService.get('reel-connections-stats'),
+          fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`).then((res) =>
+            res.json()
+          ),
+        ]);
 
         // Process Mini completion and puzzle data
         if (miniProgressResult.status === 'fulfilled') {
@@ -98,6 +111,18 @@ export default function WelcomeScreen({
         }
         setMiniLoading(false);
 
+        // Process Element Soup completion and puzzle data
+        if (soupProgressResult.status === 'fulfilled' && soupProgressResult.value) {
+          const soupProgress = JSON.parse(soupProgressResult.value);
+          setSoupPlayed(!!soupProgress);
+          setSoupCompleted(soupProgress?.completed || false);
+        }
+
+        if (soupPuzzleResult.status === 'fulfilled' && soupPuzzleResult.value?.puzzle) {
+          setSoupPuzzle(soupPuzzleResult.value.puzzle);
+        }
+        setSoupLoading(false);
+
         // Process Reel Connections completion and puzzle data
         if (reelStatsResult.status === 'fulfilled' && reelStatsResult.value) {
           const parsed = JSON.parse(reelStatsResult.value);
@@ -114,6 +139,7 @@ export default function WelcomeScreen({
       } catch (err) {
         logger.error('Failed to load completion status', err);
         setMiniLoading(false);
+        setSoupLoading(false);
         setReelLoading(false);
       }
     };
@@ -163,6 +189,10 @@ export default function WelcomeScreen({
     router.push('/dailymini');
   };
 
+  const handleSoupClick = () => {
+    router.push('/element-soup');
+  };
+
   const handleReelClick = () => {
     router.push('/reel-connections');
   };
@@ -187,11 +217,13 @@ export default function WelcomeScreen({
           <Greeting
             tandemCompleted={tandemCompleted}
             miniCompleted={miniCompleted}
+            soupCompleted={soupCompleted}
             reelCompleted={reelCompleted}
             tandemPlayed={tandemPlayed}
             miniPlayed={miniPlayed}
+            soupPlayed={soupPlayed}
             reelPlayed={reelPlayed}
-            isLoading={!puzzle || miniLoading || reelLoading}
+            isLoading={!puzzle || miniLoading || soupLoading || reelLoading}
           />
 
           {/* Game Cards */}
@@ -222,6 +254,19 @@ export default function WelcomeScreen({
               animationDelay={0.1}
             />
 
+            {/* Element Soup */}
+            <GameCard
+              icon="/icons/ui/element-soup.png"
+              title="Element Soup"
+              description="Combine elements to discover today's target creation."
+              puzzleNumber={soupPuzzle?.number || 1}
+              onClick={handleSoupClick}
+              loading={soupLoading}
+              completed={soupCompleted}
+              completedMessage="You created today's element"
+              animationDelay={0.15}
+            />
+
             {/* Reel Connections */}
             <GameCard
               icon="/icons/ui/movie.png"
@@ -233,7 +278,7 @@ export default function WelcomeScreen({
               loading={reelLoading}
               completed={reelCompleted}
               completedMessage="You grouped all movies"
-              animationDelay={0.2}
+              animationDelay={0.25}
             />
           </div>
 

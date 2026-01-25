@@ -54,6 +54,7 @@ function generateRealisticScore(gameType, config) {
     cryptic: { min: config.cryptic_min_score, max: config.cryptic_max_score },
     mini: { min: config.mini_min_score, max: config.mini_max_score },
     reel: { min: config.reel_min_score, max: config.reel_max_score },
+    soup: { min: config.soup_min_score, max: config.soup_max_score },
   };
 
   const range = ranges[gameType];
@@ -87,8 +88,8 @@ function generateRealisticScore(gameType, config) {
  * @returns {number} Number of hints used
  */
 function generateHintsUsed(gameType) {
-  // Mini doesn't use hints
-  if (gameType === 'mini') {
+  // Mini and Soup don't use hints
+  if (gameType === 'mini' || gameType === 'soup') {
     return 0;
   }
 
@@ -370,7 +371,7 @@ export async function generateDailyBotEntries() {
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-    const games = ['tandem', 'mini', 'reel'];
+    const games = ['tandem', 'mini', 'reel', 'soup'];
     const results = {};
 
     for (const game of games) {

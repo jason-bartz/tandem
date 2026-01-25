@@ -102,7 +102,7 @@ export default function AdmireScreen({
                 title="Return to Welcome Screen"
               >
                 <Image
-                  src={`${theme === 'dark' ? '/images/dark-mode-logo-2.webp' : '/images/main-logo.webp'}?v=${ASSET_VERSION}`}
+                  src={`${theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png'}?v=${ASSET_VERSION}`}
                   alt="Tandem Logo"
                   width={96}
                   height={96}

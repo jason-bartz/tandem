@@ -3,6 +3,7 @@ import { loadStats } from '@/lib/storage';
 import { loadMiniStats } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
+import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 
@@ -36,6 +37,49 @@ async function loadReelStats() {
     bestStreak: 0,
     lastPlayedDate: null,
     gameHistory: [],
+  };
+}
+
+/**
+ * Load Element Soup stats from storage
+ * @returns {Object} Soup stats object
+ */
+async function loadSoupStats() {
+  try {
+    const stored = await storageService.get(SOUP_STORAGE_KEYS.STATS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        totalCompleted: parsed.totalCompleted || 0,
+        currentStreak: parsed.currentStreak || 0,
+        longestStreak: parsed.longestStreak || 0,
+        averageTime: parsed.averageTime || 0,
+        bestTime: parsed.bestTime || 0,
+        totalMoves: parsed.totalMoves || 0,
+        totalDiscoveries: parsed.totalDiscoveries || 0,
+        firstDiscoveries: parsed.firstDiscoveries || 0,
+        underPar: parsed.underPar || 0,
+        atPar: parsed.atPar || 0,
+        overPar: parsed.overPar || 0,
+        lastPlayedDate: parsed.lastPlayedDate || null,
+      };
+    }
+  } catch (error) {
+    logger.error('[loadSoupStats] Failed to load Soup stats:', error);
+  }
+  return {
+    totalCompleted: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    averageTime: 0,
+    bestTime: 0,
+    totalMoves: 0,
+    totalDiscoveries: 0,
+    firstDiscoveries: 0,
+    underPar: 0,
+    atPar: 0,
+    overPar: 0,
+    lastPlayedDate: null,
   };
 }
 
@@ -76,6 +120,21 @@ export function useUnifiedStats(isOpen) {
     gameHistory: [],
   });
 
+  const [soupStats, setSoupStats] = useState({
+    totalCompleted: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    averageTime: 0,
+    bestTime: 0,
+    totalMoves: 0,
+    totalDiscoveries: 0,
+    firstDiscoveries: 0,
+    underPar: 0,
+    atPar: 0,
+    overPar: 0,
+    lastPlayedDate: null,
+  });
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -91,20 +150,23 @@ export function useUnifiedStats(isOpen) {
 
     try {
       // Load stats in parallel for all games
-      const [tandem, mini, reel] = await Promise.all([
+      const [tandem, mini, reel, soup] = await Promise.all([
         loadStats(),
         loadMiniStats(),
         loadReelStats(),
+        loadSoupStats(),
       ]);
 
       setTandemStats(tandem);
       setMiniStats(mini);
       setReelStats(reel);
+      setSoupStats(soup);
 
       logger.info('[useUnifiedStats] Stats loaded successfully', {
         tandemPlayed: tandem.played,
         miniCompleted: mini.totalCompleted,
         reelPlayed: reel.gamesPlayed,
+        soupCompleted: soup.totalCompleted,
       });
     } catch (err) {
       logger.error('[useUnifiedStats] Failed to load stats', { error: err.message });
@@ -118,6 +180,7 @@ export function useUnifiedStats(isOpen) {
     tandemStats,
     miniStats,
     reelStats,
+    soupStats,
     loading,
     error,
     reload: loadAllStats,

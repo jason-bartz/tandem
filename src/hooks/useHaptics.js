@@ -71,11 +71,11 @@ export function useHaptics() {
   const welcomeMelody = useCallback(async () => {
     // Haptic pattern matching the 5-note melody
     const pattern = [
-      { delay: 0, type: 'light' },      // C5 - welcoming
-      { delay: 150, type: 'light' },    // E5 - bright
-      { delay: 300, type: 'medium' },   // G5 - lifting
-      { delay: 450, type: 'light' },    // E5 - quick bounce
-      { delay: 550, type: 'medium' },   // G5 - settling
+      { delay: 0, type: 'light' }, // C5 - welcoming
+      { delay: 150, type: 'light' }, // E5 - bright
+      { delay: 300, type: 'medium' }, // G5 - lifting
+      { delay: 450, type: 'light' }, // E5 - quick bounce
+      { delay: 550, type: 'medium' }, // G5 - settling
     ];
 
     for (const { delay, type } of pattern) {
@@ -83,6 +83,43 @@ export function useHaptics() {
         platformService.hapticImpact(type);
       }, delay);
     }
+  }, []);
+
+  // Element Soup: Combination haptic - quick succession for element combining
+  const soupCombine = useCallback(async () => {
+    const pattern = [
+      { delay: 0, type: 'light' },
+      { delay: 50, type: 'light' },
+      { delay: 100, type: 'medium' },
+    ];
+
+    for (const { delay, type } of pattern) {
+      setTimeout(() => {
+        platformService.hapticImpact(type);
+      }, delay);
+    }
+  }, []);
+
+  // Element Soup: First discovery celebration haptic - build-up pattern
+  const soupFirstDiscovery = useCallback(async () => {
+    const pattern = [
+      { delay: 0, type: 'light' },
+      { delay: 100, type: 'light' },
+      { delay: 200, type: 'light' },
+      { delay: 400, type: 'heavy' },
+      { delay: 600, type: 'heavy' },
+    ];
+
+    for (const { delay, type } of pattern) {
+      setTimeout(() => {
+        platformService.hapticImpact(type);
+      }, delay);
+    }
+  }, []);
+
+  // Element Soup: New element added to bank
+  const soupNewElement = useCallback(async () => {
+    await platformService.hapticNotification('success');
   }, []);
 
   return {
@@ -97,5 +134,9 @@ export function useHaptics() {
     selectionChanged,
     selectionEnd,
     welcomeMelody,
+    // Element Soup specific
+    soupCombine,
+    soupFirstDiscovery,
+    soupNewElement,
   };
 }

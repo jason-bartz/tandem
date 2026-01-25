@@ -140,7 +140,7 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
-        <div className="bg-bg-card rounded-[32px] border-[3px] border-black dark:border-white p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)]">
+        <div className="bg-bg-card rounded-[32px] border-[3px] border-black dark:border-white p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] overflow-visible">
           {children}
         </div>
       </main>
