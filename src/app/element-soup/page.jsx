@@ -4,10 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { cn } from '@/lib/utils';
 import { SOUP_CONFIG } from '@/lib/element-soup.constants';
-import { ElementSoupGame } from '@/components/element-soup';
+import { ElementSoupGame, ElementSoupBackground } from '@/components/element-soup';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -33,7 +31,6 @@ export default function ElementSoupPage() {
 
   const { user, loading: authLoading } = useAuth();
   const { isActive: hasSubscription, loading: subscriptionLoading } = useSubscription();
-  const { highContrast } = useTheme();
 
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -61,13 +58,8 @@ export default function ElementSoupPage() {
   // Paywall state for old archive puzzles
   if (showPaywall) {
     return (
-      <div
-        className={cn(
-          'fixed inset-0 flex items-center justify-center',
-          'bg-soup-green dark:bg-gray-900 px-4',
-          highContrast && 'bg-hc-background'
-        )}
-      >
+      <div className="fixed inset-0 flex items-center justify-center px-4">
+        <ElementSoupBackground />
         <div
           className="
             max-w-md w-full

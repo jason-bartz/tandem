@@ -12,6 +12,7 @@ import { ElementSoupWelcomeScreen } from './ElementSoupWelcomeScreen';
 import { ElementSoupGameScreen } from './ElementSoupGameScreen';
 import { ElementSoupCompleteScreen } from './ElementSoupCompleteScreen';
 import { ElementSoupLoadingSkeleton } from './ElementSoupLoadingSkeleton';
+import { ElementSoupBackground } from './ElementSoupBackground';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -142,13 +143,8 @@ export function ElementSoupGame({ initialDate = null }) {
 
   if (error) {
     return (
-      <div
-        className={cn(
-          'fixed inset-0 flex items-center justify-center',
-          'bg-soup-green dark:bg-gray-900 px-4',
-          highContrast && 'bg-hc-background'
-        )}
-      >
+      <div className="fixed inset-0 flex items-center justify-center px-4">
+        <ElementSoupBackground />
         <div className="max-w-md w-full">
           <ErrorDisplay error={error} onRetry={() => loadPuzzle(initialDate)} />
         </div>
@@ -158,13 +154,9 @@ export function ElementSoupGame({ initialDate = null }) {
 
   return (
     <>
-      <div
-        className={cn(
-          'fixed inset-0 flex flex-col',
-          'bg-soup-green dark:bg-gray-900 overflow-hidden',
-          highContrast && 'bg-hc-background'
-        )}
-      >
+      <div className={cn('fixed inset-0 flex flex-col overflow-hidden')}>
+        {/* Animated gradient background */}
+        <ElementSoupBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios">
           <div
