@@ -75,7 +75,7 @@ function LoadingPhraseMarquee({ isActive }) {
           x: {
             repeat: Infinity,
             repeatType: 'loop',
-            duration: 6,
+            duration: 4,
             ease: 'linear',
           },
         }}
