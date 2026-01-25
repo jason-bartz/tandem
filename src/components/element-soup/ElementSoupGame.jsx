@@ -163,7 +163,7 @@ export function ElementSoupGame({ initialDate = null }) {
         <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios">
           <div
             className={cn(
-              'rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col mx-4 mb-4',
+              'rounded-[32px] border-[3px] flex-1 flex flex-col mx-4 mb-4 min-h-0',
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                 : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
@@ -218,7 +218,7 @@ export function ElementSoupGame({ initialDate = null }) {
             </header>
 
             {/* Content Area */}
-            <div className="flex-1 flex flex-col p-4 sm:p-6 overflow-y-auto">
+            <div className="flex-1 flex flex-col p-4 sm:p-6 min-h-0 overflow-y-auto overflow-x-hidden">
               {/* Welcome Screen */}
               {gameState === SOUP_GAME_STATES.WELCOME && (
                 <ElementSoupWelcomeScreen

@@ -37,7 +37,7 @@ export function ElementSoupWelcomeScreen({
   };
 
   return (
-    <div className="flex flex-col items-center flex-1 px-4">
+    <div className="flex flex-col items-center flex-1 px-4 pb-8">
       {/* Archive Badge */}
       {isArchive && (
         <motion.div
