@@ -9,7 +9,6 @@ import TandemStatsSection from './TandemStatsSection';
 import MiniStatsSection from './MiniStatsSection';
 import ReelStatsSection from './ReelStatsSection';
 import SoupStatsSection from './SoupStatsSection';
-import ShareButton from '../game/ShareButton';
 import AchievementsModal from '../achievements/AchievementsModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
@@ -35,31 +34,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
       setAnimationKey((prev) => prev + 1);
     }
   }, [isOpen]);
-
-  // Generate shareable stats text
-  const reelWinRate =
-    reelStats.gamesPlayed > 0 ? Math.round((reelStats.gamesWon / reelStats.gamesPlayed) * 100) : 0;
-  const shareableStatsText = `My Tandem Daily Games Stats 🚲
-═══════════════════════
-
-🚲 Daily Tandem
-Played: ${tandemStats.played} | Win Rate: ${tandemStats.played > 0 ? Math.round((tandemStats.wins / tandemStats.played) * 100) : 0}%
-Current Streak: ${tandemStats.currentStreak} ${tandemStats.currentStreak > 0 ? '🔥' : ''}
-
-📝 Daily Mini
-Played: ${miniStats.totalCompleted} | Best Streak: ${miniStats.longestStreak || 0}
-Current Streak: ${miniStats.currentStreak} ${miniStats.currentStreak > 0 ? '🔥' : ''}
-
-🧪 Element Soup
-Played: ${soupStats.totalCompleted} | Discoveries: ${soupStats.totalDiscoveries || 0}
-Current Streak: ${soupStats.currentStreak} ${soupStats.currentStreak > 0 ? '🔥' : ''}
-
-🎬 Reel Connections
-Played: ${reelStats.gamesPlayed} | Win Rate: ${reelWinRate}%
-Current Streak: ${reelStats.currentStreak} ${reelStats.currentStreak > 0 ? '🔥' : ''}
-
-Play at tandemdaily.com
-#TandemDailyGames`;
 
   const handleClose = () => {
     lightTap();
@@ -122,14 +96,11 @@ Play at tandemdaily.com
                 className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
                   highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                    : 'bg-white text-black border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
                 }`}
               >
                 View Achievements
               </button>
-
-              {/* Share Button */}
-              <ShareButton shareText={shareableStatsText} className="w-full" />
             </div>
           </>
         )}
