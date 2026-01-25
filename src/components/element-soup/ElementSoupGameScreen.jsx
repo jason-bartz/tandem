@@ -114,9 +114,14 @@ function ResultAnimation({ result, onComplete }) {
         )}
         <motion.span
           className="text-6xl"
+          style={{
+            willChange: 'transform',
+            backfaceVisibility: 'hidden',
+            transformOrigin: 'center center',
+          }}
           initial={!reduceMotion ? { scale: 0 } : false}
-          animate={{ scale: [0, 1.2, 1] }}
-          transition={{ delay: 0.1 }}
+          animate={!reduceMotion ? { scale: [0, 1.2, 1] } : { scale: 1 }}
+          transition={{ delay: 0.1, duration: 0.3 }}
         >
           {result.emoji}
         </motion.span>
