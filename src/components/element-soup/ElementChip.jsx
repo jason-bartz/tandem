@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
@@ -7,8 +8,9 @@ import { cn } from '@/lib/utils';
 /**
  * ElementChip - Small clickable chip for displaying an element
  * Designed to fit many elements in a grid layout
+ * Memoized to prevent unnecessary re-renders when parent updates
  */
-export function ElementChip({
+function ElementChipInner({
   element,
   isSelected = false,
   isNew = false,
@@ -73,7 +75,7 @@ export function ElementChip({
           aria-hidden="true"
         >
           <span
-            className="absolute inset-0 -translate-x-full animate-[shimmer_3s_ease-in-out_infinite]"
+            className="absolute inset-0 -translate-x-full animate-[shimmer_5s_ease-in-out_infinite] will-change-transform"
             style={{
               background:
                 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
@@ -105,5 +107,20 @@ export function ElementChip({
     </motion.button>
   );
 }
+
+// Custom comparison function for memo - only re-render when meaningful props change
+function arePropsEqual(prevProps, nextProps) {
+  return (
+    prevProps.element.id === nextProps.element.id &&
+    prevProps.element.isFirstDiscovery === nextProps.element.isFirstDiscovery &&
+    prevProps.isSelected === nextProps.isSelected &&
+    prevProps.isNew === nextProps.isNew &&
+    prevProps.isTarget === nextProps.isTarget &&
+    prevProps.disabled === nextProps.disabled &&
+    prevProps.size === nextProps.size
+  );
+}
+
+export const ElementChip = memo(ElementChipInner, arePropsEqual);
 
 export default ElementChip;
