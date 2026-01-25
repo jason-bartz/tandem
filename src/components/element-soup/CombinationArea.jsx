@@ -278,8 +278,8 @@ export function CombinationArea({
         </button>
 
         <motion.button
-          onClick={onCombine}
-          disabled={!canCombine}
+          onClick={() => canCombine && onCombine()}
+          disabled={!canCombine && !isCombining}
           className={cn(
             'flex-1 py-3',
             'bg-soup-primary text-white',
@@ -294,6 +294,11 @@ export function CombinationArea({
             'overflow-hidden',
             highContrast && 'border-[4px]'
           )}
+          animate={
+            isCombining && !reduceMotion
+              ? { scale: [1, 1.02, 1], transition: { repeat: Infinity, duration: 1.2 } }
+              : { scale: 1 }
+          }
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
           aria-label={
             isCombining
