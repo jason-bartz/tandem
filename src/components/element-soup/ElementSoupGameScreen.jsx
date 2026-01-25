@@ -73,12 +73,8 @@ function ResultAnimation({ result, onComplete }) {
         className={cn(
           'relative flex flex-col items-center gap-2 p-6',
           'bg-white dark:bg-gray-800',
-          'border-[4px]',
-          result.isFirstDiscovery
-            ? 'border-black bg-yellow-50 dark:bg-yellow-900/30'
-            : result.isNew
-              ? 'border-soup-primary bg-white dark:bg-gray-800'
-              : 'border-black dark:border-gray-600',
+          'border-[4px] border-black dark:border-gray-600',
+          result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
           result.isFirstDiscovery && 'cursor-default'
