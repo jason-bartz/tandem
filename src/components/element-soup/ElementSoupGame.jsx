@@ -173,7 +173,7 @@ export function ElementSoupGame({ initialDate = null }) {
             {/* Header - back button, title/date, and hamburger menu */}
             <header
               className={cn(
-                'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0',
+                'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 rounded-t-[29px]',
                 highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
               )}
             >
@@ -219,7 +219,7 @@ export function ElementSoupGame({ initialDate = null }) {
             </header>
 
             {/* Content Area */}
-            <div className="flex-1 flex flex-col p-4 sm:p-6 min-h-0 overflow-y-auto overflow-x-hidden">
+            <div className="flex-1 flex flex-col p-4 sm:p-6 min-h-0 overflow-y-auto overflow-x-hidden scrollable">
               {/* Welcome Screen */}
               {gameState === SOUP_GAME_STATES.WELCOME && (
                 <ElementSoupWelcomeScreen

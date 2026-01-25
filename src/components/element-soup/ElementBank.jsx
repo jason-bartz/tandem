@@ -106,7 +106,7 @@ export function ElementBank({
       <div
         className={cn(
           'flex flex-wrap content-start gap-2',
-          'flex-1 min-h-0 overflow-y-auto',
+          'flex-1 min-h-0 overflow-y-auto scrollable',
           'p-2 pb-4',
           'bg-gray-50 dark:bg-gray-900/50',
           'border-[2px] border-gray-200 dark:border-gray-700',
