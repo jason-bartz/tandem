@@ -133,35 +133,6 @@ export function ElementSoupLoadingSkeleton() {
             />
           </div>
 
-          {/* Starting Elements Section Skeleton */}
-          <div className="w-full max-w-sm mb-5">
-            <div className={`h-3 w-28 mb-3 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`} />
-
-            {/* 4-Column Element Grid */}
-            <div className="grid grid-cols-4 gap-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div
-                  key={i}
-                  className={cn(
-                    'flex flex-col items-center justify-center py-3 px-2',
-                    'bg-white/50 dark:bg-gray-800/50',
-                    'border-2 border-gray-200 dark:border-gray-700',
-                    'rounded-xl'
-                  )}
-                >
-                  <div
-                    className={`w-8 h-8 mb-1 bg-gray-200 dark:bg-gray-700 rounded-lg ${shimmerClass}`}
-                    style={{ animationDelay: `${i * 50}ms` }}
-                  />
-                  <div
-                    className={`h-3 w-12 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
-                    style={{ animationDelay: `${i * 50 + 25}ms` }}
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* How to Play Section Skeleton */}
           <div className="w-full max-w-sm mb-6">
             <div className="flex items-center gap-2 mb-2">
