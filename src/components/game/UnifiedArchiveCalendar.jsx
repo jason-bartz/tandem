@@ -16,6 +16,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
+import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 
@@ -65,6 +66,7 @@ export default function UnifiedArchiveCalendar({
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
   const [completedMiniPuzzles, setCompletedMiniPuzzles] = useState(new Set());
   const [completedReelPuzzles, setCompletedReelPuzzles] = useState(new Set());
+  const [completedSoupPuzzles, setCompletedSoupPuzzles] = useState(new Set());
   const [isLoading, setIsLoading] = useState(false);
   const abortControllerRef = useRef(null);
 
@@ -98,6 +100,10 @@ export default function UnifiedArchiveCalendar({
   const firstReelPuzzleMonth = 10;
   const firstReelPuzzleYear = 2025;
 
+  const firstSoupPuzzleDate = new Date(2026, 0, 24); // January 24, 2026
+  const firstSoupPuzzleMonth = 0;
+  const firstSoupPuzzleYear = 2026;
+
   // Current first puzzle date based on active tab
   const getFirstPuzzleInfo = () => {
     if (activeTab === 'tandem') {
@@ -108,8 +114,10 @@ export default function UnifiedArchiveCalendar({
       };
     } else if (activeTab === 'mini') {
       return { date: firstMiniPuzzleDate, month: firstMiniPuzzleMonth, year: firstMiniPuzzleYear };
-    } else {
+    } else if (activeTab === 'reel') {
       return { date: firstReelPuzzleDate, month: firstReelPuzzleMonth, year: firstReelPuzzleYear };
+    } else {
+      return { date: firstSoupPuzzleDate, month: firstSoupPuzzleMonth, year: firstSoupPuzzleYear };
     }
   };
   const {
@@ -307,6 +315,71 @@ export default function UnifiedArchiveCalendar({
   }, []);
 
   /**
+   * Load puzzles for the current month - Element Soup puzzles
+   */
+  const loadSoupMonthData = useCallback(async (month, year) => {
+    try {
+      const startDate = new Date(year, month, 1).toISOString().split('T')[0];
+      const endDate = new Date(year, month + 1, 0).toISOString().split('T')[0];
+
+      // Load puzzles for this month using Element Soup puzzle API
+      const apiUrl = getApiUrl(
+        `/api/element-soup/puzzle?startDate=${startDate}&endDate=${endDate}`
+      );
+      const puzzlesResponse = await capacitorFetch(apiUrl, {
+        signal: abortControllerRef.current?.signal,
+      });
+
+      // Load completed puzzles from localStorage
+      const completedSet = new Set();
+      try {
+        // Check all dates in the month range for completed puzzles
+        const startDay = new Date(year, month, 1);
+        const endDay = new Date(year, month + 1, 0);
+        for (let d = new Date(startDay); d <= endDay; d.setDate(d.getDate() + 1)) {
+          const dateStr = d.toISOString().split('T')[0];
+          const key = `${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${dateStr}`;
+          const saved = localStorage.getItem(key);
+          if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed.completed) {
+              completedSet.add(dateStr);
+            }
+          }
+        }
+      } catch (storageError) {
+        logger.error('[UnifiedArchiveCalendar] Error loading Soup history:', storageError);
+      }
+      setCompletedSoupPuzzles(completedSet);
+
+      const monthData = {};
+
+      if (puzzlesResponse.ok) {
+        const puzzlesData = await puzzlesResponse.json();
+        if (puzzlesData.success && puzzlesData.puzzles) {
+          puzzlesData.puzzles.forEach((puzzle) => {
+            const puzzleDate = new Date(puzzle.date + 'T00:00:00'); // Parse in local timezone
+            if (puzzleDate.getMonth() === month && puzzleDate.getFullYear() === year) {
+              const day = puzzleDate.getDate();
+              monthData[day] = {
+                id: puzzle.id,
+                date: puzzle.date,
+              };
+            }
+          });
+        }
+      }
+
+      return { monthData, accessMap: {} };
+    } catch (error) {
+      if (error.name !== 'AbortError') {
+        logger.error('[UnifiedArchiveCalendar] Failed to load Soup month data:', error);
+      }
+      return { monthData: {}, accessMap: {} };
+    }
+  }, []);
+
+  /**
    * Load puzzles for the current month based on active tab
    */
   const loadMonthData = useCallback(
@@ -325,8 +398,10 @@ export default function UnifiedArchiveCalendar({
           result = await loadTandemMonthData(month, year);
         } else if (activeTab === 'mini') {
           result = await loadMiniMonthData(month, year);
-        } else {
+        } else if (activeTab === 'reel') {
           result = await loadReelMonthData(month, year);
+        } else {
+          result = await loadSoupMonthData(month, year);
         }
 
         setPuzzleData(result.monthData);
@@ -335,7 +410,7 @@ export default function UnifiedArchiveCalendar({
         setIsLoading(false);
       }
     },
-    [activeTab, loadTandemMonthData, loadMiniMonthData, loadReelMonthData]
+    [activeTab, loadTandemMonthData, loadMiniMonthData, loadReelMonthData, loadSoupMonthData]
   );
 
   // Load data when month/year changes, modal opens, or tab changes
@@ -439,7 +514,7 @@ export default function UnifiedArchiveCalendar({
       // Navigate to the mini game with the selected date
       onClose?.();
       router.push(`/dailymini?date=${puzzle.date}`);
-    } else {
+    } else if (activeTab === 'reel') {
       // Reel Connections - same paywall as Mini (archive puzzles require subscription)
       const isArchivePuzzle = !isToday;
       if (isArchivePuzzle && !hasSubscription) {
@@ -449,6 +524,16 @@ export default function UnifiedArchiveCalendar({
 
       onClose?.();
       router.push(`/reel-connections?date=${puzzle.date}`);
+    } else {
+      // Element Soup - archive puzzles require subscription (same as Mini/Reel)
+      const isArchivePuzzle = !isToday;
+      if (isArchivePuzzle && !hasSubscription) {
+        setShowPaywall(true);
+        return;
+      }
+
+      onClose?.();
+      router.push(`/element-soup?date=${puzzle.date}`);
     }
   };
 
@@ -514,7 +599,7 @@ export default function UnifiedArchiveCalendar({
 
         const isArchivePuzzle = puzzle && !isToday;
         shouldBeLocked = !hasSubscription && isArchivePuzzle;
-      } else {
+      } else if (activeTab === 'reel') {
         // Reel Connections
         const dateStr = puzzle?.date;
         const isCompleted = dateStr ? completedReelPuzzles.has(dateStr) : false;
@@ -528,6 +613,22 @@ export default function UnifiedArchiveCalendar({
         }
 
         // Reel archive requires subscription (same as Mini)
+        const isArchivePuzzle = puzzle && !isToday;
+        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+      } else {
+        // Element Soup
+        const dateStr = puzzle?.date;
+        const isCompleted = dateStr ? completedSoupPuzzles.has(dateStr) : false;
+
+        if (puzzle && isCompleted) {
+          status = 'completed';
+        } else if (puzzle && !isFutureDate) {
+          status = 'not_played';
+        } else if (!isPastFirstPuzzle || isFutureDate) {
+          status = 'no_puzzle';
+        }
+
+        // Soup archive requires subscription (same as Mini/Reel)
         const isArchivePuzzle = puzzle && !isToday;
         shouldBeLocked = !hasSubscription && isArchivePuzzle;
       }
@@ -563,8 +664,10 @@ export default function UnifiedArchiveCalendar({
       return { icon: '/icons/ui/tandem.png', alt: 'Tandem', text: 'Tandem Puzzle Archive' };
     } else if (activeTab === 'mini') {
       return { icon: '/icons/ui/mini.png', alt: 'Mini', text: 'Mini Puzzle Archive' };
-    } else {
+    } else if (activeTab === 'reel') {
       return { icon: '/icons/ui/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
+    } else {
+      return { icon: '/icons/ui/element-soup.png', alt: 'Soup', text: 'Soup Puzzle Archive' };
     }
   };
   const tabTitle = getTabTitle();
@@ -588,29 +691,31 @@ export default function UnifiedArchiveCalendar({
             ? 'bg-sky-400/30 dark:bg-sky-400/30'
             : activeTab === 'mini'
               ? 'bg-yellow-400/30 dark:bg-yellow-400/30'
-              : 'bg-red-500/30 dark:bg-red-500/30'
+              : activeTab === 'reel'
+                ? 'bg-red-500/30 dark:bg-red-500/30'
+                : 'bg-green-500/30 dark:bg-green-500/30'
         }
         footer={
-          /* Tab Buttons */
-          <div className="flex gap-2">
+          /* Tab Buttons - 4 tabs, no icons to fit */
+          <div className="flex gap-1.5">
             <button
               onClick={() => setActiveTab('tandem')}
               className={`
-                flex-1 py-3 px-3
-                rounded-2xl
+                flex-1 py-2.5 px-2
+                rounded-xl
                 border-[3px]
                 font-semibold
                 transition-all
-                flex items-center justify-center gap-1.5
-                text-sm
+                flex items-center justify-center
+                text-xs
                 ${
                   activeTab === 'tandem'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                      : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      : 'bg-accent-blue text-white border-black dark:border-gray-600 hover:bg-accent-blue/90 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                      : 'bg-accent-blue/20 text-accent-blue border-accent-blue/50 dark:border-accent-blue/30 hover:bg-accent-blue/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
               style={{
@@ -620,27 +725,26 @@ export default function UnifiedArchiveCalendar({
               aria-label="Tandem Archive"
               aria-pressed={activeTab === 'tandem'}
             >
-              <img src="/icons/ui/tandem.png" alt="" className="w-5 h-5" />
               Tandem
             </button>
             <button
               onClick={() => setActiveTab('mini')}
               className={`
-                flex-1 py-3 px-3
-                rounded-2xl
+                flex-1 py-2.5 px-2
+                rounded-xl
                 border-[3px]
                 font-semibold
                 transition-all
-                flex items-center justify-center gap-1.5
-                text-sm
+                flex items-center justify-center
+                text-xs
                 ${
                   activeTab === 'mini'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                      : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      : 'bg-accent-yellow text-gray-900 border-black dark:border-gray-600 hover:bg-accent-yellow/90 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                      : 'bg-accent-yellow/20 text-yellow-700 dark:text-yellow-500 border-accent-yellow/50 dark:border-accent-yellow/30 hover:bg-accent-yellow/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
               style={{
@@ -650,27 +754,26 @@ export default function UnifiedArchiveCalendar({
               aria-label="Mini Archive"
               aria-pressed={activeTab === 'mini'}
             >
-              <img src="/icons/ui/mini.png" alt="" className="w-5 h-5" />
               Mini
             </button>
             <button
               onClick={() => setActiveTab('reel')}
               className={`
-                flex-1 py-3 px-3
-                rounded-2xl
+                flex-1 py-2.5 px-2
+                rounded-xl
                 border-[3px]
                 font-semibold
                 transition-all
-                flex items-center justify-center gap-1.5
-                text-sm
+                flex items-center justify-center
+                text-xs
                 ${
                   activeTab === 'reel'
                     ? highContrast
-                      ? 'bg-hc-primary text-white border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                      : 'bg-red-500 text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-red-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                     : highContrast
                       ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                      : 'bg-red-500 text-white border-black dark:border-gray-600 hover:bg-red-500/90 shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                      : 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/50 dark:border-red-500/30 hover:bg-red-500/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
               style={{
@@ -680,8 +783,36 @@ export default function UnifiedArchiveCalendar({
               aria-label="Reel Archive"
               aria-pressed={activeTab === 'reel'}
             >
-              <img src="/icons/ui/movie.png" alt="" className="w-5 h-5" />
               Reel
+            </button>
+            <button
+              onClick={() => setActiveTab('soup')}
+              className={`
+                flex-1 py-2.5 px-2
+                rounded-xl
+                border-[3px]
+                font-semibold
+                transition-all
+                flex items-center justify-center
+                text-xs
+                ${
+                  activeTab === 'soup'
+                    ? highContrast
+                      ? 'bg-hc-primary text-white border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                      : 'bg-green-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : highContrast
+                      ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                      : 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/50 dark:border-green-500/30 hover:bg-green-500/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+                }
+              `}
+              style={{
+                WebkitTapHighlightColor: 'transparent',
+                touchAction: 'manipulation',
+              }}
+              aria-label="Soup Archive"
+              aria-pressed={activeTab === 'soup'}
+            >
+              Soup
             </button>
           </div>
         }
