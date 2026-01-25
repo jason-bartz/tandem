@@ -91,47 +91,49 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid - horizontal scrolling with column flow */}
-      <div
-        className={cn(
-          'flex flex-col flex-wrap content-start gap-2',
-          'flex-1 min-h-0 overflow-x-auto overflow-y-hidden scrollable',
-          'p-2',
-          'bg-gray-50 dark:bg-gray-900/50',
-          'border-[2px] border-gray-200 dark:border-gray-700',
-          'rounded-xl',
-          highContrast && 'border-hc-border'
-        )}
-        role="region"
-        aria-label="Element bank"
-      >
-        {elements.length === 0 ? (
-          <div className="w-full text-center py-8 text-gray-500 dark:text-gray-400">
-            {searchQuery ? 'No elements match your search' : 'No elements yet'}
-          </div>
-        ) : (
-          elements.map((element) => {
-            const isSelected =
-              (selectedA && selectedA.id === element.id) ||
-              (selectedB && selectedB.id === element.id);
-            const isTarget =
-              targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
-            // Only show NEW badge for elements in the recent list (last 5 discovered)
-            const showNewBadge = recentElements.includes(element.name);
+      {/* Element grid wrapper - provides fixed height for column wrapping */}
+      <div className="flex-1 min-h-0">
+        <div
+          className={cn(
+            'flex flex-col flex-wrap content-start gap-2',
+            'h-full overflow-x-auto overflow-y-hidden scrollable',
+            'p-2',
+            'bg-gray-50 dark:bg-gray-900/50',
+            'border-[2px] border-gray-200 dark:border-gray-700',
+            'rounded-xl',
+            highContrast && 'border-hc-border'
+          )}
+          role="region"
+          aria-label="Element bank"
+        >
+          {elements.length === 0 ? (
+            <div className="w-full text-center py-8 text-gray-500 dark:text-gray-400">
+              {searchQuery ? 'No elements match your search' : 'No elements yet'}
+            </div>
+          ) : (
+            elements.map((element) => {
+              const isSelected =
+                (selectedA && selectedA.id === element.id) ||
+                (selectedB && selectedB.id === element.id);
+              const isTarget =
+                targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
+              // Only show NEW badge for elements in the recent list (last 5 discovered)
+              const showNewBadge = recentElements.includes(element.name);
 
-            return (
-              <ElementChip
-                key={element.id}
-                element={element}
-                isSelected={isSelected}
-                isNew={showNewBadge}
-                isTarget={isTarget}
-                onClick={onSelect}
-                disabled={disabled}
-              />
-            );
-          })
-        )}
+              return (
+                <ElementChip
+                  key={element.id}
+                  element={element}
+                  isSelected={isSelected}
+                  isNew={showNewBadge}
+                  isTarget={isTarget}
+                  onClick={onSelect}
+                  disabled={disabled}
+                />
+              );
+            })
+          )}
+        </div>
       </div>
     </div>
   );
