@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
+import { ElementSoupBackground } from './ElementSoupBackground';
 
 const LOADING_MESSAGES = [
   'Heating up the elements...',
@@ -67,13 +68,9 @@ export function ElementSoupLoadingSkeleton() {
   const shimmerClass = !reduceMotion ? 'skeleton-shimmer' : '';
 
   return (
-    <div
-      className={cn(
-        'fixed inset-0 flex flex-col',
-        'bg-soup-green dark:bg-gray-900',
-        highContrast && 'bg-hc-background'
-      )}
-    >
+    <div className="fixed inset-0 flex flex-col">
+      {/* Animated gradient background */}
+      <ElementSoupBackground />
       {/* Header Skeleton */}
       <header
         className={cn(

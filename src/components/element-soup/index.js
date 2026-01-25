@@ -1,4 +1,5 @@
 // Element Soup Components
+export { ElementSoupBackground } from './ElementSoupBackground';
 export { ElementChip } from './ElementChip';
 export { ElementBank } from './ElementBank';
 export { CombinationArea } from './CombinationArea';
