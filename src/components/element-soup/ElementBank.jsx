@@ -97,8 +97,8 @@ export function ElementBank({
         <div
           className={cn(
             'grid gap-2',
-            'grid-rows-[repeat(7,auto)] sm:grid-rows-[repeat(8,auto)] md:grid-rows-[repeat(10,auto)] lg:grid-rows-[repeat(12,auto)]',
-            'grid-flow-col auto-cols-max',
+            'grid-rows-[repeat(7,min-content)] sm:grid-rows-[repeat(8,min-content)] md:grid-rows-[repeat(10,min-content)] lg:grid-rows-[repeat(12,min-content)]',
+            'grid-flow-col auto-cols-max content-start',
             'h-full overflow-x-auto overflow-y-hidden scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
