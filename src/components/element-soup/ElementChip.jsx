@@ -66,6 +66,22 @@ export function ElementChip({
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
+      {/* NEW badge for recently discovered elements */}
+      {isNew && (
+        <span
+          className={cn(
+            'absolute -top-1.5 -right-1.5',
+            'px-1 py-0.5',
+            'bg-purple-500 text-white',
+            'text-[9px] font-bold leading-none',
+            'rounded',
+            'border border-purple-700',
+            'shadow-sm'
+          )}
+        >
+          NEW
+        </span>
+      )}
       <span className={emojiSizes[size]} role="img" aria-hidden="true">
         {element.emoji}
       </span>
