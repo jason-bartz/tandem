@@ -21,6 +21,7 @@ export function ElementBank({
   onSearchChange,
   targetElement,
   recentElements = [],
+  firstDiscoveryElements = [],
   disabled = false,
 }) {
   const { highContrast } = useTheme();
@@ -119,11 +120,13 @@ export function ElementBank({
                 targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
               // Only show NEW badge for elements in the recent list (last 5 discovered)
               const showNewBadge = recentElements.includes(element.name);
+              // Check if this element was a first discovery
+              const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
 
               return (
                 <ElementChip
                   key={element.id}
-                  element={element}
+                  element={{ ...element, isFirstDiscovery }}
                   isSelected={isSelected}
                   isNew={showNewBadge}
                   isTarget={isTarget}

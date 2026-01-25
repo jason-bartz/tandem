@@ -264,6 +264,7 @@ export function ElementSoupGame({ initialDate = null }) {
                     lastResult={lastResult}
                     clearLastResult={clearLastResult}
                     recentElements={recentElements}
+                    firstDiscoveryElements={firstDiscoveryElements}
                     isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
                     freePlayMode={freePlayMode}
                   />
