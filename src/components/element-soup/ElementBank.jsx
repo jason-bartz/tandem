@@ -102,12 +102,14 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - vertical scroll with flex-wrap for content-based widths */}
+      {/* Element grid wrapper - fixed rows with horizontal scroll, content-based column widths */}
       <div className="flex-1 min-h-0">
         <div
           className={cn(
-            'flex flex-wrap gap-2 content-start',
-            'h-full overflow-y-auto overflow-x-hidden scrollable',
+            'grid gap-2',
+            'grid-rows-[repeat(7,min-content)] sm:grid-rows-[repeat(8,min-content)] md:grid-rows-[repeat(10,min-content)] lg:grid-rows-[repeat(12,min-content)]',
+            'grid-flow-col auto-cols-min content-start',
+            'h-full overflow-x-auto overflow-y-hidden scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
             'border-[2px] border-gray-200 dark:border-gray-700',
