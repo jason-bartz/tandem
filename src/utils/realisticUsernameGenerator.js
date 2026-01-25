@@ -1,4 +1,5 @@
 import realisticUsernameDatabase from '@/data/realisticUsernameDatabase.json';
+import simpleUsernameDatabase from '@/data/usernameDatabase.json';
 
 /**
  * Pick a random item from an array
@@ -7,6 +8,17 @@ import realisticUsernameDatabase from '@/data/realisticUsernameDatabase.json';
  */
 function randomPick(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
+}
+
+/**
+ * Generate a simple two-part username from the simple database
+ * Format: Descriptor + Noun (e.g., "CleverSolver", "CrypticGenius")
+ * @returns {string} Simple two-part username
+ */
+function generateSimpleTwoPartUsername() {
+  const firstPart = randomPick(simpleUsernameDatabase.firstParts);
+  const secondPart = randomPick(simpleUsernameDatabase.secondParts);
+  return firstPart + secondPart;
 }
 
 /**
@@ -63,6 +75,7 @@ function getDelimiter() {
  * Generate a realistic username that looks like a real person would create
  *
  * Possible patterns:
+ * - Simple two-part (25%): "CleverSolver", "CrypticGenius" (from simple database)
  * - 1 only (name/descriptor): "Ashley", "MightyMike"
  * - 2 only (word/letter): "Phoenix", "Gamer"
  * - 1+2: "AshleyK", "Mike_Dragon", "BigBoss"
@@ -75,6 +88,11 @@ function getDelimiter() {
  * @returns {string} Generated username
  */
 export function generateRealisticUsername() {
+  // 25% chance to use simple two-part format for variety
+  if (Math.random() < 0.25) {
+    return generateSimpleTwoPartUsername();
+  }
+
   // Define pattern probabilities (weighted to create realistic distribution)
   // Pattern format: [has1, has2, has3]
   const patterns = [

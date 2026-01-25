@@ -19,15 +19,15 @@ export default function BotLeaderboardManager() {
     soup_entries_per_day: 20,
     carryover_bot_count: 5,
     tandem_min_score: 30,
-    tandem_max_score: 300,
+    tandem_max_score: 150,
     cryptic_min_score: 45,
     cryptic_max_score: 400,
-    mini_min_score: 60,
-    mini_max_score: 600,
-    reel_min_score: 90,
-    reel_max_score: 900,
-    soup_min_score: 60,
-    soup_max_score: 600,
+    mini_min_score: 25,
+    mini_max_score: 180,
+    reel_min_score: 25,
+    reel_max_score: 300,
+    soup_min_score: 65,
+    soup_max_score: 400,
     spread_throughout_day: true,
   });
 
@@ -60,8 +60,8 @@ export default function BotLeaderboardManager() {
           mini_max_score: data.config.mini_max_score,
           reel_min_score: data.config.reel_min_score,
           reel_max_score: data.config.reel_max_score,
-          soup_min_score: data.config.soup_min_score || 60,
-          soup_max_score: data.config.soup_max_score || 600,
+          soup_min_score: data.config.soup_min_score || 65,
+          soup_max_score: data.config.soup_max_score || 400,
           spread_throughout_day: data.config.spread_throughout_day,
         });
       } else if (response.status === 401) {
