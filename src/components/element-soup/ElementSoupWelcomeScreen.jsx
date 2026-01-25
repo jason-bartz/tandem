@@ -20,6 +20,7 @@ export function ElementSoupWelcomeScreen({
   parMoves,
   onStart,
   onStartFreePlay,
+  onOpenHowToPlay,
   isArchive = false,
   puzzleNumber,
 }) {
@@ -89,9 +90,10 @@ export function ElementSoupWelcomeScreen({
         </div>
       </motion.div>
 
-      {/* How to Play Section - Persistent */}
-      <motion.div
-        className="w-full max-w-sm mb-6"
+      {/* How to Play Section - Clickable */}
+      <motion.button
+        onClick={onOpenHowToPlay}
+        className="w-full max-w-sm mb-6 text-left"
         initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.35 }}
@@ -109,13 +111,16 @@ export function ElementSoupWelcomeScreen({
             'bg-soup-light/50 dark:bg-soup-primary/10',
             'border-2 border-soup-light dark:border-soup-primary/30',
             'rounded-xl',
-            'text-sm text-soup-dark dark:text-soup-primary'
+            'text-sm text-soup-dark dark:text-soup-primary',
+            'hover:bg-soup-light/70 dark:hover:bg-soup-primary/20',
+            'hover:border-soup-primary/50 dark:hover:border-soup-primary/50',
+            'transition-colors cursor-pointer'
           )}
         >
           Combine elements to create new ones. Mix and match until you discover the target element.
           Fewer moves = better score!
         </div>
-      </motion.div>
+      </motion.button>
 
       {/* Full-Width Start Button */}
       <motion.button

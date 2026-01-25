@@ -226,6 +226,7 @@ export function ElementSoupGame({ initialDate = null }) {
                   parMoves={parMoves}
                   onStart={startGame}
                   onStartFreePlay={startFreePlay}
+                  onOpenHowToPlay={() => setShowHowToPlay(true)}
                   isArchive={isArchive}
                   puzzleNumber={puzzle?.number}
                 />
