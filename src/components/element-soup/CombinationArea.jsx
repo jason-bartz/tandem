@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -147,9 +147,8 @@ function ScrollingText({ text, className }) {
 function SelectionSlot({ element, position, onClick, isCombining = false }) {
   const { highContrast, reduceMotion } = useTheme();
 
-  // Wiggle and bang animation for combining
-  const wiggleRotation = position === 'first' ? [-3, 3, -3, 3, 0] : [3, -3, 3, -3, 0];
-  const bangDirection = position === 'first' ? 35 : -35;
+  // Wiggle animation for combining
+  const bangDirection = position === 'first' ? 20 : -20;
 
   return (
     <motion.button
@@ -161,64 +160,30 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
         'border-[3px] border-black dark:border-gray-600',
         'rounded-xl',
         'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
-        'transition-colors duration-200',
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
         highContrast && 'border-[4px]'
       )}
       animate={
-        !reduceMotion && isCombining
-          ? {
-              rotate: wiggleRotation,
-              x: [0, 0, 0, 0, bangDirection],
-              scale: [1, 1, 1, 1, 0.9],
-            }
-          : { rotate: 0, x: 0, scale: 1 }
+        !reduceMotion && isCombining ? { x: bangDirection, scale: 0.95 } : { x: 0, scale: 1 }
       }
-      transition={
-        isCombining
-          ? {
-              duration: 0.5,
-              times: [0, 0.2, 0.4, 0.6, 1],
-              ease: 'easeInOut',
-            }
-          : {
-              type: 'spring',
-              stiffness: 400,
-              damping: 15,
-            }
-      }
+      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       whileHover={!reduceMotion && !isCombining ? { scale: 1.02 } : undefined}
       whileTap={!reduceMotion && !isCombining ? { scale: 0.98 } : undefined}
       aria-label={
         element ? `Selected: ${element.name}. Click to deselect.` : `Select ${position} element`
       }
     >
-      <AnimatePresence mode="wait">
-        {element ? (
-          <motion.div
-            key={element.id}
-            initial={!reduceMotion ? { scale: 0, opacity: 0 } : false}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={!reduceMotion ? { scale: 0, opacity: 0 } : undefined}
-            className="flex flex-col items-center overflow-hidden w-full px-1"
-          >
-            <span className="text-3xl sm:text-4xl mb-1">{element.emoji}</span>
-            <ScrollingText
-              text={element.name}
-              className="text-xs sm:text-sm font-medium text-center text-gray-900 dark:text-white"
-            />
-          </motion.div>
-        ) : (
-          <motion.span
-            key="empty"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            className="text-gray-400 dark:text-gray-500 text-sm"
-          >
-            Select
-          </motion.span>
-        )}
-      </AnimatePresence>
+      {element ? (
+        <div className="flex flex-col items-center overflow-hidden w-full px-1">
+          <span className="text-3xl sm:text-4xl mb-1">{element.emoji}</span>
+          <ScrollingText
+            text={element.name}
+            className="text-xs sm:text-sm font-medium text-center text-gray-900 dark:text-white"
+          />
+        </div>
+      ) : (
+        <span className="text-gray-400 dark:text-gray-500 text-sm">Select</span>
+      )}
     </motion.button>
   );
 }
@@ -265,15 +230,9 @@ export function CombinationArea({
         <motion.div
           className="flex items-center justify-center w-8 h-8"
           animate={
-            !reduceMotion && isAnimating
-              ? { scale: [1, 1, 1, 1.5, 0.8], rotate: [0, 0, 0, 180, 180] }
-              : { scale: 1, rotate: 0 }
+            !reduceMotion && isAnimating ? { scale: 1.3, rotate: 180 } : { scale: 1, rotate: 0 }
           }
-          transition={
-            isAnimating
-              ? { duration: 0.5, times: [0, 0.2, 0.6, 0.8, 1], ease: 'easeInOut' }
-              : { duration: 0.3 }
-          }
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         >
           <Plus
             className={cn(
@@ -331,6 +290,7 @@ export function CombinationArea({
             'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
             'active:translate-y-0 active:shadow-none',
             'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] disabled:hover:bg-soup-primary',
+            'overflow-hidden',
             highContrast && 'border-[4px]'
           )}
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
@@ -342,7 +302,9 @@ export function CombinationArea({
                 : 'Select two elements to combine'
           }
         >
-          {isCombining ? <LoadingPhraseMarquee isActive={isCombining} /> : 'Combine'}
+          <span className="flex items-center justify-center">
+            {isCombining ? <LoadingPhraseMarquee isActive={isCombining} /> : 'Combine'}
+          </span>
         </motion.button>
       </div>
     </div>

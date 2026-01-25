@@ -36,7 +36,7 @@ export function ElementChip({
       onClick={() => !disabled && onClick?.(element)}
       disabled={disabled}
       className={cn(
-        'inline-flex items-center justify-center',
+        'relative inline-flex items-center justify-center',
         sizeClasses[size],
         'bg-white dark:bg-gray-800',
         'border-[2px] border-black dark:border-gray-600',
@@ -48,7 +48,6 @@ export function ElementChip({
         !disabled && 'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
         !disabled && 'active:translate-y-0 active:shadow-none',
         isSelected && 'bg-soup-light dark:bg-soup-primary/30',
-        isNew && 'ring-2 ring-soup-primary ring-offset-1',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
         highContrast && 'border-[3px]'
@@ -63,12 +62,7 @@ export function ElementChip({
       <span className={emojiSizes[size]} role="img" aria-hidden="true">
         {element.emoji}
       </span>
-      <span className="whitespace-nowrap text-gray-900 dark:text-white">{element.name}</span>
-      {isNew && (
-        <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-[8px] px-1 rounded font-bold">
-          NEW
-        </span>
-      )}
+      <span className="truncate max-w-[100px] text-gray-900 dark:text-white">{element.name}</span>
     </motion.button>
   );
 }
