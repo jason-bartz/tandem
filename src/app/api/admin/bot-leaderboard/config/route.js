@@ -62,6 +62,7 @@ export async function GET(request) {
  *   tandem_entries_per_day?: number,
  *   mini_entries_per_day?: number,
  *   reel_entries_per_day?: number,
+ *   soup_entries_per_day?: number,
  *   carryover_bot_count?: number,
  *   tandem_min_score?: number,
  *   tandem_max_score?: number,
@@ -71,6 +72,8 @@ export async function GET(request) {
  *   mini_max_score?: number,
  *   reel_min_score?: number,
  *   reel_max_score?: number,
+ *   soup_min_score?: number,
+ *   soup_max_score?: number,
  *   spread_throughout_day?: boolean
  * }
  */
@@ -90,6 +93,7 @@ export async function PUT(request) {
       'tandem_entries_per_day',
       'mini_entries_per_day',
       'reel_entries_per_day',
+      'soup_entries_per_day',
       'carryover_bot_count',
       'tandem_min_score',
       'tandem_max_score',
@@ -99,6 +103,8 @@ export async function PUT(request) {
       'mini_max_score',
       'reel_min_score',
       'reel_max_score',
+      'soup_min_score',
+      'soup_max_score',
       'spread_throughout_day',
     ];
 
