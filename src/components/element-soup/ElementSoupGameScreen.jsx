@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { X, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -225,23 +225,6 @@ export function ElementSoupGameScreen({
   // Mode
   freePlayMode = false,
 }) {
-  const resultTimeoutRef = useRef(null);
-
-  // Clear result after animation
-  useEffect(() => {
-    if (lastResult) {
-      resultTimeoutRef.current = setTimeout(() => {
-        // Result animation will handle cleanup
-      }, 2000);
-    }
-
-    return () => {
-      if (resultTimeoutRef.current) {
-        clearTimeout(resultTimeoutRef.current);
-      }
-    };
-  }, [lastResult]);
-
   // Check if target is found (not applicable in free play mode)
   const isTargetFound = freePlayMode
     ? false
@@ -302,9 +285,13 @@ export function ElementSoupGameScreen({
       </div>
 
       {/* Result Animation Overlay */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {lastResult && !isComplete && (
-          <ResultAnimation result={lastResult} onComplete={clearLastResult} />
+          <ResultAnimation
+            key={`${lastResult.element}-${lastResult.from.join('-')}`}
+            result={lastResult}
+            onComplete={clearLastResult}
+          />
         )}
       </AnimatePresence>
     </div>

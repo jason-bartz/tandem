@@ -91,12 +91,12 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - provides fixed height for column wrapping */}
+      {/* Element grid wrapper - flex row wrap with vertical scroll (Infinite Craft style) */}
       <div className="flex-1 min-h-0">
         <div
           className={cn(
-            'flex flex-col flex-wrap content-start gap-2',
-            'h-full overflow-x-auto overflow-y-hidden scrollable',
+            'flex flex-wrap content-start gap-2',
+            'h-full overflow-y-auto overflow-x-hidden scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
             'border-[2px] border-gray-200 dark:border-gray-700',

@@ -384,7 +384,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     if (!selectedA || !selectedB || isCombining || isAnimating) return;
 
     setIsCombining(true);
-    setLastResult(null);
+    // Don't clear lastResult here - let AnimatePresence handle transitions smoothly
 
     const ANIMATION_DURATION = 600; // ms - wiggle + bang animation
 

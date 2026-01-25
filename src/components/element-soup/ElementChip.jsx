@@ -62,7 +62,7 @@ export function ElementChip({
       <span className={emojiSizes[size]} role="img" aria-hidden="true">
         {element.emoji}
       </span>
-      <span className="truncate max-w-[100px] text-gray-900 dark:text-white">{element.name}</span>
+      <span className="whitespace-nowrap text-gray-900 dark:text-white">{element.name}</span>
     </motion.button>
   );
 }
