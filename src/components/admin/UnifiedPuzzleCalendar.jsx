@@ -20,6 +20,12 @@ const GAMES = {
     icon: '/icons/ui/mini.png',
     color: 'accent-blue',
   },
+  soup: {
+    id: 'soup',
+    name: 'Element Soup',
+    icon: '/icons/ui/element-soup.png',
+    color: 'accent-green',
+  },
   reel: {
     id: 'reel',
     name: 'Reel Connections',
@@ -97,8 +103,8 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
     try {
       const headers = await authService.getAuthHeaders();
 
-      // Fetch all three puzzle types in parallel
-      const [tandemRes, miniRes, reelRes] = await Promise.all([
+      // Fetch all four puzzle types in parallel
+      const [tandemRes, miniRes, soupRes, reelRes] = await Promise.all([
         fetch(
           `/api/admin/puzzles?start=${formatApiDate(startDate)}&end=${formatApiDate(endDate)}`,
           {
@@ -106,12 +112,14 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           }
         ),
         fetch('/api/admin/mini/puzzles?limit=365', { headers }),
+        fetch('/api/admin/element-soup/puzzles?limit=365', { headers }),
         fetch('/api/admin/reel-connections/puzzles?limit=365', { headers }),
       ]);
 
-      const [tandemData, miniData, reelData] = await Promise.all([
+      const [tandemData, miniData, soupData, reelData] = await Promise.all([
         tandemRes.json(),
         miniRes.json(),
+        soupRes.json(),
         reelRes.json(),
       ]);
 
@@ -131,6 +139,14 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         miniData.puzzles.forEach((puzzle) => {
           if (!merged[puzzle.date]) merged[puzzle.date] = {};
           merged[puzzle.date].mini = puzzle;
+        });
+      }
+
+      // Add Element Soup puzzles
+      if (soupData?.puzzles) {
+        soupData.puzzles.forEach((puzzle) => {
+          if (!merged[puzzle.date]) merged[puzzle.date] = {};
+          merged[puzzle.date].soup = puzzle;
         });
       }
 
@@ -209,8 +225,13 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         holidayEmoji: holiday ? getHolidayEmoji(holiday) : null,
         hasTandem: !!dayData.tandem,
         hasMini: !!dayData.mini,
+        hasSoup: !!dayData.soup,
         hasReel: !!dayData.reel,
-        puzzleCount: (dayData.tandem ? 1 : 0) + (dayData.mini ? 1 : 0) + (dayData.reel ? 1 : 0),
+        puzzleCount:
+          (dayData.tandem ? 1 : 0) +
+          (dayData.mini ? 1 : 0) +
+          (dayData.soup ? 1 : 0) +
+          (dayData.reel ? 1 : 0),
       });
     }
 
@@ -396,6 +417,12 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         </div>
         <div className="flex items-center gap-1.5">
           {/* Mobile: dot, Desktop: icon */}
+          <span className="sm:hidden w-2 h-2 rounded-full bg-accent-green"></span>
+          <Image src={GAMES.soup.icon} alt="" width={16} height={16} className="hidden sm:block" />
+          <span>Soup</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          {/* Mobile: dot, Desktop: icon */}
           <span className="sm:hidden w-2 h-2 rounded-full bg-accent-red"></span>
           <Image src={GAMES.reel.icon} alt="" width={16} height={16} className="hidden sm:block" />
           <span>Reel</span>
@@ -498,6 +525,16 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                       {/* Desktop: icon */}
                       <div className="hidden sm:block w-5 h-5 relative">
                         <Image src={GAMES.mini.icon} alt="Mini" fill className="object-contain" />
+                      </div>
+                    </>
+                  )}
+                  {dayInfo.hasSoup && (
+                    <>
+                      {/* Mobile: colored dot */}
+                      <span className="sm:hidden w-2 h-2 rounded-full bg-accent-green"></span>
+                      {/* Desktop: icon */}
+                      <div className="hidden sm:block w-5 h-5 relative">
+                        <Image src={GAMES.soup.icon} alt="Soup" fill className="object-contain" />
                       </div>
                     </>
                   )}

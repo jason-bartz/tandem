@@ -182,7 +182,7 @@ export default function MiniCompleteScreen({
           {/* Logo */}
           <div className="w-24 h-24 mx-auto mb-6">
             <Image
-              src="/images/mini-logo.png"
+              src="/icons/ui/mini.png"
               alt="Daily Mini"
               width={96}
               height={96}

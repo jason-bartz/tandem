@@ -3448,6 +3448,500 @@ Respond in JSON format:
       throw new Error('Failed to parse AI suggestions. Please try again.');
     }
   }
+
+  // ============================================
+  // ELEMENT SOUP - ELEMENT COMBINATION GENERATION
+  // ============================================
+
+  /**
+   * Generate a result element from combining two elements (Element Soup game)
+   * @param {string} elementA - First element name
+   * @param {string} elementB - Second element name
+   * @returns {Promise<{element: string, emoji: string}>}
+   */
+  async generateElementCombination(elementA, elementB) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildElementCombinationPrompt(elementA, elementB);
+
+        logger.info('Generating element combination with AI', {
+          elementA,
+          elementB,
+          model: this.model,
+          attempt: attempt + 1,
+        });
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 100,
+          temperature: 0.8, // Balance creativity with consistency
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI element combination response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseElementCombinationResponse(responseText);
+
+        logger.info('Element combination generated successfully', {
+          elementA,
+          elementB,
+          result: result.element,
+          emoji: result.emoji,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI element combination attempt failed', {
+          attempt: attempt + 1,
+          elementA,
+          elementB,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        // Handle rate limiting
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          }
+        }
+
+        // Don't retry on auth errors
+        if (error.status === 401) {
+          throw error;
+        }
+
+        // Service overloaded
+        if (error.status === 529 && attempt < this.maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+          continue;
+        }
+
+        // Retry on validation errors with fresh generation
+        if (error.message.includes('Invalid') && attempt < this.maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          continue;
+        }
+
+        if (attempt === this.maxRetries) break;
+
+        // Exponential backoff
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    logger.error('AI element combination failed after all retries', {
+      elementA,
+      elementB,
+      attempts: this.maxRetries + 1,
+      error: lastError?.message,
+    });
+
+    throw new Error(
+      `Element combination generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build the prompt for element combination generation
+   */
+  buildElementCombinationPrompt(elementA, elementB) {
+    return `You are generating results for an element combination game similar to "Infinite Craft".
+
+TASK: Determine what results from combining these two elements:
+Element 1: ${elementA}
+Element 2: ${elementB}
+
+RULES:
+1. ALWAYS return a result - there are no "failed" combinations
+2. Be creative but logical - the result should make intuitive sense
+3. Real-world items, concepts, people, places, pop culture, history, science - ALL are fair game
+4. NO profanity or offensive content
+5. Keep element names concise (1-3 words typically)
+6. Choose 1-3 appropriate emojis for the result (1 is most common, use 2-3 only when it enhances representation)
+
+COMBINATION LOGIC EXAMPLES:
+- Water + Fire = Steam (physical reaction)
+- Earth + Water = Mud (material combination)
+- Fire + Earth = Lava (extreme combination)
+- Human + Fire = Firefighter (occupation/concept)
+- Music + Sadness = Blues (cultural reference)
+- Cat + Internet = Meme (pop culture)
+- Einstein + Time = Relativity (historical/scientific)
+
+IMPORTANT GUIDELINES:
+- Two identical elements can still combine into something new (Fire + Fire = Inferno)
+- Abstract concepts can combine (Love + Time = Memory)
+- Be playful and creative with unexpected combinations
+- Pop culture references are encouraged (Batman + Joker = Gotham)
+- Historical figures and events are allowed (Napoleon + Winter = Retreat)
+- Keep results family-friendly and appropriate for all ages
+
+Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
+{"element": "ResultName", "emoji": "🔥"}`;
+  }
+
+  /**
+   * Parse the AI response for element combination
+   */
+  parseElementCombinationResponse(responseText) {
+    try {
+      // Extract JSON from response (handle potential markdown or extra text)
+      let jsonStr = responseText.trim();
+
+      // Handle markdown code blocks
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1].trim();
+      } else {
+        // Try to find raw JSON
+        const startIdx = responseText.indexOf('{');
+        const endIdx = responseText.lastIndexOf('}');
+        if (startIdx !== -1 && endIdx !== -1) {
+          jsonStr = responseText.slice(startIdx, endIdx + 1);
+        }
+      }
+
+      const result = JSON.parse(jsonStr);
+
+      // Validate required fields
+      if (!result.element || typeof result.element !== 'string') {
+        throw new Error('Invalid response: missing or invalid element name');
+      }
+
+      if (!result.emoji || typeof result.emoji !== 'string') {
+        throw new Error('Invalid response: missing or invalid emoji');
+      }
+
+      // Clean up the element name
+      const element = result.element.trim().substring(0, 100); // Cap at 100 chars
+
+      // Clean up emoji (allow 1-3 emojis, cap at 30 chars)
+      const emoji = result.emoji.trim().substring(0, 30);
+
+      // Validate element name isn't empty
+      if (!element) {
+        throw new Error('Invalid response: element name is empty');
+      }
+
+      return { element, emoji };
+    } catch (error) {
+      logger.error('Failed to parse AI element combination response', {
+        error: error.message,
+        responseText: responseText.substring(0, 500),
+      });
+      throw new Error('Failed to parse AI element combination response. Please try again.');
+    }
+  }
+
+  /**
+   * Generate multiple paths from starter elements to a target element
+   * @param {string} targetElement - The target element to reach
+   * @returns {Promise<{paths: Array}>} - Array of 3 different paths
+   */
+  async generateElementPaths(targetElement, existingCombinations = []) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildElementPathsPrompt(targetElement, existingCombinations);
+
+        logger.info('Generating element paths with AI', {
+          targetElement,
+          model: this.model,
+          attempt: attempt + 1,
+        });
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 2000,
+          temperature: 0.9, // Higher creativity for diverse paths
+          messages: [{ role: 'user', content: prompt }],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI element paths response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseElementPathsResponse(responseText);
+
+        logger.info('Element paths generated successfully', {
+          targetElement,
+          pathCount: result.paths.length,
+          pathLengths: result.paths.map((p) => p.steps.length),
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI element paths attempt failed', {
+          attempt: attempt + 1,
+          targetElement,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        // Handle rate limiting
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          }
+        }
+
+        // Don't retry on auth errors
+        if (error.status === 401) {
+          throw error;
+        }
+
+        // Service overloaded
+        if (error.status === 529 && attempt < this.maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
+          continue;
+        }
+
+        // Retry on validation errors with fresh generation
+        if (error.message.includes('Invalid') && attempt < this.maxRetries) {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          continue;
+        }
+
+        if (attempt === this.maxRetries) break;
+
+        // Exponential backoff
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    logger.error('AI element paths failed after all retries', {
+      targetElement,
+      attempts: this.maxRetries + 1,
+      error: lastError?.message,
+    });
+
+    throw new Error(
+      `Failed to generate element paths after ${this.maxRetries + 1} attempts: ${lastError?.message}`
+    );
+  }
+
+  /**
+   * Build the prompt for generating multiple element paths
+   * @param {string} targetElement - The target element to reach
+   * @param {Array} existingCombinations - Array of {elementA, elementB, result, resultEmoji} from database
+   */
+  buildElementPathsPrompt(targetElement, existingCombinations = []) {
+    // Build the existing combinations section if we have any
+    let existingSection = '';
+    if (existingCombinations && existingCombinations.length > 0) {
+      const comboList = existingCombinations
+        .slice(0, 200) // Limit to prevent token overflow
+        .map((c) => `- ${c.elementA} + ${c.elementB} = ${c.resultEmoji} ${c.result}`)
+        .join('\n');
+
+      existingSection = `
+EXISTING COMBINATIONS (these are already defined - you MUST use these exact results when combining these elements):
+${comboList}
+
+IMPORTANT: If you need to combine two elements that appear in the existing combinations above, you MUST use the result shown. Do not create different results for the same combination.
+
+`;
+    }
+
+    return `You are designing combination paths for an element combination game similar to "Infinite Craft".
+
+STARTER ELEMENTS (all players begin with these 4):
+- Earth 🌍
+- Water 💧
+- Fire 🔥
+- Wind 💨
+${existingSection}
+GOAL: Create 3 DIFFERENT paths of combinations that lead from the starter elements to: "${targetElement}"
+
+RULES:
+1. Each path must start ONLY with the 4 starter elements
+2. Each combination creates a NEW element that can be used in subsequent steps
+3. You can only combine elements that exist (starters OR created in previous steps of that path)
+4. Each step combines exactly 2 elements to create 1 new element
+5. The final step of each path must result in "${targetElement}"
+6. Keep paths between 3-12 steps
+7. Be creative but logical - combinations should make intuitive sense
+8. Choose appropriate emojis (1-3) for each new element
+9. NO profanity or offensive content
+10. Keep element names concise (1-3 words)
+11. CRITICAL: If an element combination already exists in the EXISTING COMBINATIONS list above, use that exact result
+12. CRITICAL: ALL paths must use the EXACT SAME emoji for the target element "${targetElement}" - pick one emoji and use it consistently across all 3 paths
+
+CREATE 3 DISTINCT PATHS:
+- Path 1 (Direct): The most efficient/shortest route
+- Path 2 (Creative): Unconventional combinations, surprising intermediate elements
+- Path 3 (Thematic): A narrative/story-driven path that builds conceptually
+
+IMPORTANT: Each path must be self-contained - only use starters and elements created within THAT path (or from existing combinations).
+
+Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
+{
+  "paths": [
+    {
+      "id": 1,
+      "label": "Direct Path",
+      "steps": [
+        { "step": 1, "elementA": "Fire", "emojiA": "🔥", "elementB": "Earth", "emojiB": "🌍", "result": "Lava", "resultEmoji": "🌋" },
+        { "step": 2, "elementA": "Lava", "emojiA": "🌋", "elementB": "Water", "emojiB": "💧", "result": "Stone", "resultEmoji": "🪨" }
+      ],
+      "targetEmoji": "🎯"
+    },
+    {
+      "id": 2,
+      "label": "Creative Path",
+      "steps": [...],
+      "targetEmoji": "🎯"
+    },
+    {
+      "id": 3,
+      "label": "Thematic Path",
+      "steps": [...],
+      "targetEmoji": "🎯"
+    }
+  ]
+}`;
+  }
+
+  /**
+   * Parse the AI response for element paths
+   */
+  parseElementPathsResponse(responseText) {
+    try {
+      // Extract JSON from response (handle potential markdown or extra text)
+      let jsonStr = responseText.trim();
+
+      // Handle markdown code blocks
+      const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
+      if (jsonMatch) {
+        jsonStr = jsonMatch[1].trim();
+      } else {
+        // Try to find raw JSON
+        const startIdx = responseText.indexOf('{');
+        const endIdx = responseText.lastIndexOf('}');
+        if (startIdx !== -1 && endIdx !== -1) {
+          jsonStr = responseText.slice(startIdx, endIdx + 1);
+        }
+      }
+
+      const result = JSON.parse(jsonStr);
+
+      // Validate required fields
+      if (!result.paths || !Array.isArray(result.paths)) {
+        throw new Error('Invalid response: missing or invalid paths array');
+      }
+
+      if (result.paths.length < 1) {
+        throw new Error('Invalid response: no paths returned');
+      }
+
+      // Validate each path
+      const validatedPaths = result.paths.map((path, idx) => {
+        if (!path.steps || !Array.isArray(path.steps)) {
+          throw new Error(`Invalid response: path ${idx + 1} missing steps array`);
+        }
+
+        if (path.steps.length < 1) {
+          throw new Error(`Invalid response: path ${idx + 1} has no steps`);
+        }
+
+        // Validate each step
+        const validatedSteps = path.steps.map((step, stepIdx) => {
+          if (!step.elementA || !step.elementB || !step.result) {
+            throw new Error(
+              `Invalid step ${stepIdx + 1} in path ${idx + 1}: missing required fields`
+            );
+          }
+
+          return {
+            step: step.step || stepIdx + 1,
+            elementA: String(step.elementA).trim().substring(0, 100),
+            emojiA: String(step.emojiA || '✨')
+              .trim()
+              .substring(0, 30),
+            elementB: String(step.elementB).trim().substring(0, 100),
+            emojiB: String(step.emojiB || '✨')
+              .trim()
+              .substring(0, 30),
+            result: String(step.result).trim().substring(0, 100),
+            resultEmoji: String(step.resultEmoji || '✨')
+              .trim()
+              .substring(0, 30),
+          };
+        });
+
+        return {
+          id: path.id || idx + 1,
+          label: String(path.label || `Path ${idx + 1}`).trim(),
+          steps: validatedSteps,
+          targetEmoji: String(path.targetEmoji || '✨')
+            .trim()
+            .substring(0, 30),
+        };
+      });
+
+      // Normalize target emoji across all paths - use the first path's emoji for consistency
+      if (validatedPaths.length > 0) {
+        const canonicalEmoji = validatedPaths[0].targetEmoji;
+        for (const path of validatedPaths) {
+          path.targetEmoji = canonicalEmoji;
+          // Also update the final step's resultEmoji to match
+          if (path.steps.length > 0) {
+            path.steps[path.steps.length - 1].resultEmoji = canonicalEmoji;
+          }
+        }
+      }
+
+      return { paths: validatedPaths };
+    } catch (error) {
+      logger.error('Failed to parse AI element paths response', {
+        error: error.message,
+        responseText: responseText.substring(0, 1000),
+      });
+      throw new Error('Failed to parse AI element paths response. Please try again.');
+    }
+  }
 }
 
 export default new AIService();

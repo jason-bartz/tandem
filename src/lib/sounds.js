@@ -566,3 +566,465 @@ export function playKeyPressSound() {
   tap.start(currentTime);
   tap.stop(currentTime + 0.012);
 }
+
+// Play a wondrous magical sound for Element Soup combinations
+export function playCombineSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Magical swirl - ascending with a mystical feel
+  const swirlNotes = [
+    { freq: 392, start: 0, duration: 0.12 }, // G4
+    { freq: 523.25, start: 0.06, duration: 0.12 }, // C5
+    { freq: 659.25, start: 0.12, duration: 0.15 }, // E5
+  ];
+
+  swirlNotes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.1, currentTime + start + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    // Add subtle vibrato for magical shimmer
+    const vibrato = context.createOscillator();
+    vibrato.frequency.value = 8;
+    const vibratoGain = context.createGain();
+    vibratoGain.gain.value = 3;
+
+    vibrato.connect(vibratoGain);
+    vibratoGain.connect(osc.frequency);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+    vibrato.start(currentTime + start);
+    vibrato.stop(currentTime + start + duration);
+  });
+
+  // Layer 2: Culminating chime - the moment of creation
+  const chime = context.createOscillator();
+  const chimeGain = context.createGain();
+
+  chime.type = 'sine';
+  chime.frequency.setValueAtTime(783.99, currentTime + 0.18); // G5
+
+  chimeGain.gain.setValueAtTime(0, currentTime + 0.18);
+  chimeGain.gain.linearRampToValueAtTime(0.15, currentTime + 0.19);
+  chimeGain.gain.setValueAtTime(0.12, currentTime + 0.25);
+  chimeGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.4);
+
+  chime.connect(chimeGain);
+  chimeGain.connect(context.destination);
+
+  chime.start(currentTime + 0.18);
+  chime.stop(currentTime + 0.45);
+
+  // Layer 3: Sparkle dust - quick high twinkles
+  const sparkles = [
+    { freq: 1318.51, start: 0.2, duration: 0.1 }, // E6
+    { freq: 1567.98, start: 0.24, duration: 0.12 }, // G6
+  ];
+
+  sparkles.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.04, currentTime + start + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 4: Soft harmonic undertone - warmth and wonder
+  const undertone = context.createOscillator();
+  const undertoneGain = context.createGain();
+
+  undertone.type = 'sine';
+  undertone.frequency.setValueAtTime(196, currentTime); // G3
+
+  undertoneGain.gain.setValueAtTime(0, currentTime);
+  undertoneGain.gain.linearRampToValueAtTime(0.06, currentTime + 0.05);
+  undertoneGain.gain.setValueAtTime(0.04, currentTime + 0.2);
+  undertoneGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.35);
+
+  undertone.connect(undertoneGain);
+  undertoneGain.connect(context.destination);
+
+  undertone.start(currentTime);
+  undertone.stop(currentTime + 0.4);
+}
+
+// Play a triumphant fanfare for first discovery in Element Soup
+export function playFirstDiscoverySound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Triumphant ascending arpeggio
+  const notes = [
+    { freq: 523.25, start: 0, duration: 0.15 }, // C5
+    { freq: 659.25, start: 0.1, duration: 0.15 }, // E5
+    { freq: 783.99, start: 0.2, duration: 0.15 }, // G5
+    { freq: 1046.5, start: 0.3, duration: 0.4 }, // C6
+    { freq: 1318.51, start: 0.35, duration: 0.35 }, // E6
+    { freq: 1567.98, start: 0.4, duration: 0.5 }, // G6
+  ];
+
+  notes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.15, currentTime + start + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Add sparkle harmonics
+  const sparkles = [
+    { freq: 2093, start: 0.5, duration: 0.3 }, // C7
+    { freq: 2637, start: 0.55, duration: 0.25 }, // E7
+  ];
+
+  sparkles.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.06, currentTime + start + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+}
+
+// Play a triumphant victory sound for Element Soup game completion
+export function playSoupWinSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Triumphant fanfare - ascending victory melody
+  const fanfareNotes = [
+    { freq: 523.25, start: 0, duration: 0.15 }, // C5
+    { freq: 659.25, start: 0.12, duration: 0.15 }, // E5
+    { freq: 783.99, start: 0.24, duration: 0.15 }, // G5
+    { freq: 1046.5, start: 0.36, duration: 0.4 }, // C6 - victory peak
+  ];
+
+  fanfareNotes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.15, currentTime + start + 0.015);
+    gain.gain.setValueAtTime(0.12, currentTime + start + duration * 0.6);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 2: Celebratory harmony - rich chord
+  const harmonyNotes = [
+    { freq: 261.63, start: 0.36, duration: 0.5 }, // C4
+    { freq: 329.63, start: 0.38, duration: 0.48 }, // E4
+    { freq: 392, start: 0.4, duration: 0.46 }, // G4
+  ];
+
+  harmonyNotes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.03);
+    gain.gain.setValueAtTime(0.06, currentTime + start + duration * 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 3: Sparkle cascade - celebration twinkles
+  const sparkles = [
+    { freq: 1318.51, start: 0.5, duration: 0.15 }, // E6
+    { freq: 1567.98, start: 0.55, duration: 0.15 }, // G6
+    { freq: 2093, start: 0.6, duration: 0.2 }, // C7
+    { freq: 2637, start: 0.65, duration: 0.2 }, // E7
+  ];
+
+  sparkles.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.05, currentTime + start + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 4: Deep celebratory bass - grounding victory
+  const bass = context.createOscillator();
+  const bassGain = context.createGain();
+
+  bass.type = 'sine';
+  bass.frequency.setValueAtTime(130.81, currentTime + 0.36); // C3
+
+  bassGain.gain.setValueAtTime(0, currentTime + 0.36);
+  bassGain.gain.linearRampToValueAtTime(0.1, currentTime + 0.4);
+  bassGain.gain.setValueAtTime(0.08, currentTime + 0.6);
+  bassGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.9);
+
+  bass.connect(bassGain);
+  bassGain.connect(context.destination);
+
+  bass.start(currentTime + 0.36);
+  bass.stop(currentTime + 1.0);
+}
+
+// Play a magical "start game" sound for Element Soup - evokes wonder and discovery
+export function playSoupStartSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Magical ascending shimmer - like opening a spellbook
+  // Layer 1: Warm foundation chord
+  const foundationNotes = [
+    { freq: 261.63, start: 0, duration: 0.5 }, // C4 - grounding
+    { freq: 329.63, start: 0.05, duration: 0.45 }, // E4 - warmth
+  ];
+
+  foundationNotes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.03);
+    gain.gain.setValueAtTime(0.06, currentTime + start + duration * 0.6);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 2: Ascending magical arpeggio - wonder and discovery
+  const arpeggioNotes = [
+    { freq: 523.25, start: 0.1, duration: 0.18 }, // C5
+    { freq: 659.25, start: 0.2, duration: 0.18 }, // E5
+    { freq: 783.99, start: 0.3, duration: 0.18 }, // G5
+    { freq: 1046.5, start: 0.4, duration: 0.3 }, // C6 - peak wonder
+  ];
+
+  arpeggioNotes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.12, currentTime + start + 0.015);
+    gain.gain.setValueAtTime(0.1, currentTime + start + duration * 0.5);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    // Add subtle vibrato for magical feel
+    const vibrato = context.createOscillator();
+    vibrato.frequency.value = 5;
+    const vibratoGain = context.createGain();
+    vibratoGain.gain.value = 2;
+
+    vibrato.connect(vibratoGain);
+    vibratoGain.connect(osc.frequency);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+    vibrato.start(currentTime + start);
+    vibrato.stop(currentTime + start + duration);
+  });
+
+  // Layer 3: Sparkle/twinkle effects - sense of magic
+  const sparkles = [
+    { freq: 1318.51, start: 0.45, duration: 0.2 }, // E6
+    { freq: 1567.98, start: 0.5, duration: 0.2 }, // G6
+    { freq: 2093, start: 0.55, duration: 0.25 }, // C7
+  ];
+
+  sparkles.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.05, currentTime + start + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+
+  // Layer 4: Low mystical hum - sense of ancient wisdom
+  const hum = context.createOscillator();
+  const humGain = context.createGain();
+
+  hum.type = 'sine';
+  hum.frequency.setValueAtTime(130.81, currentTime); // C3
+
+  humGain.gain.setValueAtTime(0, currentTime);
+  humGain.gain.linearRampToValueAtTime(0.04, currentTime + 0.1);
+  humGain.gain.setValueAtTime(0.03, currentTime + 0.4);
+  humGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.7);
+
+  hum.connect(humGain);
+  humGain.connect(context.destination);
+
+  hum.start(currentTime);
+  hum.stop(currentTime + 0.7);
+}
+
+// Play a subtle "plunk" sound when selecting an element (like Infinite Craft)
+export function playPlunkSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Water drop / plunk sound - quick and satisfying
+  // Layer 1: Low frequency "plop" body
+  const plop = context.createOscillator();
+  const plopGain = context.createGain();
+
+  plop.type = 'sine';
+  plop.frequency.setValueAtTime(300, currentTime);
+  plop.frequency.exponentialRampToValueAtTime(150, currentTime + 0.08); // Descending pitch
+
+  plopGain.gain.setValueAtTime(0, currentTime);
+  plopGain.gain.linearRampToValueAtTime(0.12, currentTime + 0.005); // Fast attack
+  plopGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.08); // Quick decay
+
+  plop.connect(plopGain);
+  plopGain.connect(context.destination);
+
+  plop.start(currentTime);
+  plop.stop(currentTime + 0.1);
+
+  // Layer 2: Higher frequency "tap" for clarity
+  const tap = context.createOscillator();
+  const tapGain = context.createGain();
+
+  tap.type = 'triangle';
+  tap.frequency.setValueAtTime(800, currentTime);
+  tap.frequency.exponentialRampToValueAtTime(400, currentTime + 0.04);
+
+  tapGain.gain.setValueAtTime(0, currentTime);
+  tapGain.gain.linearRampToValueAtTime(0.06, currentTime + 0.003);
+  tapGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.04);
+
+  tap.connect(tapGain);
+  tapGain.connect(context.destination);
+
+  tap.start(currentTime);
+  tap.stop(currentTime + 0.05);
+}
+
+// Play a new element discovery sound (softer than first discovery)
+export function playNewElementSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Gentle ascending chime
+  const notes = [
+    { freq: 659.25, start: 0, duration: 0.12 }, // E5
+    { freq: 880, start: 0.08, duration: 0.12 }, // A5
+    { freq: 1046.5, start: 0.16, duration: 0.2 }, // C6
+  ];
+
+  notes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.1, currentTime + start + 0.01);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration);
+  });
+}

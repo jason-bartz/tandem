@@ -25,6 +25,15 @@ const GAMES = [
     borderColor: 'border-accent-blue',
   },
   {
+    id: 'soup',
+    name: 'Element Soup',
+    description: 'Element combination puzzle',
+    icon: '/icons/ui/element-soup.png',
+    color: 'accent-green',
+    bgColor: 'bg-accent-green/20',
+    borderColor: 'border-accent-green',
+  },
+  {
     id: 'reel',
     name: 'Reel Connections',
     description: 'Movie connection puzzle',

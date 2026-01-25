@@ -12,10 +12,11 @@ import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import { ASSET_VERSION } from '@/lib/constants';
 
 export default function Support() {
   useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'mini', or 'reel'
+  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'mini', 'soup', or 'reel'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,7 +26,7 @@ export default function Support() {
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const tandemIcon = '/icons/ui/tandem.png';
+  const tandemIcon = `/icons/ui/tandem.png?v=${ASSET_VERSION}`;
 
   // Daily Tandem sections
   const tandemSections = [
@@ -931,6 +932,264 @@ export default function Support() {
     },
   ];
 
+  // Element Soup sections
+  const soupSections = [
+    {
+      id: 'soup-getting-started',
+      title: 'Getting Started',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">What is Element Soup?</h4>
+            <p className="text-sm mb-3">
+              Element Soup is a daily element combination puzzle inspired by Infinite Craft. Start
+              with four basic elements (Earth, Water, Fire, Wind) and combine them to create new
+              elements. Your goal is to discover the target element of the day!
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How to Play</h4>
+            <ol className="list-decimal list-inside text-sm space-y-1">
+              <li>
+                <strong>Start with 4 elements</strong> - Earth, Water, Fire, and Wind are always
+                available
+              </li>
+              <li>
+                <strong>Select two elements</strong> - Tap on elements in your bank to add them to
+                the combination area
+              </li>
+              <li>
+                <strong>Combine them</strong> - Press the Combine button to create something new
+              </li>
+              <li>
+                <strong>Build your element bank</strong> - New elements are added to your collection
+              </li>
+              <li>
+                <strong>Find the target</strong> - Keep combining until you create the daily target
+                element
+              </li>
+              <li>
+                <strong>Beat the par</strong> - Try to reach the target in fewer moves than par!
+              </li>
+            </ol>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Game Features</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Daily Puzzles</strong>: One new target element every day at midnight
+              </li>
+              <li>
+                <strong>Par System</strong>: Each puzzle has a par (benchmark number of moves)
+              </li>
+              <li>
+                <strong>First Discoveries</strong>: Be the first to discover a new element
+                combination!
+              </li>
+              <li>
+                <strong>Time & Moves Tracking</strong>: Track your solving time and number of moves
+              </li>
+              <li>
+                <strong>Search & Sort</strong>: Easily find elements in your bank
+              </li>
+              <li>
+                <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'soup-combinations',
+      title: 'Combination Tips',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">How Combinations Work</h4>
+            <p className="text-sm mb-3">
+              Every element combination produces a result. The AI determines what two elements
+              create when combined. Results are based on logic, creativity, and sometimes wordplay!
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Example Combinations</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Water + Fire</strong> = Steam
+              </li>
+              <li>
+                <strong>Earth + Water</strong> = Mud
+              </li>
+              <li>
+                <strong>Fire + Fire</strong> = Inferno
+              </li>
+              <li>
+                <strong>Steam + Earth</strong> = Geyser
+              </li>
+              <li>
+                <strong>Wind + Fire</strong> = Smoke
+              </li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">Strategy Tips</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Start with basics</strong> - Combine starter elements first to build a
+                foundation
+              </li>
+              <li>
+                <strong>Think logically</strong> - What would naturally result from combining these
+                elements?
+              </li>
+              <li>
+                <strong>Try combining the same element</strong> - Fire + Fire might surprise you!
+              </li>
+              <li>
+                <strong>Use search</strong> - When your bank gets large, search for specific
+                elements
+              </li>
+              <li>
+                <strong>Multiple paths exist</strong> - There's often more than one way to reach the
+                target
+              </li>
+            </ul>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'soup-first-discoveries',
+      title: 'First Discoveries',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">What are First Discoveries?</h4>
+            <p className="text-sm mb-3">
+              When you combine two elements that no one has ever combined before, you make a{' '}
+              <strong>First Discovery</strong>! You'll be credited as the discoverer of that
+              combination.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How It Works</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Global database</strong> - All element combinations are stored and shared
+              </li>
+              <li>
+                <strong>Instant notification</strong> - You'll see a special celebration when you
+                make a first discovery
+              </li>
+              <li>
+                <strong>Your name is recorded</strong> - First discoveries are attributed to your
+                account
+              </li>
+              <li>
+                <strong>Share your discoveries</strong> - First discoveries appear in your share
+                text
+              </li>
+            </ul>
+          </div>
+          <div className="p-3 bg-gradient-to-r from-yellow-100 to-orange-100 dark:from-yellow-900/30 dark:to-orange-900/30 rounded-lg border-2 border-yellow-400">
+            <p className="font-semibold mb-1">Pro Tip</p>
+            <p className="text-sm">
+              To maximize first discoveries, try unusual or creative combinations that others might
+              not think of!
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'soup-faq',
+      title: 'Frequently Asked Questions',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-1">General Questions</h4>
+            <div className="space-y-3 text-sm">
+              <div>
+                <p className="font-medium">Q: Is Element Soup free to play?</p>
+                <p>
+                  A: Yes! Today's puzzle and the last 3 days are always free. Tandem Unlimited
+                  subscriptions unlock access to all archived puzzles.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: When do new puzzles become available?</p>
+                <p>A: A new puzzle is released daily at midnight in your local timezone.</p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What is "par" in Element Soup?</p>
+                <p>
+                  A: Par is the benchmark number of moves (combinations) to reach the target
+                  element. It represents a good solving pace - try to match or beat it!
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Can I combine any two elements?</p>
+                <p>
+                  A: Yes! Any two elements can be combined, including combining an element with
+                  itself. Every combination produces a result.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: What if I can't find the target element?</p>
+                <p>
+                  A: Keep experimenting! There are often multiple paths to the target. Try building
+                  up related elements and combining them in new ways.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'soup-troubleshooting',
+      title: 'Troubleshooting',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Common Issues and Solutions</h4>
+            <div className="space-y-3">
+              <div>
+                <p className="font-medium">Problem: Combination is taking too long</p>
+                <p className="italic">
+                  Solution: The AI generates new combinations on the fly. If it's slow, check your
+                  internet connection. Most combinations are cached and return instantly.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Can't find an element in my bank</p>
+                <p className="italic">
+                  Solution: Use the search field to filter elements. You can also sort by "A-Z" for
+                  alphabetical order.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Game shows yesterday's puzzle</p>
+                <p className="italic">
+                  Solution: Hard refresh the page (Ctrl+F5 on desktop, pull down to refresh on
+                  mobile) or force quit and reopen the app.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Problem: Progress not saving</p>
+                <p className="italic">
+                  Solution: Make sure you're signed in. Progress is saved automatically but requires
+                  authentication.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+  ];
+
   // Shared sections (platforms, account, contact)
   const sharedSections = [
     {
@@ -1090,7 +1349,9 @@ export default function Support() {
       ? [...tandemSections, ...sharedSections]
       : activeGame === 'mini'
         ? [...miniSections, ...sharedSections]
-        : [...reelSections, ...sharedSections];
+        : activeGame === 'soup'
+          ? [...soupSections, ...sharedSections]
+          : [...reelSections, ...sharedSections];
 
   // Simulate initial loading
   useEffect(() => {
@@ -1145,19 +1406,19 @@ export default function Support() {
 
                   {/* Game Toggle */}
                   <div className="p-6 pb-4">
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-4 gap-2">
                       <button
                         onClick={() => {
                           setActiveGame('tandem');
                           setActiveSection(null);
                         }}
-                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'tandem'
                             ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-1.5">
+                        <div className="flex items-center justify-center gap-1">
                           <Image
                             src={tandemIcon}
                             alt="Daily Tandem"
@@ -1173,15 +1434,15 @@ export default function Support() {
                           setActiveGame('mini');
                           setActiveSection(null);
                         }}
-                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'mini'
                             ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-1.5">
+                        <div className="flex items-center justify-center gap-1">
                           <Image
-                            src="/icons/ui/mini.png"
+                            src={`/icons/ui/mini.png?v=${ASSET_VERSION}`}
                             alt="Daily Mini"
                             width={20}
                             height={20}
@@ -1192,18 +1453,40 @@ export default function Support() {
                       </button>
                       <button
                         onClick={() => {
+                          setActiveGame('soup');
+                          setActiveSection(null);
+                        }}
+                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                          activeGame === 'soup'
+                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                        }`}
+                      >
+                        <div className="flex items-center justify-center gap-1">
+                          <Image
+                            src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+                            alt="Element Soup"
+                            width={20}
+                            height={20}
+                            className="w-5 h-5"
+                          />
+                          <span className="hidden sm:inline">Soup</span>
+                        </div>
+                      </button>
+                      <button
+                        onClick={() => {
                           setActiveGame('reel');
                           setActiveSection(null);
                         }}
-                        className={`px-3 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
                           activeGame === 'reel'
                             ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
                             : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
                         }`}
                       >
-                        <div className="flex items-center justify-center gap-1.5">
+                        <div className="flex items-center justify-center gap-1">
                           <Image
-                            src="/icons/ui/movie.png"
+                            src={`/icons/ui/movie.png?v=${ASSET_VERSION}`}
                             alt="Reel Connections"
                             width={20}
                             height={20}

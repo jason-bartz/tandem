@@ -101,18 +101,22 @@ function getFormattedDate() {
  * @param {Object} props
  * @param {boolean} props.tandemCompleted - Whether Tandem puzzle is won
  * @param {boolean} props.miniCompleted - Whether Mini puzzle is won
+ * @param {boolean} props.soupCompleted - Whether Element Soup is won
  * @param {boolean} props.reelCompleted - Whether Reel Connections is won
  * @param {boolean} props.tandemPlayed - Whether Tandem puzzle has been played
  * @param {boolean} props.miniPlayed - Whether Mini puzzle has been played
+ * @param {boolean} props.soupPlayed - Whether Element Soup has been played
  * @param {boolean} props.reelPlayed - Whether Reel Connections has been played
  * @param {boolean} props.isLoading - Whether game completion data is still loading
  */
 export default function Greeting({
   tandemCompleted = false,
   miniCompleted = false,
+  soupCompleted = false,
   reelCompleted = false,
   tandemPlayed = false,
   miniPlayed = false,
+  soupPlayed = false,
   reelPlayed = false,
   isLoading = false,
 }) {
@@ -143,8 +147,8 @@ export default function Greeting({
       return callToAction;
     }
 
-    const allPlayed = tandemPlayed && miniPlayed && reelPlayed;
-    const allSolved = tandemCompleted && miniCompleted && reelCompleted;
+    const allPlayed = tandemPlayed && miniPlayed && soupPlayed && reelPlayed;
+    const allSolved = tandemCompleted && miniCompleted && soupCompleted && reelCompleted;
 
     if (allPlayed && allSolved) {
       return "You solved today's puzzles! Nice work.";

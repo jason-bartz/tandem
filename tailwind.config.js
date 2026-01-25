@@ -16,6 +16,7 @@ module.exports = {
           'system-ui',
           'sans-serif',
         ],
+        jua: ['Jua', 'sans-serif'],
       },
       height: {
         screen: ['100vh', '100dvh'], // Support for dynamic viewport height
@@ -75,6 +76,12 @@ module.exports = {
         'border-light': 'var(--border-light)',
         // Ghost white (replaces pure white)
         'ghost-white': '#F4F5F9',
+        // Element Soup color palette (based on #7ed957)
+        'soup-green': '#7ed957', // Page background (matches primary button)
+        'soup-primary': '#7ed957', // Primary button/accent color
+        'soup-light': '#d4f4c4', // Light backgrounds for cards/sections
+        'soup-hover': '#6bc447', // Hover state for primary buttons
+        'soup-dark': '#4a9c2e', // Darker shade for text accents
         // Legacy colors for backward compatibility
         'gray-text': '#6B7280',
         'dark-text': '#1F2937',

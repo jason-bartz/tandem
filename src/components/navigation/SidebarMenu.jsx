@@ -468,6 +468,15 @@ export default function SidebarMenu({
                     highContrast={highContrast}
                     subtitle="Classic 5x5 mini crossword"
                   />
+                  <GameButton
+                    icon="/icons/ui/element-soup.png"
+                    label="Element Soup"
+                    onClick={() => handleNavigation('/element-soup')}
+                    isActive={pathname === '/element-soup'}
+                    gameColor="green"
+                    highContrast={highContrast}
+                    subtitle="Combine elements to make discoveries"
+                  />
                 </div>
               </section>
 
@@ -665,6 +674,11 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
     } else if (gameColor === 'red') {
       return {
         bg: '#ef4444', // Red-500 (Reel Connections color)
+        text: 'text-white',
+      };
+    } else if (gameColor === 'green') {
+      return {
+        bg: '#84cc16', // Lime-500 (Element Soup color)
         text: 'text-white',
       };
     }

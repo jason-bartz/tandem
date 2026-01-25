@@ -16,6 +16,7 @@ export default function BotLeaderboardManager() {
     tandem_entries_per_day: 20,
     mini_entries_per_day: 20,
     reel_entries_per_day: 20,
+    soup_entries_per_day: 20,
     carryover_bot_count: 5,
     tandem_min_score: 30,
     tandem_max_score: 300,
@@ -25,6 +26,8 @@ export default function BotLeaderboardManager() {
     mini_max_score: 600,
     reel_min_score: 90,
     reel_max_score: 900,
+    soup_min_score: 60,
+    soup_max_score: 600,
     spread_throughout_day: true,
   });
 
@@ -47,6 +50,7 @@ export default function BotLeaderboardManager() {
           tandem_entries_per_day: data.config.tandem_entries_per_day,
           mini_entries_per_day: data.config.mini_entries_per_day,
           reel_entries_per_day: data.config.reel_entries_per_day,
+          soup_entries_per_day: data.config.soup_entries_per_day || 20,
           carryover_bot_count: data.config.carryover_bot_count,
           tandem_min_score: data.config.tandem_min_score,
           tandem_max_score: data.config.tandem_max_score,
@@ -56,6 +60,8 @@ export default function BotLeaderboardManager() {
           mini_max_score: data.config.mini_max_score,
           reel_min_score: data.config.reel_min_score,
           reel_max_score: data.config.reel_max_score,
+          soup_min_score: data.config.soup_min_score || 60,
+          soup_max_score: data.config.soup_max_score || 600,
           spread_throughout_day: data.config.spread_throughout_day,
         });
       } else if (response.status === 401) {
@@ -244,6 +250,7 @@ export default function BotLeaderboardManager() {
               { name: 'Daily Tandem', key: 'tandem', icon: '/icons/ui/tandem.png' },
               { name: 'Daily Mini', key: 'mini', icon: '/icons/ui/mini.png' },
               { name: 'Reel Connections', key: 'reel', icon: '/icons/ui/movie.png' },
+              { name: 'Element Soup', key: 'soup', icon: '/icons/ui/element-soup.png' },
             ].map((game) => (
               <div
                 key={game.key}

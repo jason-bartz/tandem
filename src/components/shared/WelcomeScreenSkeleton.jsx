@@ -209,9 +209,58 @@ export default function WelcomeScreenSkeleton() {
             <GameCardSkeleton
               reduceMotion={reduceMotion}
               highContrast={highContrast}
-              animationDelay={200}
+              animationDelay={150}
+            />
+            <GameCardSkeleton
+              reduceMotion={reduceMotion}
+              highContrast={highContrast}
+              animationDelay={250}
             />
           </div>
+
+          {/* About Section Skeleton */}
+          <div className="mt-8 text-center">
+            <div
+              className={`h-5 w-48 mx-auto mb-2 bg-gray-200 dark:bg-gray-700 rounded ${
+                !reduceMotion ? 'skeleton-shimmer' : ''
+              }`}
+            />
+            <div
+              className={`h-4 w-64 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${
+                !reduceMotion ? 'skeleton-shimmer' : ''
+              }`}
+            />
+          </div>
+        </div>
+
+        {/* Footer Skeleton */}
+        <div className="max-w-2xl w-full mx-auto px-4">
+          <footer className="pt-8 pb-4">
+            <div className="text-center">
+              <div
+                className={`h-3 w-32 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                  !reduceMotion ? 'skeleton-shimmer' : ''
+                }`}
+              />
+              <div
+                className={`h-3 w-56 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                  !reduceMotion ? 'skeleton-shimmer' : ''
+                }`}
+              />
+              <div className="flex items-center justify-center gap-4">
+                <div
+                  className={`w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 ${
+                    !reduceMotion ? 'skeleton-shimmer' : ''
+                  }`}
+                />
+                <div
+                  className={`w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 ${
+                    !reduceMotion ? 'skeleton-shimmer' : ''
+                  }`}
+                />
+              </div>
+            </div>
+          </footer>
         </div>
       </main>
     </>

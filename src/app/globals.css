@@ -5,6 +5,9 @@
 /* Import micro-animations */
 @import '../styles/micro-animations.css';
 
+/* Jua font for Element Soup game */
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+
 :root {
   /* Original bright, fun color palette for light mode */
   --accent-green: #7ed957;
