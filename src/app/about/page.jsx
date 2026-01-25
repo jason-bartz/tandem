@@ -9,9 +9,10 @@ import SidebarMenu from '@/components/navigation/SidebarMenu';
 import AnimatedLoadingMessage from '@/components/shared/AnimatedLoadingMessage';
 import AboutPageSkeleton from '@/components/shared/AboutPageSkeleton';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
+import FeedbackPane from '@/components/FeedbackPane';
 
 export default function AboutPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function AboutPage() {
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'About', path: '/about' }]);
 
@@ -161,13 +163,15 @@ export default function AboutPage() {
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }
