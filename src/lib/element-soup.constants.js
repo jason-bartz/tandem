@@ -43,6 +43,7 @@ export const SOUP_GAME_STATES = {
 export const SORT_OPTIONS = {
   NEWEST: 'newest',
   ALPHABETICAL: 'alpha',
+  FIRST_DISCOVERIES: 'first_discoveries',
 };
 
 // LocalStorage keys

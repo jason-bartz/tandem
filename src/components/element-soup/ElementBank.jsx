@@ -40,11 +40,16 @@ export function ElementBank({
           Element Bank
         </h3>
         <button
-          onClick={() =>
-            onSortChange(
-              sortOrder === SORT_OPTIONS.NEWEST ? SORT_OPTIONS.ALPHABETICAL : SORT_OPTIONS.NEWEST
-            )
-          }
+          onClick={() => {
+            const order = [
+              SORT_OPTIONS.NEWEST,
+              SORT_OPTIONS.ALPHABETICAL,
+              SORT_OPTIONS.FIRST_DISCOVERIES,
+            ];
+            const currentIndex = order.indexOf(sortOrder);
+            const nextIndex = (currentIndex + 1) % order.length;
+            onSortChange(order[nextIndex]);
+          }}
           className={cn(
             'px-2 py-1',
             'text-sm font-medium',
@@ -54,7 +59,12 @@ export function ElementBank({
           )}
           aria-label="Toggle sort order"
         >
-          Sort: {sortOrder === SORT_OPTIONS.NEWEST ? 'Newest' : 'A-Z'}
+          Sort:{' '}
+          {sortOrder === SORT_OPTIONS.NEWEST
+            ? 'Newest'
+            : sortOrder === SORT_OPTIONS.ALPHABETICAL
+              ? 'A-Z'
+              : '1st Disc.'}
         </button>
       </div>
 
