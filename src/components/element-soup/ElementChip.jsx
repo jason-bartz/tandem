@@ -47,11 +47,18 @@ export function ElementChip({
         'transition-all duration-150',
         !disabled && 'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
         !disabled && 'active:translate-y-0 active:shadow-none',
-        isSelected && 'bg-soup-light dark:bg-soup-primary/30',
+        isSelected && 'bg-green-200 dark:bg-green-700/50',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
         highContrast && 'border-[3px]'
       )}
+      style={
+        element.isFirstDiscovery && !isSelected && !isTarget
+          ? {
+              background: 'linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #f59e0b 100%)',
+            }
+          : undefined
+      }
       whileTap={!disabled && !reduceMotion ? { scale: 0.95 } : undefined}
       initial={isNew && !reduceMotion ? { scale: 0, opacity: 0 } : false}
       animate={isNew && !reduceMotion ? { scale: 1, opacity: 1 } : undefined}

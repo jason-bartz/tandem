@@ -219,6 +219,9 @@ export function ElementSoupGameScreen({
   // Recent elements (for NEW badge - only show for last 5)
   recentElements = [],
 
+  // First discovery elements (for golden styling)
+  firstDiscoveryElements = [],
+
   // State
   isComplete,
 
@@ -280,6 +283,7 @@ export function ElementSoupGameScreen({
           onSearchChange={setSearchQuery}
           targetElement={freePlayMode ? null : targetElement}
           recentElements={recentElements}
+          firstDiscoveryElements={firstDiscoveryElements}
           disabled={isCombining || isAnimating || (isComplete && !freePlayMode)}
         />
       </div>
