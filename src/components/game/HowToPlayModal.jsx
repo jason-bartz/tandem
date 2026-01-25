@@ -394,26 +394,65 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             }`}
           >
             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <p className="text-sm mb-3">
+              Element Soup is a daily element combination puzzle inspired by alchemy and crafting
+              games. Combine elements to discover new ones and reach the daily target!
+            </p>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   1
                 </span>
-                <span>Start with four basic elements: Earth, Water, Fire, and Wind.</span>
+                <span>
+                  <strong>Start with 4 elements</strong> — Earth, Water, Fire, and Wind are always
+                  available.
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   2
                 </span>
-                <span>Select two elements and tap Combine to create something new!</span>
+                <span>
+                  <strong>Select two elements</strong> — Tap on elements in your bank to add them to
+                  the combination area.
+                </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
                   3
                 </span>
-                <span>Create the daily target element to win. Can you beat par?</span>
+                <span>
+                  <strong>Combine them</strong> — Press the Combine button to create something new.
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  4
+                </span>
+                <span>
+                  <strong>Build your element bank</strong> — New elements are added to your
+                  collection.
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
+                  5
+                </span>
+                <span>
+                  <strong>Find the target</strong> — Keep combining until you create the daily
+                  target element!
+                </span>
               </li>
             </ul>
+          </div>
+
+          {/* Demo GIF */}
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+            <img
+              src="/screenshots/elementsoup-howto.gif"
+              alt="Element Soup gameplay demo"
+              className="w-full h-auto"
+            />
           </div>
 
           <div>
