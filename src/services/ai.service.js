@@ -3568,36 +3568,48 @@ Respond in JSON format:
    * Build the prompt for element combination generation
    */
   buildElementCombinationPrompt(elementA, elementB) {
-    return `You are generating results for an element combination game similar to "Infinite Craft".
+    return `You are generating results for an element combination game.
 
 TASK: Determine what results from combining these two elements:
 Element 1: ${elementA}
 Element 2: ${elementB}
 
+CORE PHILOSOPHY:
+The best combinations feel INTUITIVE yet CLEVER. Use a balanced mix of physical logic, wordplay, and thematic associations. Players should think "Oh, that makes sense!" or "That's clever!"
+
+COMBINATION STRATEGIES (use a balanced mix of all three):
+
+1. PHYSICAL/LOGICAL: Natural reactions and transformations
+   - Fire + Water = Steam
+   - Earth + Fire = Lava
+   - Fire + Steam = Engine
+   - Engine + Engine = Rocket
+
+2. WORDPLAY & PUNS: Combine word sounds or meanings
+   - Lake + Ring = Lord of the Rings
+   - Dust + Earth = Planet
+   - Rocket + Surfer = Iron Man (Marvel reference + rocket suit)
+
+3. THEMATIC ASSOCIATIONS: Unexpected but satisfying connections
+   - Fire + Holy Water = Vampire (what vampires fear)
+   - Chicken + Fan = Chicken Wings
+   - Steam + Wave = Surf
+   - Surf + Wave = Surfer
+
 RULES:
 1. ALWAYS return a result - there are no "failed" combinations
-2. Be creative but logical - the result should make intuitive sense
-3. Real-world items, concepts, people, places, pop culture, history, science - ALL are fair game
+2. Balance physical logic with creative leaps
+3. Real-world items, concepts, people, places, pop culture - ALL fair game
 4. NO profanity or offensive content
-5. Keep element names concise (1-3 words typically)
-6. Choose 1-3 appropriate emojis for the result (1 is most common, use 2-3 only when it enhances representation)
+5. Keep element names concise (1-3 words)
+6. Choose 1-2 appropriate emojis (1 is preferred)
 
-COMBINATION LOGIC EXAMPLES:
-- Water + Fire = Steam (physical reaction)
-- Earth + Water = Mud (material combination)
-- Fire + Earth = Lava (extreme combination)
-- Human + Fire = Firefighter (occupation/concept)
-- Music + Sadness = Blues (cultural reference)
-- Cat + Internet = Meme (pop culture)
-- Einstein + Time = Relativity (historical/scientific)
-
-IMPORTANT GUIDELINES:
-- Two identical elements can still combine into something new (Fire + Fire = Inferno)
-- Abstract concepts can combine (Love + Time = Memory)
-- Be playful and creative with unexpected combinations
-- Pop culture references are encouraged (Batman + Joker = Gotham)
-- Historical figures and events are allowed (Napoleon + Winter = Retreat)
-- Keep results family-friendly and appropriate for all ages
+SAME ELEMENT COMBINATIONS:
+When combining identical elements, scale up or transform:
+- Water + Water = Lake (not Ocean - keep it incremental)
+- Fire + Fire = Inferno
+- Earth + Earth = Mountain
+- Lake + Lake = Ocean (progressive scaling)
 
 Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
 {"element": "ResultName", "emoji": "🔥"}`;
@@ -3785,7 +3797,7 @@ IMPORTANT: If you need to combine two elements that appear in the existing combi
 `;
     }
 
-    return `You are designing combination paths for an element combination game similar to "Infinite Craft".
+    return `You are designing combination paths for an element combination game.
 
 STARTER ELEMENTS (all players begin with these 4):
 - Earth 🌍
@@ -3795,24 +3807,43 @@ STARTER ELEMENTS (all players begin with these 4):
 ${existingSection}
 GOAL: Create 3 DIFFERENT paths of combinations that lead from the starter elements to: "${targetElement}"
 
+CORE PHILOSOPHY:
+The best combinations feel INTUITIVE yet CLEVER. Use a balanced mix of physical logic, wordplay, and thematic associations. Players should think "Oh, that makes sense!" or "That's clever!"
+
+COMBINATION STRATEGIES (use a balanced mix of all three):
+
+1. PHYSICAL/LOGICAL: Natural reactions and transformations
+   - Fire + Water = Steam
+   - Fire + Steam = Engine
+   - Engine + Engine = Rocket
+
+2. WORDPLAY & PUNS: Combine word sounds or meanings
+   - Lake + Ring = Lord of the Rings
+   - Dust + Earth = Planet
+   - Rocket + Surfer = Iron Man
+
+3. THEMATIC ASSOCIATIONS: Unexpected but satisfying
+   - Fire + Holy Water = Vampire
+   - Steam + Wave = Surf
+   - Surf + Wave = Surfer
+
 RULES:
 1. Each path must start ONLY with the 4 starter elements
-2. Each combination creates a NEW element that can be used in subsequent steps
-3. You can only combine elements that exist (starters OR created in previous steps of that path)
-4. Each step combines exactly 2 elements to create 1 new element
-5. The final step of each path must result in "${targetElement}"
-6. Keep paths between 3-12 steps
-7. Be creative but logical - combinations should make intuitive sense
-8. Choose appropriate emojis (1-3) for each new element
-9. NO profanity or offensive content
-10. Keep element names concise (1-3 words)
-11. CRITICAL: If an element combination already exists in the EXISTING COMBINATIONS list above, use that exact result
-12. CRITICAL: ALL paths must use the EXACT SAME emoji for the target element "${targetElement}" - pick one emoji and use it consistently across all 3 paths
+2. Each combination creates a NEW element for subsequent steps
+3. Each step combines exactly 2 elements to create 1 new element
+4. The final step must result in "${targetElement}"
+5. Keep paths SHORT: aim for 3-8 steps (shorter is better!)
+6. Balance physical logic with creative leaps
+7. Choose 1-2 appropriate emojis (1 is preferred)
+8. NO profanity or offensive content
+9. Keep element names concise (1-3 words)
+10. CRITICAL: If a combination exists in EXISTING COMBINATIONS above, use that exact result
+11. CRITICAL: ALL paths must use the EXACT SAME emoji for "${targetElement}"
 
 CREATE 3 DISTINCT PATHS:
-- Path 1 (Direct): The most efficient/shortest route
-- Path 2 (Creative): Unconventional combinations, surprising intermediate elements
-- Path 3 (Thematic): A narrative/story-driven path that builds conceptually
+- Path 1 (Direct): The shortest possible route (aim for 3-5 steps)
+- Path 2 (Creative): Clever wordplay and surprising intermediate elements
+- Path 3 (Thematic): A narrative path that builds conceptually
 
 IMPORTANT: Each path must be self-contained - only use starters and elements created within THAT path (or from existing combinations).
 
