@@ -98,6 +98,7 @@ export function ElementSoupGame({ initialDate = null }) {
     lastResult,
     clearLastResult,
     combinationPath,
+    combinationError,
 
     // Timer
     elapsedTime,
@@ -267,6 +268,7 @@ export function ElementSoupGame({ initialDate = null }) {
                     firstDiscoveryElements={firstDiscoveryElements}
                     isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
                     freePlayMode={freePlayMode}
+                    combinationError={combinationError}
                   />
                 </>
               )}

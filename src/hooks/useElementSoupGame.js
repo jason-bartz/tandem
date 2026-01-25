@@ -79,6 +79,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const [isAnimating, setIsAnimating] = useState(false); // Animation state (after API responds)
   const [lastResult, setLastResult] = useState(null);
   const [combinationPath, setCombinationPath] = useState([]);
+  const [combinationError, setCombinationError] = useState(null); // Inline error for failed combinations
 
   // Timer state
   const [hasStarted, setHasStarted] = useState(false);
@@ -493,9 +494,14 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
       clearSelections();
     } catch (err) {
       logger.error('[ElementSoup] Failed to combine elements', { error: err.message });
-      setError('Failed to combine elements. Please try again.');
+      // Show inline error instead of global error screen
+      setCombinationError("Hmm, couldn't find a combination. Try a different pair!");
       setIsCombining(false);
       setIsAnimating(false);
+      // Clear selections so user can try again
+      clearSelections();
+      // Auto-dismiss error after 3 seconds
+      setTimeout(() => setCombinationError(null), 3000);
     }
   }, [
     selectedA,
@@ -732,6 +738,8 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     lastResult,
     clearLastResult: useCallback(() => setLastResult(null), []),
     combinationPath,
+    combinationError,
+    clearCombinationError: useCallback(() => setCombinationError(null), []),
 
     // Timer
     hasStarted,
