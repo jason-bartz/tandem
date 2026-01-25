@@ -103,6 +103,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   // Hint state
   const [hintsRemaining, setHintsRemaining] = useState(4);
   const [solutionPath, setSolutionPath] = useState([]);
+  const [lastHintStep, setLastHintStep] = useState(null); // Track step from last hint for consecutive hints
 
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
@@ -392,6 +393,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const clearSelections = useCallback(() => {
     setSelectedA(null);
     setSelectedB(null);
+    setLastHintStep(null); // Clear hint step tracking when selections are cleared
   }, []);
 
   /**
@@ -678,6 +680,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     setStatsRecorded(false);
     setCompletionStats(null);
     setHintsRemaining(4); // Reset hints
+    setLastHintStep(null); // Clear hint step tracking
     setStartTime(Date.now());
     setElapsedTime(0);
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -699,10 +702,38 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
    * Prioritizes steps later in the solution path (closer to the target).
    * Within a step, prefers non-starter elements.
    * Only shows starter elements if that's all that's available.
+   *
+   * Consecutive hints: If player uses two hints in a row, the second hint
+   * adds the other element from the same combination step.
    */
   const useHint = useCallback(() => {
     if (hintsRemaining <= 0 || !solutionPath || solutionPath.length === 0) return;
     if (freePlayMode || isComplete || isCombining || isAnimating) return;
+
+    // Play the hint sound
+    playHintSound();
+
+    // Check if this is a consecutive hint (second hint for the same step)
+    // We have a pending step if: lastHintStep exists, first element is selected,
+    // and the result hasn't been discovered yet
+    if (
+      lastHintStep &&
+      selectedA &&
+      selectedA.name.toLowerCase() === lastHintStep.firstElement.toLowerCase() &&
+      !discoveredElements.current.has(lastHintStep.step.result)
+    ) {
+      // Consecutive hint: add the second element to slot B
+      const secondElement = elementBank.find(
+        (el) => el.name.toLowerCase() === lastHintStep.secondElement.toLowerCase()
+      );
+
+      if (secondElement) {
+        setSelectedB(secondElement);
+        setLastHintStep(null); // Clear the hint step after both elements are selected
+        setHintsRemaining((prev) => prev - 1);
+        return;
+      }
+    }
 
     const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name));
 
@@ -719,10 +750,10 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
         );
       });
 
-    // Play the hint sound
-    playHintSound();
-
     let elementToSelect = null;
+    let stepForHint = null;
+    let firstElementName = null;
+    let secondElementName = null;
 
     if (availableSteps.length > 0) {
       // Prioritize steps later in the solution path (closer to target)
@@ -741,23 +772,26 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
       });
 
       const bestStep = sortedSteps[0];
+      stepForHint = bestStep;
 
       // Within the chosen step, prefer the non-starter element if one exists
       const elementAIsStarter = starterNames.has(bestStep.elementA);
       const elementBIsStarter = starterNames.has(bestStep.elementB);
 
-      let elementNameToSelect;
       if (!elementAIsStarter && elementBIsStarter) {
-        elementNameToSelect = bestStep.elementA;
+        firstElementName = bestStep.elementA;
+        secondElementName = bestStep.elementB;
       } else if (elementAIsStarter && !elementBIsStarter) {
-        elementNameToSelect = bestStep.elementB;
+        firstElementName = bestStep.elementB;
+        secondElementName = bestStep.elementA;
       } else {
-        // Both are starters or both are non-starters - just pick elementA
-        elementNameToSelect = bestStep.elementA;
+        // Both are starters or both are non-starters - just pick elementA first
+        firstElementName = bestStep.elementA;
+        secondElementName = bestStep.elementB;
       }
 
       elementToSelect = elementBank.find(
-        (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
+        (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
       );
     } else {
       // No steps where player has both inputs - find the LAST step in the path
@@ -787,28 +821,38 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
           });
 
           if (earlierStep) {
+            stepForHint = earlierStep;
             // Prefer non-starter element from the earlier step
             const elementAIsStarter = starterNames.has(earlierStep.elementA);
             const elementBIsStarter = starterNames.has(earlierStep.elementB);
 
-            let elementNameToSelect;
             if (!elementAIsStarter && elementBIsStarter) {
-              elementNameToSelect = earlierStep.elementA;
+              firstElementName = earlierStep.elementA;
+              secondElementName = earlierStep.elementB;
             } else if (elementAIsStarter && !elementBIsStarter) {
-              elementNameToSelect = earlierStep.elementB;
+              firstElementName = earlierStep.elementB;
+              secondElementName = earlierStep.elementA;
             } else {
-              elementNameToSelect = earlierStep.elementA;
+              firstElementName = earlierStep.elementA;
+              secondElementName = earlierStep.elementB;
             }
 
             elementToSelect = elementBank.find(
-              (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
+              (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
             );
           }
         }
       }
     }
 
-    if (elementToSelect) {
+    if (elementToSelect && stepForHint) {
+      // Store the hint step for potential consecutive hint
+      setLastHintStep({
+        step: stepForHint,
+        firstElement: firstElementName,
+        secondElement: secondElementName,
+      });
+
       // Clear any existing selections first, then select the hint element
       setSelectedA(null);
       setSelectedB(null);
@@ -829,6 +873,8 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     isAnimating,
     elementBank,
     selectElement,
+    lastHintStep,
+    selectedA,
   ]);
 
   /**
