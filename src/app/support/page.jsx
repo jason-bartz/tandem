@@ -942,9 +942,9 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">What is Element Soup?</h4>
             <p className="text-sm mb-3">
-              Element Soup is a daily element combination puzzle inspired by Infinite Craft. Start
-              with four basic elements (Earth, Water, Fire, Wind) and combine them to create new
-              elements. Your goal is to discover the target element of the day!
+              Element Soup is a daily element combination puzzle inspired by alchemy and crafting
+              games. Start with four basic elements (Earth, Water, Fire, Wind) and combine them to
+              create new elements. Your goal is to discover the target element of the day!
             </p>
           </div>
           <div>
@@ -972,6 +972,14 @@ export default function Support() {
                 <strong>Beat the par</strong> - Try to reach the target in fewer moves than par!
               </li>
             </ol>
+          </div>
+          {/* Demo GIF */}
+          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+            <img
+              src="/screenshots/elementsoup-howto.gif"
+              alt="Element Soup gameplay demo"
+              className="w-full h-auto"
+            />
           </div>
           <div>
             <h4 className="font-semibold mb-2">Game Features</h4>
