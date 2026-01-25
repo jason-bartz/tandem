@@ -688,11 +688,20 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     // Apply sort
     if (sortOrder === SORT_OPTIONS.ALPHABETICAL) {
       sorted.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortOrder === SORT_OPTIONS.FIRST_DISCOVERIES) {
+      // Sort first discoveries to the top, then newest
+      sorted.sort((a, b) => {
+        const aIsFirst = firstDiscoveryElements.includes(a.name);
+        const bIsFirst = firstDiscoveryElements.includes(b.name);
+        if (aIsFirst && !bIsFirst) return -1;
+        if (!aIsFirst && bIsFirst) return 1;
+        return 0; // Keep original order (newest) within each group
+      });
     }
     // NEWEST is default order (newest first, which is how we add them)
 
     return sorted;
-  }, [elementBank, searchQuery, sortOrder]);
+  }, [elementBank, searchQuery, sortOrder, firstDiscoveryElements]);
 
   return {
     // State
