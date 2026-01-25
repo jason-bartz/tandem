@@ -295,7 +295,7 @@ export function ElementSoupGameScreen({
           targetElement={freePlayMode ? null : targetElement}
           recentElements={recentElements}
           firstDiscoveryElements={firstDiscoveryElements}
-          disabled={isCombining || isAnimating || (isComplete && !freePlayMode)}
+          disabled={isCombining || (isComplete && !freePlayMode)}
         />
       </div>
 
