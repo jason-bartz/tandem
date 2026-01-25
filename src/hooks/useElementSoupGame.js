@@ -101,7 +101,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const [statsRecorded, setStatsRecorded] = useState(false);
 
   // Hint state
-  const [hintsRemaining, setHintsRemaining] = useState(2);
+  const [hintsRemaining, setHintsRemaining] = useState(4);
   const [solutionPath, setSolutionPath] = useState([]);
 
   // Refs for tracking
@@ -231,7 +231,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
           setNewDiscoveries(0);
           setFirstDiscoveries(0);
           setFirstDiscoveryElements([]);
-          setHintsRemaining(2); // Reset hints for fresh start
+          setHintsRemaining(4); // Reset hints for fresh start
           setGameState(SOUP_GAME_STATES.WELCOME);
         }
 
@@ -677,7 +677,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     setIsComplete(false);
     setStatsRecorded(false);
     setCompletionStats(null);
-    setHintsRemaining(2); // Reset hints
+    setHintsRemaining(4); // Reset hints
     setStartTime(Date.now());
     setElapsedTime(0);
     setGameState(SOUP_GAME_STATES.PLAYING);

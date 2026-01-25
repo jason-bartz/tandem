@@ -145,7 +145,7 @@ export function ElementSoupCompleteScreen({
   };
 
   return (
-    <div className="flex flex-col items-center flex-1 overflow-y-auto">
+    <div className="flex flex-col items-center flex-1 overflow-y-auto px-1">
       {/* Congrats Message */}
       <motion.div
         className="text-center mb-4"

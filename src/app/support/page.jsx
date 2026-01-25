@@ -1067,7 +1067,7 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">Using Hints</h4>
             <p className="text-sm mb-3">
-              Stuck on a puzzle? You get <strong>two hints per puzzle</strong>. Look for the hint
+              Stuck on a puzzle? You get <strong>four hints per puzzle</strong>. Look for the hint
               icons in the stats bar at the top of the game screen.
             </p>
           </div>
@@ -1181,13 +1181,13 @@ export default function Support() {
                 <p>
                   A: Keep experimenting! There are often multiple paths to the target. Try building
                   up related elements and combining them in new ways. You can also use one of your
-                  two hints to get a nudge in the right direction.
+                  four hints to get a nudge in the right direction.
                 </p>
               </div>
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get two hints per puzzle. Tap a hint icon in the stats bar to use one. The
+                  A: You get four hints per puzzle. Tap a hint icon in the stats bar to use one. The
                   hint will select an element that's part of the solution path, helping guide you
                   toward the target. Hint icons disappear as you use them.
                 </p>
