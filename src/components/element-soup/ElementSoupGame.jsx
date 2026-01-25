@@ -97,6 +97,7 @@ export function ElementSoupGame({ initialDate = null }) {
     combineElements,
     lastResult,
     clearLastResult,
+    combinationPath,
 
     // Timer
     elapsedTime,
@@ -280,6 +281,9 @@ export function ElementSoupGame({ initialDate = null }) {
                   firstDiscoveries={firstDiscoveries}
                   firstDiscoveryElements={firstDiscoveryElements}
                   completionStats={completionStats}
+                  winningCombination={combinationPath.find(
+                    (step) => step.result?.toLowerCase() === targetElement?.toLowerCase()
+                  )}
                   onShare={getShareText}
                   onPlayAgain={resetGame}
                   onStartFreePlay={startFreePlay}
