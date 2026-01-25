@@ -52,7 +52,7 @@ function LoadingPhraseMarquee({ isActive }) {
   // Create the marquee text by joining all phrases
   const marqueeText = useMemo(() => {
     if (shuffledPhrases.length === 0) return '';
-    return shuffledPhrases.join('   •   ');
+    return shuffledPhrases.join('      ');
   }, [shuffledPhrases]);
 
   if (!isActive || shuffledPhrases.length === 0) {
@@ -81,7 +81,7 @@ function LoadingPhraseMarquee({ isActive }) {
         }}
       >
         <span>{marqueeText}</span>
-        <span className="px-3">•</span>
+        <span className="px-6"></span>
         <span>{marqueeText}</span>
       </motion.div>
     </div>
@@ -351,7 +351,7 @@ export function CombinationArea({
           disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
             'flex-1 py-3',
-            'bg-soup-primary text-white',
+            'bg-soup-primary text-black',
             'border-[3px] border-black',
             'rounded-xl font-bold',
             'shadow-[3px_3px_0px_rgba(0,0,0,1)]',

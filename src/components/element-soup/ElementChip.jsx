@@ -47,7 +47,7 @@ export function ElementChip({
         'transition-all duration-150',
         !disabled && 'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
         !disabled && 'active:translate-y-0 active:shadow-none',
-        isSelected && 'bg-green-200 dark:bg-green-700/50',
+        isSelected && 'bg-[#ffce00] dark:bg-[#ffce00]/70',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
         highContrast && 'border-[3px]'
@@ -66,6 +66,22 @@ export function ElementChip({
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
+      {/* Gold shimmer effect for first discoveries */}
+      {element.isFirstDiscovery && !isSelected && !isTarget && !reduceMotion && (
+        <span
+          className="absolute inset-0 overflow-hidden rounded-lg pointer-events-none"
+          aria-hidden="true"
+        >
+          <span
+            className="absolute inset-0 -translate-x-full animate-[shimmer_3s_ease-in-out_infinite]"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.4) 50%, transparent 100%)',
+            }}
+          />
+        </span>
+      )}
+
       {/* NEW badge for recently discovered elements */}
       {isNew && (
         <span
