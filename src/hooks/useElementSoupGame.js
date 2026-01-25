@@ -696,64 +696,96 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
   /**
    * Use a hint - selects an element from the solution path that will help reach the target
-   * The hint finds the next step in the solution path that the player hasn't completed yet,
-   * then selects one element from that step's combination.
+   * Prioritizes showing more complex (non-starter) elements when possible.
+   * Only shows starter elements if that's all that's available.
    */
   const useHint = useCallback(() => {
     if (hintsRemaining <= 0 || !solutionPath || solutionPath.length === 0) return;
     if (freePlayMode || isComplete || isCombining || isAnimating) return;
 
-    // Find the first step in the solution path where the result hasn't been discovered yet
-    const nextStep = solutionPath.find((step) => {
-      return !discoveredElements.current.has(step.result);
+    const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name));
+
+    // Find all steps where the player hasn't discovered the result yet
+    // but has both inputs available (can make progress)
+    const availableSteps = solutionPath.filter((step) => {
+      return (
+        !discoveredElements.current.has(step.result) &&
+        discoveredElements.current.has(step.elementA) &&
+        discoveredElements.current.has(step.elementB)
+      );
     });
-
-    if (!nextStep) {
-      // All steps completed - shouldn't happen but just in case
-      return;
-    }
-
-    // Check which elements from the step the player has
-    const hasElementA = discoveredElements.current.has(nextStep.elementA);
-    const hasElementB = discoveredElements.current.has(nextStep.elementB);
 
     // Play the hint sound
     playHintSound();
 
-    // Select the element that will help most
-    // If player has both elements, select the first one
-    // If player has one, select it (they need to combine it with the other)
-    // If player has neither, we need to find an earlier step - but for now just select elementA
     let elementToSelect = null;
 
-    if (hasElementA && hasElementB) {
-      // Player has both - select elementA to start the combination
-      elementToSelect = elementBank.find(
-        (el) => el.name.toLowerCase() === nextStep.elementA.toLowerCase()
-      );
-    } else if (hasElementA) {
-      elementToSelect = elementBank.find(
-        (el) => el.name.toLowerCase() === nextStep.elementA.toLowerCase()
-      );
-    } else if (hasElementB) {
-      elementToSelect = elementBank.find(
-        (el) => el.name.toLowerCase() === nextStep.elementB.toLowerCase()
-      );
-    } else {
-      // Player has neither - find an earlier step that creates one of these elements
-      const earlierStep = solutionPath.find((step) => {
-        return (
-          (step.result.toLowerCase() === nextStep.elementA.toLowerCase() ||
-            step.result.toLowerCase() === nextStep.elementB.toLowerCase()) &&
-          discoveredElements.current.has(step.elementA) &&
-          discoveredElements.current.has(step.elementB)
-        );
+    if (availableSteps.length > 0) {
+      // Among available steps, prefer ones that use non-starter elements
+      // Sort: steps with more non-starter inputs come first
+      const sortedSteps = [...availableSteps].sort((a, b) => {
+        const aStarterCount =
+          (starterNames.has(a.elementA) ? 1 : 0) + (starterNames.has(a.elementB) ? 1 : 0);
+        const bStarterCount =
+          (starterNames.has(b.elementA) ? 1 : 0) + (starterNames.has(b.elementB) ? 1 : 0);
+        return aStarterCount - bStarterCount; // Fewer starters = better
       });
 
-      if (earlierStep) {
-        elementToSelect = elementBank.find(
-          (el) => el.name.toLowerCase() === earlierStep.elementA.toLowerCase()
-        );
+      const bestStep = sortedSteps[0];
+
+      // Within the chosen step, prefer the non-starter element if one exists
+      const elementAIsStarter = starterNames.has(bestStep.elementA);
+      const elementBIsStarter = starterNames.has(bestStep.elementB);
+
+      let elementNameToSelect;
+      if (!elementAIsStarter && elementBIsStarter) {
+        elementNameToSelect = bestStep.elementA;
+      } else if (elementAIsStarter && !elementBIsStarter) {
+        elementNameToSelect = bestStep.elementB;
+      } else {
+        // Both are starters or both are non-starters - just pick elementA
+        elementNameToSelect = bestStep.elementA;
+      }
+
+      elementToSelect = elementBank.find(
+        (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
+      );
+    } else {
+      // No steps where player has both inputs - find the next needed step
+      // and guide toward an earlier step that creates a needed element
+      const nextNeededStep = solutionPath.find((step) => {
+        return !discoveredElements.current.has(step.result);
+      });
+
+      if (nextNeededStep) {
+        // Find an earlier step that creates one of the needed elements
+        const earlierStep = solutionPath.find((step) => {
+          return (
+            (step.result.toLowerCase() === nextNeededStep.elementA.toLowerCase() ||
+              step.result.toLowerCase() === nextNeededStep.elementB.toLowerCase()) &&
+            discoveredElements.current.has(step.elementA) &&
+            discoveredElements.current.has(step.elementB)
+          );
+        });
+
+        if (earlierStep) {
+          // Prefer non-starter element from the earlier step
+          const elementAIsStarter = starterNames.has(earlierStep.elementA);
+          const elementBIsStarter = starterNames.has(earlierStep.elementB);
+
+          let elementNameToSelect;
+          if (!elementAIsStarter && elementBIsStarter) {
+            elementNameToSelect = earlierStep.elementA;
+          } else if (elementAIsStarter && !elementBIsStarter) {
+            elementNameToSelect = earlierStep.elementB;
+          } else {
+            elementNameToSelect = earlierStep.elementA;
+          }
+
+          elementToSelect = elementBank.find(
+            (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
+          );
+        }
       }
     }
 
