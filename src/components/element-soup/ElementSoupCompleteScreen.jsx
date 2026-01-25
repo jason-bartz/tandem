@@ -57,6 +57,7 @@ export function ElementSoupCompleteScreen({
   firstDiscoveries: _firstDiscoveries,
   firstDiscoveryElements,
   completionStats,
+  winningCombination,
   onShare,
   onPlayAgain,
   onStartFreePlay,
@@ -182,6 +183,11 @@ export function ElementSoupCompleteScreen({
           <span className="text-3xl">{targetEmoji}</span>
           <span className="text-2xl font-bold text-gray-900 dark:text-white">{targetElement}</span>
         </div>
+        {winningCombination && (
+          <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
+            {winningCombination.elementA} + {winningCombination.elementB}
+          </div>
+        )}
       </motion.div>
 
       {/* Stats Grid - Time and Par only */}
