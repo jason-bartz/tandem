@@ -96,7 +96,8 @@ export function ElementBank({
       <div className="flex-1 min-h-0">
         <div
           className={cn(
-            'flex flex-col flex-wrap content-start gap-2',
+            'grid gap-2',
+            'grid-rows-[repeat(5,auto)] grid-flow-col auto-cols-max',
             'h-full overflow-x-auto overflow-y-hidden scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
