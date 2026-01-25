@@ -1,6 +1,5 @@
 'use client';
 
-import { useMemo } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -8,7 +7,8 @@ import { SORT_OPTIONS } from '@/lib/element-soup.constants';
 import ElementChip from './ElementChip';
 
 /**
- * ElementBank - Scrollable grid of discovered elements
+ * ElementBank - Horizontally scrollable grid of discovered elements
+ * Elements flow in columns: top to bottom, then continue to the right
  */
 export function ElementBank({
   elements,
@@ -24,14 +24,6 @@ export function ElementBank({
   disabled = false,
 }) {
   const { highContrast } = useTheme();
-
-  // Memoize the element count text
-  const elementCountText = useMemo(() => {
-    const total = elements.length;
-    const starterCount = elements.filter((el) => el.isStarter).length;
-    const discovered = total - starterCount;
-    return `${total} element${total !== 1 ? 's' : ''} (${discovered} discovered)`;
-  }, [elements]);
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
@@ -99,15 +91,12 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element count */}
-      <p className="text-xs text-gray-500 dark:text-gray-400">{elementCountText}</p>
-
-      {/* Element grid */}
+      {/* Element grid - horizontal scrolling with column flow */}
       <div
         className={cn(
-          'flex flex-wrap content-start gap-2',
-          'flex-1 min-h-0 overflow-y-auto scrollable',
-          'p-2 pb-4',
+          'flex flex-col flex-wrap content-start gap-2',
+          'flex-1 min-h-0 overflow-x-auto overflow-y-hidden scrollable',
+          'p-2',
           'bg-gray-50 dark:bg-gray-900/50',
           'border-[2px] border-gray-200 dark:border-gray-700',
           'rounded-xl',
