@@ -142,6 +142,19 @@ function ScrollingText({ text, className }) {
 }
 
 /**
+ * Count the number of visible emoji/grapheme clusters in a string
+ * Uses Intl.Segmenter when available, falls back to spread operator
+ */
+function countGraphemes(str) {
+  if (typeof Intl !== 'undefined' && Intl.Segmenter) {
+    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+    return [...segmenter.segment(str)].length;
+  }
+  // Fallback: spread operator handles most emoji correctly
+  return [...str].length;
+}
+
+/**
  * SelectionSlot - Individual slot for selected element
  */
 function SelectionSlot({ element, position, onClick, isCombining = false }) {
@@ -149,6 +162,10 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
 
   // Wiggle animation for combining
   const bangDirection = position === 'first' ? 20 : -20;
+
+  // Determine emoji size based on grapheme count
+  const emojiCount = element?.emoji ? countGraphemes(element.emoji) : 1;
+  const isMultiEmoji = emojiCount >= 3;
 
   return (
     <motion.button
@@ -176,7 +193,11 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
     >
       {element ? (
         <div className="flex flex-col items-center overflow-hidden w-full px-1">
-          <span className="text-3xl sm:text-4xl mb-1">{element.emoji}</span>
+          <span
+            className={cn('mb-1', isMultiEmoji ? 'text-xl sm:text-2xl' : 'text-3xl sm:text-4xl')}
+          >
+            {element.emoji}
+          </span>
           <ScrollingText
             text={element.name}
             className="text-xs sm:text-sm font-medium text-center text-gray-900 dark:text-white"
