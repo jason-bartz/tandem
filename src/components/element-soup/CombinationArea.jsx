@@ -206,7 +206,7 @@ function SelectionSlot({ element, position, onClick, isShaking = false }) {
       }
       transition={
         isShaking
-          ? { repeat: Infinity, duration: 0.4, ease: 'easeInOut' }
+          ? { repeat: Infinity, duration: 0.8, ease: 'easeInOut' }
           : { type: 'spring', stiffness: 300, damping: 20 }
       }
       whileHover={!reduceMotion && !isShaking ? { scale: 1.02 } : undefined}
@@ -363,14 +363,7 @@ export function CombinationArea({
             'overflow-hidden',
             highContrast && 'border-[4px]'
           )}
-          animate={
-            isCombining && !isAnimating && !reduceMotion && selectedA && selectedB
-              ? {
-                  scale: [1, 1.08, 1],
-                  transition: { repeat: Infinity, duration: 0.6, ease: 'easeInOut' },
-                }
-              : { scale: 1 }
-          }
+          animate={{ scale: 1 }}
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
           aria-label={
             isCombining || isAnimating

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import logger from '@/lib/logger';
@@ -109,6 +109,12 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
   const puzzleDateRef = useRef(null);
 
+  // Refs for selection state (allows stable callback for memoized components)
+  const selectedARef = useRef(selectedA);
+  const selectedBRef = useRef(selectedB);
+  selectedARef.current = selectedA;
+  selectedBRef.current = selectedB;
+
   // Load puzzle on mount (skip in free play mode)
   useEffect(() => {
     if (!isFreePlay) {
@@ -128,7 +134,8 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     }
   }, [gameState, hasStarted, isPaused, startTime, freePlayMode]);
 
-  // Auto-save progress effect
+  // Auto-save progress effect - only triggers on meaningful state changes
+  // Note: elapsedTime intentionally excluded to avoid saving every second
   useEffect(() => {
     if (
       gameState === SOUP_GAME_STATES.PLAYING &&
@@ -144,7 +151,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
       return () => clearTimeout(saveTimeout);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementBank, movesCount, elapsedTime]);
+  }, [elementBank, movesCount]);
 
   /**
    * Load puzzle from API
@@ -367,25 +374,27 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
   /**
    * Select an element from the bank
+   * Uses refs to read current selection state, allowing a stable callback
+   * that works with memoized ElementChip components
    */
-  const selectElement = useCallback(
-    (element) => {
-      // Play plunk sound when selecting an element
-      playPlunkSound();
+  const selectElement = useCallback((element) => {
+    // Play plunk sound when selecting an element
+    playPlunkSound();
 
-      if (!selectedA) {
-        setSelectedA(element);
-      } else if (!selectedB) {
-        // Both branches do the same thing, so just set selectedB
-        // (Same element selected is valid in Element Soup)
-        setSelectedB(element);
-      } else {
-        // Both slots full - replace the second
-        setSelectedB(element);
-      }
-    },
-    [selectedA]
-  );
+    // Read current values from refs (not stale closure values)
+    const currentA = selectedARef.current;
+    const currentB = selectedBRef.current;
+
+    if (!currentA) {
+      setSelectedA(element);
+    } else if (!currentB) {
+      // (Same element selected is valid in Element Soup)
+      setSelectedB(element);
+    } else {
+      // Both slots full - replace the second
+      setSelectedB(element);
+    }
+  }, []);
 
   /**
    * Clear selections
@@ -907,9 +916,9 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   ]);
 
   /**
-   * Get sorted and filtered element bank
+   * Memoized sorted and filtered element bank
    */
-  const getSortedElementBank = useCallback(() => {
+  const sortedElementBank = useMemo(() => {
     let sorted = [...elementBank];
 
     // Apply search filter
@@ -948,7 +957,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
     // Element bank
     elementBank,
-    sortedElementBank: getSortedElementBank(),
+    sortedElementBank,
     sortOrder,
     setSortOrder,
     searchQuery,
