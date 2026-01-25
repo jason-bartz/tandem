@@ -6,7 +6,7 @@ import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import LegalPageSkeleton from '@/components/shared/LegalPageSkeleton';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
-import ArchiveModalPaginated from '@/components/game/ArchiveModalPaginated';
+import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
@@ -729,11 +729,12 @@ export default function TermsOfUse() {
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
-      <ArchiveModalPaginated isOpen={showArchive} onClose={() => setShowArchive(false)} />
+      <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
