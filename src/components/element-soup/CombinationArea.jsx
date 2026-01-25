@@ -364,7 +364,7 @@ export function CombinationArea({
             highContrast && 'border-[4px]'
           )}
           animate={
-            isCombining && !isAnimating && !reduceMotion
+            isCombining && !isAnimating && !reduceMotion && selectedA && selectedB
               ? {
                   scale: [1, 1.08, 1],
                   transition: { repeat: Infinity, duration: 0.6, ease: 'easeInOut' },

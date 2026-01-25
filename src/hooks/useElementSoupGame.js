@@ -696,7 +696,8 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
   /**
    * Use a hint - selects an element from the solution path that will help reach the target
-   * Prioritizes showing more complex (non-starter) elements when possible.
+   * Prioritizes steps later in the solution path (closer to the target).
+   * Within a step, prefers non-starter elements.
    * Only shows starter elements if that's all that's available.
    */
   const useHint = useCallback(() => {
@@ -707,13 +708,16 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
     // Find all steps where the player hasn't discovered the result yet
     // but has both inputs available (can make progress)
-    const availableSteps = solutionPath.filter((step) => {
-      return (
-        !discoveredElements.current.has(step.result) &&
-        discoveredElements.current.has(step.elementA) &&
-        discoveredElements.current.has(step.elementB)
-      );
-    });
+    // Track the original index to prioritize steps closer to the target
+    const availableSteps = solutionPath
+      .map((step, index) => ({ ...step, pathIndex: index }))
+      .filter((step) => {
+        return (
+          !discoveredElements.current.has(step.result) &&
+          discoveredElements.current.has(step.elementA) &&
+          discoveredElements.current.has(step.elementB)
+        );
+      });
 
     // Play the hint sound
     playHintSound();
@@ -721,14 +725,19 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     let elementToSelect = null;
 
     if (availableSteps.length > 0) {
-      // Among available steps, prefer ones that use non-starter elements
-      // Sort: steps with more non-starter inputs come first
+      // Prioritize steps later in the solution path (closer to target)
+      // Then use starter count as a tiebreaker
       const sortedSteps = [...availableSteps].sort((a, b) => {
+        // First: prefer later steps (higher index = closer to target)
+        if (a.pathIndex !== b.pathIndex) {
+          return b.pathIndex - a.pathIndex;
+        }
+        // Tiebreaker: fewer starters is better
         const aStarterCount =
           (starterNames.has(a.elementA) ? 1 : 0) + (starterNames.has(a.elementB) ? 1 : 0);
         const bStarterCount =
           (starterNames.has(b.elementA) ? 1 : 0) + (starterNames.has(b.elementB) ? 1 : 0);
-        return aStarterCount - bStarterCount; // Fewer starters = better
+        return aStarterCount - bStarterCount;
       });
 
       const bestStep = sortedSteps[0];
@@ -751,40 +760,50 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
         (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
       );
     } else {
-      // No steps where player has both inputs - find the next needed step
-      // and guide toward an earlier step that creates a needed element
-      const nextNeededStep = solutionPath.find((step) => {
-        return !discoveredElements.current.has(step.result);
-      });
+      // No steps where player has both inputs - find the LAST step in the path
+      // where the result isn't discovered (closest to target) and work backwards
+      let targetStep = null;
+      for (let i = solutionPath.length - 1; i >= 0; i--) {
+        if (!discoveredElements.current.has(solutionPath[i].result)) {
+          targetStep = solutionPath[i];
+          break;
+        }
+      }
 
-      if (nextNeededStep) {
-        // Find an earlier step that creates one of the needed elements
-        const earlierStep = solutionPath.find((step) => {
-          return (
-            (step.result.toLowerCase() === nextNeededStep.elementA.toLowerCase() ||
-              step.result.toLowerCase() === nextNeededStep.elementB.toLowerCase()) &&
-            discoveredElements.current.has(step.elementA) &&
-            discoveredElements.current.has(step.elementB)
-          );
-        });
+      if (targetStep) {
+        // Find which input is missing and look for a step that creates it
+        const needsA = !discoveredElements.current.has(targetStep.elementA);
+        const needsB = !discoveredElements.current.has(targetStep.elementB);
+        const neededElement = needsA ? targetStep.elementA : needsB ? targetStep.elementB : null;
 
-        if (earlierStep) {
-          // Prefer non-starter element from the earlier step
-          const elementAIsStarter = starterNames.has(earlierStep.elementA);
-          const elementBIsStarter = starterNames.has(earlierStep.elementB);
+        if (neededElement) {
+          // Find an earlier step that creates the needed element
+          const earlierStep = solutionPath.find((step) => {
+            return (
+              step.result.toLowerCase() === neededElement.toLowerCase() &&
+              discoveredElements.current.has(step.elementA) &&
+              discoveredElements.current.has(step.elementB)
+            );
+          });
 
-          let elementNameToSelect;
-          if (!elementAIsStarter && elementBIsStarter) {
-            elementNameToSelect = earlierStep.elementA;
-          } else if (elementAIsStarter && !elementBIsStarter) {
-            elementNameToSelect = earlierStep.elementB;
-          } else {
-            elementNameToSelect = earlierStep.elementA;
+          if (earlierStep) {
+            // Prefer non-starter element from the earlier step
+            const elementAIsStarter = starterNames.has(earlierStep.elementA);
+            const elementBIsStarter = starterNames.has(earlierStep.elementB);
+
+            let elementNameToSelect;
+            if (!elementAIsStarter && elementBIsStarter) {
+              elementNameToSelect = earlierStep.elementA;
+            } else if (elementAIsStarter && !elementBIsStarter) {
+              elementNameToSelect = earlierStep.elementB;
+            } else {
+              elementNameToSelect = earlierStep.elementA;
+            }
+
+            elementToSelect = elementBank.find(
+              (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
+            );
           }
-
-          elementToSelect = elementBank.find(
-            (el) => el.name.toLowerCase() === elementNameToSelect.toLowerCase()
-          );
         }
       }
     }
