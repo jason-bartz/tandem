@@ -34,7 +34,7 @@ export function ElementBank({
   }, [elements]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 flex-1 min-h-0">
       {/* Header row with title and sort */}
       <div className="flex items-center justify-between">
         <h3
@@ -105,9 +105,9 @@ export function ElementBank({
       {/* Element grid */}
       <div
         className={cn(
-          'flex flex-wrap gap-2',
-          'max-h-[280px] overflow-y-auto',
-          'p-2',
+          'flex flex-wrap content-start gap-2',
+          'flex-1 min-h-0 overflow-y-auto',
+          'p-2 pb-4',
           'bg-gray-50 dark:bg-gray-900/50',
           'border-[2px] border-gray-200 dark:border-gray-700',
           'rounded-xl',

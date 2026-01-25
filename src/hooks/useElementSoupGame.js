@@ -335,8 +335,13 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const startFreePlay = useCallback(() => {
     playSoupStartSound();
     setFreePlayMode(true);
+    setIsComplete(false); // Reset completion state for free play
     setGameState(SOUP_GAME_STATES.PLAYING);
     setHasStarted(true);
+    // Clear selections
+    setSelectedA(null);
+    setSelectedB(null);
+    setLastResult(null);
     // No timer in free play mode
     setStartTime(null);
     setElapsedTime(0);

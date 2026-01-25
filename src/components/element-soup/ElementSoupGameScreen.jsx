@@ -279,17 +279,17 @@ export function ElementSoupGameScreen({
       <CombinationArea
         selectedA={selectedA}
         selectedB={selectedB}
-        onClearA={() => selectElement(null) || clearSelections()}
-        onClearB={() => selectElement(null) || clearSelections()}
+        onClearA={clearSelections}
+        onClearB={clearSelections}
         onCombine={combineElements}
         onClear={clearSelections}
         isCombining={isCombining}
         isAnimating={isAnimating}
-        disabled={isComplete}
+        disabled={isComplete && !freePlayMode}
       />
 
       {/* Element Bank - fills remaining space */}
-      <div className="flex-1 min-h-0">
+      <div className="flex-1 min-h-0 flex flex-col">
         <ElementBank
           elements={sortedElementBank}
           selectedA={selectedA}
@@ -301,7 +301,7 @@ export function ElementSoupGameScreen({
           onSearchChange={setSearchQuery}
           targetElement={freePlayMode ? null : targetElement}
           recentElements={recentElements}
-          disabled={isCombining || isAnimating || isComplete}
+          disabled={isCombining || isAnimating || (isComplete && !freePlayMode)}
         />
       </div>
 
