@@ -159,7 +159,8 @@ function SelectionSlot({ element, position, onClick, isCombining = false }) {
         'bg-white dark:bg-gray-800',
         'border-[3px] border-black dark:border-gray-600',
         'rounded-xl',
-        'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+        // Only show shadow when element is present
+        element && 'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
         highContrast && 'border-[4px]'
       )}

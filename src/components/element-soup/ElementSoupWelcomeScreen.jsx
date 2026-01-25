@@ -7,7 +7,6 @@ import { Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { STARTER_ELEMENTS } from '@/lib/element-soup.constants';
 import PaywallModal from '@/components/PaywallModal';
 
 /**
@@ -72,10 +71,10 @@ export function ElementSoupWelcomeScreen({
 
         {/* Emoji + Title Row */}
         <div className="flex items-center gap-3 mb-2">
-          <span className="text-5xl">{targetEmoji}</span>
+          <span className="text-4xl">{targetEmoji}</span>
           <h1
             className={cn(
-              'text-3xl font-jua text-gray-900 dark:text-white',
+              'text-2xl font-jua text-gray-900 dark:text-white',
               highContrast && 'text-hc-text'
             )}
           >
@@ -85,43 +84,6 @@ export function ElementSoupWelcomeScreen({
 
         {/* Par Display */}
         <p className="text-sm text-gray-600 dark:text-gray-400">Par: {parMoves} moves</p>
-      </motion.div>
-
-      {/* Starting Elements Section */}
-      <motion.div
-        className="w-full max-w-sm mb-5"
-        initial={!reduceMotion ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
-      >
-        <div className="text-gray-600 dark:text-gray-400 font-semibold text-xs tracking-wider mb-3">
-          Starting Elements
-        </div>
-
-        {/* 4-Column Element Grid */}
-        <div className="grid grid-cols-4 gap-2">
-          {STARTER_ELEMENTS.map((el) => (
-            <motion.div
-              key={el.id}
-              className={cn(
-                'flex flex-col items-center justify-center py-3 px-2',
-                'bg-white dark:bg-gray-800',
-                'border-[3px] border-black dark:border-gray-600',
-                'rounded-xl',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
-                'hover:bg-gray-50 dark:hover:bg-gray-700',
-                'transition-colors duration-150',
-                highContrast && 'border-[4px] border-hc-border'
-              )}
-              whileHover={!reduceMotion ? { scale: 1.05 } : undefined}
-            >
-              <span className="text-2xl mb-1">{el.emoji}</span>
-              <span className="text-xs text-gray-600 dark:text-gray-400 font-medium">
-                {el.name}
-              </span>
-            </motion.div>
-          ))}
-        </div>
       </motion.div>
 
       {/* How to Play Section - Persistent */}

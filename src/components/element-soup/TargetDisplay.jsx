@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
-import { useTheme } from '@/contexts/ThemeContext';
 
 /**
  * StatsDisplay - Shows time, moves count, and par (compact version)
@@ -30,22 +29,12 @@ export function StatsDisplay({ time, moves, parMoves, formatTime }) {
 }
 
 /**
- * TargetDisplay - Compact target element display
+ * TargetDisplay - Compact target element display (no border/box)
  */
 export function TargetDisplay({ targetElement, targetEmoji, isFound = false }) {
-  const { highContrast } = useTheme();
-
   return (
     <div
-      className={cn(
-        'flex items-center gap-2 px-3 py-1.5',
-        isFound ? 'bg-yellow-100 dark:bg-yellow-900/30' : 'bg-soup-light dark:bg-soup-primary/20',
-        'border-2 border-black dark:border-gray-600',
-        'rounded-xl',
-        'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]',
-        isFound && 'animate-pulse',
-        highContrast && 'border-[3px]'
-      )}
+      className={cn('flex items-center gap-2', isFound && 'animate-pulse')}
       role="status"
       aria-label={`Target: ${targetElement}${isFound ? ' (Found!)' : ''}`}
     >
