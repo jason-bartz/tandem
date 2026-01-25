@@ -227,6 +227,9 @@ export function ElementSoupGameScreen({
 
   // Mode
   freePlayMode = false,
+
+  // Error
+  combinationError = null,
 }) {
   // Check if target is found (not applicable in free play mode)
   const isTargetFound = freePlayMode
@@ -268,6 +271,7 @@ export function ElementSoupGameScreen({
         isCombining={isCombining}
         isAnimating={isAnimating}
         disabled={isComplete && !freePlayMode}
+        combinationError={combinationError}
       />
 
       {/* Element Bank - fills remaining space */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -202,6 +202,7 @@ export function CombinationArea({
   isCombining,
   isAnimating = false,
   disabled = false,
+  combinationError = null,
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -218,6 +219,27 @@ export function CombinationArea({
         highContrast && 'border-[4px] border-hc-border'
       )}
     >
+      {/* Inline Error Message */}
+      <AnimatePresence>
+        {combinationError && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className={cn(
+              'mb-3 px-4 py-2',
+              'bg-amber-50 dark:bg-amber-900/30',
+              'border-2 border-amber-300 dark:border-amber-600',
+              'rounded-xl',
+              'text-amber-700 dark:text-amber-300',
+              'text-sm text-center font-medium'
+            )}
+          >
+            {combinationError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Selection Slots */}
       <div className="flex items-center justify-center gap-3 sm:gap-4 mb-4">
         <SelectionSlot
