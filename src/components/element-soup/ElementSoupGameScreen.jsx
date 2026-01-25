@@ -230,6 +230,10 @@ export function ElementSoupGameScreen({
 
   // Error
   combinationError = null,
+
+  // Hints
+  hintsRemaining = 0,
+  onUseHint,
 }) {
   // Check if target is found (not applicable in free play mode)
   const isTargetFound = freePlayMode
@@ -248,6 +252,9 @@ export function ElementSoupGameScreen({
           targetEmoji={targetEmoji}
           parMoves={parMoves}
           isTargetFound={isTargetFound}
+          hintsRemaining={hintsRemaining}
+          onUseHint={onUseHint}
+          hintDisabled={isCombining || isAnimating || isComplete}
         />
       )}
 

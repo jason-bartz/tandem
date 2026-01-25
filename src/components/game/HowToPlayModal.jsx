@@ -481,6 +481,35 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
+                ? 'bg-hc-success text-white border-hc-border'
+                : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <Image
+                src="/icons/ui/hint.png"
+                alt="Hint"
+                width={20}
+                height={20}
+                className="w-5 h-5"
+              />
+              Hint System
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
+              Stuck? You get <strong>two hints per puzzle</strong>. Tap a hint icon in the stats bar
+              to get help.
+            </p>
+            <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
+              Each hint will <strong>select an element</strong> that's part of the solution path,
+              helping guide you toward the target.
+            </p>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
                 ? 'bg-hc-warning text-black border-hc-border'
                 : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
             }`}

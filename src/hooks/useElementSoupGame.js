@@ -8,6 +8,7 @@ import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import {
   playCombineSound,
   playFirstDiscoverySound,
+  playHintSound,
   playNewElementSound,
   playPlunkSound,
   playSoupStartSound,
@@ -99,6 +100,10 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const [completionStats, setCompletionStats] = useState(null);
   const [statsRecorded, setStatsRecorded] = useState(false);
 
+  // Hint state
+  const [hintsRemaining, setHintsRemaining] = useState(2);
+  const [solutionPath, setSolutionPath] = useState([]);
+
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
   const puzzleDateRef = useRef(null);
@@ -178,6 +183,11 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
         setIsArchive(isArchivePuzzle);
         puzzleDateRef.current = targetDate;
 
+        // Store solution path for hints
+        if (data.puzzle.solutionPath) {
+          setSolutionPath(data.puzzle.solutionPath);
+        }
+
         // Check for saved progress
         const savedState = loadSavedState(targetDate);
         if (savedState && !savedState.completed) {
@@ -221,6 +231,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
           setNewDiscoveries(0);
           setFirstDiscoveries(0);
           setFirstDiscoveryElements([]);
+          setHintsRemaining(2); // Reset hints for fresh start
           setGameState(SOUP_GAME_STATES.WELCOME);
         }
 
@@ -272,6 +283,9 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     if (savedState.elapsedTime) setElapsedTime(savedState.elapsedTime);
     if (savedState.newDiscoveries) setNewDiscoveries(savedState.newDiscoveries);
     if (savedState.firstDiscoveries) setFirstDiscoveries(savedState.firstDiscoveries);
+    if (typeof savedState.hintsRemaining === 'number') {
+      setHintsRemaining(savedState.hintsRemaining);
+    }
 
     setHasStarted(true);
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -298,6 +312,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
         elapsedTime,
         newDiscoveries,
         firstDiscoveries,
+        hintsRemaining,
         completed: false,
         savedAt: Date.now(),
       };
@@ -315,6 +330,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     elapsedTime,
     newDiscoveries,
     firstDiscoveries,
+    hintsRemaining,
   ]);
 
   /**
@@ -661,6 +677,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     setIsComplete(false);
     setStatsRecorded(false);
     setCompletionStats(null);
+    setHintsRemaining(2); // Reset hints
     setStartTime(Date.now());
     setElapsedTime(0);
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -676,6 +693,92 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
       }
     }
   }, []);
+
+  /**
+   * Use a hint - selects an element from the solution path that will help reach the target
+   * The hint finds the next step in the solution path that the player hasn't completed yet,
+   * then selects one element from that step's combination.
+   */
+  const useHint = useCallback(() => {
+    if (hintsRemaining <= 0 || !solutionPath || solutionPath.length === 0) return;
+    if (freePlayMode || isComplete || isCombining || isAnimating) return;
+
+    // Find the first step in the solution path where the result hasn't been discovered yet
+    const nextStep = solutionPath.find((step) => {
+      return !discoveredElements.current.has(step.result);
+    });
+
+    if (!nextStep) {
+      // All steps completed - shouldn't happen but just in case
+      return;
+    }
+
+    // Check which elements from the step the player has
+    const hasElementA = discoveredElements.current.has(nextStep.elementA);
+    const hasElementB = discoveredElements.current.has(nextStep.elementB);
+
+    // Play the hint sound
+    playHintSound();
+
+    // Select the element that will help most
+    // If player has both elements, select the first one
+    // If player has one, select it (they need to combine it with the other)
+    // If player has neither, we need to find an earlier step - but for now just select elementA
+    let elementToSelect = null;
+
+    if (hasElementA && hasElementB) {
+      // Player has both - select elementA to start the combination
+      elementToSelect = elementBank.find(
+        (el) => el.name.toLowerCase() === nextStep.elementA.toLowerCase()
+      );
+    } else if (hasElementA) {
+      elementToSelect = elementBank.find(
+        (el) => el.name.toLowerCase() === nextStep.elementA.toLowerCase()
+      );
+    } else if (hasElementB) {
+      elementToSelect = elementBank.find(
+        (el) => el.name.toLowerCase() === nextStep.elementB.toLowerCase()
+      );
+    } else {
+      // Player has neither - find an earlier step that creates one of these elements
+      const earlierStep = solutionPath.find((step) => {
+        return (
+          (step.result.toLowerCase() === nextStep.elementA.toLowerCase() ||
+            step.result.toLowerCase() === nextStep.elementB.toLowerCase()) &&
+          discoveredElements.current.has(step.elementA) &&
+          discoveredElements.current.has(step.elementB)
+        );
+      });
+
+      if (earlierStep) {
+        elementToSelect = elementBank.find(
+          (el) => el.name.toLowerCase() === earlierStep.elementA.toLowerCase()
+        );
+      }
+    }
+
+    if (elementToSelect) {
+      // Clear any existing selections first, then select the hint element
+      setSelectedA(null);
+      setSelectedB(null);
+      // Use setTimeout to ensure state is cleared before selecting
+      setTimeout(() => {
+        selectElement(elementToSelect);
+      }, 50);
+    }
+
+    // Decrement hints
+    setHintsRemaining((prev) => prev - 1);
+  }, [
+    hintsRemaining,
+    solutionPath,
+    freePlayMode,
+    isComplete,
+    isCombining,
+    isAnimating,
+    elementBank,
+    selectElement,
+  ]);
 
   /**
    * Get sorted and filtered element bank
@@ -764,6 +867,10 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     startFreePlay,
     loadPuzzle,
     resetGame,
+
+    // Hints
+    hintsRemaining,
+    useHint,
 
     // Mode
     freePlayMode,
