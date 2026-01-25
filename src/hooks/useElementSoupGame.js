@@ -573,8 +573,23 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
       logger.error('[ElementSoup] Failed to save completion', { error: err.message });
     }
 
+    // Generate local completion stats
+    const localParComparison =
+      movesCount === puzzle?.parMoves
+        ? '0'
+        : movesCount > puzzle?.parMoves
+          ? `+${movesCount - puzzle?.parMoves}`
+          : `${movesCount - puzzle?.parMoves}`;
+    const congratsMessage = getRandomMessage(CONGRATS_MESSAGES);
+
+    // Set initial local stats (will be updated with server stats if authenticated)
+    setCompletionStats({
+      parComparison: localParComparison,
+      congratsMessage,
+    });
+
     // Record stats to server if authenticated
-    if (isAuthenticated && !statsRecorded) {
+    if (isAuthenticated && !statsRecorded && !isArchive) {
       setStatsRecorded(true);
 
       try {
@@ -601,27 +616,41 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
         if (response.ok) {
           const data = await response.json();
-          setCompletionStats(data.stats);
+          // Merge server stats with local congratsMessage
+          setCompletionStats({
+            ...data.stats,
+            congratsMessage,
+          });
         }
       } catch (err) {
         logger.error('[ElementSoup] Failed to record stats', { error: err.message });
       }
-    }
 
-    // Generate completion stats for display
-    setCompletionStats({
-      parComparison:
-        movesCount === puzzle?.parMoves
-          ? '0'
-          : movesCount > puzzle?.parMoves
-            ? `+${movesCount - puzzle?.parMoves}`
-            : `${movesCount - puzzle?.parMoves}`,
-      congratsMessage: getRandomMessage(CONGRATS_MESSAGES),
-    });
+      // Submit to leaderboard
+      try {
+        await capacitorFetch(
+          getApiUrl('/api/leaderboard/daily'),
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              gameType: 'soup',
+              puzzleDate: puzzleDateRef.current,
+              score: elapsedTime,
+              metadata: { movesCount, firstDiscoveries, newDiscoveries },
+            }),
+          },
+          true // Include auth
+        );
+      } catch (err) {
+        logger.error('[ElementSoup] Failed to submit to leaderboard', { error: err.message });
+      }
+    }
   }, [
     isComplete,
     statsRecorded,
     isAuthenticated,
+    isArchive,
     puzzle,
     elementBank,
     combinationPath,
