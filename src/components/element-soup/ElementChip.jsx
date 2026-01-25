@@ -38,7 +38,7 @@ export function ElementChip({
       className={cn(
         'relative inline-flex items-center justify-center',
         sizeClasses[size],
-        'bg-white dark:bg-gray-800',
+        !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
         'border-[2px] border-black dark:border-gray-600',
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
