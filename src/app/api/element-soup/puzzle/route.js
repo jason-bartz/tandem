@@ -79,7 +79,9 @@ export async function GET(request) {
 
     const { data, error } = await supabase
       .from('element_soup_puzzles')
-      .select('id, puzzle_number, date, target_element, target_emoji, par_moves, difficulty')
+      .select(
+        'id, puzzle_number, date, target_element, target_emoji, par_moves, difficulty, solution_path'
+      )
       .eq('date', targetDate)
       .eq('published', true)
       .single();
@@ -114,6 +116,7 @@ export async function GET(request) {
         targetEmoji: data.target_emoji,
         parMoves: data.par_moves,
         difficulty: data.difficulty,
+        solutionPath: data.solution_path || [],
       },
       starterElements: STARTER_ELEMENTS,
     });

@@ -121,6 +121,10 @@ export function ElementSoupGame({ initialDate = null }) {
     loadPuzzle,
     resetGame,
 
+    // Hints
+    hintsRemaining,
+    useHint,
+
     // Mode
     freePlayMode,
 
@@ -269,6 +273,8 @@ export function ElementSoupGame({ initialDate = null }) {
                     isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
                     freePlayMode={freePlayMode}
                     combinationError={combinationError}
+                    hintsRemaining={hintsRemaining}
+                    onUseHint={useHint}
                   />
                 </>
               )}

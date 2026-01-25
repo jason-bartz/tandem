@@ -69,6 +69,9 @@ export function StatsAndTargetRow({
   targetEmoji,
   parMoves,
   isTargetFound = false,
+  hintsRemaining = 0,
+  onUseHint,
+  hintDisabled = false,
 }) {
   return (
     <div className="flex items-center justify-between mb-3">
@@ -79,8 +82,37 @@ export function StatsAndTargetRow({
         isFound={isTargetFound}
       />
 
-      {/* Right side - Stats */}
-      <div className="flex items-center gap-4">
+      {/* Right side - Stats and Hints */}
+      <div className="flex items-center gap-3">
+        {/* Hint Icons */}
+        {hintsRemaining > 0 && onUseHint && (
+          <div className="flex items-center gap-1">
+            {Array.from({ length: hintsRemaining }).map((_, index) => (
+              <button
+                key={index}
+                onClick={onUseHint}
+                disabled={hintDisabled}
+                className={cn(
+                  'transition-all duration-200',
+                  hintDisabled
+                    ? 'opacity-40 cursor-not-allowed'
+                    : 'hover:scale-110 hover:opacity-80 active:scale-95 cursor-pointer'
+                )}
+                aria-label={`Use hint (${hintsRemaining} remaining)`}
+                title="Use hint"
+              >
+                <Image
+                  src="/icons/ui/hint.png"
+                  alt="Hint"
+                  width={22}
+                  height={22}
+                  className="w-[22px] h-[22px]"
+                />
+              </button>
+            ))}
+          </div>
+        )}
+
         {/* Timer */}
         <div className="flex items-center gap-1">
           <Image

@@ -1060,6 +1060,47 @@ export default function Support() {
       ),
     },
     {
+      id: 'soup-hints',
+      title: 'Hint System',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">Using Hints</h4>
+            <p className="text-sm mb-3">
+              Stuck on a puzzle? You get <strong>two hints per puzzle</strong>. Look for the hint
+              icons in the stats bar at the top of the game screen.
+            </p>
+          </div>
+          <div>
+            <h4 className="font-semibold mb-2">How Hints Work</h4>
+            <ul className="list-disc list-inside text-sm space-y-1">
+              <li>
+                <strong>Tap a hint icon</strong> to use one of your hints
+              </li>
+              <li>
+                <strong>An element will be selected</strong> that's part of the solution path to the
+                target
+              </li>
+              <li>
+                <strong>Combine this element</strong> with something else to progress toward the
+                target
+              </li>
+              <li>
+                <strong>Hints disappear</strong> as you use them — you can see how many remain
+              </li>
+            </ul>
+          </div>
+          <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border-2 border-green-400">
+            <p className="font-semibold mb-1">Pro Tip</p>
+            <p className="text-sm">
+              Save your hints for when you're truly stuck. Try experimenting with different
+              combinations first — you might discover an unexpected path to the target!
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: 'soup-first-discoveries',
       title: 'First Discoveries',
       content: (
@@ -1139,7 +1180,16 @@ export default function Support() {
                 <p className="font-medium">Q: What if I can't find the target element?</p>
                 <p>
                   A: Keep experimenting! There are often multiple paths to the target. Try building
-                  up related elements and combining them in new ways.
+                  up related elements and combining them in new ways. You can also use one of your
+                  two hints to get a nudge in the right direction.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: How does the hint system work?</p>
+                <p>
+                  A: You get two hints per puzzle. Tap a hint icon in the stats bar to use one. The
+                  hint will select an element that's part of the solution path, helping guide you
+                  toward the target. Hint icons disappear as you use them.
                 </p>
               </div>
             </div>
