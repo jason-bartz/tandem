@@ -38,7 +38,7 @@ function ElementChipInner({
       onClick={() => !disabled && onClick?.(element)}
       disabled={disabled}
       className={cn(
-        'relative inline-flex items-center justify-center',
+        'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
         !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
         'border-[2px] border-black dark:border-gray-600',
@@ -100,10 +100,10 @@ function ElementChipInner({
           NEW
         </span>
       )}
-      <span className={emojiSizes[size]} role="img" aria-hidden="true">
+      <span className={cn(emojiSizes[size], 'flex-shrink-0')} role="img" aria-hidden="true">
         {element.emoji}
       </span>
-      <span className="whitespace-nowrap text-gray-900 dark:text-white">{element.name}</span>
+      <span className="text-gray-900 dark:text-white">{element.name}</span>
     </motion.button>
   );
 }
