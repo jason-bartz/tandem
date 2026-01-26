@@ -126,6 +126,7 @@ export default function MiniGrid({
                     border-r-[2px] border-b-[2px]
                     last:border-r-0
                     border-black dark:border-gray-700
+                    outline-none focus:outline-none
                     ${getCellClasses(rowIndex, colIndex)}
                   `}
                   onClick={() => handleCellClick(rowIndex, colIndex)}
