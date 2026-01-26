@@ -5,6 +5,7 @@ import Image from 'next/image';
 import authService from '@/services/auth.service';
 import { getHolidaysForMonth } from '@/lib/holidays';
 import logger from '@/lib/logger';
+import { ASSET_VERSION } from '@/lib/constants';
 
 // Game configuration for easy extensibility
 const GAMES = {
@@ -23,7 +24,7 @@ const GAMES = {
   soup: {
     id: 'soup',
     name: 'Element Soup',
-    icon: '/icons/ui/element-soup.png',
+    icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
     color: 'accent-green',
   },
   reel: {

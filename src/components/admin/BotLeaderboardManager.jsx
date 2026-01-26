@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
+import { ASSET_VERSION } from '@/lib/constants';
 
 export default function BotLeaderboardManager() {
   const [loading, setLoading] = useState(true);
@@ -250,7 +251,11 @@ export default function BotLeaderboardManager() {
               { name: 'Daily Tandem', key: 'tandem', icon: '/icons/ui/tandem.png' },
               { name: 'Daily Mini', key: 'mini', icon: '/icons/ui/mini.png' },
               { name: 'Reel Connections', key: 'reel', icon: '/icons/ui/movie.png' },
-              { name: 'Element Soup', key: 'soup', icon: '/icons/ui/element-soup.png' },
+              {
+                name: 'Element Soup',
+                key: 'soup',
+                icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
+              },
             ].map((game) => (
               <div
                 key={game.key}

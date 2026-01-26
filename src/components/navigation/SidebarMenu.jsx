@@ -11,6 +11,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import { ASSET_VERSION } from '@/lib/constants';
 
 /**
  * SidebarMenu - Sliding sidebar navigation menu
@@ -469,7 +470,7 @@ export default function SidebarMenu({
                     subtitle="Classic 5x5 mini crossword"
                   />
                   <GameButton
-                    icon="/icons/ui/element-soup.png"
+                    icon={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
                     label="Element Soup"
                     onClick={() => handleNavigation('/element-soup')}
                     isActive={pathname === '/element-soup'}

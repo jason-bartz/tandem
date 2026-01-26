@@ -16,6 +16,7 @@ import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import AvatarManager from '@/components/admin/AvatarManager';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
+import { ASSET_VERSION } from '@/lib/constants';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
@@ -314,7 +315,12 @@ export default function AdminDashboard() {
           <div className="space-y-4 overflow-visible">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Image src="/icons/ui/element-soup.png" alt="" width={24} height={24} />
+                <Image
+                  src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+                  alt=""
+                  width={24}
+                  height={24}
+                />
                 <h3 className="text-base sm:text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Element Soup Puzzle
                 </h3>
@@ -500,7 +506,12 @@ export default function AdminDashboard() {
                             : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-green-500/20'
                         }`}
                       >
-                        <Image src="/icons/ui/element-soup.png" alt="" width={16} height={16} />
+                        <Image
+                          src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+                          alt=""
+                          width={16}
+                          height={16}
+                        />
                         <span className="hidden sm:inline">Elements</span>
                       </button>
                     </div>
