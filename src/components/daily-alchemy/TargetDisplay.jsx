@@ -89,33 +89,29 @@ export function StatsAndTargetRow({
 
       {/* Right side - Stats and Hints */}
       <div className="flex items-center gap-3">
-        {/* Hint Icons */}
+        {/* Hint Button */}
         {hintsRemaining > 0 && onUseHint && (
-          <div className="flex items-center gap-1">
-            {Array.from({ length: hintsRemaining }).map((_, index) => (
-              <button
-                key={index}
-                onClick={onUseHint}
-                disabled={hintDisabled}
-                className={cn(
-                  'transition-all duration-200',
-                  hintDisabled
-                    ? 'opacity-40 cursor-not-allowed'
-                    : 'hover:scale-110 hover:opacity-80 active:scale-95 cursor-pointer'
-                )}
-                aria-label={`Use hint (${hintsRemaining} remaining)`}
-                title="Use hint"
-              >
-                <Image
-                  src="/icons/ui/hint.png"
-                  alt="Hint"
-                  width={22}
-                  height={22}
-                  className="w-[22px] h-[22px]"
-                />
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={onUseHint}
+            disabled={hintDisabled}
+            className={cn(
+              'flex items-center gap-1 transition-all duration-200',
+              hintDisabled
+                ? 'opacity-40 cursor-not-allowed'
+                : 'hover:scale-105 hover:opacity-80 active:scale-95 cursor-pointer'
+            )}
+            aria-label={`Use hint (${hintsRemaining} of 4 remaining)`}
+            title="Use hint"
+          >
+            <Image
+              src="/icons/ui/hint.png"
+              alt="Hint"
+              width={22}
+              height={22}
+              className="w-[22px] h-[22px]"
+            />
+            <span className="font-bold text-text-primary text-sm">{hintsRemaining}/4</span>
+          </button>
         )}
 
         {/* Timer */}
