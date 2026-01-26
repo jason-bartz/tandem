@@ -423,7 +423,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Archive access for all past puzzles (Daily Tandem, Daily Mini, and Reel Connections)
+                Archive access for all past puzzles across all games
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -435,7 +435,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Sync and save your progress across devices
+                Access to Element Soup Free Play Mode
               </span>
             </div>
             <div className="flex items-start gap-3">
@@ -471,7 +471,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Access to Element Soup Free Play Mode
+                Sync and save your progress across devices
               </span>
             </div>
             <div className="flex items-start gap-3">
