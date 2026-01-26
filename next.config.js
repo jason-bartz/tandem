@@ -8,6 +8,17 @@ const nextConfig = {
     instrumentationHook: true,
   },
 
+  // Redirects for renamed routes
+  async redirects() {
+    return [
+      {
+        source: '/element-soup',
+        destination: '/daily-alchemy',
+        permanent: true,
+      },
+    ];
+  },
+
   // IMPORTANT: Disable source maps in production for security
   productionBrowserSourceMaps: false,
 
