@@ -240,8 +240,7 @@ export function useGameWithInitialData(initialPuzzleData) {
       const timeTaken = startTime ? Math.floor((endTime - startTime) / 1000) : 0; // Time in seconds
       setCompletionTime(timeTaken);
 
-      // Set won state immediately for sounds, but delay game state change
-      // until after stats are updated to prevent race condition
+      // Set won state immediately for sounds
       setWon(won);
 
       if (won) {
@@ -250,6 +249,13 @@ export function useGameWithInitialData(initialPuzzleData) {
         playFailureSound();
       }
 
+      // Transition to complete screen quickly - stats save in background
+      // Short delay for success sound to register before screen change
+      setTimeout(() => {
+        setGameState(GAME_STATES.COMPLETE);
+      }, 150);
+
+      // Save stats in background (non-blocking for UI)
       const isFirstAttempt = currentPuzzleDate && !(await hasPlayedPuzzle(currentPuzzleDate));
 
       try {
@@ -268,9 +274,6 @@ export function useGameWithInitialData(initialPuzzleData) {
         // Fall back to direct storage update if service fails
         updateGameStats(won, isFirstAttempt, isArchiveGame, currentPuzzleDate);
       }
-
-      // Now transition to complete screen - stats are saved
-      setGameState(GAME_STATES.COMPLETE);
 
       if (!isArchiveGame) {
         try {
