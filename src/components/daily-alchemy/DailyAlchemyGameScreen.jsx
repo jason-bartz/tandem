@@ -85,20 +85,18 @@ function ResultAnimation({ result, onComplete }) {
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         onClick={(e) => result.isFirstDiscovery && e.stopPropagation()}
       >
-        {/* Close button for first discoveries */}
-        {result.isFirstDiscovery && (
-          <button
-            onClick={onComplete}
-            className={cn(
-              'absolute top-2 right-2',
-              'flex items-center justify-center',
-              'hover:opacity-70',
-              'transition-opacity'
-            )}
-          >
-            <X className="w-5 h-5 text-gray-700 dark:text-gray-200" />
-          </button>
-        )}
+        {/* Close button */}
+        <button
+          onClick={onComplete}
+          className={cn(
+            'absolute top-2 right-2',
+            'flex items-center justify-center',
+            'hover:opacity-70',
+            'transition-opacity'
+          )}
+        >
+          <X className="w-5 h-5 text-gray-700 dark:text-gray-200" />
+        </button>
 
         {result.isFirstDiscovery && (
           <motion.div
