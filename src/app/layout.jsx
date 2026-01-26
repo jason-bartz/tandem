@@ -13,6 +13,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ASSET_VERSION } from '@/lib/constants';
 
 // Plus Jakarta Sans - Variable font for optimal performance
 // Following Apple HIG: Use variable fonts when available for better scaling
@@ -182,7 +183,12 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/icons/ui/tandem.png" as="image" type="image/png" />
         <link rel="preload" href="/icons/ui/mini.png" as="image" type="image/png" />
         <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
-        <link rel="preload" href="/icons/ui/element-soup.png" as="image" type="image/png" />
+        <link
+          rel="preload"
+          href={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+          as="image"
+          type="image/png"
+        />
 
         {/* Structured Data */}
         <script

@@ -3,6 +3,7 @@
 import { useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import { getHoliday } from '@/lib/holidays';
+import { ASSET_VERSION } from '@/lib/constants';
 
 // Game configuration
 const GAMES = [
@@ -28,7 +29,7 @@ const GAMES = [
     id: 'soup',
     name: 'Element Soup',
     description: 'Element combination puzzle',
-    icon: '/icons/ui/element-soup.png',
+    icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
     color: 'accent-green',
     bgColor: 'bg-accent-green/20',
     borderColor: 'border-accent-green',

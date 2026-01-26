@@ -7,6 +7,7 @@ import logger from '@/lib/logger';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import {
   playCombineSound,
+  playFailureSound,
   playFirstDiscoverySound,
   playHintSound,
   playNewElementSound,
@@ -688,6 +689,9 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
     setIsGameOver(true);
     setGameState(SOUP_GAME_STATES.GAME_OVER);
+
+    // Play failure sound
+    playFailureSound();
 
     // Generate game over message
     setCompletionStats({

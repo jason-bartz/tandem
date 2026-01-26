@@ -17,6 +17,7 @@ import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
 import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
+import { ASSET_VERSION } from '@/lib/constants';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 
@@ -667,7 +668,11 @@ export default function UnifiedArchiveCalendar({
     } else if (activeTab === 'reel') {
       return { icon: '/icons/ui/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
     } else {
-      return { icon: '/icons/ui/element-soup.png', alt: 'Soup', text: 'Soup Puzzle Archive' };
+      return {
+        icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
+        alt: 'Soup',
+        text: 'Soup Puzzle Archive',
+      };
     }
   };
   const tabTitle = getTabTitle();

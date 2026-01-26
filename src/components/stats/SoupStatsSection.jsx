@@ -8,6 +8,7 @@ import { useCounterAnimation } from '@/hooks/useAnimation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import { ASSET_VERSION } from '@/lib/constants';
 
 /**
  * SoupStatsSection - Displays Element Soup stats
@@ -36,7 +37,11 @@ export default function SoupStatsSection({ stats, animationKey }) {
 
   return (
     <>
-      <StatsSection title="Element Soup" icon="/icons/ui/element-soup.png" themeColor="green">
+      <StatsSection
+        title="Element Soup"
+        icon={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+        themeColor="green"
+      >
         {/* All Stats in a Row */}
         <div className="grid grid-cols-4 gap-3 mb-3">
           <StatCard value={animatedCompleted} label="Played" />
