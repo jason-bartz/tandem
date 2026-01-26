@@ -54,8 +54,7 @@ export function ElementSoupWelcomeScreen({
       <motion.div
         className={cn(
           'w-full max-w-sm p-5 mb-6',
-          'bg-gradient-to-br from-soup-light/50 via-soup-light to-soup-light/70',
-          'dark:from-soup-primary/20 dark:via-soup-primary/15 dark:to-soup-primary/20',
+          'bg-soup-light/50 dark:bg-soup-primary/10',
           'border-[3px] border-black dark:border-gray-600',
           'rounded-2xl',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
