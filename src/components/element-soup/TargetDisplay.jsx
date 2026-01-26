@@ -72,7 +72,12 @@ export function StatsAndTargetRow({
   hintsRemaining = 0,
   onUseHint,
   hintDisabled = false,
+  isCountdown = false,
 }) {
+  // Determine timer warning state for countdown mode
+  const isLowTime = isCountdown && time <= 60; // Last minute
+  const isCriticalTime = isCountdown && time <= 30; // Last 30 seconds
+
   return (
     <div className="flex items-center justify-between mb-3">
       {/* Left side - Target */}
@@ -120,9 +125,18 @@ export function StatsAndTargetRow({
             alt="Time"
             width={18}
             height={18}
-            className="opacity-70"
+            className={cn('opacity-70', isCriticalTime && 'opacity-100')}
           />
-          <span className="font-bold text-text-primary text-base tabular-nums">
+          <span
+            className={cn(
+              'font-bold text-base tabular-nums transition-colors',
+              isCriticalTime
+                ? 'text-red-500 dark:text-red-400 animate-pulse'
+                : isLowTime
+                  ? 'text-orange-500 dark:text-orange-400'
+                  : 'text-text-primary'
+            )}
+          >
             {formatTime(time)}
           </span>
         </div>

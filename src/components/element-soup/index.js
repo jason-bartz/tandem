@@ -8,6 +8,7 @@ export { FirstDiscoveryToast } from './FirstDiscoveryToast';
 export { ElementSoupWelcomeScreen } from './ElementSoupWelcomeScreen';
 export { ElementSoupGameScreen } from './ElementSoupGameScreen';
 export { ElementSoupCompleteScreen } from './ElementSoupCompleteScreen';
+export { ElementSoupGameOverScreen } from './ElementSoupGameOverScreen';
 export { ElementSoupLoadingSkeleton } from './ElementSoupLoadingSkeleton';
 export { ElementSoupGame } from './ElementSoupGame';
 export { default } from './ElementSoupGame';

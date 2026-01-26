@@ -20,6 +20,9 @@ export const SOUP_CONFIG = {
   // - Daily puzzle: Free for all account holders
   // - Archive: Last 4 days free, older requires Tandem Unlimited subscription
   FREE_ARCHIVE_DAYS: 4,
+  // Time limit for daily puzzle mode (10 minutes in seconds)
+  // Free play mode has no time limit
+  TIME_LIMIT_SECONDS: 600,
 };
 
 // Starter elements (same every day)
@@ -35,6 +38,7 @@ export const SOUP_GAME_STATES = {
   WELCOME: 'welcome',
   PLAYING: 'playing',
   COMPLETE: 'complete',
+  GAME_OVER: 'game_over', // Time ran out
   ADMIRE: 'admire',
   ERROR: 'error',
 };
@@ -105,6 +109,14 @@ export const FIRST_DISCOVERY_MESSAGES = [
   'Pioneering Discovery!',
   'Never Seen Before!',
   'World First!',
+];
+
+// Game over messages (time ran out)
+export const GAME_OVER_MESSAGES = [
+  "Time's Up!",
+  'The Cauldron Cooled!',
+  'Out of Time!',
+  'The Magic Faded!',
 ];
 
 // Par comparison messages

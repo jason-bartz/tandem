@@ -197,7 +197,7 @@ export function ElementSoupGameScreen({
   parMoves,
 
   // Timer & Stats
-  elapsedTime,
+  remainingTime,
   movesCount,
   formatTime,
 
@@ -250,7 +250,7 @@ export function ElementSoupGameScreen({
       {/* Stats and Target Row - hidden in free play mode */}
       {!freePlayMode && (
         <StatsAndTargetRow
-          time={elapsedTime}
+          time={remainingTime}
           moves={movesCount}
           formatTime={formatTime}
           targetElement={targetElement}
@@ -260,6 +260,7 @@ export function ElementSoupGameScreen({
           hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
           hintDisabled={isCombining || isAnimating || isComplete}
+          isCountdown={true}
         />
       )}
 
