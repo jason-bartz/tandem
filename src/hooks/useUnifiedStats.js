@@ -3,7 +3,7 @@ import { loadStats } from '@/lib/storage';
 import { loadMiniStats } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
-import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
+import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 

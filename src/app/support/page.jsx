@@ -932,7 +932,7 @@ export default function Support() {
     },
   ];
 
-  // Element Soup sections
+  // Daily Alchemy sections
   const soupSections = [
     {
       id: 'soup-getting-started',
@@ -940,9 +940,9 @@ export default function Support() {
       content: (
         <div className="space-y-4">
           <div>
-            <h4 className="font-semibold mb-2">What is Element Soup?</h4>
+            <h4 className="font-semibold mb-2">What is Daily Alchemy?</h4>
             <p className="text-sm mb-3">
-              Element Soup is a daily element combination puzzle inspired by alchemy and crafting
+              Daily Alchemy is a daily element combination puzzle inspired by alchemy and crafting
               games. Start with four basic elements (Earth, Water, Fire, Wind) and combine them to
               create new elements. Your goal is to discover the target element of the day!
             </p>
@@ -980,8 +980,8 @@ export default function Support() {
           {/* Demo GIF */}
           <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
             <img
-              src="/screenshots/elementsoup-howto.gif"
-              alt="Element Soup gameplay demo"
+              src="/screenshots/dailyalchemy-howto.gif"
+              alt="Daily Alchemy gameplay demo"
               className="w-full h-auto"
             />
           </div>
@@ -1170,7 +1170,7 @@ export default function Support() {
             <h4 className="font-semibold mb-1">General Questions</h4>
             <div className="space-y-3 text-sm">
               <div>
-                <p className="font-medium">Q: Is Element Soup free to play?</p>
+                <p className="font-medium">Q: Is Daily Alchemy free to play?</p>
                 <p>
                   A: Yes! Today's puzzle and the last 3 days are always free. Tandem Unlimited
                   subscriptions unlock access to all archived puzzles.
@@ -1181,7 +1181,7 @@ export default function Support() {
                 <p>A: A new puzzle is released daily at midnight in your local timezone.</p>
               </div>
               <div>
-                <p className="font-medium">Q: What is "par" in Element Soup?</p>
+                <p className="font-medium">Q: What is "par" in Daily Alchemy?</p>
                 <p>
                   A: Par is the benchmark number of moves (combinations) to reach the target
                   element. It represents a good solving pace - try to match or beat it!
@@ -1532,13 +1532,13 @@ export default function Support() {
                       >
                         <div className="flex items-center justify-center gap-1">
                           <Image
-                            src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
-                            alt="Element Soup"
+                            src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                            alt="Daily Alchemy"
                             width={20}
                             height={20}
                             className="w-5 h-5"
                           />
-                          <span className="hidden sm:inline">Soup</span>
+                          <span className="hidden sm:inline">Alchemy</span>
                         </div>
                       </button>
                       <button

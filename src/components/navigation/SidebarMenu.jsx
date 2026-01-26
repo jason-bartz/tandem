@@ -470,10 +470,10 @@ export default function SidebarMenu({
                     subtitle="Classic 5x5 mini crossword"
                   />
                   <GameButton
-                    icon={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
-                    label="Element Soup"
-                    onClick={() => handleNavigation('/element-soup')}
-                    isActive={pathname === '/element-soup'}
+                    icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                    label="Daily Alchemy"
+                    onClick={() => handleNavigation('/daily-alchemy')}
+                    isActive={pathname === '/daily-alchemy'}
                     gameColor="green"
                     highContrast={highContrast}
                     subtitle="Combine elements to make discoveries"
@@ -679,7 +679,7 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
       };
     } else if (gameColor === 'green') {
       return {
-        bg: '#84cc16', // Lime-500 (Element Soup color)
+        bg: '#84cc16', // Lime-500 (Daily Alchemy color)
         text: 'text-white',
       };
     }

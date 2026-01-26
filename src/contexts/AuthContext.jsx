@@ -174,7 +174,7 @@ export function AuthProvider({ children }) {
             const { loadMiniStats } = await import('@/lib/miniStorage');
             const storageServiceModule = await import('@/core/storage/storageService');
             const storageService = storageServiceModule.default;
-            const { SOUP_STORAGE_KEYS } = await import('@/lib/element-soup.constants');
+            const { SOUP_STORAGE_KEYS } = await import('@/lib/daily-alchemy.constants');
 
             // Load current stats for all games
             const [tandemStats, miniStats] = await Promise.all([loadStats(), loadMiniStats()]);

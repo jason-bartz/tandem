@@ -11,8 +11,8 @@ import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { ASSET_VERSION } from '@/lib/constants';
 
 /**
- * SoupStatsSection - Displays Element Soup stats
- * Uses GREEN theme to match Element Soup branding
+ * SoupStatsSection - Displays Daily Alchemy stats
+ * Uses GREEN theme to match Daily Alchemy branding
  *
  * @param {Object} stats - Soup stats object
  * @param {boolean} animationKey - Key to trigger re-animation
@@ -38,8 +38,8 @@ export default function SoupStatsSection({ stats, animationKey }) {
   return (
     <>
       <StatsSection
-        title="Element Soup"
-        icon={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+        title="Daily Alchemy"
+        icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
         themeColor="green"
       >
         {/* All Stats in a Row */}

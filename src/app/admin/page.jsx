@@ -8,8 +8,8 @@ import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
 import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
-import ElementSoupPuzzleEditor from '@/components/admin/element-soup/ElementSoupPuzzleEditor';
-import ElementManager from '@/components/admin/element-soup/ElementManager';
+import DailyAlchemyPuzzleEditor from '@/components/admin/daily-alchemy/DailyAlchemyPuzzleEditor';
+import ElementManager from '@/components/admin/daily-alchemy/ElementManager';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
     setSoupLoading(true);
     try {
       const isEdit = !!editingPuzzle?.id;
-      const url = '/api/admin/element-soup/puzzles';
+      const url = '/api/admin/daily-alchemy/puzzles';
       const method = isEdit ? 'PUT' : 'POST';
       const body = isEdit ? { ...puzzleData, id: editingPuzzle.id } : puzzleData;
 
@@ -197,7 +197,7 @@ export default function AdminDashboard() {
         alert(`Error: ${error.error || 'Failed to save puzzle'}`);
       }
     } catch (error) {
-      logger.error('Error saving Element Soup puzzle', error);
+      logger.error('Error saving Daily Alchemy puzzle', error);
       alert('Failed to save puzzle. Please try again.');
     } finally {
       setSoupLoading(false);
@@ -209,7 +209,7 @@ export default function AdminDashboard() {
     if (!confirm('Are you sure you want to delete this puzzle?')) return;
 
     try {
-      const response = await fetch(`/api/admin/element-soup/puzzles?id=${puzzleId}`, {
+      const response = await fetch(`/api/admin/daily-alchemy/puzzles?id=${puzzleId}`, {
         method: 'DELETE',
         headers: await authService.getAuthHeaders(true),
       });
@@ -220,7 +220,7 @@ export default function AdminDashboard() {
         alert('Failed to delete puzzle. Please try again.');
       }
     } catch (error) {
-      logger.error('Error deleting Element Soup puzzle', error);
+      logger.error('Error deleting Daily Alchemy puzzle', error);
       alert('Failed to delete puzzle. Please try again.');
     }
   };
@@ -316,13 +316,13 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Image
-                  src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+                  src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
                   alt=""
                   width={24}
                   height={24}
                 />
                 <h3 className="text-base sm:text-lg font-bold text-text-primary">
-                  {editingPuzzle ? 'Edit' : 'Create'} Element Soup Puzzle
+                  {editingPuzzle ? 'Edit' : 'Create'} Daily Alchemy Puzzle
                 </h3>
               </div>
               {editingPuzzle?.id && (
@@ -334,7 +334,7 @@ export default function AdminDashboard() {
                 </button>
               )}
             </div>
-            <ElementSoupPuzzleEditor
+            <DailyAlchemyPuzzleEditor
               puzzle={editingPuzzle}
               date={selectedDate}
               onSave={handleSaveSoupPuzzle}
@@ -507,7 +507,7 @@ export default function AdminDashboard() {
                         }`}
                       >
                         <Image
-                          src={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+                          src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
                           alt=""
                           width={16}
                           height={16}

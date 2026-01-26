@@ -252,9 +252,9 @@ export default function BotLeaderboardManager() {
               { name: 'Daily Mini', key: 'mini', icon: '/icons/ui/mini.png' },
               { name: 'Reel Connections', key: 'reel', icon: '/icons/ui/movie.png' },
               {
-                name: 'Element Soup',
+                name: 'Daily Alchemy',
                 key: 'soup',
-                icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
+                icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
               },
             ].map((game) => (
               <div
