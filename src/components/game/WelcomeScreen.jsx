@@ -258,7 +258,7 @@ export default function WelcomeScreen({
             <GameCard
               icon="/icons/ui/element-soup.png"
               title="Element Soup"
-              description="Combine elements to discover today's target creation."
+              description="Combine elements to discover today's target within 10 minutes."
               puzzleNumber={soupPuzzle?.number || 1}
               onClick={handleSoupClick}
               loading={soupLoading}
