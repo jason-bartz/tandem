@@ -1008,7 +1008,7 @@ export default function Support() {
                 <strong>Search & Sort</strong>: Easily find elements in your bank
               </li>
               <li>
-                <strong>Free Play Mode</strong>: Unlimited time with no goal (Tandem Unlimited)
+                <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Unlimited)
               </li>
               <li>
                 <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
@@ -1211,6 +1211,72 @@ export default function Support() {
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'soup-creative-mode',
+      title: 'Creative Mode (Tandem Unlimited)',
+      content: (
+        <div className="space-y-4">
+          <div>
+            <h4 className="font-semibold mb-2">🎨 About Creative Mode</h4>
+            <p className="text-sm mb-3">
+              Creative Mode is an exclusive feature for Tandem Unlimited subscribers that lets you
+              explore element combinations without any restrictions.
+            </p>
+            <div className="bg-purple-50 dark:bg-purple-900/20 border-[3px] border-purple-400 rounded-2xl p-4">
+              <h5 className="font-semibold mb-2">Creative Mode Features:</h5>
+              <ul className="list-disc list-inside text-sm space-y-1">
+                <li>
+                  <strong>No time limit</strong> - Take as long as you want to explore
+                </li>
+                <li>
+                  <strong>No target goal</strong> - Combine elements freely without pressure
+                </li>
+                <li>
+                  <strong>Pure discovery</strong> - Focus on finding new and interesting
+                  combinations
+                </li>
+                <li>
+                  <strong>First discovery hunting</strong> - Perfect for finding combinations no one
+                  else has found
+                </li>
+                <li>
+                  <strong>Build your collection</strong> - Expand your element bank at your own pace
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">How to Access Creative Mode</h4>
+            <ol className="list-decimal list-inside text-sm space-y-2">
+              <li>
+                Subscribe to <strong>Tandem Unlimited</strong> (any tier: Buddy Pass, Best Friends,
+                or Soulmates)
+              </li>
+              <li>
+                Open <strong>Daily Alchemy</strong> from the home screen
+              </li>
+              <li>
+                On the welcome screen, tap <strong>Creative Mode</strong> below the daily puzzle
+                start button
+              </li>
+              <li>
+                After completing or failing a daily puzzle, you can also switch to Creative Mode
+                from the results screen
+              </li>
+            </ol>
+          </div>
+
+          <div className="p-3 bg-gradient-to-r from-purple-100 to-pink-100 dark:from-purple-900/30 dark:to-pink-900/30 rounded-lg border-2 border-purple-400">
+            <p className="font-semibold mb-1">Pro Tip</p>
+            <p className="text-sm">
+              Creative Mode is the best way to hunt for first discoveries! Without time pressure,
+              you can experiment with unusual combinations that others might not try.
+            </p>
           </div>
         </div>
       ),

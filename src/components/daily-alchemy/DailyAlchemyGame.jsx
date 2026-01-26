@@ -204,7 +204,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
               {/* Center content - Title and date */}
               <div className="flex-1 flex flex-col items-center">
                 <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
-                  {freePlayMode ? 'Free Play Mode' : `Daily Puzzle ${formattedDate}`}
+                  {freePlayMode ? 'Creative Mode' : `Daily Puzzle ${formattedDate}`}
                 </span>
               </div>
 

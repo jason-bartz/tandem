@@ -305,7 +305,7 @@ export function DailyAlchemyCompleteScreen({
         )}
       </motion.div>
 
-      {/* Free Play Section */}
+      {/* Creative Mode Section */}
       {!isArchive && (
         <>
           {/* Divider */}
@@ -320,7 +320,7 @@ export function DailyAlchemyCompleteScreen({
             <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
           </motion.div>
 
-          {/* Free Play Button */}
+          {/* Creative Mode Button */}
           <motion.button
             onClick={handleFreePlayClick}
             className={cn(
@@ -349,10 +349,10 @@ export function DailyAlchemyCompleteScreen({
                 className="opacity-70"
               />
             )}
-            <span>Free Play</span>
+            <span>Creative Mode</span>
           </motion.button>
 
-          {/* Free Play Description */}
+          {/* Creative Mode Description */}
           <motion.p
             className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
             initial={!reduceMotion ? { opacity: 0 } : false}
