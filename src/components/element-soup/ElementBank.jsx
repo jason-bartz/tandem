@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -10,6 +11,11 @@ import ElementChip from './ElementChip';
  * ElementBank - Horizontally scrollable grid of discovered elements
  * Elements flow in columns: top to bottom, then continue to the right
  */
+// Row height: ~40px chip + 8px gap = 48px per row
+const ROW_HEIGHT = 48;
+const MIN_ROWS = 3;
+const MAX_ROWS = 10;
+
 export function ElementBank({
   elements,
   selectedA,
@@ -25,6 +31,40 @@ export function ElementBank({
   disabled = false,
 }) {
   const { highContrast } = useTheme();
+  const gridContainerRef = useRef(null);
+  const [rowCount, setRowCount] = useState(7);
+
+  // Calculate how many rows can fit in available space
+  const calculateRows = useCallback(() => {
+    if (!gridContainerRef.current) return;
+
+    const containerHeight = gridContainerRef.current.clientHeight;
+    // Subtract padding (16px = p-2 * 2)
+    const availableHeight = containerHeight - 16;
+    const calculatedRows = Math.floor(availableHeight / ROW_HEIGHT);
+    const clampedRows = Math.max(MIN_ROWS, Math.min(MAX_ROWS, calculatedRows));
+
+    setRowCount(clampedRows);
+  }, []);
+
+  // Set up ResizeObserver to detect container size changes
+  useEffect(() => {
+    const container = gridContainerRef.current;
+    if (!container) return;
+
+    // Initial calculation
+    calculateRows();
+
+    const resizeObserver = new ResizeObserver(() => {
+      calculateRows();
+    });
+
+    resizeObserver.observe(container);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [calculateRows]);
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
@@ -102,12 +142,11 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - fixed rows with horizontal scroll, content-based column widths */}
-      <div className="flex-1 min-h-0">
+      {/* Element grid wrapper - dynamic rows based on available space, horizontal scroll */}
+      <div className="flex-1 min-h-0" ref={gridContainerRef}>
         <div
           className={cn(
             'grid gap-2',
-            'grid-rows-[repeat(7,min-content)]',
             'grid-flow-col auto-cols-min content-start',
             'h-full overflow-x-auto overflow-y-hidden scrollable',
             'p-2',
@@ -116,6 +155,7 @@ export function ElementBank({
             'rounded-xl',
             highContrast && 'border-hc-border'
           )}
+          style={{ gridTemplateRows: `repeat(${rowCount}, min-content)` }}
           role="region"
           aria-label="Element bank"
         >
