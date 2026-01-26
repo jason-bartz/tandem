@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import { createServerComponentClient } from '@/lib/supabase/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
@@ -71,6 +72,28 @@ export async function GET(request) {
     }
   }
 
-  // Redirect to home page
-  return NextResponse.redirect(requestUrl.origin);
+  // Get the stored return URL from cookie (set before OAuth redirect)
+  const cookieStore = await cookies();
+  const returnUrlCookie = cookieStore.get('auth_return_url');
+  let returnPath = '/';
+
+  if (returnUrlCookie?.value) {
+    try {
+      returnPath = decodeURIComponent(returnUrlCookie.value);
+      // Validate the path is safe (starts with / and doesn't contain protocol)
+      if (!returnPath.startsWith('/') || returnPath.includes('://')) {
+        returnPath = '/';
+      }
+    } catch {
+      returnPath = '/';
+    }
+  }
+
+  // Create response with redirect to the return URL
+  const response = NextResponse.redirect(`${requestUrl.origin}${returnPath}`);
+
+  // Clear the return URL cookie
+  response.cookies.delete('auth_return_url');
+
+  return response;
 }

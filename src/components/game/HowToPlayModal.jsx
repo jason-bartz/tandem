@@ -547,9 +547,15 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             >
               First Discoveries
             </h4>
-            <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
+            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
               Be the first player to discover a new combination and get credited forever! First
               discoveries are tracked globally — can you find one no one else has found?
+            </p>
+            <p
+              className={`text-sm ${highContrast ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}
+            >
+              <strong>Note:</strong> You must be signed in to be credited as the discoverer. Your
+              username will be publicly displayed alongside your discovery.
             </p>
           </div>
 
