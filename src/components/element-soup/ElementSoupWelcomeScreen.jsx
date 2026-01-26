@@ -83,10 +83,16 @@ export function ElementSoupWelcomeScreen({
           </h1>
         </div>
 
-        {/* Par Display */}
-        <div className="flex items-center gap-1.5 text-sm text-gray-600 dark:text-gray-400">
-          <Image src="/icons/ui/par.png" alt="" width={16} height={16} />
-          <span>Par: {parMoves} moves</span>
+        {/* Par and Timer Display */}
+        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
+          <div className="flex items-center gap-1.5">
+            <Image src="/icons/ui/par.png" alt="" width={16} height={16} />
+            <span>Par: {parMoves} moves</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <Image src="/icons/ui/stopwatch.png" alt="" width={16} height={16} />
+            <span>10:00 limit</span>
+          </div>
         </div>
       </motion.div>
 
@@ -117,8 +123,8 @@ export function ElementSoupWelcomeScreen({
             'transition-colors cursor-pointer'
           )}
         >
-          Combine elements to create new ones. Mix and match until you discover the target element.
-          Fewer moves = better score!
+          Combine elements to create new ones. Find the target element within 10 minutes. Fewer
+          moves = better score!
         </div>
       </motion.button>
 

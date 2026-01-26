@@ -18,12 +18,14 @@ import {
   SOUP_GAME_STATES,
   SOUP_API,
   SOUP_STORAGE_KEYS,
+  SOUP_CONFIG,
   STARTER_ELEMENTS,
   SORT_OPTIONS,
   formatTime,
   generateShareText,
   getRandomMessage,
   CONGRATS_MESSAGES,
+  GAME_OVER_MESSAGES,
 } from '@/lib/element-soup.constants';
 
 /**
@@ -86,7 +88,9 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   const [hasStarted, setHasStarted] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [remainingTime, setRemainingTime] = useState(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Countdown timer for daily mode
   const isPaused = false; // Timer pause functionality not yet implemented
+  const [isGameOver, setIsGameOver] = useState(false);
 
   // Stats tracking
   const [movesCount, setMovesCount] = useState(0);
@@ -124,11 +128,16 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
   }, [initialDate, isFreePlay]);
 
   // Timer effect (disabled in free play mode)
+  // Tracks both elapsed time (for stats) and remaining time (countdown for daily mode)
   useEffect(() => {
     if (freePlayMode) return; // No timer in free play
     if (gameState === SOUP_GAME_STATES.PLAYING && hasStarted && !isPaused && startTime) {
       const interval = setInterval(() => {
-        setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        setElapsedTime(elapsed);
+        // Calculate remaining time (countdown from TIME_LIMIT_SECONDS)
+        const remaining = Math.max(0, SOUP_CONFIG.TIME_LIMIT_SECONDS - elapsed);
+        setRemainingTime(remaining);
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -669,11 +678,41 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     firstDiscoveries,
   ]);
 
+  /**
+   * Handle game over (time ran out)
+   */
+  const handleGameOver = useCallback(() => {
+    if (isGameOver || isComplete) return;
+
+    logger.info('[ElementSoup] Game over - time ran out');
+
+    setIsGameOver(true);
+    setGameState(SOUP_GAME_STATES.GAME_OVER);
+
+    // Generate game over message
+    setCompletionStats({
+      gameOverMessage: getRandomMessage(GAME_OVER_MESSAGES),
+    });
+  }, [isGameOver, isComplete]);
+
+  // Game over effect - triggers when time runs out in daily mode
+  useEffect(() => {
+    if (freePlayMode) return; // No game over in free play
+    if (
+      gameState === SOUP_GAME_STATES.PLAYING &&
+      remainingTime === 0 &&
+      !isComplete &&
+      !isGameOver
+    ) {
+      handleGameOver();
+    }
+  }, [remainingTime, gameState, freePlayMode, isComplete, isGameOver, handleGameOver]);
+
   // Check for win condition (must be after handlePuzzleComplete is defined)
   // Skipped in free play mode - no win condition
   useEffect(() => {
     if (freePlayMode) return; // No win condition in free play
-    if (puzzle && !isComplete && gameState === SOUP_GAME_STATES.PLAYING) {
+    if (puzzle && !isComplete && !isGameOver && gameState === SOUP_GAME_STATES.PLAYING) {
       const targetFound = elementBank.some(
         (el) => el.name.toLowerCase() === puzzle.targetElement.toLowerCase()
       );
@@ -682,7 +721,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
         handlePuzzleComplete();
       }
     }
-  }, [elementBank, puzzle, isComplete, gameState, handlePuzzleComplete, freePlayMode]);
+  }, [elementBank, puzzle, isComplete, isGameOver, gameState, handlePuzzleComplete, freePlayMode]);
 
   /**
    * Get share text for completed puzzle
@@ -715,12 +754,14 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     setSelectedB(null);
     setLastResult(null);
     setIsComplete(false);
+    setIsGameOver(false); // Reset game over state
     setStatsRecorded(false);
     setCompletionStats(null);
     setHintsRemaining(4); // Reset hints
     setLastHintStep(null); // Clear hint step tracking
     setStartTime(Date.now());
     setElapsedTime(0);
+    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Reset countdown
     setGameState(SOUP_GAME_STATES.PLAYING);
     setHasStarted(true);
 
@@ -982,8 +1023,10 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
     // Timer
     hasStarted,
     elapsedTime,
+    remainingTime,
     isPaused,
     formatTime,
+    timeLimit: SOUP_CONFIG.TIME_LIMIT_SECONDS,
 
     // Stats
     movesCount,
@@ -994,6 +1037,7 @@ export function useElementSoupGame(initialDate = null, isFreePlay = false) {
 
     // Completion
     isComplete,
+    isGameOver,
     completionStats,
     getShareText,
 

@@ -11,6 +11,7 @@ import { useElementSoupGame } from '@/hooks/useElementSoupGame';
 import { ElementSoupWelcomeScreen } from './ElementSoupWelcomeScreen';
 import { ElementSoupGameScreen } from './ElementSoupGameScreen';
 import { ElementSoupCompleteScreen } from './ElementSoupCompleteScreen';
+import { ElementSoupGameOverScreen } from './ElementSoupGameOverScreen';
 import { ElementSoupLoadingSkeleton } from './ElementSoupLoadingSkeleton';
 import { ElementSoupBackground } from './ElementSoupBackground';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
@@ -103,6 +104,7 @@ export function ElementSoupGame({ initialDate = null }) {
 
     // Timer
     elapsedTime,
+    remainingTime,
     formatTime,
 
     // Stats
@@ -244,7 +246,7 @@ export function ElementSoupGame({ initialDate = null }) {
                     targetElement={targetElement}
                     targetEmoji={targetEmoji}
                     parMoves={parMoves}
-                    elapsedTime={elapsedTime}
+                    remainingTime={remainingTime}
                     movesCount={movesCount}
                     formatTime={formatTime}
                     sortedElementBank={sortedElementBank}
@@ -290,6 +292,19 @@ export function ElementSoupGame({ initialDate = null }) {
                   onPlayAgain={resetGame}
                   onStartFreePlay={startFreePlay}
                   isArchive={isArchive}
+                />
+              )}
+
+              {/* Game Over Screen (time ran out) */}
+              {gameState === SOUP_GAME_STATES.GAME_OVER && (
+                <ElementSoupGameOverScreen
+                  targetElement={targetElement}
+                  targetEmoji={targetEmoji}
+                  elapsedTime={elapsedTime}
+                  movesCount={movesCount}
+                  completionStats={completionStats}
+                  onRetry={resetGame}
+                  onStartFreePlay={startFreePlay}
                 />
               )}
             </div>
