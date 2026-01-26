@@ -969,6 +969,10 @@ export default function Support() {
                 element
               </li>
               <li>
+                <strong>Beat the clock</strong> - You have 10 minutes to find the target before time
+                runs out!
+              </li>
+              <li>
                 <strong>Beat the par</strong> - Try to reach the target in fewer moves than par!
               </li>
             </ol>
@@ -988,6 +992,9 @@ export default function Support() {
                 <strong>Daily Puzzles</strong>: One new target element every day at midnight
               </li>
               <li>
+                <strong>10-Minute Timer</strong>: Find the target before time runs out!
+              </li>
+              <li>
                 <strong>Par System</strong>: Each puzzle has a par (benchmark number of moves)
               </li>
               <li>
@@ -999,6 +1006,9 @@ export default function Support() {
               </li>
               <li>
                 <strong>Search & Sort</strong>: Easily find elements in your bank
+              </li>
+              <li>
+                <strong>Free Play Mode</strong>: Unlimited time with no goal (Tandem Unlimited)
               </li>
               <li>
                 <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
