@@ -314,7 +314,7 @@ body {
   /* Apple HIG: Optimize font rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+  text-rendering: optimizeSpeed;
 }
 
 [data-theme='dark'] body {
