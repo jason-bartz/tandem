@@ -16,7 +16,7 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
     } else if (themeColor === 'yellow') {
       return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'green') {
-      return 'bg-emerald-500 dark:bg-emerald-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
     }
@@ -34,7 +34,7 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
     } else if (themeColor === 'yellow') {
       return 'bg-yellow-500 dark:bg-yellow-600 border-black shadow-[3px_3px_0px_#000]';
     } else if (themeColor === 'green') {
-      return 'bg-emerald-500 dark:bg-emerald-600 border-black shadow-[3px_3px_0px_#000]';
+      return 'bg-soup-primary dark:bg-soup-hover border-black shadow-[3px_3px_0px_#000]';
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[3px_3px_0px_#000]';
     }
