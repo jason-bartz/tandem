@@ -1,4 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk';
+import { generateText, createGateway } from 'ai';
 import logger from '@/lib/logger';
 
 class AIService {
@@ -9,6 +10,14 @@ class AIService {
     this.maxRetries = 2;
     this.timeout = 30000; // 30 seconds
     this.generationCount = 0; // Track for analytics
+
+    // Daily Alchemy AI Gateway configuration
+    this.alchemyProvider = process.env.ALCHEMY_AI_PROVIDER || 'gateway';
+    this.alchemyPrimaryModel =
+      process.env.ALCHEMY_PRIMARY_MODEL ||
+      'together/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8';
+    this.alchemyFallbackModel = process.env.ALCHEMY_FALLBACK_MODEL || 'anthropic/claude-sonnet-4';
+    this.gatewayClient = null;
   }
 
   isEnabled() {
@@ -26,6 +35,22 @@ class AIService {
       this.client = new Anthropic({ apiKey });
     }
     return this.client;
+  }
+
+  /**
+   * Get or create Vercel AI Gateway client for Daily Alchemy
+   * @returns {Function|null} Gateway client or null if not configured
+   */
+  getGatewayClient() {
+    if (!this.gatewayClient) {
+      const apiKey = process.env.AI_GATEWAY_API_KEY;
+      if (!apiKey) {
+        logger.warn('AI_GATEWAY_API_KEY not found - using direct Anthropic for Daily Alchemy');
+        return null;
+      }
+      this.gatewayClient = createGateway({ apiKey });
+    }
+    return this.gatewayClient;
   }
 
   /**
@@ -3454,12 +3479,76 @@ Respond in JSON format:
   // ============================================
 
   /**
-   * Generate a result element from combining two elements (Element Soup game)
-   * @param {string} elementA - First element name
-   * @param {string} elementB - Second element name
-   * @returns {Promise<{element: string, emoji: string}>}
+   * Internal: Generate text using Vercel AI Gateway
+   * @param {string} prompt - The prompt to send
+   * @param {Object} options - Generation options
+   * @returns {Promise<{text: string, modelUsed: string, usage: Object}>}
    */
-  async generateElementCombination(elementA, elementB) {
+  async _generateWithGateway(prompt, { model, maxTokens, temperature, fallbackModels = [] }) {
+    const gateway = this.getGatewayClient();
+
+    if (!gateway) {
+      // Fall back to Anthropic if gateway not configured
+      logger.warn('Gateway not available, falling back to Anthropic');
+      return this._generateWithAnthropic(prompt, { maxTokens, temperature });
+    }
+
+    const startTime = Date.now();
+
+    try {
+      const gatewayOptions =
+        fallbackModels.length > 0
+          ? {
+              gateway: {
+                models: fallbackModels,
+              },
+            }
+          : undefined;
+
+      const response = await generateText({
+        model: gateway(model),
+        prompt,
+        maxTokens,
+        temperature,
+        providerOptions: gatewayOptions,
+      });
+
+      const duration = Date.now() - startTime;
+
+      logger.info('Gateway generation completed', {
+        model,
+        fallbackModels,
+        duration,
+        promptTokens: response.usage?.promptTokens,
+        completionTokens: response.usage?.completionTokens,
+      });
+
+      return {
+        text: response.text,
+        modelUsed: response.providerMetadata?.gateway?.modelUsed || model,
+        usage: response.usage,
+      };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+
+      logger.error('Gateway generation failed', {
+        model,
+        fallbackModels,
+        error: error.message,
+        duration,
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Internal: Generate text using direct Anthropic SDK (legacy/fallback)
+   * @param {string} prompt - The prompt to send
+   * @param {Object} options - Generation options
+   * @returns {Promise<{text: string, modelUsed: string, usage: Object}>}
+   */
+  async _generateWithAnthropic(prompt, { maxTokens, temperature }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -3470,49 +3559,36 @@ Respond in JSON format:
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildElementCombinationPrompt(elementA, elementB);
-
-        logger.info('Generating element combination with AI', {
-          elementA,
-          elementB,
-          model: this.model,
-          attempt: attempt + 1,
-        });
-
         const message = await client.messages.create({
           model: this.model,
-          max_tokens: 100,
-          temperature: 0.8, // Balance creativity with consistency
+          max_tokens: maxTokens,
+          temperature,
           messages: [{ role: 'user', content: prompt }],
         });
 
-        const responseText = message.content[0].text;
         const duration = Date.now() - startTime;
 
-        logger.info('AI element combination response received', {
-          length: responseText.length,
+        logger.info('Anthropic generation completed', {
+          model: this.model,
           duration,
           attempt: attempt + 1,
+          promptTokens: message.usage.input_tokens,
+          completionTokens: message.usage.output_tokens,
         });
 
-        const result = this.parseElementCombinationResponse(responseText);
-
-        logger.info('Element combination generated successfully', {
-          elementA,
-          elementB,
-          result: result.element,
-          emoji: result.emoji,
-          duration,
-        });
-
-        return result;
+        return {
+          text: message.content[0].text,
+          modelUsed: this.model,
+          usage: {
+            promptTokens: message.usage.input_tokens,
+            completionTokens: message.usage.output_tokens,
+          },
+        };
       } catch (error) {
         lastError = error;
 
-        logger.error('AI element combination attempt failed', {
+        logger.error('Anthropic generation attempt failed', {
           attempt: attempt + 1,
-          elementA,
-          elementB,
           errorMessage: error.message,
           errorType: error.constructor.name,
           willRetry: attempt < this.maxRetries,
@@ -3538,12 +3614,6 @@ Respond in JSON format:
           continue;
         }
 
-        // Retry on validation errors with fresh generation
-        if (error.message.includes('Invalid') && attempt < this.maxRetries) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          continue;
-        }
-
         if (attempt === this.maxRetries) break;
 
         // Exponential backoff
@@ -3552,16 +3622,84 @@ Respond in JSON format:
       }
     }
 
-    logger.error('AI element combination failed after all retries', {
+    throw lastError || new Error('Anthropic generation failed');
+  }
+
+  /**
+   * Generate a result element from combining two elements (Daily Alchemy game)
+   * Uses Vercel AI Gateway with Llama 4 primary and Claude fallback
+   * @param {string} elementA - First element name
+   * @param {string} elementB - Second element name
+   * @returns {Promise<{element: string, emoji: string}>}
+   */
+  async generateElementCombination(elementA, elementB) {
+    const startTime = Date.now();
+    const providerMode = this.alchemyProvider;
+
+    logger.info('Generating element combination', {
       elementA,
       elementB,
-      attempts: this.maxRetries + 1,
-      error: lastError?.message,
+      providerMode,
+      primaryModel: this.alchemyPrimaryModel,
+      fallbackModel: this.alchemyFallbackModel,
     });
 
-    throw new Error(
-      `Element combination generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
-    );
+    const prompt = this.buildElementCombinationPrompt(elementA, elementB);
+
+    try {
+      let result;
+
+      if (providerMode === 'claude-only') {
+        // Direct Claude - uses existing Anthropic SDK (legacy mode)
+        result = await this._generateWithAnthropic(prompt, {
+          maxTokens: 100,
+          temperature: 0.8,
+        });
+      } else if (providerMode === 'llama-only') {
+        // Direct Llama via gateway - no fallback
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 100,
+          temperature: 0.8,
+          fallbackModels: [],
+        });
+      } else {
+        // Gateway mode (default) - Llama with Claude fallback
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 100,
+          temperature: 0.8,
+          fallbackModels: [this.alchemyFallbackModel],
+        });
+      }
+
+      const duration = Date.now() - startTime;
+      const parsed = this.parseElementCombinationResponse(result.text);
+
+      logger.info('Element combination generated successfully', {
+        elementA,
+        elementB,
+        result: parsed.element,
+        emoji: parsed.emoji,
+        duration,
+        modelUsed: result.modelUsed,
+        providerMode,
+      });
+
+      return parsed;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+
+      logger.error('Element combination generation failed', {
+        elementA,
+        elementB,
+        error: error.message,
+        duration,
+        providerMode,
+      });
+
+      throw new Error(`Element combination generation failed: ${error.message}`);
+    }
   }
 
   /**
@@ -3670,108 +3808,77 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
 
   /**
    * Generate multiple paths from starter elements to a target element
+   * Uses Vercel AI Gateway with Llama 4 primary and Claude fallback
    * @param {string} targetElement - The target element to reach
+   * @param {Array} existingCombinations - Previously discovered combinations
    * @returns {Promise<{paths: Array}>} - Array of 3 different paths
    */
   async generateElementPaths(targetElement, existingCombinations = []) {
-    const client = this.getClient();
-    if (!client) {
-      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
-    }
-
     const startTime = Date.now();
-    let lastError = null;
+    const providerMode = this.alchemyProvider;
 
-    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
-      try {
-        const prompt = this.buildElementPathsPrompt(targetElement, existingCombinations);
-
-        logger.info('Generating element paths with AI', {
-          targetElement,
-          model: this.model,
-          attempt: attempt + 1,
-        });
-
-        const message = await client.messages.create({
-          model: this.model,
-          max_tokens: 2000,
-          temperature: 0.9, // Higher creativity for diverse paths
-          messages: [{ role: 'user', content: prompt }],
-        });
-
-        const responseText = message.content[0].text;
-        const duration = Date.now() - startTime;
-
-        logger.info('AI element paths response received', {
-          length: responseText.length,
-          duration,
-          attempt: attempt + 1,
-        });
-
-        const result = this.parseElementPathsResponse(responseText);
-
-        logger.info('Element paths generated successfully', {
-          targetElement,
-          pathCount: result.paths.length,
-          pathLengths: result.paths.map((p) => p.steps.length),
-          duration,
-        });
-
-        return result;
-      } catch (error) {
-        lastError = error;
-
-        logger.error('AI element paths attempt failed', {
-          attempt: attempt + 1,
-          targetElement,
-          errorMessage: error.message,
-          errorType: error.constructor.name,
-          willRetry: attempt < this.maxRetries,
-        });
-
-        // Handle rate limiting
-        if (error.status === 429) {
-          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
-          if (attempt < this.maxRetries) {
-            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
-            continue;
-          }
-        }
-
-        // Don't retry on auth errors
-        if (error.status === 401) {
-          throw error;
-        }
-
-        // Service overloaded
-        if (error.status === 529 && attempt < this.maxRetries) {
-          await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt + 2) * 1000));
-          continue;
-        }
-
-        // Retry on validation errors with fresh generation
-        if (error.message.includes('Invalid') && attempt < this.maxRetries) {
-          await new Promise((resolve) => setTimeout(resolve, 500));
-          continue;
-        }
-
-        if (attempt === this.maxRetries) break;
-
-        // Exponential backoff
-        const backoffMs = Math.pow(2, attempt) * 1000;
-        await new Promise((resolve) => setTimeout(resolve, backoffMs));
-      }
-    }
-
-    logger.error('AI element paths failed after all retries', {
+    logger.info('Generating element paths', {
       targetElement,
-      attempts: this.maxRetries + 1,
-      error: lastError?.message,
+      existingCombinations: existingCombinations.length,
+      providerMode,
+      primaryModel: this.alchemyPrimaryModel,
+      fallbackModel: this.alchemyFallbackModel,
     });
 
-    throw new Error(
-      `Failed to generate element paths after ${this.maxRetries + 1} attempts: ${lastError?.message}`
-    );
+    const prompt = this.buildElementPathsPrompt(targetElement, existingCombinations);
+
+    try {
+      let result;
+
+      if (providerMode === 'claude-only') {
+        // Direct Claude - uses existing Anthropic SDK (legacy mode)
+        result = await this._generateWithAnthropic(prompt, {
+          maxTokens: 2000,
+          temperature: 0.9,
+        });
+      } else if (providerMode === 'llama-only') {
+        // Direct Llama via gateway - no fallback
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 2000,
+          temperature: 0.9,
+          fallbackModels: [],
+        });
+      } else {
+        // Gateway mode (default) - Llama with Claude fallback
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 2000,
+          temperature: 0.9,
+          fallbackModels: [this.alchemyFallbackModel],
+        });
+      }
+
+      const duration = Date.now() - startTime;
+      const parsed = this.parseElementPathsResponse(result.text);
+
+      logger.info('Element paths generated successfully', {
+        targetElement,
+        pathCount: parsed.paths.length,
+        pathLengths: parsed.paths.map((p) => p.steps.length),
+        duration,
+        modelUsed: result.modelUsed,
+        providerMode,
+      });
+
+      return parsed;
+    } catch (error) {
+      const duration = Date.now() - startTime;
+
+      logger.error('Element paths generation failed', {
+        targetElement,
+        error: error.message,
+        duration,
+        providerMode,
+      });
+
+      throw new Error(`Failed to generate element paths: ${error.message}`);
+    }
   }
 
   /**
