@@ -177,7 +177,7 @@ export function DailyAlchemyLoadingSkeleton() {
             <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
           </div>
 
-          {/* Free Play Button Skeleton */}
+          {/* Creative Mode Button Skeleton */}
           <div
             className={cn(
               'w-full max-w-sm h-14',
@@ -189,7 +189,7 @@ export function DailyAlchemyLoadingSkeleton() {
             )}
           />
 
-          {/* Free Play Description Skeleton */}
+          {/* Creative Mode Description Skeleton */}
           <div className="w-full max-w-sm mt-3 px-4 flex flex-col items-center">
             <div
               className={`h-3 w-4/5 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}

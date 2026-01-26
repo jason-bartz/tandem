@@ -614,7 +614,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
               <li>• Timer counts down from 10:00</li>
               <li>• Warning colors appear when time is low</li>
-              <li>• If time runs out, you can retry or try Free Play</li>
+              <li>• If time runs out, you can retry or try Creative Mode</li>
             </ul>
           </div>
 
@@ -660,7 +660,39 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               <li>• Use the search bar to find elements quickly</li>
               <li>• Combine the same element with itself for interesting results</li>
               <li>• Think creatively — pop culture, history, and science all work!</li>
-              <li>• Want unlimited time? Try Free Play mode (Tandem Unlimited)</li>
+            </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <span className="text-lg">🎨</span> Creative Mode
+              <span
+                className={`text-xs px-2 py-0.5 rounded-full ${
+                  highContrast
+                    ? 'bg-black text-yellow-300 border border-yellow-300'
+                    : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
+                }`}
+              >
+                Tandem Unlimited
+              </span>
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              Want to explore without limits? <strong>Creative Mode</strong> lets you combine
+              elements endlessly with no target and no timer.
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
+              <li>• No time pressure — take as long as you want</li>
+              <li>• No target goal — just pure discovery</li>
+              <li>• Perfect for finding first discoveries</li>
+              <li>• Build your element collection freely</li>
             </ul>
           </div>
 

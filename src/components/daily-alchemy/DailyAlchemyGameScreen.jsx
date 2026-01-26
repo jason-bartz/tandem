@@ -262,7 +262,7 @@ export function DailyAlchemyGameScreen({
         />
       )}
 
-      {/* Free Play Mode Header */}
+      {/* Creative Mode Header */}
       {freePlayMode && (
         <div className="flex items-center justify-center gap-2 py-2 px-4 bg-soup-light/50 dark:bg-soup-primary/10 rounded-xl border-2 border-soup-light dark:border-soup-primary/30">
           <span className="text-soup-dark dark:text-soup-primary text-sm font-medium">
