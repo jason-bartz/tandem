@@ -9,9 +9,34 @@ import Image from 'next/image';
 import logger from '@/lib/logger';
 
 /**
+ * Get today's date in YYYY-MM-DD format based on ET timezone
+ * Used for Daily Alchemy which uses ET for puzzle dates
+ */
+function getETDateString() {
+  const now = new Date();
+  const etDate = new Date(now.toLocaleString('en-US', { timeZone: 'America/New_York' }));
+  const year = etDate.getFullYear();
+  const month = String(etDate.getMonth() + 1).padStart(2, '0');
+  const day = String(etDate.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+/**
+ * Get the correct puzzle date for a given game type
+ * - Daily Alchemy (soup) uses Eastern Time
+ * - All other games use local timezone
+ */
+function getPuzzleDateForGame(gameType) {
+  if (gameType === 'soup') {
+    return getETDateString();
+  }
+  return getCurrentPuzzleInfo().isoDate;
+}
+
+/**
  * DailyLeaderboard - Displays top 10 players for today's daily puzzle
  *
- * @param {string} gameType - 'tandem' or 'mini'
+ * @param {string} gameType - 'tandem', 'mini', 'reel', or 'soup'
  */
 export default function DailyLeaderboard({ gameType }) {
   const [leaderboard, setLeaderboard] = useState([]);
@@ -29,13 +54,11 @@ export default function DailyLeaderboard({ gameType }) {
 
   async function fetchLeaderboard() {
     try {
-      const puzzleInfo = getCurrentPuzzleInfo();
+      const puzzleDate = getPuzzleDateForGame(gameType);
 
       // Import API config for iOS compatibility
       const { capacitorFetch, getApiUrl } = await import('@/lib/api-config');
-      const url = getApiUrl(
-        `/api/leaderboard/daily?game=${gameType}&date=${puzzleInfo.isoDate}&limit=10`
-      );
+      const url = getApiUrl(`/api/leaderboard/daily?game=${gameType}&date=${puzzleDate}&limit=10`);
 
       const response = await capacitorFetch(url, {
         method: 'GET',
