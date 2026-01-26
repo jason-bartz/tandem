@@ -88,9 +88,24 @@ function generateRealisticScore(gameType, config) {
  * @returns {number} Number of hints used
  */
 function generateHintsUsed(gameType) {
-  // Mini and Soup don't use hints
-  if (gameType === 'mini' || gameType === 'soup') {
+  // Mini doesn't use hints
+  if (gameType === 'mini') {
     return 0;
+  }
+
+  // Daily Alchemy (soup) has 0-4 hints available
+  if (gameType === 'soup') {
+    const rand = Math.random();
+    // 30% chance of 0 hints
+    // 25% chance of 1 hint
+    // 20% chance of 2 hints
+    // 15% chance of 3 hints
+    // 10% chance of 4 hints
+    if (rand < 0.3) return 0;
+    if (rand < 0.55) return 1;
+    if (rand < 0.75) return 2;
+    if (rand < 0.9) return 3;
+    return 4;
   }
 
   // Reel Connections has only 1 hint available
