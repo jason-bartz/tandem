@@ -64,7 +64,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
           }`}
         >
-          Soup
+          Alchemy
         </button>
         <button
           onClick={() => {
@@ -393,7 +393,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
         </div>
       )}
 
-      {/* Element Soup Content */}
+      {/* Daily Alchemy Content */}
       {activeGame === 'soup' && (
         <div className="space-y-4 text-gray-600 dark:text-gray-400">
           <div
@@ -405,7 +405,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           >
             <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
             <p className="text-sm mb-3">
-              Element Soup is a daily element combination puzzle inspired by alchemy and crafting
+              Daily Alchemy is a daily element combination puzzle inspired by alchemy and crafting
               games. Combine elements to discover new ones and reach the daily target!
             </p>
             <ul className="space-y-3 text-sm">
@@ -460,8 +460,8 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="md:w-1/2">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
-                src="/screenshots/elementsoup-howto.gif"
-                alt="Element Soup gameplay demo"
+                src="/screenshots/dailyalchemy-howto.gif"
+                alt="Daily Alchemy gameplay demo"
                 className="w-full h-auto"
               />
             </div>

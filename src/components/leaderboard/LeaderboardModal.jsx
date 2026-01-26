@@ -31,7 +31,7 @@ export default function LeaderboardModal({
     mini: 'Daily Mini',
     reel: 'Reel Connections',
     'reel-connections': 'Reel Connections',
-    soup: 'Element Soup',
+    soup: 'Daily Alchemy',
   };
   const gameName = gameNames[gameType] || 'Daily Mini';
 

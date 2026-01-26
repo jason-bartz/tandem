@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { getCurrentReelPuzzleNumber, getLocalDateString } from '@/lib/reelConnectionsUtils';
-import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
+import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 import { playStartSound } from '@/lib/sounds';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
@@ -88,7 +88,7 @@ export default function WelcomeScreen({
           loadMiniPuzzleProgress(miniPuzzleInfo.isoDate),
           miniService.getPuzzle(miniPuzzleInfo.isoDate),
           storageService.get(`${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${getLocalDateString()}`),
-          fetch(`/api/element-soup/puzzle?date=${getLocalDateString()}`).then((res) => res.json()),
+          fetch(`/api/daily-alchemy/puzzle?date=${getLocalDateString()}`).then((res) => res.json()),
           storageService.get('reel-connections-stats'),
           fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`).then((res) =>
             res.json()
@@ -111,7 +111,7 @@ export default function WelcomeScreen({
         }
         setMiniLoading(false);
 
-        // Process Element Soup completion and puzzle data
+        // Process Daily Alchemy completion and puzzle data
         if (soupProgressResult.status === 'fulfilled' && soupProgressResult.value) {
           const soupProgress = JSON.parse(soupProgressResult.value);
           setSoupPlayed(!!soupProgress);
@@ -190,7 +190,7 @@ export default function WelcomeScreen({
   };
 
   const handleSoupClick = () => {
-    router.push('/element-soup');
+    router.push('/daily-alchemy');
   };
 
   const handleReelClick = () => {
@@ -254,10 +254,10 @@ export default function WelcomeScreen({
               animationDelay={0.1}
             />
 
-            {/* Element Soup */}
+            {/* Daily Alchemy */}
             <GameCard
-              icon="/icons/ui/element-soup.png"
-              title="Element Soup"
+              icon="/icons/ui/daily-alchemy.png"
+              title="Daily Alchemy"
               description="Combine elements to discover today's target within 10 minutes."
               puzzleNumber={soupPuzzle?.number || 1}
               onClick={handleSoupClick}

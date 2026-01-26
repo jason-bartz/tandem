@@ -16,7 +16,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
-import { SOUP_STORAGE_KEYS } from '@/lib/element-soup.constants';
+import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 import { ASSET_VERSION } from '@/lib/constants';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
@@ -325,7 +325,7 @@ export default function UnifiedArchiveCalendar({
 
       // Load puzzles for this month using Element Soup puzzle API
       const apiUrl = getApiUrl(
-        `/api/element-soup/puzzle?startDate=${startDate}&endDate=${endDate}`
+        `/api/daily-alchemy/puzzle?startDate=${startDate}&endDate=${endDate}`
       );
       const puzzlesResponse = await capacitorFetch(apiUrl, {
         signal: abortControllerRef.current?.signal,
@@ -534,7 +534,7 @@ export default function UnifiedArchiveCalendar({
       }
 
       onClose?.();
-      router.push(`/element-soup?date=${puzzle.date}`);
+      router.push(`/daily-alchemy?date=${puzzle.date}`);
     }
   };
 
@@ -669,9 +669,9 @@ export default function UnifiedArchiveCalendar({
       return { icon: '/icons/ui/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
     } else {
       return {
-        icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
-        alt: 'Soup',
-        text: 'Soup Puzzle Archive',
+        icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
+        alt: 'Alchemy',
+        text: 'Alchemy Puzzle Archive',
       };
     }
   };
@@ -814,10 +814,10 @@ export default function UnifiedArchiveCalendar({
                 WebkitTapHighlightColor: 'transparent',
                 touchAction: 'manipulation',
               }}
-              aria-label="Soup Archive"
+              aria-label="Alchemy Archive"
               aria-pressed={activeTab === 'soup'}
             >
-              Soup
+              Alchemy
             </button>
           </div>
         }

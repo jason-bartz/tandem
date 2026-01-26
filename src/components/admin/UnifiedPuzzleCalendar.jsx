@@ -23,8 +23,8 @@ const GAMES = {
   },
   soup: {
     id: 'soup',
-    name: 'Element Soup',
-    icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
+    name: 'Daily Alchemy',
+    icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
     color: 'accent-green',
   },
   reel: {
@@ -113,7 +113,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           }
         ),
         fetch('/api/admin/mini/puzzles?limit=365', { headers }),
-        fetch('/api/admin/element-soup/puzzles?limit=365', { headers }),
+        fetch('/api/admin/daily-alchemy/puzzles?limit=365', { headers }),
         fetch('/api/admin/reel-connections/puzzles?limit=365', { headers }),
       ]);
 
@@ -143,7 +143,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
         });
       }
 
-      // Add Element Soup puzzles
+      // Add Daily Alchemy puzzles
       if (soupData?.puzzles) {
         soupData.puzzles.forEach((puzzle) => {
           if (!merged[puzzle.date]) merged[puzzle.date] = {};

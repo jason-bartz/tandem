@@ -185,7 +185,7 @@ export default function RootLayout({ children }) {
         <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
         <link
           rel="preload"
-          href={`/icons/ui/element-soup.png?v=${ASSET_VERSION}`}
+          href={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
           as="image"
           type="image/png"
         />

@@ -27,9 +27,9 @@ const GAMES = [
   },
   {
     id: 'soup',
-    name: 'Element Soup',
+    name: 'Daily Alchemy',
     description: 'Element combination puzzle',
-    icon: `/icons/ui/element-soup.png?v=${ASSET_VERSION}`,
+    icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
     color: 'accent-green',
     bgColor: 'bg-accent-green/20',
     borderColor: 'border-accent-green',

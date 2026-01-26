@@ -435,7 +435,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               <span
                 className={`text-sm ${highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'}`}
               >
-                Access to Element Soup Free Play Mode
+                Access to Daily Alchemy Free Play Mode
               </span>
             </div>
             <div className="flex items-start gap-3">
