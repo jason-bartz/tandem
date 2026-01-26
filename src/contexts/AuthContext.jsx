@@ -350,6 +350,9 @@ export function AuthProvider({ children }) {
    */
   const signInWithGoogle = async () => {
     try {
+      // Store current path to return to after OAuth
+      document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -383,6 +386,8 @@ export function AuthProvider({ children }) {
 
       if (!isCapacitor) {
         // On web, use Supabase's Apple OAuth
+        // Store current path to return to after OAuth
+        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'apple',

@@ -212,6 +212,41 @@ export default function TermsOfUse() {
       ),
     },
     {
+      id: 'daily-alchemy-discoveries',
+      title: 'Daily Alchemy First Discoveries',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">First Discovery Credits</h4>
+            <p>
+              In Daily Alchemy, signed-in players who are the first to discover a new element
+              combination receive permanent credit as the discoverer. Your username will be publicly
+              displayed alongside your discovery for all players to see.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Requirements</h4>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>You must be signed in to receive first discovery credit</li>
+              <li>Discoveries made while not signed in cannot be credited retroactively</li>
+              <li>First discovery credits are permanent and cannot be transferred or removed</li>
+              <li>Your username (not email or other personal information) is displayed publicly</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">No Guarantees</h4>
+            <p>
+              We do not guarantee the accuracy or availability of first discovery data. Discovery
+              credits are provided "as is" and may be affected by technical issues or data
+              corrections. This feature is available on both web and iOS.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: 'intellectual-property',
       title: 'Intellectual Property',
       content: (

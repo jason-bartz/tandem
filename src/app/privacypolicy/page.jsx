@@ -189,7 +189,25 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">9. Payment Information (Web Only)</h4>
+            <h4 className="font-semibold mb-2">9. Daily Alchemy First Discoveries</h4>
+            <p className="mb-2">
+              In Daily Alchemy, signed-in players who are the first to discover a new element
+              combination are credited as the discoverer. We collect and publicly display:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Username of the first discoverer (permanently displayed with the combination)</li>
+              <li>Date and time of discovery</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: First discovery credits are permanent and cannot be removed. Only signed-in
+              players can receive first discovery credit. Your email address and other personal
+              information are never displayed — only your chosen username appears alongside your
+              discoveries. This feature is available on both web and iOS.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">10. Payment Information (Web Only)</h4>
             <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Stripe customer ID (for managing subscriptions)</li>
