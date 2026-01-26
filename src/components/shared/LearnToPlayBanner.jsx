@@ -99,12 +99,15 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
           role="banner"
           aria-label="Learn how to play prompt"
         >
-          <button
+          <div
             onClick={handleClick}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(e) => e.key === 'Enter' && handleClick()}
             className={`
               flex items-center gap-2.5 px-4 py-2.5
               rounded-full shadow-lg backdrop-blur-sm
-              border-2
+              border-2 cursor-pointer
               transition-transform active:scale-[0.98]
               ${
                 highContrast
@@ -169,7 +172,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
             >
               <X className="w-4 h-4" />
             </button>
-          </button>
+          </div>
         </motion.div>
       )}
     </AnimatePresence>
