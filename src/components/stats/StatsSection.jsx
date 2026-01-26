@@ -31,7 +31,7 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
     } else if (themeColor === 'red') {
       return 'bg-red-500 dark:bg-red-600 border-black shadow-[4px_4px_0px_#000]';
     } else if (themeColor === 'green') {
-      return 'bg-green-500 dark:bg-green-600 border-black shadow-[4px_4px_0px_#000]';
+      return 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]';
     }
 
     // Default fallback

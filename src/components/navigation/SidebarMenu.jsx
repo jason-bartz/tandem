@@ -432,7 +432,7 @@ export default function SidebarMenu({
                   />
                   <MenuButton
                     icon={getIconPath('archive')}
-                    label="Puzzle Archive"
+                    label="Puzzle Archives"
                     onClick={() => handleModalOpen(onOpenArchive)}
                     highContrast={highContrast}
                   />
@@ -511,7 +511,7 @@ export default function SidebarMenu({
                         window.dispatchEvent(new CustomEvent('openPaywall'));
                       }
                     }}
-                    style={!highContrast ? { backgroundColor: '#ef4444' } : undefined}
+                    style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
                     className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
                       pathname === '/create-puzzle'
                         ? highContrast
@@ -679,7 +679,7 @@ function GameButton({ icon, label, onClick, isActive, gameColor, highContrast, b
       };
     } else if (gameColor === 'green') {
       return {
-        bg: '#84cc16', // Lime-500 (Daily Alchemy color)
+        bg: '#7ed957', // soup-primary (Daily Alchemy color)
         text: 'text-white',
       };
     }
