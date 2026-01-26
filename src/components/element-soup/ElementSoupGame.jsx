@@ -237,41 +237,35 @@ export function ElementSoupGame({ initialDate = null }) {
               {/* Active Gameplay */}
               {(gameState === SOUP_GAME_STATES.PLAYING ||
                 gameState === SOUP_GAME_STATES.ADMIRE) && (
-                <>
-                  <LearnToPlayBanner
-                    gameType="soup"
-                    onOpenHowToPlay={() => setShowHowToPlay(true)}
-                  />
-                  <ElementSoupGameScreen
-                    targetElement={targetElement}
-                    targetEmoji={targetEmoji}
-                    parMoves={parMoves}
-                    remainingTime={remainingTime}
-                    movesCount={movesCount}
-                    formatTime={formatTime}
-                    sortedElementBank={sortedElementBank}
-                    sortOrder={sortOrder}
-                    setSortOrder={setSortOrder}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    selectedA={selectedA}
-                    selectedB={selectedB}
-                    selectElement={selectElement}
-                    clearSelections={clearSelections}
-                    isCombining={isCombining}
-                    isAnimating={isAnimating}
-                    combineElements={combineElements}
-                    lastResult={lastResult}
-                    clearLastResult={clearLastResult}
-                    recentElements={recentElements}
-                    firstDiscoveryElements={firstDiscoveryElements}
-                    isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
-                    freePlayMode={freePlayMode}
-                    combinationError={combinationError}
-                    hintsRemaining={hintsRemaining}
-                    onUseHint={useHint}
-                  />
-                </>
+                <ElementSoupGameScreen
+                  targetElement={targetElement}
+                  targetEmoji={targetEmoji}
+                  parMoves={parMoves}
+                  remainingTime={remainingTime}
+                  movesCount={movesCount}
+                  formatTime={formatTime}
+                  sortedElementBank={sortedElementBank}
+                  sortOrder={sortOrder}
+                  setSortOrder={setSortOrder}
+                  searchQuery={searchQuery}
+                  setSearchQuery={setSearchQuery}
+                  selectedA={selectedA}
+                  selectedB={selectedB}
+                  selectElement={selectElement}
+                  clearSelections={clearSelections}
+                  isCombining={isCombining}
+                  isAnimating={isAnimating}
+                  combineElements={combineElements}
+                  lastResult={lastResult}
+                  clearLastResult={clearLastResult}
+                  recentElements={recentElements}
+                  firstDiscoveryElements={firstDiscoveryElements}
+                  isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
+                  freePlayMode={freePlayMode}
+                  combinationError={combinationError}
+                  hintsRemaining={hintsRemaining}
+                  onUseHint={useHint}
+                />
               )}
 
               {/* Complete Screen */}
@@ -322,6 +316,11 @@ export function ElementSoupGame({ initialDate = null }) {
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
       />
+
+      {/* Learn to Play Banner - outside scrollable container for proper click handling */}
+      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
+        <LearnToPlayBanner gameType="soup" onOpenHowToPlay={() => setShowHowToPlay(true)} />
+      )}
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
