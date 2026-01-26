@@ -138,7 +138,7 @@ export function generateRealisticUsername() {
   if (has3) {
     if (parts.length > 0) {
       // Numbers often have no delimiter or underscore
-      const numDelimiter = Math.random() < 0.7 ? '' : randomPick(['_', '-', '']);
+      const numDelimiter = Math.random() < 0.7 ? '' : randomPick(['_', '']);
       delimiters.push(numDelimiter);
     }
     parts.push(getThirdPart());
