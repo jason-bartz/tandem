@@ -172,6 +172,9 @@ export function AuthProvider({ children }) {
             const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
             const { loadStats } = await import('@/lib/storage');
             const { loadMiniStats } = await import('@/lib/miniStorage');
+            const storageServiceModule = await import('@/core/storage/storageService');
+            const storageService = storageServiceModule.default;
+            const { SOUP_STORAGE_KEYS } = await import('@/lib/element-soup.constants');
 
             // Load current stats for all games
             const [tandemStats, miniStats] = await Promise.all([loadStats(), loadMiniStats()]);
@@ -187,10 +190,23 @@ export function AuthProvider({ children }) {
               logger.error('[AuthProvider] Failed to load reel-connections stats', e);
             }
 
+            // Load soup stats from storage
+            let soupStats = null;
+            try {
+              const soupStatsRaw = await storageService.get(SOUP_STORAGE_KEYS.STATS);
+              if (soupStatsRaw) {
+                soupStats = JSON.parse(soupStatsRaw);
+              }
+            } catch (e) {
+              logger.error('[AuthProvider] Failed to load soup stats', e);
+            }
+
             // Sync to leaderboard (non-blocking, fails silently)
-            syncStatsToLeaderboardOnAuth(tandemStats, null, miniStats, reelStats).catch((error) => {
-              logger.error('[AuthProvider] Leaderboard sync failed', error);
-            });
+            syncStatsToLeaderboardOnAuth(tandemStats, null, miniStats, reelStats, soupStats).catch(
+              (error) => {
+                logger.error('[AuthProvider] Leaderboard sync failed', error);
+              }
+            );
           } catch (error) {
             logger.error('[AuthProvider] Failed to sync stats to leaderboard', error);
           }

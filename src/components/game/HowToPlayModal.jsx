@@ -91,7 +91,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-[#38b6ff] text-white rounded-full flex items-center justify-center text-xs font-bold">
@@ -118,23 +118,25 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
-            <img
-              src="/screenshots/tandem-howto.gif"
-              alt="Tandem gameplay demo"
-              className="w-full h-auto"
-            />
+          <div className="md:w-1/2">
+            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+              <img
+                src="/screenshots/tandem-howto.gif"
+                alt="Tandem gameplay demo"
+                className="w-full h-auto"
+              />
+            </div>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h3>
-            <div
-              className={`rounded-xl p-4 space-y-3 ${
-                highContrast
-                  ? 'bg-hc-surface border-2 border-hc-border'
-                  : 'bg-gray-50 dark:bg-gray-700'
-              }`}
-            >
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-sky-50 dark:bg-sky-900/20 border-sky-300 dark:border-sky-700'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">Example Round</h4>
+            <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🌅☀️</span>
                 <span className="font-mono text-sm font-semibold text-gray-700 dark:text-gray-300">
@@ -160,7 +162,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 </span>
               </div>
 
-              <div className="mt-2 pt-3 border-t border-gray-200 dark:border-gray-600">
+              <div className="mt-2 pt-3 border-t border-sky-200 dark:border-sky-800">
                 <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                   Theme: Things That Rise
                 </p>
@@ -226,10 +228,16 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </div>
           </div>
 
-          <div>
-            <h3 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
+            }`}
+          >
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
               Difficulty Ratings
-            </h3>
+            </h4>
             <p className="text-sm mb-3">
               Each puzzle has a difficulty rating that appears after you complete a puzzle. These
               ratings help you reflect on the challenge and track your progress.
@@ -259,13 +267,13 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           <div
-            className={`rounded-xl p-4 ${
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
-                ? 'bg-hc-error text-white border-2 border-hc-border'
-                : 'bg-gradient-to-br from-red-50 to-orange-50 dark:from-red-900/20 dark:to-orange-900/20'
+                ? 'bg-hc-error text-white border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600'
             }`}
           >
-            <h3
+            <h4
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <span className="text-lg">🔥</span> Hard Mode
@@ -278,7 +286,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               >
                 Tandem Unlimited
               </span>
-            </h3>
+            </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
               For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
             </p>
@@ -315,7 +323,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-[#FFEB3B] text-gray-900 rounded-full flex items-center justify-center text-xs font-bold">
@@ -339,12 +347,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
-            <img
-              src="/screenshots/dailymini-howto.gif"
-              alt="Daily Mini gameplay demo"
-              className="w-full h-auto"
-            />
+          <div className="md:w-1/2">
+            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+              <img
+                src="/screenshots/dailymini-howto.gif"
+                alt="Daily Mini gameplay demo"
+                className="w-full h-auto"
+              />
+            </div>
           </div>
 
           <div
@@ -393,7 +403,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
             <p className="text-sm mb-3">
               Element Soup is a daily element combination puzzle inspired by alchemy and crafting
               games. Combine elements to discover new ones and reach the daily target!
@@ -447,12 +457,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
-            <img
-              src="/screenshots/elementsoup-howto.gif"
-              alt="Element Soup gameplay demo"
-              className="w-full h-auto"
-            />
+          <div className="md:w-1/2">
+            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+              <img
+                src="/screenshots/elementsoup-howto.gif"
+                alt="Element Soup gameplay demo"
+                className="w-full h-auto"
+              />
+            </div>
           </div>
 
           <div>
@@ -497,6 +509,30 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 </span>
               </div>
             </div>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              Think Creatively
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              Combinations aren&apos;t always literal or physical. An element&apos;s name can have
+              multiple meanings — and depending on what you combine it with, you might get
+              completely different results!
+            </p>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              You can craft your favorite characters and settings from movies, games, and books.
+              Experiment with the craziest combinations you can think of — you might be surprised
+              what you discover.
+            </p>
           </div>
 
           <div
@@ -584,8 +620,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             }`}
           >
             <h4
-              className={`font-semibold mb-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
             >
+              <Image src="/icons/ui/par.png" alt="" width={20} height={20} className="w-5 h-5" />
               Par System
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
@@ -639,7 +676,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                 : 'bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600'
             }`}
           >
-            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">How to Play</h4>
+            <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-3">The Basics</h4>
             <ul className="space-y-3 text-sm">
               <li className="flex items-start gap-3">
                 <span className="flex-shrink-0 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs font-bold">
@@ -663,12 +700,14 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
-            <img
-              src="/screenshots/reel-connections-howto.gif"
-              alt="Reel Connections gameplay demo"
-              className="w-full h-auto"
-            />
+          <div className="md:w-1/2">
+            <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
+              <img
+                src="/screenshots/reel-connections-howto.gif"
+                alt="Reel Connections gameplay demo"
+                className="w-full h-auto"
+              />
+            </div>
           </div>
 
           <div
