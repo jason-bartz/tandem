@@ -503,7 +503,14 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
                 )}
 
                 {/* Game indicators - dots on mobile, icons on desktop */}
-                <div className="flex items-center justify-start gap-0.5 sm:gap-1 mt-auto">
+                {/* Use 2x2 grid when all 4 puzzles exist, otherwise single row */}
+                <div
+                  className={`mt-auto ${
+                    dayInfo.puzzleCount === 4
+                      ? 'grid grid-cols-2 gap-0.5 sm:gap-1'
+                      : 'flex items-center justify-start gap-0.5 sm:gap-1'
+                  }`}
+                >
                   {dayInfo.hasTandem && (
                     <>
                       {/* Mobile: colored dot */}
