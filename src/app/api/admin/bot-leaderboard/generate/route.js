@@ -35,7 +35,7 @@ export async function POST(request) {
     }
 
     // Validate game type if provided
-    if (gameType && !['tandem', 'cryptic', 'mini', 'reel'].includes(gameType)) {
+    if (gameType && !['tandem', 'cryptic', 'mini', 'reel', 'soup'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 

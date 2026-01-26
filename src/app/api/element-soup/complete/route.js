@@ -143,6 +143,33 @@ export async function POST(request) {
       rank,
     });
 
+    // Submit streak to leaderboard if this is a new best or continuing streak
+    if (userStats?.current_streak > 0) {
+      try {
+        const { error: streakError } = await supabase.rpc('submit_leaderboard_score', {
+          p_user_id: user.id,
+          p_game_type: 'soup',
+          p_leaderboard_type: 'best_streak',
+          p_puzzle_date: puzzleDate,
+          p_score: userStats.longest_streak,
+          p_metadata: { current_streak: userStats.current_streak },
+        });
+
+        if (streakError) {
+          logger.warn('[ElementSoup] Failed to submit streak to leaderboard', {
+            error: streakError,
+          });
+        } else {
+          logger.info('[ElementSoup] Streak submitted to leaderboard', {
+            userId: user.id,
+            longestStreak: userStats.longest_streak,
+          });
+        }
+      } catch (streakErr) {
+        logger.warn('[ElementSoup] Exception submitting streak', { error: streakErr.message });
+      }
+    }
+
     // Calculate par comparison
     const parDiff = movesCount - parMoves;
     const parComparison = parDiff === 0 ? '0' : parDiff > 0 ? `+${parDiff}` : `${parDiff}`;

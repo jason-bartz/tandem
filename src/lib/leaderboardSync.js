@@ -12,7 +12,7 @@ import { getApiUrl, capacitorFetch } from '@/lib/api-config';
  * Submit user's best streak to the leaderboard
  *
  * @param {Object} stats - User's stats object with bestStreak
- * @param {string} gameType - 'tandem', 'cryptic', 'mini', or 'reel'
+ * @param {string} gameType - 'tandem', 'cryptic', 'mini', 'reel', or 'soup'
  * @returns {Promise<boolean>} True if submitted successfully
  */
 async function submitStreakToLeaderboard(stats, gameType = 'tandem') {
@@ -68,19 +68,21 @@ async function submitStreakToLeaderboard(stats, gameType = 'tandem') {
 
 /**
  * Sync user's stats to leaderboard after authentication
- * Submits Tandem, Cryptic, Mini, and Reel streaks if available
+ * Submits Tandem, Cryptic, Mini, Reel, and Soup streaks if available
  *
  * @param {Object} tandemStats - Tandem game stats
  * @param {Object} crypticStats - Cryptic game stats (optional)
  * @param {Object} miniStats - Mini game stats (optional)
  * @param {Object} reelStats - Reel Connections game stats (optional)
- * @returns {Promise<{tandem: boolean, cryptic: boolean, mini: boolean, reel: boolean}>}
+ * @param {Object} soupStats - Element Soup game stats (optional)
+ * @returns {Promise<{tandem: boolean, cryptic: boolean, mini: boolean, reel: boolean, soup: boolean}>}
  */
 export async function syncStatsToLeaderboardOnAuth(
   tandemStats,
   crypticStats = null,
   miniStats = null,
-  reelStats = null
+  reelStats = null,
+  soupStats = null
 ) {
   try {
     logger.info('[leaderboardSync] Starting auth-triggered leaderboard sync');
@@ -90,6 +92,7 @@ export async function syncStatsToLeaderboardOnAuth(
       cryptic: false,
       mini: false,
       reel: false,
+      soup: false,
     };
 
     // Submit Tandem streak
@@ -97,7 +100,7 @@ export async function syncStatsToLeaderboardOnAuth(
       results.tandem = await submitStreakToLeaderboard(tandemStats, 'tandem');
 
       // Add small delay to avoid rate limiting
-      if (crypticStats || miniStats || reelStats) {
+      if (crypticStats || miniStats || reelStats || soupStats) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
@@ -107,7 +110,7 @@ export async function syncStatsToLeaderboardOnAuth(
       results.cryptic = await submitStreakToLeaderboard(crypticStats, 'cryptic');
 
       // Add small delay to avoid rate limiting
-      if (miniStats || reelStats) {
+      if (miniStats || reelStats || soupStats) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
@@ -120,7 +123,7 @@ export async function syncStatsToLeaderboardOnAuth(
       );
 
       // Add small delay to avoid rate limiting
-      if (reelStats) {
+      if (reelStats || soupStats) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
@@ -128,13 +131,26 @@ export async function syncStatsToLeaderboardOnAuth(
     // Submit Reel Connections streak
     if (reelStats && reelStats.bestStreak > 0) {
       results.reel = await submitStreakToLeaderboard({ bestStreak: reelStats.bestStreak }, 'reel');
+
+      // Add small delay to avoid rate limiting
+      if (soupStats) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+    }
+
+    // Submit Element Soup streak (uses longestStreak as bestStreak)
+    if (soupStats && soupStats.longestStreak > 0) {
+      results.soup = await submitStreakToLeaderboard(
+        { bestStreak: soupStats.longestStreak },
+        'soup'
+      );
     }
 
     logger.info('[leaderboardSync] Auth sync complete:', results);
     return results;
   } catch (error) {
     logger.error('[leaderboardSync] Error during auth sync:', error);
-    return { tandem: false, cryptic: false, mini: false, reel: false };
+    return { tandem: false, cryptic: false, mini: false, reel: false, soup: false };
   }
 }
 
@@ -142,7 +158,7 @@ export async function syncStatsToLeaderboardOnAuth(
  * Sync current streak to leaderboard (called after stats update)
  *
  * @param {Object} stats - Updated stats object
- * @param {string} gameType - 'tandem', 'cryptic', 'mini', or 'reel'
+ * @param {string} gameType - 'tandem', 'cryptic', 'mini', 'reel', or 'soup'
  * @returns {Promise<boolean>}
  */
 export async function syncCurrentStreakToLeaderboard(stats, gameType = 'tandem') {
