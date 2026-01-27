@@ -90,6 +90,7 @@ export function ElementBank({
             const order = [
               SORT_OPTIONS.NEWEST,
               SORT_OPTIONS.ALPHABETICAL,
+              SORT_OPTIONS.EMOJI,
               SORT_OPTIONS.FIRST_DISCOVERIES,
             ];
             const currentIndex = order.indexOf(sortOrder);
@@ -110,7 +111,9 @@ export function ElementBank({
             ? 'Newest'
             : sortOrder === SORT_OPTIONS.ALPHABETICAL
               ? 'A-Z'
-              : '1st Disc.'}
+              : sortOrder === SORT_OPTIONS.EMOJI
+                ? 'Emoji'
+                : '1st Disc.'}
         </button>
       </div>
 

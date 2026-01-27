@@ -325,6 +325,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   onShare={getShareText}
                   onPlayAgain={resetGame}
                   onStartFreePlay={startFreePlay}
+                  onViewArchive={() => setShowArchive(true)}
                   isArchive={isArchive}
                 />
               )}
