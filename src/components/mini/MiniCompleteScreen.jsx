@@ -12,7 +12,6 @@ import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
 import { generateMiniShareText } from '@/lib/miniShareText';
 import { loadMiniStats } from '@/lib/miniStorage';
 import ShareButton from '../game/ShareButton';
-import UnifiedStatsModal from '../stats/UnifiedStatsModal';
 import LeaderboardModal from '../leaderboard/LeaderboardModal';
 import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import SidebarMenu from '../navigation/SidebarMenu';
@@ -36,7 +35,6 @@ export default function MiniCompleteScreen({
   const { user } = useAuth();
 
   const [showArchive, setShowArchive] = useState(false);
-  const [showStats, setShowStats] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [stats, setStats] = useState(null);
@@ -272,7 +270,7 @@ export default function MiniCompleteScreen({
             </button>
 
             <button
-              onClick={() => setShowStats(true)}
+              onClick={() => setShowLeaderboard(true)}
               className="
                 w-full h-12
                 rounded-[16px]
@@ -289,31 +287,8 @@ export default function MiniCompleteScreen({
                 transition-all
               "
             >
-              View Stats
+              Leaderboard
             </button>
-
-            {user && (
-              <button
-                onClick={() => setShowLeaderboard(true)}
-                className="
-                  w-full h-12
-                  rounded-[16px]
-                  border-[3px] border-black dark:border-gray-600
-                  shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                  dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                  bg-ghost-white dark:bg-gray-700
-                  text-text-primary
-                  font-bold
-                  hover:translate-x-[2px] hover:translate-y-[2px]
-                  hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                  active:translate-x-[3px] active:translate-y-[3px]
-                  active:shadow-none
-                  transition-all
-                "
-              >
-                Leaderboard
-              </button>
-            )}
           </div>
 
           {/* Account CTA if not authenticated */}
@@ -349,8 +324,6 @@ export default function MiniCompleteScreen({
       </div>
 
       {/* Modals */}
-      <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} defaultTab="mini" />
-
       <LeaderboardModal
         isOpen={showLeaderboard}
         onClose={() => setShowLeaderboard(false)}
@@ -367,7 +340,7 @@ export default function MiniCompleteScreen({
       <SidebarMenu
         isOpen={showMenu}
         onClose={() => setShowMenu(false)}
-        onOpenStats={() => setShowStats(true)}
+        onOpenStats={() => setShowLeaderboard(true)}
         onOpenArchive={() => setShowArchive(true)}
       />
     </div>
