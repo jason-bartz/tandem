@@ -111,7 +111,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Hint state
   const [hintsRemaining, setHintsRemaining] = useState(4);
   const [solutionPath, setSolutionPath] = useState([]);
-  const [lastHintStep, setLastHintStep] = useState(null); // Track step from last hint for consecutive hints
 
   // Creative Mode save state
   const [isSavingCreative, setIsSavingCreative] = useState(false);
@@ -137,6 +136,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
+  const madeCombinations = useRef(new Set()); // Track combinations to avoid counting duplicates
   const puzzleDateRef = useRef(null);
 
   // Refs for selection state (allows stable callback for memoized components)
@@ -177,6 +177,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Reset element bank to starter elements
       setElementBank([...STARTER_ELEMENTS]);
       discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+      madeCombinations.current = new Set();
 
       // Reset all game stats
       setMovesCount(0);
@@ -413,6 +414,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           // Fresh start
           setElementBank([...STARTER_ELEMENTS]);
           discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+          madeCombinations.current = new Set();
           setCombinationPath([]);
           setMovesCount(0);
           setNewDiscoveries(0);
@@ -566,6 +568,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Reset element bank to starter elements for daily puzzle
     setElementBank([...STARTER_ELEMENTS]);
     discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+    madeCombinations.current = new Set();
 
     // Reset all game state
     setCombinationPath([]);
@@ -581,7 +584,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setStatsRecorded(false);
     setCompletionStats(null);
     setHintsRemaining(4);
-    setLastHintStep(null);
 
     // Start timer for daily puzzle
     setStartTime(Date.now());
@@ -678,6 +680,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Fresh start
       setElementBank([...STARTER_ELEMENTS]);
       discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+      madeCombinations.current = new Set();
       setMovesCount(0);
       setNewDiscoveries(0);
       setFirstDiscoveries(0);
@@ -685,6 +688,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     }
 
     setCombinationPath([]);
+    madeCombinations.current = new Set(); // Also reset for restored games
     setRecentElements([]);
     setGameState(SOUP_GAME_STATES.PLAYING);
 
@@ -783,6 +787,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Reset to starter elements
       setElementBank([...STARTER_ELEMENTS]);
       discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+      madeCombinations.current = new Set();
       setCombinationPath([]);
       setMovesCount(0);
       setNewDiscoveries(0);
@@ -919,7 +924,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const clearSelections = useCallback(() => {
     setSelectedA(null);
     setSelectedB(null);
-    setLastHintStep(null); // Clear hint step tracking when selections are cleared
   }, []);
 
   /**
@@ -1001,8 +1005,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
       setIsAnimating(false);
 
-      // Update moves count
-      setMovesCount((prev) => prev + 1);
+      // Create a normalized combination key (sort alphabetically so A+B == B+A)
+      const comboKey = [selectedA.name.toLowerCase(), selectedB.name.toLowerCase()]
+        .sort()
+        .join('+');
+      const isFirstTimeCombination = !madeCombinations.current.has(comboKey);
+
+      // Only count moves for first-time combinations (duplicates don't count against par)
+      if (isFirstTimeCombination) {
+        madeCombinations.current.add(comboKey);
+        setMovesCount((prev) => prev + 1);
+      }
 
       // Add to combination path
       setCombinationPath((prev) => [
@@ -1012,6 +1025,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           elementA: selectedA.name,
           elementB: selectedB.name,
           result: element,
+          isDuplicate: !isFirstTimeCombination,
         },
       ]);
 
@@ -1052,7 +1066,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Clear both selection slots after combination
       setSelectedA(null);
       setSelectedB(null);
-      setLastHintStep(null); // Clear hint step tracking
     } catch (err) {
       logger.error('[ElementSoup] Failed to combine elements', { error: err.message });
       // Show inline error instead of global error screen
@@ -1304,6 +1317,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const resetGame = useCallback(() => {
     setElementBank([...STARTER_ELEMENTS]);
     discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+    madeCombinations.current = new Set();
     setCombinationPath([]);
     setMovesCount(0);
     setNewDiscoveries(0);
@@ -1318,7 +1332,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setStatsRecorded(false);
     setCompletionStats(null);
     setHintsRemaining(4); // Reset hints
-    setLastHintStep(null); // Clear hint step tracking
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Reset countdown
@@ -1339,13 +1352,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, []);
 
   /**
-   * Use a hint - selects an element from the solution path that will help reach the target
+   * Use a hint - selects BOTH elements from the solution path that will help reach the target
    * Prioritizes steps later in the solution path (closer to the target).
    * Within a step, prefers non-starter elements.
    * Only shows starter elements if that's all that's available.
    *
-   * Consecutive hints: If player uses two hints in a row, the second hint
-   * adds the other element from the same combination step.
+   * Each hint press inserts both elements of the next combination into the combo area.
    */
   const useHint = useCallback(() => {
     if (hintsRemaining <= 0 || !solutionPath || solutionPath.length === 0) return;
@@ -1353,28 +1365,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Play the hint sound
     playHintSound();
-
-    // Check if this is a consecutive hint (second hint for the same step)
-    // We have a pending step if: lastHintStep exists, first element is selected,
-    // and the result hasn't been discovered yet
-    if (
-      lastHintStep &&
-      selectedA &&
-      selectedA.name.toLowerCase() === lastHintStep.firstElement.toLowerCase() &&
-      !discoveredElements.current.has(lastHintStep.step.result)
-    ) {
-      // Consecutive hint: add the second element to slot B
-      const secondElement = elementBank.find(
-        (el) => el.name.toLowerCase() === lastHintStep.secondElement.toLowerCase()
-      );
-
-      if (secondElement) {
-        setSelectedB(secondElement);
-        setLastHintStep(null); // Clear the hint step after both elements are selected
-        setHintsRemaining((prev) => prev - 1);
-        return;
-      }
-    }
 
     const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name));
 
@@ -1391,7 +1381,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         );
       });
 
-    let elementToSelect = null;
     let stepForHint = null;
     let firstElementName = null;
     let secondElementName = null;
@@ -1414,26 +1403,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
       const bestStep = sortedSteps[0];
       stepForHint = bestStep;
-
-      // Within the chosen step, prefer the non-starter element if one exists
-      const elementAIsStarter = starterNames.has(bestStep.elementA);
-      const elementBIsStarter = starterNames.has(bestStep.elementB);
-
-      if (!elementAIsStarter && elementBIsStarter) {
-        firstElementName = bestStep.elementA;
-        secondElementName = bestStep.elementB;
-      } else if (elementAIsStarter && !elementBIsStarter) {
-        firstElementName = bestStep.elementB;
-        secondElementName = bestStep.elementA;
-      } else {
-        // Both are starters or both are non-starters - just pick elementA first
-        firstElementName = bestStep.elementA;
-        secondElementName = bestStep.elementB;
-      }
-
-      elementToSelect = elementBank.find(
-        (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
-      );
+      firstElementName = bestStep.elementA;
+      secondElementName = bestStep.elementB;
     } else {
       // No steps where player has both inputs - find the LAST step in the path
       // where the result isn't discovered (closest to target) and work backwards
@@ -1463,44 +1434,32 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
           if (earlierStep) {
             stepForHint = earlierStep;
-            // Prefer non-starter element from the earlier step
-            const elementAIsStarter = starterNames.has(earlierStep.elementA);
-            const elementBIsStarter = starterNames.has(earlierStep.elementB);
-
-            if (!elementAIsStarter && elementBIsStarter) {
-              firstElementName = earlierStep.elementA;
-              secondElementName = earlierStep.elementB;
-            } else if (elementAIsStarter && !elementBIsStarter) {
-              firstElementName = earlierStep.elementB;
-              secondElementName = earlierStep.elementA;
-            } else {
-              firstElementName = earlierStep.elementA;
-              secondElementName = earlierStep.elementB;
-            }
-
-            elementToSelect = elementBank.find(
-              (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
-            );
+            firstElementName = earlierStep.elementA;
+            secondElementName = earlierStep.elementB;
           }
         }
       }
     }
 
-    if (elementToSelect && stepForHint) {
-      // Store the hint step for potential consecutive hint
-      setLastHintStep({
-        step: stepForHint,
-        firstElement: firstElementName,
-        secondElement: secondElementName,
-      });
+    if (stepForHint && firstElementName && secondElementName) {
+      // Find both elements in the element bank
+      const firstElement = elementBank.find(
+        (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
+      );
+      const secondElement = elementBank.find(
+        (el) => el.name.toLowerCase() === secondElementName.toLowerCase()
+      );
 
-      // Clear any existing selections first, then select the hint element
-      setSelectedA(null);
-      setSelectedB(null);
-      // Use setTimeout to ensure state is cleared before selecting
-      setTimeout(() => {
-        selectElement(elementToSelect);
-      }, 50);
+      if (firstElement && secondElement) {
+        // Clear any existing selections first, then select both hint elements
+        setSelectedA(null);
+        setSelectedB(null);
+        // Use setTimeout to ensure state is cleared before selecting
+        setTimeout(() => {
+          setSelectedA(firstElement);
+          setSelectedB(secondElement);
+        }, 50);
+      }
     }
 
     // Decrement hints
@@ -1513,9 +1472,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isCombining,
     isAnimating,
     elementBank,
-    selectElement,
-    lastHintStep,
-    selectedA,
   ]);
 
   /**

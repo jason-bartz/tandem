@@ -1096,11 +1096,11 @@ export default function Support() {
                 <strong>Tap a hint icon</strong> to use one of your hints
               </li>
               <li>
-                <strong>An element will be selected</strong> that's part of the solution path to the
-                target
+                <strong>Both elements will be selected</strong> for a combination that's part of the
+                solution path to the target
               </li>
               <li>
-                <strong>Combine this element</strong> with something else to progress toward the
+                <strong>Just tap Combine</strong> to create the element and progress toward the
                 target
               </li>
               <li>
@@ -1205,9 +1205,16 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get four hints per puzzle. Tap a hint icon in the stats bar to use one. The
-                  hint will select an element that's part of the solution path, helping guide you
-                  toward the target. Hint icons disappear as you use them.
+                  A: You get four hints per puzzle. Tap a hint icon in the stats bar to use one.
+                  Each hint selects both elements of a combination that's part of the solution path
+                  — just tap Combine to make progress! Hint icons disappear as you use them.
+                </p>
+              </div>
+              <div>
+                <p className="font-medium">Q: Do duplicate combinations count against my moves?</p>
+                <p>
+                  A: No! Only the first time you make a combination counts toward your move total.
+                  If you accidentally repeat the same combination, it won't affect your par score.
                 </p>
               </div>
             </div>
