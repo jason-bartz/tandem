@@ -97,7 +97,7 @@ export const CONGRATS_MESSAGES = [
   'Perfect Concoction!',
   'Masterful Mixing!',
   'Element Genius!',
-  'Soup-erb Work!',
+  'Pure Gold!',
   'Crafting Complete!',
   'Discovery Champion!',
   'Element Wizard!',

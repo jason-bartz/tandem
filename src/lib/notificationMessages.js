@@ -3,7 +3,7 @@
 export const DAILY_REMINDER = [
   {
     title: 'Your Puzzles Are Ready',
-    body: 'Three new games to play today',
+    body: 'Four new games to play today',
   },
   {
     title: "Today's Puzzles Are Here",
@@ -19,7 +19,7 @@ export const DAILY_REMINDER = [
   },
   {
     title: 'Daily Puzzles Unlocked',
-    body: 'Three fresh games to solve',
+    body: 'Four fresh games to solve',
   },
   {
     title: 'Good Morning',
@@ -39,7 +39,7 @@ export const DAILY_REMINDER = [
   },
   {
     title: 'Fresh Puzzles',
-    body: 'Three new challenges today',
+    body: 'Four new challenges today',
   },
   {
     title: 'Daily Games Ready',
