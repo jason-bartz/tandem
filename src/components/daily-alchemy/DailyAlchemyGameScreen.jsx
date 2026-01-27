@@ -57,46 +57,56 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
     }
   };
 
+  // Handle "use" action - select element into first slot
+  const handleUse = async () => {
+    setSwipeDirection('up');
+
+    // Play plunk sound and haptic
+    playPlunkSound();
+    mediumTap();
+
+    // Animate card flying up
+    await controls.start({
+      y: -600,
+      opacity: 0,
+      scale: 0.5,
+      transition: { duration: 0.25, ease: 'easeOut' },
+    });
+
+    // Select the element into first slot
+    onSelectElement?.({ name: result.element, emoji: result.emoji });
+    onComplete?.();
+  };
+
+  // Handle "close" action - dismiss without selecting
+  const handleClose = async () => {
+    setSwipeDirection('down');
+
+    // Light haptic for dismiss
+    lightTap();
+
+    // Animate card flying down
+    await controls.start({
+      y: 600,
+      opacity: 0,
+      scale: 0.8,
+      transition: { duration: 0.25, ease: 'easeOut' },
+    });
+
+    onComplete?.();
+  };
+
   const handleDragEnd = async (event, info) => {
     const offsetY = info.offset.y;
     const velocityY = info.velocity.y;
 
     // Swipe UP - select element into first slot
     if (offsetY < -60 || velocityY < -400) {
-      setSwipeDirection('up');
-
-      // Play plunk sound and haptic
-      playPlunkSound();
-      mediumTap();
-
-      // Animate card flying up
-      await controls.start({
-        y: -600,
-        opacity: 0,
-        scale: 0.5,
-        transition: { duration: 0.25, ease: 'easeOut' },
-      });
-
-      // Select the element into first slot
-      onSelectElement?.({ name: result.element, emoji: result.emoji });
-      onComplete?.();
+      await handleUse();
     }
     // Swipe DOWN - dismiss
     else if (offsetY > 60 || velocityY > 400) {
-      setSwipeDirection('down');
-
-      // Light haptic for dismiss
-      lightTap();
-
-      // Animate card flying down
-      await controls.start({
-        y: 600,
-        opacity: 0,
-        scale: 0.8,
-        transition: { duration: 0.25, ease: 'easeOut' },
-      });
-
-      onComplete?.();
+      await handleClose();
     }
     // Not enough - spring back
     else {
@@ -224,21 +234,27 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           </motion.button>
         )}
 
-        {/* Swipe hints at bottom */}
+        {/* Swipe hints at bottom - also clickable */}
         <motion.div
           className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+          <button
+            onClick={handleUse}
+            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          >
             <ChevronUp className="w-4 h-4" />
             <span>use</span>
-          </div>
-          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
+          </button>
+          <button
+            onClick={handleClose}
+            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+          >
             <ChevronDown className="w-4 h-4" />
             <span>close</span>
-          </div>
+          </button>
         </motion.div>
       </motion.div>
     </motion.div>
