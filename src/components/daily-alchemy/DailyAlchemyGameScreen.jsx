@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { X, Check } from 'lucide-react';
+import { X, Check, Save, Trash2, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
+import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 
 /**
  * ResultAnimation - Shows the result of a combination
@@ -237,7 +238,28 @@ export function DailyAlchemyGameScreen({
   // Hints
   hintsRemaining = 0,
   onUseHint,
+
+  // Creative Mode save
+  onSaveCreative,
+  onClearCreative,
+  isSavingCreative = false,
+  creativeSaveSuccess = false,
 }) {
+  const { highContrast } = useTheme();
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  // Calculate discovered elements (excluding starters)
+  const discoveredCount = sortedElementBank.length - STARTER_ELEMENTS.length;
+
+  // Handle clear with confirmation
+  const handleClearClick = () => {
+    setShowClearConfirm(true);
+  };
+
+  const handleClearConfirm = async () => {
+    await onClearCreative?.();
+    setShowClearConfirm(false);
+  };
   // Check if target is found (not applicable in free play mode)
   const isTargetFound = freePlayMode
     ? false
@@ -262,14 +284,129 @@ export function DailyAlchemyGameScreen({
         />
       )}
 
-      {/* Creative Mode Header */}
+      {/* Creative Mode Header with Save/Clear buttons */}
       {freePlayMode && (
-        <div className="flex items-center justify-center gap-2 py-2 px-4 bg-soup-light/50 dark:bg-soup-primary/10 rounded-xl border-2 border-soup-light dark:border-soup-primary/30">
-          <span className="text-soup-dark dark:text-soup-primary text-sm font-medium">
-            🔭 Discovered {sortedElementBank.length} elements and counting...
-          </span>
+        <div className="flex items-center justify-between gap-2 py-2 px-3">
+          {/* Save button */}
+          <button
+            onClick={() => {
+              onSaveCreative?.();
+            }}
+            disabled={isSavingCreative}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2',
+              'text-sm font-bold',
+              'bg-soup-primary text-white',
+              'border-[2px] border-black dark:border-gray-600',
+              'rounded-xl',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150',
+              'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+              creativeSaveSuccess && 'bg-green-500',
+              highContrast && 'border-[3px] border-hc-border'
+            )}
+          >
+            {isSavingCreative ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : creativeSaveSuccess ? (
+              <Check className="w-4 h-4" />
+            ) : (
+              <Save className="w-4 h-4" />
+            )}
+            <span>{creativeSaveSuccess ? 'Saved!' : 'Save'}</span>
+          </button>
+
+          {/* Clear button */}
+          <button
+            onClick={handleClearClick}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2',
+              'text-sm font-bold',
+              'bg-red-500 text-white',
+              'border-[2px] border-black dark:border-gray-600',
+              'rounded-xl',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'hover:bg-red-600 hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150',
+              highContrast && 'border-[3px] border-hc-border'
+            )}
+          >
+            <Trash2 className="w-4 h-4" />
+            <span>Clear</span>
+          </button>
         </div>
       )}
+
+      {/* Clear Confirmation Modal */}
+      <AnimatePresence>
+        {showClearConfirm && (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setShowClearConfirm(false)}
+          >
+            <motion.div
+              className={cn(
+                'flex flex-col gap-4 p-6 mx-4 max-w-sm',
+                'bg-white dark:bg-gray-800',
+                'border-[3px] border-black dark:border-gray-600',
+                'rounded-2xl',
+                'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              )}
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+                Clear Creative Mode?
+              </h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                This will delete your saved progress and reset your element bank to the 4 starter
+                elements. This cannot be undone.
+              </p>
+              <div className="flex gap-3 mt-2">
+                <button
+                  onClick={() => setShowClearConfirm(false)}
+                  className={cn(
+                    'flex-1 px-4 py-2',
+                    'text-sm font-medium',
+                    'bg-gray-100 dark:bg-gray-700',
+                    'text-gray-700 dark:text-gray-300',
+                    'border-2 border-gray-300 dark:border-gray-600',
+                    'rounded-xl',
+                    'hover:bg-gray-200 dark:hover:bg-gray-600',
+                    'transition-colors'
+                  )}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleClearConfirm}
+                  className={cn(
+                    'flex-1 px-4 py-2',
+                    'text-sm font-bold',
+                    'bg-red-500 text-white',
+                    'border-2 border-red-600',
+                    'rounded-xl',
+                    'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                    'hover:bg-red-600',
+                    'active:translate-y-[1px] active:shadow-none',
+                    'transition-all duration-150'
+                  )}
+                >
+                  Clear
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Combination Area */}
       <CombinationArea
@@ -300,6 +437,7 @@ export function DailyAlchemyGameScreen({
           recentElements={recentElements}
           firstDiscoveryElements={firstDiscoveryElements}
           disabled={isCombining || (isComplete && !freePlayMode)}
+          discoveredCount={freePlayMode ? discoveredCount : null}
         />
       </div>
 

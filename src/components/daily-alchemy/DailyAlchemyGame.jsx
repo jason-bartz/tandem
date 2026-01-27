@@ -124,6 +124,13 @@ export function DailyAlchemyGame({ initialDate = null }) {
     loadPuzzle,
     resetGame,
 
+    // Creative Mode save
+    saveCreativeMode,
+    clearCreativeMode,
+    isSavingCreative,
+    creativeSaveSuccess,
+    isLoadingCreative,
+
     // Hints
     hintsRemaining,
     useHint,
@@ -265,6 +272,12 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   combinationError={combinationError}
                   hintsRemaining={hintsRemaining}
                   onUseHint={useHint}
+                  // Creative Mode save props
+                  onSaveCreative={saveCreativeMode}
+                  onClearCreative={clearCreativeMode}
+                  isSavingCreative={isSavingCreative}
+                  creativeSaveSuccess={creativeSaveSuccess}
+                  isLoadingCreative={isLoadingCreative}
                 />
               )}
 

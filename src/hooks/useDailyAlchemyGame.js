@@ -58,7 +58,7 @@ function getFormattedDate(dateString) {
  * @param {boolean} isFreePlay - If true, runs in free play mode (no target, no timer)
  */
 export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
-  const { user, isAuthenticated, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { soupCombine, soupNewElement, soupFirstDiscovery } = useHaptics();
 
   // Core state
@@ -110,6 +110,11 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [solutionPath, setSolutionPath] = useState([]);
   const [lastHintStep, setLastHintStep] = useState(null); // Track step from last hint for consecutive hints
 
+  // Creative Mode save state
+  const [isSavingCreative, setIsSavingCreative] = useState(false);
+  const [creativeSaveSuccess, setCreativeSaveSuccess] = useState(false);
+  const [isLoadingCreative, setIsLoadingCreative] = useState(false);
+
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
   const puzzleDateRef = useRef(null);
@@ -146,13 +151,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Auto-save progress effect - only triggers on meaningful state changes
   // Note: elapsedTime intentionally excluded to avoid saving every second
+  // Note: Only saves for daily puzzle mode, not Creative Mode (Creative Mode saves to Supabase)
   useEffect(() => {
     if (
       gameState === SOUP_GAME_STATES.PLAYING &&
       hasStarted &&
       puzzle &&
-      isAuthenticated &&
-      !isComplete
+      user &&
+      !isComplete &&
+      !freePlayMode // Don't auto-save to localStorage in Creative Mode
     ) {
       const saveTimeout = setTimeout(() => {
         saveProgress();
@@ -161,7 +168,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       return () => clearTimeout(saveTimeout);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [elementBank, movesCount]);
+  }, [elementBank, movesCount, freePlayMode]);
 
   /**
    * Load puzzle from API
@@ -260,7 +267,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setLoading(false);
       }
     },
-    [isAuthenticated]
+    [user]
   );
 
   /**
@@ -313,7 +320,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Save current progress to localStorage
    */
   const saveProgress = useCallback(() => {
-    if (!puzzle || isComplete) return;
+    // Don't save to localStorage in Creative Mode - it uses Supabase instead
+    if (!puzzle || isComplete || freePlayMode) return;
 
     try {
       const key = `${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${puzzleDateRef.current}`;
@@ -342,6 +350,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, [
     puzzle,
     isComplete,
+    freePlayMode,
     elementBank,
     combinationPath,
     movesCount,
@@ -356,31 +365,230 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    */
   const startGame = useCallback(() => {
     playSoupStartSound();
-    setGameState(SOUP_GAME_STATES.PLAYING);
-    setHasStarted(true);
-    if (!freePlayMode) {
-      setStartTime(Date.now());
-      setElapsedTime(0);
-    }
-  }, [freePlayMode]);
 
-  /**
-   * Start free play mode
-   */
-  const startFreePlay = useCallback(() => {
-    playSoupStartSound();
-    setFreePlayMode(true);
-    setIsComplete(false); // Reset completion state for free play
-    setGameState(SOUP_GAME_STATES.PLAYING);
-    setHasStarted(true);
-    // Clear selections
+    // Reset to daily puzzle mode (not Creative Mode)
+    setFreePlayMode(false);
+
+    // Reset element bank to starter elements for daily puzzle
+    setElementBank([...STARTER_ELEMENTS]);
+    discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+
+    // Reset all game state
+    setCombinationPath([]);
+    setMovesCount(0);
+    setNewDiscoveries(0);
+    setFirstDiscoveries(0);
+    setFirstDiscoveryElements([]);
+    setRecentElements([]);
     setSelectedA(null);
     setSelectedB(null);
     setLastResult(null);
-    // No timer in free play mode
+    setIsComplete(false);
+    setStatsRecorded(false);
+    setCompletionStats(null);
+    setHintsRemaining(4);
+    setLastHintStep(null);
+
+    // Start timer for daily puzzle
+    setStartTime(Date.now());
+    setElapsedTime(0);
+    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS);
+
+    setGameState(SOUP_GAME_STATES.PLAYING);
+    setHasStarted(true);
+  }, []);
+
+  /**
+   * Load Creative Mode save from Supabase
+   * Returns the save data if exists, null otherwise
+   */
+  const loadCreativeSave = useCallback(async () => {
+    if (!user) return null;
+
+    setIsLoadingCreative(true);
+    try {
+      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+      const response = await capacitorFetch(url, {}, true);
+
+      if (!response.ok) {
+        logger.error('[DailyAlchemy] Failed to load creative save');
+        setIsLoadingCreative(false);
+        return null;
+      }
+
+      const data = await response.json();
+      setIsLoadingCreative(false);
+
+      if (data.success && data.hasSave && data.save) {
+        return data.save;
+      }
+      return null;
+    } catch (err) {
+      logger.error('[DailyAlchemy] Failed to load creative save', { error: err.message });
+      setIsLoadingCreative(false);
+      return null;
+    }
+  }, [user]);
+
+  /**
+   * Start free play mode (Creative Mode)
+   * Automatically loads saved game if one exists
+   */
+  const startFreePlay = useCallback(async () => {
+    playSoupStartSound();
+    setFreePlayMode(true);
+    setIsComplete(false);
+    setHasStarted(true);
+    setSelectedA(null);
+    setSelectedB(null);
+    setLastResult(null);
     setStartTime(null);
     setElapsedTime(0);
-  }, []);
+
+    // Try to load existing save
+    const savedGame = await loadCreativeSave();
+
+    if (savedGame && savedGame.elementBank && savedGame.elementBank.length > 0) {
+      // Restore from save
+      logger.info('[DailyAlchemy] Restoring Creative Mode save', {
+        elementCount: savedGame.elementBank.length,
+      });
+
+      const restoredBank = savedGame.elementBank.map((el) => ({
+        id: el.name.toLowerCase().replace(/\s+/g, '-'),
+        name: el.name,
+        emoji: el.emoji || '✨',
+        isStarter: STARTER_ELEMENTS.some((s) => s.name === el.name),
+      }));
+
+      setElementBank(restoredBank);
+      discoveredElements.current = new Set(restoredBank.map((el) => el.name));
+      setMovesCount(savedGame.totalMoves || 0);
+      setNewDiscoveries(savedGame.totalDiscoveries || 0);
+      setFirstDiscoveries(savedGame.firstDiscoveries || 0);
+      setFirstDiscoveryElements(savedGame.firstDiscoveryElements || []);
+    } else {
+      // Fresh start
+      setElementBank([...STARTER_ELEMENTS]);
+      discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+      setMovesCount(0);
+      setNewDiscoveries(0);
+      setFirstDiscoveries(0);
+      setFirstDiscoveryElements([]);
+    }
+
+    setCombinationPath([]);
+    setRecentElements([]);
+    setGameState(SOUP_GAME_STATES.PLAYING);
+  }, [loadCreativeSave]);
+
+  /**
+   * Save Creative Mode progress to Supabase
+   */
+  const saveCreativeMode = useCallback(async () => {
+    if (!user || !freePlayMode) {
+      return false;
+    }
+
+    setIsSavingCreative(true);
+    setCreativeSaveSuccess(false);
+
+    try {
+      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+      const response = await capacitorFetch(
+        url,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            elementBank: elementBank.map((el) => ({
+              name: el.name,
+              emoji: el.emoji,
+              isStarter: el.isStarter || false,
+            })),
+            totalMoves: movesCount,
+            totalDiscoveries: newDiscoveries,
+            firstDiscoveries,
+            firstDiscoveryElements,
+          }),
+        },
+        true
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        logger.error('[DailyAlchemy] Failed to save creative mode', {
+          status: response.status,
+          error: errorData.error || 'Unknown error',
+        });
+        setIsSavingCreative(false);
+        return false;
+      }
+
+      const data = await response.json();
+      logger.info('[DailyAlchemy] Creative Mode saved successfully', {
+        elementCount: elementBank.length,
+        savedAt: data.savedAt,
+      });
+
+      setIsSavingCreative(false);
+      setCreativeSaveSuccess(true);
+
+      // Clear success indicator after 2 seconds
+      setTimeout(() => setCreativeSaveSuccess(false), 2000);
+
+      return true;
+    } catch (err) {
+      logger.error('[DailyAlchemy] Failed to save creative mode', { error: err.message });
+      setIsSavingCreative(false);
+      return false;
+    }
+  }, [
+    user,
+    freePlayMode,
+    elementBank,
+    movesCount,
+    newDiscoveries,
+    firstDiscoveries,
+    firstDiscoveryElements,
+  ]);
+
+  /**
+   * Clear Creative Mode save and reset to starter elements
+   */
+  const clearCreativeMode = useCallback(async () => {
+    if (!user) return false;
+
+    try {
+      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+      const response = await capacitorFetch(url, { method: 'DELETE' }, true);
+
+      if (!response.ok) {
+        logger.error('[DailyAlchemy] Failed to clear creative save');
+        return false;
+      }
+
+      logger.info('[DailyAlchemy] Creative Mode save cleared');
+
+      // Reset to starter elements
+      setElementBank([...STARTER_ELEMENTS]);
+      discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+      setCombinationPath([]);
+      setMovesCount(0);
+      setNewDiscoveries(0);
+      setFirstDiscoveries(0);
+      setFirstDiscoveryElements([]);
+      setRecentElements([]);
+      setSelectedA(null);
+      setSelectedB(null);
+      setLastResult(null);
+
+      return true;
+    } catch (err) {
+      logger.error('[DailyAlchemy] Failed to clear creative save', { error: err.message });
+      return false;
+    }
+  }, [user]);
 
   /**
    * Select an element from the bank
@@ -608,7 +816,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     });
 
     // Record stats to server if authenticated
-    if (isAuthenticated && !statsRecorded && !isArchive) {
+    if (user && !statsRecorded && !isArchive) {
       setStatsRecorded(true);
 
       try {
@@ -668,7 +876,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, [
     isComplete,
     statsRecorded,
-    isAuthenticated,
+    user,
     isArchive,
     puzzle,
     elementBank,
@@ -1050,6 +1258,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     startFreePlay,
     loadPuzzle,
     resetGame,
+
+    // Creative Mode save
+    saveCreativeMode,
+    clearCreativeMode,
+    isSavingCreative,
+    creativeSaveSuccess,
+    isLoadingCreative,
 
     // Hints
     hintsRemaining,
