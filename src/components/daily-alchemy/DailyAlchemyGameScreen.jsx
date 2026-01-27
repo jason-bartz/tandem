@@ -55,20 +55,12 @@ function ResultAnimation({ result, onComplete }) {
     }
   };
 
-  // For first discoveries, only close on backdrop click, not card click
-  const handleBackdropClick = (e) => {
-    if (e.target === e.currentTarget) {
-      onComplete?.();
-    }
-  };
-
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm cursor-pointer"
+      className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={result.isFirstDiscovery ? handleBackdropClick : onComplete}
     >
       <motion.div
         className={cn(
@@ -78,13 +70,13 @@ function ResultAnimation({ result, onComplete }) {
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          result.isFirstDiscovery && 'cursor-default'
+          'pointer-events-auto cursor-pointer'
         )}
         initial={!reduceMotion ? { scale: 0, rotate: -10 } : false}
         animate={{ scale: 1, rotate: 0 }}
         exit={!reduceMotion ? { scale: 0, opacity: 0 } : undefined}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-        onClick={(e) => result.isFirstDiscovery && e.stopPropagation()}
+        onClick={result.isFirstDiscovery ? undefined : onComplete}
       >
         {/* Close button */}
         <button

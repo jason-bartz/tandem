@@ -40,7 +40,11 @@ function ElementChipInner({
       className={cn(
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
-        !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
+        !isSelected && !isTarget && !element.isFirstDiscovery && 'bg-white dark:bg-gray-800',
+        element.isFirstDiscovery &&
+          !isSelected &&
+          !isTarget &&
+          'bg-yellow-50 dark:bg-yellow-900/30',
         'border-[2px] border-black dark:border-gray-600',
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
@@ -54,13 +58,6 @@ function ElementChipInner({
         disabled && 'opacity-50 cursor-not-allowed',
         highContrast && 'border-[3px]'
       )}
-      style={
-        element.isFirstDiscovery && !isSelected && !isTarget
-          ? {
-              background: 'linear-gradient(135deg, #fef3c7 0%, #fcd34d 50%, #f59e0b 100%)',
-            }
-          : undefined
-      }
       whileTap={!disabled && !reduceMotion ? { scale: 0.95 } : undefined}
       initial={isNew && !reduceMotion ? { scale: 0, opacity: 0 } : false}
       animate={isNew && !reduceMotion ? { scale: 1, opacity: 1 } : undefined}
@@ -103,7 +100,17 @@ function ElementChipInner({
       <span className={cn(emojiSizes[size], 'flex-shrink-0')} role="img" aria-hidden="true">
         {element.emoji}
       </span>
-      <span className="text-gray-900 dark:text-white">{element.name}</span>
+      <span
+        className={cn(
+          'text-gray-900 dark:text-white',
+          element.isFirstDiscovery &&
+            !isSelected &&
+            !isTarget &&
+            'text-yellow-700 dark:text-yellow-400'
+        )}
+      >
+        {element.name}
+      </span>
     </motion.button>
   );
 }
