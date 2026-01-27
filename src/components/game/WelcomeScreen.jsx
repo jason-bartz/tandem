@@ -265,6 +265,7 @@ export default function WelcomeScreen({
               completed={soupCompleted}
               completedMessage="You created today's element"
               animationDelay={0.15}
+              showNewBadge
             />
 
             {/* Reel Connections */}
