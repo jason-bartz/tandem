@@ -23,6 +23,8 @@ export function DailyAlchemyWelcomeScreen({
   onOpenHowToPlay,
   isArchive = false,
   puzzleNumber,
+  hasSavedProgress = false,
+  onResume,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
@@ -127,9 +129,9 @@ export function DailyAlchemyWelcomeScreen({
         </div>
       </motion.button>
 
-      {/* Full-Width Start Button */}
+      {/* Full-Width Start/Continue Button */}
       <motion.button
-        onClick={onStart}
+        onClick={hasSavedProgress ? onResume : onStart}
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4',
           'bg-soup-primary text-black',
@@ -148,8 +150,21 @@ export function DailyAlchemyWelcomeScreen({
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
         <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
-        <span>Start Mixing</span>
+        <span>{hasSavedProgress ? 'Continue Puzzle' : 'Start Mixing'}</span>
       </motion.button>
+
+      {/* Start Over option when there's saved progress */}
+      {hasSavedProgress && (
+        <motion.button
+          onClick={onStart}
+          className="mt-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
+          initial={!reduceMotion ? { opacity: 0 } : false}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+        >
+          Start Over
+        </motion.button>
+      )}
 
       {/* Divider */}
       <motion.div

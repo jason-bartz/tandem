@@ -123,6 +123,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     startFreePlay,
     loadPuzzle,
     resetGame,
+    resumeGame,
+    hasSavedProgress,
 
     // Creative Mode save
     saveCreativeMode,
@@ -238,6 +240,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   onOpenHowToPlay={() => setShowHowToPlay(true)}
                   isArchive={isArchive}
                   puzzleNumber={puzzle?.number}
+                  hasSavedProgress={hasSavedProgress}
+                  onResume={resumeGame}
                 />
               )}
 

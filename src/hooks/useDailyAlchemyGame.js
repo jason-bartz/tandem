@@ -115,6 +115,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [creativeSaveSuccess, setCreativeSaveSuccess] = useState(false);
   const [isLoadingCreative, setIsLoadingCreative] = useState(false);
 
+  // Saved progress state - tracks if there's a game in progress to resume
+  const [hasSavedProgress, setHasSavedProgress] = useState(false);
+  const pendingSavedState = useRef(null);
+
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
   const puzzleDateRef = useRef(null);
@@ -216,7 +220,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         // Check for saved progress
         const savedState = loadSavedState(targetDate);
         if (savedState && !savedState.completed) {
-          restoreSavedState(savedState);
+          // Store saved state but don't restore yet - show welcome screen with Continue option
+          pendingSavedState.current = savedState;
+          setHasSavedProgress(true);
+          setGameState(SOUP_GAME_STATES.WELCOME);
         } else if (savedState?.completed) {
           // Already completed - show complete screen so user can play again
           setGameState(SOUP_GAME_STATES.COMPLETE);
@@ -305,16 +312,36 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Restore other state
     if (savedState.combinationPath) setCombinationPath(savedState.combinationPath);
     if (savedState.movesCount) setMovesCount(savedState.movesCount);
-    if (savedState.elapsedTime) setElapsedTime(savedState.elapsedTime);
     if (savedState.newDiscoveries) setNewDiscoveries(savedState.newDiscoveries);
     if (savedState.firstDiscoveries) setFirstDiscoveries(savedState.firstDiscoveries);
     if (typeof savedState.hintsRemaining === 'number') {
       setHintsRemaining(savedState.hintsRemaining);
     }
 
+    // Restore timer state - calculate startTime so the timer continues from where it left off
+    const restoredElapsed = savedState.elapsedTime || 0;
+    setElapsedTime(restoredElapsed);
+    setRemainingTime(Math.max(0, SOUP_CONFIG.TIME_LIMIT_SECONDS - restoredElapsed));
+    // Set startTime to a value that makes the timer calculation work correctly
+    // Timer calculates: elapsed = (Date.now() - startTime) / 1000
+    // So we need: startTime = Date.now() - (elapsedTime * 1000)
+    setStartTime(Date.now() - restoredElapsed * 1000);
+
     setHasStarted(true);
     setGameState(SOUP_GAME_STATES.PLAYING);
   }, []);
+
+  /**
+   * Resume game from saved progress (called when user clicks Continue on welcome screen)
+   */
+  const resumeGame = useCallback(() => {
+    if (pendingSavedState.current) {
+      playSoupStartSound();
+      restoreSavedState(pendingSavedState.current);
+      pendingSavedState.current = null;
+      setHasSavedProgress(false);
+    }
+  }, [restoreSavedState]);
 
   /**
    * Save current progress to localStorage
@@ -1258,6 +1285,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     startFreePlay,
     loadPuzzle,
     resetGame,
+    resumeGame,
+    hasSavedProgress,
 
     // Creative Mode save
     saveCreativeMode,
