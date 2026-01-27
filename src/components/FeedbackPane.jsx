@@ -94,7 +94,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
       >
         <div className="h-full overflow-y-auto">
           {/* Header */}
-          <div className="sticky top-0 z-10 bg-ghost-white dark:bg-bg-surface border-b-[3px] border-border-main p-6">
+          <div className="sticky top-0 z-10 bg-ghost-white dark:bg-bg-surface border-b-[3px] border-border-main p-6 pt-safe">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">Feedback</h2>
               <button
@@ -268,7 +268,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                 </label>
                 <textarea
                   id="feedback-message"
-                  rows={8}
+                  rows={4}
                   value={formData.message}
                   disabled={!user}
                   onChange={(event) =>
@@ -327,14 +327,9 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       setFormData((prev) => ({ ...prev, allowContact: event.target.checked }))
                     }
                   />
-                  <div className="flex-1">
-                    <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
-                      You can email me for more details
-                    </span>
-                    <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
-                      We'll only reach out if we need clarification to better address your feedback.
-                    </p>
-                  </div>
+                  <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">
+                    You can email me for more details
+                  </span>
                 </label>
               </div>
 
