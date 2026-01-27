@@ -321,7 +321,7 @@ export function DailyAlchemyCompleteScreen({
       </motion.div>
 
       {/* Play Archive Button */}
-      {onViewArchive && !isArchive && (
+      {onViewArchive && (
         <motion.div
           className="w-full max-w-sm mt-3"
           initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
@@ -361,38 +361,36 @@ export function DailyAlchemyCompleteScreen({
       </motion.div>
 
       {/* Creative Mode Button */}
-      {!isArchive && (
-        <motion.button
-          onClick={handleFreePlayClick}
-          className={cn(
-            'w-full max-w-sm flex items-center justify-center gap-2 py-3',
-            'bg-white dark:bg-gray-800',
-            'text-gray-800 dark:text-gray-200',
-            'border-[3px] border-black dark:border-gray-600',
-            'rounded-xl font-bold',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
-            'hover:bg-gray-50 dark:hover:bg-gray-700',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
-            'transition-all duration-150',
-            highContrast && 'border-[4px] border-hc-border'
-          )}
-          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          {!hasSubscription && (
-            <Image
-              src="/icons/ui/lock.png"
-              alt="Locked"
-              width={20}
-              height={20}
-              className="opacity-70"
-            />
-          )}
-          <span>Play Creative Mode</span>
-        </motion.button>
-      )}
+      <motion.button
+        onClick={handleFreePlayClick}
+        className={cn(
+          'w-full max-w-sm flex items-center justify-center gap-2 py-3',
+          'bg-white dark:bg-gray-800',
+          'text-gray-800 dark:text-gray-200',
+          'border-[3px] border-black dark:border-gray-600',
+          'rounded-xl font-bold',
+          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
+          'hover:bg-gray-50 dark:hover:bg-gray-700',
+          'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+          'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+          'transition-all duration-150',
+          highContrast && 'border-[4px] border-hc-border'
+        )}
+        initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+      >
+        {!hasSubscription && (
+          <Image
+            src="/icons/ui/lock.png"
+            alt="Locked"
+            width={20}
+            height={20}
+            className="opacity-70"
+          />
+        )}
+        <span>Play Creative Mode</span>
+      </motion.button>
 
       {/* Leaderboard Modal */}
       <LeaderboardModal
