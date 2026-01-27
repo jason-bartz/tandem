@@ -31,6 +31,11 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const opacity = useTransform(y, [-150, 0], [0, 1]);
   const scale = useTransform(y, [-150, 0], [0.5, 1]);
 
+  // Start the entrance animation on mount
+  useEffect(() => {
+    controls.start({ scale: 1, rotate: 0, opacity: 1 });
+  }, [controls]);
+
   useEffect(() => {
     // Don't auto-dismiss for first discoveries - they stay until user closes
     if (result?.isFirstDiscovery) return;
