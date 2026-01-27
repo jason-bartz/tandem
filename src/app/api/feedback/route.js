@@ -112,7 +112,15 @@ export async function POST(request) {
 
     // Get platform and user agent from request
     const userAgent = request.headers.get('user-agent') || null;
-    const platform = userAgent?.toLowerCase().includes('mobile') ? 'mobile' : 'web';
+    // Determine platform - check for iOS/Android specifically, otherwise 'web'
+    // The database has a check constraint that only allows: 'ios', 'android', 'web'
+    const userAgentLower = userAgent?.toLowerCase() || '';
+    let platform = 'web';
+    if (userAgentLower.includes('iphone') || userAgentLower.includes('ipad')) {
+      platform = 'ios';
+    } else if (userAgentLower.includes('android')) {
+      platform = 'android';
+    }
 
     const entry = {
       id: randomUUID(),
