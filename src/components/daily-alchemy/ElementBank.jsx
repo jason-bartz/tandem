@@ -169,7 +169,10 @@ export function ElementBank({
           aria-label="Element bank"
         >
           {elements.length === 0 ? (
-            <div className="w-full text-center py-8 text-gray-500 dark:text-gray-400">
+            <div
+              className="text-center py-8 text-gray-500 dark:text-gray-400"
+              style={{ gridColumn: '1 / -1', gridRow: '1 / -1' }}
+            >
               {searchQuery ? 'No elements match your search' : 'No elements yet'}
             </div>
           ) : (
