@@ -652,8 +652,9 @@ function ManualComboEntry() {
   const [success, setSuccess] = useState(null);
 
   // Autocomplete state
-  const [showSuggestions, setShowSuggestions] = useState({ a: false, b: false });
+  const [showSuggestions, setShowSuggestions] = useState({ a: false, b: false, result: false });
   const [suggestions, setSuggestions] = useState([]);
+  const [resultSuggestions, setResultSuggestions] = useState([]);
 
   // Conflict detection state
   const [existingCombo, setExistingCombo] = useState(null);
@@ -756,10 +757,41 @@ function ManualComboEntry() {
         // Check for existing combination with current elementA
         checkExistingCombination(elementA, element.name);
       }
-      setShowSuggestions({ a: false, b: false });
+      setShowSuggestions({ a: false, b: false, result: false });
     },
     [elementA, elementB, checkExistingCombination]
   );
+
+  // Search for result elements
+  const handleResultSearch = useCallback(
+    async (value) => {
+      setResult(value);
+
+      if (value.length >= 1) {
+        const results = await searchElements(value);
+        // Include starter elements in suggestions
+        const starters = STARTER_ELEMENTS.filter((s) =>
+          s.name.toLowerCase().includes(value.toLowerCase())
+        ).map((s) => ({ name: s.name, emoji: s.emoji }));
+        const combined = [
+          ...starters,
+          ...results.filter((r) => !starters.find((s) => s.name === r.name)),
+        ];
+        setResultSuggestions(combined.slice(0, 8));
+        setShowSuggestions((prev) => ({ ...prev, result: true }));
+      } else {
+        setShowSuggestions((prev) => ({ ...prev, result: false }));
+      }
+    },
+    [searchElements]
+  );
+
+  // Select result from suggestions
+  const selectResultSuggestion = useCallback((element) => {
+    setResult(element.name);
+    setEmoji(element.emoji);
+    setShowSuggestions((prev) => ({ ...prev, result: false }));
+  }, []);
 
   // Debounced conflict check when typing (not selecting from dropdown)
   useEffect(() => {
@@ -977,15 +1009,33 @@ function ManualComboEntry() {
             />
           </div>
 
-          {/* Result Name */}
-          <div className="flex-1 min-w-[150px]">
+          {/* Result Name - Searchable */}
+          <div className="relative flex-1 min-w-[150px]">
             <input
               type="text"
               value={result}
-              onChange={(e) => setResult(e.target.value)}
-              placeholder="Result Element"
+              onChange={(e) => handleResultSearch(e.target.value)}
+              onFocus={() => result && handleResultSearch(result)}
+              onBlur={() =>
+                setTimeout(() => setShowSuggestions((prev) => ({ ...prev, result: false })), 200)
+              }
+              placeholder="Result Element (search or type new)"
               className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold"
             />
+            {showSuggestions.result && resultSuggestions.length > 0 && (
+              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                {resultSuggestions.map((s, i) => (
+                  <button
+                    key={i}
+                    onClick={() => selectResultSuggestion(s)}
+                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                  >
+                    <span>{s.emoji}</span>
+                    <span className="font-medium">{s.name}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
