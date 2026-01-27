@@ -69,6 +69,7 @@ export const SOUP_API = {
   COMPLETE: '/api/daily-alchemy/complete',
   STATS: '/api/daily-alchemy/stats',
   DISCOVERIES: '/api/daily-alchemy/discoveries',
+  CREATIVE_SAVE: '/api/daily-alchemy/creative/save',
   LEADERBOARD_DAILY: '/api/leaderboard/daily',
   ADMIN_PUZZLES: '/api/admin/daily-alchemy/puzzles',
   ADMIN_SANDBOX: '/api/admin/daily-alchemy/sandbox',
