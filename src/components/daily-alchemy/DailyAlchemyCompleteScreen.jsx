@@ -275,12 +275,36 @@ export function DailyAlchemyCompleteScreen({
         </button>
       </motion.div>
 
+      {/* Play Archive Button */}
+      {onViewArchive && (
+        <motion.button
+          onClick={onViewArchive}
+          className={cn(
+            'w-full max-w-sm flex items-center justify-center gap-2 py-3 mt-3',
+            'bg-soup-light dark:bg-soup-primary/30',
+            'text-soup-dark dark:text-soup-primary',
+            'border-[3px] border-black dark:border-gray-600',
+            'rounded-xl font-bold',
+            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
+            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            'transition-all duration-150',
+            highContrast && 'border-[4px] border-hc-border'
+          )}
+          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+        >
+          <span>Play the Archive</span>
+        </motion.button>
+      )}
+
       {/* Leaderboard Button */}
       <motion.div
         className="w-full max-w-sm mt-3"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.45 }}
+        transition={{ delay: 0.5 }}
       >
         <button
           onClick={() => setShowLeaderboard(true)}
@@ -301,48 +325,24 @@ export function DailyAlchemyCompleteScreen({
         </button>
       </motion.div>
 
-      {/* Archive & Creative Mode Section */}
+      {/* Creative Mode Section */}
       <motion.div
         className="w-full max-w-sm flex items-center gap-3 my-5"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.55 }}
       >
         <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
         <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or</span>
         <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
       </motion.div>
 
-      {/* Play Archive Button */}
-      {onViewArchive && (
-        <motion.button
-          onClick={onViewArchive}
-          className={cn(
-            'w-full max-w-sm flex items-center justify-center gap-2 py-3',
-            'bg-soup-light dark:bg-soup-primary/30',
-            'text-soup-dark dark:text-soup-primary',
-            'border-[3px] border-black dark:border-gray-600',
-            'rounded-xl font-bold',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
-            'transition-all duration-150',
-            highContrast && 'border-[4px] border-hc-border'
-          )}
-          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.55 }}
-        >
-          <span>Play the Archive</span>
-        </motion.button>
-      )}
-
       {/* Creative Mode Button */}
       {!isArchive && (
         <motion.button
           onClick={handleFreePlayClick}
           className={cn(
-            'w-full max-w-sm flex items-center justify-center gap-2 py-3 mt-3',
+            'w-full max-w-sm flex items-center justify-center gap-2 py-3',
             'bg-white dark:bg-gray-800',
             'text-gray-800 dark:text-gray-200',
             'border-[3px] border-black dark:border-gray-600',
