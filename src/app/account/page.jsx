@@ -465,7 +465,7 @@ export default function AccountPage() {
     <>
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
         {/* Scrollable content container */}
-        <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="min-h-screen flex items-center justify-center py-6 pt-safe">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
               {/* Main content card */}
@@ -796,6 +796,14 @@ export default function AccountPage() {
                                   Create & share Reel Connections puzzles
                                 </span>
                               </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-green-600 dark:text-green-400 text-sm">
+                                  ✓
+                                </span>
+                                <span className="text-sm text-gray-700 dark:text-gray-300">
+                                  Daily Alchemy Creative Mode
+                                </span>
+                              </div>
                             </div>
                           </div>
 
@@ -837,6 +845,7 @@ export default function AccountPage() {
                             'Ad-free experience',
                             'Daily Tandem Hard Mode',
                             'Create & share Reel Connections puzzles',
+                            'Daily Alchemy Creative Mode',
                             'Support solo developer',
                           ].map((benefit, idx) => (
                             <div key={idx} className="flex items-start gap-2">
