@@ -49,12 +49,16 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
     lightTap();
     setIsVisible(false);
     localStorage.setItem(storageKey, 'true');
+    // Dispatch custom event for HintTutorialBanner to listen for
+    window.dispatchEvent(new CustomEvent('learnToPlayDismissed', { detail: { gameType } }));
   };
 
   const handleClick = () => {
     lightTap();
     setIsVisible(false);
     localStorage.setItem(storageKey, 'true');
+    // Dispatch custom event for HintTutorialBanner to listen for
+    window.dispatchEvent(new CustomEvent('learnToPlayDismissed', { detail: { gameType } }));
     onOpenHowToPlay?.();
   };
 

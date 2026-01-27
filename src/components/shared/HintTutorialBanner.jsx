@@ -26,6 +26,15 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
   const learnToPlayKey = `${gameType}LearnToPlayDismissed`;
   const hintTutorialKey = `${gameType}HintTutorialDismissed`;
 
+  // Show banner after delay
+  const showBannerAfterDelay = () => {
+    setShouldRender(true);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, 1500);
+    return timer;
+  };
+
   // Check localStorage and show banner after learn-to-play is dismissed
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -42,32 +51,29 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
       return;
     }
 
-    // Check if learn to play is already dismissed
+    // Check if learn to play is already dismissed (returning user)
     const isLearnToPlayDismissed = localStorage.getItem(learnToPlayKey);
     if (isLearnToPlayDismissed === 'true') {
-      // Already dismissed, show banner after delay
-      setShouldRender(true);
-      const timer = setTimeout(() => {
-        setIsVisible(true);
-      }, 1500);
+      const timer = showBannerAfterDelay();
       return () => clearTimeout(timer);
     }
 
-    // Poll for learn-to-play dismissal (fires in same tab, unlike storage event)
-    const pollInterval = setInterval(() => {
-      const dismissed = localStorage.getItem(learnToPlayKey);
-      if (dismissed === 'true') {
-        clearInterval(pollInterval);
-        setShouldRender(true);
-        // Show banner after 1.5 second delay once learn-to-play is dismissed
-        setTimeout(() => {
-          setIsVisible(true);
-        }, 1500);
+    // Listen for custom event when learn-to-play banner is dismissed
+    let timer = null;
+    const handleLearnToPlayDismissed = (event) => {
+      // Only respond to events for the same game type
+      if (event.detail?.gameType === gameType) {
+        timer = showBannerAfterDelay();
       }
-    }, 500);
+    };
 
-    return () => clearInterval(pollInterval);
-  }, [learnToPlayKey, hintTutorialKey, hasUsedHint]);
+    window.addEventListener('learnToPlayDismissed', handleLearnToPlayDismissed);
+
+    return () => {
+      window.removeEventListener('learnToPlayDismissed', handleLearnToPlayDismissed);
+      if (timer) clearTimeout(timer);
+    };
+  }, [learnToPlayKey, hintTutorialKey, hasUsedHint, gameType]);
 
   // Hide banner when player uses a hint
   useEffect(() => {
