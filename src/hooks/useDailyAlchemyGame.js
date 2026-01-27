@@ -1366,7 +1366,14 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Play the hint sound
     playHintSound();
 
-    const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name));
+    const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
+
+    // Create lowercase set for case-insensitive comparison
+    // This ensures hint filtering works regardless of case differences between
+    // discoveredElements and solutionPath
+    const discoveredLower = new Set(
+      Array.from(discoveredElements.current).map((e) => e.toLowerCase())
+    );
 
     // Find all steps where the player hasn't discovered the result yet
     // but has both inputs available (can make progress)
@@ -1375,9 +1382,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       .map((step, index) => ({ ...step, pathIndex: index }))
       .filter((step) => {
         return (
-          !discoveredElements.current.has(step.result) &&
-          discoveredElements.current.has(step.elementA) &&
-          discoveredElements.current.has(step.elementB)
+          !discoveredLower.has(step.result.toLowerCase()) &&
+          discoveredLower.has(step.elementA.toLowerCase()) &&
+          discoveredLower.has(step.elementB.toLowerCase())
         );
       });
 
@@ -1393,11 +1400,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         if (a.pathIndex !== b.pathIndex) {
           return b.pathIndex - a.pathIndex;
         }
-        // Tiebreaker: fewer starters is better
+        // Tiebreaker: fewer starters is better (use lowercase for comparison)
         const aStarterCount =
-          (starterNames.has(a.elementA) ? 1 : 0) + (starterNames.has(a.elementB) ? 1 : 0);
+          (starterNames.has(a.elementA.toLowerCase()) ? 1 : 0) +
+          (starterNames.has(a.elementB.toLowerCase()) ? 1 : 0);
         const bStarterCount =
-          (starterNames.has(b.elementA) ? 1 : 0) + (starterNames.has(b.elementB) ? 1 : 0);
+          (starterNames.has(b.elementA.toLowerCase()) ? 1 : 0) +
+          (starterNames.has(b.elementB.toLowerCase()) ? 1 : 0);
         return aStarterCount - bStarterCount;
       });
 
@@ -1410,7 +1419,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // where the result isn't discovered (closest to target) and work backwards
       let targetStep = null;
       for (let i = solutionPath.length - 1; i >= 0; i--) {
-        if (!discoveredElements.current.has(solutionPath[i].result)) {
+        if (!discoveredLower.has(solutionPath[i].result.toLowerCase())) {
           targetStep = solutionPath[i];
           break;
         }
@@ -1418,8 +1427,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
       if (targetStep) {
         // Find which input is missing and look for a step that creates it
-        const needsA = !discoveredElements.current.has(targetStep.elementA);
-        const needsB = !discoveredElements.current.has(targetStep.elementB);
+        const needsA = !discoveredLower.has(targetStep.elementA.toLowerCase());
+        const needsB = !discoveredLower.has(targetStep.elementB.toLowerCase());
         const neededElement = needsA ? targetStep.elementA : needsB ? targetStep.elementB : null;
 
         if (neededElement) {
@@ -1427,8 +1436,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           const earlierStep = solutionPath.find((step) => {
             return (
               step.result.toLowerCase() === neededElement.toLowerCase() &&
-              discoveredElements.current.has(step.elementA) &&
-              discoveredElements.current.has(step.elementB)
+              discoveredLower.has(step.elementA.toLowerCase()) &&
+              discoveredLower.has(step.elementB.toLowerCase())
             );
           });
 
