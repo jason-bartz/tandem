@@ -583,8 +583,8 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               bar to get help.
             </p>
             <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
-              Each hint will <strong>select an element</strong> that's part of the solution path,
-              helping guide you toward the target.
+              Each hint will <strong>select both elements</strong> of a combination that's part of
+              the solution path, ready for you to combine!
             </p>
           </div>
 
@@ -644,6 +644,10 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               </li>
               <li>
                 • <strong>Over par:</strong> You still won — every path is valid!
+              </li>
+              <li>
+                • <strong>Duplicates don&apos;t count:</strong> Repeating the same combination
+                won&apos;t add to your move total
               </li>
             </ul>
           </div>
