@@ -140,7 +140,9 @@ export function SubscriptionProvider({ children }) {
    */
   useEffect(() => {
     if (!authLoading) {
-      // Auth has loaded, now refresh subscription
+      // Set loading immediately when user changes to invalidate stale cache
+      // This ensures components show loading state while we fetch fresh data
+      setSubscription((prev) => ({ ...prev, loading: true }));
       refreshStatus();
     }
   }, [user, authLoading, refreshStatus]);
