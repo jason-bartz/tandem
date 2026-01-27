@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { X, Check, Save, Trash2, Loader2 } from 'lucide-react';
+import { useEffect, useState, useRef } from 'react';
+import { AnimatePresence, motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
+import { X, Check, Save, Trash2, Loader2, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHaptics } from '@/hooks/useHaptics';
+import { playPlunkSound } from '@/lib/sounds';
 import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
@@ -14,10 +16,20 @@ import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
  * ResultAnimation - Shows the result of a combination
  * Auto-dismisses after timeout or on tap/click (except for first discoveries)
  * First discoveries stay on screen until explicitly closed and include a share button
+ * Supports swipe-up gesture to select element into first combination slot
  */
-function ResultAnimation({ result, onComplete }) {
+function ResultAnimation({ result, onComplete, onSelectElement }) {
   const { reduceMotion, highContrast } = useTheme();
+  const { mediumTap } = useHaptics();
   const [copied, setCopied] = useState(false);
+  const [isSwipingUp, setIsSwipingUp] = useState(false);
+  const cardRef = useRef(null);
+  const controls = useAnimation();
+
+  // Motion values for drag
+  const y = useMotionValue(0);
+  const opacity = useTransform(y, [-150, 0], [0, 1]);
+  const scale = useTransform(y, [-150, 0], [0.5, 1]);
 
   useEffect(() => {
     // Don't auto-dismiss for first discoveries - they stay until user closes
@@ -55,6 +67,32 @@ function ResultAnimation({ result, onComplete }) {
     }
   };
 
+  const handleDragEnd = async (event, info) => {
+    // Check if swiped up enough (negative y = upward)
+    if (info.offset.y < -80 || info.velocity.y < -300) {
+      setIsSwipingUp(true);
+
+      // Play plunk sound and haptic
+      playPlunkSound();
+      mediumTap();
+
+      // Animate card flying up
+      await controls.start({
+        y: -500,
+        opacity: 0,
+        scale: 0.5,
+        transition: { duration: 0.3, ease: 'easeOut' },
+      });
+
+      // Select the element into first slot
+      onSelectElement?.({ name: result.element, emoji: result.emoji });
+      onComplete?.();
+    } else {
+      // Spring back to original position
+      controls.start({ y: 0, opacity: 1, scale: 1 });
+    }
+  };
+
   return (
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
@@ -63,6 +101,7 @@ function ResultAnimation({ result, onComplete }) {
       exit={{ opacity: 0 }}
     >
       <motion.div
+        ref={cardRef}
         className={cn(
           'relative flex flex-col items-center gap-2 p-6',
           'bg-white dark:bg-gray-800',
@@ -70,17 +109,39 @@ function ResultAnimation({ result, onComplete }) {
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'pointer-events-auto cursor-pointer'
+          'pointer-events-auto cursor-grab active:cursor-grabbing',
+          'touch-none select-none'
         )}
+        style={{ y, opacity: isSwipingUp ? opacity : 1, scale: isSwipingUp ? scale : 1 }}
         initial={!reduceMotion ? { scale: 0, rotate: -10 } : false}
-        animate={{ scale: 1, rotate: 0 }}
-        exit={!reduceMotion ? { scale: 0, opacity: 0 } : undefined}
+        animate={controls}
+        exit={!reduceMotion ? { scale: 0, opacity: 0, y: isSwipingUp ? -500 : 0 } : undefined}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        drag="y"
+        dragConstraints={{ top: -200, bottom: 50 }}
+        dragElastic={0.2}
+        onDragEnd={handleDragEnd}
         onClick={result.isFirstDiscovery ? undefined : onComplete}
       >
+        {/* Swipe up hint */}
+        <motion.div
+          className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 0.6, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 animate-bounce" />
+          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+            swipe to use
+          </span>
+        </motion.div>
+
         {/* Close button */}
         <button
-          onClick={onComplete}
+          onClick={(e) => {
+            e.stopPropagation();
+            onComplete?.();
+          }}
           className={cn(
             'absolute top-2 right-2',
             'flex items-center justify-center',
@@ -146,7 +207,10 @@ function ResultAnimation({ result, onComplete }) {
         {/* Share button for first discoveries */}
         {result.isFirstDiscovery && (
           <motion.button
-            onClick={handleShare}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShare();
+            }}
             className={cn(
               'mt-3 flex items-center justify-center gap-2 px-5 py-2',
               'bg-yellow-500 text-white',
@@ -202,8 +266,8 @@ export function DailyAlchemyGameScreen({
   // Selection
   selectedA,
   selectedB,
-  isAutoSelectedA = false,
   selectElement,
+  selectResultElement,
   clearSelections,
 
   // Combination
@@ -486,7 +550,6 @@ export function DailyAlchemyGameScreen({
       <CombinationArea
         selectedA={selectedA}
         selectedB={selectedB}
-        isAutoSelectedA={isAutoSelectedA}
         onClearA={clearSelections}
         onClearB={clearSelections}
         onCombine={combineElements}
@@ -523,6 +586,7 @@ export function DailyAlchemyGameScreen({
             key={`${lastResult.element}-${lastResult.from.join('-')}`}
             result={lastResult}
             onComplete={clearLastResult}
+            onSelectElement={selectResultElement}
           />
         )}
       </AnimatePresence>

@@ -90,8 +90,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     // Selection
     selectedA,
     selectedB,
-    isAutoSelectedA,
     selectElement,
+    selectResultElement,
     clearSelections,
 
     // Combination
@@ -281,8 +281,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   setSearchQuery={setSearchQuery}
                   selectedA={selectedA}
                   selectedB={selectedB}
-                  isAutoSelectedA={isAutoSelectedA}
                   selectElement={selectElement}
+                  selectResultElement={selectResultElement}
                   clearSelections={clearSelections}
                   isCombining={isCombining}
                   isAnimating={isAnimating}
