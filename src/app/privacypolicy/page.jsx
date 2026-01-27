@@ -40,7 +40,7 @@ export default function PrivacyPolicy() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: November 5, 2025
+            <strong>Last Updated</strong>: January 27, 2026
           </p>
         </div>
       ),
@@ -112,7 +112,26 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">5. Apple Game Center (iOS Only)</h4>
+            <h4 className="font-semibold mb-2">5. Analytics Data (Web Only)</h4>
+            <p className="mb-2">
+              We use PostHog analytics to understand how players interact with our games. This
+              includes:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Pages visited and navigation patterns</li>
+              <li>Game interactions (starting games, completing puzzles, using hints)</li>
+              <li>Feature usage (sharing results, viewing leaderboards)</li>
+              <li>Anonymous session data</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Analytics are collected anonymously. If you have an account and are logged in,
+              this data may be associated with your user ID. Analytics are not collected in our iOS
+              app.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">6. Apple Game Center (iOS Only)</h4>
             <p className="mb-2">
               If you use our iOS app and sign in to Game Center, Apple may collect:
             </p>
@@ -133,7 +152,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">6. iCloud Sync (iOS Only)</h4>
+            <h4 className="font-semibold mb-2">7. iCloud Sync (iOS Only)</h4>
             <p className="mb-2">If you enable iCloud sync on iOS, Apple may store:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Your game statistics and progress</li>
@@ -147,7 +166,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">7. User Accounts (Web Only)</h4>
+            <h4 className="font-semibold mb-2">8. User Accounts (Web Only)</h4>
             <p className="mb-2">If you create an account on our web platform, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Username (required, for leaderboard display and account identification)</li>
@@ -167,7 +186,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">8. Leaderboards (Web Only)</h4>
+            <h4 className="font-semibold mb-2">9. Leaderboards (Web Only)</h4>
             <p className="mb-2">
               When you create a free account, you are automatically enrolled in our global
               leaderboards to compete with players worldwide. We collect and publicly display:
@@ -189,7 +208,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">9. Daily Alchemy First Discoveries</h4>
+            <h4 className="font-semibold mb-2">10. Daily Alchemy First Discoveries</h4>
             <p className="mb-2">
               In Daily Alchemy, signed-in players who are the first to discover a new element
               combination are credited as the discoverer. We collect and publicly display:
@@ -207,7 +226,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">10. Payment Information (Web Only)</h4>
+            <h4 className="font-semibold mb-2">11. Payment Information (Web Only)</h4>
             <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Stripe customer ID (for managing subscriptions)</li>
@@ -243,6 +262,7 @@ export default function PrivacyPolicy() {
             <li>Send important account and subscription notifications (web only)</li>
             <li>Provide customer support and respond to inquiries</li>
             <li>Generate anonymous aggregated statistics</li>
+            <li>Analyze gameplay patterns to improve user experience (via PostHog, web only)</li>
             <li>Improve game difficulty and puzzle quality</li>
             <li>Ensure the Service operates correctly</li>
             <li>Prevent fraud and abuse</li>
@@ -292,15 +312,11 @@ export default function PrivacyPolicy() {
       id: 'cookies-tracking',
       title: 'Cookies and Tracking',
       content: (
-        <div className="space-y-3 text-sm">
+        <div className="space-y-4 text-sm">
           <p>Tandem uses minimal tracking:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>
               <strong>localStorage</strong>: For game state and preferences (not cookies)
-            </li>
-            <li>
-              <strong>No Third-Party Trackers</strong>: We do not use Google Analytics or similar
-              services
             </li>
             <li>
               <strong>No Advertising</strong>: We do not serve ads or use advertising networks
@@ -310,6 +326,25 @@ export default function PrivacyPolicy() {
               activity
             </li>
           </ul>
+
+          <div>
+            <h4 className="font-semibold mb-2">Analytics (Web Only)</h4>
+            <p className="mb-2">
+              We use PostHog, a privacy-focused analytics service, to understand how players use our
+              games and to improve the experience. PostHog collects:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Page views and navigation patterns</li>
+              <li>Game events (game starts, completions, shares)</li>
+              <li>Anonymous device and browser information</li>
+              <li>General geographic location (country/region level)</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Analytics data is collected anonymously by default. If you create an account and
+              log in, your analytics data may be linked to your user ID to provide a better
+              experience. PostHog analytics are not used in our iOS app.
+            </p>
+          </div>
         </div>
       ),
     },
@@ -342,6 +377,10 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Google OAuth</strong>: If you sign in with Google, authentication data is
               shared with Google according to their privacy policy
+            </li>
+            <li>
+              <strong>PostHog (Analytics)</strong>: Anonymous usage data is shared with PostHog for
+              analytics purposes (web only). PostHog's privacy policy governs this data.
             </li>
             <li>
               <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game
@@ -727,7 +766,7 @@ export default function PrivacyPolicy() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span>No ads or third-party trackers</span>
+                        <span>No ads or advertising networks</span>
                       </li>
                       <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
                         <svg
@@ -786,6 +825,20 @@ export default function PrivacyPolicy() {
                           />
                         </svg>
                         <span>Gameplay scores stored on our servers for leaderboards</span>
+                      </li>
+                      <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
+                        <svg
+                          className="w-5 h-5 flex-shrink-0 mt-0.5"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                        <span>Anonymous analytics to improve our games (web only)</span>
                       </li>
                     </ul>
                   </div>
