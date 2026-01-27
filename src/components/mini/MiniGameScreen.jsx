@@ -238,7 +238,8 @@ export default function MiniGameScreen({
     <>
       <div className="fixed inset-0 flex flex-col bg-bg-main dark:bg-bg-main overflow-hidden">
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
-        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios">
+        {/* Bottom padding accounts for fixed keyboard (~200px) */}
+        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios pb-[220px]">
           <div
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col mx-4 mb-4 ${
               highContrast
@@ -421,18 +422,18 @@ export default function MiniGameScreen({
             )}
           </div>
         </div>
+      </div>
 
-        {/* Keyboard - outside the card, BLURRED when not started */}
-        <div
-          className={`safe-area-bottom pb-4 ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
-        >
-          <OnScreenKeyboard
-            onKeyPress={handleKeyPress}
-            disabled={!gameStarted}
-            checkButtonColor="#ffce00"
-            actionKeyType="tab"
-          />
-        </div>
+      {/* Fixed Keyboard at Bottom - Outside Card */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 pb-safe bg-bg-main pt-3 z-10 ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+      >
+        <OnScreenKeyboard
+          onKeyPress={handleKeyPress}
+          disabled={!gameStarted}
+          checkButtonColor="#ffce00"
+          actionKeyType="tab"
+        />
       </div>
 
       {/* Sidebar Menu */}
