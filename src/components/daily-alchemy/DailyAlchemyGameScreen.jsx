@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
-import { AnimatePresence, motion, useMotionValue, useTransform, useAnimation } from 'framer-motion';
-import { X, Check, Save, Trash2, Loader2, ChevronUp } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
+import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -14,46 +14,31 @@ import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 
 /**
  * ResultAnimation - Shows the result of a combination
- * Auto-dismisses after timeout or on tap/click (except for first discoveries)
- * First discoveries stay on screen until explicitly closed and include a share button
- * Supports swipe-up gesture to select element into first combination slot
+ * Swipe up to select element into first combination slot
+ * Swipe down to dismiss
  */
 function ResultAnimation({ result, onComplete, onSelectElement }) {
   const { reduceMotion, highContrast } = useTheme();
-  const { mediumTap } = useHaptics();
+  const { mediumTap, lightTap } = useHaptics();
   const [copied, setCopied] = useState(false);
-  const [isSwipingUp, setIsSwipingUp] = useState(false);
-  const cardRef = useRef(null);
+  const [swipeDirection, setSwipeDirection] = useState(null); // 'up' | 'down' | null
   const controls = useAnimation();
 
-  // Motion values for drag
+  // Motion value for drag
   const y = useMotionValue(0);
-  const opacity = useTransform(y, [-150, 0], [0, 1]);
-  const scale = useTransform(y, [-150, 0], [0.5, 1]);
 
   // Start the entrance animation on mount
   useEffect(() => {
-    controls.start({ scale: 1, rotate: 0, opacity: 1 });
+    controls.start({ scale: 1, rotate: 0, opacity: 1, y: 0 });
   }, [controls]);
 
-  useEffect(() => {
-    // Don't auto-dismiss for first discoveries - they stay until user closes
-    if (result?.isFirstDiscovery) return;
-
-    // Longer duration: 3.5s normal, 1.5s with reduced motion
-    const timer = setTimeout(
-      () => {
-        onComplete?.();
-      },
-      reduceMotion ? 1500 : 3500
-    );
-
-    return () => clearTimeout(timer);
-  }, [onComplete, reduceMotion, result?.isFirstDiscovery]);
+  // No auto-dismiss - user must swipe
+  // (removed the auto-dismiss timer)
 
   if (!result) return null;
 
-  const handleShare = async () => {
+  const handleShare = async (e) => {
+    e?.stopPropagation();
     const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
 
     if (navigator.share) {
@@ -73,9 +58,12 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   };
 
   const handleDragEnd = async (event, info) => {
-    // Check if swiped up enough (negative y = upward)
-    if (info.offset.y < -80 || info.velocity.y < -300) {
-      setIsSwipingUp(true);
+    const offsetY = info.offset.y;
+    const velocityY = info.velocity.y;
+
+    // Swipe UP - select element into first slot
+    if (offsetY < -60 || velocityY < -400) {
+      setSwipeDirection('up');
 
       // Play plunk sound and haptic
       playPlunkSound();
@@ -83,18 +71,41 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
       // Animate card flying up
       await controls.start({
-        y: -500,
+        y: -600,
         opacity: 0,
         scale: 0.5,
-        transition: { duration: 0.3, ease: 'easeOut' },
+        transition: { duration: 0.25, ease: 'easeOut' },
       });
 
       // Select the element into first slot
       onSelectElement?.({ name: result.element, emoji: result.emoji });
       onComplete?.();
-    } else {
-      // Spring back to original position
-      controls.start({ y: 0, opacity: 1, scale: 1 });
+    }
+    // Swipe DOWN - dismiss
+    else if (offsetY > 60 || velocityY > 400) {
+      setSwipeDirection('down');
+
+      // Light haptic for dismiss
+      lightTap();
+
+      // Animate card flying down
+      await controls.start({
+        y: 600,
+        opacity: 0,
+        scale: 0.8,
+        transition: { duration: 0.25, ease: 'easeOut' },
+      });
+
+      onComplete?.();
+    }
+    // Not enough - spring back
+    else {
+      controls.start({
+        y: 0,
+        opacity: 1,
+        scale: 1,
+        transition: { type: 'spring', stiffness: 400, damping: 25 },
+      });
     }
   };
 
@@ -106,9 +117,8 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       exit={{ opacity: 0 }}
     >
       <motion.div
-        ref={cardRef}
         className={cn(
-          'relative flex flex-col items-center gap-2 p-6',
+          'relative flex flex-col items-center gap-2 px-8 pt-6 pb-4',
           'bg-white dark:bg-gray-800',
           'border-[4px] border-black dark:border-gray-600',
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
@@ -117,46 +127,20 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           'pointer-events-auto cursor-grab active:cursor-grabbing',
           'touch-none select-none'
         )}
-        style={{ y, opacity: isSwipingUp ? opacity : 1, scale: isSwipingUp ? scale : 1 }}
-        initial={!reduceMotion ? { scale: 0, rotate: -10 } : false}
+        style={{ y }}
+        initial={!reduceMotion ? { scale: 0, rotate: -10, opacity: 0 } : { opacity: 0 }}
         animate={controls}
-        exit={!reduceMotion ? { scale: 0, opacity: 0, y: isSwipingUp ? -500 : 0 } : undefined}
+        exit={
+          !reduceMotion
+            ? { scale: 0.5, opacity: 0, y: swipeDirection === 'up' ? -600 : 600 }
+            : { opacity: 0 }
+        }
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         drag="y"
-        dragConstraints={{ top: -200, bottom: 50 }}
-        dragElastic={0.2}
+        dragConstraints={{ top: -150, bottom: 150 }}
+        dragElastic={0.3}
         onDragEnd={handleDragEnd}
-        onClick={result.isFirstDiscovery ? undefined : onComplete}
       >
-        {/* Swipe up hint */}
-        <motion.div
-          className="absolute -top-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center"
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 0.6, y: 0 }}
-          transition={{ delay: 0.5 }}
-        >
-          <ChevronUp className="w-5 h-5 text-gray-500 dark:text-gray-400 animate-bounce" />
-          <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-            swipe to use
-          </span>
-        </motion.div>
-
-        {/* Close button */}
-        <button
-          onClick={(e) => {
-            e.stopPropagation();
-            onComplete?.();
-          }}
-          className={cn(
-            'absolute top-2 right-2',
-            'flex items-center justify-center',
-            'hover:opacity-70',
-            'transition-opacity'
-          )}
-        >
-          <X className="w-5 h-5 text-gray-700 dark:text-gray-200" />
-        </button>
-
         {result.isFirstDiscovery && (
           <motion.div
             className="text-center"
@@ -212,12 +196,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         {/* Share button for first discoveries */}
         {result.isFirstDiscovery && (
           <motion.button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShare();
-            }}
+            onClick={handleShare}
             className={cn(
-              'mt-3 flex items-center justify-center gap-2 px-5 py-2',
+              'mt-2 flex items-center justify-center gap-2 px-5 py-2',
               'bg-yellow-500 text-white',
               'border-[2px] border-black',
               'rounded-xl font-bold text-sm',
@@ -242,6 +223,23 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             )}
           </motion.button>
         )}
+
+        {/* Swipe hints at bottom */}
+        <motion.div
+          className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 w-full"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.7 }}
+          transition={{ delay: 0.6 }}
+        >
+          <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+            <ChevronUp className="w-4 h-4" />
+            <span>use</span>
+          </div>
+          <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+            <ChevronDown className="w-4 h-4" />
+            <span>close</span>
+          </div>
+        </motion.div>
       </motion.div>
     </motion.div>
   );
