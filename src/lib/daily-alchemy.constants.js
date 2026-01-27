@@ -56,6 +56,7 @@ export const SOUP_STORAGE_KEYS = {
   STATS: 'soup_stats',
   COMPLETED_PUZZLES: 'soup_completed',
   PUZZLE_PROGRESS: 'soup_puzzle_progress_',
+  PUZZLE_ATTEMPTED: 'soup_puzzle_attempted_', // Tracks if user has attempted (for leaderboard first-attempt-only)
   STREAK: 'soup_streak',
   LAST_PLAYED_DATE: 'soup_last_played_date',
   ELEMENT_BANK: 'soup_element_bank_',
