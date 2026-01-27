@@ -248,6 +248,18 @@ export function DailyAlchemyGameScreen({
 }) {
   const { highContrast } = useTheme();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [isCreativeMenuOpen, setIsCreativeMenuOpen] = useState(false);
+
+  // Auto-close creative menu after 3 seconds of inactivity
+  useEffect(() => {
+    if (!isCreativeMenuOpen) return;
+
+    const timer = setTimeout(() => {
+      setIsCreativeMenuOpen(false);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [isCreativeMenuOpen]);
 
   // Calculate discovered elements (excluding starters)
   const discoveredCount = sortedElementBank.length - STARTER_ELEMENTS.length;
@@ -285,59 +297,111 @@ export function DailyAlchemyGameScreen({
         />
       )}
 
-      {/* Creative Mode Header with Save/Clear buttons */}
+      {/* Creative Mode Header with collapsible menu */}
       {freePlayMode && (
-        <div className="flex items-center justify-between gap-2 py-2 px-3">
-          {/* Save button */}
+        <div className="flex items-center gap-2 py-2 px-3">
+          {/* Menu toggle button */}
           <button
-            onClick={() => {
-              onSaveCreative?.();
-            }}
-            disabled={isSavingCreative}
+            onClick={() => setIsCreativeMenuOpen(!isCreativeMenuOpen)}
             className={cn(
-              'flex items-center gap-1.5 px-4 py-2',
+              'flex items-center justify-center px-3 py-2',
               'text-sm font-bold',
-              'bg-soup-primary text-white',
+              'text-gray-700 dark:text-gray-300',
+              'bg-gray-100 dark:bg-gray-700',
               'border-[2px] border-black dark:border-gray-600',
               'rounded-xl',
               'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
               'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
               'active:translate-y-0 active:shadow-none',
               'transition-all duration-150',
-              'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-              creativeSaveSuccess && 'bg-green-500',
               highContrast && 'border-[3px] border-hc-border'
             )}
           >
-            {isSavingCreative ? (
-              <Loader2 className="w-4 h-4 animate-spin" />
-            ) : creativeSaveSuccess ? (
-              <Check className="w-4 h-4" />
-            ) : (
-              <Save className="w-4 h-4" />
-            )}
-            <span>{creativeSaveSuccess ? 'Saved!' : 'Save'}</span>
+            Menu
           </button>
 
-          {/* Clear button */}
-          <button
-            onClick={handleClearClick}
-            className={cn(
-              'flex items-center gap-1.5 px-4 py-2',
-              'text-sm font-bold',
-              'bg-red-500 text-white',
-              'border-[2px] border-black dark:border-gray-600',
-              'rounded-xl',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-              'hover:bg-red-600 hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
-              'transition-all duration-150',
-              highContrast && 'border-[3px] border-hc-border'
+          {/* Sliding buttons container */}
+          <AnimatePresence mode="popLayout">
+            {isCreativeMenuOpen && (
+              <motion.div
+                className="flex items-center gap-2 pr-1 pb-1"
+                initial={{ width: 0, opacity: 0 }}
+                animate={{ width: 'auto', opacity: 1 }}
+                exit={{ width: 0, opacity: 0 }}
+                transition={{
+                  duration: 0.25,
+                  ease: [0.4, 0, 0.2, 1],
+                  opacity: { duration: 0.15 },
+                }}
+              >
+                {/* Save button */}
+                <motion.button
+                  onClick={() => {
+                    onSaveCreative?.();
+                  }}
+                  disabled={isSavingCreative}
+                  className={cn(
+                    'flex items-center gap-1.5 px-4 py-2 whitespace-nowrap',
+                    'text-sm font-bold',
+                    'bg-soup-primary text-white',
+                    'border-[2px] border-black dark:border-gray-600',
+                    'rounded-xl',
+                    'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+                    'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    'active:translate-y-0 active:shadow-none',
+                    'transition-all duration-150',
+                    'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+                    creativeSaveSuccess && 'bg-green-500',
+                    highContrast && 'border-[3px] border-hc-border'
+                  )}
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -10, opacity: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: [0.4, 0, 0.2, 1],
+                  }}
+                >
+                  {isSavingCreative ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : creativeSaveSuccess ? (
+                    <Check className="w-4 h-4" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  <span>{creativeSaveSuccess ? 'Saved!' : 'Save'}</span>
+                </motion.button>
+
+                {/* Start Fresh button */}
+                <motion.button
+                  onClick={handleClearClick}
+                  className={cn(
+                    'flex items-center gap-1.5 px-4 py-2 whitespace-nowrap',
+                    'text-sm font-bold',
+                    'bg-red-500 text-white',
+                    'border-[2px] border-black dark:border-gray-600',
+                    'rounded-xl',
+                    'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+                    'hover:bg-red-600 hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    'active:translate-y-0 active:shadow-none',
+                    'transition-all duration-150',
+                    highContrast && 'border-[3px] border-hc-border'
+                  )}
+                  initial={{ x: -10, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  exit={{ x: -10, opacity: 0 }}
+                  transition={{
+                    duration: 0.2,
+                    ease: [0.4, 0, 0.2, 1],
+                    delay: 0.03,
+                  }}
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Start Fresh</span>
+                </motion.button>
+              </motion.div>
             )}
-          >
-            <Trash2 className="w-4 h-4" />
-            <span>Clear</span>
-          </button>
+          </AnimatePresence>
         </div>
       )}
 
@@ -364,9 +428,7 @@ export function DailyAlchemyGameScreen({
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                Clear Creative Mode?
-              </h3>
+              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Start Fresh?</h3>
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 This will delete your saved progress and reset your element bank to the 4 starter
                 elements. This cannot be undone.
@@ -401,7 +463,7 @@ export function DailyAlchemyGameScreen({
                     'transition-all duration-150'
                   )}
                 >
-                  Clear
+                  Start Fresh
                 </button>
               </div>
             </motion.div>
