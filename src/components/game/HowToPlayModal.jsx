@@ -118,7 +118,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="md:w-1/2">
+          <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
                 src="/screenshots/tandem-howto.gif"
@@ -347,7 +347,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="md:w-1/2">
+          <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
                 src="/screenshots/dailymini-howto.gif"
@@ -457,7 +457,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="md:w-1/2">
+          <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
                 src="/screenshots/dailyalchemy-howto.gif"
@@ -738,7 +738,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           </div>
 
           {/* Demo GIF */}
-          <div className="md:w-1/2">
+          <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
                 src="/screenshots/reel-connections-howto.gif"
