@@ -147,6 +147,25 @@ export function DailyAlchemyCompleteScreen({
 
   return (
     <div className="flex flex-col items-center flex-1 overflow-y-auto px-1">
+      {/* Completion Image - Daily mode only */}
+      {!isArchive && (
+        <motion.div
+          className="mb-2"
+          initial={!reduceMotion ? { opacity: 0, scale: 0.8 } : false}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.05 }}
+        >
+          <Image
+            src="/images/dailyalchemy-end.png"
+            alt="Puzzle Complete"
+            width={120}
+            height={120}
+            className="w-[120px] h-[120px]"
+            priority
+          />
+        </motion.div>
+      )}
+
       {/* Congrats Message */}
       <motion.div
         className="text-center mb-4"
