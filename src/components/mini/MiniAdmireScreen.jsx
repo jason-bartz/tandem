@@ -166,7 +166,7 @@ export default function MiniAdmireScreen({
               </div>
 
               {/* Action buttons */}
-              <div className="space-y-2 mt-auto">
+              <div className="space-y-2">
                 <button
                   onClick={() => {
                     lightTap();
