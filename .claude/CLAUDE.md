@@ -4,11 +4,12 @@ This file provides guidance for Claude Code when working with this codebase.
 
 ## Project Overview
 
-Tandem Daily is a PWA and native iOS app featuring three daily puzzle games:
+Tandem Daily is a PWA and native iOS app featuring four daily puzzle games:
 
 - **Daily Tandem** - Emoji word puzzles (4 puzzles/day, 4 mistakes allowed)
 - **Daily Mini** - 5x5 crossword with AI-generated clues
 - **Reel Connections** - Group 16 movies into 4 categories
+- **Daily Alchemy** - Element combination puzzle with time limit
 
 **Live site:** https://www.tandemdaily.com
 

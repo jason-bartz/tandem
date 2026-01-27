@@ -1,6 +1,6 @@
-# Tandem Daily - Three Daily Puzzle Games
+# Tandem Daily - Four Daily Puzzle Games
 
-A progressive web application (PWA) and native iOS app featuring three daily puzzle games: Daily Tandem (emoji word puzzles), Daily Mini (5x5 crossword), and Reel Connections (movie trivia). Built with Next.js 14, Supabase, and Capacitor 5 for seamless cross-platform deployment.
+A progressive web application (PWA) and native iOS app featuring four daily puzzle games: Daily Tandem (emoji word puzzles), Daily Mini (5x5 crossword), Reel Connections (movie trivia), and Daily Alchemy (element combination). Built with Next.js 14, Supabase, and Capacitor 5 for seamless cross-platform deployment.
 
 **Live at:** [www.tandemdaily.com](https://www.tandemdaily.com)
 
@@ -52,7 +52,7 @@ Group 16 movies into four categories that share something in common.
 
 ### Achievements
 
-- **40+ achievements** across all three games
+- **40+ achievements** across all four games
 - **Cross-device sync** via Supabase
 - **Achievement notifications** with celebration animations
 - **Progress tracking** for multi-tier achievements

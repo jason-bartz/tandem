@@ -35,7 +35,7 @@ export default function AboutSection({ onSubscribe }) {
         }`}
       >
         In a world of infinite scrolling and attention-stealing algorithms, we built something
-        different. Three daily puzzles you solve, share with friends, and move on with your day.
+        different. Four daily puzzles you solve, share with friends, and move on with your day.
         Fresh challenges that respect your time. Ad-free forever.
       </p>
 
