@@ -29,6 +29,7 @@ export default function GameCard({
   completed = false,
   completedMessage = 'Completed!',
   animationDelay = 0,
+  showNewBadge = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { lightTap } = useHaptics();
@@ -69,11 +70,25 @@ export default function GameCard({
         },
   };
 
+  const wiggleVariants = {
+    animate: reduceMotion
+      ? {}
+      : {
+          rotate: [0, -6, 6, -6, 6, 0],
+          transition: {
+            duration: 0.6,
+            repeat: Infinity,
+            repeatDelay: 3,
+            ease: 'easeInOut',
+          },
+        },
+  };
+
   return (
     <motion.button
       onClick={handleClick}
       disabled={loading}
-      className={`w-full text-left rounded-[24px] border-[3px] overflow-hidden p-5 transition-shadow cursor-pointer disabled:cursor-wait focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+      className={`relative w-full text-left rounded-[24px] border-[3px] overflow-hidden p-5 transition-shadow cursor-pointer disabled:cursor-wait focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
         highContrast
           ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)] focus-visible:ring-hc-focus'
           : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] focus-visible:ring-accent-blue'
@@ -82,8 +97,20 @@ export default function GameCard({
       initial="initial"
       animate="animate"
       whileTap="tap"
-      aria-label={`Play ${title}${completed ? ' - Completed' : ''}`}
+      aria-label={`Play ${title}${completed ? ' - Completed' : ''}${showNewBadge ? ' - New' : ''}`}
     >
+      {/* New Badge */}
+      {showNewBadge && (
+        <motion.span
+          className={`absolute top-2 right-2 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide rounded-full z-10 ${
+            highContrast ? 'bg-hc-text text-hc-background' : 'bg-accent-blue text-white'
+          }`}
+          variants={wiggleVariants}
+          animate="animate"
+        >
+          new!
+        </motion.span>
+      )}
       <div className="flex items-center gap-4">
         {/* Icon */}
         <div className="w-[52px] h-[52px] flex-shrink-0 relative">
