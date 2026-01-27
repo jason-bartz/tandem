@@ -162,55 +162,22 @@ export function AuthProvider({ children }) {
           }
         })();
 
-        // Sync stats to leaderboard when user signs in
-        // IMPORTANT: Run this completely non-blocking to avoid hanging auth UI
-
-        // Run sync in background without blocking auth flow
-        (async () => {
-          try {
-            // Import dynamically to avoid circular dependencies
-            const { syncStatsToLeaderboardOnAuth } = await import('@/lib/leaderboardSync');
-            const { loadStats } = await import('@/lib/storage');
-            const { loadMiniStats } = await import('@/lib/miniStorage');
-            const storageServiceModule = await import('@/core/storage/storageService');
-            const storageService = storageServiceModule.default;
-            const { SOUP_STORAGE_KEYS } = await import('@/lib/daily-alchemy.constants');
-
-            // Load current stats for all games
-            const [tandemStats, miniStats] = await Promise.all([loadStats(), loadMiniStats()]);
-
-            // Load reel-connections stats from localStorage
-            let reelStats = null;
-            try {
-              const reelStatsRaw = localStorage.getItem('reel-connections-stats');
-              if (reelStatsRaw) {
-                reelStats = JSON.parse(reelStatsRaw);
-              }
-            } catch (e) {
-              logger.error('[AuthProvider] Failed to load reel-connections stats', e);
-            }
-
-            // Load soup stats from storage
-            let soupStats = null;
-            try {
-              const soupStatsRaw = await storageService.get(SOUP_STORAGE_KEYS.STATS);
-              if (soupStatsRaw) {
-                soupStats = JSON.parse(soupStatsRaw);
-              }
-            } catch (e) {
-              logger.error('[AuthProvider] Failed to load soup stats', e);
-            }
-
-            // Sync to leaderboard (non-blocking, fails silently)
-            syncStatsToLeaderboardOnAuth(tandemStats, null, miniStats, reelStats, soupStats).catch(
-              (error) => {
-                logger.error('[AuthProvider] Leaderboard sync failed', error);
-              }
-            );
-          } catch (error) {
-            logger.error('[AuthProvider] Failed to sync stats to leaderboard', error);
-          }
-        })();
+        // NOTE: Leaderboard sync on sign-in has been REMOVED
+        //
+        // Why: Syncing local storage stats to leaderboard on sign-in caused
+        // cross-account contamination on shared devices. Local storage stats
+        // from previous users would be incorrectly attributed to new accounts.
+        //
+        // How major games handle this:
+        // - Wordle/NYT: Server-authoritative, fetch FROM server on login
+        // - Clash of Clans: Account-bound, no automatic merging
+        // - Pokemon GO: 100% server-side, local is UI cache only
+        //
+        // The correct approach: Leaderboard entries are ONLY created/updated
+        // when a user actually plays a game and sets a new best streak.
+        // See: leaderboardSync.syncCurrentStreakToLeaderboard() which is called
+        // from individual game hooks (useGameWithInitialData, useMiniGame, etc.)
+        // after a win that matches/exceeds the best streak.
 
         // Sync achievements when user signs in (non-blocking)
         // This merges local achievements with database for cross-device persistence
@@ -495,6 +462,30 @@ export function AuthProvider({ children }) {
       } catch (clearError) {
         // Non-critical - continue with sign out
         logger.warn('[Auth] Could not clear iOS preferences', clearError);
+      }
+
+      // Clear anonymous/shared storage keys to prevent cross-account contamination
+      // This ensures the next user who signs in won't inherit previous user's stats
+      try {
+        const storageServiceModule = await import('@/core/storage/storageService');
+        const storageServiceInst = storageServiceModule.default;
+        const { SOUP_STORAGE_KEYS } = await import('@/lib/daily-alchemy.constants');
+        const { STORAGE_KEYS, MINI_STORAGE_KEYS } = await import('@/lib/constants');
+
+        // Clear anonymous stats keys that could leak to new accounts
+        // NOTE: User-namespaced keys (e.g., tandem_stats_user_{id}) are kept
+        // so users can sign back in and recover their data
+        await Promise.allSettled([
+          storageServiceInst.remove('reel-connections-stats'),
+          storageServiceInst.remove(SOUP_STORAGE_KEYS.STATS),
+          storageServiceInst.remove(STORAGE_KEYS.STATS), // tandem_stats (anonymous key)
+          storageServiceInst.remove(MINI_STORAGE_KEYS.STATS), // mini_stats (anonymous key)
+        ]);
+
+        logger.debug('[Auth] Cleared anonymous stats keys on sign-out');
+      } catch (clearStatsError) {
+        // Non-critical - continue with sign out
+        logger.warn('[Auth] Could not clear anonymous stats', clearStatsError);
       }
 
       if (error) throw error;

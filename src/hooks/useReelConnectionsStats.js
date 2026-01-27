@@ -222,8 +222,8 @@ export function useReelConnectionsStats() {
             const mergedStats = mergeReelStats(localStats, dbStats);
 
             // Save merged stats locally (with quota handling and IndexedDB fallback)
+            // NOTE: Only save to user-namespaced key to prevent cross-account contamination
             await storageService.set(storageKey, JSON.stringify(mergedStats));
-            await storageService.set(STORAGE_KEY, JSON.stringify(mergedStats));
 
             // Save merged stats to database (fire-and-forget)
             saveUserReelStatsToDatabase(mergedStats).catch((err) => {
@@ -264,10 +264,9 @@ export function useReelConnectionsStats() {
       try {
         const storageKey = currentStorageKeyRef.current;
         // Use storageService with quota handling and IndexedDB fallback
+        // NOTE: Only save to user-namespaced key (or anonymous key for non-auth users)
+        // to prevent cross-account contamination on shared devices
         await storageService.set(storageKey, JSON.stringify(stats));
-
-        // Also save to default key for leaderboard sync to find
-        await storageService.set(STORAGE_KEY, JSON.stringify(stats));
 
         // If user is authenticated, sync to database (fire-and-forget)
         if (user?.id && stats.gamesPlayed > 0) {
