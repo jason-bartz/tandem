@@ -26,7 +26,7 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
   const learnToPlayKey = `${gameType}LearnToPlayDismissed`;
   const hintTutorialKey = `${gameType}HintTutorialDismissed`;
 
-  // Check localStorage and show banner after delay
+  // Check localStorage and show banner after learn-to-play is dismissed
   useEffect(() => {
     if (typeof window === 'undefined') return;
 
@@ -42,19 +42,31 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
       return;
     }
 
-    // Only show if learn to play banner was already interacted with
+    // Check if learn to play is already dismissed
     const isLearnToPlayDismissed = localStorage.getItem(learnToPlayKey);
-    if (isLearnToPlayDismissed !== 'true') {
-      return;
+    if (isLearnToPlayDismissed === 'true') {
+      // Already dismissed, show banner after delay
+      setShouldRender(true);
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 1500);
+      return () => clearTimeout(timer);
     }
 
-    // Show banner after 1.5 second delay (slightly after learn to play would appear)
-    setShouldRender(true);
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 1500);
+    // Poll for learn-to-play dismissal (fires in same tab, unlike storage event)
+    const pollInterval = setInterval(() => {
+      const dismissed = localStorage.getItem(learnToPlayKey);
+      if (dismissed === 'true') {
+        clearInterval(pollInterval);
+        setShouldRender(true);
+        // Show banner after 1.5 second delay once learn-to-play is dismissed
+        setTimeout(() => {
+          setIsVisible(true);
+        }, 1500);
+      }
+    }, 500);
 
-    return () => clearTimeout(timer);
+    return () => clearInterval(pollInterval);
   }, [learnToPlayKey, hintTutorialKey, hasUsedHint]);
 
   // Hide banner when player uses a hint
