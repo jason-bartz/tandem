@@ -27,6 +27,7 @@ import {
   getRandomMessage,
   CONGRATS_MESSAGES,
   GAME_OVER_MESSAGES,
+  getEmojiCategory,
 } from '@/lib/daily-alchemy.constants';
 
 /**
@@ -1527,6 +1528,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         if (aIsFirst && !bIsFirst) return -1;
         if (!aIsFirst && bIsFirst) return 1;
         return 0; // Keep original order (newest) within each group
+      });
+    } else if (sortOrder === SORT_OPTIONS.EMOJI) {
+      // Sort by emoji category (iOS keyboard order), then alphabetically within category
+      sorted.sort((a, b) => {
+        const categoryA = getEmojiCategory(a.emoji);
+        const categoryB = getEmojiCategory(b.emoji);
+        if (categoryA !== categoryB) return categoryA - categoryB;
+        // Within same category, sort alphabetically by name
+        return a.name.localeCompare(b.name);
       });
     }
     // NEWEST is default order (newest first, which is how we add them)

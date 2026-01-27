@@ -275,36 +275,12 @@ export function DailyAlchemyCompleteScreen({
         </button>
       </motion.div>
 
-      {/* Play Archive Button */}
-      {onViewArchive && (
-        <motion.button
-          onClick={onViewArchive}
-          className={cn(
-            'w-full max-w-sm flex items-center justify-center gap-2 py-3 mt-3',
-            'bg-soup-light dark:bg-soup-primary/30',
-            'text-soup-dark dark:text-soup-primary',
-            'border-[3px] border-black dark:border-gray-600',
-            'rounded-xl font-bold',
-            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
-            'transition-all duration-150',
-            highContrast && 'border-[4px] border-hc-border'
-          )}
-          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-        >
-          <span>Play the Archive</span>
-        </motion.button>
-      )}
-
       {/* Leaderboard Button */}
       <motion.div
         className="w-full max-w-sm mt-3"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.45 }}
       >
         <button
           onClick={() => setShowLeaderboard(true)}
@@ -324,6 +300,34 @@ export function DailyAlchemyCompleteScreen({
           Leaderboard
         </button>
       </motion.div>
+
+      {/* Play Archive Button */}
+      {onViewArchive && !isArchive && (
+        <motion.div
+          className="w-full max-w-sm mt-3"
+          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <button
+            onClick={onViewArchive}
+            className={cn(
+              'w-full flex items-center justify-center gap-2 px-6 py-3',
+              'bg-gray-200 dark:bg-gray-700',
+              'text-gray-800 dark:text-gray-200',
+              'border-[3px] border-black dark:border-gray-600',
+              'rounded-xl font-bold',
+              'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
+              'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
+              'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+              'transition-all duration-150',
+              highContrast && 'border-[4px]'
+            )}
+          >
+            Play Archive
+          </button>
+        </motion.div>
+      )}
 
       {/* Creative Mode Section */}
       <motion.div
