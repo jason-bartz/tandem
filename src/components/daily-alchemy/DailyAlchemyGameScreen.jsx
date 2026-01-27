@@ -228,14 +228,14 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         <motion.div
           className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 w-full"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.7 }}
+          animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
         >
-          <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
             <ChevronUp className="w-4 h-4" />
             <span>use</span>
           </div>
-          <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500">
+          <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400">
             <ChevronDown className="w-4 h-4" />
             <span>close</span>
           </div>
