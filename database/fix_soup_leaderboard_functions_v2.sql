@@ -63,6 +63,7 @@ $$ LANGUAGE plpgsql;
 
 -- =====================================================
 -- 2. RESTORE get_streak_leaderboard with soup support
+-- Includes both real users AND bots (no is_bot filter)
 -- =====================================================
 CREATE FUNCTION get_streak_leaderboard(
   p_game_type TEXT,
@@ -76,6 +77,7 @@ RETURNS TABLE (
   rank BIGINT,
   submitted_at TIMESTAMPTZ,
   metadata JSONB,
+  is_bot BOOLEAN,
   avatar_image_path TEXT
 ) AS $$
 BEGIN
@@ -89,18 +91,19 @@ BEGIN
     SELECT
       le.id as entry_id,
       le.user_id,
-      u.username as display_name,
+      COALESCE(le.bot_username, u.username) as display_name,
       le.score,
       RANK() OVER (ORDER BY le.score DESC) as rank,
       le.created_at as submitted_at,
       le.metadata,
-      av.image_path as avatar_image_path
+      le.is_bot,
+      COALESCE(bot_av.image_path, user_av.image_path) as avatar_image_path
     FROM leaderboard_entries le
     LEFT JOIN users u ON le.user_id = u.id
-    LEFT JOIN avatars av ON u.selected_avatar_id = av.id
+    LEFT JOIN avatars user_av ON u.selected_avatar_id = user_av.id
+    LEFT JOIN avatars bot_av ON le.bot_avatar_id = bot_av.id
     WHERE le.game_type = p_game_type
       AND le.leaderboard_type = 'best_streak'
-      AND le.is_bot = FALSE
     ORDER BY le.score DESC
   )
   SELECT * FROM ranked_entries
