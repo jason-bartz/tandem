@@ -152,10 +152,7 @@ export default function AdmireScreen({
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1">
-                      <span className="text-2xl">{puzzleItem.emoji1}</span>
-                      <span className="text-2xl">{puzzleItem.emoji2}</span>
-                    </div>
+                    <span className="text-2xl">{puzzleItem.emoji || '❓❓'}</span>
                     <div
                       className={`text-lg font-bold ${
                         highContrast ? 'text-hc-text' : 'text-green-700 dark:text-green-300'
