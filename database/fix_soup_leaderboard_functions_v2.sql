@@ -1,11 +1,117 @@
 -- =====================================================
--- FIX SOUP LEADERBOARD FUNCTIONS
--- Updates all leaderboard functions to accept 'soup' game type
--- The table constraint was updated but the functions were not
+-- FIX SOUP LEADERBOARD FUNCTIONS V2
+-- Restores proper function signatures with bot support
+-- and adds 'soup' game type to all leaderboard functions
 -- =====================================================
 
--- Step 1: Update submit_leaderboard_score function
-CREATE OR REPLACE FUNCTION submit_leaderboard_score(
+-- Drop existing functions to ensure clean slate
+DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
+DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
+DROP FUNCTION IF EXISTS get_user_daily_rank(UUID, TEXT, DATE);
+DROP FUNCTION IF EXISTS submit_leaderboard_score(UUID, TEXT, TEXT, DATE, INTEGER, JSONB);
+
+-- =====================================================
+-- 1. RESTORE get_daily_leaderboard with soup support
+-- =====================================================
+CREATE FUNCTION get_daily_leaderboard(
+  p_game_type TEXT,
+  p_puzzle_date DATE,
+  p_limit INTEGER DEFAULT 10
+)
+RETURNS TABLE (
+  entry_id UUID,
+  user_id UUID,
+  display_name TEXT,
+  score INTEGER,
+  rank BIGINT,
+  submitted_at TIMESTAMPTZ,
+  metadata JSONB,
+  is_bot BOOLEAN,
+  avatar_image_path TEXT
+) AS $$
+BEGIN
+  -- Validate game type (includes 'soup')
+  IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
+    RAISE EXCEPTION 'Invalid game type: %', p_game_type;
+  END IF;
+
+  RETURN QUERY
+  WITH ranked_entries AS (
+    SELECT
+      le.id as entry_id,
+      le.user_id,
+      COALESCE(le.bot_username, u.username) as display_name,
+      le.score,
+      RANK() OVER (ORDER BY le.score ASC) as rank,
+      le.created_at as submitted_at,
+      le.metadata,
+      le.is_bot,
+      COALESCE(bot_av.image_path, user_av.image_path) as avatar_image_path
+    FROM leaderboard_entries le
+    LEFT JOIN users u ON le.user_id = u.id
+    LEFT JOIN avatars user_av ON u.selected_avatar_id = user_av.id
+    LEFT JOIN avatars bot_av ON le.bot_avatar_id = bot_av.id
+    WHERE le.game_type = p_game_type
+      AND le.leaderboard_type = 'daily_speed'
+      AND le.puzzle_date = p_puzzle_date
+    ORDER BY le.score ASC
+  )
+  SELECT * FROM ranked_entries
+  LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- 2. RESTORE get_streak_leaderboard with soup support
+-- =====================================================
+CREATE FUNCTION get_streak_leaderboard(
+  p_game_type TEXT,
+  p_limit INTEGER DEFAULT 10
+)
+RETURNS TABLE (
+  entry_id UUID,
+  user_id UUID,
+  display_name TEXT,
+  score INTEGER,
+  rank BIGINT,
+  submitted_at TIMESTAMPTZ,
+  metadata JSONB,
+  avatar_image_path TEXT
+) AS $$
+BEGIN
+  -- Validate game type (includes 'soup')
+  IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
+    RAISE EXCEPTION 'Invalid game type: %', p_game_type;
+  END IF;
+
+  RETURN QUERY
+  WITH ranked_entries AS (
+    SELECT
+      le.id as entry_id,
+      le.user_id,
+      u.username as display_name,
+      le.score,
+      RANK() OVER (ORDER BY le.score DESC) as rank,
+      le.created_at as submitted_at,
+      le.metadata,
+      av.image_path as avatar_image_path
+    FROM leaderboard_entries le
+    LEFT JOIN users u ON le.user_id = u.id
+    LEFT JOIN avatars av ON u.selected_avatar_id = av.id
+    WHERE le.game_type = p_game_type
+      AND le.leaderboard_type = 'best_streak'
+      AND le.is_bot = FALSE
+    ORDER BY le.score DESC
+  )
+  SELECT * FROM ranked_entries
+  LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql;
+
+-- =====================================================
+-- 3. RESTORE submit_leaderboard_score with soup support
+-- =====================================================
+CREATE FUNCTION submit_leaderboard_score(
   p_user_id UUID,
   p_game_type TEXT,
   p_leaderboard_type TEXT,
@@ -19,7 +125,7 @@ DECLARE
   v_existing_score INTEGER;
   v_last_submission TIMESTAMP;
 BEGIN
-  -- Validate game type (now includes 'soup')
+  -- Validate game type (includes 'soup')
   IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
     RAISE EXCEPTION 'Invalid game type: %', p_game_type;
   END IF;
@@ -116,89 +222,10 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Step 2: Update get_daily_leaderboard function
-DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
-CREATE OR REPLACE FUNCTION get_daily_leaderboard(
-  p_game_type TEXT,
-  p_puzzle_date DATE,
-  p_limit INTEGER DEFAULT 10
-)
-RETURNS TABLE (
-  user_id UUID,
-  username TEXT,
-  avatar_url TEXT,
-  avatar_image_path TEXT,
-  score INTEGER,
-  metadata JSONB
-) AS $$
-BEGIN
-  -- Validate game type (now includes 'soup')
-  IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
-    RAISE EXCEPTION 'Invalid game type: %', p_game_type;
-  END IF;
-
-  RETURN QUERY
-  SELECT
-    le.user_id,
-    u.username,
-    u.avatar_url,
-    u.avatar_image_path,
-    le.score,
-    le.metadata
-  FROM leaderboard_entries le
-  JOIN users u ON u.id = le.user_id
-  LEFT JOIN leaderboard_preferences lp ON lp.user_id = le.user_id
-  WHERE le.game_type = p_game_type
-    AND le.leaderboard_type = 'daily_speed'
-    AND le.puzzle_date = p_puzzle_date
-    AND (lp.enabled IS NULL OR lp.enabled = true)
-  ORDER BY le.score ASC -- Lower time is better
-  LIMIT p_limit;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Step 3: Update get_streak_leaderboard function
-DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
-CREATE OR REPLACE FUNCTION get_streak_leaderboard(
-  p_game_type TEXT,
-  p_limit INTEGER DEFAULT 10
-)
-RETURNS TABLE (
-  user_id UUID,
-  username TEXT,
-  avatar_url TEXT,
-  avatar_image_path TEXT,
-  score INTEGER,
-  updated_at TIMESTAMP
-) AS $$
-BEGIN
-  -- Validate game type (now includes 'soup')
-  IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
-    RAISE EXCEPTION 'Invalid game type: %', p_game_type;
-  END IF;
-
-  RETURN QUERY
-  SELECT
-    le.user_id,
-    u.username,
-    u.avatar_url,
-    u.avatar_image_path,
-    le.score,
-    le.updated_at
-  FROM leaderboard_entries le
-  JOIN users u ON u.id = le.user_id
-  LEFT JOIN leaderboard_preferences lp ON lp.user_id = le.user_id
-  WHERE le.game_type = p_game_type
-    AND le.leaderboard_type = 'best_streak'
-    AND (lp.enabled IS NULL OR lp.enabled = true)
-  ORDER BY le.score DESC -- Higher streak is better
-  LIMIT p_limit;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Step 4: Update get_user_daily_rank function
-DROP FUNCTION IF EXISTS get_user_daily_rank(UUID, TEXT, DATE);
-CREATE OR REPLACE FUNCTION get_user_daily_rank(
+-- =====================================================
+-- 4. RESTORE get_user_daily_rank with soup support
+-- =====================================================
+CREATE FUNCTION get_user_daily_rank(
   p_user_id UUID,
   p_game_type TEXT,
   p_puzzle_date DATE
@@ -208,7 +235,7 @@ RETURNS TABLE (
   rank BIGINT
 ) AS $$
 BEGIN
-  -- Validate game type (now includes 'soup')
+  -- Validate game type (includes 'soup')
   IF p_game_type NOT IN ('tandem', 'cryptic', 'mini', 'reel', 'soup') THEN
     RAISE EXCEPTION 'Invalid game type: %', p_game_type;
   END IF;
@@ -232,7 +259,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Verify the functions were updated
+-- =====================================================
+-- Verify functions exist
+-- =====================================================
 SELECT proname, pronargs
 FROM pg_proc
 WHERE proname IN (
