@@ -115,12 +115,16 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [isSavingCreative, setIsSavingCreative] = useState(false);
   const [creativeSaveSuccess, setCreativeSaveSuccess] = useState(false);
   const [isLoadingCreative, setIsLoadingCreative] = useState(false);
+  const [creativeLoadComplete, setCreativeLoadComplete] = useState(false); // Tracks if initial load finished
 
   // Autosave state for Creative Mode
   const [isAutoSaving, setIsAutoSaving] = useState(false);
   const [autoSaveComplete, setAutoSaveComplete] = useState(false);
   const lastAutoSaveDiscoveryCount = useRef(0); // Track discoveries at last autosave
   const lastAutoSaveFirstDiscoveryCount = useRef(0); // Track first discoveries at last autosave
+
+  // Track user ID to detect account switches
+  const previousUserIdRef = useRef(user?.id);
 
   // Saved progress state - tracks if there's a game in progress to resume
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
@@ -146,6 +150,61 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialDate, isFreePlay]);
+
+  // CRITICAL: Reset Creative Mode state when user changes (account switching)
+  // This prevents User X's in-memory state from being saved under User Y's account
+  useEffect(() => {
+    const currentUserId = user?.id;
+    const previousUserId = previousUserIdRef.current;
+
+    // Detect user change (including logout -> login with different account)
+    if (previousUserId !== currentUserId) {
+      logger.info('[DailyAlchemy] User changed, resetting Creative Mode state', {
+        previousUserId: previousUserId || 'none',
+        currentUserId: currentUserId || 'none',
+      });
+
+      // Reset Creative Mode state to prevent cross-account contamination
+      if (freePlayMode) {
+        // If we were in Creative Mode, exit it completely
+        setFreePlayMode(false);
+        setGameState(SOUP_GAME_STATES.WELCOME);
+        setHasStarted(false);
+      }
+
+      // Reset element bank to starter elements
+      setElementBank([...STARTER_ELEMENTS]);
+      discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+
+      // Reset all game stats
+      setMovesCount(0);
+      setNewDiscoveries(0);
+      setFirstDiscoveries(0);
+      setFirstDiscoveryElements([]);
+      setRecentElements([]);
+      setCombinationPath([]);
+
+      // Reset Creative Mode save state
+      setCreativeLoadComplete(false);
+      setIsSavingCreative(false);
+      setCreativeSaveSuccess(false);
+      setIsLoadingCreative(false);
+
+      // Reset autosave tracking refs
+      lastAutoSaveDiscoveryCount.current = 0;
+      lastAutoSaveFirstDiscoveryCount.current = 0;
+      setIsAutoSaving(false);
+      setAutoSaveComplete(false);
+
+      // Reset selections
+      setSelectedA(null);
+      setSelectedB(null);
+      setLastResult(null);
+
+      // Update the ref to track new user
+      previousUserIdRef.current = currentUserId;
+    }
+  }, [user?.id, freePlayMode]);
 
   // Timer effect (disabled in free play mode)
   // Tracks both elapsed time (for stats) and remaining time (countdown for daily mode)
@@ -568,6 +627,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    */
   const startFreePlay = useCallback(async () => {
     playSoupStartSound();
+
+    // IMPORTANT: Reset autosave tracking before loading to prevent stale data saves
+    // This ensures we don't autosave old state while loading new state
+    setCreativeLoadComplete(false);
+    lastAutoSaveDiscoveryCount.current = 0;
+    lastAutoSaveFirstDiscoveryCount.current = 0;
+
     setFreePlayMode(true);
     setIsComplete(false);
     setHasStarted(true);
@@ -599,6 +665,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       setNewDiscoveries(savedGame.totalDiscoveries || 0);
       setFirstDiscoveries(savedGame.firstDiscoveries || 0);
       setFirstDiscoveryElements(savedGame.firstDiscoveryElements || []);
+
+      // Sync autosave refs with loaded state to prevent immediate autosave
+      lastAutoSaveDiscoveryCount.current = savedGame.totalDiscoveries || 0;
+      lastAutoSaveFirstDiscoveryCount.current = savedGame.firstDiscoveries || 0;
     } else {
       // Fresh start
       setElementBank([...STARTER_ELEMENTS]);
@@ -612,6 +682,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCombinationPath([]);
     setRecentElements([]);
     setGameState(SOUP_GAME_STATES.PLAYING);
+
+    // Mark load as complete - autosave is now safe to run
+    setCreativeLoadComplete(true);
   }, [loadCreativeSave]);
 
   /**
@@ -715,6 +788,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       setSelectedB(null);
       setLastResult(null);
 
+      // Reset autosave tracking refs to match cleared state
+      lastAutoSaveDiscoveryCount.current = 0;
+      lastAutoSaveFirstDiscoveryCount.current = 0;
+
       return true;
     } catch (err) {
       logger.error('[DailyAlchemy] Failed to clear creative save', { error: err.message });
@@ -731,6 +808,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   useEffect(() => {
     // Only autosave in Creative Mode with authenticated user
     if (!freePlayMode || !user || !hasStarted) return;
+
+    // CRITICAL: Don't autosave until initial load is complete
+    // This prevents saving stale/previous user data during the load phase
+    if (!creativeLoadComplete) return;
 
     // Don't autosave if already saving
     if (isSavingCreative || isAutoSaving) return;
@@ -793,6 +874,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     freePlayMode,
     user,
     hasStarted,
+    creativeLoadComplete,
     newDiscoveries,
     firstDiscoveries,
     firstDiscoveryElements,
