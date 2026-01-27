@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -106,6 +106,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     elapsedTime,
     remainingTime,
     formatTime,
+    pauseTimer,
+    resumeTimer,
 
     // Stats
     movesCount,
@@ -146,6 +148,18 @@ export function DailyAlchemyGame({ initialDate = null }) {
     targetEmoji,
     parMoves,
   } = useDailyAlchemyGame(initialDate);
+
+  // Pause timer when sidebar or modals are open, resume when closed
+  const isAnyModalOpen =
+    isSidebarOpen || showStats || showArchive || showHowToPlay || showSettings || showFeedback;
+
+  useEffect(() => {
+    if (isAnyModalOpen) {
+      pauseTimer();
+    } else {
+      resumeTimer();
+    }
+  }, [isAnyModalOpen, pauseTimer, resumeTimer]);
 
   // Render based on game state
   if (loading) {

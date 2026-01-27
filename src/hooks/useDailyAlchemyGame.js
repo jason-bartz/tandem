@@ -90,7 +90,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
   const [remainingTime, setRemainingTime] = useState(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Countdown timer for daily mode
-  const isPaused = false; // Timer pause functionality not yet implemented
+  const [isPaused, setIsPaused] = useState(false);
+  const pausedAtRef = useRef(null); // Track when we paused to calculate elapsed time correctly
   const [isGameOver, setIsGameOver] = useState(false);
 
   // Stats tracking
@@ -118,6 +119,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Saved progress state - tracks if there's a game in progress to resume
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
   const pendingSavedState = useRef(null);
+
+  // First attempt tracking - only first successful attempt counts for leaderboard
+  const [isFirstAttempt, setIsFirstAttempt] = useState(true);
 
   // Refs for tracking
   const discoveredElements = useRef(new Set(['Earth', 'Water', 'Fire', 'Wind']));
@@ -152,6 +156,80 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       return () => clearInterval(interval);
     }
   }, [gameState, hasStarted, isPaused, startTime, freePlayMode]);
+
+  /**
+   * Pause the timer and save current elapsed time
+   */
+  const pauseTimer = useCallback(() => {
+    if (freePlayMode || isPaused || !hasStarted) return;
+
+    // Calculate and save current elapsed time before pausing
+    if (startTime) {
+      const currentElapsed = Math.floor((Date.now() - startTime) / 1000);
+      setElapsedTime(currentElapsed);
+      pausedAtRef.current = currentElapsed;
+    }
+
+    setIsPaused(true);
+    logger.info('[ElementSoup] Timer paused', { elapsedTime: pausedAtRef.current });
+  }, [freePlayMode, isPaused, hasStarted, startTime]);
+
+  /**
+   * Resume the timer from where it was paused
+   */
+  const resumeTimer = useCallback(() => {
+    if (freePlayMode || !isPaused || !hasStarted) return;
+
+    // Recalculate startTime based on elapsed time when we paused
+    const savedElapsed = pausedAtRef.current ?? elapsedTime;
+    setStartTime(Date.now() - savedElapsed * 1000);
+    pausedAtRef.current = null;
+
+    setIsPaused(false);
+    logger.info('[ElementSoup] Timer resumed', { elapsedTime: savedElapsed });
+  }, [freePlayMode, isPaused, hasStarted, elapsedTime]);
+
+  // Visibility change handler - pause timer when app/tab loses focus
+  useEffect(() => {
+    if (freePlayMode || !hasStarted || isComplete || isGameOver) return;
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        // Tab/app is hidden - pause timer
+        if (!isPaused && gameState === SOUP_GAME_STATES.PLAYING) {
+          // Calculate and save current elapsed time before pausing
+          if (startTime) {
+            const currentElapsed = Math.floor((Date.now() - startTime) / 1000);
+            setElapsedTime(currentElapsed);
+            pausedAtRef.current = currentElapsed;
+          }
+          setIsPaused(true);
+          logger.info('[ElementSoup] Timer paused due to visibility change');
+        }
+      } else {
+        // Tab/app is visible again - resume timer
+        if (isPaused && gameState === SOUP_GAME_STATES.PLAYING) {
+          const savedElapsed = pausedAtRef.current ?? elapsedTime;
+          setStartTime(Date.now() - savedElapsed * 1000);
+          pausedAtRef.current = null;
+          setIsPaused(false);
+          logger.info('[ElementSoup] Timer resumed after visibility change');
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [
+    freePlayMode,
+    hasStarted,
+    isComplete,
+    isGameOver,
+    isPaused,
+    gameState,
+    startTime,
+    elapsedTime,
+  ]);
 
   // Auto-save progress effect - only triggers on meaningful state changes
   // Note: elapsedTime intentionally excluded to avoid saving every second
@@ -211,6 +289,16 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setPuzzle(data.puzzle);
         setIsArchive(isArchivePuzzle);
         puzzleDateRef.current = targetDate;
+
+        // Check if this puzzle was previously attempted (for leaderboard first-attempt-only)
+        try {
+          const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${targetDate}`;
+          const wasAttempted = localStorage.getItem(attemptedKey);
+          setIsFirstAttempt(!wasAttempted);
+        } catch (err) {
+          // If localStorage fails, assume first attempt
+          setIsFirstAttempt(true);
+        }
 
         // Store solution path for hints
         if (data.puzzle.solutionPath) {
@@ -326,6 +414,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Timer calculates: elapsed = (Date.now() - startTime) / 1000
     // So we need: startTime = Date.now() - (elapsedTime * 1000)
     setStartTime(Date.now() - restoredElapsed * 1000);
+    setIsPaused(false);
+    pausedAtRef.current = null;
 
     setHasStarted(true);
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -387,6 +477,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     hintsRemaining,
   ]);
 
+  // Save progress immediately when timer is paused (ensures elapsedTime is saved before user exits)
+  useEffect(() => {
+    if (isPaused && hasStarted && puzzle && user && !isComplete && !freePlayMode) {
+      saveProgress();
+    }
+  }, [isPaused, hasStarted, puzzle, user, isComplete, freePlayMode, saveProgress]);
+
   /**
    * Start the game
    */
@@ -420,6 +517,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS);
+    setIsPaused(false);
+    pausedAtRef.current = null;
 
     setGameState(SOUP_GAME_STATES.PLAYING);
     setHasStarted(true);
@@ -823,6 +922,11 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     try {
       localStorage.setItem(key, JSON.stringify(completionState));
+      // Also mark as attempted (for leaderboard first-attempt tracking)
+      if (!freePlayMode) {
+        const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${puzzleDateRef.current}`;
+        localStorage.setItem(attemptedKey, 'true');
+      }
     } catch (err) {
       logger.error('[ElementSoup] Failed to save completion', { error: err.message });
     }
@@ -880,24 +984,28 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         logger.error('[ElementSoup] Failed to record stats', { error: err.message });
       }
 
-      // Submit to leaderboard
-      try {
-        await capacitorFetch(
-          getApiUrl('/api/leaderboard/daily'),
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              gameType: 'soup',
-              puzzleDate: puzzleDateRef.current,
-              score: elapsedTime,
-              metadata: { movesCount, firstDiscoveries, newDiscoveries },
-            }),
-          },
-          true // Include auth
-        );
-      } catch (err) {
-        logger.error('[ElementSoup] Failed to submit to leaderboard', { error: err.message });
+      // Submit to leaderboard (only on first attempt - retries after failure don't count)
+      if (isFirstAttempt) {
+        try {
+          await capacitorFetch(
+            getApiUrl('/api/leaderboard/daily'),
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                gameType: 'soup',
+                puzzleDate: puzzleDateRef.current,
+                score: elapsedTime,
+                metadata: { movesCount, firstDiscoveries, newDiscoveries },
+              }),
+            },
+            true // Include auth
+          );
+        } catch (err) {
+          logger.error('[ElementSoup] Failed to submit to leaderboard', { error: err.message });
+        }
+      } else {
+        logger.info('[ElementSoup] Skipping leaderboard submission - not first attempt');
       }
     }
   }, [
@@ -912,6 +1020,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     elapsedTime,
     newDiscoveries,
     firstDiscoveries,
+    isFirstAttempt,
   ]);
 
   /**
@@ -925,6 +1034,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setIsGameOver(true);
     setGameState(SOUP_GAME_STATES.GAME_OVER);
 
+    // Mark this puzzle as attempted (so retries don't count for leaderboard)
+    if (puzzleDateRef.current && !freePlayMode) {
+      try {
+        const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${puzzleDateRef.current}`;
+        localStorage.setItem(attemptedKey, 'true');
+        setIsFirstAttempt(false);
+      } catch (err) {
+        logger.error('[ElementSoup] Failed to save attempted marker', { error: err.message });
+      }
+    }
+
     // Play failure sound
     playFailureSound();
 
@@ -932,7 +1052,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCompletionStats({
       gameOverMessage: getRandomMessage(GAME_OVER_MESSAGES),
     });
-  }, [isGameOver, isComplete]);
+  }, [isGameOver, isComplete, freePlayMode]);
 
   // Game over effect - triggers when time runs out in daily mode
   useEffect(() => {
@@ -1001,6 +1121,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Reset countdown
+    setIsPaused(false);
+    pausedAtRef.current = null;
     setGameState(SOUP_GAME_STATES.PLAYING);
     setHasStarted(true);
 
@@ -1264,6 +1386,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     elapsedTime,
     remainingTime,
     isPaused,
+    pauseTimer,
+    resumeTimer,
     formatTime,
     timeLimit: SOUP_CONFIG.TIME_LIMIT_SECONDS,
 
