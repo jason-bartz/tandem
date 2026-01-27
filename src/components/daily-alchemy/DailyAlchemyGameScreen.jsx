@@ -276,6 +276,7 @@ export function DailyAlchemyGameScreen({
   formatTime,
 
   // Element bank
+  elementBank,
   sortedElementBank,
   sortOrder,
   setSortOrder,
@@ -340,8 +341,8 @@ export function DailyAlchemyGameScreen({
     return () => clearTimeout(timer);
   }, [isCreativeMenuOpen]);
 
-  // Calculate discovered elements (excluding starters)
-  const discoveredCount = sortedElementBank.length - STARTER_ELEMENTS.length;
+  // Calculate discovered elements (excluding starters) - use unfiltered elementBank for accurate count
+  const discoveredCount = elementBank.length - STARTER_ELEMENTS.length;
 
   // Handle clear with confirmation
   const handleClearClick = () => {

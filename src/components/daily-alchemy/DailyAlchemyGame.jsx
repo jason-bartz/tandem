@@ -81,6 +81,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     isArchive,
 
     // Element bank
+    elementBank,
     sortedElementBank,
     sortOrder,
     setSortOrder,
@@ -274,6 +275,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   remainingTime={remainingTime}
                   movesCount={movesCount}
                   formatTime={formatTime}
+                  elementBank={elementBank}
                   sortedElementBank={sortedElementBank}
                   sortOrder={sortOrder}
                   setSortOrder={setSortOrder}
