@@ -77,6 +77,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Selection state
   const [selectedA, setSelectedA] = useState(null);
   const [selectedB, setSelectedB] = useState(null);
+  const [isAutoSelectedA, setIsAutoSelectedA] = useState(false); // Track if slot A was auto-selected after combination
 
   // Combination state
   const [isCombining, setIsCombining] = useState(false); // API loading state
@@ -725,6 +726,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Play plunk sound when selecting an element
     playPlunkSound();
 
+    // Clear auto-selected flag when user manually selects
+    setIsAutoSelectedA(false);
+
     // Read current values from refs (not stale closure values)
     const currentA = selectedARef.current;
     const currentB = selectedBRef.current;
@@ -746,6 +750,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const clearSelections = useCallback(() => {
     setSelectedA(null);
     setSelectedB(null);
+    setIsAutoSelectedA(false);
     setLastHintStep(null); // Clear hint step tracking when selections are cleared
   }, []);
 
@@ -861,8 +866,18 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         from: [selectedA.name, selectedB.name],
       });
 
-      // Clear selections after successful combination
-      clearSelections();
+      // Auto-select the result into slot A for quick chaining
+      const resultElement = {
+        id: element.toLowerCase().replace(/\s+/g, '-'),
+        name: element,
+        emoji: emoji,
+        isStarter: false,
+      };
+
+      setSelectedA(resultElement);
+      setSelectedB(null);
+      setIsAutoSelectedA(true);
+      setLastHintStep(null); // Clear hint step tracking
     } catch (err) {
       logger.error('[ElementSoup] Failed to combine elements', { error: err.message });
       // Show inline error instead of global error screen
@@ -1368,6 +1383,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Selection
     selectedA,
     selectedB,
+    isAutoSelectedA,
     selectElement,
     clearSelections,
 
