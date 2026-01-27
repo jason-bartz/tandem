@@ -359,36 +359,20 @@ export default function CompleteScreen({
               Play from Archive
             </button>
 
-            {/* View Stats and Leaderboard Buttons */}
-            <div className="grid grid-cols-2 gap-3 animate-fade-in-up delay-400">
-              <button
-                onClick={() => {
-                  lightTap();
-                  setShowPlayerStats(true);
-                }}
-                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                Stats
-              </button>
-
-              <button
-                onClick={() => {
-                  lightTap();
-                  setShowLeaderboard(true);
-                }}
-                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                Leaderboard
-              </button>
-            </div>
+            {/* Leaderboard Button */}
+            <button
+              onClick={() => {
+                lightTap();
+                setShowLeaderboard(true);
+              }}
+              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-400 ${
+                highContrast
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                  : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+              }`}
+            >
+              Leaderboard
+            </button>
 
             {/* Account CTA for non-logged-in users */}
             {!user && !authLoading && (

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RotateCcw, Check } from 'lucide-react';
+import { Check } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -10,6 +10,7 @@ import { useSubscription } from '@/contexts/SubscriptionContext';
 import { formatTime, getRandomMessage, CONGRATS_MESSAGES } from '@/lib/daily-alchemy.constants';
 import confetti from 'canvas-confetti';
 import PaywallModal from '@/components/PaywallModal';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
 /**
  * StatCard - Individual stat display with custom icon image
@@ -59,7 +60,6 @@ export function DailyAlchemyCompleteScreen({
   completionStats,
   winningCombination,
   onShare,
-  onPlayAgain,
   onStartFreePlay,
   onViewArchive,
   isArchive = false,
@@ -68,6 +68,7 @@ export function DailyAlchemyCompleteScreen({
   const { isActive: hasSubscription } = useSubscription();
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
@@ -274,34 +275,31 @@ export function DailyAlchemyCompleteScreen({
         </button>
       </motion.div>
 
-      {/* Play Again Button (only for non-archive) */}
-      {!isArchive && (
-        <motion.div
-          className="w-full max-w-sm mt-3"
-          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
+      {/* Leaderboard Button */}
+      <motion.div
+        className="w-full max-w-sm mt-3"
+        initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.45 }}
+      >
+        <button
+          onClick={() => setShowLeaderboard(true)}
+          className={cn(
+            'w-full flex items-center justify-center gap-2 px-6 py-3',
+            'bg-gray-200 dark:bg-gray-700',
+            'text-gray-800 dark:text-gray-200',
+            'border-[3px] border-black dark:border-gray-600',
+            'rounded-xl font-bold',
+            'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
+            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
+            'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
+            'transition-all duration-150',
+            highContrast && 'border-[4px]'
+          )}
         >
-          <button
-            onClick={onPlayAgain}
-            className={cn(
-              'w-full flex items-center justify-center gap-2 px-6 py-3',
-              'bg-gray-200 dark:bg-gray-700',
-              'text-gray-800 dark:text-gray-200',
-              'border-[3px] border-black dark:border-gray-600',
-              'rounded-xl font-bold',
-              'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
-              'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-              'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
-              'transition-all duration-150',
-              highContrast && 'border-[4px]'
-            )}
-          >
-            <RotateCcw className="w-5 h-5" />
-            <span>Play Again</span>
-          </button>
-        </motion.div>
-      )}
+          Leaderboard
+        </button>
+      </motion.div>
 
       {/* Archive & Creative Mode Section */}
       <motion.div
@@ -372,6 +370,14 @@ export function DailyAlchemyCompleteScreen({
           <span>Play Creative Mode</span>
         </motion.button>
       )}
+
+      {/* Leaderboard Modal */}
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        gameType="soup"
+        initialTab="daily"
+      />
 
       {/* Paywall Modal */}
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
