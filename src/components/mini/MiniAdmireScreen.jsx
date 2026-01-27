@@ -12,6 +12,7 @@ import UnifiedStatsModal from '../stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
+import FeedbackPane from '@/components/FeedbackPane';
 import { formatDateShort } from '@/lib/utils';
 
 /**
@@ -36,6 +37,7 @@ export default function MiniAdmireScreen({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
 
   const perfectSolve = checksUsed === 0 && revealsUsed === 0 && mistakes === 0;
   const puzzleInfo = getMiniPuzzleInfoForDate(currentPuzzleDate);
@@ -226,6 +228,7 @@ export default function MiniAdmireScreen({
         onClose={() => setIsSidebarOpen(false)}
         onOpenStats={() => setShowStats(true)}
         onOpenArchive={() => setShowArchive(true)}
+        onOpenFeedback={() => setShowFeedback(true)}
       />
 
       {/* Modals */}
@@ -239,6 +242,7 @@ export default function MiniAdmireScreen({
         }}
         defaultTab="mini"
       />
+      <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
     </>
   );
 }
