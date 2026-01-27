@@ -24,6 +24,7 @@ import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
 import miniService from '@/services/mini.service';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
+import { trackGameCardClick, GAME_TYPES } from '@/lib/gameAnalytics';
 
 export default function WelcomeScreen({
   onStart,
@@ -178,6 +179,7 @@ export default function WelcomeScreen({
   }, [onStart, tandemCompleted, puzzle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTandemClick = () => {
+    trackGameCardClick(GAME_TYPES.TANDEM, tandemPuzzleNumber, puzzle?.date);
     if (tandemCompleted && puzzle?.date) {
       onSelectPuzzle(puzzle.date);
     } else {
@@ -186,14 +188,25 @@ export default function WelcomeScreen({
   };
 
   const handleMiniClick = () => {
+    trackGameCardClick(
+      GAME_TYPES.MINI,
+      miniPuzzle?.number || miniPuzzleInfo.number,
+      miniPuzzleInfo.isoDate
+    );
     router.push('/dailymini');
   };
 
   const handleSoupClick = () => {
+    trackGameCardClick(GAME_TYPES.ALCHEMY, soupPuzzle?.number || 1, getLocalDateString());
     router.push('/daily-alchemy');
   };
 
   const handleReelClick = () => {
+    trackGameCardClick(
+      GAME_TYPES.REEL,
+      reelPuzzle?.number || reelPuzzleNumber,
+      getLocalDateString()
+    );
     router.push('/reel-connections');
   };
 
