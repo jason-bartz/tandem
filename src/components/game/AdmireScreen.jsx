@@ -151,28 +151,17 @@ export default function AdmireScreen({
                       : 'bg-green-100 dark:bg-green-900/30 border-black dark:border-gray-600'
                   }`}
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1">
                       <span className="text-2xl">{puzzleItem.emoji1}</span>
                       <span className="text-2xl">{puzzleItem.emoji2}</span>
                     </div>
                     <div
-                      className={`flex-1 text-lg font-bold text-center ${
+                      className={`text-lg font-bold ${
                         highContrast ? 'text-hc-text' : 'text-green-700 dark:text-green-300'
                       }`}
                     >
                       {puzzleItem.answer}
-                    </div>
-                    <div className="flex items-center gap-2 min-w-[24px]">
-                      {admireData?.hintedAnswers?.includes(index) && (
-                        <Image
-                          src="/icons/ui/hint.png"
-                          alt="Hint used"
-                          width={20}
-                          height={20}
-                          className="opacity-70"
-                        />
-                      )}
                     </div>
                   </div>
                 </div>
@@ -257,8 +246,8 @@ export default function AdmireScreen({
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-orange text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               Replay Puzzle
@@ -272,42 +261,25 @@ export default function AdmireScreen({
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
                 highContrast
                   ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
               Browse Archive
             </button>
 
-            {/* View Stats and Leaderboard Buttons */}
-            <div className="grid grid-cols-2 gap-3">
-              <button
-                onClick={() => {
-                  lightTap();
-                  setShowPlayerStats(true);
-                }}
-                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                Stats
-              </button>
-
-              <button
-                onClick={() => {
-                  lightTap();
-                  setShowLeaderboard(true);
-                }}
-                className={`py-3 px-4 rounded-2xl font-semibold text-sm transition-all border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                Leaderboard
-              </button>
-            </div>
+            <button
+              onClick={() => {
+                lightTap();
+                setShowLeaderboard(true);
+              }}
+              className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] ${
+                highContrast
+                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                  : 'bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+              }`}
+            >
+              Leaderboard
+            </button>
           </div>
         </div>
       </div>
