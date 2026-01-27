@@ -237,9 +237,9 @@ export default function MiniGameScreen({
   return (
     <>
       <div className="fixed inset-0 flex flex-col bg-bg-main dark:bg-bg-main overflow-hidden">
-        {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
+        {/* Main game card - pt-1 for web, pt-safe-ios for iOS notch */}
         {/* Bottom padding accounts for fixed keyboard (~200px) */}
-        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios pb-[220px]">
+        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px]">
           <div
             className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col mx-4 mb-4 ${
               highContrast
@@ -249,7 +249,7 @@ export default function MiniGameScreen({
           >
             {/* Header - back button, title/date, and hamburger menu - ALWAYS VISIBLE */}
             <header
-              className={`pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
+              className={`pt-1 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 ${
                 highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
               }`}
             >
@@ -299,7 +299,7 @@ export default function MiniGameScreen({
               className={`flex-1 flex flex-col p-4 sm:p-6 overflow-hidden relative ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
             >
               {/* Timer and Check/Reveal Buttons */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between mb-2">
                 {/* Check Button */}
                 <button
                   onClick={handleCheckClick}
