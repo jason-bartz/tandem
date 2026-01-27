@@ -39,7 +39,7 @@ export default function TermsOfUse() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: November 5, 2025
+            <strong>Last Updated</strong>: January 27, 2026
           </p>
         </div>
       ),
