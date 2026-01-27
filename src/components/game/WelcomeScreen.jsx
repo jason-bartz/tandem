@@ -245,7 +245,7 @@ export default function WelcomeScreen({
             <GameCard
               icon="/icons/ui/tandem.png"
               title="Daily Tandem"
-              description="Decipher four sets of emoji clues that share a hidden theme."
+              description="Decipher four emoji pairs that share a hidden theme."
               puzzleNumber={tandemPuzzleNumber}
               onClick={handleTandemClick}
               loading={!puzzle}
@@ -271,7 +271,7 @@ export default function WelcomeScreen({
             <GameCard
               icon="/icons/ui/daily-alchemy.png"
               title="Daily Alchemy"
-              description="Combine elements to discover today's target within 10 minutes."
+              description="Combine elements to discover today's target."
               puzzleNumber={soupPuzzle?.number || 1}
               onClick={handleSoupClick}
               loading={soupLoading}
