@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { RotateCcw, Check, ChevronRight } from 'lucide-react';
+import { RotateCcw, Check } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -240,37 +240,26 @@ export function DailyAlchemyCompleteScreen({
         </motion.div>
       )}
 
-      {/* Action Buttons */}
+      {/* Share Button */}
       <motion.div
-        className="flex flex-col sm:flex-row gap-3 w-full max-w-sm"
+        className="w-full max-w-sm"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <motion.button
+        <button
           onClick={handleShare}
-          animate={
-            !copied && !reduceMotion
-              ? {
-                  scale: [1, 1.02, 1],
-                }
-              : {}
-          }
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
           className={cn(
-            'flex-1 flex items-center justify-center gap-2 px-6 py-3',
+            'w-full flex items-center justify-center gap-2 px-6 py-3',
             'bg-soup-primary text-white',
             'border-[3px] border-black',
             'rounded-xl font-bold',
-            'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
             'hover:bg-soup-hover',
-            'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-            'active:translate-y-0 active:shadow-none',
-            'transition-colors duration-150',
+            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            'transition-all duration-150',
+            !copied && !reduceMotion && 'animate-attention-pulse',
             highContrast && 'border-[4px]'
           )}
         >
@@ -280,21 +269,30 @@ export function DailyAlchemyCompleteScreen({
               <span>Copied!</span>
             </>
           ) : (
-            <span>Share</span>
+            <span>Share Results</span>
           )}
-        </motion.button>
+        </button>
+      </motion.div>
 
-        {!isArchive && (
+      {/* Play Again Button (only for non-archive) */}
+      {!isArchive && (
+        <motion.div
+          className="w-full max-w-sm mt-3"
+          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.45 }}
+        >
           <button
             onClick={onPlayAgain}
             className={cn(
-              'flex-1 flex items-center justify-center gap-2 px-6 py-3',
+              'w-full flex items-center justify-center gap-2 px-6 py-3',
               'bg-gray-200 dark:bg-gray-700',
-              'border-[3px] border-black',
+              'text-gray-800 dark:text-gray-200',
+              'border-[3px] border-black dark:border-gray-600',
               'rounded-xl font-bold',
-              'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
+              'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
+              'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
+              'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
               'transition-all duration-150',
               highContrast && 'border-[4px]'
             )}
@@ -302,79 +300,76 @@ export function DailyAlchemyCompleteScreen({
             <RotateCcw className="w-5 h-5" />
             <span>Play Again</span>
           </button>
-        )}
-      </motion.div>
-
-      {/* Creative Mode Section */}
-      {!isArchive && (
-        <>
-          {/* Divider */}
-          <motion.div
-            className="w-full max-w-sm flex items-center gap-3 my-5"
-            initial={!reduceMotion ? { opacity: 0 } : false}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.45 }}
-          >
-            <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
-            <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or</span>
-            <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
-          </motion.div>
-
-          {/* Creative Mode Button */}
-          <motion.button
-            onClick={handleFreePlayClick}
-            className={cn(
-              'w-full max-w-sm flex items-center justify-center gap-3 py-4',
-              'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-              'border-[3px] border-black dark:border-gray-600',
-              'rounded-xl font-bold text-lg',
-              'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
-              'hover:bg-gray-50 dark:hover:bg-gray-700',
-              'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
-              'transition-all duration-150',
-              highContrast && 'border-[4px] border-hc-border'
-            )}
-            initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.5 }}
-            whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
-          >
-            {!hasSubscription && (
-              <Image
-                src="/icons/ui/lock.png"
-                alt="Locked"
-                width={20}
-                height={20}
-                className="opacity-70"
-              />
-            )}
-            <span>Creative Mode</span>
-          </motion.button>
-
-          {/* Creative Mode Description */}
-          <motion.p
-            className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
-            initial={!reduceMotion ? { opacity: 0 } : false}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.55 }}
-          >
-            Combine elements endlessly with no goal or timer.
-          </motion.p>
-        </>
+        </motion.div>
       )}
 
-      {/* Archive Link */}
+      {/* Archive & Creative Mode Section */}
+      <motion.div
+        className="w-full max-w-sm flex items-center gap-3 my-5"
+        initial={!reduceMotion ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+      >
+        <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
+        <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or</span>
+        <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
+      </motion.div>
+
+      {/* Play Archive Button */}
       {onViewArchive && (
         <motion.button
           onClick={onViewArchive}
-          className="mt-6 flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
-          initial={!reduceMotion ? { opacity: 0 } : false}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          className={cn(
+            'w-full max-w-sm flex items-center justify-center gap-2 py-3',
+            'bg-soup-light dark:bg-soup-primary/30',
+            'text-soup-dark dark:text-soup-primary',
+            'border-[3px] border-black dark:border-gray-600',
+            'rounded-xl font-bold',
+            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
+            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            'transition-all duration-150',
+            highContrast && 'border-[4px] border-hc-border'
+          )}
+          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.55 }}
         >
-          <span>View Archive</span>
-          <ChevronRight className="w-4 h-4" />
+          <span>Play the Archive</span>
+        </motion.button>
+      )}
+
+      {/* Creative Mode Button */}
+      {!isArchive && (
+        <motion.button
+          onClick={handleFreePlayClick}
+          className={cn(
+            'w-full max-w-sm flex items-center justify-center gap-2 py-3 mt-3',
+            'bg-white dark:bg-gray-800',
+            'text-gray-800 dark:text-gray-200',
+            'border-[3px] border-black dark:border-gray-600',
+            'rounded-xl font-bold',
+            'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]',
+            'hover:bg-gray-50 dark:hover:bg-gray-700',
+            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+            'active:translate-x-[4px] active:translate-y-[4px] active:shadow-none',
+            'transition-all duration-150',
+            highContrast && 'border-[4px] border-hc-border'
+          )}
+          initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+        >
+          {!hasSubscription && (
+            <Image
+              src="/icons/ui/lock.png"
+              alt="Locked"
+              width={20}
+              height={20}
+              className="opacity-70"
+            />
+          )}
+          <span>Play Creative Mode</span>
         </motion.button>
       )}
 
