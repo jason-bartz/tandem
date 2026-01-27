@@ -1530,12 +1530,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return 0; // Keep original order (newest) within each group
       });
     } else if (sortOrder === SORT_OPTIONS.EMOJI) {
-      // Sort by emoji category (iOS keyboard order), then alphabetically within category
+      // Sort by emoji category (iOS keyboard order), then by emoji to group same emojis,
+      // then alphabetically by name within same emoji
       sorted.sort((a, b) => {
         const categoryA = getEmojiCategory(a.emoji);
         const categoryB = getEmojiCategory(b.emoji);
         if (categoryA !== categoryB) return categoryA - categoryB;
-        // Within same category, sort alphabetically by name
+        // Within same category, group by actual emoji
+        if (a.emoji !== b.emoji) return a.emoji.localeCompare(b.emoji);
+        // Within same emoji, sort alphabetically by name
         return a.name.localeCompare(b.name);
       });
     }
