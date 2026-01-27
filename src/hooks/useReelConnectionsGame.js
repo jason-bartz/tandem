@@ -25,6 +25,7 @@ import {
   REEL_GAME_TYPE,
 } from '@/lib/reel-connections.constants';
 import logger from '@/lib/logger';
+import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 
 /**
  * Sort groups by difficulty order (easiest to hardest)
@@ -194,9 +195,20 @@ export function useReelConnectionsGame() {
   useEffect(() => {
     if ((gameWon || gameOver) && endTime && startTime && !statsRecorded) {
       const timeMs = endTime - startTime;
+      const timeSeconds = Math.floor(timeMs / 1000);
       const puzzleDate = archiveDate || puzzle?.date;
       recordGame(gameWon, timeMs, mistakes, puzzleDate);
       setStatsRecorded(true);
+
+      // Track game completion for analytics
+      trackGameComplete({
+        gameType: GAME_TYPES.REEL,
+        puzzleNumber: puzzle?.number,
+        puzzleDate,
+        won: gameWon,
+        timeSeconds,
+        mistakes,
+      });
     }
   }, [
     gameWon,
@@ -208,6 +220,7 @@ export function useReelConnectionsGame() {
     recordGame,
     archiveDate,
     puzzle?.date,
+    puzzle?.number,
   ]);
 
   // Submit to leaderboard when game ends
@@ -537,9 +550,11 @@ export function useReelConnectionsGame() {
 
   // Start game
   const handleStartGame = useCallback(() => {
+    // Track game start
+    trackGameStart(GAME_TYPES.REEL, puzzle?.number, archiveDate || puzzle?.date);
     setGameStarted(true);
     setStartTime(Date.now());
-  }, []);
+  }, [puzzle?.number, puzzle?.date, archiveDate]);
 
   // View completed puzzle
   const handleViewPuzzle = useCallback(() => {

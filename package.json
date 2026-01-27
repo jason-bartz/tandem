@@ -67,6 +67,7 @@
     "lucide-react": "^0.555.0",
     "next": "^14.2.32",
     "node-cron": "^4.2.1",
+    "posthog-js": "^1.335.4",
     "react": "^18",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^18",
