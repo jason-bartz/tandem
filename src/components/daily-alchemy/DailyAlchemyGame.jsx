@@ -136,6 +136,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
     creativeSaveSuccess,
     isLoadingCreative,
 
+    // Creative Mode autosave
+    isAutoSaving,
+    autoSaveComplete,
+
     // Hints
     hintsRemaining,
     useHint,
@@ -298,6 +302,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   isSavingCreative={isSavingCreative}
                   creativeSaveSuccess={creativeSaveSuccess}
                   isLoadingCreative={isLoadingCreative}
+                  // Creative Mode autosave props
+                  isAutoSaving={isAutoSaving}
+                  autoSaveComplete={autoSaveComplete}
                 />
               )}
 

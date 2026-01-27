@@ -237,6 +237,10 @@ export function DailyAlchemyGameScreen({
   onClearCreative,
   isSavingCreative = false,
   creativeSaveSuccess = false,
+
+  // Creative Mode autosave
+  isAutoSaving = false,
+  autoSaveComplete = false,
 }) {
   const { highContrast } = useTheme();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -311,6 +315,21 @@ export function DailyAlchemyGameScreen({
           >
             Menu
           </button>
+
+          {/* Autosave indicator - hidden when menu is open */}
+          <AnimatePresence>
+            {!isCreativeMenuOpen && (isAutoSaving || autoSaveComplete) && (
+              <motion.span
+                className="text-xs text-gray-400 dark:text-gray-500 ml-1"
+                initial={{ opacity: 0, x: -5 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -5 }}
+                transition={{ duration: 0.2 }}
+              >
+                {isAutoSaving ? 'autosaving...' : 'autosaved'}
+              </motion.span>
+            )}
+          </AnimatePresence>
 
           {/* Sliding buttons container */}
           <AnimatePresence mode="popLayout">

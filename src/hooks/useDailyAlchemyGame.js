@@ -117,6 +117,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [creativeSaveSuccess, setCreativeSaveSuccess] = useState(false);
   const [isLoadingCreative, setIsLoadingCreative] = useState(false);
 
+  // Autosave state for Creative Mode
+  const [isAutoSaving, setIsAutoSaving] = useState(false);
+  const [autoSaveComplete, setAutoSaveComplete] = useState(false);
+  const lastAutoSaveDiscoveryCount = useRef(0); // Track discoveries at last autosave
+  const lastAutoSaveFirstDiscoveryCount = useRef(0); // Track first discoveries at last autosave
+
   // Saved progress state - tracks if there's a game in progress to resume
   const [hasSavedProgress, setHasSavedProgress] = useState(false);
   const pendingSavedState = useRef(null);
@@ -716,6 +722,86 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       return false;
     }
   }, [user]);
+
+  /**
+   * Autosave for Creative Mode
+   * Triggers on:
+   * - Every 5 new discoveries
+   * - Every first discovery
+   */
+  useEffect(() => {
+    // Only autosave in Creative Mode with authenticated user
+    if (!freePlayMode || !user || !hasStarted) return;
+
+    // Don't autosave if already saving
+    if (isSavingCreative || isAutoSaving) return;
+
+    // Check if we should trigger autosave
+    const discoveryCountSinceLastSave = newDiscoveries - lastAutoSaveDiscoveryCount.current;
+    const shouldSaveEveryFive = discoveryCountSinceLastSave >= 5 && newDiscoveries > 0;
+    const hasNewFirstDiscovery = firstDiscoveries > lastAutoSaveFirstDiscoveryCount.current;
+
+    if (shouldSaveEveryFive || hasNewFirstDiscovery) {
+      // Trigger autosave
+      const doAutoSave = async () => {
+        setIsAutoSaving(true);
+        setAutoSaveComplete(false);
+
+        try {
+          const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+          const response = await capacitorFetch(
+            url,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                elementBank: elementBank.map((el) => ({
+                  name: el.name,
+                  emoji: el.emoji,
+                  isStarter: el.isStarter || false,
+                })),
+                totalMoves: movesCount,
+                totalDiscoveries: newDiscoveries,
+                firstDiscoveries,
+                firstDiscoveryElements,
+              }),
+            },
+            true
+          );
+
+          if (response.ok) {
+            logger.info('[DailyAlchemy] Creative Mode autosaved', {
+              elementCount: elementBank.length,
+              trigger: shouldSaveEveryFive ? 'every5' : 'firstDiscovery',
+            });
+            lastAutoSaveDiscoveryCount.current = newDiscoveries;
+            lastAutoSaveFirstDiscoveryCount.current = firstDiscoveries;
+          }
+        } catch (err) {
+          logger.error('[DailyAlchemy] Autosave failed', { error: err.message });
+        }
+
+        setIsAutoSaving(false);
+        setAutoSaveComplete(true);
+
+        // Clear the "complete" indicator after 2 seconds
+        setTimeout(() => setAutoSaveComplete(false), 2000);
+      };
+
+      doAutoSave();
+    }
+  }, [
+    freePlayMode,
+    user,
+    hasStarted,
+    newDiscoveries,
+    firstDiscoveries,
+    firstDiscoveryElements,
+    elementBank,
+    movesCount,
+    isSavingCreative,
+    isAutoSaving,
+  ]);
 
   /**
    * Select an element from the bank
@@ -1434,6 +1520,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isSavingCreative,
     creativeSaveSuccess,
     isLoadingCreative,
+
+    // Creative Mode autosave
+    isAutoSaving,
+    autoSaveComplete,
 
     // Hints
     hintsRemaining,
