@@ -5,6 +5,155 @@ import aiService from '@/services/ai.service';
 import { normalizeKey } from '@/lib/daily-alchemy.constants';
 
 /**
+ * Validate generated paths against existing combinations in the database
+ * Returns paths with conflict information for each step
+ */
+async function validatePathsAgainstDatabase(paths, supabase) {
+  // Collect all unique combination keys from all paths
+  const allCombos = new Map();
+  for (const path of paths) {
+    for (const step of path.steps) {
+      const key = normalizeKey(step.elementA, step.elementB);
+      if (!allCombos.has(key)) {
+        allCombos.set(key, {
+          elementA: step.elementA,
+          elementB: step.elementB,
+          generatedResult: step.result,
+          generatedEmoji: step.resultEmoji,
+        });
+      }
+    }
+  }
+
+  // Also collect all unique element names to check for emoji consistency
+  const allElements = new Map();
+  for (const path of paths) {
+    for (const step of path.steps) {
+      // Track elements used as inputs
+      if (!allElements.has(step.elementA.toLowerCase())) {
+        allElements.set(step.elementA.toLowerCase(), { name: step.elementA, emoji: step.emojiA });
+      }
+      if (!allElements.has(step.elementB.toLowerCase())) {
+        allElements.set(step.elementB.toLowerCase(), { name: step.elementB, emoji: step.emojiB });
+      }
+      // Track result elements
+      if (!allElements.has(step.result.toLowerCase())) {
+        allElements.set(step.result.toLowerCase(), { name: step.result, emoji: step.resultEmoji });
+      }
+    }
+  }
+
+  // Batch query for all combination keys
+  const comboKeys = Array.from(allCombos.keys());
+  const { data: existingCombos } = await supabase
+    .from('element_combinations')
+    .select('combination_key, result_element, result_emoji')
+    .in('combination_key', comboKeys);
+
+  // Build lookup map of existing combinations
+  const existingComboMap = new Map();
+  if (existingCombos) {
+    for (const combo of existingCombos) {
+      existingComboMap.set(combo.combination_key, {
+        result: combo.result_element,
+        emoji: combo.result_emoji,
+      });
+    }
+  }
+
+  // Query for existing elements to check emoji consistency
+  const elementNames = Array.from(allElements.keys());
+  const { data: existingElements } = await supabase
+    .from('element_combinations')
+    .select('result_element, result_emoji')
+    .in(
+      'result_element',
+      elementNames.map((n) => allElements.get(n).name)
+    );
+
+  // Build lookup map for canonical element emojis
+  const elementEmojiMap = new Map();
+  if (existingElements) {
+    for (const el of existingElements) {
+      const key = el.result_element.toLowerCase();
+      if (!elementEmojiMap.has(key)) {
+        elementEmojiMap.set(key, el.result_emoji);
+      }
+    }
+  }
+
+  // Annotate paths with validation info
+  const validatedPaths = paths.map((path) => {
+    const validatedSteps = path.steps.map((step) => {
+      const key = normalizeKey(step.elementA, step.elementB);
+      const existing = existingComboMap.get(key);
+
+      let status = 'new'; // green - new combination
+      let conflict = null;
+      let emojiMismatch = null;
+
+      if (existing) {
+        if (existing.result.toLowerCase() === step.result.toLowerCase()) {
+          status = 'exists'; // yellow - already exists with same result
+          // Check if emoji differs
+          if (existing.emoji !== step.resultEmoji) {
+            emojiMismatch = {
+              existing: existing.emoji,
+              generated: step.resultEmoji,
+            };
+          }
+        } else {
+          status = 'conflict'; // red - different result exists
+          conflict = {
+            existingResult: existing.result,
+            existingEmoji: existing.emoji,
+            generatedResult: step.result,
+            generatedEmoji: step.resultEmoji,
+          };
+        }
+      } else {
+        // Check if result element exists with different emoji
+        const canonicalEmoji = elementEmojiMap.get(step.result.toLowerCase());
+        if (canonicalEmoji && canonicalEmoji !== step.resultEmoji) {
+          emojiMismatch = {
+            existing: canonicalEmoji,
+            generated: step.resultEmoji,
+          };
+        }
+      }
+
+      return {
+        ...step,
+        validation: {
+          status,
+          conflict,
+          emojiMismatch,
+        },
+      };
+    });
+
+    // Calculate path summary
+    const conflicts = validatedSteps.filter((s) => s.validation.status === 'conflict').length;
+    const existing = validatedSteps.filter((s) => s.validation.status === 'exists').length;
+    const newCombos = validatedSteps.filter((s) => s.validation.status === 'new').length;
+
+    return {
+      ...path,
+      steps: validatedSteps,
+      validationSummary: {
+        conflicts,
+        existing,
+        new: newCombos,
+        total: validatedSteps.length,
+        hasConflicts: conflicts > 0,
+      },
+    };
+  });
+
+  return validatedPaths;
+}
+
+/**
  * POST /api/admin/element-soup/generate-path
  * Generate 3 different paths from starter elements to a target element
  * Body:
@@ -53,16 +202,38 @@ export async function POST(request) {
     // Call AI service to generate paths with existing combinations context
     const result = await aiService.generateElementPaths(trimmedTarget, existingCombinations);
 
-    logger.info('[PathGenerator] Paths generated successfully', {
+    logger.info('[PathGenerator] Paths generated, validating against database', {
       targetElement: trimmedTarget,
       pathCount: result.paths.length,
+    });
+
+    // Validate generated paths against existing combinations
+    const validatedPaths = await validatePathsAgainstDatabase(result.paths, supabase);
+
+    // Calculate overall validation summary
+    const totalConflicts = validatedPaths.reduce(
+      (sum, p) => sum + p.validationSummary.conflicts,
+      0
+    );
+    const totalExisting = validatedPaths.reduce((sum, p) => sum + p.validationSummary.existing, 0);
+
+    logger.info('[PathGenerator] Paths validated', {
+      targetElement: trimmedTarget,
+      pathCount: validatedPaths.length,
+      totalConflicts,
+      totalExisting,
       existingCombosUsed: existingCombinations.length,
     });
 
     return NextResponse.json({
       success: true,
-      paths: result.paths,
+      paths: validatedPaths,
       existingCombinationsCount: existingCombinations.length,
+      validationSummary: {
+        totalConflicts,
+        totalExisting,
+        hasConflicts: totalConflicts > 0,
+      },
     });
   } catch (error) {
     logger.error('[PathGenerator] Error generating paths', {

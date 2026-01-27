@@ -13,6 +13,9 @@ import {
   Beaker,
   BookOpen,
   GitBranch,
+  AlertTriangle,
+  CheckCircle2,
+  XCircle,
 } from 'lucide-react';
 import logger from '@/lib/logger';
 import authService from '@/services/auth.service';
@@ -340,6 +343,22 @@ function MultiPathGenerator() {
       {/* Paths Display */}
       {paths && paths.length > 0 && (
         <div className="space-y-4">
+          {/* Validation Warning Banner */}
+          {paths.some((p) => p.validationSummary?.hasConflicts) && (
+            <div className="p-4 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="font-bold text-red-600 dark:text-red-400">
+                  Conflicts Detected in Generated Paths
+                </p>
+                <p className="text-sm text-red-600 dark:text-red-400">
+                  Some combinations already exist with different results. These steps will be
+                  skipped when saving. Consider regenerating or deselecting paths with conflicts.
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Header with Controls */}
           <div className="flex items-center justify-between flex-wrap gap-3">
             <h3 className="text-lg font-bold text-text-primary">
@@ -422,6 +441,46 @@ function MultiPathGenerator() {
 }
 
 /**
+ * ValidationBadge - Shows validation status for a step
+ */
+function ValidationBadge({ validation }) {
+  if (!validation) return null;
+
+  const { status, emojiMismatch } = validation;
+
+  if (status === 'conflict') {
+    return (
+      <div
+        className="flex items-center gap-1 text-red-500"
+        title="Conflict: different result exists"
+      >
+        <XCircle className="w-4 h-4 flex-shrink-0" />
+      </div>
+    );
+  }
+
+  if (status === 'exists') {
+    return (
+      <div
+        className="flex items-center gap-1 text-amber-500"
+        title={
+          emojiMismatch ? `Exists (emoji differs: ${emojiMismatch.existing})` : 'Already exists'
+        }
+      >
+        <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+      </div>
+    );
+  }
+
+  // status === 'new'
+  return (
+    <div className="flex items-center gap-1 text-green-500" title="New combination">
+      <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+    </div>
+  );
+}
+
+/**
  * PathCardWithCheckbox - Path card with selection checkbox
  */
 function PathCardWithCheckbox({ path, isSelected, onToggle }) {
@@ -454,6 +513,7 @@ function PathCardWithCheckbox({ path, isSelected, onToggle }) {
 
   const colors = getPathColors(path.label);
   const finalStep = path.steps[path.steps.length - 1];
+  const validationSummary = path.validationSummary;
 
   return (
     <div
@@ -485,6 +545,27 @@ function PathCardWithCheckbox({ path, isSelected, onToggle }) {
             <p className="text-xs text-text-secondary">{finalStep.result}</p>
           </div>
         </div>
+        {/* Validation Summary */}
+        {validationSummary && (
+          <div className="mt-2 flex flex-wrap gap-2 text-xs">
+            {validationSummary.new > 0 && (
+              <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full">
+                {validationSummary.new} new
+              </span>
+            )}
+            {validationSummary.existing > 0 && (
+              <span className="px-2 py-0.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded-full">
+                {validationSummary.existing} existing
+              </span>
+            )}
+            {validationSummary.conflicts > 0 && (
+              <span className="px-2 py-0.5 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-full font-bold">
+                ⚠️ {validationSummary.conflicts} conflict
+                {validationSummary.conflicts !== 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Steps */}
@@ -501,28 +582,56 @@ function PathCardWithCheckbox({ path, isSelected, onToggle }) {
 
         {isExpanded && (
           <div className="space-y-2 max-h-[300px] overflow-y-auto pr-2">
-            {path.steps.map((step, idx) => (
-              <div
-                key={idx}
-                className="flex items-center gap-2 text-sm bg-white dark:bg-gray-800 rounded-lg p-2 border border-black/10 dark:border-white/10"
-              >
-                <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
-                <span className="text-lg">{step.emojiA}</span>
-                <span className="font-medium truncate max-w-[60px]" title={step.elementA}>
-                  {step.elementA}
-                </span>
-                <span className="text-gray-400">+</span>
-                <span className="text-lg">{step.emojiB}</span>
-                <span className="font-medium truncate max-w-[60px]" title={step.elementB}>
-                  {step.elementB}
-                </span>
-                <span className="text-gray-400">=</span>
-                <span className="text-lg">{step.resultEmoji}</span>
-                <span className="font-bold truncate flex-1" title={step.result}>
-                  {step.result}
-                </span>
-              </div>
-            ))}
+            {path.steps.map((step, idx) => {
+              const isConflict = step.validation?.status === 'conflict';
+              const isExists = step.validation?.status === 'exists';
+              const conflict = step.validation?.conflict;
+
+              return (
+                <div key={idx} className="space-y-1">
+                  <div
+                    className={`flex items-center gap-2 text-sm bg-white dark:bg-gray-800 rounded-lg p-2 border-2 ${
+                      isConflict
+                        ? 'border-red-400 bg-red-50 dark:bg-red-900/20'
+                        : isExists
+                          ? 'border-amber-300 bg-amber-50 dark:bg-amber-900/20'
+                          : 'border-black/10 dark:border-white/10'
+                    }`}
+                  >
+                    <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
+                    <span className="text-lg">{step.emojiA}</span>
+                    <span className="font-medium truncate max-w-[60px]" title={step.elementA}>
+                      {step.elementA}
+                    </span>
+                    <span className="text-gray-400">+</span>
+                    <span className="text-lg">{step.emojiB}</span>
+                    <span className="font-medium truncate max-w-[60px]" title={step.elementB}>
+                      {step.elementB}
+                    </span>
+                    <span className="text-gray-400">=</span>
+                    <span className={`text-lg ${isConflict ? 'line-through opacity-50' : ''}`}>
+                      {step.resultEmoji}
+                    </span>
+                    <span
+                      className={`font-bold truncate flex-1 ${isConflict ? 'line-through opacity-50' : ''}`}
+                      title={step.result}
+                    >
+                      {step.result}
+                    </span>
+                    <ValidationBadge validation={step.validation} />
+                  </div>
+                  {/* Show conflict details */}
+                  {conflict && (
+                    <div className="ml-6 text-xs p-2 bg-red-100 dark:bg-red-900/30 rounded border border-red-300 dark:border-red-700">
+                      <span className="text-red-600 dark:text-red-400">
+                        <strong>Existing:</strong> {conflict.existingEmoji}{' '}
+                        {conflict.existingResult}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
         )}
       </div>
