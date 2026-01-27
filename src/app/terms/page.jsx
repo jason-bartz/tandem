@@ -65,6 +65,10 @@ export default function TermsOfUse() {
               <strong>Reel Connections</strong>: Group movies that share a common theme into four
               categories
             </li>
+            <li>
+              <strong>Daily Alchemy</strong>: Combine elements to discover new compounds and reach
+              target elements
+            </li>
           </ul>
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
@@ -170,11 +174,12 @@ export default function TermsOfUse() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Opt-Out</h4>
+            <h4 className="font-semibold mb-2">Opting Out</h4>
             <p>
-              You may disable leaderboard participation at any time in Settings. When disabled, your
-              scores will not appear on public leaderboards, though your gameplay statistics will
-              still be tracked privately for your personal use.
+              Leaderboard participation is automatic for all logged-in users. If you wish to opt out
+              of leaderboards, you may log out of your account or delete your account entirely.
+              While logged out, your gameplay will not appear on public leaderboards. Your local
+              gameplay statistics will still be tracked on your device for your personal use.
             </p>
           </div>
 
@@ -241,6 +246,58 @@ export default function TermsOfUse() {
               We do not guarantee the accuracy or availability of first discovery data. Discovery
               credits are provided "as is" and may be affected by technical issues or data
               corrections. This feature is available on both web and iOS.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'ai-generated-content',
+      title: 'AI-Generated Content',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Use of Artificial Intelligence</h4>
+            <p>
+              Certain game content, including but not limited to Daily Alchemy element combinations,
+              crossword clues, and puzzle hints, may be generated or assisted by artificial
+              intelligence (AI) systems. This AI-generated content is provided for entertainment
+              purposes only.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">No Warranties on AI Content</h4>
+            <p className="mb-2">
+              AI-generated content is provided "as is" without warranties of any kind. We do not
+              guarantee that AI-generated content will be:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Accurate, complete, or factually correct</li>
+              <li>Free from errors, inconsistencies, or unexpected outputs</li>
+              <li>Suitable for any purpose beyond entertainment</li>
+              <li>Representative of our views or opinions</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Limitation of Liability</h4>
+            <p>
+              Good Vibes Games shall not be liable for any claims, damages, or losses arising from
+              AI-generated content, including but not limited to inaccurate information, unexpected
+              combinations, or any reliance on such content. AI-generated element combinations in
+              Daily Alchemy are fictional and should not be interpreted as scientific, educational,
+              or factual information.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Content Moderation</h4>
+            <p>
+              While we make reasonable efforts to review and moderate AI-generated content, we
+              cannot guarantee that all content will meet every user's expectations. If you
+              encounter AI-generated content that appears inappropriate or incorrect, please report
+              it through our feedback form.
             </p>
           </div>
         </div>
