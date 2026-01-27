@@ -210,6 +210,7 @@ export function DailyAlchemyGameScreen({
   // Selection
   selectedA,
   selectedB,
+  isAutoSelectedA = false,
   selectElement,
   clearSelections,
 
@@ -412,6 +413,7 @@ export function DailyAlchemyGameScreen({
       <CombinationArea
         selectedA={selectedA}
         selectedB={selectedB}
+        isAutoSelectedA={isAutoSelectedA}
         onClearA={clearSelections}
         onClearB={clearSelections}
         onCombine={combineElements}
