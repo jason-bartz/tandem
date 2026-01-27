@@ -150,7 +150,7 @@ export function DailyAlchemyCompleteScreen({
       {/* Completion Image - Daily mode only */}
       {!isArchive && (
         <motion.div
-          className="mb-2"
+          className="mb-1 -mt-1"
           initial={!reduceMotion ? { opacity: 0, scale: 0.8 } : false}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.05 }}
@@ -158,9 +158,9 @@ export function DailyAlchemyCompleteScreen({
           <Image
             src="/images/dailyalchemy-end.png"
             alt="Puzzle Complete"
-            width={120}
-            height={120}
-            className="w-[120px] h-[120px]"
+            width={84}
+            height={84}
+            className="w-[84px] h-[84px]"
             priority
           />
         </motion.div>
