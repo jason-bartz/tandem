@@ -153,26 +153,10 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
   };
 
   const benefits = [
-    {
-      iconPath: '/icons/ui/tandem.png',
-      title: 'All Game Modes',
-      description: 'Play Tandem and Daily Mini',
-    },
-    {
-      iconPath: '/icons/ui/leaderboard.png',
-      title: 'Leaderboards',
-      description: 'Compete with players worldwide',
-    },
-    {
-      iconPath: '/icons/ui/stats.png',
-      title: 'Stats Tracking',
-      description: 'Track your progress across all devices',
-    },
-    {
-      iconPath: '/icons/ui/medal.png',
-      title: 'Achievements',
-      description: 'Unlock badges and celebrate milestones',
-    },
+    'Leaderboards',
+    'Achievements',
+    'Save your game',
+    'Sync stats across multiple devices',
   ];
 
   return (
@@ -198,45 +182,33 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
             Your free account includes access to:
           </p>
 
-          {/* Benefits Grid */}
-          <div className="grid grid-cols-2 gap-2.5 mb-5">
+          {/* Benefits List */}
+          <ul className="mb-5 space-y-2">
             {benefits.map((benefit, index) => (
-              <div
+              <li
                 key={index}
-                className={`p-3 rounded-2xl border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-surface border-hc-border'
-                    : 'bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 border-purple-200 dark:border-purple-700'
+                className={`flex items-center gap-3 ${
+                  highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
                 }`}
               >
-                <div className="flex flex-col items-center text-center gap-1.5">
-                  <div className="w-8 h-8 flex-shrink-0 relative">
-                    <Image
-                      src={benefit.iconPath}
-                      alt=""
-                      width={32}
-                      height={32}
-                      className="object-contain"
+                <span
+                  className={`w-5 h-5 flex-shrink-0 flex items-center justify-center rounded-full ${
+                    highContrast ? 'bg-hc-primary text-white' : 'bg-purple-500 text-white'
+                  }`}
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={3}
+                      d="M5 13l4 4L19 7"
                     />
-                  </div>
-                  <h3
-                    className={`font-bold text-sm leading-tight ${
-                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
-                    }`}
-                  >
-                    {benefit.title}
-                  </h3>
-                  <p
-                    className={`text-xs leading-snug ${
-                      highContrast ? 'text-hc-text/70' : 'text-gray-600 dark:text-gray-400'
-                    }`}
-                  >
-                    {benefit.description}
-                  </p>
-                </div>
-              </div>
+                  </svg>
+                </span>
+                <span className="text-sm font-medium">{benefit}</span>
+              </li>
             ))}
-          </div>
+          </ul>
 
           {/* Username Creation Section */}
           <div
