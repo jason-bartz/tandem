@@ -20,6 +20,7 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
+import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 
@@ -364,6 +365,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
         <LearnToPlayBanner gameType="soup" onOpenHowToPlay={() => setShowHowToPlay(true)} />
       )}
+
+      {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
+      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
+        !freePlayMode && <HintTutorialBanner gameType="soup" hasUsedHint={hintsRemaining < 4} />}
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
