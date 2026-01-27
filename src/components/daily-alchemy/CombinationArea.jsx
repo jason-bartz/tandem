@@ -157,7 +157,7 @@ function countGraphemes(str) {
 /**
  * SelectionSlot - Individual slot for selected element
  */
-function SelectionSlot({ element, position, onClick, isShaking = false, shouldPop = false }) {
+function SelectionSlot({ element, position, onClick, isShaking = false }) {
   const { highContrast, reduceMotion } = useTheme();
 
   // Wobble animation - alternates left/right with rotation
@@ -170,8 +170,6 @@ function SelectionSlot({ element, position, onClick, isShaking = false, shouldPo
   return (
     <motion.button
       onClick={onClick}
-      // Use key to trigger re-mount and pop animation when element changes via auto-select
-      key={shouldPop && element ? `pop-${element.id}` : 'slot'}
       className={cn(
         'w-24 h-24 sm:w-28 sm:h-28',
         'flex flex-col items-center justify-center',
@@ -183,7 +181,6 @@ function SelectionSlot({ element, position, onClick, isShaking = false, shouldPo
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
         highContrast && 'border-[4px]'
       )}
-      initial={!reduceMotion && shouldPop && element ? { scale: 0.5, opacity: 0 } : false}
       animate={
         !reduceMotion && isShaking
           ? {
@@ -210,9 +207,7 @@ function SelectionSlot({ element, position, onClick, isShaking = false, shouldPo
       transition={
         isShaking
           ? { repeat: Infinity, duration: 0.8, ease: 'easeInOut' }
-          : shouldPop
-            ? { type: 'spring', stiffness: 400, damping: 15 }
-            : { type: 'spring', stiffness: 300, damping: 20 }
+          : { type: 'spring', stiffness: 300, damping: 20 }
       }
       whileHover={!reduceMotion && !isShaking ? { scale: 1.02 } : undefined}
       whileTap={!reduceMotion && !isShaking ? { scale: 0.98 } : undefined}
@@ -245,7 +240,6 @@ function SelectionSlot({ element, position, onClick, isShaking = false, shouldPo
 export function CombinationArea({
   selectedA,
   selectedB,
-  isAutoSelectedA = false,
   onClearA,
   onClearB,
   onCombine,
@@ -298,7 +292,6 @@ export function CombinationArea({
           position="first"
           onClick={onClearA}
           isShaking={isCombining || isAnimating}
-          shouldPop={isAutoSelectedA}
         />
 
         {/* Plus Sign */}
