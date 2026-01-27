@@ -199,11 +199,11 @@ export default function PrivacyPolicy() {
               <li>Leaderboard rankings</li>
             </ul>
             <p className="mt-2 text-xs italic">
-              Privacy Control: Leaderboards are enabled by default but can be disabled at any time
-              in Settings. When disabled, your scores will not appear on public leaderboards. Your
-              email address and other personal information remain private and are never displayed on
-              leaderboards. Only your chosen username, avatar (if provided), and game performance
-              data are visible to other players.
+              Privacy Control: Leaderboard participation is automatic for all logged-in users. To
+              opt out of leaderboards, you may log out of your account or delete your account
+              entirely. Your email address and other personal information remain private and are
+              never displayed on leaderboards. Only your chosen username, avatar (if provided), and
+              game performance data are visible to other players.
             </p>
           </div>
 
