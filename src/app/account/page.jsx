@@ -397,6 +397,12 @@ export default function AccountPage() {
     return descriptions[tierLower] || descriptions[tier] || '';
   };
 
+  const isSoulmatesTier = (tier) => {
+    if (!tier) return false;
+    const tierLower = tier.toLowerCase();
+    return tierLower === 'soulmates' || tierLower === 'com.tandemdaily.app.soulmates';
+  };
+
   if (authLoading || (loading && user)) {
     return (
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
@@ -734,7 +740,8 @@ export default function AccountPage() {
                           </div>
 
                           {subscription.expiryDate &&
-                            subscription.expiryDate !== '2099-12-31T00:00:00.000Z' && (
+                            subscription.expiryDate !== '2099-12-31T00:00:00.000Z' &&
+                            !isSoulmatesTier(subscription.tier || subscription.productId) && (
                               <div
                                 className={`p-3 rounded-xl border-2 ${
                                   subscription.cancelAtPeriodEnd
@@ -807,8 +814,12 @@ export default function AccountPage() {
                             </div>
                           </div>
 
-                          {/* Manage Button */}
-                          {isWeb ? (
+                          {/* Manage Button or Soulmates Thank You */}
+                          {isSoulmatesTier(subscription.tier || subscription.productId) ? (
+                            <p className="text-sm text-gray-600 dark:text-gray-400 text-center pt-2 italic">
+                              Thank you for being an early believer and lifetime supporter!
+                            </p>
+                          ) : isWeb ? (
                             <button
                               onClick={handleManageAccount}
                               className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
