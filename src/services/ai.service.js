@@ -3706,40 +3706,52 @@ Respond in JSON format:
    * Build the prompt for element combination generation
    */
   buildElementCombinationPrompt(elementA, elementB) {
-    return `You are generating results for an element combination game.
+    return `You are generating results for an element combination game similar to popular element-mixing puzzle games.
 
 TASK: Determine what results from combining these two elements:
 Element 1: ${elementA}
 Element 2: ${elementB}
 
 CORE PHILOSOPHY:
-The best combinations feel INTUITIVE yet CLEVER. Use a balanced mix of physical logic, wordplay, and thematic associations. Players should think "Oh, that makes sense!" or "That's clever!"
+The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
 
-COMBINATION STRATEGIES (use a balanced mix of all three):
+WHAT MAKES A GREAT COMBINATION:
 
-1. PHYSICAL/LOGICAL: Natural reactions and transformations
-   - Fire + Water = Steam
-   - Earth + Fire = Lava
-   - Fire + Steam = Engine
-   - Engine + Engine = Rocket
+1. LOGICAL CONNECTIONS: The result should follow naturally from the inputs
+   - Fire + Water = Steam (obvious physical reaction)
+   - Earth + Water = Mud (natural mixture)
+   - Steam + Earth = Geyser (makes sense)
 
-2. WORDPLAY & PUNS: Combine word sounds or meanings
-   - Lake + Ring = Lord of the Rings
-   - Dust + Earth = Planet
-   - Rocket + Surfer = Iron Man (Marvel reference + rocket suit)
+2. POP CULTURE & FICTION: Lean into recognizable characters, movies, games, memes
+   - Wizard + Ring = Gandalf (iconic association)
+   - Monster + Japan = Godzilla (cultural icon)
+   - Plumber + Mushroom = Mario (beloved character)
+   - Bat + Man = Batman (direct wordplay + pop culture)
+   - Space + Wizard = Jedi (recognizable reference)
 
-3. THEMATIC ASSOCIATIONS: Unexpected but satisfying connections
-   - Fire + Holy Water = Vampire (what vampires fear)
-   - Chicken + Fan = Chicken Wings
-   - Steam + Wave = Surf
-   - Surf + Wave = Surfer
+3. PLAYFUL WORDPLAY: Puns and word combinations that click
+   - Sun + Flower = Sunflower (compound word)
+   - Sand + Witch = Sandwich (fun pun)
+   - Knight + Mare = Nightmare (clever wordplay)
+   - Egg + Plant = Eggplant (literal combination)
+
+4. THEMATIC BUILDS: Results that connect meaningfully to both inputs
+   - Fire + Lizard = Dragon (exciting, makes sense)
+   - Ocean + Horse = Seahorse (natural fit)
+   - Snow + Man = Snowman (satisfying)
+
+WHAT TO AVOID (CRITICAL):
+- DON'T use either element as a "wildcard" to create unrelated results
+- DON'T create abstract or forced connections that feel arbitrary
+- BOTH input elements should contribute meaningfully to the result
+- DON'T be boring: Fire + Lizard = Dragon (exciting) NOT "Fire Lizard" (lazy)
 
 RULES:
 1. ALWAYS return a result - there are no "failed" combinations
-2. Balance physical logic with creative leaps
-3. Real-world items, concepts, people, places, pop culture - ALL fair game
+2. BOTH inputs must contribute to the result (no wildcard transformations)
+3. Favor recognizable pop culture references where they fit naturally
 4. NO profanity or offensive content
-5. Keep element names concise (1-3 words)
+5. Keep element names concise (1-3 words max)
 6. Choose 1-2 appropriate emojis (1 is preferred)
 
 SAME ELEMENT COMBINATIONS:
@@ -3904,7 +3916,7 @@ IMPORTANT: If you need to combine two elements that appear in the existing combi
 `;
     }
 
-    return `You are designing combination paths for an element combination game.
+    return `You are designing combination paths for an element combination game similar to popular element-mixing puzzle games.
 
 STARTER ELEMENTS (all players begin with these 4):
 - Earth 🌍
@@ -3915,42 +3927,66 @@ ${existingSection}
 GOAL: Create 3 DIFFERENT paths of combinations that lead from the starter elements to: "${targetElement}"
 
 CORE PHILOSOPHY:
-The best combinations feel INTUITIVE yet CLEVER. Use a balanced mix of physical logic, wordplay, and thematic associations. Players should think "Oh, that makes sense!" or "That's clever!"
+The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
 
-COMBINATION STRATEGIES (use a balanced mix of all three):
+WHAT MAKES A GREAT COMBINATION:
+- LOGICAL CONNECTIONS: The result should follow naturally from the inputs
+  - Fire + Water = Steam ✓ (obvious physical reaction)
+  - Earth + Water = Mud ✓ (natural mixture)
+  - Steam + Earth = Geyser ✓ (makes sense)
 
-1. PHYSICAL/LOGICAL: Natural reactions and transformations
-   - Fire + Water = Steam
-   - Fire + Steam = Engine
-   - Engine + Engine = Rocket
+- POP CULTURE & FICTION: Lean into recognizable characters, movies, games, memes
+  - Wizard + Ring = Gandalf ✓ (iconic association)
+  - Monster + Japan = Godzilla ✓ (cultural icon)
+  - Plumber + Mushroom = Mario ✓ (beloved character)
+  - Bat + Man = Batman ✓ (direct wordplay + pop culture)
 
-2. WORDPLAY & PUNS: Combine word sounds or meanings
-   - Lake + Ring = Lord of the Rings
-   - Dust + Earth = Planet
-   - Rocket + Surfer = Iron Man
+- PLAYFUL WORDPLAY: Puns and word combinations that click
+  - Sun + Flower = Sunflower ✓ (compound word)
+  - Sand + Witch = Sandwich ✓ (fun pun)
+  - Knight + Mare = Nightmare ✓ (clever wordplay)
 
-3. THEMATIC ASSOCIATIONS: Unexpected but satisfying
-   - Fire + Holy Water = Vampire
-   - Steam + Wave = Surf
-   - Surf + Wave = Surfer
+- THEMATIC BUILDS: Each step should feel like progress toward something
+  - Water + Cold = Ice → Ice + Mountain = Glacier (building toward arctic theme)
+  - Fire + Earth = Lava → Lava + Time = Volcano (building toward geology)
+
+WHAT TO AVOID (CRITICAL):
+- DON'T use generic elements as "wildcards" to create unrelated results:
+  - Wind + Politics = Politician ✗ (Wind doesn't transform things randomly)
+  - Fire + Concept = Random Thing ✗ (adding an element shouldn't = anything)
+  - Energy + Noun = Unrelated Noun ✗ (lazy, feels arbitrary)
+
+- DON'T create abstract or forced connections:
+  - Thought + Air = Philosophy ✗ (too abstract, not satisfying)
+  - Essence + Thing = Other Thing ✗ (meaningless transformation)
+
+- DON'T ignore what elements actually represent:
+  - Each element should contribute meaningfully to the result
+  - Both inputs should be evident in the output somehow (physically, thematically, or via wordplay)
+
+- DON'T be boring when you can be fun:
+  - Fire + Lizard = Fire Lizard ✗ (boring, just adds adjective)
+  - Fire + Lizard = Dragon ✓ (exciting, makes sense, pop culture appeal)
 
 RULES:
 1. Each path must start ONLY with the 4 starter elements
 2. Each combination creates a NEW element for subsequent steps
 3. Each step combines exactly 2 elements to create 1 new element
 4. The final step must result in "${targetElement}"
-5. Keep paths SHORT: aim for 3-8 steps (shorter is better!)
-6. Balance physical logic with creative leaps
-7. Choose 1-2 appropriate emojis (1 is preferred)
-8. NO profanity or offensive content
-9. Keep element names concise (1-3 words)
+5. BOTH input elements should contribute to the result (no "wildcard" transformations)
+6. Choose 1-2 appropriate emojis (1 is preferred)
+7. NO profanity or offensive content
+8. Keep element names concise (1-3 words max)
+9. Favor recognizable pop culture references where they fit naturally
 10. CRITICAL: If a combination exists in EXISTING COMBINATIONS above, use that exact result
 11. CRITICAL: ALL paths must use the EXACT SAME emoji for "${targetElement}"
 
-CREATE 3 DISTINCT PATHS:
-- Path 1 (Direct): The shortest possible route (aim for 3-5 steps)
-- Path 2 (Creative): Clever wordplay and surprising intermediate elements
-- Path 3 (Thematic): A narrative path that builds conceptually
+CREATE 3 PATHS OF DIFFERENT LENGTHS:
+- Path 1 (Short): The most direct route possible (3-4 steps)
+- Path 2 (Medium): A balanced path with good intermediate elements (5-6 steps)
+- Path 3 (Long): A longer journey with more creative intermediate elements (7-8 steps)
+
+All three paths should feel INTUITIVE and SATISFYING - the difference is just the length and route taken.
 
 IMPORTANT: Each path must be self-contained - only use starters and elements created within THAT path (or from existing combinations).
 
@@ -3959,7 +3995,7 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
   "paths": [
     {
       "id": 1,
-      "label": "Direct Path",
+      "label": "Short Path",
       "steps": [
         { "step": 1, "elementA": "Fire", "emojiA": "🔥", "elementB": "Earth", "emojiB": "🌍", "result": "Lava", "resultEmoji": "🌋" },
         { "step": 2, "elementA": "Lava", "emojiA": "🌋", "elementB": "Water", "emojiB": "💧", "result": "Stone", "resultEmoji": "🪨" }
@@ -3968,13 +4004,13 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
     },
     {
       "id": 2,
-      "label": "Creative Path",
+      "label": "Medium Path",
       "steps": [...],
       "targetEmoji": "🎯"
     },
     {
       "id": 3,
-      "label": "Thematic Path",
+      "label": "Long Path",
       "steps": [...],
       "targetEmoji": "🎯"
     }

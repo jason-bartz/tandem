@@ -527,7 +527,9 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
   const [deletingConflict, setDeletingConflict] = useState(null);
 
   const getPathColors = (label) => {
-    if (label.toLowerCase().includes('direct')) {
+    const lowerLabel = label.toLowerCase();
+    // Short path - blue (quickest route)
+    if (lowerLabel.includes('short') || lowerLabel.includes('direct')) {
       return {
         bg: 'bg-blue-50 dark:bg-blue-900/20',
         border: 'border-blue-500',
@@ -535,7 +537,8 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
         checkbox: 'accent-blue-500',
       };
     }
-    if (label.toLowerCase().includes('creative')) {
+    // Medium path - purple (balanced route)
+    if (lowerLabel.includes('medium') || lowerLabel.includes('creative')) {
       return {
         bg: 'bg-purple-50 dark:bg-purple-900/20',
         border: 'border-purple-500',
@@ -543,6 +546,7 @@ function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) 
         checkbox: 'accent-purple-500',
       };
     }
+    // Long path - amber (extended journey)
     return {
       bg: 'bg-amber-50 dark:bg-amber-900/20',
       border: 'border-amber-500',
