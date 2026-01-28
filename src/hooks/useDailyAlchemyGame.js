@@ -1193,6 +1193,29 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
             ...data.stats,
             congratsMessage,
           });
+
+          // Save stats to localStorage for unified stats display
+          try {
+            const statsToSave = {
+              totalCompleted: data.stats.totalCompleted || 0,
+              currentStreak: data.stats.currentStreak || 0,
+              longestStreak: data.stats.longestStreak || 0,
+              averageTime: data.stats.averageTime || 0,
+              bestTime: data.stats.bestTime || 0,
+              totalMoves: data.stats.totalMoves || 0,
+              totalDiscoveries: data.stats.totalDiscoveries || 0,
+              firstDiscoveries: data.stats.totalFirstDiscoveries || 0,
+              underPar: data.stats.underPar || 0,
+              atPar: data.stats.atPar || 0,
+              overPar: data.stats.overPar || 0,
+              lastPlayedDate: puzzleDateRef.current,
+            };
+            localStorage.setItem(SOUP_STORAGE_KEYS.STATS, JSON.stringify(statsToSave));
+          } catch (storageErr) {
+            logger.error('[ElementSoup] Failed to save stats to localStorage', {
+              error: storageErr.message,
+            });
+          }
         }
       } catch (err) {
         logger.error('[ElementSoup] Failed to record stats', { error: err.message });
@@ -1210,7 +1233,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
                 gameType: 'soup',
                 puzzleDate: puzzleDateRef.current,
                 score: elapsedTime,
-                metadata: { movesCount, firstDiscoveries, newDiscoveries },
+                metadata: {
+                  movesCount,
+                  firstDiscoveries,
+                  newDiscoveries,
+                  hintsUsed: 4 - hintsRemaining,
+                },
               }),
             },
             true // Include auth
@@ -1235,6 +1263,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     newDiscoveries,
     firstDiscoveries,
     isFirstAttempt,
+    hintsRemaining,
   ]);
 
   /**
