@@ -3926,6 +3926,26 @@ STARTER ELEMENTS (all players begin with these 4):
 ${existingSection}
 GOAL: Create 3 DIFFERENT paths of combinations that lead from the starter elements to: "${targetElement}"
 
+CRITICAL - PLAN BACKWARDS FROM THE TARGET:
+Before building ANY path, first ask yourself: "What two elements would LOGICALLY combine to make ${targetElement}?"
+
+The FINAL STEP is the most important! Work backwards:
+1. First, decide what combination creates "${targetElement}" - this must be intuitive!
+2. Then figure out how to create those precursor elements from starters
+
+Examples of GOOD final steps:
+- Target "Cat": Animal + House = Cat ✓ (house cat), or Fur + Whiskers = Cat ✓, or Lion + Tiny = Cat ✓
+- Target "Dragon": Fire + Lizard = Dragon ✓, or Dinosaur + Wings = Dragon ✓
+- Target "Pizza": Bread + Tomato = Pizza ✓, or Italy + Food = Pizza ✓
+- Target "Batman": Bat + Man = Batman ✓, or Hero + Night = Batman ✓
+- Target "Ocean": Water + Water = Lake, Lake + Lake = Ocean ✓ (scaling up)
+
+Examples of BAD final steps (NEVER do this):
+- Whistle + Earth = Cat ✗ (makes no sense - neither element relates to cats)
+- Rain + Valley = Cat ✗ (arbitrary - cats aren't made of rain or valleys)
+- Sharp + Water = Cat ✗ (random elements forced into target)
+- Curiosity + Dust = Cat ✓ (this works! "curiosity killed the cat" - there's logic)
+
 CORE PHILOSOPHY:
 The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
 
@@ -3972,7 +3992,7 @@ RULES:
 1. Each path must start ONLY with the 4 starter elements
 2. Each combination creates a NEW element for subsequent steps
 3. Each step combines exactly 2 elements to create 1 new element
-4. The final step must result in "${targetElement}"
+4. MOST IMPORTANT: The final step must LOGICALLY create "${targetElement}" - both inputs must relate to the target!
 5. BOTH input elements should contribute to the result (no "wildcard" transformations)
 6. Choose 1-2 appropriate emojis (1 is preferred)
 7. NO profanity or offensive content
