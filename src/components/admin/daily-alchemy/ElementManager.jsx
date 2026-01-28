@@ -240,7 +240,16 @@ function MultiPathGenerator() {
           }
         );
 
-        const data = await response.json();
+        // Handle non-JSON responses
+        const text = await response.text();
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          throw new Error(
+            `Server returned invalid response (${response.status}): ${text.slice(0, 100)}`
+          );
+        }
 
         if (!response.ok) {
           throw new Error(data.message || data.error || 'Failed to delete combination');
@@ -1884,7 +1893,16 @@ function CombinationReview() {
           }
         );
 
-        const data = await response.json();
+        // Handle non-JSON responses
+        const text = await response.text();
+        let data;
+        try {
+          data = text ? JSON.parse(text) : {};
+        } catch {
+          throw new Error(
+            `Server returned invalid response (${response.status}): ${text.slice(0, 100)}`
+          );
+        }
 
         if (!response.ok) {
           throw new Error(data.message || data.error || 'Failed to delete combination');
