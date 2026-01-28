@@ -16,6 +16,10 @@ import {
   AlertTriangle,
   CheckCircle2,
   XCircle,
+  Trash2,
+  Pencil,
+  X,
+  Save,
 } from 'lucide-react';
 import logger from '@/lib/logger';
 import authService from '@/services/auth.service';
@@ -223,6 +227,40 @@ function MultiPathGenerator() {
     generatePaths();
   }, [generatePaths]);
 
+  // Delete a conflicting combination and refresh the path
+  const deleteConflict = useCallback(
+    async (elementA, elementB, _stepIdx) => {
+      try {
+        const token = await authService.getToken();
+        const response = await fetch(
+          `/api/admin/daily-alchemy/combinations?elementA=${encodeURIComponent(elementA)}&elementB=${encodeURIComponent(elementB)}`,
+          {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || 'Failed to delete combination');
+        }
+
+        logger.info('[ElementManager] Conflict deleted, regenerating paths', {
+          elementA,
+          elementB,
+        });
+
+        // Regenerate paths to update validation
+        regenerate();
+      } catch (err) {
+        logger.error('[ElementManager] Delete conflict error', { error: err.message });
+        setError(`Failed to delete conflict: ${err.message}`);
+      }
+    },
+    [regenerate]
+  );
+
   return (
     <div className="space-y-4">
       {/* Input Section */}
@@ -396,6 +434,7 @@ function MultiPathGenerator() {
                 path={path}
                 isSelected={selectedPaths.has(path.id)}
                 onToggle={() => togglePathSelection(path.id)}
+                onDeleteConflict={deleteConflict}
               />
             ))}
           </div>
@@ -483,8 +522,9 @@ function ValidationBadge({ validation }) {
 /**
  * PathCardWithCheckbox - Path card with selection checkbox
  */
-function PathCardWithCheckbox({ path, isSelected, onToggle }) {
+function PathCardWithCheckbox({ path, isSelected, onToggle, onDeleteConflict }) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [deletingConflict, setDeletingConflict] = useState(null);
 
   const getPathColors = (label) => {
     if (label.toLowerCase().includes('direct')) {
@@ -620,13 +660,34 @@ function PathCardWithCheckbox({ path, isSelected, onToggle }) {
                     </span>
                     <ValidationBadge validation={step.validation} />
                   </div>
-                  {/* Show conflict details */}
+                  {/* Show conflict details with delete option */}
                   {conflict && (
                     <div className="ml-6 text-xs p-2 bg-red-100 dark:bg-red-900/30 rounded border border-red-300 dark:border-red-700">
-                      <span className="text-red-600 dark:text-red-400">
-                        <strong>Existing:</strong> {conflict.existingEmoji}{' '}
-                        {conflict.existingResult}
-                      </span>
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-red-600 dark:text-red-400">
+                          <strong>Existing:</strong> {conflict.existingEmoji}{' '}
+                          {conflict.existingResult}
+                        </span>
+                        {onDeleteConflict && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setDeletingConflict(idx);
+                              onDeleteConflict(step.elementA, step.elementB, idx);
+                            }}
+                            disabled={deletingConflict === idx}
+                            className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center gap-1"
+                            title="Delete existing combination to allow new one"
+                          >
+                            {deletingConflict === idx ? (
+                              <div className="w-3 h-3 border border-white border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-3 h-3" />
+                            )}
+                            Delete & Use New
+                          </button>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
@@ -641,8 +702,629 @@ function PathCardWithCheckbox({ path, isSelected, onToggle }) {
 
 /**
  * ManualComboEntry - Form for manually adding element combinations
+ * Includes both single combo entry and pathway builder
  */
 function ManualComboEntry() {
+  const [activeTab, setActiveTab] = useState('pathway'); // 'single' or 'pathway'
+
+  return (
+    <div className="space-y-4">
+      {/* Sub-tabs */}
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setActiveTab('pathway')}
+          className={`px-4 py-2 font-bold rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-2 ${
+            activeTab === 'pathway'
+              ? 'bg-purple-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-bg-card text-text-secondary hover:bg-purple-100 dark:hover:bg-purple-900/20'
+          }`}
+        >
+          <GitBranch className="w-4 h-4" />
+          Pathway Builder
+        </button>
+        <button
+          onClick={() => setActiveTab('single')}
+          className={`px-4 py-2 font-bold rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-2 ${
+            activeTab === 'single'
+              ? 'bg-purple-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-bg-card text-text-secondary hover:bg-purple-100 dark:hover:bg-purple-900/20'
+          }`}
+        >
+          <Plus className="w-4 h-4" />
+          Single Combo
+        </button>
+      </div>
+
+      {/* Content */}
+      {activeTab === 'pathway' && <PathwayBuilder />}
+      {activeTab === 'single' && <SingleComboEntry />}
+    </div>
+  );
+}
+
+/**
+ * PathwayBuilder - Build entire pathways manually with live search
+ */
+function PathwayBuilder() {
+  const [rows, setRows] = useState([
+    { id: 1, elementA: '', elementB: '', result: '', emojiA: '', emojiB: '', resultEmoji: '' },
+  ]);
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+  const [savedPathway, setSavedPathway] = useState(null);
+  const [isEditingEmojis, setIsEditingEmojis] = useState(false);
+
+  // Add a new row
+  const addRow = useCallback(() => {
+    setRows((prev) => [
+      ...prev,
+      {
+        id: Date.now(),
+        elementA: '',
+        elementB: '',
+        result: '',
+        emojiA: '',
+        emojiB: '',
+        resultEmoji: '',
+      },
+    ]);
+  }, []);
+
+  // Remove a row
+  const removeRow = useCallback((id) => {
+    setRows((prev) => (prev.length > 1 ? prev.filter((r) => r.id !== id) : prev));
+  }, []);
+
+  // Update a row field
+  const updateRow = useCallback((id, field, value) => {
+    setRows((prev) => prev.map((row) => (row.id === id ? { ...row, [field]: value } : row)));
+  }, []);
+
+  // Check if pathway is valid
+  const isValid = rows.every(
+    (row) => row.elementA.trim() && row.elementB.trim() && row.result.trim()
+  );
+
+  // Get the final element (result of last row)
+  const finalElement = rows[rows.length - 1]?.result?.trim() || '';
+
+  // Save the pathway
+  const savePathway = useCallback(async () => {
+    if (!isValid || !finalElement) return;
+
+    setIsSaving(true);
+    setError(null);
+    setSavedPathway(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch('/api/admin/daily-alchemy/manual-pathway', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          steps: rows.map((row) => ({
+            elementA: row.elementA.trim(),
+            elementB: row.elementB.trim(),
+            result: row.result.trim(),
+            emojiA: row.emojiA || undefined,
+            emojiB: row.emojiB || undefined,
+            resultEmoji: row.resultEmoji || undefined,
+          })),
+          finalElement,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to save pathway');
+      }
+
+      logger.info('[PathwayBuilder] Pathway saved', data);
+      setSavedPathway(data);
+      setIsEditingEmojis(true);
+    } catch (err) {
+      logger.error('[PathwayBuilder] Save error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [rows, isValid, finalElement]);
+
+  // Reset to build a new pathway
+  const resetPathway = useCallback(() => {
+    setRows([
+      { id: 1, elementA: '', elementB: '', result: '', emojiA: '', emojiB: '', resultEmoji: '' },
+    ]);
+    setSavedPathway(null);
+    setIsEditingEmojis(false);
+    setError(null);
+  }, []);
+
+  // If we have a saved pathway and are editing emojis, show that view
+  if (savedPathway && isEditingEmojis) {
+    return (
+      <EmojiEditor
+        pathway={savedPathway.pathway}
+        saveResults={savedPathway}
+        onDone={resetPathway}
+      />
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-[3px] border-purple-500 p-6">
+        <h3 className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-2 flex items-center gap-2">
+          <GitBranch className="w-5 h-5" />
+          Build a Pathway
+        </h3>
+        <p className="text-sm text-text-secondary mb-4">
+          Add rows to build a complete pathway. Start from starter elements and work toward your
+          target. Emojis are optional - AI will generate them if needed.
+        </p>
+
+        {/* Error Display */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500" />
+            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+          </div>
+        )}
+
+        {/* Pathway Rows */}
+        <div className="space-y-3">
+          {rows.map((row, idx) => (
+            <PathwayRow
+              key={row.id}
+              row={row}
+              index={idx}
+              onUpdate={(field, value) => updateRow(row.id, field, value)}
+              onRemove={() => removeRow(row.id)}
+              canRemove={rows.length > 1}
+            />
+          ))}
+        </div>
+
+        {/* Add Row Button */}
+        <button
+          onClick={addRow}
+          className="mt-4 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-lg border-[2px] border-purple-500 border-dashed hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-2"
+        >
+          <Plus className="w-4 h-4" />
+          Add Step
+        </button>
+
+        {/* Save Button */}
+        <div className="mt-6 flex items-center justify-between">
+          <div className="text-sm text-text-secondary">
+            {rows.length} step{rows.length !== 1 ? 's' : ''}
+            {finalElement && (
+              <span>
+                {' '}
+                → <span className="font-bold text-purple-600">{finalElement}</span>
+              </span>
+            )}
+          </div>
+          <button
+            onClick={savePathway}
+            disabled={isSaving || !isValid}
+            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+          >
+            {isSaving ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Save className="w-5 h-5" />
+                Save Pathway
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Starter Elements Reference */}
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600 p-4">
+        <h4 className="font-bold text-text-secondary mb-2">Starter Elements</h4>
+        <div className="flex flex-wrap gap-3">
+          {STARTER_ELEMENTS.map((el) => (
+            <span
+              key={el.id}
+              className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-sm flex items-center gap-1.5"
+            >
+              <span>{el.emoji}</span>
+              <span className="font-medium">{el.name}</span>
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * PathwayRow - A single row in the pathway builder with live search
+ */
+function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
+  const [suggestions, setSuggestions] = useState({ a: [], b: [], result: [] });
+  const [showSuggestions, setShowSuggestions] = useState({ a: false, b: false, result: false });
+
+  // Search for elements
+  const searchElements = useCallback(async (query) => {
+    if (!query || query.length < 1) return [];
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(query)}&limit=6`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.elements || [];
+      }
+    } catch (err) {
+      logger.error('[PathwayRow] Search error', { error: err.message });
+    }
+    return [];
+  }, []);
+
+  // Handle element search
+  const handleSearch = useCallback(
+    async (field, value) => {
+      onUpdate(field === 'a' ? 'elementA' : field === 'b' ? 'elementB' : 'result', value);
+
+      if (value.length >= 1) {
+        const results = await searchElements(value);
+        // Include starter elements in suggestions
+        const starters = STARTER_ELEMENTS.filter((s) =>
+          s.name.toLowerCase().includes(value.toLowerCase())
+        ).map((s) => ({ name: s.name, emoji: s.emoji }));
+        const combined = [
+          ...starters,
+          ...results.filter((r) => !starters.find((s) => s.name === r.name)),
+        ].slice(0, 6);
+        setSuggestions((prev) => ({ ...prev, [field]: combined }));
+        setShowSuggestions((prev) => ({ ...prev, [field]: true }));
+      } else {
+        setShowSuggestions((prev) => ({ ...prev, [field]: false }));
+      }
+    },
+    [onUpdate, searchElements]
+  );
+
+  // Select suggestion
+  const selectSuggestion = useCallback(
+    (field, element) => {
+      const fieldKey = field === 'a' ? 'elementA' : field === 'b' ? 'elementB' : 'result';
+      const emojiKey = field === 'a' ? 'emojiA' : field === 'b' ? 'emojiB' : 'resultEmoji';
+      onUpdate(fieldKey, element.name);
+      onUpdate(emojiKey, element.emoji);
+      setShowSuggestions((prev) => ({ ...prev, [field]: false }));
+    },
+    [onUpdate]
+  );
+
+  const closeSuggestions = useCallback((field) => {
+    setTimeout(() => setShowSuggestions((prev) => ({ ...prev, [field]: false })), 200);
+  }, []);
+
+  return (
+    <div className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
+      {/* Step number */}
+      <span className="text-xs font-bold text-gray-400 w-6">{index + 1}.</span>
+
+      {/* Element A */}
+      <div className="relative flex-1 min-w-[100px]">
+        <div className="flex items-center gap-1">
+          {row.emojiA && <span className="text-lg">{row.emojiA}</span>}
+          <input
+            type="text"
+            value={row.elementA}
+            onChange={(e) => handleSearch('a', e.target.value)}
+            onFocus={() => row.elementA && handleSearch('a', row.elementA)}
+            onBlur={() => closeSuggestions('a')}
+            placeholder="Element A"
+            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+          />
+        </div>
+        {showSuggestions.a && suggestions.a.length > 0 && (
+          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            {suggestions.a.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => selectSuggestion('a', s)}
+                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <span>{s.emoji}</span>
+                <span className="font-medium">{s.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <span className="text-lg font-bold text-purple-500">+</span>
+
+      {/* Element B */}
+      <div className="relative flex-1 min-w-[100px]">
+        <div className="flex items-center gap-1">
+          {row.emojiB && <span className="text-lg">{row.emojiB}</span>}
+          <input
+            type="text"
+            value={row.elementB}
+            onChange={(e) => handleSearch('b', e.target.value)}
+            onFocus={() => row.elementB && handleSearch('b', row.elementB)}
+            onBlur={() => closeSuggestions('b')}
+            placeholder="Element B"
+            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+          />
+        </div>
+        {showSuggestions.b && suggestions.b.length > 0 && (
+          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            {suggestions.b.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => selectSuggestion('b', s)}
+                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <span>{s.emoji}</span>
+                <span className="font-medium">{s.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      <span className="text-lg font-bold text-purple-500">=</span>
+
+      {/* Result */}
+      <div className="relative flex-1 min-w-[120px]">
+        <div className="flex items-center gap-1">
+          {row.resultEmoji && <span className="text-lg">{row.resultEmoji}</span>}
+          <input
+            type="text"
+            value={row.result}
+            onChange={(e) => handleSearch('result', e.target.value)}
+            onFocus={() => row.result && handleSearch('result', row.result)}
+            onBlur={() => closeSuggestions('result')}
+            placeholder="Result"
+            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-bold"
+          />
+        </div>
+        {showSuggestions.result && suggestions.result.length > 0 && (
+          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+            {suggestions.result.map((s, i) => (
+              <button
+                key={i}
+                onClick={() => selectSuggestion('result', s)}
+                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+              >
+                <span>{s.emoji}</span>
+                <span className="font-medium">{s.name}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Remove button */}
+      {canRemove && (
+        <button
+          onClick={onRemove}
+          className="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+          title="Remove step"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
+}
+
+/**
+ * EmojiEditor - Edit emojis for elements after saving a pathway
+ */
+function EmojiEditor({ pathway, saveResults, onDone }) {
+  const [editedEmojis, setEditedEmojis] = useState(() => {
+    // Build initial emoji map from pathway
+    const map = {};
+    for (const step of pathway.steps) {
+      map[step.elementA] = step.emojiA;
+      map[step.elementB] = step.emojiB;
+      map[step.result] = step.resultEmoji;
+    }
+    return map;
+  });
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState(null);
+
+  // Get unique elements
+  const uniqueElements = [
+    ...new Set(pathway.steps.flatMap((s) => [s.elementA, s.elementB, s.result])),
+  ];
+
+  // Update an emoji
+  const updateEmoji = useCallback((elementName, newEmoji) => {
+    setEditedEmojis((prev) => ({ ...prev, [elementName]: newEmoji }));
+  }, []);
+
+  // Save emoji updates
+  const saveEmojis = useCallback(async () => {
+    const updates = uniqueElements
+      .filter(
+        (name) =>
+          editedEmojis[name] !==
+          pathway.steps.find((s) => s.elementA === name || s.elementB === name || s.result === name)
+            ?.resultEmoji
+      )
+      .map((name) => ({ elementName: name, newEmoji: editedEmojis[name] }));
+
+    if (updates.length === 0) {
+      onDone();
+      return;
+    }
+
+    setIsSaving(true);
+    setSaveError(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch('/api/admin/daily-alchemy/manual-pathway', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ updates }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to update emojis');
+      }
+
+      logger.info('[EmojiEditor] Emojis updated', data);
+      onDone();
+    } catch (err) {
+      logger.error('[EmojiEditor] Save error', { error: err.message });
+      setSaveError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  }, [editedEmojis, uniqueElements, pathway, onDone]);
+
+  return (
+    <div className="space-y-4">
+      {/* Success Banner */}
+      <div className="p-4 bg-green-50 dark:bg-green-900/20 border-[2px] border-green-500 rounded-lg flex items-start gap-3">
+        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="font-bold text-green-600 dark:text-green-400">Pathway Saved!</p>
+          <p className="text-sm text-green-600 dark:text-green-400">
+            Created {saveResults.created} new combination{saveResults.created !== 1 ? 's' : ''}
+            {saveResults.skipped > 0 && `, ${saveResults.skipped} already existed`}
+          </p>
+          {saveResults.conflicts && saveResults.conflicts.length > 0 && (
+            <p className="text-sm text-amber-600 dark:text-amber-400 mt-1">
+              ⚠️ {saveResults.conflicts.length} conflict
+              {saveResults.conflicts.length !== 1 ? 's' : ''} (kept existing)
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* Emoji Editor */}
+      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-[3px] border-purple-500 p-6">
+        <h3 className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-2 flex items-center gap-2">
+          <Pencil className="w-5 h-5" />
+          Edit Element Emojis
+        </h3>
+        <p className="text-sm text-text-secondary mb-4">
+          Review and edit the emojis for each element in your pathway.
+        </p>
+
+        {saveError && (
+          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-center gap-2">
+            <AlertCircle className="w-4 h-4 text-red-500" />
+            <p className="text-sm text-red-600 dark:text-red-400">{saveError}</p>
+          </div>
+        )}
+
+        {/* Elements Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+          {uniqueElements.map((name) => (
+            <div
+              key={name}
+              className="flex items-center gap-2 p-2 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10"
+            >
+              <input
+                type="text"
+                value={editedEmojis[name] || ''}
+                onChange={(e) => updateEmoji(name, e.target.value.slice(0, 4))}
+                className="w-12 px-2 py-1 text-xl text-center rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700"
+                maxLength={4}
+              />
+              <span className="font-medium text-sm text-text-primary truncate" title={name}>
+                {name}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="mt-6 flex items-center justify-between">
+          <button
+            onClick={onDone}
+            className="px-4 py-2 text-text-secondary font-bold hover:text-text-primary transition-colors"
+          >
+            Skip Editing
+          </button>
+          <button
+            onClick={saveEmojis}
+            disabled={isSaving}
+            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
+            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+          >
+            {isSaving ? (
+              <>
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Saving...
+              </>
+            ) : (
+              <>
+                <Check className="w-5 h-5" />
+                Save & Done
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Pathway Preview */}
+      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600 p-4">
+        <h4 className="font-bold text-text-secondary mb-3 flex items-center gap-2">
+          <GitBranch className="w-4 h-4" />
+          Pathway Preview
+        </h4>
+        <div className="space-y-2">
+          {pathway.steps.map((step, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-2 text-sm bg-white dark:bg-gray-800 rounded-lg p-2 border border-gray-200 dark:border-gray-700"
+            >
+              <span className="text-xs font-bold text-gray-400 w-5">{step.step}.</span>
+              <span className="text-lg">{editedEmojis[step.elementA] || step.emojiA}</span>
+              <span className="font-medium">{step.elementA}</span>
+              <span className="text-gray-400">+</span>
+              <span className="text-lg">{editedEmojis[step.elementB] || step.emojiB}</span>
+              <span className="font-medium">{step.elementB}</span>
+              <span className="text-gray-400">=</span>
+              <span className="text-lg">{editedEmojis[step.result] || step.resultEmoji}</span>
+              <span className="font-bold">{step.result}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * SingleComboEntry - Form for manually adding a single element combination
+ */
+function SingleComboEntry() {
   const [elementA, setElementA] = useState('');
   const [elementB, setElementB] = useState('');
   const [result, setResult] = useState('');
@@ -1185,6 +1867,82 @@ function CombinationReview() {
     [searchResults?.pathways, loadPathways]
   );
 
+  // Delete a combination
+  const deleteCombination = useCallback(
+    async (elementA, elementB) => {
+      try {
+        const token = await authService.getToken();
+        const response = await fetch(
+          `/api/admin/daily-alchemy/combinations?elementA=${encodeURIComponent(elementA)}&elementB=${encodeURIComponent(elementB)}`,
+          {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || 'Failed to delete combination');
+        }
+
+        logger.info('[CombinationReview] Combination deleted, refreshing search', {
+          elementA,
+          elementB,
+        });
+
+        // Refresh the search results
+        searchElement();
+      } catch (err) {
+        logger.error('[CombinationReview] Delete error', { error: err.message });
+        setError(`Failed to delete: ${err.message}`);
+      }
+    },
+    [searchElement]
+  );
+
+  // Edit a combination's result
+  const editCombination = useCallback(
+    async (elementA, elementB, newResult, newEmoji) => {
+      try {
+        const token = await authService.getToken();
+        const response = await fetch('/api/admin/daily-alchemy/combinations', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            elementA,
+            elementB,
+            newResult,
+            newEmoji,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || data.error || 'Failed to update combination');
+        }
+
+        logger.info('[CombinationReview] Combination updated, refreshing search', {
+          elementA,
+          elementB,
+          newResult,
+          newEmoji,
+        });
+
+        // Refresh the search results
+        searchElement();
+      } catch (err) {
+        logger.error('[CombinationReview] Edit error', { error: err.message });
+        setError(`Failed to update: ${err.message}`);
+      }
+    },
+    [searchElement]
+  );
+
   return (
     <div className="space-y-6">
       {/* Search Section */}
@@ -1287,6 +2045,8 @@ function CombinationReview() {
                   isExpanded={expandedPathways.has(idx)}
                   isLoading={loadingPathways && expandedPathways.has(idx)}
                   onToggle={() => togglePathway(idx)}
+                  onDelete={deleteCombination}
+                  onEdit={editCombination}
                 />
               ))}
             </div>
@@ -1324,37 +2084,192 @@ function CombinationReview() {
 /**
  * CombinationCard - Display a single combination with expandable pathway
  */
-function CombinationCard({ combo, result, resultEmoji, pathway, isExpanded, isLoading, onToggle }) {
+function CombinationCard({
+  combo,
+  result,
+  resultEmoji,
+  pathway,
+  isExpanded,
+  isLoading,
+  onToggle,
+  onDelete,
+  onEdit,
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editResult, setEditResult] = useState(result);
+  const [editEmoji, setEditEmoji] = useState(resultEmoji);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleSaveEdit = async () => {
+    if (!editResult.trim() || !editEmoji.trim()) return;
+    setIsSaving(true);
+    try {
+      await onEdit(combo.elementA, combo.elementB, editResult.trim(), editEmoji.trim());
+      setIsEditing(false);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      await onDelete(combo.elementA, combo.elementB);
+    } finally {
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const cancelEdit = () => {
+    setEditResult(result);
+    setEditEmoji(resultEmoji);
+    setIsEditing(false);
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black dark:border-white overflow-hidden">
+      {/* Delete Confirmation */}
+      {showDeleteConfirm && (
+        <div className="p-4 bg-red-50 dark:bg-red-900/30 border-b-[2px] border-red-500">
+          <p className="text-sm font-bold text-red-600 dark:text-red-400 mb-3">
+            Delete this combination?
+          </p>
+          <p className="text-xs text-red-600 dark:text-red-400 mb-3">
+            {combo.elementA} + {combo.elementB} = {resultEmoji} {result}
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded hover:bg-red-600 transition-colors disabled:opacity-50 flex items-center gap-1"
+            >
+              {isDeleting ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Trash2 className="w-4 h-4" />
+              )}
+              Delete
+            </button>
+            <button
+              onClick={() => setShowDeleteConfirm(false)}
+              disabled={isDeleting}
+              className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-text-primary text-sm font-bold rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Mode */}
+      {isEditing && !showDeleteConfirm && (
+        <div className="p-4 bg-purple-50 dark:bg-purple-900/20 border-b-[2px] border-purple-500">
+          <p className="text-sm font-bold text-purple-600 dark:text-purple-400 mb-3">
+            Edit Combination Result
+          </p>
+          <div className="flex items-center gap-2 mb-3">
+            <span className="font-medium text-text-secondary">{combo.elementA}</span>
+            <span className="text-purple-500">+</span>
+            <span className="font-medium text-text-secondary">{combo.elementB}</span>
+            <span className="text-purple-500">=</span>
+            <input
+              type="text"
+              value={editEmoji}
+              onChange={(e) => setEditEmoji(e.target.value.slice(0, 4))}
+              className="w-16 px-2 py-1 text-xl text-center rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+              maxLength={4}
+            />
+            <input
+              type="text"
+              value={editResult}
+              onChange={(e) => setEditResult(e.target.value)}
+              className="flex-1 px-3 py-1 rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 font-bold"
+              placeholder="Result element"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleSaveEdit}
+              disabled={isSaving || !editResult.trim() || !editEmoji.trim()}
+              className="px-3 py-1.5 bg-purple-500 text-white text-sm font-bold rounded hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-1"
+            >
+              {isSaving ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Save className="w-4 h-4" />
+              )}
+              Save
+            </button>
+            <button
+              onClick={cancelEdit}
+              disabled={isSaving}
+              className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-text-primary text-sm font-bold rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50 flex items-center gap-1"
+            >
+              <X className="w-4 h-4" />
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Combination Header */}
-      <button
-        onClick={onToggle}
-        className="w-full p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
-      >
-        <div className="flex items-center gap-3 text-lg">
-          <span className="font-bold text-text-primary">{combo.elementA}</span>
-          <span className="text-blue-500 font-bold">+</span>
-          <span className="font-bold text-text-primary">{combo.elementB}</span>
-          <span className="text-blue-500 font-bold">=</span>
-          <span className="text-2xl">{resultEmoji}</span>
-          <span className="font-bold text-text-primary">{result}</span>
-        </div>
-        <div className="flex items-center gap-3">
-          {combo.useCount > 0 && (
-            <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
-              Used {combo.useCount}×
-            </span>
-          )}
-          {isLoading ? (
-            <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          ) : isExpanded ? (
-            <ChevronDown className="w-5 h-5 text-blue-500" />
-          ) : (
-            <ChevronRight className="w-5 h-5 text-text-secondary" />
-          )}
-        </div>
-      </button>
+      <div className="flex items-center">
+        <button
+          onClick={onToggle}
+          className="flex-1 p-4 flex items-center justify-between hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
+        >
+          <div className="flex items-center gap-3 text-lg">
+            <span className="font-bold text-text-primary">{combo.elementA}</span>
+            <span className="text-blue-500 font-bold">+</span>
+            <span className="font-bold text-text-primary">{combo.elementB}</span>
+            <span className="text-blue-500 font-bold">=</span>
+            <span className="text-2xl">{resultEmoji}</span>
+            <span className="font-bold text-text-primary">{result}</span>
+          </div>
+          <div className="flex items-center gap-3">
+            {combo.useCount > 0 && (
+              <span className="text-xs text-text-secondary bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded-full">
+                Used {combo.useCount}×
+              </span>
+            )}
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
+            ) : isExpanded ? (
+              <ChevronDown className="w-5 h-5 text-blue-500" />
+            ) : (
+              <ChevronRight className="w-5 h-5 text-text-secondary" />
+            )}
+          </div>
+        </button>
+        {/* Edit/Delete buttons */}
+        {onEdit && onDelete && !isEditing && !showDeleteConfirm && (
+          <div className="flex items-center gap-1 pr-3">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+              className="p-2 text-purple-500 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded transition-colors"
+              title="Edit combination"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowDeleteConfirm(true);
+              }}
+              className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+              title="Delete combination"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        )}
+      </div>
 
       {/* Expanded Pathway */}
       {isExpanded && (
