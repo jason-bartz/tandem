@@ -1,5 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -24,6 +25,7 @@ import subscriptionService from '@/services/subscriptionService';
 // gameCenterService removed - Game Center integration deprecated
 
 export default function GameContainerClient({ initialPuzzleData }) {
+  const searchParams = useSearchParams();
   const game = useGameWithInitialData(initialPuzzleData);
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp);
   const { theme, toggleTheme } = useTheme();
@@ -32,6 +34,16 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { isMobilePhone, isSmallPhone } = useDeviceType();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Load archive puzzle from URL date parameter
+  const { loadPuzzle } = game;
+  useEffect(() => {
+    const dateParam = searchParams.get('date');
+    if (dateParam && loadPuzzle) {
+      // Load the archive puzzle for the specified date
+      loadPuzzle(dateParam);
+    }
+  }, [searchParams, loadPuzzle]);
 
   useEffect(() => {
     async function checkOnboarding() {

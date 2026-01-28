@@ -502,8 +502,15 @@ export default function UnifiedArchiveCalendar({
         return;
       }
 
-      // Load puzzle - pass date for proper admire mode detection
-      onSelectPuzzle(puzzle.date);
+      // If we're in the Tandem game context (defaultTab is 'tandem'), use the callback
+      // Otherwise, navigate directly to the Tandem page
+      if (defaultTab === 'tandem' && onSelectPuzzle) {
+        onSelectPuzzle(puzzle.date);
+      } else {
+        // Cross-game navigation: close archive and navigate to Tandem
+        onClose?.();
+        router.push(`/?date=${puzzle.date}`);
+      }
     } else if (activeTab === 'mini') {
       // Mini - only require subscription for archive puzzles (not today's puzzle)
       const isArchivePuzzle = !isToday;
