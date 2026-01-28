@@ -183,6 +183,13 @@ export async function POST(request) {
         longestStreak: userStats?.longest_streak || 0,
         totalCompleted: userStats?.total_completed || 1,
         totalFirstDiscoveries: userStats?.first_discoveries || 0,
+        averageTime: userStats?.average_time || 0,
+        bestTime: userStats?.best_time || 0,
+        totalMoves: userStats?.total_moves || 0,
+        totalDiscoveries: userStats?.total_discoveries || 0,
+        underPar: userStats?.under_par_count || 0,
+        atPar: userStats?.at_par_count || 0,
+        overPar: userStats?.over_par_count || 0,
       },
     });
   } catch (error) {
