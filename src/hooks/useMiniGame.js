@@ -279,6 +279,21 @@ export function useMiniGame(providedDate = null) {
           }
         }
       } else {
+        // Reset all state for fresh puzzle (archive or new daily)
+        setUserGrid(emptyGrid);
+        setSelectedCell(firstCell);
+        setDirection(DIRECTION.ACROSS);
+        setStartTime(null);
+        setElapsedTime(0);
+        setHasStarted(false);
+        setIsPaused(false);
+        setPausedAt(null);
+        setChecksUsed(0);
+        setRevealsUsed(0);
+        setMistakes(0);
+        setAutoCheck(false);
+        setCorrectCells(new Set());
+        setIsComplete(false);
         setGameState(MINI_GAME_STATES.START);
       }
 
