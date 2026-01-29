@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import {
   Search,
   Sparkles,
@@ -23,7 +23,9 @@ import {
   Loader2,
   Wand2,
   Route,
+  Download,
 } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import logger from '@/lib/logger';
 import authService from '@/services/auth.service';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
@@ -3053,6 +3055,9 @@ function FirstDiscoveriesSection() {
  * FirstDiscoveryDetailModal - Shows details of a first discovery
  */
 function FirstDiscoveryDetailModal({ discovery, onClose }) {
+  const cardRef = useRef(null);
+  const [isSaving, setIsSaving] = useState(false);
+
   const formatDate = (dateStr) => {
     const date = new Date(dateStr);
     return date.toLocaleDateString('en-US', {
@@ -3063,13 +3068,36 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
     });
   };
 
-  const formatTime = (dateStr) => {
-    const date = new Date(dateStr);
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    });
+  const handleSaveAsPng = async () => {
+    if (!cardRef.current || isSaving) return;
+
+    setIsSaving(true);
+    try {
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#ffffff',
+        scale: 2, // Higher resolution for social media
+        useCORS: true,
+        logging: false,
+      });
+
+      // Convert to blob and download
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `first-discovery-${discovery.resultElement.toLowerCase().replace(/\s+/g, '-')}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+    } catch (err) {
+      logger.error('[FirstDiscovery] Failed to save PNG', { error: err.message });
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -3078,70 +3106,90 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)]"
+        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)] relative"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors z-10"
         >
           <X className="w-5 h-5" />
         </button>
 
-        {/* Element display */}
-        <div className="text-center mb-6">
-          <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
-          <h3 className="text-2xl font-bold text-text-primary">{discovery.resultElement}</h3>
-          <div className="flex items-center justify-center gap-2 mt-2">
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
-              First Discovery
-            </span>
+        {/* Exportable card content */}
+        <div ref={cardRef} className="bg-white rounded-xl border-[3px] border-black p-6">
+          {/* Element display */}
+          <div className="text-center mb-6">
+            <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
+            <h3 className="text-2xl font-bold text-gray-900">{discovery.resultElement}</h3>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              <span className="text-amber-500">✨</span>
+              <span className="text-sm font-medium text-amber-600">First Discovery</span>
+            </div>
+          </div>
+
+          {/* Combination that made it - with emojis */}
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4 mb-6">
+            <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-bold text-center">
+              Created by combining
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex flex-col items-center">
+                <span className="text-3xl mb-1">{discovery.elementAEmoji || '✨'}</span>
+                <span className="font-bold text-gray-900 text-sm">{discovery.elementA}</span>
+              </div>
+              <span className="text-blue-500 font-bold text-2xl">+</span>
+              <div className="flex flex-col items-center">
+                <span className="text-3xl mb-1">{discovery.elementBEmoji || '✨'}</span>
+                <span className="font-bold text-gray-900 text-sm">{discovery.elementB}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Discovery info - no time for export */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between py-2 border-b border-gray-200">
+              <span className="text-sm text-gray-500">Discovered by</span>
+              <span className="font-bold text-gray-900">
+                {discovery.username || 'Anonymous Player'}
+              </span>
+            </div>
+            <div className="flex items-center justify-between py-2">
+              <span className="text-sm text-gray-500">Date</span>
+              <span className="font-medium text-gray-900">
+                {formatDate(discovery.discoveredAt)}
+              </span>
+            </div>
+          </div>
+
+          {/* Branding */}
+          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+            <span className="text-xs font-bold text-gray-400">tandemdaily.com/daily-alchemy</span>
           </div>
         </div>
 
-        {/* Combination that made it */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border-[2px] border-black dark:border-white p-4 mb-6">
-          <p className="text-xs text-text-secondary mb-2 uppercase tracking-wide font-bold">
-            Created by combining
-          </p>
-          <div className="flex items-center justify-center gap-3 text-lg">
-            <span className="font-bold text-text-primary">{discovery.elementA}</span>
-            <span className="text-blue-500 font-bold text-xl">+</span>
-            <span className="font-bold text-text-primary">{discovery.elementB}</span>
-          </div>
+        {/* Action buttons */}
+        <div className="mt-4 flex gap-3">
+          <button
+            onClick={handleSaveAsPng}
+            disabled={isSaving}
+            className="flex-1 py-3 bg-blue-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-blue-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)] flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {isSaving ? (
+              <Loader2 className="w-5 h-5 animate-spin" />
+            ) : (
+              <Download className="w-5 h-5" />
+            )}
+            {isSaving ? 'Saving...' : 'Save as PNG'}
+          </button>
+          <button
+            onClick={onClose}
+            className="flex-1 py-3 bg-amber-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-amber-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)]"
+          >
+            Close
+          </button>
         </div>
-
-        {/* Discovery info */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-sm text-text-secondary">Discovered by</span>
-            <span className="font-bold text-text-primary">
-              {discovery.username || 'Anonymous Player'}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
-            <span className="text-sm text-text-secondary">Date</span>
-            <span className="font-medium text-text-primary">
-              {formatDate(discovery.discoveredAt)}
-            </span>
-          </div>
-          <div className="flex items-center justify-between py-2">
-            <span className="text-sm text-text-secondary">Time</span>
-            <span className="font-medium text-text-primary">
-              {formatTime(discovery.discoveredAt)}
-            </span>
-          </div>
-        </div>
-
-        {/* Close button */}
-        <button
-          onClick={onClose}
-          className="mt-6 w-full py-3 bg-amber-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-amber-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)]"
-        >
-          Close
-        </button>
       </div>
     </div>
   );
