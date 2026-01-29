@@ -70,13 +70,44 @@ export async function GET(request) {
       }
     }
 
+    // Get emojis for all unique element names (elementA and elementB)
+    const allElementNames = [...new Set((data || []).flatMap((d) => [d.element_a, d.element_b]))];
+
+    let elementEmojiMap = {};
+    if (allElementNames.length > 0) {
+      // Look up emojis from element_combinations where these appear as results
+      const { data: elements } = await supabase
+        .from('element_combinations')
+        .select('result_element, result_emoji')
+        .in('result_element', allElementNames);
+
+      if (elements) {
+        elementEmojiMap = elements.reduce((acc, e) => {
+          if (!acc[e.result_element]) {
+            acc[e.result_element] = e.result_emoji || '✨';
+          }
+          return acc;
+        }, {});
+      }
+
+      // Add starter elements
+      const starters = { Earth: '🌍', Water: '💧', Fire: '🔥', Wind: '💨' };
+      for (const [name, emoji] of Object.entries(starters)) {
+        if (!elementEmojiMap[name]) {
+          elementEmojiMap[name] = emoji;
+        }
+      }
+    }
+
     // Transform data to camelCase, using looked-up usernames as fallback
     const discoveries = (data || []).map((d) => ({
       id: d.id,
       userId: d.user_id,
       username: d.username || usernameMap[d.user_id] || null,
       elementA: d.element_a,
+      elementAEmoji: elementEmojiMap[d.element_a] || '✨',
       elementB: d.element_b,
+      elementBEmoji: elementEmojiMap[d.element_b] || '✨',
       resultElement: d.result_element,
       resultEmoji: d.result_emoji || '✨',
       discoveredAt: d.discovered_at,
