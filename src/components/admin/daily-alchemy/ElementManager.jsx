@@ -3118,7 +3118,10 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
         </button>
 
         {/* Exportable card content */}
-        <div ref={cardRef} className="bg-white rounded-xl border-[3px] border-black p-6">
+        <div
+          ref={cardRef}
+          className="bg-gradient-to-br from-white via-amber-50/30 to-orange-50/50 rounded-xl border-[3px] border-black p-6 shadow-[8px_8px_0px_rgba(0,0,0,0.8)]"
+        >
           {/* Element display */}
           <div className="text-center mb-6">
             <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
@@ -3131,8 +3134,8 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
 
           {/* Combination that made it - with emojis */}
           <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4 mb-6">
-            <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide font-bold text-center">
-              Created by combining
+            <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
+              Created By Combining
             </p>
             <div className="flex items-center justify-center gap-3">
               <div className="flex flex-col items-center">
