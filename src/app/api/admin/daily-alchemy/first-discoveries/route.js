@@ -50,11 +50,31 @@ export async function GET(request) {
       );
     }
 
-    // Transform data to camelCase
+    // Get usernames for any discoveries missing them
+    const userIdsNeedingLookup = [
+      ...new Set((data || []).filter((d) => !d.username && d.user_id).map((d) => d.user_id)),
+    ];
+
+    let usernameMap = {};
+    if (userIdsNeedingLookup.length > 0) {
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, username')
+        .in('id', userIdsNeedingLookup);
+
+      if (profiles) {
+        usernameMap = profiles.reduce((acc, p) => {
+          acc[p.id] = p.username;
+          return acc;
+        }, {});
+      }
+    }
+
+    // Transform data to camelCase, using looked-up usernames as fallback
     const discoveries = (data || []).map((d) => ({
       id: d.id,
       userId: d.user_id,
-      username: d.username,
+      username: d.username || usernameMap[d.user_id] || null,
       elementA: d.element_a,
       elementB: d.element_b,
       resultElement: d.result_element,
