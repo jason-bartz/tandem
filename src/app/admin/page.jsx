@@ -20,7 +20,7 @@ import { ASSET_VERSION } from '@/lib/constants';
 
 export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
-  const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes', 'elements'
+  const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
   const [showBulkImport, setShowBulkImport] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
@@ -386,7 +386,26 @@ export default function AdminDashboard() {
             `}
           >
             <Image src="/icons/ui/archive.png" alt="" width={20} height={20} />
-            Calendar
+            <span className="hidden sm:inline">Calendar</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('elements')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'elements'
+                  ? 'border-green-500 text-text-primary bg-green-500/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image
+              src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+              alt=""
+              width={20}
+              height={20}
+            />
+            <span className="hidden sm:inline">Elements</span>
           </button>
           <button
             onClick={() => setActiveTab('submissions')}
@@ -400,7 +419,7 @@ export default function AdminDashboard() {
             `}
           >
             <Image src="/icons/ui/movie.png" alt="" width={20} height={20} />
-            Submissions
+            <span className="hidden sm:inline">Submissions</span>
             {submissionCounts?.pending > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
                 {submissionCounts.pending}
@@ -419,7 +438,7 @@ export default function AdminDashboard() {
             `}
           >
             <Image src="/icons/ui/feedback.png" alt="" width={20} height={20} />
-            Feedback
+            <span className="hidden sm:inline">Feedback</span>
             {feedbackCounts?.new > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
                 {feedbackCounts.new}
@@ -438,7 +457,7 @@ export default function AdminDashboard() {
             `}
           >
             <Image src="/icons/ui/leaderboard.png" alt="" width={20} height={20} />
-            Leaderboards
+            <span className="hidden sm:inline">Leaderboards</span>
           </button>
           <button
             onClick={() => setActiveTab('avatars')}
@@ -452,7 +471,7 @@ export default function AdminDashboard() {
             `}
           >
             <span className="text-lg">🐾</span>
-            Avatars
+            <span className="hidden sm:inline">Avatars</span>
           </button>
         </nav>
       </div>
@@ -469,11 +488,7 @@ export default function AdminDashboard() {
                 <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <h3 className="text-base sm:text-lg font-bold text-text-primary">
-                      {calendarSubTab === 'calendar'
-                        ? 'All Games Calendar'
-                        : calendarSubTab === 'themes'
-                          ? 'Theme Tracker'
-                          : 'Element Manager'}
+                      {calendarSubTab === 'calendar' ? 'All Games Calendar' : 'Theme Tracker'}
                     </h3>
                     <div className="flex items-center space-x-1 sm:space-x-2">
                       <button
@@ -498,22 +513,6 @@ export default function AdminDashboard() {
                         <Image src="/icons/ui/theme.png" alt="" width={16} height={16} />
                         <span className="hidden sm:inline">Themes</span>
                       </button>
-                      <button
-                        onClick={() => setCalendarSubTab('elements')}
-                        className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 ${
-                          calendarSubTab === 'elements'
-                            ? 'bg-green-500 border-black dark:border-white text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-green-500/20'
-                        }`}
-                      >
-                        <Image
-                          src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
-                          alt=""
-                          width={16}
-                          height={16}
-                        />
-                        <span className="hidden sm:inline">Elements</span>
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -536,12 +535,12 @@ export default function AdminDashboard() {
                       }}
                     />
                   )}
-                  {calendarSubTab === 'elements' && <ElementManager />}
                 </div>
               </div>
             )}
           </>
         )}
+        {activeTab === 'elements' && <ElementManager />}
         {activeTab === 'feedback' && <FeedbackDashboard onCountsChange={setFeedbackCounts} />}
         {activeTab === 'submissions' && (
           <SubmissionsDashboard
