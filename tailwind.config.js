@@ -466,7 +466,7 @@ module.exports = {
         // Scroll text animation for long element names
         scrollText: {
           '0%, 10%': { transform: 'translateX(0)' },
-          '45%, 55%': { transform: 'translateX(calc(-100% + 70px))' },
+          '45%, 55%': { transform: 'translateX(-35%)' },
           '90%, 100%': { transform: 'translateX(0)' },
         },
       },
