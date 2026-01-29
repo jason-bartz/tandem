@@ -35,7 +35,7 @@ import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
  * - Library: Browse, search, and manage existing elements
  */
 export default function ElementManager() {
-  const [activeTab, setActiveTab] = useState('create'); // 'create' or 'library'
+  const [activeTab, setActiveTab] = useState('create'); // 'create', 'library', or 'discoveries'
 
   return (
     <div className="space-y-6">
@@ -63,11 +63,23 @@ export default function ElementManager() {
           <Grid3X3 className="w-5 h-5" />
           Library
         </button>
+        <button
+          onClick={() => setActiveTab('discoveries')}
+          className={`px-6 py-3 font-bold rounded-xl border-[3px] border-black dark:border-white transition-all flex items-center gap-2 ${
+            activeTab === 'discoveries'
+              ? 'bg-amber-500 text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
+          }`}
+        >
+          <Sparkles className="w-5 h-5" />
+          First Discoveries
+        </button>
       </div>
 
       {/* Content */}
       {activeTab === 'create' && <CreateSection />}
       {activeTab === 'library' && <LibrarySection />}
+      {activeTab === 'discoveries' && <FirstDiscoveriesSection />}
     </div>
   );
 }
@@ -2825,6 +2837,311 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
             </div>
           )}
         </div>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * FirstDiscoveriesSection - Display player-discovered elements grouped by week
+ */
+function FirstDiscoveriesSection() {
+  const [discoveries, setDiscoveries] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedDiscovery, setSelectedDiscovery] = useState(null);
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+
+  // Fetch discoveries
+  const fetchDiscoveries = useCallback(async (page = 1) => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/daily-alchemy/first-discoveries?page=${page}&limit=200`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch discoveries');
+      }
+
+      setDiscoveries(data.discoveries || []);
+      setPagination(data.pagination || { page: 1, totalPages: 1, total: 0 });
+    } catch (err) {
+      logger.error('[FirstDiscoveries] Fetch error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDiscoveries();
+  }, [fetchDiscoveries]);
+
+  // Group discoveries by week
+  const groupDiscoveriesByWeek = useCallback((items) => {
+    if (!items || items.length === 0) return [];
+
+    const groups = [];
+    let currentWeekKey = null;
+    let currentGroup = [];
+
+    for (const discovery of items) {
+      const date = new Date(discovery.discoveredAt);
+      // Get start of week (Sunday)
+      const weekStart = new Date(date);
+      weekStart.setDate(date.getDate() - date.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+
+      const weekKey = weekStart.toISOString().split('T')[0];
+
+      if (currentWeekKey !== weekKey) {
+        if (currentGroup.length > 0) {
+          groups.push({ weekKey: currentWeekKey, discoveries: currentGroup });
+        }
+        currentWeekKey = weekKey;
+        currentGroup = [discovery];
+      } else {
+        currentGroup.push(discovery);
+      }
+    }
+
+    if (currentGroup.length > 0) {
+      groups.push({ weekKey: currentWeekKey, discoveries: currentGroup });
+    }
+
+    return groups;
+  }, []);
+
+  // Format week label
+  const formatWeekLabel = (weekStartStr) => {
+    const weekStart = new Date(weekStartStr);
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+
+    const format = (d) =>
+      `${String(d.getMonth() + 1).padStart(2, '0')}/${String(d.getDate()).padStart(2, '0')}/${String(d.getFullYear()).slice(-2)}`;
+
+    return `Week of ${format(weekStart)} - ${format(weekEnd)}`;
+  };
+
+  const weekGroups = groupDiscoveriesByWeek(discoveries);
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+          <Sparkles className="w-5 h-5 text-amber-500" />
+          Player First Discoveries
+          {pagination.total > 0 && (
+            <span className="text-sm font-normal text-text-secondary">({pagination.total})</span>
+          )}
+        </h3>
+        <button
+          onClick={() => fetchDiscoveries(pagination.page)}
+          disabled={isLoading}
+          className="px-3 py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
+        >
+          <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh
+        </button>
+      </div>
+
+      {/* Error state */}
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-center gap-2">
+          <AlertCircle className="w-5 h-5 text-red-500" />
+          <p className="text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Loading state */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
+        </div>
+      )}
+
+      {/* Empty state */}
+      {!isLoading && !error && discoveries.length === 0 && (
+        <div className="text-center py-12">
+          <Sparkles className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-text-secondary">No player discoveries yet</p>
+          <p className="text-sm text-text-secondary mt-1">
+            First discoveries will appear here when players discover new elements
+          </p>
+        </div>
+      )}
+
+      {/* Discoveries grouped by week */}
+      {!isLoading && !error && weekGroups.length > 0 && (
+        <div className="space-y-8">
+          {weekGroups.map(({ weekKey, discoveries: weekDiscoveries }) => (
+            <div key={weekKey}>
+              {/* Week separator */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-amber-300 to-transparent dark:via-amber-700" />
+                <span className="text-sm font-bold text-amber-600 dark:text-amber-400 px-3 whitespace-nowrap">
+                  {formatWeekLabel(weekKey)}
+                </span>
+                <div className="flex-1 h-[2px] bg-gradient-to-r from-transparent via-amber-300 to-transparent dark:via-amber-700" />
+              </div>
+
+              {/* Grid for this week */}
+              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+                {weekDiscoveries.map((discovery) => (
+                  <button
+                    key={discovery.id}
+                    onClick={() => setSelectedDiscovery(discovery)}
+                    className="flex flex-col items-center p-2 rounded-lg border-[2px] border-black dark:border-white bg-gray-50 dark:bg-gray-700 hover:bg-amber-50 dark:hover:bg-amber-900/30 hover:border-amber-500 transition-all group"
+                    title={`${discovery.resultElement} - discovered by ${discovery.username || 'Anonymous'}`}
+                  >
+                    <span className="text-2xl mb-1">{discovery.resultEmoji}</span>
+                    <div className="w-full overflow-hidden">
+                      <span className="text-xs font-medium text-text-primary whitespace-nowrap block text-center group-hover:text-amber-600 dark:group-hover:text-amber-400 truncate">
+                        {discovery.resultElement}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button
+            onClick={() => fetchDiscoveries(pagination.page - 1)}
+            disabled={pagination.page <= 1}
+            className="p-2 rounded-lg border-[2px] border-black dark:border-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <ChevronLeft className="w-5 h-5" />
+          </button>
+          <span className="text-sm font-medium text-text-secondary px-4">
+            Page {pagination.page} of {pagination.totalPages}
+          </span>
+          <button
+            onClick={() => fetchDiscoveries(pagination.page + 1)}
+            disabled={pagination.page >= pagination.totalPages}
+            className="p-2 rounded-lg border-[2px] border-black dark:border-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-100 dark:hover:bg-gray-700"
+          >
+            <ChevronRight className="w-5 h-5" />
+          </button>
+        </div>
+      )}
+
+      {/* Discovery Detail Modal */}
+      {selectedDiscovery && (
+        <FirstDiscoveryDetailModal
+          discovery={selectedDiscovery}
+          onClose={() => setSelectedDiscovery(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+/**
+ * FirstDiscoveryDetailModal - Shows details of a first discovery
+ */
+function FirstDiscoveryDetailModal({ discovery, onClose }) {
+  const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  const formatTime = (dateStr) => {
+    const date = new Date(dateStr);
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    });
+  };
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      onClick={onClose}
+    >
+      <div
+        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+        >
+          <X className="w-5 h-5" />
+        </button>
+
+        {/* Element display */}
+        <div className="text-center mb-6">
+          <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
+          <h3 className="text-2xl font-bold text-text-primary">{discovery.resultElement}</h3>
+          <div className="flex items-center justify-center gap-2 mt-2">
+            <Sparkles className="w-4 h-4 text-amber-500" />
+            <span className="text-sm font-medium text-amber-600 dark:text-amber-400">
+              First Discovery
+            </span>
+          </div>
+        </div>
+
+        {/* Combination that made it */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 rounded-xl border-[2px] border-black dark:border-white p-4 mb-6">
+          <p className="text-xs text-text-secondary mb-2 uppercase tracking-wide font-bold">
+            Created by combining
+          </p>
+          <div className="flex items-center justify-center gap-3 text-lg">
+            <span className="font-bold text-text-primary">{discovery.elementA}</span>
+            <span className="text-blue-500 font-bold text-xl">+</span>
+            <span className="font-bold text-text-primary">{discovery.elementB}</span>
+          </div>
+        </div>
+
+        {/* Discovery info */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+            <span className="text-sm text-text-secondary">Discovered by</span>
+            <span className="font-bold text-text-primary">
+              {discovery.username || 'Anonymous Player'}
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-2 border-b border-gray-200 dark:border-gray-700">
+            <span className="text-sm text-text-secondary">Date</span>
+            <span className="font-medium text-text-primary">
+              {formatDate(discovery.discoveredAt)}
+            </span>
+          </div>
+          <div className="flex items-center justify-between py-2">
+            <span className="text-sm text-text-secondary">Time</span>
+            <span className="font-medium text-text-primary">
+              {formatTime(discovery.discoveredAt)}
+            </span>
+          </div>
+        </div>
+
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="mt-6 w-full py-3 bg-amber-500 text-white font-bold rounded-xl border-[3px] border-black hover:bg-amber-600 transition-colors shadow-[3px_3px_0px_rgba(0,0,0,1)]"
+        >
+          Close
+        </button>
       </div>
     </div>
   );
