@@ -2573,7 +2573,7 @@ function ElementBrowser({ onSelectElement, externalSearch = '' }) {
           <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-2" />
           <p className="text-text-secondary font-medium">No elements found</p>
           <p className="text-sm text-gray-500 mt-1">
-            {searchFilter ? 'Try a different search term' : 'No elements start with this letter'}
+            {debouncedSearch ? 'Try a different search term' : 'No elements start with this letter'}
           </p>
         </div>
       )}
