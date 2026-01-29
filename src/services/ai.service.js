@@ -3715,36 +3715,70 @@ Element 2: ${elementB}
 CORE PHILOSOPHY:
 The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
 
+THINK BIGGER - ESCALATE SCOPE:
+When combining elements, especially similar or thematically aligned ones, aim for LARGER, more significant concepts:
+
+Physical things → Collections → Institutions → Systems:
+- Tank + Tank = Army (not "Two Tanks" or "Tank Squad")
+- Book + Book = Library (not "Book Collection")
+- Tree + Tree = Forest (natural progression)
+- House + House = Neighborhood
+
+Abstract concepts → Movements → Eras → Cultural Phenomena:
+- Nuclear Standoff + Nuclear Standoff = Cold War
+- Protest + Protest = Revolution
+- Apocalypse + Wasteland = Mad Max (iconic cultural touchstone)
+- War + War = World War
+
+ASK YOURSELF: "Is my result BIGGER than the inputs?" If combining two tanks produces something tank-sized, think bigger.
+
 WHAT MAKES A GREAT COMBINATION:
 
 1. LOGICAL CONNECTIONS: The result should follow naturally from the inputs
    - Fire + Water = Steam (obvious physical reaction)
    - Earth + Water = Mud (natural mixture)
-   - Steam + Earth = Geyser (makes sense)
+   - Army + Earth = Trench (meaningful progression)
 
-2. POP CULTURE & FICTION: Lean into recognizable characters, movies, games, memes
-   - Wizard + Ring = Gandalf (iconic association)
-   - Monster + Japan = Godzilla (cultural icon)
+2. POP CULTURE & FICTION: Lean into WIDELY recognizable references (~70%+ of English speakers should know it)
+   - Wizard + Ring = Gandalf (Lord of the Rings - classic)
+   - Monster + Japan = Godzilla (iconic kaiju)
+   - Bat + Man = Batman (DC classic)
+   - Space + Wizard = Jedi (Star Wars)
+   - Electric + Mouse = Pikachu (globally known)
+   - Hero + Spider = Spider-Man (Marvel)
    - Plumber + Mushroom = Mario (beloved character)
-   - Bat + Man = Batman (direct wordplay + pop culture)
-   - Space + Wizard = Jedi (recognizable reference)
 
-3. PLAYFUL WORDPLAY: Puns and word combinations that click
+3. PLAYFUL WORDPLAY: Puns and compound words that click naturally
    - Sun + Flower = Sunflower (compound word)
    - Sand + Witch = Sandwich (fun pun)
    - Knight + Mare = Nightmare (clever wordplay)
-   - Egg + Plant = Eggplant (literal combination)
+   - Neighborhood + Wind = Gossip (metaphorical but intuitive)
 
 4. THEMATIC BUILDS: Results that connect meaningfully to both inputs
    - Fire + Lizard = Dragon (exciting, makes sense)
    - Ocean + Horse = Seahorse (natural fit)
    - Snow + Man = Snowman (satisfying)
 
-WHAT TO AVOID (CRITICAL):
-- DON'T use either element as a "wildcard" to create unrelated results
-- DON'T create abstract or forced connections that feel arbitrary
-- BOTH input elements should contribute meaningfully to the result
-- DON'T be boring: Fire + Lizard = Dragon (exciting) NOT "Fire Lizard" (lazy)
+ANTI-PATTERNS - NEVER DO THESE:
+
+1. LAZY ADJECTIVE NAMING: Never just prepend an adjective from one input
+   - Engine + Chicken = "Mechanical Chicken" ✗ (lazy)
+   - Engine + Chicken = "Clockwork" ✓ or "Automaton" ✓ (transformation)
+   - Fire + Lizard = "Fire Lizard" ✗ (boring)
+   - Fire + Lizard = "Dragon" ✓ (exciting)
+
+2. WORD MASHUPS: Never just combine/concatenate the words nonsensically
+   - Ninja + Archipelago = "Ninja Hopping" ✗ (meaningless)
+   - Ninja + Archipelago = "Hidden Village" ✓ or "Shadow Isles" ✓ (meaningful)
+
+3. NICHE OBSCURITY: Avoid references only hardcore fans would know
+   - Obscure video game lore, recent memes, deep fandom references ✗
+   - Classic movies, main Pokémon, major superheroes, Star Wars ✓
+   - Ask: "Would most people recognize this?"
+
+4. STAGNANT SAME-ELEMENT: Don't just reference what the element does
+   - Ninja + Ninja = "Shadow Clone" ✗ (anime technique, doesn't scale up)
+   - Ninja + Ninja = "Clan" ✓ or "Dojo" ✓ or "Assassin Order" ✓ (scales up)
 
 RULES:
 1. ALWAYS return a result - there are no "failed" combinations
@@ -3754,12 +3788,24 @@ RULES:
 5. Keep element names concise (1-3 words max)
 6. Choose 1-2 appropriate emojis (1 is preferred)
 
-SAME ELEMENT COMBINATIONS:
-When combining identical elements, scale up or transform:
-- Water + Water = Lake (not Ocean - keep it incremental)
+SAME ELEMENT COMBINATIONS - SCALE UP:
+When combining identical or similar elements, create something LARGER in scope:
+
+Physical objects → Groups/Collections:
+- Tank + Tank = Army
+- Wolf + Wolf = Pack
+- House + House = Neighborhood
+- Robot + Robot = Factory
+
+Abstract/Forces → Intensity/Phenomena:
 - Fire + Fire = Inferno
-- Earth + Earth = Mountain
-- Lake + Lake = Ocean (progressive scaling)
+- Wind + Wind = Hurricane
+- Fear + Fear = Terror
+
+Concepts → Movements/Eras:
+- War + War = World War
+- Idea + Idea = Philosophy
+- Trade + Trade = Economy
 
 Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
 {"element": "ResultName", "emoji": "🔥"}`;
@@ -3949,44 +3995,71 @@ Examples of BAD final steps (NEVER do this):
 CORE PHILOSOPHY:
 The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
 
+THINK BIGGER - ESCALATE SCOPE:
+When combining elements, especially similar or thematically aligned ones, aim for LARGER, more significant concepts:
+
+Physical things → Collections → Institutions → Systems:
+- Tank + Tank = Army (not "Two Tanks" or "Tank Squad")
+- Book + Book = Library (not "Book Collection")
+- Tree + Tree = Forest (natural progression)
+- House + House = Neighborhood
+
+Abstract concepts → Movements → Eras → Cultural Phenomena:
+- Nuclear Standoff + Nuclear Standoff = Cold War
+- Protest + Protest = Revolution
+- Apocalypse + Wasteland = Mad Max (iconic cultural touchstone)
+- War + War = World War
+
+ASK YOURSELF: "Is my result BIGGER than the inputs?" If combining two tanks produces something tank-sized, think bigger.
+
 WHAT MAKES A GREAT COMBINATION:
 - LOGICAL CONNECTIONS: The result should follow naturally from the inputs
   - Fire + Water = Steam ✓ (obvious physical reaction)
   - Earth + Water = Mud ✓ (natural mixture)
-  - Steam + Earth = Geyser ✓ (makes sense)
+  - Army + Earth = Trench ✓ (meaningful progression)
 
-- POP CULTURE & FICTION: Lean into recognizable characters, movies, games, memes
-  - Wizard + Ring = Gandalf ✓ (iconic association)
-  - Monster + Japan = Godzilla ✓ (cultural icon)
-  - Plumber + Mushroom = Mario ✓ (beloved character)
-  - Bat + Man = Batman ✓ (direct wordplay + pop culture)
+- POP CULTURE & FICTION: Lean into WIDELY recognizable references (~70%+ should know it)
+  - Wizard + Ring = Gandalf ✓ (Lord of the Rings - classic)
+  - Monster + Japan = Godzilla ✓ (iconic kaiju)
+  - Bat + Man = Batman ✓ (DC classic)
+  - Electric + Mouse = Pikachu ✓ (globally known)
+  - Hero + Spider = Spider-Man ✓ (Marvel)
 
 - PLAYFUL WORDPLAY: Puns and word combinations that click
   - Sun + Flower = Sunflower ✓ (compound word)
   - Sand + Witch = Sandwich ✓ (fun pun)
   - Knight + Mare = Nightmare ✓ (clever wordplay)
+  - Neighborhood + Wind = Gossip ✓ (metaphorical but intuitive)
 
 - THEMATIC BUILDS: Each step should feel like progress toward something
   - Water + Cold = Ice → Ice + Mountain = Glacier (building toward arctic theme)
   - Fire + Earth = Lava → Lava + Time = Volcano (building toward geology)
 
-WHAT TO AVOID (CRITICAL):
-- DON'T use generic elements as "wildcards" to create unrelated results:
-  - Wind + Politics = Politician ✗ (Wind doesn't transform things randomly)
-  - Fire + Concept = Random Thing ✗ (adding an element shouldn't = anything)
-  - Energy + Noun = Unrelated Noun ✗ (lazy, feels arbitrary)
+ANTI-PATTERNS - NEVER DO THESE:
 
-- DON'T create abstract or forced connections:
-  - Thought + Air = Philosophy ✗ (too abstract, not satisfying)
-  - Essence + Thing = Other Thing ✗ (meaningless transformation)
+1. LAZY ADJECTIVE NAMING: Never just prepend an adjective from one input
+   - Engine + Chicken = "Mechanical Chicken" ✗ (lazy)
+   - Engine + Chicken = "Clockwork" ✓ or "Automaton" ✓ (transformation)
+   - Fire + Lizard = "Fire Lizard" ✗ (boring)
+   - Fire + Lizard = "Dragon" ✓ (exciting)
 
-- DON'T ignore what elements actually represent:
-  - Each element should contribute meaningfully to the result
-  - Both inputs should be evident in the output somehow (physically, thematically, or via wordplay)
+2. WORD MASHUPS: Never just combine/concatenate the words nonsensically
+   - Ninja + Archipelago = "Ninja Hopping" ✗ (meaningless)
+   - Ninja + Archipelago = "Hidden Village" ✓ or "Shadow Isles" ✓ (meaningful)
 
-- DON'T be boring when you can be fun:
-  - Fire + Lizard = Fire Lizard ✗ (boring, just adds adjective)
-  - Fire + Lizard = Dragon ✓ (exciting, makes sense, pop culture appeal)
+3. NICHE OBSCURITY: Avoid references only hardcore fans would know
+   - Obscure video game lore, recent memes, deep fandom references ✗
+   - Classic movies, main Pokémon, major superheroes, Star Wars ✓
+   - Ask: "Would most people recognize this?"
+
+4. STAGNANT SAME-ELEMENT: Don't just reference what the element does
+   - Ninja + Ninja = "Shadow Clone" ✗ (anime technique, doesn't scale up)
+   - Ninja + Ninja = "Clan" ✓ or "Dojo" ✓ or "Assassin Order" ✓ (scales up)
+
+5. WILDCARD TRANSFORMATIONS: Don't use elements as magic converters
+   - Wind + Politics = Politician ✗ (Wind doesn't transform things randomly)
+   - Fire + Concept = Random Thing ✗ (adding an element shouldn't = anything)
+   - Each element should contribute meaningfully to the result
 
 RULES:
 1. Each path must start ONLY with the 4 starter elements
