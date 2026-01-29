@@ -119,7 +119,7 @@ export async function GET(request) {
         total,
         totalPages,
       },
-      letterCounts: letter === 'all' ? letterCounts : undefined,
+      letterCounts, // Always return letterCounts for alphabet filter UI
     });
   } catch (error) {
     logger.error('[ElementBrowse] Unexpected error', {

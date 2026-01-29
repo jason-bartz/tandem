@@ -2026,6 +2026,7 @@ function CombinationReview() {
           onSelectElement={(element) => {
             setSelectedElement(element);
           }}
+          externalSearch={searchQuery}
         />
       )}
 
@@ -2122,17 +2123,6 @@ function CombinationReview() {
               </p>
             </div>
           )}
-        </div>
-      )}
-
-      {/* Empty State */}
-      {!isSearching && !searchResults && !error && (
-        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600">
-          <Search className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-lg font-bold text-text-secondary">Search for an element</p>
-          <p className="text-sm text-gray-500 mt-1">
-            Enter an element name to see all the ways it can be created
-          </p>
         </div>
       )}
     </div>
@@ -2396,16 +2386,24 @@ function PathwayStep({ step }) {
 /**
  * ElementBrowser - Browse all elements with letter filtering and pagination
  */
-function ElementBrowser({ onSelectElement }) {
+function ElementBrowser({ onSelectElement, externalSearch = '' }) {
   const [elements, setElements] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedLetter, setSelectedLetter] = useState('all');
   const [letterCounts, setLetterCounts] = useState({});
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
-  const [searchFilter, setSearchFilter] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+  // Debounce external search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(externalSearch);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [externalSearch]);
 
   // Fetch elements
   const fetchElements = useCallback(async (letter = 'all', page = 1, search = '') => {
@@ -2451,30 +2449,31 @@ function ElementBrowser({ onSelectElement }) {
     fetchElements('all', 1, '');
   }, [fetchElements]);
 
+  // React to debounced search changes
+  useEffect(() => {
+    if (debouncedSearch) {
+      setSelectedLetter('all');
+      fetchElements('all', 1, debouncedSearch);
+    } else if (debouncedSearch === '' && selectedLetter === 'all') {
+      fetchElements('all', 1, '');
+    }
+  }, [debouncedSearch, fetchElements, selectedLetter]);
+
   // Handle letter filter change
   const handleLetterChange = useCallback(
     (letter) => {
       setSelectedLetter(letter);
-      setSearchFilter('');
-      fetchElements(letter, 1, '');
+      fetchElements(letter, 1, debouncedSearch);
     },
-    [fetchElements]
+    [fetchElements, debouncedSearch]
   );
-
-  // Handle search
-  const handleSearch = useCallback(() => {
-    if (searchFilter.trim()) {
-      setSelectedLetter('all');
-      fetchElements('all', 1, searchFilter.trim());
-    }
-  }, [searchFilter, fetchElements]);
 
   // Handle page change
   const handlePageChange = useCallback(
     (newPage) => {
-      fetchElements(selectedLetter, newPage, searchFilter);
+      fetchElements(selectedLetter, newPage, debouncedSearch);
     },
-    [selectedLetter, searchFilter, fetchElements]
+    [selectedLetter, debouncedSearch, fetchElements]
   );
 
   return (
@@ -2484,32 +2483,11 @@ function ElementBrowser({ onSelectElement }) {
           <Grid3X3 className="w-5 h-5" />
           All Elements ({pagination.total})
         </h3>
-
-        {/* Quick Search Filter */}
-        <div className="flex gap-2">
-          <div className="relative">
-            <input
-              type="text"
-              value={searchFilter}
-              onChange={(e) => setSearchFilter(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              placeholder="Filter..."
-              className="w-40 px-3 py-1.5 pl-8 text-sm rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
-            />
-            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          </div>
-          {searchFilter && (
-            <button
-              onClick={() => {
-                setSearchFilter('');
-                fetchElements(selectedLetter, 1, '');
-              }}
-              className="px-2 py-1.5 text-sm font-bold bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
-            >
-              <X className="w-4 h-4" />
-            </button>
-          )}
-        </div>
+        {debouncedSearch && (
+          <span className="text-sm text-text-secondary">
+            Filtering by: &quot;{debouncedSearch}&quot;
+          </span>
+        )}
       </div>
 
       {/* Letter Filter Row */}
@@ -2530,16 +2508,15 @@ function ElementBrowser({ onSelectElement }) {
           return (
             <button
               key={letter}
-              onClick={() => hasElements && handleLetterChange(letter)}
-              disabled={!hasElements}
+              onClick={() => handleLetterChange(letter)}
               className={`w-8 h-8 text-sm font-bold rounded-lg border-[2px] transition-all ${
                 selectedLetter === letter
                   ? 'bg-blue-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                   : hasElements
                     ? 'bg-gray-100 dark:bg-gray-700 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
-                    : 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 border-transparent cursor-not-allowed'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700'
               }`}
-              title={hasElements ? `${count} elements` : 'No elements'}
+              title={hasElements ? `${count} elements` : 'No elements starting with this letter'}
             >
               {letter}
             </button>
@@ -2572,9 +2549,19 @@ function ElementBrowser({ onSelectElement }) {
               title={element.name}
             >
               <span className="text-2xl mb-1">{element.emoji}</span>
-              <span className="text-xs font-medium text-text-primary truncate w-full text-center group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                {element.name.length > 10 ? element.name.slice(0, 9) + '…' : element.name}
-              </span>
+              <div className="w-full overflow-hidden">
+                <span
+                  className={`text-xs font-medium text-text-primary whitespace-nowrap block text-center group-hover:text-blue-600 dark:group-hover:text-blue-400 ${
+                    element.name.length > 10 ? 'group-hover:animate-scroll-text' : ''
+                  }`}
+                  style={{
+                    display: 'block',
+                    animation: element.name.length > 10 ? undefined : 'none',
+                  }}
+                >
+                  {element.name}
+                </span>
+              </div>
             </button>
           ))}
         </div>
@@ -2624,6 +2611,315 @@ function ElementBrowser({ onSelectElement }) {
 /**
  * ElementDetailModal - Modal showing element details, combinations, and edit/delete options
  */
+/**
+ * ElementSearchInput - Live search input for selecting elements
+ */
+function ElementSearchInput({ value, onChange, onSelect, placeholder = 'Search elements...' }) {
+  const [searchResults, setSearchResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!value || value.length < 1) {
+      setSearchResults([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsSearching(true);
+      try {
+        const token = await authService.getToken();
+        const response = await fetch(
+          `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(value)}&limit=10`,
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        const data = await response.json();
+        if (response.ok) {
+          setSearchResults(data.elements || []);
+        }
+      } catch (err) {
+        logger.error('[ElementSearchInput] Search error', { error: err.message });
+      } finally {
+        setIsSearching(false);
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, [value]);
+
+  return (
+    <div className="relative">
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => {
+          onChange(e.target.value);
+          setShowDropdown(true);
+        }}
+        onFocus={() => setShowDropdown(true)}
+        onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        placeholder={placeholder}
+        className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-sm"
+      />
+      {isSearching && (
+        <Loader2 className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400" />
+      )}
+      {showDropdown && searchResults.length > 0 && (
+        <div className="absolute z-10 top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          {searchResults.map((el) => (
+            <button
+              key={el.name}
+              type="button"
+              onMouseDown={(e) => {
+                e.preventDefault();
+                onSelect(el);
+                setShowDropdown(false);
+              }}
+              className="w-full px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-900/30 flex items-center gap-2"
+            >
+              <span>{el.emoji}</span>
+              <span>{el.name}</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * AddCombinationForm - Form for adding a new combination
+ */
+function AddCombinationForm({ elementName, mode, onSave, onCancel }) {
+  // mode: 'createdBy' (element is result) or 'usedIn' (element is input)
+  const [elementA, setElementA] = useState(mode === 'usedIn' ? elementName : '');
+  const [elementB, setElementB] = useState('');
+  const [result, setResult] = useState(mode === 'createdBy' ? elementName : '');
+  const [emoji, setEmoji] = useState('✨');
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  const handleSave = async () => {
+    if (!elementA.trim() || !elementB.trim() || !result.trim()) {
+      setError('All fields are required');
+      return;
+    }
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch('/api/admin/daily-alchemy/combinations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          elementA: elementA.trim(),
+          elementB: elementB.trim(),
+          result: result.trim(),
+          emoji: emoji.trim() || '✨',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || data.message || 'Failed to create combination');
+      }
+
+      onSave();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border-[2px] border-yellow-500">
+      <div className="flex flex-wrap items-center gap-2 mb-2">
+        {mode === 'createdBy' ? (
+          <>
+            <div className="flex-1 min-w-[100px]">
+              <ElementSearchInput
+                value={elementA}
+                onChange={setElementA}
+                onSelect={(el) => setElementA(el.name)}
+                placeholder="Element A"
+              />
+            </div>
+            <span className="text-blue-500 font-bold">+</span>
+            <div className="flex-1 min-w-[100px]">
+              <ElementSearchInput
+                value={elementB}
+                onChange={setElementB}
+                onSelect={(el) => setElementB(el.name)}
+                placeholder="Element B"
+              />
+            </div>
+            <span className="text-gray-400">=</span>
+            <input
+              type="text"
+              value={emoji}
+              onChange={(e) => setEmoji(e.target.value)}
+              className="w-12 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-center text-sm"
+              placeholder="✨"
+            />
+            <span className="font-bold text-sm bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
+              {result}
+            </span>
+          </>
+        ) : (
+          <>
+            <span className="font-bold text-sm bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded">
+              {elementA}
+            </span>
+            <span className="text-blue-500 font-bold">+</span>
+            <div className="flex-1 min-w-[100px]">
+              <ElementSearchInput
+                value={elementB}
+                onChange={setElementB}
+                onSelect={(el) => setElementB(el.name)}
+                placeholder="Other Element"
+              />
+            </div>
+            <span className="text-gray-400">=</span>
+            <input
+              type="text"
+              value={emoji}
+              onChange={(e) => setEmoji(e.target.value)}
+              className="w-12 px-2 py-2 rounded-lg border-[2px] border-black dark:border-white text-center text-sm"
+              placeholder="✨"
+            />
+            <div className="flex-1 min-w-[100px]">
+              <ElementSearchInput
+                value={result}
+                onChange={setResult}
+                onSelect={(el) => {
+                  setResult(el.name);
+                  setEmoji(el.emoji || '✨');
+                }}
+                placeholder="Result"
+              />
+            </div>
+          </>
+        )}
+      </div>
+      {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
+      <div className="flex gap-2">
+        <button
+          onClick={handleSave}
+          disabled={isSaving}
+          className="px-3 py-1.5 bg-green-500 text-white text-sm font-bold rounded-lg hover:bg-green-600 disabled:opacity-50 flex items-center gap-1"
+        >
+          {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+          Save
+        </button>
+        <button
+          onClick={onCancel}
+          className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-text-primary text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * CombinationRowEditable - Single combination row with edit/delete capability
+ */
+function CombinationRowEditable({ combo, mode, onRefresh }) {
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    try {
+      const token = await authService.getToken();
+      const params = new URLSearchParams({
+        elementA: combo.elementA,
+        elementB: combo.elementB,
+      });
+      const response = await fetch(`/api/admin/daily-alchemy/combinations?${params}`, {
+        method: 'DELETE',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to delete');
+      }
+
+      onRefresh();
+    } catch (err) {
+      logger.error('[CombinationRowEditable] Delete error', { error: err.message });
+    } finally {
+      setIsDeleting(false);
+      setShowConfirm(false);
+    }
+  };
+
+  if (showConfirm) {
+    return (
+      <div className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-900/20 rounded-lg text-sm">
+        <span className="text-red-600 dark:text-red-400 font-medium">Delete this combination?</span>
+        <div className="flex gap-2">
+          <button
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded hover:bg-red-600 disabled:opacity-50"
+          >
+            {isDeleting ? 'Deleting...' : 'Yes'}
+          </button>
+          <button
+            onClick={() => setShowConfirm(false)}
+            className="px-2 py-1 bg-gray-200 dark:bg-gray-700 text-xs font-bold rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+          >
+            No
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm group">
+      {mode === 'createdBy' ? (
+        <>
+          <span className="font-medium">{combo.elementA}</span>
+          <span className="text-blue-500 font-bold">+</span>
+          <span className="font-medium">{combo.elementB}</span>
+        </>
+      ) : (
+        <>
+          <span className="font-medium">{combo.elementA}</span>
+          <span className="text-blue-500 font-bold">+</span>
+          <span className="font-medium">{combo.elementB}</span>
+          <span className="text-gray-400">=</span>
+          <span className="text-lg">{combo.resultEmoji}</span>
+          <span className="font-bold">{combo.result}</span>
+        </>
+      )}
+      {combo.useCount > 0 && mode === 'createdBy' && (
+        <span className="ml-auto text-xs text-gray-500 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+          {combo.useCount}× used
+        </span>
+      )}
+      <button
+        onClick={() => setShowConfirm(true)}
+        className="ml-auto p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded opacity-0 group-hover:opacity-100 transition-opacity"
+        title="Delete combination"
+      >
+        <Trash2 className="w-4 h-4" />
+      </button>
+    </div>
+  );
+}
+
 function ElementDetailModal({ element, onClose, onElementUpdated, onElementDeleted }) {
   const [details, setDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -2634,6 +2930,8 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
   const [isSaving, setIsSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAddCreatedBy, setShowAddCreatedBy] = useState(false);
+  const [showAddUsedIn, setShowAddUsedIn] = useState(false);
 
   // Fetch element details
   const fetchDetails = useCallback(async () => {
@@ -2950,28 +3248,49 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
           )}
 
           {/* Combinations that create this element */}
-          {!isLoading && details?.combinations && details.combinations.length > 0 && (
+          {!isLoading && !isStarter && (
             <div className="mb-6">
-              <h3 className="text-lg font-bold text-text-primary mb-3 flex items-center gap-2">
-                <GitBranch className="w-5 h-5" />
-                Created By ({details.combinations.length})
-              </h3>
-              <div className="space-y-2 max-h-64 overflow-y-auto">
-                {details.combinations.map((combo, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                  <GitBranch className="w-5 h-5" />
+                  Created By ({details?.combinations?.length || 0})
+                </h3>
+                {!showAddCreatedBy && (
+                  <button
+                    onClick={() => setShowAddCreatedBy(true)}
+                    className="p-1.5 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                    title="Add new combination"
                   >
-                    <span className="font-medium">{combo.elementA}</span>
-                    <span className="text-blue-500 font-bold">+</span>
-                    <span className="font-medium">{combo.elementB}</span>
-                    {combo.useCount > 0 && (
-                      <span className="ml-auto text-xs text-gray-500 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
-                        {combo.useCount}× used
-                      </span>
-                    )}
-                  </div>
+                    <Plus className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {showAddCreatedBy && (
+                  <AddCombinationForm
+                    elementName={details?.element?.name || element.name}
+                    mode="createdBy"
+                    onSave={() => {
+                      setShowAddCreatedBy(false);
+                      fetchDetails();
+                    }}
+                    onCancel={() => setShowAddCreatedBy(false)}
+                  />
+                )}
+                {details?.combinations?.map((combo, idx) => (
+                  <CombinationRowEditable
+                    key={idx}
+                    combo={combo}
+                    mode="createdBy"
+                    onRefresh={fetchDetails}
+                  />
                 ))}
+                {(!details?.combinations || details.combinations.length === 0) &&
+                  !showAddCreatedBy && (
+                    <p className="text-sm text-text-secondary text-center py-4">
+                      No combinations create this element yet. Click + to add one.
+                    </p>
+                  )}
               </div>
             </div>
           )}
@@ -2986,41 +3305,52 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
             </div>
           )}
 
-          {/* No combinations */}
-          {!isLoading &&
-            !isStarter &&
-            details?.combinations?.length === 0 &&
-            details?.usedIn?.length === 0 && (
-              <div className="p-4 text-center bg-gray-50 dark:bg-gray-900 rounded-lg">
-                <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-2" />
-                <p className="text-text-secondary">No combinations found for this element</p>
-              </div>
-            )}
-
           {/* Used in combinations */}
-          {!isLoading && details?.usedIn && details.usedIn.length > 0 && (
+          {!isLoading && !isStarter && (
             <div>
-              <h3 className="text-lg font-bold text-text-primary mb-3 flex items-center gap-2">
-                <Plus className="w-5 h-5" />
-                Used to Create ({details.usedIn.length})
-              </h3>
-              <div className="space-y-2 max-h-48 overflow-y-auto">
-                {details.usedIn.slice(0, 20).map((combo, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+                  <Beaker className="w-5 h-5" />
+                  Used to Create ({details?.usedIn?.length || 0})
+                </h3>
+                {!showAddUsedIn && (
+                  <button
+                    onClick={() => setShowAddUsedIn(true)}
+                    className="p-1.5 text-green-500 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+                    title="Add new combination"
                   >
-                    <span className="font-medium">{combo.elementA}</span>
-                    <span className="text-blue-500 font-bold">+</span>
-                    <span className="font-medium">{combo.elementB}</span>
-                    <span className="text-gray-400">=</span>
-                    <span className="text-lg">{combo.resultEmoji}</span>
-                    <span className="font-bold">{combo.result}</span>
-                  </div>
+                    <Plus className="w-5 h-5" />
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {showAddUsedIn && (
+                  <AddCombinationForm
+                    elementName={details?.element?.name || element.name}
+                    mode="usedIn"
+                    onSave={() => {
+                      setShowAddUsedIn(false);
+                      fetchDetails();
+                    }}
+                    onCancel={() => setShowAddUsedIn(false)}
+                  />
+                )}
+                {details?.usedIn?.slice(0, 20).map((combo, idx) => (
+                  <CombinationRowEditable
+                    key={idx}
+                    combo={combo}
+                    mode="usedIn"
+                    onRefresh={fetchDetails}
+                  />
                 ))}
-                {details.usedIn.length > 20 && (
+                {details?.usedIn?.length > 20 && (
                   <p className="text-sm text-text-secondary text-center py-2">
                     And {details.usedIn.length - 20} more...
+                  </p>
+                )}
+                {(!details?.usedIn || details.usedIn.length === 0) && !showAddUsedIn && (
+                  <p className="text-sm text-text-secondary text-center py-4">
+                    This element isn&apos;t used in any combinations yet. Click + to add one.
                   </p>
                 )}
               </div>

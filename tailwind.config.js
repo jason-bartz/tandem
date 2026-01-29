@@ -165,6 +165,9 @@ module.exports = {
 
         // Slide down from top (for stats bar, notifications, etc.)
         'slide-down': 'slideDownFromTop 400ms cubic-bezier(0.25, 0.1, 0.25, 1)',
+
+        // Scroll text animation for long element names
+        'scroll-text': 'scrollText 3s linear infinite',
       },
       transitionDuration: {
         instant: '100ms',
@@ -459,6 +462,12 @@ module.exports = {
         shimmer: {
           '0%': { transform: 'translateX(-100%)' },
           '100%': { transform: 'translateX(100%)' },
+        },
+        // Scroll text animation for long element names
+        scrollText: {
+          '0%, 10%': { transform: 'translateX(0)' },
+          '45%, 55%': { transform: 'translateX(calc(-100% + 70px))' },
+          '90%, 100%': { transform: 'translateX(0)' },
         },
       },
     },
