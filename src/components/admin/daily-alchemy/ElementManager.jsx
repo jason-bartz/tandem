@@ -9,6 +9,7 @@ import {
   AlertCircle,
   ChevronRight,
   ChevronDown,
+  ChevronLeft,
   Plus,
   Beaker,
   BookOpen,
@@ -20,6 +21,8 @@ import {
   Pencil,
   X,
   Save,
+  Grid3X3,
+  Loader2,
 } from 'lucide-react';
 import logger from '@/lib/logger';
 import authService from '@/services/auth.service';
@@ -1787,6 +1790,9 @@ function CombinationReview() {
   const [expandedPathways, setExpandedPathways] = useState(new Set());
   const [loadingPathways, setLoadingPathways] = useState(false);
 
+  // Element browser state
+  const [selectedElement, setSelectedElement] = useState(null);
+
   // Search for element and its combinations
   const searchElement = useCallback(async () => {
     if (!searchQuery.trim()) {
@@ -2013,6 +2019,36 @@ function CombinationReview() {
           </button>
         </div>
       </div>
+
+      {/* Element Browser Grid */}
+      {!searchResults && (
+        <ElementBrowser
+          onSelectElement={(element) => {
+            setSelectedElement(element);
+          }}
+        />
+      )}
+
+      {/* Element Detail Modal */}
+      {selectedElement && (
+        <ElementDetailModal
+          element={selectedElement}
+          onClose={() => setSelectedElement(null)}
+          onElementUpdated={() => {
+            // Refresh if we're viewing this element's search results
+            if (searchResults?.element?.toLowerCase() === selectedElement.name.toLowerCase()) {
+              searchElement();
+            }
+          }}
+          onElementDeleted={() => {
+            setSelectedElement(null);
+            // Clear search results if we deleted the element being viewed
+            if (searchResults?.element?.toLowerCase() === selectedElement.name.toLowerCase()) {
+              setSearchResults(null);
+            }
+          }}
+        />
+      )}
 
       {/* Error Display */}
       {error && (
@@ -2353,6 +2389,645 @@ function PathwayStep({ step }) {
       <span className="text-gray-400">=</span>
       <span className="text-lg">{step.resultEmoji}</span>
       <span className="font-bold text-text-primary">{step.result}</span>
+    </div>
+  );
+}
+
+/**
+ * ElementBrowser - Browse all elements with letter filtering and pagination
+ */
+function ElementBrowser({ onSelectElement }) {
+  const [elements, setElements] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedLetter, setSelectedLetter] = useState('all');
+  const [letterCounts, setLetterCounts] = useState({});
+  const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [searchFilter, setSearchFilter] = useState('');
+
+  const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+  // Fetch elements
+  const fetchElements = useCallback(async (letter = 'all', page = 1, search = '') => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const params = new URLSearchParams({
+        letter,
+        page: String(page),
+        limit: '100',
+      });
+      if (search) {
+        params.set('search', search);
+      }
+
+      const response = await fetch(`/api/admin/daily-alchemy/elements/browse?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch elements');
+      }
+
+      setElements(data.elements || []);
+      setPagination(data.pagination || { page: 1, totalPages: 1, total: 0 });
+      if (data.letterCounts) {
+        setLetterCounts(data.letterCounts);
+      }
+    } catch (err) {
+      logger.error('[ElementBrowser] Fetch error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  // Initial load
+  useEffect(() => {
+    fetchElements('all', 1, '');
+  }, [fetchElements]);
+
+  // Handle letter filter change
+  const handleLetterChange = useCallback(
+    (letter) => {
+      setSelectedLetter(letter);
+      setSearchFilter('');
+      fetchElements(letter, 1, '');
+    },
+    [fetchElements]
+  );
+
+  // Handle search
+  const handleSearch = useCallback(() => {
+    if (searchFilter.trim()) {
+      setSelectedLetter('all');
+      fetchElements('all', 1, searchFilter.trim());
+    }
+  }, [searchFilter, fetchElements]);
+
+  // Handle page change
+  const handlePageChange = useCallback(
+    (newPage) => {
+      fetchElements(selectedLetter, newPage, searchFilter);
+    },
+    [selectedLetter, searchFilter, fetchElements]
+  );
+
+  return (
+    <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
+          <Grid3X3 className="w-5 h-5" />
+          All Elements ({pagination.total})
+        </h3>
+
+        {/* Quick Search Filter */}
+        <div className="flex gap-2">
+          <div className="relative">
+            <input
+              type="text"
+              value={searchFilter}
+              onChange={(e) => setSearchFilter(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+              placeholder="Filter..."
+              className="w-40 px-3 py-1.5 pl-8 text-sm rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+            />
+            <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          </div>
+          {searchFilter && (
+            <button
+              onClick={() => {
+                setSearchFilter('');
+                fetchElements(selectedLetter, 1, '');
+              }}
+              className="px-2 py-1.5 text-sm font-bold bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Letter Filter Row */}
+      <div className="flex flex-wrap gap-1 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+        <button
+          onClick={() => handleLetterChange('all')}
+          className={`px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+            selectedLetter === 'all'
+              ? 'bg-blue-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+              : 'bg-gray-100 dark:bg-gray-700 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+          }`}
+        >
+          All
+        </button>
+        {LETTERS.map((letter) => {
+          const count = letterCounts[letter] || 0;
+          const hasElements = count > 0;
+          return (
+            <button
+              key={letter}
+              onClick={() => hasElements && handleLetterChange(letter)}
+              disabled={!hasElements}
+              className={`w-8 h-8 text-sm font-bold rounded-lg border-[2px] transition-all ${
+                selectedLetter === letter
+                  ? 'bg-blue-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                  : hasElements
+                    ? 'bg-gray-100 dark:bg-gray-700 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+                    : 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 border-transparent cursor-not-allowed'
+              }`}
+              title={hasElements ? `${count} elements` : 'No elements'}
+            >
+              {letter}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Error Display */}
+      {error && (
+        <div className="p-4 mb-4 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg">
+          <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        </div>
+      )}
+
+      {/* Loading State */}
+      {isLoading && (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+        </div>
+      )}
+
+      {/* Element Grid */}
+      {!isLoading && elements.length > 0 && (
+        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-2">
+          {elements.map((element) => (
+            <button
+              key={element.name}
+              onClick={() => onSelectElement(element)}
+              className="flex flex-col items-center p-2 rounded-lg border-[2px] border-black dark:border-white bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/30 hover:border-blue-500 transition-all group"
+              title={element.name}
+            >
+              <span className="text-2xl mb-1">{element.emoji}</span>
+              <span className="text-xs font-medium text-text-primary truncate w-full text-center group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                {element.name.length > 10 ? element.name.slice(0, 9) + '…' : element.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!isLoading && elements.length === 0 && (
+        <div className="py-12 text-center">
+          <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+          <p className="text-text-secondary font-medium">No elements found</p>
+          <p className="text-sm text-gray-500 mt-1">
+            {searchFilter ? 'Try a different search term' : 'No elements start with this letter'}
+          </p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {!isLoading && pagination.totalPages > 1 && (
+        <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-text-secondary">
+            Page {pagination.page} of {pagination.totalPages} ({pagination.total} elements)
+          </p>
+          <div className="flex gap-2">
+            <button
+              onClick={() => handlePageChange(pagination.page - 1)}
+              disabled={pagination.page <= 1}
+              className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              Prev
+            </button>
+            <button
+              onClick={() => handlePageChange(pagination.page + 1)}
+              disabled={pagination.page >= pagination.totalPages}
+              className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1"
+            >
+              Next
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+/**
+ * ElementDetailModal - Modal showing element details, combinations, and edit/delete options
+ */
+function ElementDetailModal({ element, onClose, onElementUpdated, onElementDeleted }) {
+  const [details, setDetails] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(element.name);
+  const [editEmoji, setEditEmoji] = useState(element.emoji);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // Fetch element details
+  const fetchDetails = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to fetch element details');
+      }
+
+      setDetails(data);
+      setEditName(data.element?.name || element.name);
+      setEditEmoji(data.element?.emoji || element.emoji);
+    } catch (err) {
+      logger.error('[ElementDetailModal] Fetch error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [element.name, element.emoji]);
+
+  useEffect(() => {
+    fetchDetails();
+  }, [fetchDetails]);
+
+  // Handle save edit
+  const handleSaveEdit = async () => {
+    if (!editName.trim()) return;
+
+    setIsSaving(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const body = {};
+      if (editName.trim() !== element.name) {
+        body.newName = editName.trim();
+      }
+      if (editEmoji.trim() !== element.emoji) {
+        body.newEmoji = editEmoji.trim();
+      }
+
+      if (Object.keys(body).length === 0) {
+        setIsEditing(false);
+        return;
+      }
+
+      const response = await fetch(
+        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(body),
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to update element');
+      }
+
+      logger.info('[ElementDetailModal] Element updated', { data });
+      setIsEditing(false);
+      onElementUpdated?.();
+      // Refresh details with new name
+      if (body.newName) {
+        element.name = body.newName;
+      }
+      if (body.newEmoji) {
+        element.emoji = body.newEmoji;
+      }
+      fetchDetails();
+    } catch (err) {
+      logger.error('[ElementDetailModal] Update error', { error: err.message });
+      setError(err.message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  // Handle delete
+  const handleDelete = async () => {
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || data.error || 'Failed to delete element');
+      }
+
+      logger.info('[ElementDetailModal] Element deleted', { data });
+      onElementDeleted?.();
+    } catch (err) {
+      logger.error('[ElementDetailModal] Delete error', { error: err.message });
+      setError(err.message);
+      setIsDeleting(false);
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  // Close on escape
+  useEffect(() => {
+    const handleEsc = (e) => {
+      if (e.key === 'Escape' && !isEditing && !showDeleteConfirm) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleEsc);
+    return () => window.removeEventListener('keydown', handleEsc);
+  }, [onClose, isEditing, showDeleteConfirm]);
+
+  const isStarter = details?.element?.isStarter;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div
+        className="bg-white dark:bg-gray-800 rounded-2xl border-4 border-black dark:border-white shadow-[8px_8px_0px_rgba(0,0,0,1)] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b-[3px] border-black dark:border-white">
+          <div className="flex items-center gap-3">
+            {isEditing ? (
+              <>
+                <input
+                  type="text"
+                  value={editEmoji}
+                  onChange={(e) => setEditEmoji(e.target.value.slice(0, 4))}
+                  className="w-16 px-2 py-1 text-3xl text-center rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+                  maxLength={4}
+                />
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  className="px-3 py-1 text-xl font-bold rounded border-[2px] border-black dark:border-white bg-white dark:bg-gray-700"
+                  placeholder="Element name"
+                />
+              </>
+            ) : (
+              <>
+                <span className="text-4xl">{details?.element?.emoji || element.emoji}</span>
+                <div>
+                  <h2 className="text-xl font-bold text-text-primary">
+                    {details?.element?.name || element.name}
+                  </h2>
+                  {isStarter && (
+                    <span className="text-xs font-bold text-green-600 dark:text-green-400 flex items-center gap-1">
+                      <Check className="w-3 h-3" />
+                      Starter Element
+                    </span>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+          <div className="flex items-center gap-2">
+            {isEditing ? (
+              <>
+                <button
+                  onClick={handleSaveEdit}
+                  disabled={isSaving || !editName.trim()}
+                  className="px-3 py-1.5 bg-green-500 text-white text-sm font-bold rounded-lg hover:bg-green-600 disabled:opacity-50 flex items-center gap-1"
+                >
+                  {isSaving ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <Save className="w-4 h-4" />
+                  )}
+                  Save
+                </button>
+                <button
+                  onClick={() => {
+                    setIsEditing(false);
+                    setEditName(details?.element?.name || element.name);
+                    setEditEmoji(details?.element?.emoji || element.emoji);
+                  }}
+                  disabled={isSaving}
+                  className="px-3 py-1.5 bg-gray-200 dark:bg-gray-700 text-text-primary text-sm font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+                >
+                  Cancel
+                </button>
+              </>
+            ) : (
+              <>
+                {!isStarter && (
+                  <>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="p-2 text-purple-500 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors"
+                      title="Edit element"
+                    >
+                      <Pencil className="w-5 h-5" />
+                    </button>
+                    <button
+                      onClick={() => setShowDeleteConfirm(true)}
+                      className="p-2 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors"
+                      title="Delete element"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  </>
+                )}
+                <button
+                  onClick={onClose}
+                  className="p-2 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Delete Confirmation */}
+        {showDeleteConfirm && (
+          <div className="p-4 bg-red-50 dark:bg-red-900/30 border-b-[2px] border-red-500">
+            <p className="font-bold text-red-600 dark:text-red-400 mb-2">
+              Delete &quot;{element.name}&quot;?
+            </p>
+            <p className="text-sm text-red-600 dark:text-red-400 mb-3">
+              This will delete {details?.stats?.waysToCreate || 0} combinations that create this
+              element and {details?.stats?.usedInCombinations || 0} combinations that use it as an
+              input. This action cannot be undone.
+            </p>
+            <div className="flex gap-2">
+              <button
+                onClick={handleDelete}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-red-500 text-white font-bold rounded-lg hover:bg-red-600 disabled:opacity-50 flex items-center gap-2"
+              >
+                {isDeleting ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Trash2 className="w-4 h-4" />
+                )}
+                Delete Element
+              </button>
+              <button
+                onClick={() => setShowDeleteConfirm(false)}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-text-primary font-bold rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 disabled:opacity-50"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* Error Display */}
+          {error && (
+            <div className="p-3 mb-4 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg">
+              <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          )}
+
+          {/* Loading */}
+          {isLoading && (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+            </div>
+          )}
+
+          {/* Stats */}
+          {!isLoading && details && (
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-xl text-center">
+                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                  {details.stats?.waysToCreate || 0}
+                </p>
+                <p className="text-sm text-blue-600 dark:text-blue-400">Ways to Create</p>
+              </div>
+              <div className="p-4 bg-purple-50 dark:bg-purple-900/20 rounded-xl text-center">
+                <p className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+                  {details.stats?.usedInCombinations || 0}
+                </p>
+                <p className="text-sm text-purple-600 dark:text-purple-400">Used In</p>
+              </div>
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl text-center">
+                <p className="text-2xl font-bold text-green-600 dark:text-green-400">
+                  {details.stats?.totalUses || 0}
+                </p>
+                <p className="text-sm text-green-600 dark:text-green-400">Total Uses</p>
+              </div>
+            </div>
+          )}
+
+          {/* Combinations that create this element */}
+          {!isLoading && details?.combinations && details.combinations.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-lg font-bold text-text-primary mb-3 flex items-center gap-2">
+                <GitBranch className="w-5 h-5" />
+                Created By ({details.combinations.length})
+              </h3>
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {details.combinations.map((combo, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+                  >
+                    <span className="font-medium">{combo.elementA}</span>
+                    <span className="text-blue-500 font-bold">+</span>
+                    <span className="font-medium">{combo.elementB}</span>
+                    {combo.useCount > 0 && (
+                      <span className="ml-auto text-xs text-gray-500 bg-gray-200 dark:bg-gray-600 px-2 py-0.5 rounded-full">
+                        {combo.useCount}× used
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Starter element message */}
+          {!isLoading && isStarter && (
+            <div className="p-4 bg-green-50 dark:bg-green-900/20 rounded-xl">
+              <p className="text-sm text-green-600 dark:text-green-400 font-medium">
+                This is a starter element. It cannot be created by combining other elements and
+                cannot be edited or deleted.
+              </p>
+            </div>
+          )}
+
+          {/* No combinations */}
+          {!isLoading &&
+            !isStarter &&
+            details?.combinations?.length === 0 &&
+            details?.usedIn?.length === 0 && (
+              <div className="p-4 text-center bg-gray-50 dark:bg-gray-900 rounded-lg">
+                <AlertCircle className="w-10 h-10 text-gray-400 mx-auto mb-2" />
+                <p className="text-text-secondary">No combinations found for this element</p>
+              </div>
+            )}
+
+          {/* Used in combinations */}
+          {!isLoading && details?.usedIn && details.usedIn.length > 0 && (
+            <div>
+              <h3 className="text-lg font-bold text-text-primary mb-3 flex items-center gap-2">
+                <Plus className="w-5 h-5" />
+                Used to Create ({details.usedIn.length})
+              </h3>
+              <div className="space-y-2 max-h-48 overflow-y-auto">
+                {details.usedIn.slice(0, 20).map((combo, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-2 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg text-sm"
+                  >
+                    <span className="font-medium">{combo.elementA}</span>
+                    <span className="text-blue-500 font-bold">+</span>
+                    <span className="font-medium">{combo.elementB}</span>
+                    <span className="text-gray-400">=</span>
+                    <span className="text-lg">{combo.resultEmoji}</span>
+                    <span className="font-bold">{combo.result}</span>
+                  </div>
+                ))}
+                {details.usedIn.length > 20 && (
+                  <p className="text-sm text-text-secondary text-center py-2">
+                    And {details.usedIn.length - 20} more...
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
