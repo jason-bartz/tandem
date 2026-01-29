@@ -57,14 +57,14 @@ export async function GET(request) {
 
     let usernameMap = {};
     if (userIdsNeedingLookup.length > 0) {
-      const { data: profiles } = await supabase
-        .from('profiles')
+      const { data: users } = await supabase
+        .from('users')
         .select('id, username')
         .in('id', userIdsNeedingLookup);
 
-      if (profiles) {
-        usernameMap = profiles.reduce((acc, p) => {
-          acc[p.id] = p.username;
+      if (users) {
+        usernameMap = users.reduce((acc, u) => {
+          acc[u.id] = u.username;
           return acc;
         }, {});
       }
