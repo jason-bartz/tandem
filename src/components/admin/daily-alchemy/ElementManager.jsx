@@ -2690,12 +2690,13 @@ function ElementSearchInput({ value, onChange, onSelect, placeholder = 'Search e
 /**
  * AddCombinationForm - Form for adding a new combination
  */
-function AddCombinationForm({ elementName, mode, onSave, onCancel }) {
+function AddCombinationForm({ elementName, elementEmoji, mode, onSave, onCancel }) {
   // mode: 'createdBy' (element is result) or 'usedIn' (element is input)
   const [elementA, setElementA] = useState(mode === 'usedIn' ? elementName : '');
   const [elementB, setElementB] = useState('');
   const [result, setResult] = useState(mode === 'createdBy' ? elementName : '');
-  const [emoji, setEmoji] = useState('✨');
+  // For 'createdBy' mode, use the existing element's emoji as default
+  const [emoji, setEmoji] = useState(mode === 'createdBy' && elementEmoji ? elementEmoji : '✨');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState(null);
 
@@ -3269,6 +3270,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                 {showAddCreatedBy && (
                   <AddCombinationForm
                     elementName={details?.element?.name || element.name}
+                    elementEmoji={details?.element?.emoji || element.emoji}
                     mode="createdBy"
                     onSave={() => {
                       setShowAddCreatedBy(false);
@@ -3327,6 +3329,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                 {showAddUsedIn && (
                   <AddCombinationForm
                     elementName={details?.element?.name || element.name}
+                    elementEmoji={details?.element?.emoji || element.emoji}
                     mode="usedIn"
                     onSave={() => {
                       setShowAddUsedIn(false);
