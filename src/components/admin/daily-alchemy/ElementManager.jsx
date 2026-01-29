@@ -1552,9 +1552,9 @@ function SingleComboEntry() {
   }, [elementA, elementB, checkExistingCombination]);
 
   const handleSave = useCallback(async () => {
-    // Validation
-    if (!elementA.trim() || !elementB.trim() || !result.trim() || !emoji.trim()) {
-      setError('Please fill in all fields');
+    // Validation - emoji is optional, AI will generate if needed
+    if (!elementA.trim() || !elementB.trim() || !result.trim()) {
+      setError('Please fill in element A, element B, and result');
       return;
     }
 
@@ -1565,32 +1565,23 @@ function SingleComboEntry() {
     try {
       const token = await authService.getToken();
 
-      // Create a single-step path to save
-      const path = {
-        id: 'manual',
-        steps: [
-          {
-            step: 1,
-            elementA: elementA.trim(),
-            emojiA: '?',
-            elementB: elementB.trim(),
-            emojiB: '?',
-            result: result.trim(),
-            resultEmoji: emoji.trim(),
-          },
-        ],
-      };
-
-      const response = await fetch('/api/admin/daily-alchemy/generate-path', {
-        method: 'PUT',
+      // Use manual-pathway endpoint which auto-generates emojis if needed
+      const response = await fetch('/api/admin/daily-alchemy/manual-pathway', {
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          path,
-          targetElement: result.trim(),
-          targetEmoji: emoji.trim(),
+          steps: [
+            {
+              elementA: elementA.trim(),
+              elementB: elementB.trim(),
+              result: result.trim(),
+              resultEmoji: emoji.trim() || undefined,
+            },
+          ],
+          finalElement: result.trim(),
         }),
       });
 
@@ -1601,7 +1592,9 @@ function SingleComboEntry() {
       }
 
       if (data.created > 0) {
-        setSuccess(`Created: ${elementA} + ${elementB} = ${emoji} ${result}`);
+        // Get the emoji from the response (which may have been AI-generated)
+        const resultEmoji = data.pathway?.steps?.[0]?.resultEmoji || emoji || '✨';
+        setSuccess(`Created: ${elementA} + ${elementB} = ${resultEmoji} ${result}`);
         // Clear form
         setElementA('');
         setElementB('');
@@ -1741,14 +1734,15 @@ function SingleComboEntry() {
 
           <span className="text-2xl font-bold text-purple-600">=</span>
 
-          {/* Result Emoji */}
+          {/* Result Emoji - optional, AI will generate if empty */}
           <div className="w-20">
             <input
               type="text"
               value={emoji}
               onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-              placeholder="🎯"
-              className="w-full px-3 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary text-2xl text-center"
+              placeholder="auto"
+              title="Optional - AI will generate if empty"
+              className="w-full px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
               maxLength={4}
             />
           </div>
@@ -1787,7 +1781,7 @@ function SingleComboEntry() {
         <div className="mt-6 flex justify-end">
           <button
             onClick={handleSave}
-            disabled={isSaving || !elementA || !elementB || !result || !emoji}
+            disabled={isSaving || !elementA || !elementB || !result}
             className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
             style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
           >
