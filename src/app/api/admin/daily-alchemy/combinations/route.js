@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 import { normalizeKey } from '@/lib/daily-alchemy.constants';
+import { kv } from '@vercel/kv';
+
+// Check if KV is available
+const isKvAvailable = !!(
+  process.env.KV_REST_API_URL &&
+  process.env.KV_REST_API_TOKEN &&
+  !process.env.KV_REST_API_URL.includes('localhost')
+);
 
 /**
  * DELETE /api/admin/daily-alchemy/combinations
@@ -356,6 +364,146 @@ export async function PATCH(request) {
     });
   } catch (error) {
     logger.error('[CombinationsAPI] Unexpected error during element update', {
+      error: error.message,
+      stack: error.stack,
+    });
+
+    return NextResponse.json(
+      { error: 'Internal server error', message: error.message },
+      { status: 500 }
+    );
+  }
+}
+
+/**
+ * POST /api/admin/daily-alchemy/combinations
+ * Create a new combination
+ * Body:
+ * - elementA: first element name (required)
+ * - elementB: second element name (required)
+ * - result: result element name (required)
+ * - emoji: result emoji (optional, defaults to ✨)
+ */
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { elementA, elementB, result, emoji } = body;
+
+    if (!elementA || !elementB || !result) {
+      return NextResponse.json(
+        { error: 'Missing required fields: elementA, elementB, result' },
+        { status: 400 }
+      );
+    }
+
+    const trimmedA = elementA.trim();
+    const trimmedB = elementB.trim();
+    const trimmedResult = result.trim();
+    const trimmedEmoji = emoji?.trim() || '✨';
+
+    const combinationKey = normalizeKey(trimmedA, trimmedB);
+
+    logger.info('[CombinationsAPI] Creating combination', {
+      combinationKey,
+      elementA: trimmedA,
+      elementB: trimmedB,
+      result: trimmedResult,
+      emoji: trimmedEmoji,
+    });
+
+    const supabase = createServerClient();
+
+    // Check if the combination already exists
+    const { data: existing, error: fetchError } = await supabase
+      .from('element_combinations')
+      .select('id, element_a, element_b, result_element, result_emoji')
+      .eq('combination_key', combinationKey)
+      .single();
+
+    if (fetchError && fetchError.code !== 'PGRST116') {
+      logger.error('[CombinationsAPI] Error checking existing combination', {
+        combinationKey,
+        error: fetchError.message,
+      });
+      return NextResponse.json(
+        { error: 'Database error', message: fetchError.message },
+        { status: 500 }
+      );
+    }
+
+    if (existing) {
+      return NextResponse.json(
+        {
+          error: 'Combination already exists',
+          existing: {
+            elementA: existing.element_a,
+            elementB: existing.element_b,
+            result: existing.result_element,
+            emoji: existing.result_emoji,
+          },
+        },
+        { status: 409 }
+      );
+    }
+
+    // Create the new combination
+    const { data: inserted, error: insertError } = await supabase
+      .from('element_combinations')
+      .insert({
+        combination_key: combinationKey,
+        element_a: trimmedA,
+        element_b: trimmedB,
+        result_element: trimmedResult,
+        result_emoji: trimmedEmoji,
+        ai_generated: false,
+        discovered_by: null,
+      })
+      .select('id, element_a, element_b, result_element, result_emoji')
+      .single();
+
+    if (insertError) {
+      logger.error('[CombinationsAPI] Error creating combination', {
+        combinationKey,
+        error: insertError.message,
+      });
+      return NextResponse.json(
+        { error: 'Failed to create combination', message: insertError.message },
+        { status: 500 }
+      );
+    }
+
+    // Clear Redis cache for this combination key if KV is available
+    if (isKvAvailable) {
+      try {
+        await kv.del(`soup:combo:${combinationKey}`);
+        logger.info('[CombinationsAPI] Cache cleared for new combination', { combinationKey });
+      } catch (cacheError) {
+        logger.error('[CombinationsAPI] Cache clear error', { error: cacheError.message });
+        // Continue - cache will be updated on next request
+      }
+    }
+
+    logger.info('[CombinationsAPI] Combination created', {
+      combinationKey,
+      elementA: inserted.element_a,
+      elementB: inserted.element_b,
+      result: inserted.result_element,
+      emoji: inserted.result_emoji,
+    });
+
+    return NextResponse.json({
+      success: true,
+      combination: {
+        id: inserted.id,
+        combinationKey,
+        elementA: inserted.element_a,
+        elementB: inserted.element_b,
+        result: inserted.result_element,
+        emoji: inserted.result_emoji,
+      },
+    });
+  } catch (error) {
+    logger.error('[CombinationsAPI] Unexpected error during creation', {
       error: error.message,
       stack: error.stack,
     });
