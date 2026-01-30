@@ -1,6 +1,60 @@
 import { NextResponse } from 'next/server';
-import { createServerClient } from '@/lib/supabase/server';
+import { createServerComponentClient, createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
 import logger from '@/lib/logger';
+
+/**
+ * Get authenticated user from either cookies or Authorization header
+ * iOS apps send Bearer tokens, web uses cookies
+ */
+async function getAuthenticatedUser(request) {
+  // First, try Bearer token from Authorization header (iOS/native)
+  const authHeader =
+    request?.headers?.get?.('authorization') || request?.headers?.get?.('Authorization');
+
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+
+    // Create a Supabase client with the access token to verify it
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        global: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      }
+    );
+
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+
+    if (!error && user) {
+      // Return both user and a service client for database operations
+      const serviceClient = createServerClient();
+      return { user, supabase: serviceClient, source: 'bearer' };
+    }
+  }
+
+  // Fall back to cookie-based auth (web)
+  const supabase = await createServerComponentClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (!error && user) {
+    // Use service client for database operations to bypass RLS
+    const serviceClient = createServerClient();
+    return { user, supabase: serviceClient, source: 'cookie' };
+  }
+
+  return { user: null, supabase: null, source: null };
+}
 
 /**
  * POST /api/element-soup/complete
@@ -18,15 +72,12 @@ import logger from '@/lib/logger';
  */
 export async function POST(request) {
   try {
-    const supabase = createServerClient();
+    // Get authenticated user (supports both cookie and Bearer token auth for iOS)
+    const { user, supabase, source } = await getAuthenticatedUser(request);
 
-    // Check authentication
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    logger.info('[ElementSoup] Complete endpoint auth', { source, userId: user?.id });
 
-    if (authError || !user) {
+    if (!user || !supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
