@@ -93,8 +93,12 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
       setIsSearching(true);
       setSearchError(null);
       try {
+        const token = await authService.getToken();
         const response = await fetch(
-          `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(searchText)}&limit=15`
+          `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(searchText)}&limit=15`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
         );
         const data = await response.json();
 
