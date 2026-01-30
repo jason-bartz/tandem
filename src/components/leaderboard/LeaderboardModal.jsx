@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import DailyLeaderboard from './DailyLeaderboard';
@@ -26,14 +27,39 @@ export default function LeaderboardModal({
   const [activeTab, setActiveTab] = useState(initialTab);
   const { highContrast } = useTheme();
 
-  const gameNames = {
-    tandem: 'Daily Tandem',
-    mini: 'Daily Mini',
-    reel: 'Reel Connections',
-    'reel-connections': 'Reel Connections',
-    soup: 'Daily Alchemy',
+  const gameConfig = {
+    tandem: {
+      name: 'Daily Tandem',
+      icon: '/icons/ui/tandem.png',
+      bgColor: 'bg-sky-400/30 dark:bg-sky-400/30',
+      hcBgColor: 'bg-hc-primary/20',
+    },
+    mini: {
+      name: 'Daily Mini',
+      icon: '/icons/ui/mini.png',
+      bgColor: 'bg-yellow-400/30 dark:bg-yellow-400/30',
+      hcBgColor: 'bg-hc-warning/20',
+    },
+    reel: {
+      name: 'Reel Connections',
+      icon: '/icons/ui/movie.png',
+      bgColor: 'bg-red-500/30 dark:bg-red-500/30',
+      hcBgColor: 'bg-hc-error/20',
+    },
+    'reel-connections': {
+      name: 'Reel Connections',
+      icon: '/icons/ui/movie.png',
+      bgColor: 'bg-red-500/30 dark:bg-red-500/30',
+      hcBgColor: 'bg-hc-error/20',
+    },
+    soup: {
+      name: 'Daily Alchemy',
+      icon: '/icons/ui/daily-alchemy.png',
+      bgColor: 'bg-green-500/30 dark:bg-green-500/30',
+      hcBgColor: 'bg-hc-success/20',
+    },
   };
-  const gameName = gameNames[gameType] || 'Daily Mini';
+  const config = gameConfig[gameType] || gameConfig.mini;
 
   return (
     <LeftSidePanel
@@ -51,9 +77,22 @@ export default function LeaderboardModal({
         </p>
       }
     >
-      {/* Subtitle under title */}
-      <div className="px-6 pt-2 pb-4 border-b-[3px] border-gray-200 dark:border-gray-700">
-        <p className="text-sm text-gray-600 dark:text-gray-400">{gameName}</p>
+      {/* Game name header with icon */}
+      <div
+        className={`px-6 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 ${
+          highContrast ? config.hcBgColor : config.bgColor
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <Image src={config.icon} alt="" width={20} height={20} />
+          <p
+            className={`text-sm font-semibold ${
+              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+            }`}
+          >
+            {config.name}
+          </p>
+        </div>
       </div>
 
       {/* Tab Navigation */}
