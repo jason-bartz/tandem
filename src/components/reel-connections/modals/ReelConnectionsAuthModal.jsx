@@ -257,12 +257,12 @@ export default function ReelConnectionsAuthModal({
           onClick={handleGoogleSignIn}
           disabled={loading}
           type="button"
-          aria-label="Sign in with Google"
+          aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
           className={`w-full p-4 rounded-xl border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.8)] transition-all flex items-center justify-center gap-3 ${
             loading
               ? 'opacity-50 cursor-not-allowed'
               : 'hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)]'
-          } bg-ghost-white text-gray-700 border-gray-300`}
+          } bg-ghost-white text-gray-700 border-black`}
         >
           {loading ? (
             <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-700 border-t-transparent"></div>
@@ -286,7 +286,9 @@ export default function ReelConnectionsAuthModal({
                   fill="#EA4335"
                 />
               </svg>
-              <span className="font-bold">Sign in with Google</span>
+              <span className="font-bold">
+                {mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
+              </span>
             </>
           )}
         </button>
