@@ -3177,12 +3177,16 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
                   <div className="flex items-center justify-center gap-3">
                     <div className="flex flex-col items-center">
                       <span className="text-3xl mb-1">{discovery.elementAEmoji || '✨'}</span>
-                      <span className="font-bold text-gray-900 text-sm">{discovery.elementA}</span>
+                      <span className="font-bold text-gray-900 text-sm text-center">
+                        {discovery.elementA}
+                      </span>
                     </div>
                     <span className="text-blue-500 font-bold text-2xl">+</span>
                     <div className="flex flex-col items-center">
                       <span className="text-3xl mb-1">{discovery.elementBEmoji || '✨'}</span>
-                      <span className="font-bold text-gray-900 text-sm">{discovery.elementB}</span>
+                      <span className="font-bold text-gray-900 text-sm text-center">
+                        {discovery.elementB}
+                      </span>
                     </div>
                   </div>
                 </div>
