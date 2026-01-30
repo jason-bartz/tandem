@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -117,15 +117,72 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
 
 /**
  * DiscoveryCard - Grid item for a single discovery
+ * Uses touch tracking to distinguish taps from scrolls
  */
 function DiscoveryCard({ discovery, onClick }) {
   const { highContrast } = useTheme();
+  const touchStartRef = useRef(null);
+  const didScrollRef = useRef(false);
+  const touchHandledRef = useRef(false);
+
+  // Track touch start position
+  const handleTouchStart = useCallback((e) => {
+    touchStartRef.current = {
+      x: e.touches[0].clientX,
+      y: e.touches[0].clientY,
+    };
+    didScrollRef.current = false;
+    touchHandledRef.current = false;
+  }, []);
+
+  // Detect if finger moved (scrolling)
+  const handleTouchMove = useCallback((e) => {
+    if (!touchStartRef.current) return;
+
+    const deltaX = Math.abs(e.touches[0].clientX - touchStartRef.current.x);
+    const deltaY = Math.abs(e.touches[0].clientY - touchStartRef.current.y);
+
+    // If moved more than 10px in any direction, it's a scroll
+    if (deltaX > 10 || deltaY > 10) {
+      didScrollRef.current = true;
+    }
+  }, []);
+
+  // Only trigger click if it was a tap (no scroll movement)
+  const handleTouchEnd = useCallback(() => {
+    if (!didScrollRef.current && touchStartRef.current) {
+      touchHandledRef.current = true;
+      onClick();
+    }
+    touchStartRef.current = null;
+    didScrollRef.current = false;
+  }, [onClick]);
+
+  // Handle keyboard/mouse clicks normally, but skip if touch already handled
+  const handleClick = useCallback(
+    (e) => {
+      // Prevent synthetic click after touch events
+      if (touchHandledRef.current) {
+        touchHandledRef.current = false;
+        e.preventDefault();
+        return;
+      }
+      onClick();
+    },
+    [onClick]
+  );
 
   return (
-    <button
-      onClick={onClick}
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={handleClick}
+      onKeyDown={(e) => e.key === 'Enter' && onClick()}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
       className={cn(
-        'flex flex-col items-center justify-center p-3',
+        'flex flex-col items-center justify-center p-3 cursor-pointer select-none',
         'bg-white dark:bg-gray-800',
         'border-[2px] border-black dark:border-gray-600',
         'rounded-xl',
@@ -140,7 +197,7 @@ function DiscoveryCard({ discovery, onClick }) {
       <span className="text-xs font-medium text-gray-700 dark:text-gray-300 text-center line-clamp-2">
         {discovery.resultElement}
       </span>
-    </button>
+    </div>
   );
 }
 
@@ -192,7 +249,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
     <LeftSidePanel
       isOpen={isOpen}
       onClose={onClose}
-      title="First Discoveries"
+      title="Discoveries"
       maxWidth="550px"
       headerClassName="border-b-0"
       contentClassName="p-0 relative"
