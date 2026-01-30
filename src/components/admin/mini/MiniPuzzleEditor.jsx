@@ -37,13 +37,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
   const [errors, setErrors] = useState({});
   const [selectedCell, setSelectedCell] = useState(null);
-  const [symmetryType, setSymmetryType] = useState(SYMMETRY_TYPES.NONE);
+  const symmetryType = SYMMETRY_TYPES.NONE; // Fixed to no symmetry
   const [wordSuggestions, setWordSuggestions] = useState([]);
   const [currentDirection, setCurrentDirection] = useState('across');
   const [wordsLoaded, setWordsLoaded] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generationStats, setGenerationStats] = useState(null);
-  const [theme, setTheme] = useState(''); // Optional theme for AI generation
   // eslint-disable-next-line no-unused-vars
   const [cellConstraints, setCellConstraints] = useState(null); // For visual feedback
   const [aiSuggestions, setAiSuggestions] = useState([]); // AI-powered word suggestions
@@ -524,8 +522,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     if (isGenerating) return;
 
     setIsGenerating(true);
-    setGenerationStats(null); // Clear previous stats
-    logger.info(`[Generator] Starting AI generation${theme ? ` with theme: "${theme}"` : ''}...`);
+    logger.info('[Generator] Starting AI generation...');
 
     try {
       // Add timeout to prevent hanging forever (AI might take longer)
@@ -535,9 +532,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       const response = await fetch('/api/admin/mini/generate', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true), // Include auth + CSRF token
-        body: JSON.stringify({
-          theme: theme.trim() || null,
-        }),
+        body: JSON.stringify({}),
         signal: controller.signal,
       });
 
@@ -554,9 +549,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         logger.info(`[Generator] Success! ${result.words.length} words placed`);
         logger.info('[Generator] Stats:', result.stats);
 
-        // Store generation statistics
-        setGenerationStats(result.stats);
-
         // Update grid with generated solution
         setFormData((prev) => ({
           ...prev,
@@ -565,9 +557,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         }));
 
         // Show success message with stats
-        const statsMsg = result.stats
-          ? `\n\nGeneration Time: ${result.stats.elapsedTime}ms${result.stats.theme ? `\nTheme: ${result.stats.theme}` : ''}`
-          : '';
+        const statsMsg = result.stats ? `\n\nGeneration Time: ${result.stats.elapsedTime}ms` : '';
         alert(`AI puzzle generated successfully with ${result.words.length} words!${statsMsg}`);
       } else {
         throw new Error('Generation failed');
@@ -648,7 +638,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   };
 
   const clearAll = () => {
-    if (!confirm('Clear all grid content, clues, and stats? This cannot be undone.')) {
+    if (!confirm('Clear all grid content and clues? This cannot be undone.')) {
       return;
     }
     setFormData((prev) => ({
@@ -661,7 +651,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         down: [],
       },
     }));
-    setGenerationStats(null);
     setSelectedCell(null);
     setWordSuggestions([]);
   };
@@ -883,59 +872,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
       </div>
 
-      {/* AI Generation Controls Panel */}
-      <div className="mb-4 p-4 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-800 dark:to-gray-900 rounded-lg border-[3px] border-black">
-        <h3 className="text-lg font-black text-text-primary mb-4">🤖 AI Generation</h3>
-
-        {/* Theme Input (Optional) */}
-        <div className="mb-4">
-          <label className="block text-sm font-bold text-text-primary mb-2">Theme (Optional)</label>
-          <input
-            type="text"
-            value={theme}
-            onChange={(e) => setTheme(e.target.value)}
-            placeholder="e.g., Food, Movies, Sports, Animals..."
-            disabled={isGenerating}
-            className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary placeholder-gray-400"
-          />
-          <p className="text-xs text-text-secondary mt-1">
-            Leave empty for a general puzzle, or enter a theme to create a themed crossword
-          </p>
-        </div>
-
-        {/* Generation Statistics */}
-        {generationStats && (
-          <div className="mt-4 p-3 bg-ghost-white dark:bg-gray-800 rounded-lg border-[2px] border-green-500">
-            <div className="flex justify-between items-center mb-2">
-              <h4 className="text-sm font-bold text-text-primary">📊 Last Generation</h4>
-              <span className="text-xs font-bold text-green-600 bg-green-100 px-2 py-1 rounded">
-                ✓ AI Generated
-              </span>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs mb-2">
-              <div className="p-2 bg-blue-50 dark:bg-gray-700 rounded">
-                <div className="font-bold text-gray-600 dark:text-gray-400">Time</div>
-                <div className="text-lg font-black text-blue-600">
-                  {generationStats.elapsedTime}ms
-                </div>
-              </div>
-              <div className="p-2 bg-purple-50 dark:bg-gray-700 rounded">
-                <div className="font-bold text-gray-600 dark:text-gray-400">Words Excluded</div>
-                <div className="text-lg font-black text-purple-600">
-                  {generationStats.excludedWordsCount || 0}
-                </div>
-              </div>
-              {generationStats.theme && (
-                <div className="p-2 bg-yellow-50 dark:bg-gray-700 rounded">
-                  <div className="font-bold text-gray-600 dark:text-gray-400">Theme</div>
-                  <div className="text-sm font-black text-yellow-600">{generationStats.theme}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-      </div>
-
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -967,84 +903,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               <option value="hard">Hard</option>
             </select>
           </div>
-        </div>
-
-        {/* Symmetry Controls */}
-        <div>
-          <label className="block text-sm font-bold text-text-primary mb-3">
-            Black Square Symmetry
-          </label>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.NONE)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.NONE
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              No Symmetry
-            </button>
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.ROTATIONAL)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.ROTATIONAL
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              Rotational
-            </button>
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.HORIZONTAL)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.HORIZONTAL
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              Horizontal
-            </button>
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.VERTICAL)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.VERTICAL
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              Vertical
-            </button>
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.DIAGONAL_NESW)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.DIAGONAL_NESW
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              NE/SW Diagonal
-            </button>
-            <button
-              type="button"
-              onClick={() => setSymmetryType(SYMMETRY_TYPES.DIAGONAL_NWSE)}
-              className={`px-3 py-2 text-xs font-bold rounded-lg border-[2px] transition-all ${
-                symmetryType === SYMMETRY_TYPES.DIAGONAL_NWSE
-                  ? 'bg-accent-yellow text-gray-900 border-black'
-                  : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
-              }`}
-            >
-              NW/SE Diagonal
-            </button>
-          </div>
-          <p className="text-xs text-text-secondary mt-2">
-            Symmetry is applied when placing black squares (■)
-          </p>
         </div>
 
         {/* Grid Editor with Word Suggestions */}

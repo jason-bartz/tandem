@@ -37,50 +37,50 @@ import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
  * - Library: Browse, search, and manage existing elements
  */
 export default function ElementManager() {
-  const [activeTab, setActiveTab] = useState('create'); // 'create', 'library', or 'discoveries'
+  const [activeTab, setActiveTab] = useState('library'); // 'library', 'create', or 'discoveries'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Main Tabs */}
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => setActiveTab('create')}
-          className={`px-6 py-3 font-bold rounded-xl border-[3px] border-black dark:border-white transition-all flex items-center gap-2 ${
-            activeTab === 'create'
-              ? 'bg-green-500 text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-bg-card text-text-secondary hover:bg-green-100 dark:hover:bg-green-900/20'
-          }`}
-        >
-          <Plus className="w-5 h-5" />
-          Create
-        </button>
+      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
         <button
           onClick={() => setActiveTab('library')}
-          className={`px-6 py-3 font-bold rounded-xl border-[3px] border-black dark:border-white transition-all flex items-center gap-2 ${
+          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
             activeTab === 'library'
-              ? 'bg-blue-500 text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              ? 'bg-blue-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
               : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
           }`}
         >
-          <Grid3X3 className="w-5 h-5" />
+          <Grid3X3 className="w-4 h-4 sm:w-5 sm:h-5" />
           Library
         </button>
         <button
+          onClick={() => setActiveTab('create')}
+          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
+            activeTab === 'create'
+              ? 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-bg-card text-text-secondary hover:bg-green-100 dark:hover:bg-green-900/20'
+          }`}
+        >
+          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          Create
+        </button>
+        <button
           onClick={() => setActiveTab('discoveries')}
-          className={`px-6 py-3 font-bold rounded-xl border-[3px] border-black dark:border-white transition-all flex items-center gap-2 ${
+          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
             activeTab === 'discoveries'
-              ? 'bg-amber-500 text-white shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              ? 'bg-amber-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
               : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
           }`}
         >
-          <Sparkles className="w-5 h-5" />
-          First Discoveries
+          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          <span className="hidden sm:inline">First </span>Discoveries
         </button>
       </div>
 
       {/* Content */}
-      {activeTab === 'create' && <CreateSection />}
       {activeTab === 'library' && <LibrarySection />}
+      {activeTab === 'create' && <CreateSection />}
       {activeTab === 'discoveries' && <FirstDiscoveriesSection />}
     </div>
   );
@@ -96,44 +96,46 @@ function CreateSection() {
   return (
     <div className="space-y-4">
       {/* Mode Selector */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-4">
-        <p className="text-sm text-text-secondary mb-3 font-medium">Choose how to add elements:</p>
-        <div className="flex flex-wrap gap-2">
+      <div className="bg-white dark:bg-gray-800 rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white p-3 sm:p-4">
+        <p className="text-xs sm:text-sm text-text-secondary mb-2 sm:mb-3 font-medium">
+          Choose how to add elements:
+        </p>
+        <div className="flex flex-wrap gap-1.5 sm:gap-2">
           <button
             onClick={() => setCreateMode('ai')}
-            className={`px-4 py-2 font-bold rounded-lg border-[2px] transition-all flex items-center gap-2 ${
+            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
               createMode === 'ai'
                 ? 'bg-green-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 : 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-100 dark:hover:bg-green-900/30'
             }`}
           >
-            <Wand2 className="w-4 h-4" />
+            <Wand2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             AI Generator
           </button>
           <button
             onClick={() => setCreateMode('pathway')}
-            className={`px-4 py-2 font-bold rounded-lg border-[2px] transition-all flex items-center gap-2 ${
+            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
               createMode === 'pathway'
                 ? 'bg-purple-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 : 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400 border-purple-300 dark:border-purple-700 hover:bg-purple-100 dark:hover:bg-purple-900/30'
             }`}
           >
-            <Route className="w-4 h-4" />
+            <Route className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Manual Pathway
           </button>
           <button
             onClick={() => setCreateMode('single')}
-            className={`px-4 py-2 font-bold rounded-lg border-[2px] transition-all flex items-center gap-2 ${
+            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
               createMode === 'single'
                 ? 'bg-amber-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
                 : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/30'
             }`}
           >
-            <Beaker className="w-4 h-4" />
+            <Beaker className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Single Combo
           </button>
         </div>
-        <p className="text-xs text-text-secondary mt-3">
+        <p className="text-[10px] sm:text-xs text-text-secondary mt-2 sm:mt-3">
           {createMode === 'ai' &&
             'Enter a target element and AI will generate multiple paths from starter elements.'}
           {createMode === 'pathway' &&
