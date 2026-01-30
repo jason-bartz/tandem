@@ -10,8 +10,15 @@ import { useTheme } from '@/contexts/ThemeContext';
  * @param {number} rank - Player's rank (1-indexed)
  * @param {boolean} isCurrentUser - Whether this is the current user
  * @param {boolean} isStreak - Whether this is a streak leaderboard (vs speed)
+ * @param {string} gameType - Game type ('tandem', 'mini', 'reel', 'soup')
  */
-export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak = false }) {
+export default function LeaderboardEntry({
+  entry,
+  rank,
+  isCurrentUser,
+  isStreak = false,
+  gameType,
+}) {
   const { highContrast } = useTheme();
 
   return (
@@ -80,20 +87,25 @@ export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak 
           {entry.display_name || 'Anonymous'}
           {isCurrentUser && <span className="text-xs ml-2">(You)</span>}
         </p>
-        <p
-          className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
-        >
-          {isStreak ? (
+        {/* Show streak info, hints (except for mini which doesn't use hints), or nothing */}
+        {isStreak ? (
+          <p
+            className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
+          >
             <span className="flex items-center gap-1">
               <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
               {entry.score} day streak
             </span>
-          ) : entry.metadata?.hintsUsed > 0 ? (
-            `${entry.metadata.hintsUsed} hint${entry.metadata.hintsUsed > 1 ? 's' : ''} used`
-          ) : (
-            'No hints'
-          )}
-        </p>
+          </p>
+        ) : gameType !== 'mini' ? (
+          <p
+            className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
+          >
+            {entry.metadata?.hintsUsed > 0
+              ? `${entry.metadata.hintsUsed} hint${entry.metadata.hintsUsed > 1 ? 's' : ''} used`
+              : 'No hints'}
+          </p>
+        ) : null}
       </div>
 
       {/* Score */}
