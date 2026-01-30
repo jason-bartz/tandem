@@ -364,20 +364,20 @@ export default function AccountPage() {
   const { horoscope, loading: horoscopeLoading } = useHoroscope(zodiacData?.name, userTimezone);
 
   const getTierName = (tier) => {
-    if (!tier) return 'Tandem Unlimited';
+    if (!tier) return 'Tandem Puzzle Club';
 
     const tierLower = tier.toLowerCase();
 
     const tiers = {
-      buddypass: '🤝 Buddy Pass',
-      'com.tandemdaily.app.buddypass': '🤝 Buddy Pass',
-      bestfriends: '👯 Best Friends',
-      'com.tandemdaily.app.bestfriends': '👯 Best Friends',
-      soulmates: '💕 Soulmates',
-      'com.tandemdaily.app.soulmates': '💕 Soulmates',
+      buddypass: '🤝 Monthly Membership',
+      'com.tandemdaily.app.buddypass': '🤝 Monthly Membership',
+      bestfriends: '👯 Annual Membership',
+      'com.tandemdaily.app.bestfriends': '👯 Annual Membership',
+      soulmates: '💕 Lifetime Membership',
+      'com.tandemdaily.app.soulmates': '💕 Lifetime Membership',
     };
 
-    return tiers[tierLower] || tiers[tier] || 'Tandem Unlimited';
+    return tiers[tierLower] || tiers[tier] || 'Tandem Puzzle Club';
   };
 
   const getTierDescription = (tier) => {
@@ -814,7 +814,7 @@ export default function AccountPage() {
                             </div>
                           </div>
 
-                          {/* Manage Button or Soulmates Thank You */}
+                          {/* Manage Button or Lifetime Membership Thank You */}
                           {isSoulmatesTier(subscription.tier || subscription.productId) ? (
                             <p className="text-sm text-gray-600 dark:text-gray-400 text-center pt-2 italic">
                               Thank you for being an early believer and lifetime supporter!
@@ -838,13 +838,13 @@ export default function AccountPage() {
                         <div className="flex items-center justify-center gap-2 mb-4">
                           <Image
                             src="/icons/ui/tandem-unlimited.png"
-                            alt="Tandem Unlimited"
+                            alt="Tandem Puzzle Club"
                             width={28}
                             height={28}
                             className="object-contain"
                           />
                           <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                            Tandem Unlimited
+                            Tandem Puzzle Club
                           </h3>
                         </div>
 

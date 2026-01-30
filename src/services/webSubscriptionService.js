@@ -207,7 +207,7 @@ class WebSubscriptionService {
 
   /**
    * Check if user can access a puzzle by number
-   * Only today's puzzle is free - all archive puzzles require Tandem Unlimited
+   * Only today's puzzle is free - all archive puzzles require Tandem Puzzle Club membership
    */
   canAccessPuzzle(puzzleNumber) {
     const currentPuzzleNumber = getCurrentPuzzleNumber();
@@ -383,7 +383,7 @@ class WebSubscriptionService {
     return {
       buddypass: {
         id: 'buddypass',
-        title: 'Buddy Pass',
+        title: 'Monthly Membership',
         description: 'Monthly subscription',
         price: '$1.99',
         pricing: { price: '$1.99' },
@@ -392,7 +392,7 @@ class WebSubscriptionService {
       },
       bestfriends: {
         id: 'bestfriends',
-        title: 'Best Friends',
+        title: 'Annual Membership',
         description: 'Yearly subscription',
         price: '$14.99',
         pricing: { price: '$14.99' },
@@ -401,7 +401,7 @@ class WebSubscriptionService {
       },
       soulmates: {
         id: 'soulmates',
-        title: 'Soulmates',
+        title: 'Lifetime Membership',
         description: 'Lifetime access',
         price: '$29.99',
         pricing: { price: '$29.99' },

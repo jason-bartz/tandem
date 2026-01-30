@@ -411,7 +411,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                     {!user && (
                       <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
                         <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          Get unlimited access to all puzzles with Tandem Unlimited!
+                          Become a Tandem Puzzle Club member for unlimited access to all puzzles!
                         </p>
                         <button
                           onClick={() => setShowPaywall(true)}

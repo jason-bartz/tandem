@@ -102,7 +102,7 @@ async function handleCheckoutCompleted(session) {
     mode: session.mode,
   });
 
-  // For one-time payments (Soulmates), create subscription record directly
+  // For one-time payments (Lifetime Membership), create subscription record directly
   if (session.mode === 'payment') {
     const { error } = await supabase.from('subscriptions').upsert({
       user_id: userId,

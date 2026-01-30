@@ -79,7 +79,7 @@ export default function Support() {
                 time)
               </li>
               <li>
-                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Unlimited feature)
+                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Puzzle Club feature)
               </li>
               <li>
                 <strong>Streak Tracking</strong>: Build consecutive days of completed puzzles
@@ -172,7 +172,7 @@ export default function Support() {
                 <p className="font-medium">Q: Is Tandem free to play?</p>
                 <p>
                   A: Yes! Tandem is completely free with no advertisements. Today's puzzle and the
-                  last 3 days are always free. Tandem Unlimited subscriptions unlock access to all
+                  last 3 days are always free. Tandem Puzzle Club subscriptions unlock access to all
                   archived puzzles and exclusive features.
                 </p>
               </div>
@@ -184,7 +184,7 @@ export default function Support() {
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
                 <p>
                   A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
-                  a Tandem Unlimited subscription, available on both iOS (via App Store) and web
+                  a Tandem Puzzle Club subscription, available on both iOS (via App Store) and web
                   (via Stripe).
                 </p>
               </div>
@@ -242,13 +242,13 @@ export default function Support() {
     },
     {
       id: 'hard-mode',
-      title: 'Hard Mode (Tandem Unlimited)',
+      title: 'Hard Mode (Tandem Puzzle Club)',
       content: (
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
-              Hard Mode is an exclusive feature for Tandem Unlimited subscribers that adds a
+              Hard Mode is an exclusive feature for Tandem Puzzle Club subscribers that adds a
               challenging twist to the classic Tandem gameplay.
             </p>
             <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
@@ -278,8 +278,8 @@ export default function Support() {
             <h4 className="font-semibold mb-2">How to Enable Hard Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
               <li>
-                Subscribe to <strong>Tandem Unlimited</strong> (any tier: Buddy Pass, Best Friends,
-                or Soulmates)
+                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership, Annual Membership,
+                or Lifetime Membership)
               </li>
               <li>
                 Open the <strong>Settings</strong> menu (gear icon)
@@ -521,7 +521,7 @@ export default function Support() {
                 <p className="font-medium">Q: Is Daily Mini free?</p>
                 <p>
                   A: Yes! Today's puzzle and the last 3 days are always free with a free account.
-                  Tandem Unlimited subscriptions unlock the entire archive.
+                  Tandem Puzzle Club subscriptions unlock the entire archive.
                 </p>
               </div>
               <div>
@@ -532,7 +532,7 @@ export default function Support() {
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
                 <p>
                   A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
-                  a Tandem Unlimited subscription.
+                  a Tandem Puzzle Club subscription.
                 </p>
               </div>
             </div>
@@ -657,7 +657,7 @@ export default function Support() {
               <div>
                 <p className="font-medium">Problem: Can't access older puzzles</p>
                 <p className="italic">
-                  Solution: Puzzles older than 4 days require a Tandem Unlimited subscription. Check
+                  Solution: Puzzles older than 4 days require a Tandem Puzzle Club subscription. Check
                   your subscription status in Settings.
                 </p>
               </div>
@@ -711,7 +711,7 @@ export default function Support() {
                 time)
               </li>
               <li>
-                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Unlimited feature)
+                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Puzzle Club feature)
               </li>
               <li>
                 <strong>Hint System</strong>: One hint per game reveals the easiest unsolved
@@ -854,7 +854,7 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is Reel Connections free to play?</p>
                 <p>
-                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Unlimited
+                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Puzzle Club
                   subscriptions unlock access to all archived puzzles.
                 </p>
               </div>
@@ -1008,7 +1008,7 @@ export default function Support() {
                 <strong>Search & Sort</strong>: Easily find elements in your bank
               </li>
               <li>
-                <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Unlimited)
+                <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Puzzle Club)
               </li>
               <li>
                 <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
@@ -1172,7 +1172,7 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is Daily Alchemy free to play?</p>
                 <p>
-                  A: Yes! Today's puzzle and the last 3 days are always free. Tandem Unlimited
+                  A: Yes! Today's puzzle and the last 3 days are always free. Tandem Puzzle Club
                   subscriptions unlock access to all archived puzzles.
                 </p>
               </div>
@@ -1224,13 +1224,13 @@ export default function Support() {
     },
     {
       id: 'soup-creative-mode',
-      title: 'Creative Mode (Tandem Unlimited)',
+      title: 'Creative Mode (Tandem Puzzle Club)',
       content: (
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold mb-2">🎨 About Creative Mode</h4>
             <p className="text-sm mb-3">
-              Creative Mode is an exclusive feature for Tandem Unlimited subscribers that lets you
+              Creative Mode is an exclusive feature for Tandem Puzzle Club subscribers that lets you
               explore element combinations without any restrictions.
             </p>
             <div className="bg-purple-50 dark:bg-purple-900/20 border-[3px] border-purple-400 rounded-2xl p-4">
@@ -1261,8 +1261,8 @@ export default function Support() {
             <h4 className="font-semibold mb-2">How to Access Creative Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
               <li>
-                Subscribe to <strong>Tandem Unlimited</strong> (any tier: Buddy Pass, Best Friends,
-                or Soulmates)
+                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership, Annual Membership,
+                or Lifetime Membership)
               </li>
               <li>
                 Open <strong>Daily Alchemy</strong> from the home screen
@@ -1346,7 +1346,7 @@ export default function Support() {
               </li>
               <li>Full offline support - play without internet connection</li>
               <li>Optimized for iPhone and iPad</li>
-              <li>Tandem Unlimited subscription with full Hard Mode support</li>
+              <li>Tandem Puzzle Club subscription with full Hard Mode support</li>
               <li>Download from the App Store</li>
             </ul>
           </div>
@@ -1358,7 +1358,7 @@ export default function Support() {
               </li>
               <li>Install to home screen for app-like experience</li>
               <li>Works on all devices with modern browsers</li>
-              <li>Tandem Unlimited subscription available via Stripe</li>
+              <li>Tandem Puzzle Club subscription available via Stripe</li>
               <li>Requires internet connection to play</li>
               <li>Visit tandemdaily.com to play</li>
             </ul>

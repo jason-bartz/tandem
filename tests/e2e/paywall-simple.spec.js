@@ -103,11 +103,11 @@ test.describe('Paywall and Account System Tests', () => {
       const bodyText = await page.locator('body').textContent();
 
       const hasPaywallContent =
-        bodyText?.includes('Unlimited') ||
+        bodyText?.includes('Puzzle Club') ||
         bodyText?.includes('Subscribe') ||
-        bodyText?.includes('Buddy Pass') ||
-        bodyText?.includes('Best Friends') ||
-        bodyText?.includes('Soulmates');
+        bodyText?.includes('Monthly Membership') ||
+        bodyText?.includes('Annual Membership') ||
+        bodyText?.includes('Lifetime Membership');
 
       const hasAuthContent =
         bodyText?.includes('Sign In') ||
@@ -145,19 +145,19 @@ test.describe('Paywall and Account System Tests', () => {
       const pageContent = await page.textContent('body');
 
       // Check for subscription tiers
-      const hasBuddyPass = pageContent?.includes('Buddy Pass') || pageContent?.includes('$1.99');
-      const hasBestFriends =
-        pageContent?.includes('Best Friends') || pageContent?.includes('$14.99');
-      const hasSoulmates = pageContent?.includes('Soulmates') || pageContent?.includes('$29.99');
+      const hasMonthlyMembership = pageContent?.includes('Monthly Membership') || pageContent?.includes('$1.99');
+      const hasAnnualMembership =
+        pageContent?.includes('Annual Membership') || pageContent?.includes('$14.99');
+      const hasLifetimeMembership = pageContent?.includes('Lifetime Membership') || pageContent?.includes('$29.99');
 
-      console.log('Buddy Pass visible:', hasBuddyPass);
-      console.log('Best Friends visible:', hasBestFriends);
-      console.log('Soulmates visible:', hasSoulmates);
+      console.log('Monthly Membership visible:', hasMonthlyMembership);
+      console.log('Annual Membership visible:', hasAnnualMembership);
+      console.log('Lifetime Membership visible:', hasLifetimeMembership);
 
       // If paywall is shown, should show pricing
-      if (pageContent?.includes('Unlimited') || pageContent?.includes('Subscribe')) {
+      if (pageContent?.includes('Puzzle Club') || pageContent?.includes('Subscribe')) {
         // At least one tier should be visible
-        const hasAnyTier = hasBuddyPass || hasBestFriends || hasSoulmates;
+        const hasAnyTier = hasMonthlyMembership || hasAnnualMembership || hasLifetimeMembership;
         expect(hasAnyTier).toBe(true);
       }
     }

@@ -396,9 +396,9 @@ class SubscriptionService {
       const lifetime = this.store.get(PRODUCTS.SOULMATES_LIFETIME);
 
       // Determine which subscription is actually active using priority:
-      // 1. Soulmates (lifetime) - highest priority
-      // 2. Best Friends (yearly) - mid priority
-      // 3. Buddy Pass (monthly) - lowest priority
+      // 1. Lifetime Membership (lifetime) - highest priority
+      // 2. Annual Membership (yearly) - mid priority
+      // 3. Monthly Membership (monthly) - lowest priority
       let activeProduct = null;
       let activeProductId = null;
 
@@ -661,7 +661,7 @@ class SubscriptionService {
   }
 
   canAccessPuzzle(puzzleNumber) {
-    // Only today's puzzle is free - all archive puzzles require Tandem Unlimited
+    // Only today's puzzle is free - all archive puzzles require Tandem Puzzle Club membership
     const currentPuzzleNumber = getCurrentPuzzleNumber();
 
     // Free access to today's puzzle only

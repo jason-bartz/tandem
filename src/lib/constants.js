@@ -255,7 +255,7 @@ export const CRYPTIC_CONFIG = {
   MAX_ATTEMPTS: null, // Unlimited attempts
   // Access control:
   // - Daily puzzle: Free for all account holders
-  // - Archive: Requires Tandem Unlimited subscription
+  // - Archive: Requires Tandem Puzzle Club membership
 };
 
 export const CRYPTIC_STORAGE_KEYS = {
@@ -300,7 +300,7 @@ export const MINI_CONFIG = {
   GAME_ROUTE: '/dailymini',
   // Access control:
   // - Daily puzzle: Free for all account holders
-  // - Archive: Last 4 days free (today + 3 back), older requires Tandem Unlimited subscription
+  // - Archive: Last 4 days free (today + 3 back), older requires Tandem Puzzle Club membership
   FREE_ARCHIVE_DAYS: 4,
 };
 

@@ -70,14 +70,14 @@ Group 16 movies into four categories that share something in common.
 - **iCloud sync** for stats and progress
 - **Push notifications** for daily reminders and streak alerts
 - **Apple Sign In** for quick account creation
-- **In-app purchases** for Tandem Unlimited subscription
+- **In-app purchases** for Tandem Puzzle Club membership
 - **Haptic feedback** throughout gameplay
 - **Native share sheet** integration
 
 ### Account System
 
 - **Free tier** includes daily puzzles for all games
-- **Tandem Unlimited** subscription unlocks full archive access
+- **Tandem Puzzle Club** membership unlocks full archive access
 - **Cross-device sync** of all progress and stats
 - **Avatar selection** with unlockable avatars
 

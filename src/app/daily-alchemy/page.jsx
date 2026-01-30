@@ -74,7 +74,7 @@ export default function DailyAlchemyPage() {
         >
           <div className="text-6xl mb-4">🔒</div>
           <h1 className="text-2xl font-black text-text-primary mb-3">
-            Archive Requires Tandem Unlimited
+            Archive Requires Membership
           </h1>
           <p className="text-text-secondary mb-6">
             Get unlimited access to all past Daily Alchemy puzzles, plus the full archive of Tandem,

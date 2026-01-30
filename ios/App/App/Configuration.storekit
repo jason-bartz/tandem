@@ -11,12 +11,12 @@
       "localizations" : [
         {
           "description" : "Lifetime access to all puzzles in the archive. Support indie development!",
-          "displayName" : "Soulmates - Lifetime Access",
+          "displayName" : "Lifetime Membership",
           "locale" : "en_US"
         }
       ],
       "productID" : "com.tandemdaily.app.soulmates",
-      "referenceName" : "Soulmates Lifetime",
+      "referenceName" : "Lifetime Membership",
       "type" : "NonConsumable"
     }
   ],
@@ -81,7 +81,7 @@
       "localizations" : [
 
       ],
-      "name" : "Tandem Unlimited",
+      "name" : "Tandem Puzzle Club",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -98,13 +98,13 @@
           "localizations" : [
             {
               "description" : "Access to all puzzles in the archive. Billed monthly.",
-              "displayName" : "Buddy Pass - Monthly",
+              "displayName" : "Monthly Membership",
               "locale" : "en_US"
             }
           ],
           "productID" : "com.tandemdaily.app.buddypass",
           "recurringSubscriptionPeriod" : "P1M",
-          "referenceName" : "Buddy Pass Monthly",
+          "referenceName" : "Monthly Membership",
           "subscriptionGroupID" : "21645379",
           "type" : "RecurringSubscription"
         },
@@ -123,13 +123,13 @@
           "localizations" : [
             {
               "description" : "Access to all puzzles in the archive. Billed yearly. Save 37%!",
-              "displayName" : "Best Friends - Yearly",
+              "displayName" : "Annual Membership",
               "locale" : "en_US"
             }
           ],
           "productID" : "com.tandemdaily.app.bestfriends",
           "recurringSubscriptionPeriod" : "P1Y",
-          "referenceName" : "Best Friends Yearly",
+          "referenceName" : "Annual Membership",
           "subscriptionGroupID" : "21645379",
           "type" : "RecurringSubscription"
         }

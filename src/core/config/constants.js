@@ -187,7 +187,7 @@ export const CRYPTIC_CONFIG = {
   MAX_ATTEMPTS: null, // Unlimited attempts
   // Access control:
   // - Daily puzzle: Free for all account holders
-  // - Archive: Requires Tandem Unlimited subscription
+  // - Archive: Requires Tandem Puzzle Club membership
 };
 
 export const CRYPTIC_STORAGE_KEYS = {
@@ -238,7 +238,7 @@ export const MINI_CONFIG = {
   BLACK_SQUARE: 'BLACK', // Marker for black squares in grid
   // Access control:
   // - Daily puzzle: Requires free account (like Daily Cryptic)
-  // - Archive: Last 4 days free (current + 3 back), older puzzles require Tandem Unlimited
+  // - Archive: Last 4 days free (current + 3 back), older puzzles require Tandem Puzzle Club membership
 };
 
 export const MINI_STORAGE_KEYS = {

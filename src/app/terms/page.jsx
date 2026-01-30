@@ -110,17 +110,17 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-4 text-sm">
           <div>
-            <h4 className="font-semibold mb-2">Tandem Unlimited Subscriptions</h4>
+            <h4 className="font-semibold mb-2">Tandem Puzzle Club Subscriptions</h4>
             <p className="mb-2">We offer optional subscriptions for premium features:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>
-                <strong>Buddy Pass</strong>: Monthly subscription ($1.99/month)
+                <strong>Monthly Membership</strong>: Monthly subscription ($1.99/month)
               </li>
               <li>
-                <strong>Best Friends</strong>: Annual subscription ($14.99/year)
+                <strong>Annual Membership</strong>: Annual subscription ($14.99/year)
               </li>
               <li>
-                <strong>Soulmates</strong>: Lifetime access ($29.99 one-time)
+                <strong>Lifetime Membership</strong>: Lifetime access ($29.99 one-time)
               </li>
             </ul>
           </div>
@@ -439,7 +439,7 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Web users may create an account to access Tandem Unlimited features. By creating an
+            Web users may create an account to access Tandem Puzzle Club features. By creating an
             account, you agree to:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">

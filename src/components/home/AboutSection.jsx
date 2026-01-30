@@ -48,7 +48,7 @@ export default function AboutSection({ onSubscribe }) {
               : 'text-blue-700 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300'
           }`}
         >
-          Subscribe to Tandem Unlimited &rarr;
+          Join Tandem Puzzle Club &rarr;
         </button>
       )}
 
