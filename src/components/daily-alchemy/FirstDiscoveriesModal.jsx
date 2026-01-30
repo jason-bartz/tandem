@@ -249,7 +249,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
     <LeftSidePanel
       isOpen={isOpen}
       onClose={onClose}
-      title="Discoveries"
+      title="First Discoveries"
       maxWidth="550px"
       headerClassName="border-b-0"
       contentClassName="p-0 relative"
@@ -321,7 +321,8 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
         ) : (
           <>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-              {discoveries.length} element{discoveries.length !== 1 ? 's' : ''} discovered first
+              You discovered {discoveries.length} element{discoveries.length !== 1 ? 's' : ''}{' '}
+              before anyone else
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {discoveries.map((discovery) => (
