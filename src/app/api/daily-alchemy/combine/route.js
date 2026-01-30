@@ -315,16 +315,30 @@ export async function POST(request) {
         isFirstDiscovery = true;
 
         // Get user's username for the discovery log
-        const { data: userData } = await supabase
+        // Try profiles table first, then fall back to users table
+        let username = null;
+        const { data: profileData } = await supabase
           .from('profiles')
           .select('username')
           .eq('id', userId)
           .single();
 
+        username = profileData?.username;
+
+        // If no username in profiles, try users table
+        if (!username) {
+          const { data: userData } = await supabase
+            .from('users')
+            .select('username')
+            .eq('id', userId)
+            .single();
+          username = userData?.username;
+        }
+
         // Log the first discovery
         await supabase.from('element_soup_first_discoveries').insert({
           user_id: userId,
-          username: userData?.username || null,
+          username: username || null,
           combination_id: insertedCombo.id,
           element_a: elementA,
           element_b: elementB,
@@ -335,6 +349,7 @@ export async function POST(request) {
 
         logger.info('[ElementSoup] First discovery logged', {
           userId,
+          username,
           element: aiResult.element,
           from: [elementA, elementB],
         });
@@ -343,7 +358,7 @@ export async function POST(request) {
         notifyFirstDiscovery({
           element: aiResult.element,
           emoji: finalEmoji,
-          username: userData?.username,
+          username,
           discoveredAt: new Date().toISOString(),
         }).catch((err) =>
           logger.error('[ElementSoup] Discord notification failed', { error: err })
