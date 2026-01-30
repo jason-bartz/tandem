@@ -236,12 +236,15 @@ export default function MiniGameScreen({
 
   return (
     <>
-      <div className="fixed inset-0 flex flex-col bg-bg-main dark:bg-bg-main overflow-hidden">
-        {/* Main game card - pt-1 for web, pt-safe-ios for iOS notch */}
-        {/* Bottom padding accounts for fixed keyboard (~200px) */}
-        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px]">
+      <div
+        className="min-h-screen flex flex-col bg-bg-main dark:bg-bg-main overflow-y-auto"
+        style={{ WebkitOverflowScrolling: 'touch' }}
+      >
+        {/* Main game card - scrollable content area */}
+        {/* Bottom padding accounts for fixed keyboard (~220px) */}
+        <div className="flex flex-col max-w-md w-full mx-auto pt-1 pt-safe-ios pb-[220px] px-4">
           <div
-            className={`rounded-[32px] border-[3px] overflow-hidden flex-1 flex flex-col mx-4 mb-4 ${
+            className={`rounded-[32px] border-[3px] overflow-hidden flex flex-col relative ${
               highContrast
                 ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
                 : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
@@ -296,7 +299,7 @@ export default function MiniGameScreen({
 
             {/* Content Area - BLURRED when not started */}
             <div
-              className={`flex-1 flex flex-col p-4 sm:p-6 overflow-hidden relative ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
+              className={`flex flex-col p-4 sm:p-6 relative ${!gameStarted ? 'blur-md pointer-events-none select-none' : ''}`}
             >
               {/* Timer and Check/Reveal Buttons */}
               <div className="flex items-center justify-between mb-2">
@@ -355,8 +358,8 @@ export default function MiniGameScreen({
                 />
               </div>
 
-              {/* Clue Bar - Fixed position */}
-              <div className="mt-auto pt-2">
+              {/* Clue Bar */}
+              <div className="mt-2 pt-2">
                 <MiniClueBar
                   currentClue={currentClue}
                   puzzle={puzzle}
