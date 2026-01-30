@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { X, Edit2, Trash2, Save, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { X, Edit2, Trash2, Save, ChevronDown, ChevronUp, AlertTriangle, Route } from 'lucide-react';
 import authService from '@/services/auth.service';
 
 /**
@@ -24,6 +24,34 @@ export default function ElementDetailModal({
   const [error, setError] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [expandedSection, setExpandedSection] = useState('input'); // 'input' or 'result'
+  const [pathData, setPathData] = useState(null);
+  const [pathLoading, setPathLoading] = useState(false);
+  const [showPath, setShowPath] = useState(false);
+
+  // Fetch shortest path from starter elements
+  const fetchShortestPath = useCallback(async () => {
+    setPathLoading(true);
+    try {
+      const response = await fetch(
+        `/api/admin/daily-alchemy/shortest-path?target=${encodeURIComponent(element.name)}`,
+        {
+          headers: await authService.getAuthHeaders(),
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setPathData(data);
+        setShowPath(true);
+      } else {
+        setError('Failed to load shortest path');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPathLoading(false);
+    }
+  }, [element.name]);
 
   // Fetch element details
   const fetchDetails = useCallback(async () => {
@@ -226,6 +254,74 @@ export default function ElementDetailModal({
                 <div className="px-3 py-1 bg-green-100 rounded-lg border-2 border-black">
                   <span className="font-bold">{details.stats.asResultCount}</span> as result
                 </div>
+              </div>
+
+              {/* Shortest Path Section */}
+              <div className="border-2 border-black rounded-xl overflow-hidden">
+                <button
+                  onClick={() => {
+                    if (!showPath && !pathData) {
+                      fetchShortestPath();
+                    } else {
+                      setShowPath(!showPath);
+                    }
+                  }}
+                  disabled={pathLoading}
+                  className="w-full flex items-center justify-between p-3 bg-purple-50 hover:bg-purple-100 transition-colors disabled:opacity-50"
+                >
+                  <span className="font-bold flex items-center gap-2">
+                    <Route className="w-4 h-4" />
+                    {pathLoading
+                      ? 'Finding shortest path...'
+                      : showPath
+                        ? 'Hide Direct Path'
+                        : 'Reveal Direct Path'}
+                    {pathData && !pathData.isStarter && pathData.found && (
+                      <span className="text-purple-600">({pathData.steps} steps)</span>
+                    )}
+                  </span>
+                  {showPath ? (
+                    <ChevronUp className="w-5 h-5" />
+                  ) : (
+                    <ChevronDown className="w-5 h-5" />
+                  )}
+                </button>
+
+                {showPath && pathData && (
+                  <div className="p-4 bg-purple-50/50">
+                    {pathData.isStarter ? (
+                      <div className="text-center text-purple-700 font-medium">
+                        {element.emoji} {element.name} is a starter element!
+                      </div>
+                    ) : pathData.found ? (
+                      <div className="space-y-2">
+                        <div className="text-xs text-purple-600 mb-3">
+                          Shortest path from starter elements ({pathData.steps} combinations):
+                        </div>
+                        {pathData.path.map((step, index) => (
+                          <div
+                            key={index}
+                            className="flex items-center gap-2 text-sm p-2 bg-white rounded-lg border border-purple-200"
+                          >
+                            <span className="text-purple-500 font-mono text-xs w-6">
+                              {index + 1}.
+                            </span>
+                            <span>{step.element_a}</span>
+                            <span className="text-gray-400">+</span>
+                            <span>{step.element_b}</span>
+                            <span className="text-gray-400">=</span>
+                            <span className="font-medium">{step.result_element}</span>
+                            <span>{step.result_emoji}</span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center text-red-600">
+                        {pathData.message || 'No path found from starter elements'}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* Combinations as Input */}
