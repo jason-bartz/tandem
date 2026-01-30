@@ -11,7 +11,6 @@ import { formatTime, getRandomMessage, CONGRATS_MESSAGES } from '@/lib/daily-alc
 import confetti from 'canvas-confetti';
 import PaywallModal from '@/components/PaywallModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
-import FirstDiscoveriesModal from '@/components/daily-alchemy/FirstDiscoveriesModal';
 
 /**
  * StatCard - Individual stat display with custom icon image
@@ -70,7 +69,6 @@ export function DailyAlchemyCompleteScreen({
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showFirstDiscoveries, setShowFirstDiscoveries] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
@@ -322,32 +320,6 @@ export function DailyAlchemyCompleteScreen({
         </button>
       </motion.div>
 
-      {/* First Discoveries Button */}
-      <motion.div
-        className="w-full max-w-sm mt-3"
-        initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.47 }}
-      >
-        <button
-          onClick={() => setShowFirstDiscoveries(true)}
-          className={cn(
-            'w-full flex items-center justify-center gap-2 px-6 py-3',
-            'bg-gray-200 dark:bg-gray-700',
-            'text-gray-800 dark:text-gray-200',
-            'border-[3px] border-black dark:border-gray-600',
-            'rounded-xl font-bold',
-            'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]',
-            'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]',
-            'active:translate-x-[3px] active:translate-y-[3px] active:shadow-none',
-            'transition-all duration-150',
-            highContrast && 'border-[4px]'
-          )}
-        >
-          First Discoveries
-        </button>
-      </motion.div>
-
       {/* Play Archive Button */}
       {onViewArchive && (
         <motion.div
@@ -426,12 +398,6 @@ export function DailyAlchemyCompleteScreen({
         onClose={() => setShowLeaderboard(false)}
         gameType="soup"
         initialTab="daily"
-      />
-
-      {/* First Discoveries Modal */}
-      <FirstDiscoveriesModal
-        isOpen={showFirstDiscoveries}
-        onClose={() => setShowFirstDiscoveries(false)}
       />
 
       {/* Paywall Modal */}
