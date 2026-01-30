@@ -67,7 +67,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
       const dataUrl = canvas.toDataURL('image/png');
 
-      // Try native share on iOS (allows saving to Photos)
+      // Try native share on iOS/mobile (allows saving to Photos)
       if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
         try {
           const response = await fetch(dataUrl);
@@ -87,12 +87,35 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             setIsSharing(false);
             return;
           }
-        } catch {
-          // If share fails, fall back to download
+        } catch (shareError) {
+          // Check if user cancelled the share sheet - this is not an error, just do nothing
+          if (shareError?.name === 'AbortError') {
+            setIsSharing(false);
+            return;
+          }
+          // For other errors, fall through to fallback only on non-iOS platforms
+          // On iOS (Capacitor), avoid download fallback as it causes navigation issues
+          const isIOS =
+            typeof window !== 'undefined' &&
+            (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.userAgent.includes('Mac') && 'ontouchend' in document));
+          if (isIOS) {
+            // On iOS, fall back to text share instead of download
+            const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
+            try {
+              await navigator.clipboard.writeText(shareText);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 2000);
+            } catch {
+              // Clipboard failed, just continue without feedback
+            }
+            setIsSharing(false);
+            return;
+          }
         }
       }
 
-      // Fallback: download as file
+      // Fallback for desktop: download as file
       canvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob);
@@ -111,9 +134,13 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
     } catch {
       // Fall back to text share
       const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
-      await navigator.clipboard.writeText(shareText);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } catch {
+        // Clipboard failed, just continue without feedback
+      }
     } finally {
       setIsSharing(false);
     }
