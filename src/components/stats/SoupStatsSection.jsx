@@ -77,7 +77,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
             Leaderboard
           </button>
 
-          {/* First Discoveries Button */}
+          {/* Discoveries Button */}
           <button
             onClick={() => {
               lightTap();
@@ -89,7 +89,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
                 : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
             }`}
           >
-            First Discoveries
+            Discoveries
           </button>
         </div>
       </StatsSection>
