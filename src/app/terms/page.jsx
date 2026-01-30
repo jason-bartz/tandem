@@ -75,7 +75,7 @@ export default function TermsOfUse() {
             <li>One free daily puzzle for all users</li>
             <li>Archive of past puzzles (subscription required for full access)</li>
             <li>Statistics tracking and streak counting</li>
-            <li>Global leaderboards for competition (web only, requires free account)</li>
+            <li>Global leaderboards for competition (requires free account)</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
             <li>iCloud sync across devices (iOS only)</li>
             <li>Optional in-app purchases for premium features</li>
@@ -165,7 +165,7 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-4 text-sm">
           <div>
-            <h4 className="font-semibold mb-2">Automatic Enrollment (Web Only)</h4>
+            <h4 className="font-semibold mb-2">Automatic Enrollment</h4>
             <p>
               When you create a free account on our web platform, you are automatically enrolled in
               our global leaderboards to compete with players worldwide. Your username, avatar (if
@@ -259,10 +259,10 @@ export default function TermsOfUse() {
           <div>
             <h4 className="font-semibold mb-2">Use of Artificial Intelligence</h4>
             <p>
-              Certain game content, including but not limited to Daily Alchemy element combinations,
-              crossword clues, and puzzle hints, may be generated or assisted by artificial
-              intelligence (AI) systems. This AI-generated content is provided for entertainment
-              purposes only.
+              Daily Alchemy uses artificial intelligence (AI) to generate element combinations. When
+              you combine two elements, an AI system determines the resulting element based on
+              creative interpretation of the inputs. This AI-generated content is provided for
+              entertainment purposes only.
             </p>
           </div>
 
@@ -690,7 +690,7 @@ export default function TermsOfUse() {
     <>
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
         {/* Scrollable content container */}
-        <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {/* Show skeleton while loading */}
             {isLoading ? (
@@ -752,7 +752,7 @@ export default function TermsOfUse() {
                       </li>
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
-                        Subscriptions managed through Apple
+                        Subscriptions managed through Apple or Stripe
                       </li>
                     </ul>
                   </div>

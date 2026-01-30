@@ -278,8 +278,8 @@ export default function Support() {
             <h4 className="font-semibold mb-2">How to Enable Hard Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
               <li>
-                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership, Annual Membership,
-                or Lifetime Membership)
+                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership,
+                Annual Membership, or Lifetime Membership)
               </li>
               <li>
                 Open the <strong>Settings</strong> menu (gear icon)
@@ -657,8 +657,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Problem: Can't access older puzzles</p>
                 <p className="italic">
-                  Solution: Puzzles older than 4 days require a Tandem Puzzle Club subscription. Check
-                  your subscription status in Settings.
+                  Solution: Puzzles older than 4 days require a Tandem Puzzle Club subscription.
+                  Check your subscription status in Settings.
                 </p>
               </div>
             </div>
@@ -854,8 +854,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is Reel Connections free to play?</p>
                 <p>
-                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Puzzle Club
-                  subscriptions unlock access to all archived puzzles.
+                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Puzzle
+                  Club subscriptions unlock access to all archived puzzles.
                 </p>
               </div>
               <div>
@@ -1261,8 +1261,8 @@ export default function Support() {
             <h4 className="font-semibold mb-2">How to Access Creative Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
               <li>
-                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership, Annual Membership,
-                or Lifetime Membership)
+                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership,
+                Annual Membership, or Lifetime Membership)
               </li>
               <li>
                 Open <strong>Daily Alchemy</strong> from the home screen
@@ -1506,7 +1506,7 @@ export default function Support() {
     <>
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
         {/* Scrollable content container */}
-        <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {/* Show skeleton while loading */}
             {isLoading ? (
