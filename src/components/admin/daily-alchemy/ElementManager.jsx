@@ -3074,13 +3074,43 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
     setIsSaving(true);
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#ffffff',
+        backgroundColor: null, // Transparent to show the wrapper background
         scale: 2, // Higher resolution for social media
         useCORS: true,
         logging: false,
       });
 
-      // Convert to blob and download
+      // Convert to base64 for sharing
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // Try native share on iOS (allows saving to Photos)
+      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
+        try {
+          // Convert data URL to blob for sharing
+          const response = await fetch(dataUrl);
+          const blob = await response.blob();
+          const file = new File(
+            [blob],
+            `first-discovery-${discovery.resultElement.toLowerCase().replace(/\s+/g, '-')}.png`,
+            { type: 'image/png' }
+          );
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `First Discovery: ${discovery.resultElement}`,
+            });
+            return;
+          }
+        } catch (shareErr) {
+          // If share fails, fall back to download
+          logger.debug('[FirstDiscovery] Share failed, falling back to download', {
+            error: shareErr.message,
+          });
+        }
+      }
+
+      // Fallback: download as file
       canvas.toBlob((blob) => {
         if (blob) {
           const url = URL.createObjectURL(blob);
@@ -3117,58 +3147,57 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
           <X className="w-5 h-5" />
         </button>
 
-        {/* Exportable card content */}
-        <div
-          ref={cardRef}
-          className="bg-gradient-to-br from-white via-amber-50/30 to-orange-50/50 rounded-xl border-[3px] border-black p-6 shadow-[8px_8px_0px_rgba(0,0,0,0.8)]"
-        >
-          {/* Element display */}
-          <div className="text-center mb-6">
-            <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
-            <h3 className="text-2xl font-bold text-gray-900">{discovery.resultElement}</h3>
-            <div className="flex items-center justify-center gap-2 mt-2">
-              <span className="text-amber-500">✨</span>
-              <span className="text-sm font-medium text-amber-600">First Discovery</span>
-            </div>
-          </div>
-
-          {/* Combination that made it - with emojis */}
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4 mb-6">
-            <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
-              Created By Combining
-            </p>
-            <div className="flex items-center justify-center gap-3">
-              <div className="flex flex-col items-center">
-                <span className="text-3xl mb-1">{discovery.elementAEmoji || '✨'}</span>
-                <span className="font-bold text-gray-900 text-sm">{discovery.elementA}</span>
-              </div>
-              <span className="text-blue-500 font-bold text-2xl">+</span>
-              <div className="flex flex-col items-center">
-                <span className="text-3xl mb-1">{discovery.elementBEmoji || '✨'}</span>
-                <span className="font-bold text-gray-900 text-sm">{discovery.elementB}</span>
+        {/* Exportable card content - wrapper provides padding for shadow */}
+        <div ref={cardRef} className="bg-white p-3 pb-4 pr-4">
+          <div className="bg-gradient-to-br from-white via-amber-50/30 to-orange-50/50 rounded-xl border-[3px] border-black p-6 shadow-[6px_6px_0px_rgba(0,0,0,1)]">
+            {/* Element display */}
+            <div className="text-center mb-6">
+              <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
+              <h3 className="text-2xl font-bold text-gray-900">{discovery.resultElement}</h3>
+              <div className="flex items-center justify-center gap-2 mt-2">
+                <span className="text-amber-500">✨</span>
+                <span className="text-sm font-medium text-amber-600">First Discovery</span>
               </div>
             </div>
-          </div>
 
-          {/* Discovery info - no time for export */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between py-2 border-b border-gray-200">
-              <span className="text-sm text-gray-500">Discovered by</span>
-              <span className="font-bold text-gray-900">
-                {discovery.username || 'Anonymous Player'}
-              </span>
+            {/* Combination that made it - with emojis */}
+            <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4 mb-6 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
+              <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
+                Created By Combining
+              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="flex flex-col items-center">
+                  <span className="text-3xl mb-1">{discovery.elementAEmoji || '✨'}</span>
+                  <span className="font-bold text-gray-900 text-sm">{discovery.elementA}</span>
+                </div>
+                <span className="text-blue-500 font-bold text-2xl">+</span>
+                <div className="flex flex-col items-center">
+                  <span className="text-3xl mb-1">{discovery.elementBEmoji || '✨'}</span>
+                  <span className="font-bold text-gray-900 text-sm">{discovery.elementB}</span>
+                </div>
+              </div>
             </div>
-            <div className="flex items-center justify-between py-2">
-              <span className="text-sm text-gray-500">Date</span>
-              <span className="font-medium text-gray-900">
-                {formatDate(discovery.discoveredAt)}
-              </span>
-            </div>
-          </div>
 
-          {/* Branding */}
-          <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-            <span className="text-xs font-bold text-gray-400">tandemdaily.com/daily-alchemy</span>
+            {/* Discovery info - no time for export */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                <span className="text-sm text-gray-500">Discovered by</span>
+                <span className="font-bold text-gray-900">
+                  {discovery.username || 'Anonymous Player'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between py-2">
+                <span className="text-sm text-gray-500">Date</span>
+                <span className="font-medium text-gray-900">
+                  {formatDate(discovery.discoveredAt)}
+                </span>
+              </div>
+            </div>
+
+            {/* Branding */}
+            <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+              <span className="text-xs font-bold text-gray-400">tandemdaily.com/daily-alchemy</span>
+            </div>
           </div>
         </div>
 
