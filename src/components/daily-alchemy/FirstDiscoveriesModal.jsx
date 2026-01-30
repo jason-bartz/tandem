@@ -163,8 +163,9 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
 
     try {
       const response = await fetch('/api/daily-alchemy/discoveries', {
+        credentials: 'include',
         headers: {
-          Authorization: `Bearer ${session?.access_token}`,
+          ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
         },
       });
 

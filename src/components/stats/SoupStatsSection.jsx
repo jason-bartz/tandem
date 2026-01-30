@@ -8,6 +8,7 @@ import { useCounterAnimation } from '@/hooks/useAnimation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import FirstDiscoveriesModal from '@/components/daily-alchemy/FirstDiscoveriesModal';
 import { ASSET_VERSION } from '@/lib/constants';
 
 /**
@@ -19,6 +20,7 @@ import { ASSET_VERSION } from '@/lib/constants';
  */
 export default function SoupStatsSection({ stats, animationKey }) {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showFirstDiscoveries, setShowFirstDiscoveries] = useState(false);
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
 
@@ -58,20 +60,38 @@ export default function SoupStatsSection({ stats, animationKey }) {
           <StatCard value={animatedBestStreak} label="Best Streak" />
         </div>
 
-        {/* Leaderboard Button */}
-        <button
-          onClick={() => {
-            lightTap();
-            setShowLeaderboard(true);
-          }}
-          className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
-            highContrast
-              ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-              : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
-          }`}
-        >
-          View Leaderboard
-        </button>
+        {/* Buttons */}
+        <div className="flex gap-2">
+          {/* Leaderboard Button */}
+          <button
+            onClick={() => {
+              lightTap();
+              setShowLeaderboard(true);
+            }}
+            className={`flex-1 py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
+              highContrast
+                ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
+            }`}
+          >
+            Leaderboard
+          </button>
+
+          {/* First Discoveries Button */}
+          <button
+            onClick={() => {
+              lightTap();
+              setShowFirstDiscoveries(true);
+            }}
+            className={`flex-1 py-3 px-4 rounded-[20px] border-[3px] font-semibold text-sm transition-all flex items-center justify-center ${
+              highContrast
+                ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-focus shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                : 'bg-soup-primary dark:bg-soup-hover text-white border-black shadow-[3px_3px_0px_#000] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_#000]'
+            }`}
+          >
+            First Discoveries
+          </button>
+        </div>
       </StatsSection>
 
       {/* Leaderboard Modal */}
@@ -80,6 +100,12 @@ export default function SoupStatsSection({ stats, animationKey }) {
         onClose={() => setShowLeaderboard(false)}
         gameType="soup"
         initialTab="daily"
+      />
+
+      {/* First Discoveries Modal */}
+      <FirstDiscoveriesModal
+        isOpen={showFirstDiscoveries}
+        onClose={() => setShowFirstDiscoveries(false)}
       />
     </>
   );
