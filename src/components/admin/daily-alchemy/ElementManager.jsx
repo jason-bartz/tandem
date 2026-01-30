@@ -1972,32 +1972,29 @@ function ElementBrowser({ onSelectElement, externalSearch = '', onSearchChange }
       </div>
 
       {/* Letter Filter Row */}
-      <div className="flex flex-wrap gap-1 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex flex-wrap gap-0.5 mb-4 pb-4 border-b border-gray-200 dark:border-gray-700">
         <button
           onClick={() => handleLetterChange('all')}
-          className={`px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+          className={`px-2 py-0.5 text-xs font-semibold rounded transition-all ${
             selectedLetter === 'all'
-              ? 'bg-blue-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              : 'bg-gray-100 dark:bg-gray-700 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
+              ? 'bg-blue-500 text-white shadow-sm'
+              : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
           }`}
         >
           All
         </button>
         {LETTERS.map((letter) => {
           const count = letterCounts[letter] || 0;
-          const hasElements = count > 0;
           return (
             <button
               key={letter}
               onClick={() => handleLetterChange(letter)}
-              className={`w-8 h-8 text-sm font-bold rounded-lg border-[2px] transition-all ${
+              className={`w-6 h-6 text-xs font-semibold rounded transition-all ${
                 selectedLetter === letter
-                  ? 'bg-blue-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                  : hasElements
-                    ? 'bg-gray-100 dark:bg-gray-700 border-transparent hover:bg-gray-200 dark:hover:bg-gray-600'
-                    : 'bg-gray-50 dark:bg-gray-800 text-gray-300 dark:text-gray-600 border-transparent hover:bg-gray-100 dark:hover:bg-gray-700'
+                  ? 'bg-blue-500 text-white shadow-sm'
+                  : 'bg-gray-100 dark:bg-gray-700 text-text-primary hover:bg-gray-200 dark:hover:bg-gray-600'
               }`}
-              title={hasElements ? `${count} elements` : 'No elements starting with this letter'}
+              title={count > 0 ? `${count} elements` : 'No elements'}
             >
               {letter}
             </button>
