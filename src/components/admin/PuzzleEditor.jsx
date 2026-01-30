@@ -281,10 +281,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
   };
 
   return (
-    <div
-      className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white p-3 sm:p-6 h-full w-full overflow-x-auto"
-      style={{ boxShadow: 'var(--shadow-card)' }}
-    >
+    <div className="bg-bg-surface rounded-lg p-3 sm:p-6 h-full w-full overflow-x-auto">
       {initialPuzzle && (
         <div
           className="mb-4 p-3 bg-accent-blue/20 border-[3px] border-accent-blue rounded-lg"
@@ -441,13 +438,12 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
           <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
             Puzzle Pairs
           </label>
-          <div className="space-y-4 sm:space-y-5">
+          <div
+            className="space-y-4 sm:space-y-5 p-3 sm:p-4 border-[3px] border-black dark:border-white rounded-lg"
+            style={{ boxShadow: 'var(--shadow-small)' }}
+          >
             {puzzles.map((puzzle, index) => (
-              <div
-                key={index}
-                className="p-3 sm:p-4 bg-bg-card border-[3px] border-black dark:border-white rounded-lg"
-                style={{ boxShadow: 'var(--shadow-small)' }}
-              >
+              <div key={index} className="p-3 sm:p-4 bg-bg-card rounded-lg">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="text-xs sm:text-sm font-bold text-text-primary">
                     Puzzle #{index + 1}
@@ -460,8 +456,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       value={puzzle.emoji}
                       onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
                       placeholder="Emoji pair (e.g., 🍳🔥)"
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green"
-                      style={{ boxShadow: 'var(--shadow-small)' }}
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                       required
                     />
                     <input
@@ -470,8 +465,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
                       placeholder="ANSWER (E.G., STOVE)"
                       maxLength={30}
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green"
-                      style={{ boxShadow: 'var(--shadow-small)' }}
+                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                       required
                     />
                   </div>
@@ -482,8 +476,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                       onChange={(e) => handlePuzzleChange(index, 'hint', e.target.value)}
                       placeholder="💡 Hint (e.g., 'Kitchen cooking surface')"
                       maxLength={60}
-                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-accent-yellow rounded-lg bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
-                      style={{ boxShadow: 'var(--shadow-small)' }}
+                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-accent-yellow rounded-lg bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
                     />
                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-muted font-bold">
                       {puzzle.hint?.length || 0}/60
