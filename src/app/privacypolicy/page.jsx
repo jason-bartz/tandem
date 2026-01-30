@@ -166,7 +166,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">8. User Accounts (Web Only)</h4>
+            <h4 className="font-semibold mb-2">8. User Accounts</h4>
             <p className="mb-2">If you create an account on our web platform, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Username (required, for leaderboard display and account identification)</li>
@@ -186,7 +186,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">9. Leaderboards (Web Only)</h4>
+            <h4 className="font-semibold mb-2">9. Leaderboards</h4>
             <p className="mb-2">
               When you create a free account, you are automatically enrolled in our global
               leaderboards to compete with players worldwide. We collect and publicly display:
@@ -695,7 +695,7 @@ export default function PrivacyPolicy() {
     <>
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
         {/* Scrollable content container */}
-        <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {/* Show skeleton while loading */}
             {isLoading ? (
@@ -838,7 +838,7 @@ export default function PrivacyPolicy() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span>Anonymous analytics to improve our games (web only)</span>
+                        <span>Anonymous analytics to improve our games</span>
                       </li>
                     </ul>
                   </div>
