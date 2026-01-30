@@ -4,6 +4,7 @@ import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 import aiService from '@/services/ai.service';
 import { normalizeKey } from '@/lib/daily-alchemy.constants';
+import { notifyFirstDiscovery } from '@/lib/discord';
 
 // Check if KV is available
 const isKvAvailable = !!(
@@ -337,6 +338,16 @@ export async function POST(request) {
           element: aiResult.element,
           from: [elementA, elementB],
         });
+
+        // Send Discord notification (fire and forget)
+        notifyFirstDiscovery({
+          element: aiResult.element,
+          emoji: finalEmoji,
+          username: userData?.username,
+          discoveredAt: new Date().toISOString(),
+        }).catch((err) =>
+          logger.error('[ElementSoup] Discord notification failed', { error: err })
+        );
       }
 
       // Cache the result

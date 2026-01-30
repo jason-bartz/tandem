@@ -6,6 +6,7 @@
 import logger from '@/lib/logger';
 
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
+const DISCORD_FIRST_DISCOVERY_WEBHOOK_URL = process.env.DISCORD_FIRST_DISCOVERY_WEBHOOK_URL;
 
 /**
  * Send a message to Discord via webhook
@@ -15,6 +16,7 @@ const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
  * @param {string} options.color - Hex color (without #) - defaults based on type
  * @param {Array} options.fields - Array of {name, value, inline} objects
  * @param {string} options.type - 'success' | 'warning' | 'error' | 'info'
+ * @param {string} options.webhookUrl - Optional custom webhook URL (defaults to DISCORD_WEBHOOK_URL)
  */
 export async function sendDiscordNotification({
   title,
@@ -22,9 +24,10 @@ export async function sendDiscordNotification({
   color,
   fields = [],
   type = 'info',
+  webhookUrl = DISCORD_WEBHOOK_URL,
 }) {
-  if (!DISCORD_WEBHOOK_URL) {
-    logger.warn('DISCORD_WEBHOOK_URL not configured, skipping notification');
+  if (!webhookUrl) {
+    logger.warn('Discord webhook URL not configured, skipping notification');
     return;
   }
 
@@ -58,7 +61,7 @@ export async function sendDiscordNotification({
   };
 
   try {
-    const response = await fetch(DISCORD_WEBHOOK_URL, {
+    const response = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -147,5 +150,45 @@ export async function notifyPaymentFailed({ amount, currency, customerEmail, rea
       { name: 'Customer', value: customerEmail || 'Unknown' },
       { name: 'Reason', value: reason || 'Unknown' },
     ],
+  });
+}
+
+/**
+ * Send a new user signup notification
+ */
+export async function notifyNewSignup({ email, provider }) {
+  await sendDiscordNotification({
+    title: '👋 New User Signed Up!',
+    description: 'A new user has joined Tandem Daily',
+    type: 'info',
+    fields: [
+      { name: 'Email', value: email || 'Unknown' },
+      { name: 'Provider', value: provider || 'Email' },
+    ],
+  });
+}
+
+/**
+ * Send a first discovery notification (Element Soup)
+ */
+export async function notifyFirstDiscovery({ element, emoji, username, discoveredAt }) {
+  const date = discoveredAt
+    ? new Date(discoveredAt).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : new Date().toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      });
+
+  await sendDiscordNotification({
+    title: `${emoji} ${element}`,
+    description: `First discovered by **${username || 'Anonymous'}**`,
+    type: 'success',
+    fields: [{ name: 'Date', value: date, inline: false }],
+    webhookUrl: DISCORD_FIRST_DISCOVERY_WEBHOOK_URL,
   });
 }
