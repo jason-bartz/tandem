@@ -132,6 +132,7 @@ export default function DailyLeaderboard({ gameType }) {
                 entry={entry}
                 rank={idx + 1}
                 isCurrentUser={user?.id === entry.user_id}
+                gameType={gameType}
               />
             ))}
           </div>

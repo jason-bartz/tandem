@@ -96,32 +96,32 @@ function generateHintsUsed(gameType) {
   // Daily Alchemy (soup) has 0-4 hints available
   if (gameType === 'soup') {
     const rand = Math.random();
-    // 30% chance of 0 hints
-    // 25% chance of 1 hint
-    // 20% chance of 2 hints
-    // 15% chance of 3 hints
-    // 10% chance of 4 hints
-    if (rand < 0.3) return 0;
-    if (rand < 0.55) return 1;
-    if (rand < 0.75) return 2;
-    if (rand < 0.9) return 3;
+    // 3% chance of 0 hints (almost never)
+    // 7% chance of 1 hint (very rare)
+    // 15% chance of 2 hints
+    // 25% chance of 3 hints
+    // 50% chance of 4 hints (heavily weighted)
+    if (rand < 0.03) return 0;
+    if (rand < 0.1) return 1;
+    if (rand < 0.25) return 2;
+    if (rand < 0.5) return 3;
     return 4;
   }
 
   // Reel Connections has only 1 hint available
   if (gameType === 'reel') {
-    // 60% chance of no hint, 40% chance of using the hint
-    return Math.random() < 0.6 ? 0 : 1;
+    // 30% chance of no hint, 70% chance of using the hint
+    return Math.random() < 0.3 ? 0 : 1;
   }
 
   // Daily Tandem has maximum 2 hints (one per puzzle pair)
   if (gameType === 'tandem') {
     const rand = Math.random();
-    // 40% chance of 0 hints
-    // 35% chance of 1 hint
-    // 25% chance of 2 hints
-    if (rand < 0.4) return 0;
-    if (rand < 0.75) return 1;
+    // 10% chance of 0 hints (very uncommon)
+    // 30% chance of 1 hint
+    // 60% chance of 2 hints (weighted towards 2)
+    if (rand < 0.1) return 0;
+    if (rand < 0.4) return 1;
     return 2;
   }
 
