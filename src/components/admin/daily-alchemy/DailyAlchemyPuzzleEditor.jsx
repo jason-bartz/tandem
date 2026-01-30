@@ -26,11 +26,13 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newElementName, setNewElementName] = useState('');
   const [newElementEmoji, setNewElementEmoji] = useState('');
   const searchTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
+  const inputRef = useRef(null);
 
   // Path generation state
   const [isGeneratingPath, setIsGeneratingPath] = useState(false);
@@ -80,6 +82,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     if (!targetSearch || targetSearch.length < 1) {
       setSearchResults([]);
       setShowDropdown(false);
+      setSearchError(null);
       return;
     }
 
@@ -88,26 +91,30 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
     searchTimeoutRef.current = setTimeout(async () => {
       setIsSearching(true);
+      setSearchError(null);
       try {
         const response = await fetch(
-          `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(searchText)}&limit=10`
+          `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(searchText)}&limit=15`
         );
+        const data = await response.json();
+
         if (response.ok) {
-          const data = await response.json();
           setSearchResults(data.elements || []);
         } else {
-          logger.error('[SoupEditor] Element search API error:', response.status);
+          logger.error('[SoupEditor] Element search API error:', response.status, data);
+          setSearchError(data.message || 'Search failed');
           setSearchResults([]);
         }
         setShowDropdown(true);
       } catch (error) {
         logger.error('[SoupEditor] Element search error:', error);
+        setSearchError('Failed to connect to search API');
         setSearchResults([]);
         setShowDropdown(true);
       } finally {
         setIsSearching(false);
       }
-    }, 200);
+    }, 150); // Slightly faster debounce for better responsiveness
 
     return () => {
       if (searchTimeoutRef.current) {
@@ -162,6 +169,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     setShowDropdown(false);
     setSearchResults([]);
     setPathError(null);
+    setSearchError(null);
     if (errors.targetElement) {
       setErrors((prev) => {
         const newErrors = { ...prev };
@@ -183,6 +191,9 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     setTargetSearch('');
     setSearchResults([]);
     setPathError(null);
+    setSearchError(null);
+    // Focus back on input after clearing
+    setTimeout(() => inputRef.current?.focus(), 0);
   };
 
   // Open add element modal
@@ -355,6 +366,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
           <label className="block text-sm font-bold text-text-primary mb-2">Target Element *</label>
           <div className="relative">
             <input
+              ref={inputRef}
               type="text"
               value={targetSearch}
               onChange={(e) => {
@@ -378,8 +390,23 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   setShowDropdown(true);
                 }
               }}
+              onKeyDown={(e) => {
+                // Select first result on Enter
+                if (e.key === 'Enter' && searchResults.length > 0 && !formData.targetElement) {
+                  e.preventDefault();
+                  selectTargetElement(searchResults[0]);
+                }
+                // Close dropdown on Escape
+                if (e.key === 'Escape') {
+                  setShowDropdown(false);
+                }
+              }}
               placeholder="Search for an element..."
-              className="w-full px-4 py-3 pl-10 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-lg"
+              className={`w-full px-4 py-3 pl-10 rounded-lg border-[2px] ${
+                formData.targetElement
+                  ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                  : 'border-black dark:border-white bg-ghost-white dark:bg-gray-700'
+              } text-text-primary text-lg`}
               disabled={loading}
             />
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -409,20 +436,42 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
             </div>
           )}
 
+          {/* Search Error Display */}
+          {searchError && (
+            <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded text-sm text-red-600 dark:text-red-400">
+              {searchError}
+            </div>
+          )}
+
           {/* Search Results Dropdown */}
-          {showDropdown && (
-            <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-xl max-h-64 overflow-y-auto">
-              {searchResults.length > 0 ? (
+          {showDropdown && !formData.targetElement && (
+            <div className="absolute z-[100] w-full mt-1 bg-white dark:bg-gray-800 border-[3px] border-black dark:border-white rounded-lg shadow-xl max-h-80 overflow-y-auto">
+              {isSearching && searchResults.length === 0 ? (
+                <div className="px-4 py-3 text-text-secondary flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+                  Searching...
+                </div>
+              ) : searchResults.length > 0 ? (
                 <>
+                  <div className="px-3 py-2 bg-gray-100 dark:bg-gray-700 text-xs font-bold text-text-secondary uppercase tracking-wide border-b border-gray-200 dark:border-gray-600">
+                    {searchResults.length} element{searchResults.length !== 1 ? 's' : ''} found
+                  </div>
                   {searchResults.map((element, index) => (
                     <button
                       key={index}
                       type="button"
                       onClick={() => selectTargetElement(element)}
-                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-left"
+                      className={`w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors text-left ${
+                        index === 0 ? 'bg-green-50/50 dark:bg-green-900/10' : ''
+                      }`}
                     >
                       <span className="text-2xl">{element.emoji}</span>
-                      <span className="text-text-primary font-medium">{element.name}</span>
+                      <span className="text-text-primary font-medium flex-1">{element.name}</span>
+                      {index === 0 && (
+                        <span className="text-xs text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                          Enter ↵
+                        </span>
+                      )}
                     </button>
                   ))}
                   {/* Add Element Option - show if no exact match */}
@@ -442,20 +491,26 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                   )}
                 </>
               ) : (
-                // No results - show add option
-                searchText.length >= 2 && (
-                  <button
-                    type="button"
-                    onClick={openAddModal}
-                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors text-left"
-                  >
-                    <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
-                      <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
+                // No results - show add option or searching message
+                searchText.length >= 2 &&
+                !isSearching && (
+                  <>
+                    <div className="px-3 py-2 bg-amber-50 dark:bg-amber-900/20 text-sm text-amber-700 dark:text-amber-300 border-b border-amber-200 dark:border-amber-700">
+                      No elements found matching "{searchText}"
                     </div>
-                    <span className="text-green-600 dark:text-green-400 font-medium">
-                      + Add "{searchText}" as new element
-                    </span>
-                  </button>
+                    <button
+                      type="button"
+                      onClick={openAddModal}
+                      className="w-full px-4 py-3 flex items-center gap-3 hover:bg-green-50 dark:hover:bg-green-900/30 transition-colors text-left"
+                    >
+                      <div className="w-8 h-8 bg-green-100 dark:bg-green-900 rounded-full flex items-center justify-center">
+                        <Plus className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      </div>
+                      <span className="text-green-600 dark:text-green-400 font-medium">
+                        + Add "{searchText}" as new element
+                      </span>
+                    </button>
+                  </>
                 )
               )}
             </div>

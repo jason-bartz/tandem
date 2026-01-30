@@ -3,7 +3,7 @@ import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
 /**
- * GET /api/admin/element-soup/elements
+ * GET /api/admin/daily-alchemy/elements
  * Search for existing elements in the database
  * Query params:
  * - q: search query (required, min 1 char)
@@ -21,52 +21,93 @@ export async function GET(request) {
 
     const supabase = createServerClient();
 
-    // Search for elements that match the query
-    // We search result_element since that's where discovered elements are stored
+    // Search for elements that match the query in result_element
+    // Also search element_a and element_b to catch all possible elements
     const { data, error } = await supabase
       .from('element_combinations')
-      .select('result_element, result_emoji')
-      .ilike('result_element', `%${query}%`)
-      .order('use_count', { ascending: false })
-      .limit(limit * 3); // Get more to dedupe
+      .select('result_element, result_emoji, element_a, element_b')
+      .or(`result_element.ilike.%${query}%,element_a.ilike.%${query}%,element_b.ilike.%${query}%`)
+      .limit(limit * 5); // Get more to dedupe since we're searching multiple columns
 
     if (error) {
-      logger.error('[ElementSearch] Database error', { error: error.message });
+      logger.error('[ElementSearch] Database error', { error: error.message, query });
       return NextResponse.json(
         { error: 'Database error', message: error.message },
         { status: 500 }
       );
     }
 
-    // Deduplicate by element name (case-insensitive) and keep most used emoji
+    // Deduplicate by element name (case-insensitive)
+    // Collect elements from result_element, element_a, and element_b columns
     const elementMap = new Map();
-    for (const row of data || []) {
-      const key = row.result_element.toLowerCase();
-      if (!elementMap.has(key)) {
-        elementMap.set(key, {
-          name: row.result_element,
-          emoji: row.result_emoji || '✨',
-        });
-      }
-    }
 
-    // Also search the starter elements from the element_a and element_b columns
-    const starterElements = ['Earth', 'Water', 'Fire', 'Wind'];
-    for (const starter of starterElements) {
-      if (starter.toLowerCase().includes(query.toLowerCase())) {
-        const key = starter.toLowerCase();
+    for (const row of data || []) {
+      // Check result_element
+      if (row.result_element?.toLowerCase().includes(query.toLowerCase())) {
+        const key = row.result_element.toLowerCase();
         if (!elementMap.has(key)) {
-          const emojiMap = { Earth: '🌍', Water: '💧', Fire: '🔥', Wind: '💨' };
           elementMap.set(key, {
-            name: starter,
-            emoji: emojiMap[starter],
+            name: row.result_element,
+            emoji: row.result_emoji || '✨',
+          });
+        }
+      }
+
+      // Check element_a (might be a discoverable element)
+      if (row.element_a?.toLowerCase().includes(query.toLowerCase())) {
+        const key = row.element_a.toLowerCase();
+        if (!elementMap.has(key)) {
+          // Get emoji from a row where this is the result
+          elementMap.set(key, {
+            name: row.element_a,
+            emoji: getStarterEmoji(row.element_a) || '✨',
+          });
+        }
+      }
+
+      // Check element_b
+      if (row.element_b?.toLowerCase().includes(query.toLowerCase())) {
+        const key = row.element_b.toLowerCase();
+        if (!elementMap.has(key)) {
+          elementMap.set(key, {
+            name: row.element_b,
+            emoji: getStarterEmoji(row.element_b) || '✨',
           });
         }
       }
     }
 
-    // Convert to array and limit
-    const elements = Array.from(elementMap.values()).slice(0, limit);
+    // Also include starter elements if they match
+    const starterElements = [
+      { name: 'Earth', emoji: '🌍' },
+      { name: 'Water', emoji: '💧' },
+      { name: 'Fire', emoji: '🔥' },
+      { name: 'Wind', emoji: '💨' },
+    ];
+
+    for (const starter of starterElements) {
+      if (starter.name.toLowerCase().includes(query.toLowerCase())) {
+        const key = starter.name.toLowerCase();
+        if (!elementMap.has(key)) {
+          elementMap.set(key, starter);
+        }
+      }
+    }
+
+    // Convert to array, sort by relevance (exact matches first), and limit
+    const elements = Array.from(elementMap.values())
+      .sort((a, b) => {
+        const aExact = a.name.toLowerCase() === query.toLowerCase();
+        const bExact = b.name.toLowerCase() === query.toLowerCase();
+        if (aExact && !bExact) return -1;
+        if (bExact && !aExact) return 1;
+        const aStarts = a.name.toLowerCase().startsWith(query.toLowerCase());
+        const bStarts = b.name.toLowerCase().startsWith(query.toLowerCase());
+        if (aStarts && !bStarts) return -1;
+        if (bStarts && !aStarts) return 1;
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, limit);
 
     return NextResponse.json({ elements });
   } catch (error) {
@@ -80,6 +121,17 @@ export async function GET(request) {
       { status: 500 }
     );
   }
+}
+
+// Helper to get starter element emoji
+function getStarterEmoji(name) {
+  const emojiMap = {
+    earth: '🌍',
+    water: '💧',
+    fire: '🔥',
+    wind: '💨',
+  };
+  return emojiMap[name?.toLowerCase()];
 }
 
 /**
