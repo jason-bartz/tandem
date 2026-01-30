@@ -38,22 +38,43 @@ export async function GET(request) {
     const supabase = createServerClient();
 
     // Fetch all combinations from the database
-    const { data: combinations, error } = await supabase
-      .from('element_combinations')
-      .select('element_a, element_b, result_element, result_emoji')
-      .not('element_a', 'eq', '_ADMIN');
+    // Use a high limit since Supabase defaults to 1000 rows
+    let allCombinations = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
 
-    if (error) {
-      logger.error('[ShortestPath] Database error', { error: error.message });
-      return NextResponse.json(
-        { error: 'Database error', message: error.message },
-        { status: 500 }
-      );
+    while (hasMore) {
+      const { data: combinations, error: pageError } = await supabase
+        .from('element_combinations')
+        .select('element_a, element_b, result_element, result_emoji')
+        .not('element_a', 'eq', '_ADMIN')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (pageError) {
+        logger.error('[ShortestPath] Database error', { error: pageError.message });
+        return NextResponse.json(
+          { error: 'Database error', message: pageError.message },
+          { status: 500 }
+        );
+      }
+
+      if (combinations && combinations.length > 0) {
+        allCombinations = allCombinations.concat(combinations);
+        hasMore = combinations.length === pageSize;
+        page++;
+      } else {
+        hasMore = false;
+      }
     }
+
+    const combinations = allCombinations;
 
     if (!combinations || combinations.length === 0) {
       return NextResponse.json({ error: 'No combinations found in database' }, { status: 404 });
     }
+
+    logger.info('[ShortestPath] Loaded combinations', { count: combinations.length });
 
     // Build a map of result -> combinations that create it
     // Key: lowercase result element name
