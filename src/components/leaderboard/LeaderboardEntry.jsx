@@ -29,13 +29,25 @@ export default function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak 
       {/* Rank */}
       <div
         className={`w-8 h-8 rounded-lg flex items-center justify-center font-bold text-sm flex-shrink-0 ${
-          isCurrentUser
+          rank === 1
             ? highContrast
-              ? 'bg-hc-primary text-white'
-              : 'bg-sky-500 text-white'
-            : highContrast
-              ? 'bg-hc-surface text-hc-text border-[2px] border-hc-border'
-              : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+              ? 'bg-hc-warning text-black border-[2px] border-hc-border'
+              : 'bg-yellow-400 text-yellow-900 border-[2px] border-yellow-500'
+            : rank === 2
+              ? highContrast
+                ? 'bg-gray-300 text-black border-[2px] border-hc-border'
+                : 'bg-gray-300 text-gray-700 border-[2px] border-gray-400'
+              : rank === 3
+                ? highContrast
+                  ? 'bg-orange-400 text-black border-[2px] border-hc-border'
+                  : 'bg-amber-600 text-white border-[2px] border-amber-700'
+                : isCurrentUser
+                  ? highContrast
+                    ? 'bg-hc-primary text-white'
+                    : 'bg-sky-500 text-white'
+                  : highContrast
+                    ? 'bg-hc-surface text-hc-text border-[2px] border-hc-border'
+                    : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
         }`}
       >
         {rank}
