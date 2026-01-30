@@ -82,6 +82,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             await navigator.share({
               files: [file],
               title: `First Discovery: ${result.element}`,
+              text: `I'm the first player to discover ${result.emoji} ${result.element} in Daily Alchemy!\n\nPlay now at tandemdaily.com/daily-alchemy`,
             });
             setIsSharing(false);
             return;
