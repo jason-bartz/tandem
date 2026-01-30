@@ -284,11 +284,11 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                     : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
                 }`}
               >
-                Tandem Unlimited
+                Club Members
               </span>
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
-              For the ultimate challenge, Tandem Unlimited subscribers can enable Hard Mode:
+              For the ultimate challenge, Tandem Puzzle Club members can enable Hard Mode:
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
               <li>
@@ -301,7 +301,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             <p
               className={`text-xs mt-2 ${highContrast ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}
             >
-              Enable Hard Mode in Settings when you have an active Tandem Unlimited subscription.
+              Enable Hard Mode in Settings when you're a Tandem Puzzle Club member.
             </p>
           </div>
 
@@ -685,7 +685,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                     : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
                 }`}
               >
-                Tandem Unlimited
+                Club Members
               </span>
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>

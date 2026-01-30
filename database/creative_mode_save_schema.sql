@@ -3,7 +3,7 @@
 -- Created: 2026-01-26
 --
 -- This schema supports the Creative Mode save feature in Daily Alchemy.
--- Each Tandem Unlimited user can have one save slot that persists their
+-- Each Tandem Puzzle Club member can have one save slot that persists their
 -- element bank and stats across sessions.
 
 -- ============================================

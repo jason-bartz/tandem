@@ -68,9 +68,9 @@ export function getCheckoutMode(tier) {
  */
 export function getTierDisplayName(tier) {
   const names = {
-    buddypass: 'Buddy Pass',
-    bestfriends: 'Best Friends',
-    soulmates: 'Soulmates',
+    buddypass: 'Monthly Membership',
+    bestfriends: 'Annual Membership',
+    soulmates: 'Lifetime Membership',
   };
   return names[tier] || tier;
 }

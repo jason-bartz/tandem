@@ -11,7 +11,7 @@ import confetti from 'canvas-confetti';
  * WelcomeBackModal - Shown after successful email confirmation
  *
  * Welcomes users back after confirming their email and prompts them
- * to subscribe to Tandem Unlimited with a special offer.
+ * to join the Tandem Puzzle Club with a special offer.
  *
  * Props:
  * @param {boolean} isOpen - Whether the panel is open
@@ -123,7 +123,7 @@ export default function WelcomeBackModal({ isOpen, onClose, onSubscribe }) {
         </p>
       </div>
 
-      {/* Tandem Unlimited upsell - only show if not already subscribed */}
+      {/* Tandem Puzzle Club upsell - only show if not already subscribed */}
       {!isActive && (
         <div className="mb-6">
           <h3
@@ -131,7 +131,7 @@ export default function WelcomeBackModal({ isOpen, onClose, onSubscribe }) {
               highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
             }`}
           >
-            Get More with Tandem Unlimited
+            Get More with Tandem Puzzle Club
           </h3>
           <ul
             className={`space-y-2 mb-4 ${

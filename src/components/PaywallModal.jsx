@@ -7,7 +7,7 @@
  * - PostPurchaseAccountPrompt at z-60 (iOS post-purchase linking)
  *
  * Features:
- * - 3 subscription tiers (Buddy Pass, Best Friends, Soulmates)
+ * - 3 subscription tiers (Monthly Membership, Annual Membership, Lifetime Membership)
  * - Platform-specific handling (iOS IAP vs Web Stripe)
  * - Apple Sign In for iOS
  * - Product loading with retry
@@ -355,10 +355,10 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
     // If no current subscription, all are available
     if (!currentSubscription) return true;
 
-    // Soulmates is always available (lifetime > any subscription)
+    // Lifetime Membership is always available (lifetime > any subscription)
     if (productId === 'com.tandemdaily.app.soulmates') return true;
 
-    // If on Buddy Pass, can upgrade to Best Friends
+    // If on Monthly Membership, can upgrade to Annual Membership
     if (
       currentSubscription === 'com.tandemdaily.app.buddypass' &&
       productId === 'com.tandemdaily.app.bestfriends'
@@ -388,13 +388,13 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           <div className="flex items-center gap-3">
             <Image
               src={`/icons/ui/tandem-unlimited.png?v=${ASSET_VERSION}`}
-              alt="Tandem Unlimited"
+              alt="Tandem Puzzle Club"
               width={32}
               height={32}
               className="rounded-lg"
               priority
             />
-            <span>Join Tandem Unlimited</span>
+            <span>Join the Tandem Puzzle Club</span>
           </div>
         }
         maxWidth="520px"
@@ -502,7 +502,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
-            Tandem Unlimited members make the daily puzzle available for everyone and the game 100%
+            Tandem Puzzle Club members make the daily puzzle available for everyone and the game 100%
             ad-free
           </p>
         </div>
@@ -573,7 +573,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
           </div>
         ) : (
           <div className="space-y-3 mb-6">
-            {/* Buddy Pass - Monthly */}
+            {/* Monthly Membership */}
             <button
               onClick={() => handlePurchase(BUDDY_PASS)}
               disabled={loading || restoring || buddyActive || !canUpgrade(BUDDY_PASS)}
@@ -607,7 +607,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                             : 'text-gray-800'
                       }`}
                     >
-                      Buddy Pass
+                      Monthly Membership
                     </span>
                   </div>
                   <p
@@ -639,7 +639,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               </div>
             </button>
 
-            {/* Best Friends - Yearly */}
+            {/* Annual Membership */}
             <button
               onClick={() => handlePurchase(BEST_FRIENDS)}
               disabled={loading || restoring || bestFriendsActive || !canUpgrade(BEST_FRIENDS)}
@@ -681,7 +681,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                             : 'text-gray-800'
                       }`}
                     >
-                      Best Friends
+                      Annual Membership
                     </span>
                   </div>
                   <p
@@ -717,7 +717,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               </div>
             </button>
 
-            {/* Soulmates - Lifetime */}
+            {/* Lifetime Membership */}
             <button
               onClick={() => handlePurchase(SOULMATES)}
               disabled={loading || restoring || soulmatesActive}
@@ -762,7 +762,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
                             : 'text-gray-800'
                       }`}
                     >
-                      Soulmates
+                      Lifetime Membership
                     </span>
                   </div>
                   <p

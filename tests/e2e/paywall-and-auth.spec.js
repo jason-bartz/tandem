@@ -107,7 +107,7 @@ test.describe('Free User Archive Access', () => {
 
     // Should see either paywall modal or auth modal
     const paywallModal = page.locator(
-      '[data-testid="paywall-modal"], .paywall-modal, text=/Tandem Unlimited/i'
+      '[data-testid="paywall-modal"], .paywall-modal, text=/Tandem Puzzle Club/i'
     );
     const authModal = page.locator('[data-testid="auth-modal"], text=/Sign In|Log In|Sign Up/i');
 
@@ -211,24 +211,24 @@ test.describe('Paywall Display and Functionality', () => {
     await page.waitForTimeout(2000);
 
     // Look for subscription tiers
-    const buddyPass = page.locator('text=/Buddy Pass|\\$1\\.99/i');
-    const bestFriends = page.locator('text=/Best Friends|\\$14\\.99/i');
-    const soulmates = page.locator('text=/Soulmates|\\$29\\.99/i');
+    const monthlyMembership = page.locator('text=/Monthly Membership|\\$1\\.99/i');
+    const annualMembership = page.locator('text=/Annual Membership|\\$14\\.99/i');
+    const lifetimeMembership = page.locator('text=/Lifetime Membership|\\$29\\.99/i');
 
     // Take screenshot
     await page.screenshot({ path: 'tests/screenshots/paywall-tiers.png', fullPage: true });
 
     // Check if tiers are visible (they should be if paywall is shown)
-    const hasBuddyPass = (await buddyPass.count()) > 0;
-    const hasBestFriends = (await bestFriends.count()) > 0;
-    const hasSoulmates = (await soulmates.count()) > 0;
+    const hasMonthlyMembership = (await monthlyMembership.count()) > 0;
+    const hasAnnualMembership = (await annualMembership.count()) > 0;
+    const hasLifetimeMembership = (await lifetimeMembership.count()) > 0;
 
-    console.log(`Buddy Pass visible: ${hasBuddyPass}`);
-    console.log(`Best Friends visible: ${hasBestFriends}`);
-    console.log(`Soulmates visible: ${hasSoulmates}`);
+    console.log(`Monthly Membership visible: ${hasMonthlyMembership}`);
+    console.log(`Annual Membership visible: ${hasAnnualMembership}`);
+    console.log(`Lifetime Membership visible: ${hasLifetimeMembership}`);
 
     // At least one tier should be visible if paywall is shown
-    expect(hasBuddyPass || hasBestFriends || hasSoulmates).toBe(true);
+    expect(hasMonthlyMembership || hasAnnualMembership || hasLifetimeMembership).toBe(true);
   });
 
   test('should show Stripe payment buttons', async ({ page }) => {

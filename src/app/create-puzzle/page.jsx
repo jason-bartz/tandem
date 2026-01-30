@@ -100,9 +100,9 @@ export default function CreatePuzzlePage() {
         <div className="max-w-lg mx-auto px-4 py-12 text-center">
           <div className="bg-bg-surface rounded-xl border-[3px] border-black dark:border-white p-8 shadow-[4px_4px_0px_rgba(0,0,0,1)]">
             <div className="text-6xl mb-4">🎬</div>
-            <h1 className="text-2xl font-bold text-text-primary mb-4">Tandem Unlimited Required</h1>
+            <h1 className="text-2xl font-bold text-text-primary mb-4">Membership Required</h1>
             <p className="text-text-secondary mb-6">
-              Creating and submitting puzzles is a Tandem Unlimited feature. Upgrade your membership
+              Creating and submitting puzzles is a Tandem Puzzle Club feature. Upgrade your membership
               to create your own Reel Connections puzzles!
             </p>
             <Link
