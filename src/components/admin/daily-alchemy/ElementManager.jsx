@@ -2412,6 +2412,35 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
   const [isDeleting, setIsDeleting] = useState(false);
   const [showAddCreatedBy, setShowAddCreatedBy] = useState(false);
   const [showAddUsedIn, setShowAddUsedIn] = useState(false);
+  const [pathData, setPathData] = useState(null);
+  const [pathLoading, setPathLoading] = useState(false);
+  const [showPath, setShowPath] = useState(false);
+
+  // Fetch shortest path from starter elements
+  const fetchShortestPath = useCallback(async () => {
+    setPathLoading(true);
+    try {
+      const token = await authService.getToken();
+      const response = await fetch(
+        `/api/admin/daily-alchemy/shortest-path?target=${encodeURIComponent(element.name)}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (response.ok) {
+        const data = await response.json();
+        setPathData(data);
+        setShowPath(true);
+      } else {
+        setError('Failed to load shortest path');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setPathLoading(false);
+    }
+  }, [element.name]);
 
   // Fetch element details
   const fetchDetails = useCallback(async () => {
@@ -2724,6 +2753,74 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
                 </p>
                 <p className="text-sm text-green-600 dark:text-green-400">Total Uses</p>
               </div>
+            </div>
+          )}
+
+          {/* Reveal Direct Path Section */}
+          {!isLoading && !isStarter && (
+            <div className="mb-6">
+              <button
+                onClick={() => {
+                  if (!showPath && !pathData) {
+                    fetchShortestPath();
+                  } else {
+                    setShowPath(!showPath);
+                  }
+                }}
+                disabled={pathLoading}
+                className="w-full flex items-center justify-between p-3 bg-orange-50 dark:bg-orange-900/20 hover:bg-orange-100 dark:hover:bg-orange-900/30 rounded-xl transition-colors disabled:opacity-50 border-2 border-orange-200 dark:border-orange-800"
+              >
+                <span className="font-bold text-orange-700 dark:text-orange-300 flex items-center gap-2">
+                  <Route className="w-5 h-5" />
+                  {pathLoading
+                    ? 'Finding shortest path...'
+                    : showPath
+                      ? 'Hide Direct Path'
+                      : 'Reveal Direct Path'}
+                  {pathData && !pathData.isStarter && pathData.found && (
+                    <span className="text-orange-500">({pathData.steps} steps)</span>
+                  )}
+                </span>
+                {pathLoading && <Loader2 className="w-5 h-5 animate-spin text-orange-500" />}
+              </button>
+
+              {showPath && pathData && (
+                <div className="mt-3 p-4 bg-orange-50/50 dark:bg-orange-900/10 rounded-xl border border-orange-200 dark:border-orange-800">
+                  {pathData.isStarter ? (
+                    <div className="text-center text-orange-700 dark:text-orange-300 font-medium">
+                      {element.emoji} {element.name} is a starter element!
+                    </div>
+                  ) : pathData.found ? (
+                    <div className="space-y-2">
+                      <div className="text-xs text-orange-600 dark:text-orange-400 mb-3">
+                        Shortest path from starter elements ({pathData.steps} combinations):
+                      </div>
+                      {pathData.path.map((step, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 text-sm p-2 bg-white dark:bg-gray-800 rounded-lg border border-orange-200 dark:border-orange-800"
+                        >
+                          <span className="text-orange-500 font-mono text-xs w-6">
+                            {index + 1}.
+                          </span>
+                          <span className="text-text-primary">{step.element_a}</span>
+                          <span className="text-gray-400">+</span>
+                          <span className="text-text-primary">{step.element_b}</span>
+                          <span className="text-gray-400">=</span>
+                          <span className="font-medium text-text-primary">
+                            {step.result_element}
+                          </span>
+                          <span>{step.result_emoji}</span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center text-red-600 dark:text-red-400">
+                      {pathData.message || 'No path found from starter elements'}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
