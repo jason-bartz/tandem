@@ -19,6 +19,7 @@ const AuthContext = createContext({
   signIn: async () => {},
   signOut: async () => {},
   signInWithGoogle: async () => {},
+  signInWithDiscord: async () => {},
   signInWithApple: async () => {},
   resetPassword: async () => {},
 });
@@ -432,6 +433,63 @@ export function AuthProvider({ children }) {
   };
 
   /**
+   * Sign in with Discord OAuth
+   *
+   * Works on both web and iOS:
+   * - Web: Standard OAuth redirect to Discord, then back to /auth/callback
+   * - iOS: Opens Safari/SFSafariViewController for OAuth, returns via deep link
+   *
+   * @returns {Promise<{error}>}
+   */
+  const signInWithDiscord = async () => {
+    try {
+      const isNative =
+        typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
+
+      if (isNative) {
+        // iOS: Open external browser for Discord OAuth
+        const { Browser } = await import('@capacitor/browser');
+
+        // Get the OAuth URL without auto-redirecting
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'discord',
+          options: {
+            redirectTo: 'com.tandemdaily.app://auth/callback',
+            skipBrowserRedirect: true,
+          },
+        });
+
+        if (error) throw error;
+
+        // Open the OAuth URL in Safari/SFSafariViewController
+        await Browser.open({
+          url: data.url,
+          presentationStyle: 'popover',
+        });
+
+        return { error: null };
+      } else {
+        // Web: Standard OAuth redirect
+        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'discord',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (error) throw error;
+
+        return { error: null };
+      }
+    } catch (error) {
+      logger.error('Discord sign in error', error);
+      return { error };
+    }
+  };
+
+  /**
    * Sign in with Apple
    *
    * Uses native Apple Sign In on iOS via Capacitor plugin
@@ -641,6 +699,7 @@ export function AuthProvider({ children }) {
     signIn,
     signOut,
     signInWithGoogle,
+    signInWithDiscord,
     signInWithApple,
     resetPassword,
   };
