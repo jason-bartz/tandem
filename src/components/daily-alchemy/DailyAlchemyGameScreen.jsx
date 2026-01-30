@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
 import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
+import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -21,8 +22,10 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const { reduceMotion, highContrast } = useTheme();
   const { mediumTap, lightTap } = useHaptics();
   const [copied, setCopied] = useState(false);
+  const [isSharing, setIsSharing] = useState(false);
   const [swipeDirection, setSwipeDirection] = useState(null); // 'up' | 'down' | null
   const controls = useAnimation();
+  const shareCardRef = useRef(null);
 
   // Motion value for drag
   const y = useMotionValue(0);
@@ -37,23 +40,81 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   if (!result) return null;
 
+  // Format today's date
+  const formatDate = () => {
+    return new Date().toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
   const handleShare = async (e) => {
     e?.stopPropagation();
-    const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
 
-    if (navigator.share) {
-      try {
-        await navigator.share({ text: shareText });
-      } catch (err) {
-        // User cancelled or share failed, try clipboard
-        await navigator.clipboard.writeText(shareText);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+    if (!shareCardRef.current || isSharing) return;
+
+    setIsSharing(true);
+
+    try {
+      const canvas = await html2canvas(shareCardRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+
+      const dataUrl = canvas.toDataURL('image/png');
+
+      // Try native share on iOS (allows saving to Photos)
+      if (typeof navigator !== 'undefined' && navigator.share && navigator.canShare) {
+        try {
+          const response = await fetch(dataUrl);
+          const blob = await response.blob();
+          const file = new File(
+            [blob],
+            `first-discovery-${result.element.toLowerCase().replace(/\s+/g, '-')}.png`,
+            { type: 'image/png' }
+          );
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              files: [file],
+              title: `First Discovery: ${result.element}`,
+            });
+            setIsSharing(false);
+            return;
+          }
+        } catch {
+          // If share fails, fall back to download
+        }
       }
-    } else {
+
+      // Fallback: download as file
+      canvas.toBlob((blob) => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `first-discovery-${result.element.toLowerCase().replace(/\s+/g, '-')}.png`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+      }, 'image/png');
+
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fall back to text share
+      const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
       await navigator.clipboard.writeText(shareText);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -207,6 +268,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         {result.isFirstDiscovery && (
           <motion.button
             onClick={handleShare}
+            disabled={isSharing}
             className={cn(
               'mt-2 flex items-center justify-center gap-2 px-5 py-2',
               'bg-yellow-500 text-white',
@@ -217,16 +279,22 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
               'active:translate-y-0 active:shadow-none',
               'transition-colors duration-150',
+              'disabled:opacity-70',
               highContrast && 'border-[3px]'
             )}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            {copied ? (
+            {isSharing ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Saving...</span>
+              </>
+            ) : copied ? (
               <>
                 <Check className="w-4 h-4" />
-                <span>Copied!</span>
+                <span>Saved!</span>
               </>
             ) : (
               <span>Share</span>
@@ -257,6 +325,69 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           </button>
         </motion.div>
       </motion.div>
+
+      {/* Hidden shareable card for first discoveries */}
+      {result.isFirstDiscovery && (
+        <div className="fixed -left-[9999px] top-0 pointer-events-none">
+          <div ref={shareCardRef} className="bg-white p-3 pb-[22px] pr-[22px]">
+            {/* Outer card with shadow */}
+            <div className="relative">
+              <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
+              <div className="relative bg-amber-50 rounded-xl border-[3px] border-black p-6 w-[340px]">
+                {/* Element display */}
+                <div className="text-center mb-6">
+                  <span className="text-6xl mb-3 block">{result.emoji}</span>
+                  <h3 className="text-2xl font-bold text-gray-900">{result.element}</h3>
+                  <div className="flex items-center justify-center gap-2 mt-2">
+                    <span className="text-amber-500">✨</span>
+                    <span className="text-sm font-medium text-amber-600">First Discovery</span>
+                  </div>
+                </div>
+
+                {/* Combination box with shadow */}
+                <div className="relative mb-6">
+                  <div className="absolute top-[4px] left-[4px] right-[-4px] bottom-[-4px] bg-black rounded-xl" />
+                  <div className="relative bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl border-[2px] border-black p-4">
+                    <p className="text-xs text-gray-500 mb-3 tracking-wide font-bold text-center">
+                      Created By Combining
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <div className="flex flex-col items-center">
+                        <span className="text-3xl mb-1">{result.fromEmojis?.[0] || '✨'}</span>
+                        <span className="font-bold text-gray-900 text-sm text-center">
+                          {result.from[0]}
+                        </span>
+                      </div>
+                      <span className="text-blue-500 font-bold text-2xl">+</span>
+                      <div className="flex flex-col items-center">
+                        <span className="text-3xl mb-1">{result.fromEmojis?.[1] || '✨'}</span>
+                        <span className="font-bold text-gray-900 text-sm text-center">
+                          {result.from[1]}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Date */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between py-2 border-b border-gray-200">
+                    <span className="text-sm text-gray-500">Date</span>
+                    <span className="font-medium text-gray-900">{formatDate()}</span>
+                  </div>
+                </div>
+
+                {/* Branding */}
+                <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                  <span className="text-xs font-bold text-gray-400">
+                    tandemdaily.com/daily-alchemy
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

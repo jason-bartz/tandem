@@ -1061,6 +1061,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         isNew,
         isFirstDiscovery,
         from: [selectedA.name, selectedB.name],
+        fromEmojis: [selectedA.emoji, selectedB.emoji],
       });
 
       // Clear both selection slots after combination
