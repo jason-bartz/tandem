@@ -502,8 +502,8 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
-            Tandem Puzzle Club members make the daily puzzle available for everyone and the game 100%
-            ad-free
+            Tandem Puzzle Club members make the daily puzzle available for everyone and the game
+            100% ad-free
           </p>
         </div>
 
@@ -596,20 +596,17 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               )}
               <div className="flex items-center justify-between">
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">🤝</span>
-                    <span
-                      className={`font-bold text-lg ${
-                        buddyActive
-                          ? 'text-gray-500 dark:text-gray-500'
-                          : highContrast
-                            ? 'text-hc-text'
-                            : 'text-gray-800'
-                      }`}
-                    >
-                      Monthly Membership
-                    </span>
-                  </div>
+                  <span
+                    className={`font-bold text-lg ${
+                      buddyActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-800'
+                    }`}
+                  >
+                    Monthly Membership
+                  </span>
                   <p
                     className={`text-sm mt-1 ${
                       buddyActive ? 'text-gray-400 dark:text-gray-500' : 'text-gray-700'
@@ -670,20 +667,17 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
 
               <div className="flex items-center justify-between">
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">👯</span>
-                    <span
-                      className={`font-bold text-lg ${
-                        bestFriendsActive
-                          ? 'text-gray-500 dark:text-gray-500'
-                          : highContrast
-                            ? 'text-hc-text'
-                            : 'text-gray-800'
-                      }`}
-                    >
-                      Annual Membership
-                    </span>
-                  </div>
+                  <span
+                    className={`font-bold text-lg ${
+                      bestFriendsActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-800'
+                    }`}
+                  >
+                    Annual Membership
+                  </span>
                   <p
                     className={`text-sm mt-1 ${
                       bestFriendsActive
@@ -751,20 +745,17 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
               )}
               <div className="flex items-center justify-between mt-1">
                 <div className="text-left">
-                  <div className="flex items-center gap-2">
-                    <span className="text-2xl">💕</span>
-                    <span
-                      className={`font-bold text-lg ${
-                        soulmatesActive
-                          ? 'text-gray-500 dark:text-gray-500'
-                          : highContrast
-                            ? 'text-hc-text'
-                            : 'text-gray-800'
-                      }`}
-                    >
-                      Lifetime Membership
-                    </span>
-                  </div>
+                  <span
+                    className={`font-bold text-lg ${
+                      soulmatesActive
+                        ? 'text-gray-500 dark:text-gray-500'
+                        : highContrast
+                          ? 'text-hc-text'
+                          : 'text-gray-800'
+                    }`}
+                  >
+                    Lifetime Membership
+                  </span>
                   <p
                     className={`text-sm mt-1 ${
                       soulmatesActive
