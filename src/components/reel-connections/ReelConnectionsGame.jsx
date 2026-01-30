@@ -685,7 +685,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-safe">
           <div className="w-full max-w-md sm:max-w-lg pb-8">
             {/* Header with Back Button and Hamburger Menu */}
-            <div className="flex items-center justify-between px-2 mb-3">
+            <div className="max-w-2xl w-full mx-auto px-4 flex items-center justify-between mb-3">
               <button
                 onClick={() => {
                   lightTap();
@@ -870,7 +870,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       >
         <div className="min-h-full flex flex-col items-center pt-safe px-4 pb-8">
           {/* Header with Back Button and Hamburger Menu */}
-          <div className="w-full max-w-md flex items-center justify-between px-2 mb-3">
+          <div className="max-w-2xl w-full mx-auto px-4 flex items-center justify-between mb-3">
             <button
               onClick={() => {
                 lightTap();
@@ -1142,7 +1142,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
     >
       {/* Header with Back Button and Hamburger Menu - Conditionally visible */}
       <div
-        className={`flex items-center justify-between px-4 pt-safe pt-4 pb-2 fixed top-0 left-0 right-0 z-30 ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e]/90 to-transparent'} ${!showNavRow ? 'pointer-events-none' : ''}`}
+        className={`pt-safe pt-4 pb-2 fixed top-0 left-0 right-0 z-30 ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e]/90 to-transparent'} ${!showNavRow ? 'pointer-events-none' : ''}`}
         style={{
           transform: showNavRow
             ? `translateY(${pullOffset}px)`
@@ -1154,34 +1154,36 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               : 'transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1), opacity 300ms ease',
         }}
       >
-        <button
-          onClick={() => {
-            lightTap();
-            router.push('/');
-          }}
-          className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
-          aria-label="Back to home"
-          style={{
-            WebkitTapHighlightColor: 'transparent',
-            touchAction: 'manipulation',
-          }}
-        >
-          <ChevronLeft className="w-8 h-8" />
-        </button>
-        <button
-          onClick={() => {
-            lightTap();
-            setIsSidebarOpen(true);
-          }}
-          className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
-          aria-label="Open menu"
-          style={{
-            WebkitTapHighlightColor: 'transparent',
-            touchAction: 'manipulation',
-          }}
-        >
-          <Menu className="w-7 h-7" />
-        </button>
+        <div className="max-w-2xl w-full mx-auto px-4 flex items-center justify-between">
+          <button
+            onClick={() => {
+              lightTap();
+              router.push('/');
+            }}
+            className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
+            aria-label="Back to home"
+            style={{
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+            }}
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+          <button
+            onClick={() => {
+              lightTap();
+              setIsSidebarOpen(true);
+            }}
+            className={`w-12 h-12 flex items-center justify-center transition-colors rounded-xl ${highContrast ? 'text-hc-text hover:text-hc-primary' : 'text-white/80 hover:text-[#ffce00]'}`}
+            aria-label="Open menu"
+            style={{
+              WebkitTapHighlightColor: 'transparent',
+              touchAction: 'manipulation',
+            }}
+          >
+            <Menu className="w-7 h-7" />
+          </button>
+        </div>
       </div>
 
       {/* Floating Stats Bar - Below nav row */}
