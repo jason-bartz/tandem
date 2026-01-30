@@ -121,6 +121,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   // Handle "use" action - select element into first slot
   const handleUse = async () => {
+    // Don't allow interactions while sharing
+    if (isSharing) return;
+
     setSwipeDirection('up');
 
     // Play plunk sound and haptic
@@ -142,6 +145,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   // Handle "close" action - dismiss without selecting
   const handleClose = async () => {
+    // Don't allow interactions while sharing
+    if (isSharing) return;
+
     setSwipeDirection('down');
 
     // Light haptic for dismiss
@@ -159,6 +165,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   };
 
   const handleDragEnd = async (event, info) => {
+    // Don't allow interactions while sharing
+    if (isSharing) return;
+
     const offsetY = info.offset.y;
     const velocityY = info.velocity.y;
 
