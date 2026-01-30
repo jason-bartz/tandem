@@ -682,7 +682,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       <div
         className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
       >
-        <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-4">
+        <div className="min-h-full flex items-start justify-center p-2 sm:p-4 pt-safe">
           <div className="w-full max-w-md sm:max-w-lg pb-8">
             {/* Header with Back Button and Hamburger Menu */}
             <div className="flex items-center justify-between px-2 mb-3">
@@ -868,7 +868,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       <div
         className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
       >
-        <div className="min-h-full flex flex-col items-center py-4 px-4 pb-8">
+        <div className="min-h-full flex flex-col items-center pt-safe px-4 pb-8">
           {/* Header with Back Button and Hamburger Menu */}
           <div className="w-full max-w-md flex items-center justify-between px-2 mb-3">
             <button

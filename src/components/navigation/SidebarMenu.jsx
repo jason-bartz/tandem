@@ -211,7 +211,7 @@ export default function SidebarMenu({
             aria-label="Navigation menu"
           >
             {/* Header with Close button and Theme toggle */}
-            <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-inherit">
+            <div className="sticky top-0 z-10 flex justify-between items-center p-4 pt-safe bg-inherit">
               {/* Theme toggle button */}
               <motion.button
                 onClick={() => {
