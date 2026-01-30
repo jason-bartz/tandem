@@ -250,12 +250,12 @@ export default function AuthModal({
         onClick={handleGoogleSignIn}
         disabled={loading}
         type="button"
-        aria-label="Sign in with Google"
+        aria-label={mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
         className={`w-full p-4 rounded-2xl border-[3px] shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] transition-all flex items-center justify-center gap-3 mb-4 ${
           loading
             ? 'opacity-50 cursor-not-allowed'
             : 'hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-        } bg-white text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600`}
+        } bg-white text-gray-700 border-black dark:bg-gray-800 dark:text-gray-200 dark:border-gray-600`}
       >
         {loading ? (
           <div className="animate-spin rounded-full h-5 w-5 border-2 border-gray-700 border-t-transparent dark:border-gray-200 dark:border-t-transparent"></div>
@@ -279,7 +279,9 @@ export default function AuthModal({
                 fill="#EA4335"
               />
             </svg>
-            <span className="font-bold">Sign in with Google</span>
+            <span className="font-bold">
+              {mode === 'signup' ? 'Sign up with Google' : 'Sign in with Google'}
+            </span>
           </>
         )}
       </button>
