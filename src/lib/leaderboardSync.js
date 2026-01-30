@@ -12,7 +12,7 @@ import { getApiUrl, capacitorFetch } from '@/lib/api-config';
  * Submit user's best streak to the leaderboard
  *
  * @param {Object} stats - User's stats object with bestStreak
- * @param {string} gameType - 'tandem', 'cryptic', 'mini', 'reel', or 'soup'
+ * @param {string} gameType - 'tandem', 'mini', 'reel', or 'soup'
  * @returns {Promise<boolean>} True if submitted successfully
  */
 async function submitStreakToLeaderboard(stats, gameType = 'tandem') {
@@ -68,18 +68,16 @@ async function submitStreakToLeaderboard(stats, gameType = 'tandem') {
 
 /**
  * Sync user's stats to leaderboard after authentication
- * Submits Tandem, Cryptic, Mini, Reel, and Soup streaks if available
+ * Submits Tandem, Mini, Reel, and Soup streaks if available
  *
  * @param {Object} tandemStats - Tandem game stats
- * @param {Object} crypticStats - Cryptic game stats (optional)
  * @param {Object} miniStats - Mini game stats (optional)
  * @param {Object} reelStats - Reel Connections game stats (optional)
  * @param {Object} soupStats - Element Soup game stats (optional)
- * @returns {Promise<{tandem: boolean, cryptic: boolean, mini: boolean, reel: boolean, soup: boolean}>}
+ * @returns {Promise<{tandem: boolean, mini: boolean, reel: boolean, soup: boolean}>}
  */
 export async function syncStatsToLeaderboardOnAuth(
   tandemStats,
-  crypticStats = null,
   miniStats = null,
   reelStats = null,
   soupStats = null
@@ -89,7 +87,6 @@ export async function syncStatsToLeaderboardOnAuth(
 
     const results = {
       tandem: false,
-      cryptic: false,
       mini: false,
       reel: false,
       soup: false,
@@ -98,16 +95,6 @@ export async function syncStatsToLeaderboardOnAuth(
     // Submit Tandem streak
     if (tandemStats) {
       results.tandem = await submitStreakToLeaderboard(tandemStats, 'tandem');
-
-      // Add small delay to avoid rate limiting
-      if (crypticStats || miniStats || reelStats || soupStats) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-      }
-    }
-
-    // Submit Cryptic streak
-    if (crypticStats) {
-      results.cryptic = await submitStreakToLeaderboard(crypticStats, 'cryptic');
 
       // Add small delay to avoid rate limiting
       if (miniStats || reelStats || soupStats) {
@@ -150,7 +137,7 @@ export async function syncStatsToLeaderboardOnAuth(
     return results;
   } catch (error) {
     logger.error('[leaderboardSync] Error during auth sync:', error);
-    return { tandem: false, cryptic: false, mini: false, reel: false, soup: false };
+    return { tandem: false, mini: false, reel: false, soup: false };
   }
 }
 
@@ -158,7 +145,7 @@ export async function syncStatsToLeaderboardOnAuth(
  * Sync current streak to leaderboard (called after stats update)
  *
  * @param {Object} stats - Updated stats object
- * @param {string} gameType - 'tandem', 'cryptic', 'mini', 'reel', or 'soup'
+ * @param {string} gameType - 'tandem', 'mini', 'reel', or 'soup'
  * @returns {Promise<boolean>}
  */
 export async function syncCurrentStreakToLeaderboard(stats, gameType = 'tandem') {

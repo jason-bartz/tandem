@@ -13,7 +13,7 @@ import logger from '@/lib/logger';
  *
  * Body: {
  *   date?: string (YYYY-MM-DD, defaults to today),
- *   gameType?: string (tandem|cryptic|mini|reel, optional - if not provided, generates for all),
+ *   gameType?: string (tandem|mini|reel|soup, optional - if not provided, generates for all),
  *   count?: number (optional - overrides config)
  * }
  */
@@ -35,7 +35,7 @@ export async function POST(request) {
     }
 
     // Validate game type if provided
-    if (gameType && !['tandem', 'cryptic', 'mini', 'reel', 'soup'].includes(gameType)) {
+    if (gameType && !['tandem', 'mini', 'reel', 'soup'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 

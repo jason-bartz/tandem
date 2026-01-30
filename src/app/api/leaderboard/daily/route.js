@@ -71,7 +71,7 @@ export async function GET(request) {
     const limit = Math.min(parseInt(searchParams.get('limit') || '10'), 100);
 
     // Validation
-    if (!gameType || !['tandem', 'cryptic', 'mini', 'reel', 'soup'].includes(gameType)) {
+    if (!gameType || !['tandem', 'mini', 'reel', 'soup'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 
@@ -161,7 +161,7 @@ export async function POST(request) {
     const { gameType, puzzleDate, score, metadata = {} } = body;
 
     // Validation
-    if (!gameType || !['tandem', 'cryptic', 'mini', 'reel', 'soup'].includes(gameType)) {
+    if (!gameType || !['tandem', 'mini', 'reel', 'soup'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid game type' }, { status: 400 });
     }
 
