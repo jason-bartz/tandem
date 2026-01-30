@@ -196,6 +196,70 @@ export function AuthProvider({ children }) {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
+  // Handle OAuth deep link callbacks on iOS (for Google Sign In)
+  useEffect(() => {
+    const setupDeepLinkHandler = async () => {
+      const isNative =
+        typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
+
+      if (!isNative) return;
+
+      try {
+        const { App } = await import('@capacitor/app');
+        const { Browser } = await import('@capacitor/browser');
+
+        // Listen for deep links (app URL open events)
+        const listener = await App.addListener('appUrlOpen', async ({ url }) => {
+          logger.debug('[AuthContext] Received deep link', url);
+
+          // Check if this is an auth callback
+          if (url.includes('auth/callback')) {
+            // Close the browser if it's still open
+            try {
+              await Browser.close();
+            } catch (e) {
+              // Browser may already be closed, that's ok
+            }
+
+            // Extract the authorization code from URL params
+            // PKCE flow returns code in query params
+            const urlObj = new URL(url);
+            const code = urlObj.searchParams.get('code');
+
+            if (code) {
+              logger.debug('[AuthContext] Exchanging code for session');
+              const { error } = await supabase.auth.exchangeCodeForSession(code);
+              if (error) {
+                logger.error('[AuthContext] Failed to exchange code for session', error);
+              } else {
+                logger.debug('[AuthContext] Successfully exchanged code for session');
+              }
+            } else {
+              // Check for error in URL (user cancelled or OAuth error)
+              const errorParam = urlObj.searchParams.get('error');
+              const errorDescription = urlObj.searchParams.get('error_description');
+              if (errorParam) {
+                logger.warn('[AuthContext] OAuth error:', errorParam, errorDescription);
+              }
+            }
+          }
+        });
+
+        // Store cleanup function
+        return () => {
+          listener.remove();
+        };
+      } catch (error) {
+        logger.error('[AuthContext] Failed to setup deep link handler', error);
+      }
+    };
+
+    const cleanup = setupDeepLinkHandler();
+    return () => {
+      cleanup.then((cleanupFn) => cleanupFn?.());
+    };
+  }, [supabase.auth]);
+
   /**
    * Sign up with email and password
    *
@@ -311,25 +375,56 @@ export function AuthProvider({ children }) {
   /**
    * Sign in with Google OAuth
    *
-   * Redirects to Google for authentication, then back to the app.
+   * Works on both web and iOS:
+   * - Web: Standard OAuth redirect to Google, then back to /auth/callback
+   * - iOS: Opens Safari/SFSafariViewController for OAuth, returns via deep link
    *
    * @returns {Promise<{error}>}
    */
   const signInWithGoogle = async () => {
     try {
-      // Store current path to return to after OAuth
-      document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+      const isNative =
+        typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
 
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
-        },
-      });
+      if (isNative) {
+        // iOS: Open external browser for Google OAuth
+        // WKWebView cannot handle OAuth redirects properly
+        const { Browser } = await import('@capacitor/browser');
 
-      if (error) throw error;
+        // Get the OAuth URL without auto-redirecting
+        const { data, error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: 'com.tandemdaily.app://auth/callback',
+            skipBrowserRedirect: true, // Get URL instead of auto-redirecting
+          },
+        });
 
-      return { error: null };
+        if (error) throw error;
+
+        // Open the OAuth URL in Safari/SFSafariViewController
+        await Browser.open({
+          url: data.url,
+          presentationStyle: 'popover', // Uses SFSafariViewController on iOS
+        });
+
+        return { error: null };
+      } else {
+        // Web: Standard OAuth redirect
+        // Store current path to return to after OAuth
+        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+
+        const { error } = await supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: `${window.location.origin}/auth/callback`,
+          },
+        });
+
+        if (error) throw error;
+
+        return { error: null };
+      }
     } catch (error) {
       logger.error('Google sign in error', error);
       return { error };

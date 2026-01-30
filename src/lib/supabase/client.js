@@ -38,9 +38,10 @@ export function createBrowserClient() {
         storage: typeof window !== 'undefined' ? window.localStorage : undefined,
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: false,
-        // Add flow type for native
-        flowType: 'implicit',
+        // Enable URL detection for OAuth deep link callbacks (Google Sign In)
+        detectSessionInUrl: true,
+        // Use PKCE flow for secure OAuth with deep links
+        flowType: 'pkce',
       },
     });
   }
