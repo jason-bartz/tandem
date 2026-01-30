@@ -20,14 +20,14 @@ export async function GET(request) {
     }
 
     const supabase = createServerClient();
+    const pattern = `%${query}%`;
 
     // Search for elements that match the query in result_element
-    // Also search element_a and element_b to catch all possible elements
     const { data, error } = await supabase
       .from('element_combinations')
-      .select('result_element, result_emoji, element_a, element_b')
-      .or(`result_element.ilike.%${query}%,element_a.ilike.%${query}%,element_b.ilike.%${query}%`)
-      .limit(limit * 5); // Get more to dedupe since we're searching multiple columns
+      .select('result_element, result_emoji')
+      .ilike('result_element', pattern)
+      .limit(limit * 3);
 
     if (error) {
       logger.error('[ElementSearch] Database error', { error: error.message, query });
@@ -38,42 +38,15 @@ export async function GET(request) {
     }
 
     // Deduplicate by element name (case-insensitive)
-    // Collect elements from result_element, element_a, and element_b columns
     const elementMap = new Map();
 
     for (const row of data || []) {
-      // Check result_element
-      if (row.result_element?.toLowerCase().includes(query.toLowerCase())) {
-        const key = row.result_element.toLowerCase();
-        if (!elementMap.has(key)) {
-          elementMap.set(key, {
-            name: row.result_element,
-            emoji: row.result_emoji || '✨',
-          });
-        }
-      }
-
-      // Check element_a (might be a discoverable element)
-      if (row.element_a?.toLowerCase().includes(query.toLowerCase())) {
-        const key = row.element_a.toLowerCase();
-        if (!elementMap.has(key)) {
-          // Get emoji from a row where this is the result
-          elementMap.set(key, {
-            name: row.element_a,
-            emoji: getStarterEmoji(row.element_a) || '✨',
-          });
-        }
-      }
-
-      // Check element_b
-      if (row.element_b?.toLowerCase().includes(query.toLowerCase())) {
-        const key = row.element_b.toLowerCase();
-        if (!elementMap.has(key)) {
-          elementMap.set(key, {
-            name: row.element_b,
-            emoji: getStarterEmoji(row.element_b) || '✨',
-          });
-        }
+      const key = row.result_element.toLowerCase();
+      if (!elementMap.has(key)) {
+        elementMap.set(key, {
+          name: row.result_element,
+          emoji: row.result_emoji || '✨',
+        });
       }
     }
 
@@ -121,17 +94,6 @@ export async function GET(request) {
       { status: 500 }
     );
   }
-}
-
-// Helper to get starter element emoji
-function getStarterEmoji(name) {
-  const emojiMap = {
-    earth: '🌍',
-    water: '💧',
-    fire: '🔥',
-    wind: '💨',
-  };
-  return emojiMap[name?.toLowerCase()];
 }
 
 /**
