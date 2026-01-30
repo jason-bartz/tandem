@@ -3154,7 +3154,7 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
             {/* Shadow element - positioned behind the card */}
             <div className="absolute top-[6px] left-[6px] right-[-6px] bottom-[-6px] bg-black rounded-xl" />
             {/* Main card */}
-            <div className="relative bg-gradient-to-br from-white via-amber-50/30 to-orange-50/50 rounded-xl border-[3px] border-black p-6">
+            <div className="relative bg-amber-50 rounded-xl border-[3px] border-black p-6">
               {/* Element display */}
               <div className="text-center mb-6">
                 <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
