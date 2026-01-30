@@ -8,7 +8,7 @@ import logger from '@/lib/logger';
  * Delete bot entries for a specific game and date
  *
  * Query params:
- * - gameType: string (tandem|cryptic|mini|reel)
+ * - gameType: string (tandem|mini|reel|soup)
  * - date: string (YYYY-MM-DD)
  */
 export async function DELETE(request) {
@@ -24,7 +24,7 @@ export async function DELETE(request) {
     const date = searchParams.get('date');
 
     // Validation
-    if (!gameType || !['tandem', 'cryptic', 'mini', 'reel'].includes(gameType)) {
+    if (!gameType || !['tandem', 'mini', 'reel', 'soup'].includes(gameType)) {
       return NextResponse.json({ error: 'Invalid or missing game type' }, { status: 400 });
     }
 

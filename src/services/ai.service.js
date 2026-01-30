@@ -907,7 +907,15 @@ Analyze the puzzle above and provide your assessment.`;
     }
   }
 
+  // ==================================================================================
+  // DEPRECATED: Daily Cryptic puzzle methods (game removed)
+  // These methods are kept for reference but are no longer used.
+  // The Daily Cryptic game has been deprecated and removed from the application.
+  // Related methods: generateCrypticPuzzle, buildCrypticPrompt, parseCrypticResponse, validateCrypticPuzzle
+  // ==================================================================================
+
   /**
+   * @deprecated Daily Cryptic game has been removed
    * Generate a cryptic crossword-style puzzle
    * @param {Object} options - Generation options
    * @param {string} options.difficulty - Difficulty level (2-4)

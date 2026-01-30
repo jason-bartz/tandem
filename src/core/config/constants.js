@@ -24,11 +24,8 @@ export const STORAGE_KEYS = {
   PENDING_LEADERBOARD: 'tandem_pending_leaderboard',
   LAST_SUBMITTED_STREAK: 'tandem_last_streak',
   LAST_SUBMITTED_WINS: 'tandem_last_wins',
-  LAST_SUBMITTED_CRYPTIC_STREAK: 'tandem_last_cryptic_streak',
-  LAST_SUBMITTED_CRYPTIC_WINS: 'tandem_last_cryptic_wins',
   ACHIEVEMENTS_RETROACTIVE_CHECK_DONE: 'tandem_achievements_retroactive_check',
   SUBMITTED_ACHIEVEMENTS: 'tandem_submitted_achievements',
-  SUBMITTED_CRYPTIC_ACHIEVEMENTS: 'tandem_submitted_cryptic_achievements',
 };
 
 export const API_ENDPOINTS = {
@@ -38,7 +35,6 @@ export const API_ENDPOINTS = {
   ADMIN_GENERATE_PUZZLE: '/api/admin/generate-puzzle',
   STATS: '/api/stats',
   USER_STATS: '/api/user-stats',
-  USER_CRYPTIC_STATS: '/api/user-cryptic-stats',
   MINI_PUZZLE: '/api/mini/puzzle',
   MINI_STATS: '/api/mini/stats',
   ADMIN_MINI_PUZZLES: '/api/admin/mini/puzzles',
@@ -175,55 +171,6 @@ export const MESSAGES = {
     LOADING: 'Loading puzzle...',
     CHECKING: 'Checking answers...',
   },
-};
-
-// Daily Cryptic Game Configuration
-export const CRYPTIC_CONFIG = {
-  MAX_HINTS: 4,
-  MIN_ANSWER_LENGTH: 5,
-  MAX_ANSWER_LENGTH: 11,
-  HINT_TYPES: ['fodder', 'indicator', 'definition', 'letter'],
-  GAME_ROUTE: '/dailycryptic',
-  MAX_ATTEMPTS: null, // Unlimited attempts
-  // Access control:
-  // - Daily puzzle: Free for all account holders
-  // - Archive: Requires Tandem Puzzle Club membership
-};
-
-export const CRYPTIC_STORAGE_KEYS = {
-  CURRENT_GAME: 'cryptic_current_game',
-  STATS: 'cryptic_stats',
-  COMPLETED_PUZZLES: 'cryptic_completed',
-  PUZZLE_PROGRESS: 'cryptic_puzzle_progress_',
-  STREAK: 'cryptic_streak',
-  LAST_PLAYED_DATE: 'cryptic_last_played_date',
-};
-
-export const CRYPTIC_GAME_STATES = {
-  WELCOME: 'welcome',
-  PLAYING: 'playing',
-  COMPLETE: 'complete',
-  ERROR: 'error',
-};
-
-export const CRYPTIC_API_ENDPOINTS = {
-  PUZZLE: '/api/cryptic/puzzle',
-  STATS: '/api/cryptic/stats',
-  ADMIN_PUZZLES: '/api/admin/cryptic/puzzles',
-  ADMIN_GENERATE: '/api/admin/cryptic/generate-puzzle',
-  ADMIN_ASSESS: '/api/admin/cryptic/assess-difficulty',
-};
-
-export const CRYPTIC_DEVICES = {
-  CHARADE: 'charade',
-  CONTAINER: 'container',
-  DELETION: 'deletion',
-  ANAGRAM: 'anagram',
-  REVERSAL: 'reversal',
-  HOMOPHONE: 'homophone',
-  HIDDEN: 'hidden',
-  DOUBLE_DEFINITION: 'double_definition',
-  INITIAL_LETTERS: 'initial_letters',
 };
 
 // =====================================================
