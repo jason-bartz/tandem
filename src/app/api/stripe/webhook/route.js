@@ -2,6 +2,12 @@ import { NextResponse } from 'next/server';
 import { getStripe } from '@/lib/stripe/config';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
+import {
+  notifyPaymentSuccess,
+  notifyNewSubscription,
+  notifySubscriptionCancelled,
+  notifyPaymentFailed,
+} from '@/lib/discord';
 
 /**
  * Stripe Webhook Handler
@@ -102,6 +108,20 @@ async function handleCheckoutCompleted(session) {
     mode: session.mode,
   });
 
+  // Get customer email for notifications
+  let customerEmail = session.customer_email;
+  if (!customerEmail && session.customer) {
+    try {
+      const stripe = getStripe();
+      const customer = await stripe.customers.retrieve(session.customer);
+      if (!customer.deleted) {
+        customerEmail = customer.email;
+      }
+    } catch (e) {
+      logger.warn('Could not fetch customer email for notification', e);
+    }
+  }
+
   // For one-time payments (Lifetime Membership), create subscription record directly
   if (session.mode === 'payment') {
     const { error } = await supabase.from('subscriptions').upsert({
@@ -129,6 +149,13 @@ async function handleCheckoutCompleted(session) {
           session_id: session.id,
         },
       });
+
+      // Send Discord notification for lifetime purchase
+      await notifyNewSubscription({
+        customerEmail,
+        tier,
+        type: 'Lifetime Purchase',
+      });
     }
   } else if (session.mode === 'subscription') {
     // For subscriptions, create an active subscription record
@@ -148,6 +175,13 @@ async function handleCheckoutCompleted(session) {
       logger.error('Failed to create subscription from checkout', error);
     } else {
       logger.info('Subscription created from checkout', { userId, tier, status: 'active' });
+
+      // Send Discord notification for new subscription
+      await notifyNewSubscription({
+        customerEmail,
+        tier,
+        type: 'New Subscription',
+      });
     }
   }
 }
@@ -265,6 +299,13 @@ async function handleSubscriptionUpdate(subscription) {
 async function handleSubscriptionDeleted(subscription) {
   const supabase = createServerClient();
 
+  // Get subscription details before updating
+  const { data: existingSub } = await supabase
+    .from('subscriptions')
+    .select('user_id, tier')
+    .eq('stripe_subscription_id', subscription.id)
+    .single();
+
   const { error } = await supabase
     .from('subscriptions')
     .update({
@@ -279,20 +320,32 @@ async function handleSubscriptionDeleted(subscription) {
     logger.info('Subscription cancelled', { subscriptionId: subscription.id });
 
     // Log to history
-    const { data: sub } = await supabase
-      .from('subscriptions')
-      .select('user_id')
-      .eq('stripe_subscription_id', subscription.id)
-      .single();
-
-    if (sub) {
+    if (existingSub) {
       await supabase.from('subscription_history').insert({
-        user_id: sub.user_id,
+        user_id: existingSub.user_id,
         action: 'subscription_cancelled',
         new_status: 'cancelled',
         metadata: {
           subscription_id: subscription.id,
         },
+      });
+
+      // Get customer email for notification
+      let customerEmail = null;
+      try {
+        const stripe = getStripe();
+        const customer = await stripe.customers.retrieve(subscription.customer);
+        if (!customer.deleted) {
+          customerEmail = customer.email;
+        }
+      } catch (e) {
+        logger.warn('Could not fetch customer email for cancellation notification', e);
+      }
+
+      // Send Discord notification
+      await notifySubscriptionCancelled({
+        customerEmail,
+        tier: existingSub.tier,
       });
     }
   }
@@ -312,7 +365,7 @@ async function handlePaymentSucceeded(invoice) {
   if (invoice.subscription) {
     const { data: sub } = await supabase
       .from('subscriptions')
-      .select('user_id')
+      .select('user_id, tier')
       .eq('stripe_subscription_id', invoice.subscription)
       .single();
 
@@ -325,6 +378,18 @@ async function handlePaymentSucceeded(invoice) {
           amount: invoice.amount_paid,
         },
       });
+
+      // Send Discord notification for payment (only for renewals, not initial)
+      // Initial payments are handled by checkout.session.completed
+      if (invoice.billing_reason === 'subscription_cycle') {
+        await notifyPaymentSuccess({
+          amount: invoice.amount_paid,
+          currency: invoice.currency,
+          customerEmail: invoice.customer_email,
+          tier: sub.tier,
+          type: 'Renewal',
+        });
+      }
     }
   }
 }
@@ -363,6 +428,14 @@ async function handlePaymentFailed(invoice) {
         .from('subscriptions')
         .update({ status: 'past_due' })
         .eq('stripe_subscription_id', invoice.subscription);
+
+      // Send Discord notification for failed payment
+      await notifyPaymentFailed({
+        amount: invoice.amount_due,
+        currency: invoice.currency,
+        customerEmail: invoice.customer_email,
+        reason: invoice.last_finalization_error?.message || 'Payment declined',
+      });
     }
   }
 }
