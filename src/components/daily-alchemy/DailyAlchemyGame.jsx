@@ -341,11 +341,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 <DailyAlchemyGameOverScreen
                   targetElement={targetElement}
                   targetEmoji={targetEmoji}
-                  elapsedTime={elapsedTime}
-                  movesCount={movesCount}
                   completionStats={completionStats}
-                  onRetry={resetGame}
                   onStartFreePlay={startFreePlay}
+                  onViewArchive={() => setShowArchive(true)}
                   solutionPath={solutionPath}
                 />
               )}
