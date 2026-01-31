@@ -146,6 +146,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
     hintsRemaining,
     useHint,
 
+    // Solution path (for reveal on game over)
+    solutionPath,
+
     // Mode
     freePlayMode,
 
@@ -343,6 +346,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   completionStats={completionStats}
                   onRetry={resetGame}
                   onStartFreePlay={startFreePlay}
+                  solutionPath={solutionPath}
                 />
               )}
             </div>

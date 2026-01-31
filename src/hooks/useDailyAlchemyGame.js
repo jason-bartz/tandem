@@ -1636,6 +1636,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     hintsRemaining,
     useHint,
 
+    // Solution path (for reveal on game over)
+    solutionPath,
+
     // Mode
     freePlayMode,
 

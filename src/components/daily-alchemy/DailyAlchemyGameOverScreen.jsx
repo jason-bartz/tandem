@@ -9,6 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { formatTime, getRandomMessage, GAME_OVER_MESSAGES } from '@/lib/daily-alchemy.constants';
 import PaywallModal from '@/components/PaywallModal';
+import SolutionPathModal from './SolutionPathModal';
 
 /**
  * StatCard - Individual stat display with custom icon image
@@ -47,10 +48,12 @@ export function DailyAlchemyGameOverScreen({
   completionStats,
   onRetry,
   onStartFreePlay,
+  solutionPath,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showSolutionPath, setShowSolutionPath] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
@@ -100,7 +103,7 @@ export function DailyAlchemyGameOverScreen({
 
       {/* Stats Grid - Time and Moves */}
       <motion.div
-        className="grid grid-cols-2 gap-3 w-full max-w-sm mb-6"
+        className="grid grid-cols-2 gap-3 w-full max-w-sm mb-4"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
@@ -109,12 +112,38 @@ export function DailyAlchemyGameOverScreen({
         <StatCard iconSrc="/icons/ui/par.png" label="Moves" value={movesCount} />
       </motion.div>
 
+      {/* Reveal Solution Button */}
+      {solutionPath && solutionPath.length > 0 && (
+        <motion.button
+          onClick={() => setShowSolutionPath(true)}
+          className={cn(
+            'flex items-center justify-center gap-2 px-4 py-2.5 mb-4',
+            'bg-white dark:bg-gray-800',
+            'text-gray-700 dark:text-gray-200',
+            'border-[2px] border-black dark:border-gray-600',
+            'rounded-xl font-semibold text-sm',
+            'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]',
+            'hover:bg-gray-50 dark:hover:bg-gray-700',
+            'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            'active:translate-y-0 active:shadow-none',
+            'transition-all duration-150',
+            highContrast && 'border-[3px] border-hc-border'
+          )}
+          initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.25 }}
+          whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
+        >
+          Reveal Solution
+        </motion.button>
+      )}
+
       {/* Encouragement Text */}
       <motion.p
         className="text-center text-gray-600 dark:text-gray-400 mb-6 max-w-sm"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.25 }}
+        transition={{ delay: 0.3 }}
       >
         Don&apos;t give up! Try again and see if you can reach {targetElement} before time runs out.
       </motion.p>
@@ -124,7 +153,7 @@ export function DailyAlchemyGameOverScreen({
         className="flex flex-col gap-3 w-full max-w-sm"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.3 }}
+        transition={{ delay: 0.35 }}
       >
         {/* Retry Button - Primary */}
         <button
@@ -152,7 +181,7 @@ export function DailyAlchemyGameOverScreen({
         className="w-full max-w-sm flex items-center gap-3 my-5"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.35 }}
+        transition={{ delay: 0.4 }}
       >
         <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
         <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or</span>
@@ -176,7 +205,7 @@ export function DailyAlchemyGameOverScreen({
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.45 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
         {!hasSubscription && (
@@ -196,13 +225,22 @@ export function DailyAlchemyGameOverScreen({
         className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.45 }}
+        transition={{ delay: 0.5 }}
       >
         Combine elements endlessly with no goal or timer.
       </motion.p>
 
       {/* Paywall Modal */}
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+
+      {/* Solution Path Modal */}
+      <SolutionPathModal
+        isOpen={showSolutionPath}
+        onClose={() => setShowSolutionPath(false)}
+        solutionPath={solutionPath}
+        targetElement={targetElement}
+        targetEmoji={targetEmoji}
+      />
     </div>
   );
 }
