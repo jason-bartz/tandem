@@ -10,5 +10,6 @@ export { DailyAlchemyGameScreen } from './DailyAlchemyGameScreen';
 export { DailyAlchemyCompleteScreen } from './DailyAlchemyCompleteScreen';
 export { DailyAlchemyGameOverScreen } from './DailyAlchemyGameOverScreen';
 export { DailyAlchemyLoadingSkeleton } from './DailyAlchemyLoadingSkeleton';
+export { default as SolutionPathModal } from './SolutionPathModal';
 export { DailyAlchemyGame } from './DailyAlchemyGame';
 export { default } from './DailyAlchemyGame';
