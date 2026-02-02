@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { X, Menu, ChevronLeft } from 'lucide-react';
+import { X, Menu, ChevronLeft, Plus } from 'lucide-react';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import { useReelConnectionsGame } from '@/hooks/useReelConnectionsGame';
@@ -28,6 +28,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import FloatingStatsBar from './FloatingStatsBar';
 import FixedButtonBar from './FixedButtonBar';
 import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 
 // Long press duration in milliseconds
@@ -261,6 +262,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
   const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
@@ -990,20 +992,42 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
             </div>
 
             <div className="space-y-3 mb-4">
+              {/* Share Results - Green with pulse animation */}
               <button
                 onClick={handleShare}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide animate-attention-pulse ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-[#4ade80] text-[#2c2c2c] border-black'}`}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:shadow-[0px_0px_0px_rgba(0,0,0,1)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide ${!reduceMotion ? 'animate-attention-pulse' : ''} ${highContrast ? 'bg-hc-success text-white border-hc-border' : 'bg-[#4ade80] text-[#2c2c2c] border-black'}`}
               >
                 Share Results
               </button>
 
+              {/* Leaderboard - Gray */}
+              <button
+                onClick={() => setShowLeaderboard(true)}
+                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+              >
+                Leaderboard
+              </button>
+
+              {/* Back To Puzzle - Gray */}
+              <button
+                onClick={handleViewPuzzle}
+                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+              >
+                Back To Puzzle
+              </button>
+
+              {/* Play from Archive - Gray */}
               <button
                 onClick={() => setShowArchive(true)}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-[#2c2c2c] border-black'}`}
+                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
               >
                 Play from Archive
               </button>
 
+              {/* Create Your Own Puzzle - Gray with plus icon, lock for non-subscribers */}
               <button
                 onClick={() => {
                   if (hasSubscription) {
@@ -1016,16 +1040,27 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     window.dispatchEvent(new CustomEvent('openPaywall'));
                   }
                 }}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ef4444] text-white border-black'}`}
+                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
               >
-                Create Your Own Puzzle
-              </button>
-
-              <button
-                onClick={handleViewPuzzle}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
-              >
-                Back To Puzzle
+                <div className="flex flex-col items-center gap-1">
+                  <div className="flex items-center gap-2">
+                    {!hasSubscription && (
+                      <Image
+                        src="/icons/ui/lock.png"
+                        alt="Locked"
+                        width={20}
+                        height={20}
+                        className="opacity-80"
+                      />
+                    )}
+                    <Plus className="w-5 h-5" />
+                    <span className="font-bold text-lg">Create Your Own Puzzle</span>
+                  </div>
+                  <span className="text-xs opacity-80 font-medium">
+                    Create Your Own Puzzles for others to play!
+                  </span>
+                </div>
               </button>
             </div>
 
@@ -1099,6 +1134,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           onClose={() => setShowAuthModal(false)}
           initialMode="signup"
           onSuccess={() => setShowAuthModal(false)}
+        />
+        <LeaderboardModal
+          isOpen={showLeaderboard}
+          onClose={() => setShowLeaderboard(false)}
+          gameType="reel"
+          initialTab="daily"
         />
       </div>
     );
