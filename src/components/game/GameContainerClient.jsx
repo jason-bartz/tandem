@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { useGameWithInitialData } from '@/hooks/useGameWithInitialData';
 import { useTimer } from '@/hooks/useTimer';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -249,6 +250,15 @@ export default function GameContainerClient({ initialPuzzleData }) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
+          <div className="mb-6">
+            <Image
+              src="/images/tandem_asleep.png"
+              alt="Puzzlemaster asleep"
+              width={120}
+              height={120}
+              className="mx-auto"
+            />
+          </div>
           <p className="text-gray-600 dark:text-gray-400 mb-6">{game.error}</p>
           <button
             onClick={() => (window.location.href = '/')}

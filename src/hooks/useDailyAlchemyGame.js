@@ -341,7 +341,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         const response = await capacitorFetch(url);
 
         if (!response.ok) {
-          setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+          setError(
+            "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+          );
           setLoading(false);
           return;
         }
@@ -349,7 +351,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         const data = await response.json();
 
         if (!data.success || !data.puzzle) {
-          setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+          setError(
+            "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+          );
           setLoading(false);
           return;
         }
@@ -427,7 +431,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setLoading(false);
       } catch (err) {
         logger.error('[ElementSoup] Failed to load puzzle', { error: err.message });
-        setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+        setError(
+          "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+        );
         setLoading(false);
       }
     },

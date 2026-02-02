@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { MINI_GAME_STATES, MINI_CONFIG } from '@/lib/constants';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -102,6 +103,15 @@ export default function DailyMiniPage() {
             text-center
           "
         >
+          <div className="mb-6">
+            <Image
+              src="/images/tandem_asleep.png"
+              alt="Puzzlemaster asleep"
+              width={120}
+              height={120}
+              className="mx-auto"
+            />
+          </div>
           <p className="text-text-secondary mb-6">{game.error}</p>
           <button
             onClick={() => router.push('/')}

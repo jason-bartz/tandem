@@ -1118,6 +1118,15 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         <div
           className={`rounded-2xl border-[3px] p-8 max-w-md text-center mx-4 ${highContrast ? 'bg-hc-surface border-hc-border' : 'bg-[#2a2a4a] border-[#ffce00]'}`}
         >
+          <div className="mb-6">
+            <Image
+              src="/images/tandem_asleep.png"
+              alt="Puzzlemaster asleep"
+              width={120}
+              height={120}
+              className="mx-auto"
+            />
+          </div>
           <p className={`mb-6 ${highContrast ? 'text-hc-text' : 'text-white/70'}`}>{error}</p>
           <button
             onClick={() => router.push('/')}

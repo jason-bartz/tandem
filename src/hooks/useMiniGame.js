@@ -225,7 +225,9 @@ export function useMiniGame(providedDate = null) {
       const response = await miniService.getPuzzle(targetDate);
 
       if (!response.success) {
-        setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+        setError(
+          "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+        );
         setLoading(false);
         return false;
       }
@@ -301,7 +303,9 @@ export function useMiniGame(providedDate = null) {
       return true;
     } catch (err) {
       logger.error('[useMiniGame] Failed to load puzzle', { error: err.message });
-      setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+      setError(
+        "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+      );
       setLoading(false);
       return false;
     }

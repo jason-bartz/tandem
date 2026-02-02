@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -27,16 +27,23 @@ import FeedbackPane from '@/components/FeedbackPane';
 /**
  * Error display component
  */
-function ErrorDisplay({ error, onRetry }) {
+function ErrorDisplay({ error, onGoBack }) {
   const { highContrast } = useTheme();
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] px-4 text-center">
-      <AlertCircle className={cn('w-12 h-12 mb-4 text-red-500', highContrast && 'text-hc-error')} />
-      <h2 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">Oops!</h2>
+      <div className="mb-6">
+        <Image
+          src="/images/tandem_asleep.png"
+          alt="Puzzlemaster asleep"
+          width={120}
+          height={120}
+          className="mx-auto"
+        />
+      </div>
       <p className="text-gray-600 dark:text-gray-400 mb-6">{error}</p>
       <button
-        onClick={onRetry}
+        onClick={onGoBack}
         className={cn(
           'flex items-center gap-2 px-6 py-3',
           'bg-soup-primary text-white',
@@ -50,8 +57,7 @@ function ErrorDisplay({ error, onRetry }) {
           highContrast && 'border-[4px]'
         )}
       >
-        <RefreshCw className="w-5 h-5" />
-        <span>Try Again</span>
+        <span>Go Back</span>
       </button>
     </div>
   );
@@ -126,7 +132,6 @@ export function DailyAlchemyGame({ initialDate = null }) {
     // Actions
     startGame,
     startFreePlay,
-    loadPuzzle,
     resetGame,
     resumeGame,
     hasSavedProgress,
@@ -181,7 +186,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
       <div className="fixed inset-0 flex items-center justify-center px-4">
         <DailyAlchemyBackground />
         <div className="max-w-md w-full">
-          <ErrorDisplay error={error} onRetry={() => loadPuzzle(initialDate)} />
+          <ErrorDisplay error={error} onGoBack={() => router.push('/')} />
         </div>
       </div>
     );

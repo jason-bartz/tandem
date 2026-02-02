@@ -375,7 +375,9 @@ export function useReelConnectionsGame() {
       setCurrentTime(0);
     } catch (error) {
       logger.error('Error loading puzzle', error);
-      setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+      setError(
+        "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+      );
       // Show error state - no fallback puzzle
       setPuzzle(null);
       setMovies([]);
