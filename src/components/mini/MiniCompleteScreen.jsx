@@ -6,6 +6,7 @@ import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { playSuccessSound } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
@@ -32,6 +33,7 @@ export default function MiniCompleteScreen({
   const router = useRouter();
   const { celebration } = useHaptics();
   const { reduceMotion } = useTheme();
+  const { isActive: hasSubscription } = useSubscription();
   const { user } = useAuth();
 
   const [showArchive, setShowArchive] = useState(false);
@@ -247,8 +249,9 @@ export default function MiniCompleteScreen({
 
           {/* Action buttons */}
           <div className="space-y-3">
+            {/* Leaderboard Button - Yellow */}
             <button
-              onClick={() => setShowArchive(true)}
+              onClick={() => setShowLeaderboard(true)}
               className="
                 w-full h-14
                 rounded-[20px]
@@ -266,28 +269,43 @@ export default function MiniCompleteScreen({
                 transition-all
               "
             >
-              Play Archive
+              Leaderboard
             </button>
 
+            {/* Play Archive Button - Yellow if subscribed, White with lock if not */}
             <button
-              onClick={() => setShowLeaderboard(true)}
-              className="
+              onClick={() => setShowArchive(true)}
+              className={`
                 w-full h-12
                 rounded-[16px]
                 border-[3px] border-black dark:border-gray-600
                 shadow-[3px_3px_0px_rgba(0,0,0,1)]
                 dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                bg-ghost-white dark:bg-gray-700
-                text-text-primary
                 font-bold
                 hover:translate-x-[2px] hover:translate-y-[2px]
                 hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
                 active:translate-x-[3px] active:translate-y-[3px]
                 active:shadow-none
                 transition-all
-              "
+                ${
+                  hasSubscription
+                    ? 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
+                    : 'bg-ghost-white dark:bg-gray-700 text-text-primary'
+                }
+              `}
             >
-              Leaderboard
+              <div className="flex items-center justify-center gap-2">
+                {!hasSubscription && (
+                  <Image
+                    src="/icons/ui/lock.png"
+                    alt="Locked"
+                    width={20}
+                    height={20}
+                    className="opacity-80"
+                  />
+                )}
+                <span>Play Archive</span>
+              </div>
             </button>
           </div>
 

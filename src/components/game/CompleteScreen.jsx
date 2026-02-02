@@ -18,6 +18,7 @@ import RevealAnswersModal from './RevealAnswersModal';
 import ShareButton from './ShareButton';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useDeviceType } from '@/lib/deviceDetection';
 import { ASSET_VERSION } from '@/lib/constants';
 import Settings from '@/components/Settings';
@@ -56,6 +57,7 @@ export default function CompleteScreen({
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
+  const { isActive: hasSubscription } = useSubscription();
   const { isMobilePhone } = useDeviceType();
   const { user, loading: authLoading } = useAuth();
 
@@ -345,10 +347,12 @@ export default function CompleteScreen({
                 <ShareButton shareText={shareText} />
               </div>
             )}
+
+            {/* Leaderboard Button - Blue */}
             <button
               onClick={() => {
                 lightTap();
-                setShowArchive(true);
+                setShowLeaderboard(true);
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-300 ${
                 highContrast
@@ -356,22 +360,37 @@ export default function CompleteScreen({
                   : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
-              Play from Archive
+              Leaderboard
             </button>
 
-            {/* Leaderboard Button */}
+            {/* Play from Archive Button - Blue if subscribed, White with lock if not */}
             <button
               onClick={() => {
                 lightTap();
-                setShowLeaderboard(true);
+                setShowArchive(true);
               }}
               className={`w-full py-3 px-4 rounded-2xl font-semibold transition-all border-[3px] animate-fade-in-up delay-400 ${
                 highContrast
-                  ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                  : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                  ? hasSubscription
+                    ? 'bg-hc-primary text-white border-hc-border hover:bg-hc-focus shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-primary hover:text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                  : hasSubscription
+                    ? 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                    : 'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
               }`}
             >
-              Leaderboard
+              <div className="flex items-center justify-center gap-2">
+                {!hasSubscription && (
+                  <Image
+                    src="/icons/ui/lock.png"
+                    alt="Locked"
+                    width={20}
+                    height={20}
+                    className="opacity-80"
+                  />
+                )}
+                <span>Play from Archive</span>
+              </div>
             </button>
 
             {/* Account CTA for non-logged-in users */}

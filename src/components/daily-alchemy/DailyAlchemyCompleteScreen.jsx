@@ -343,7 +343,16 @@ export function DailyAlchemyCompleteScreen({
               highContrast && 'border-[4px]'
             )}
           >
-            Play Archive
+            {!hasSubscription && (
+              <Image
+                src="/icons/ui/lock.png"
+                alt="Locked"
+                width={20}
+                height={20}
+                className="opacity-70"
+              />
+            )}
+            <span>Play Archive</span>
           </button>
         </motion.div>
       )}
