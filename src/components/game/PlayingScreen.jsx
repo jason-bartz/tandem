@@ -686,7 +686,7 @@ export default function PlayingScreen({
         </div>
 
         {/* Fixed Keyboard at Bottom - Outside Card */}
-        <div className="fixed bottom-0 left-0 right-0 pb-safe bg-bg-primary pt-3 z-10">
+        <div className="fixed bottom-0 left-0 right-0 pb-safe bg-bg-tandem pt-3 z-10">
           <OnScreenKeyboard
             onKeyPress={handleKeyboardInput}
             disabled={solved === 4}
