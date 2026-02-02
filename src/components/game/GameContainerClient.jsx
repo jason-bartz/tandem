@@ -271,8 +271,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
     );
   }
 
-  // Use blue background only when playing, yellow for other states
-  const bgClass = game.gameState === GAME_STATES.PLAYING ? 'bg-bg-tandem' : 'bg-bg-primary';
+  // Use blue background for playing, complete, and admire states; yellow for welcome
+  const bgClass = game.gameState === GAME_STATES.WELCOME ? 'bg-bg-primary' : 'bg-bg-tandem';
 
   return (
     <div className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${bgClass}`}>
