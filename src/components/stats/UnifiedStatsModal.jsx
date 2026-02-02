@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import useUnifiedStats from '@/hooks/useUnifiedStats';
@@ -23,12 +24,21 @@ import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 export default function UnifiedStatsModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
+  const pathname = usePathname();
   const [animationKey, setAnimationKey] = useState(0);
   const [showAchievements, setShowAchievements] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Load stats for all games
   const { tandemStats, miniStats, reelStats, soupStats, loading, error } = useUnifiedStats(isOpen);
+
+  // Determine the current game based on the URL path
+  const getCurrentGame = () => {
+    if (pathname?.includes('dailymini')) return 'mini';
+    if (pathname?.includes('reel-connections')) return 'reel';
+    if (pathname?.includes('daily-alchemy')) return 'soup';
+    return 'tandem'; // Default to tandem (home page or /game)
+  };
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -136,7 +146,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
       <LeaderboardModal
         isOpen={showLeaderboard}
         onClose={handleCloseLeaderboard}
-        initialGame="tandem"
+        initialGame={getCurrentGame()}
         initialTab="daily"
       />
     </>
