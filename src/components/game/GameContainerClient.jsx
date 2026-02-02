@@ -223,7 +223,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   if (!onboardingChecked || game.loading) {
     return (
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-tandem">
         <div className="min-h-screen flex items-center justify-center py-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {/* Loading skeleton */}
@@ -236,7 +236,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   if (showOnboarding) {
     return (
-      <div className="fixed inset-0 w-full h-full bg-bg-primary">
+      <div className="fixed inset-0 w-full h-full bg-bg-tandem">
         <OnboardingFlow
           onComplete={() => {
             setShowOnboarding(false);
@@ -248,7 +248,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
   if (game.error) {
     return (
-      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
+      <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-tandem">
         <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <div className="mb-6">
             <Image
@@ -272,7 +272,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
   }
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-tandem">
       {/* Version checker for iOS app updates */}
       <VersionChecker />
       <AchievementToast />

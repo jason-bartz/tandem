@@ -65,6 +65,7 @@ module.exports = {
         },
         // Background colors
         'bg-primary': 'var(--bg-primary)',
+        'bg-tandem': 'var(--bg-tandem)',
         'bg-surface': 'var(--bg-surface)',
         'bg-card': 'var(--bg-card)',
         // Text colors

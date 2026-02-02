@@ -20,6 +20,7 @@
 
   /* Background colors - solid, no gradients */
   --bg-primary: #ffce00;
+  --bg-tandem: #39b6ff;
   --bg-surface: #f4f5f9;
   --bg-card: #f4f5f9;
 
@@ -73,6 +74,7 @@
 
   /* Background colors - dark blue/purple complementary to yellow */
   --bg-primary: #1a1a2e;
+  --bg-tandem: #1a1a2e;
   --bg-surface: #16213e;
   --bg-card: #0f3460;
 
