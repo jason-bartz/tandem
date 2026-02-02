@@ -43,7 +43,7 @@ export default function AboutPage() {
 
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
         {/* Scrollable content container */}
-        <div className="min-h-screen flex items-center justify-center py-6">
+        <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
             {isLoading ? (
               <>
@@ -135,8 +135,32 @@ export default function AboutPage() {
                         </div>
                       </div>
 
-                      {/* Call to Action */}
+                      {/* Support Section */}
                       <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                          Our Tandem Puzzle Club subscribers and generous supporters help keep the
+                          game ad-free for everyone, the daily puzzle free, and allow me to continue
+                          developing new games.
+                        </p>
+                        <a
+                          href="https://buymeacoffee.com/jasonbartz"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
+                        >
+                          <Image
+                            src="/icons/ui/coffee.png"
+                            alt="Coffee cup"
+                            width={24}
+                            height={24}
+                            className="w-6 h-6"
+                          />
+                          Buy me a coffee
+                        </a>
+                      </div>
+
+                      {/* Call to Action */}
+                      <div className="mt-4">
                         <Link
                           href="/"
                           className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
