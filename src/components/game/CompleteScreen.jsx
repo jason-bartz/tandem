@@ -236,7 +236,7 @@ export default function CompleteScreen({
                 </p>
                 <p
                   className={`text-2xl font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {puzzleTheme}
@@ -256,7 +256,7 @@ export default function CompleteScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {formatTime(time)}
@@ -272,7 +272,7 @@ export default function CompleteScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {mistakes}/4
@@ -288,7 +288,7 @@ export default function CompleteScreen({
               >
                 <div
                   className={`text-lg font-bold ${
-                    highContrast ? 'text-hc-text' : 'text-black dark:text-black'
+                    highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                   }`}
                 >
                   {formatDateShort(puzzleDate)}

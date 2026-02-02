@@ -68,7 +68,7 @@ export default function MiniGrid({
       return `${baseClasses} bg-gray-200 dark:bg-gray-800 cursor-not-allowed`;
     }
 
-    let bgClass = 'bg-ghost-white dark:bg-gray-900';
+    let bgClass = 'bg-ghost-white dark:bg-gray-900 text-gray-900 dark:text-gray-100';
 
     if (isSelected) {
       // Selected cell is always blue (priority over correct)
@@ -78,11 +78,13 @@ export default function MiniGrid({
     } else if (isCorrect) {
       // Correct cells are green
       bgClass = highContrast
-        ? 'bg-hc-success text-black'
+        ? 'bg-hc-success text-white'
         : 'bg-accent-green dark:bg-accent-green text-gray-900';
     } else if (isHighlighted) {
       // Highlighted cells (rest of current word) are light blue
-      bgClass = highContrast ? 'bg-blue-200 text-black' : 'bg-blue-100 dark:bg-blue-900/40';
+      bgClass = highContrast
+        ? 'bg-blue-200 text-black'
+        : 'bg-blue-100 dark:bg-blue-900/40 text-gray-900 dark:text-gray-100';
     }
     // REMOVED: Row/column highlighting that was confusing the visual presentation
     // The word highlighting is sufficient and more clear
