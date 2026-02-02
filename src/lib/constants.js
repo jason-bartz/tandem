@@ -238,7 +238,8 @@ export const MESSAGES = {
     STATS_UPDATED: 'Statistics updated',
   },
   INFO: {
-    NO_PUZZLE: 'It seems our Puzzlemaster is a little behind. Come back shortly!',
+    NO_PUZZLE:
+      "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!",
     LOADING: 'Loading puzzle...',
     CHECKING: 'Checking answers...',
   },

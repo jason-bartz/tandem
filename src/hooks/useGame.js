@@ -55,7 +55,9 @@ export function useGame() {
           // Maybe the response IS the puzzle
           setPuzzle({ ...response, date: today });
         } else {
-          setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+          setError(
+            "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+          );
         }
       } catch (err) {
         setError('Failed to load puzzle');
@@ -129,7 +131,9 @@ export function useGame() {
         setActiveHintIndex(null);
         return true;
       } else {
-        setError('It seems our Puzzlemaster is a little behind. Come back shortly!');
+        setError(
+          "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+        );
         return false;
       }
     } catch (err) {

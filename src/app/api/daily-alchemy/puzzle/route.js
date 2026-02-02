@@ -91,7 +91,10 @@ export async function GET(request) {
         // No puzzle found
         logger.warn('[API] No element soup puzzle found for date', { date: targetDate });
         return NextResponse.json(
-          { error: 'It seems our Puzzlemaster is a little behind. Come back shortly!' },
+          {
+            error:
+              "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!",
+          },
           { status: 404 }
         );
       }
