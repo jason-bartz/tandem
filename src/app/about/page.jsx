@@ -13,10 +13,12 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import platformService from '@/core/platform/platform';
 
 export default function AboutPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isWeb, setIsWeb] = useState(false);
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
@@ -32,6 +34,11 @@ export default function AboutPage() {
     }, 1000);
 
     return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    // Check if running on web (not native iOS)
+    setIsWeb(platformService.isPlatformWeb());
   }, []);
 
   return (
@@ -135,32 +142,38 @@ export default function AboutPage() {
                         </div>
                       </div>
 
-                      {/* Support Section */}
-                      <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
-                          Our Tandem Puzzle Club subscribers and generous supporters help keep the
-                          game ad-free for everyone, the daily puzzle free, and allow me to continue
-                          developing new games.
-                        </p>
-                        <a
-                          href="https://buymeacoffee.com/jasonbartz"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
-                        >
-                          <Image
-                            src="/icons/ui/coffee.png"
-                            alt="Coffee cup"
-                            width={24}
-                            height={24}
-                            className="w-6 h-6"
-                          />
-                          Buy me a coffee
-                        </a>
-                      </div>
+                      {/* Support Section - Web only (not allowed in iOS App Store) */}
+                      {isWeb && (
+                        <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                            Our Tandem Puzzle Club subscribers and generous supporters help keep the
+                            game ad-free for everyone, the daily puzzle free, and allow me to
+                            continue developing new games.
+                          </p>
+                          <a
+                            href="https://buymeacoffee.com/jasonbartz"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
+                          >
+                            <Image
+                              src="/icons/ui/coffee.png"
+                              alt="Coffee cup"
+                              width={24}
+                              height={24}
+                              className="w-6 h-6"
+                            />
+                            Buy me a coffee
+                          </a>
+                        </div>
+                      )}
 
                       {/* Call to Action */}
-                      <div className="mt-4">
+                      <div
+                        className={
+                          isWeb ? 'mt-4' : 'mt-8 pt-6 border-t-[3px] border-black dark:border-white'
+                        }
+                      >
                         <Link
                           href="/"
                           className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
