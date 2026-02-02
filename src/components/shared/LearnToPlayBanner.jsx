@@ -11,7 +11,7 @@ import { useHaptics } from '@/hooks/useHaptics';
  * LearnToPlayBanner Component
  *
  * A slide-down banner that prompts new users to learn how to play.
- * Appears 1 second after the game starts, only for first-time players.
+ * Appears 3 seconds after the game starts, only for first-time players.
  * Persists across sessions until the user interacts with it.
  *
  * @param {string} gameType - 'tandem', 'soup', or 'reel' to determine styling and localStorage key
@@ -35,11 +35,11 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
       return;
     }
 
-    // Show banner after 1 second delay
+    // Show banner after 3 second delay
     setShouldRender(true);
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 1000);
+    }, 3000);
 
     return () => clearTimeout(timer);
   }, [storageKey]);
