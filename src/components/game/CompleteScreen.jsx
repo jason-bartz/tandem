@@ -336,7 +336,10 @@ export default function CompleteScreen({
                     : 'bg-accent-orange text-white border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
                 }`}
               >
-                📖 Reveal Correct Answers
+                <span className="flex items-center justify-center gap-2">
+                  <Image src="/icons/ui/open-book.png" alt="" width={20} height={20} />
+                  Reveal Correct Answers
+                </span>
               </button>
             )}
           </div>
