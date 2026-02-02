@@ -10,6 +10,7 @@ import MiniStatsSection from './MiniStatsSection';
 import ReelStatsSection from './ReelStatsSection';
 import SoupStatsSection from './SoupStatsSection';
 import AchievementsModal from '../achievements/AchievementsModal';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
@@ -24,6 +25,7 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
   const { lightTap } = useHaptics();
   const [animationKey, setAnimationKey] = useState(0);
   const [showAchievements, setShowAchievements] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Load stats for all games
   const { tandemStats, miniStats, reelStats, soupStats, loading, error } = useUnifiedStats(isOpen);
@@ -47,6 +49,15 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
   const handleCloseAchievements = () => {
     setShowAchievements(false);
+  };
+
+  const handleOpenLeaderboard = () => {
+    lightTap();
+    setShowLeaderboard(true);
+  };
+
+  const handleCloseLeaderboard = () => {
+    setShowLeaderboard(false);
   };
 
   return (
@@ -90,6 +101,18 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
             {/* Action Buttons - scrollable with content */}
             <div className="space-y-2 mt-4 pb-4">
+              {/* Leaderboards Button */}
+              <button
+                onClick={handleOpenLeaderboard}
+                className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
+                  highContrast
+                    ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                    : 'bg-white text-black border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
+                }`}
+              >
+                View Leaderboards
+              </button>
+
               {/* Achievements Button */}
               <button
                 onClick={handleOpenAchievements}
@@ -108,6 +131,14 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
       {/* Nested Achievements Panel - Opens over stats panel */}
       <AchievementsModal isOpen={showAchievements} onClose={handleCloseAchievements} />
+
+      {/* Nested Leaderboard Panel - Opens over stats panel */}
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={handleCloseLeaderboard}
+        initialGame="tandem"
+        initialTab="daily"
+      />
     </>
   );
 }

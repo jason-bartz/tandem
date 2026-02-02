@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
-import Image from 'next/image';
+import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHaptics } from '@/hooks/useHaptics';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import DailyLeaderboard from './DailyLeaderboard';
 import StreakLeaderboard from './StreakLeaderboard';
@@ -11,55 +11,68 @@ import StreakLeaderboard from './StreakLeaderboard';
  * LeaderboardModal - Main leaderboard left panel component
  *
  * Displays both daily speed leaderboards and all-time streak leaderboards
- * for Daily Tandem and Daily Mini games
+ * for all four games with toggle buttons
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {function} onClose - Callback when panel closes
- * @param {string} gameType - 'tandem' or 'mini'
+ * @param {string} initialGame - 'tandem', 'mini', 'soup', or 'reel' (default: 'tandem')
  * @param {string} initialTab - 'daily' or 'streak' (default: 'daily')
  */
 export default function LeaderboardModal({
   isOpen,
   onClose,
   gameType = 'tandem',
+  initialGame,
   initialTab = 'daily',
 }) {
+  // Use initialGame if provided, otherwise fall back to gameType for backwards compatibility
+  const [activeGame, setActiveGame] = useState(initialGame || gameType);
   const [activeTab, setActiveTab] = useState(initialTab);
   const { highContrast } = useTheme();
+  const { lightTap } = useHaptics();
 
-  const gameConfig = {
-    tandem: {
-      name: 'Daily Tandem',
-      icon: '/icons/ui/tandem.png',
-      bgColor: 'bg-sky-400/30 dark:bg-sky-400/30',
-      hcBgColor: 'bg-hc-primary/20',
+  // Reset to initial game when modal opens
+  useEffect(() => {
+    if (isOpen) {
+      setActiveGame(initialGame || gameType);
+    }
+  }, [isOpen, initialGame, gameType]);
+
+  const gameButtons = [
+    {
+      id: 'tandem',
+      label: 'Tandem',
+      bgColor: 'bg-sky-500',
+      hcBgColor: 'bg-hc-primary',
+      textColor: 'text-white',
     },
-    mini: {
-      name: 'Daily Mini',
-      icon: '/icons/ui/mini.png',
-      bgColor: 'bg-yellow-400/30 dark:bg-yellow-400/30',
-      hcBgColor: 'bg-hc-warning/20',
+    {
+      id: 'mini',
+      label: 'Mini',
+      bgColor: 'bg-yellow-500',
+      hcBgColor: 'bg-hc-warning',
+      textColor: 'text-gray-900',
     },
-    reel: {
-      name: 'Reel Connections',
-      icon: '/icons/ui/movie.png',
-      bgColor: 'bg-red-500/30 dark:bg-red-500/30',
-      hcBgColor: 'bg-hc-error/20',
+    {
+      id: 'soup',
+      label: 'Alchemy',
+      bgColor: 'bg-soup-primary',
+      hcBgColor: 'bg-hc-success',
+      textColor: 'text-white',
     },
-    'reel-connections': {
-      name: 'Reel Connections',
-      icon: '/icons/ui/movie.png',
-      bgColor: 'bg-red-500/30 dark:bg-red-500/30',
-      hcBgColor: 'bg-hc-error/20',
+    {
+      id: 'reel',
+      label: 'Reels',
+      bgColor: 'bg-red-500',
+      hcBgColor: 'bg-hc-error',
+      textColor: 'text-white',
     },
-    soup: {
-      name: 'Daily Alchemy',
-      icon: '/icons/ui/daily-alchemy.png',
-      bgColor: 'bg-green-500/30 dark:bg-green-500/30',
-      hcBgColor: 'bg-hc-success/20',
-    },
+  ];
+
+  const handleGameChange = (gameId) => {
+    lightTap();
+    setActiveGame(gameId);
   };
-  const config = gameConfig[gameType] || gameConfig.mini;
 
   return (
     <LeftSidePanel
@@ -77,21 +90,26 @@ export default function LeaderboardModal({
         </p>
       }
     >
-      {/* Game name header with icon */}
-      <div
-        className={`px-6 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 ${
-          highContrast ? config.hcBgColor : config.bgColor
-        }`}
-      >
-        <div className="flex items-center gap-2">
-          <Image src={config.icon} alt="" width={20} height={20} />
-          <p
-            className={`text-sm font-semibold ${
-              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
-            }`}
-          >
-            {config.name}
-          </p>
+      {/* Game Toggle Buttons */}
+      <div className="px-4 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+        <div className="flex gap-2">
+          {gameButtons.map((game) => (
+            <button
+              key={game.id}
+              onClick={() => handleGameChange(game.id)}
+              className={`flex-1 py-2 px-2 rounded-xl border-[2px] font-bold text-xs transition-all ${
+                activeGame === game.id
+                  ? highContrast
+                    ? `${game.hcBgColor} text-hc-text border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
+                    : `${game.bgColor} ${game.textColor} border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
+                  : highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border'
+                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+              }`}
+            >
+              {game.label}
+            </button>
+          ))}
         </div>
       </div>
 
@@ -126,9 +144,9 @@ export default function LeaderboardModal({
       {/* Content */}
       <div className="flex-1 overflow-y-auto modal-scrollbar">
         {activeTab === 'daily' ? (
-          <DailyLeaderboard gameType={gameType} />
+          <DailyLeaderboard gameType={activeGame} />
         ) : (
-          <StreakLeaderboard gameType={gameType} />
+          <StreakLeaderboard gameType={activeGame} />
         )}
       </div>
     </LeftSidePanel>
