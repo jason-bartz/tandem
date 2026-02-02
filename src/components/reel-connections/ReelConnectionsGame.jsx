@@ -1005,42 +1005,49 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </button>
               )}
 
-              {/* Back To Puzzle - Gray (first on loss) */}
+              {/* Back To Puzzle - Yellow (first on loss) */}
               {!isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                  className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+                  className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
                 >
                   Back To Puzzle
                 </button>
               )}
 
-              {/* Leaderboard - Gray */}
+              {/* Leaderboard - Yellow */}
               <button
                 onClick={() => setShowLeaderboard(true)}
-                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
               >
                 Leaderboard
               </button>
 
-              {/* Back To Puzzle - Gray (third on win) */}
+              {/* Back To Puzzle - Yellow (third on win) */}
               {isWin && (
                 <button
                   onClick={handleViewPuzzle}
-                  style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                  className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+                  className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-warning text-black border-hc-border' : 'bg-[#ffce00] text-[#2c2c2c] border-black'}`}
                 >
                   Back To Puzzle
                 </button>
               )}
 
-              {/* Play from Archive - Gray, lock for non-subscribers */}
+              {/* Play from Archive - Yellow if subscribed, Gray if not */}
               <button
                 onClick={() => setShowArchive(true)}
-                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+                style={
+                  !highContrast && !hasSubscription ? { backgroundColor: '#64748b' } : undefined
+                }
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${
+                  highContrast
+                    ? hasSubscription
+                      ? 'bg-hc-warning text-black border-hc-border'
+                      : 'bg-hc-surface text-hc-text border-hc-border'
+                    : hasSubscription
+                      ? 'bg-[#ffce00] text-[#2c2c2c] border-black'
+                      : 'text-white border-black'
+                }`}
               >
                 <div className="flex items-center justify-center gap-2">
                   {!hasSubscription && (
@@ -1056,7 +1063,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </div>
               </button>
 
-              {/* Create Your Own Puzzle - Gray, lock for non-subscribers */}
+              {/* Create Your Own Puzzle - Yellow if subscribed, Gray if not */}
               <button
                 onClick={() => {
                   if (hasSubscription) {
@@ -1069,8 +1076,18 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     window.dispatchEvent(new CustomEvent('openPaywall'));
                   }
                 }}
-                style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all hover:brightness-110 ${highContrast ? 'bg-hc-surface text-hc-text border-hc-border' : 'text-white border-black'}`}
+                style={
+                  !highContrast && !hasSubscription ? { backgroundColor: '#64748b' } : undefined
+                }
+                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all hover:brightness-110 ${
+                  highContrast
+                    ? hasSubscription
+                      ? 'bg-hc-warning text-black border-hc-border'
+                      : 'bg-hc-surface text-hc-text border-hc-border'
+                    : hasSubscription
+                      ? 'bg-[#ffce00] text-[#2c2c2c] border-black'
+                      : 'text-white border-black'
+                }`}
               >
                 <div className="flex flex-col items-center gap-1">
                   <div className="flex items-center gap-2">
