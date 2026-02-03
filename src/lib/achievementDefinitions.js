@@ -1,6 +1,6 @@
 /**
- * Game Center Achievement and Leaderboard Definitions
- * All 31 achievements for Tandem Daily
+ * Achievement Definitions
+ * Achievements for all Tandem Daily games: Tandem, Mini, Reel Connections, and Daily Alchemy
  */
 
 /**
@@ -14,7 +14,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 3-day streak',
     emoji: '🔥',
     threshold: 3,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.finding_rhythm',
@@ -22,7 +21,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 5-day streak',
     emoji: '⭐',
     threshold: 5,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.picking_up_speed',
@@ -30,7 +28,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 7-day streak',
     emoji: '💪',
     threshold: 7,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.steady_cadence',
@@ -38,7 +35,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 10-day streak',
     emoji: '🎯',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.cruising_along',
@@ -46,7 +42,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 15-day streak',
     emoji: '🚴',
     threshold: 15,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.rolling_hills',
@@ -54,7 +49,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 20-day streak',
     emoji: '⛰️',
     threshold: 20,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.coast_to_coast',
@@ -62,7 +56,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 25-day streak',
     emoji: '🌊',
     threshold: 25,
-    points: 20,
   },
   {
     id: 'com.tandemdaily.app.monthly_rider',
@@ -70,7 +63,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 30-day streak',
     emoji: '🏆',
     threshold: 30,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.swift_cyclist',
@@ -78,7 +70,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 40-day streak',
     emoji: '⚡',
     threshold: 40,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.starlight_ride',
@@ -86,7 +77,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 50-day streak',
     emoji: '🌟',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.seaside_route',
@@ -94,7 +84,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 60-day streak',
     emoji: '🏖️',
     threshold: 60,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.summit_seeker',
@@ -102,7 +91,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 75-day streak',
     emoji: '🗻',
     threshold: 75,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.cross_country',
@@ -110,7 +98,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 90-day streak',
     emoji: '🎖️',
     threshold: 90,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.century_ride',
@@ -118,7 +105,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 100-day streak',
     emoji: '💯',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.mountain_pass',
@@ -126,7 +112,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 125-day streak',
     emoji: '🦅',
     threshold: 125,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.pathfinder',
@@ -134,7 +119,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 150-day streak',
     emoji: '🧭',
     threshold: 150,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.coastal_cruiser',
@@ -142,7 +126,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 175-day streak',
     emoji: '🌊',
     threshold: 175,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.horizon_chaser',
@@ -150,7 +133,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 200-day streak',
     emoji: '🌅',
     threshold: 200,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.grand_tour',
@@ -158,7 +140,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 250-day streak',
     emoji: '🌍',
     threshold: 250,
-    points: 80,
   },
   {
     id: 'com.tandemdaily.app.world_traveler',
@@ -166,7 +147,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 300-day streak',
     emoji: '🌎',
     threshold: 300,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.round_the_sun',
@@ -174,7 +154,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 365-day streak',
     emoji: '☀️',
     threshold: 365,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.infinite_road',
@@ -182,7 +161,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 500-day streak',
     emoji: '🛤️',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.legendary_journey',
@@ -190,7 +168,6 @@ export const STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 1000-day streak',
     emoji: '🌟🏆🔥',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -205,7 +182,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve your first puzzle',
     emoji: '🥇',
     threshold: 1,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.getting_hang',
@@ -213,7 +189,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 10 puzzles',
     emoji: '👍',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.puzzle_pal',
@@ -221,7 +196,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 25 puzzles',
     emoji: '👯',
     threshold: 25,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.clever_cookie',
@@ -229,7 +203,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 50 puzzles',
     emoji: '🍪',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.brainy_buddy',
@@ -237,7 +210,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 100 puzzles',
     emoji: '🧠',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.puzzle_whiz',
@@ -245,7 +217,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 250 puzzles',
     emoji: '⚡',
     threshold: 250,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.word_wizard',
@@ -253,7 +224,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 500 puzzles',
     emoji: '🪄',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.puzzle_king',
@@ -261,7 +231,6 @@ export const WINS_ACHIEVEMENTS = [
     description: 'Solve 1000 puzzles',
     emoji: '👑',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -276,7 +245,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 3-day mini streak',
     emoji: '🔥',
     threshold: 3,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.mini_finding_rhythm',
@@ -284,7 +252,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 5-day mini streak',
     emoji: '⭐',
     threshold: 5,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.mini_picking_up_speed',
@@ -292,7 +259,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 7-day mini streak',
     emoji: '💪',
     threshold: 7,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.mini_steady_cadence',
@@ -300,7 +266,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 10-day mini streak',
     emoji: '🎯',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.mini_cruising_along',
@@ -308,7 +273,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 15-day mini streak',
     emoji: '🚴',
     threshold: 15,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.mini_rolling_hills',
@@ -316,7 +280,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 20-day mini streak',
     emoji: '⛰️',
     threshold: 20,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.mini_coast_to_coast',
@@ -324,7 +287,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 25-day mini streak',
     emoji: '🌊',
     threshold: 25,
-    points: 20,
   },
   {
     id: 'com.tandemdaily.app.mini_monthly_rider',
@@ -332,7 +294,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 30-day mini streak',
     emoji: '🏆',
     threshold: 30,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.mini_swift_cyclist',
@@ -340,7 +301,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 40-day mini streak',
     emoji: '⚡',
     threshold: 40,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.mini_starlight_ride',
@@ -348,7 +308,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 50-day mini streak',
     emoji: '🌟',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.mini_seaside_route',
@@ -356,7 +315,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 60-day mini streak',
     emoji: '🏖️',
     threshold: 60,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.mini_summit_seeker',
@@ -364,7 +322,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 75-day mini streak',
     emoji: '🗻',
     threshold: 75,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.mini_cross_country',
@@ -372,7 +329,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 90-day mini streak',
     emoji: '🎖️',
     threshold: 90,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.mini_century_ride',
@@ -380,7 +336,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 100-day mini streak',
     emoji: '💯',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.mini_mountain_pass',
@@ -388,7 +343,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 125-day mini streak',
     emoji: '🦅',
     threshold: 125,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.mini_pathfinder',
@@ -396,7 +350,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 150-day mini streak',
     emoji: '🧭',
     threshold: 150,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.mini_coastal_cruiser',
@@ -404,7 +357,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 175-day mini streak',
     emoji: '🌊',
     threshold: 175,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.mini_horizon_chaser',
@@ -412,7 +364,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 200-day mini streak',
     emoji: '🌅',
     threshold: 200,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.mini_grand_tour',
@@ -420,7 +371,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 250-day mini streak',
     emoji: '🌍',
     threshold: 250,
-    points: 80,
   },
   {
     id: 'com.tandemdaily.app.mini_world_traveler',
@@ -428,7 +378,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 300-day mini streak',
     emoji: '🌎',
     threshold: 300,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.mini_round_the_sun',
@@ -436,7 +385,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 365-day mini streak',
     emoji: '☀️',
     threshold: 365,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.mini_infinite_road',
@@ -444,7 +392,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 500-day mini streak',
     emoji: '🛤️',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.mini_legendary_journey',
@@ -452,7 +399,6 @@ export const MINI_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 1000-day mini streak',
     emoji: '🌟🏆🔥',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -467,7 +413,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve your first mini puzzle',
     emoji: '🥇',
     threshold: 1,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.mini_getting_hang',
@@ -475,7 +420,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 10 mini puzzles',
     emoji: '👍',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.mini_puzzle_pal',
@@ -483,7 +427,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 25 mini puzzles',
     emoji: '👯',
     threshold: 25,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.mini_clever_cookie',
@@ -491,7 +434,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 50 mini puzzles',
     emoji: '🍪',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.mini_brainy_buddy',
@@ -499,7 +441,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 100 mini puzzles',
     emoji: '🧠',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.mini_puzzle_whiz',
@@ -507,7 +448,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 250 mini puzzles',
     emoji: '⚡',
     threshold: 250,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.mini_word_wizard',
@@ -515,7 +455,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 500 mini puzzles',
     emoji: '🪄',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.mini_puzzle_king',
@@ -523,7 +462,6 @@ export const MINI_WINS_ACHIEVEMENTS = [
     description: 'Solve 1000 mini puzzles',
     emoji: '👑',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -538,7 +476,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 3-day Reel streak',
     emoji: '🎬',
     threshold: 3,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.reel_scene_setter',
@@ -546,7 +483,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 5-day Reel streak',
     emoji: '🎥',
     threshold: 5,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.reel_rising_action',
@@ -554,7 +490,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 7-day Reel streak',
     emoji: '📈',
     threshold: 7,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.reel_plot_twist',
@@ -562,7 +497,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 10-day Reel streak',
     emoji: '🔄',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.reel_montage_master',
@@ -570,7 +504,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 15-day Reel streak',
     emoji: '🎞️',
     threshold: 15,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.reel_screen_star',
@@ -578,7 +511,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 20-day Reel streak',
     emoji: '⭐',
     threshold: 20,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.reel_box_office_hit',
@@ -586,7 +518,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 25-day Reel streak',
     emoji: '🎟️',
     threshold: 25,
-    points: 20,
   },
   {
     id: 'com.tandemdaily.app.reel_feature_film',
@@ -594,7 +525,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 30-day Reel streak',
     emoji: '🎦',
     threshold: 30,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.reel_blockbuster',
@@ -602,7 +532,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 40-day Reel streak',
     emoji: '💥',
     threshold: 40,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.reel_cult_classic',
@@ -610,7 +539,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 50-day Reel streak',
     emoji: '🎭',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.reel_silver_screen',
@@ -618,7 +546,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 60-day Reel streak',
     emoji: '🖥️',
     threshold: 60,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.reel_studio_legend',
@@ -626,7 +553,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 75-day Reel streak',
     emoji: '🏛️',
     threshold: 75,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.reel_award_winner',
@@ -634,7 +560,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 90-day Reel streak',
     emoji: '🏆',
     threshold: 90,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.reel_century_cinema',
@@ -642,7 +567,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 100-day Reel streak',
     emoji: '💯',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.reel_directors_cut',
@@ -650,7 +574,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 125-day Reel streak',
     emoji: '🎬',
     threshold: 125,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.reel_film_festival',
@@ -658,7 +581,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 150-day Reel streak',
     emoji: '🎪',
     threshold: 150,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.reel_golden_age',
@@ -666,7 +588,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 175-day Reel streak',
     emoji: '✨',
     threshold: 175,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.reel_cinema_royalty',
@@ -674,7 +595,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 200-day Reel streak',
     emoji: '👑',
     threshold: 200,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.reel_world_premiere',
@@ -682,7 +602,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 250-day Reel streak',
     emoji: '🌍',
     threshold: 250,
-    points: 80,
   },
   {
     id: 'com.tandemdaily.app.reel_hall_of_fame',
@@ -690,7 +609,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 300-day Reel streak',
     emoji: '🎖️',
     threshold: 300,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.reel_timeless_classic',
@@ -698,7 +616,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 365-day Reel streak',
     emoji: '⏳',
     threshold: 365,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.reel_eternal_screening',
@@ -706,7 +623,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 500-day Reel streak',
     emoji: '♾️',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.reel_legendary_producer',
@@ -714,7 +630,6 @@ export const REEL_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 1000-day Reel streak',
     emoji: '🌟🎬🏆',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -729,7 +644,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win your first Reel game',
     emoji: '🎬',
     threshold: 1,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.reel_supporting_role',
@@ -737,7 +651,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 10 Reel games',
     emoji: '🎭',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.reel_leading_role',
@@ -745,7 +658,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 25 Reel games',
     emoji: '🌟',
     threshold: 25,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.reel_movie_buff',
@@ -753,7 +665,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 50 Reel games',
     emoji: '🎥',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.reel_cinephile',
@@ -761,7 +672,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 100 Reel games',
     emoji: '📽️',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.reel_film_critic',
@@ -769,7 +679,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 250 Reel games',
     emoji: '🎞️',
     threshold: 250,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.reel_auteur',
@@ -777,7 +686,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 500 Reel games',
     emoji: '🎬',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.reel_oscar_winner',
@@ -785,7 +693,6 @@ export const REEL_WINS_ACHIEVEMENTS = [
     description: 'Win 1000 Reel games',
     emoji: '🏆',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -800,7 +707,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 3-day Alchemy streak',
     emoji: '✨',
     threshold: 3,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.alchemy_kindling',
@@ -808,7 +714,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 5-day Alchemy streak',
     emoji: '🔥',
     threshold: 5,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.alchemy_catalyst',
@@ -816,7 +721,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 7-day Alchemy streak',
     emoji: '⚗️',
     threshold: 7,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.alchemy_reagent',
@@ -824,7 +728,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 10-day Alchemy streak',
     emoji: '🧪',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.alchemy_compound',
@@ -832,7 +735,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 15-day Alchemy streak',
     emoji: '🔬',
     threshold: 15,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.alchemy_distillation',
@@ -840,7 +742,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 20-day Alchemy streak',
     emoji: '💧',
     threshold: 20,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.alchemy_synthesis',
@@ -848,7 +749,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 25-day Alchemy streak',
     emoji: '🌀',
     threshold: 25,
-    points: 20,
   },
   {
     id: 'com.tandemdaily.app.alchemy_transmutation',
@@ -856,7 +756,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 30-day Alchemy streak',
     emoji: '⭐',
     threshold: 30,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.alchemy_crucible',
@@ -864,7 +763,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 40-day Alchemy streak',
     emoji: '🏺',
     threshold: 40,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.alchemy_elixir',
@@ -872,7 +770,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 50-day Alchemy streak',
     emoji: '🍵',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.alchemy_quintessence',
@@ -880,7 +777,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 60-day Alchemy streak',
     emoji: '💫',
     threshold: 60,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.alchemy_prima_materia',
@@ -888,7 +784,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 75-day Alchemy streak',
     emoji: '🌑',
     threshold: 75,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.alchemy_arcanum',
@@ -896,7 +791,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 90-day Alchemy streak',
     emoji: '📜',
     threshold: 90,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.alchemy_magnum_opus',
@@ -904,7 +798,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 100-day Alchemy streak',
     emoji: '💯',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.alchemy_chrysopoeia',
@@ -912,7 +805,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 125-day Alchemy streak',
     emoji: '🥇',
     threshold: 125,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.alchemy_aurum',
@@ -920,7 +812,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 150-day Alchemy streak',
     emoji: '✨',
     threshold: 150,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.alchemy_astral_fire',
@@ -928,7 +819,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 175-day Alchemy streak',
     emoji: '🌟',
     threshold: 175,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.alchemy_azoth',
@@ -936,7 +826,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 200-day Alchemy streak',
     emoji: '🌙',
     threshold: 200,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.alchemy_alkahest',
@@ -944,7 +833,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 250-day Alchemy streak',
     emoji: '🌊',
     threshold: 250,
-    points: 80,
   },
   {
     id: 'com.tandemdaily.app.alchemy_panacea',
@@ -952,7 +840,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 300-day Alchemy streak',
     emoji: '💎',
     threshold: 300,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.alchemy_eternal_flame',
@@ -960,7 +847,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 365-day Alchemy streak',
     emoji: '🔥',
     threshold: 365,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.alchemy_celestial_stone',
@@ -968,7 +854,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 500-day Alchemy streak',
     emoji: '☄️',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.alchemy_philosophers_stone',
@@ -976,7 +861,6 @@ export const ALCHEMY_STREAK_ACHIEVEMENTS = [
     description: 'Maintain a 1000-day Alchemy streak',
     emoji: '🔮💎✨',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -991,7 +875,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete your first Alchemy puzzle',
     emoji: '⚗️',
     threshold: 1,
-    points: 5,
   },
   {
     id: 'com.tandemdaily.app.alchemy_apprentice',
@@ -999,7 +882,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 10 Alchemy puzzles',
     emoji: '📖',
     threshold: 10,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.alchemy_journeyman',
@@ -1007,7 +889,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 25 Alchemy puzzles',
     emoji: '🧪',
     threshold: 25,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.alchemy_artisan',
@@ -1015,7 +896,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 50 Alchemy puzzles',
     emoji: '🔬',
     threshold: 50,
-    points: 30,
   },
   {
     id: 'com.tandemdaily.app.alchemy_adept',
@@ -1023,7 +903,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 100 Alchemy puzzles',
     emoji: '⭐',
     threshold: 100,
-    points: 50,
   },
   {
     id: 'com.tandemdaily.app.alchemy_master',
@@ -1031,7 +910,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 250 Alchemy puzzles',
     emoji: '🏆',
     threshold: 250,
-    points: 75,
   },
   {
     id: 'com.tandemdaily.app.alchemy_grand_master',
@@ -1039,7 +917,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 500 Alchemy puzzles',
     emoji: '👑',
     threshold: 500,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.alchemy_legendary',
@@ -1047,7 +924,6 @@ export const ALCHEMY_WINS_ACHIEVEMENTS = [
     description: 'Complete 1000 Alchemy puzzles',
     emoji: '🔮',
     threshold: 1000,
-    points: 100,
   },
 ];
 
@@ -1062,7 +938,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make your first global discovery',
     emoji: '🌟',
     threshold: 1,
-    points: 10,
   },
   {
     id: 'com.tandemdaily.app.alchemy_trailblazer',
@@ -1070,7 +945,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 3 global discoveries',
     emoji: '🔭',
     threshold: 3,
-    points: 15,
   },
   {
     id: 'com.tandemdaily.app.alchemy_innovator',
@@ -1078,7 +952,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 5 global discoveries',
     emoji: '💡',
     threshold: 5,
-    points: 25,
   },
   {
     id: 'com.tandemdaily.app.alchemy_visionary',
@@ -1086,7 +959,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 10 global discoveries',
     emoji: '🔮',
     threshold: 10,
-    points: 40,
   },
   {
     id: 'com.tandemdaily.app.alchemy_pathfinder',
@@ -1094,7 +966,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 25 global discoveries',
     emoji: '🧭',
     threshold: 25,
-    points: 60,
   },
   {
     id: 'com.tandemdaily.app.alchemy_oracle',
@@ -1102,7 +973,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 50 global discoveries',
     emoji: '👁️',
     threshold: 50,
-    points: 80,
   },
   {
     id: 'com.tandemdaily.app.alchemy_sage',
@@ -1110,7 +980,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 100 global discoveries',
     emoji: '📿',
     threshold: 100,
-    points: 100,
   },
   {
     id: 'com.tandemdaily.app.alchemy_progenitor',
@@ -1118,7 +987,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 250 global discoveries',
     emoji: '🌌',
     threshold: 250,
-    points: 150,
   },
   {
     id: 'com.tandemdaily.app.alchemy_primordial',
@@ -1126,7 +994,6 @@ export const ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS = [
     description: 'Make 500 global discoveries',
     emoji: '🪐',
     threshold: 500,
-    points: 200,
   },
 ];
 
@@ -1262,40 +1129,4 @@ export function getAlchemyWinsAchievements() {
  */
 export function getAlchemyFirstDiscoveryAchievements() {
   return [...ALCHEMY_FIRST_DISCOVERY_ACHIEVEMENTS].sort((a, b) => a.threshold - b.threshold);
-}
-
-/**
- * Calculate total possible points for Tandem Daily
- * @returns {number} Total points from all Tandem Daily achievements
- */
-export function getTotalPossiblePoints() {
-  const all = getAllAchievements();
-  return all.reduce((sum, achievement) => sum + achievement.points, 0);
-}
-
-/**
- * Calculate total possible points for Daily Mini
- * @returns {number} Total points from all Daily Mini achievements
- */
-export function getTotalPossibleMiniPoints() {
-  const all = getAllMiniAchievements();
-  return all.reduce((sum, achievement) => sum + achievement.points, 0);
-}
-
-/**
- * Calculate total possible points for Reel Connections
- * @returns {number} Total points from all Reel Connections achievements
- */
-export function getTotalPossibleReelPoints() {
-  const all = getAllReelAchievements();
-  return all.reduce((sum, achievement) => sum + achievement.points, 0);
-}
-
-/**
- * Calculate total possible points for Daily Alchemy
- * @returns {number} Total points from all Daily Alchemy achievements
- */
-export function getTotalPossibleAlchemyPoints() {
-  const all = getAllAlchemyAchievements();
-  return all.reduce((sum, achievement) => sum + achievement.points, 0);
 }

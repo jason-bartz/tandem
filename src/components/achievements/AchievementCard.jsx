@@ -12,7 +12,6 @@ import { useTheme } from '@/contexts/ThemeContext';
  * @param {string} achievement.name - Achievement name
  * @param {string} achievement.description - Achievement description
  * @param {string} achievement.emoji - Achievement emoji displayed as the badge
- * @param {number} achievement.points - Points awarded for this achievement
  * @param {number} achievement.threshold - Threshold to unlock
  * @param {number} achievement.currentValue - User's current value
  * @param {number} index - Index in the list for stagger animation
