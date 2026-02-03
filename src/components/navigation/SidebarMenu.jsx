@@ -425,7 +425,7 @@ export default function SidebarMenu({
                   />
                   <MenuButton
                     icon="/icons/ui/sidebar-stats.png"
-                    label="Statistics"
+                    label="Player Stats"
                     onClick={() => handleModalOpen(onOpenStats)}
                     highContrast={highContrast}
                   />
