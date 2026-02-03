@@ -311,16 +311,18 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               'bg-yellow-500 text-white',
               'border-[2px] border-black',
               'rounded-xl font-bold text-sm',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-              'hover:bg-yellow-600',
-              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
               'transition-colors duration-150',
               'disabled:opacity-70',
               highContrast && 'border-[3px]'
             )}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 10, boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
+            animate={{ opacity: 1, y: 0, boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
+            whileHover={{
+              y: -1,
+              boxShadow: '3px 3px 0px rgba(0,0,0,1)',
+              backgroundColor: '#ca8a04', // yellow-600
+            }}
+            whileTap={{ y: 0, boxShadow: 'none' }}
             transition={{ delay: 0.5 }}
           >
             {isSharing ? (
