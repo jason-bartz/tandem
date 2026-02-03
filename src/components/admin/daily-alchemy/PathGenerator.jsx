@@ -131,7 +131,9 @@ export default function PathGenerator({ onPathAccepted }) {
             solutionPath: path.steps.map((step, idx) => ({
               step: idx + 1,
               elementA: step.elementA,
+              elementAEmoji: step.emojiA,
               elementB: step.elementB,
+              elementBEmoji: step.emojiB,
               result: step.result,
               emoji: step.resultEmoji,
             })),

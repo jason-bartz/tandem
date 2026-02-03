@@ -128,12 +128,16 @@ export default function SolutionPathModal({
 
   // Build emoji map from the solution path results
   // This helps us show emojis for intermediate elements
+  // Since each step's result can be an input for later steps, we build the map
+  // so emojis cascade through the path
   const emojiMap = {};
   if (solutionPath) {
     solutionPath.forEach((step) => {
       // If this step contains emoji info, store it
-      if (step.resultEmoji) {
-        emojiMap[step.result?.toLowerCase()] = step.resultEmoji;
+      // Check both 'emoji' (database format) and 'resultEmoji' (alternative format)
+      const resultEmoji = step.emoji || step.resultEmoji;
+      if (resultEmoji) {
+        emojiMap[step.result?.toLowerCase()] = resultEmoji;
       }
       if (step.elementAEmoji) {
         emojiMap[step.elementA?.toLowerCase()] = step.elementAEmoji;
