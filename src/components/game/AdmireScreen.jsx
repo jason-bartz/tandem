@@ -55,6 +55,7 @@ export default function AdmireScreen({
       onOpenArchive={() => setShowArchive(true)}
       onOpenHowToPlay={() => setShowHowToPlay(true)}
       onOpenSettings={() => setShowSettings(true)}
+      onOpenLeaderboard={() => setShowLeaderboard(true)}
     >
       <div className="animate-fade-in -mt-16">
         {/* Main admire card */}

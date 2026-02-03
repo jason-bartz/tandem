@@ -38,6 +38,7 @@ export default function GlobalNavigation({
   onOpenArchive,
   onOpenHowToPlay,
   onOpenSettings,
+  onOpenLeaderboard,
   className = '',
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -68,6 +69,7 @@ export default function GlobalNavigation({
         onOpenArchive={onOpenArchive}
         onOpenHowToPlay={onOpenHowToPlay}
         onOpenSettings={onOpenSettings}
+        onOpenLeaderboard={onOpenLeaderboard}
         onOpenFeedback={() => {
           setIsSidebarOpen(false);
           setTimeout(() => setShowFeedback(true), 200);

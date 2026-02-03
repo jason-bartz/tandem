@@ -13,6 +13,7 @@ import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { formatDateShort } from '@/lib/utils';
 
 /**
@@ -38,6 +39,7 @@ export default function MiniAdmireScreen({
   const [showStats, setShowStats] = useState(false);
   const [showArchive, setShowArchive] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const perfectSolve = checksUsed === 0 && revealsUsed === 0 && mistakes === 0;
   const puzzleInfo = getMiniPuzzleInfoForDate(currentPuzzleDate);
@@ -229,10 +231,17 @@ export default function MiniAdmireScreen({
         onOpenStats={() => setShowStats(true)}
         onOpenArchive={() => setShowArchive(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} defaultTab="mini" />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        initialGame="mini"
+        initialTab="daily"
+      />
       <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

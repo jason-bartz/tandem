@@ -11,6 +11,7 @@ import UnifiedArchiveCalendar from './UnifiedArchiveCalendar';
 import HowToPlayModal from './HowToPlayModal';
 import Settings from '@/components/Settings';
 import Header from '@/components/navigation/Header';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import Greeting from '@/components/home/Greeting';
 import GameCard from '@/components/home/GameCard';
 import Footer from '@/components/home/Footer';
@@ -43,6 +44,7 @@ export default function WelcomeScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const { welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
@@ -217,6 +219,7 @@ export default function WelcomeScreen({
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Main content with padding for fixed header */}
@@ -308,6 +311,12 @@ export default function WelcomeScreen({
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        initialGame="tandem"
+        initialTab="daily"
+      />
       <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

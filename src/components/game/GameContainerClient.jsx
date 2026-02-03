@@ -224,8 +224,8 @@ export default function GameContainerClient({ initialPuzzleData }) {
   if (!onboardingChecked || game.loading) {
     return (
       <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
-        <div className="min-h-screen flex items-center justify-center py-6">
-          <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
+        <div className="min-h-screen flex items-center justify-center py-6 px-4">
+          <div className="w-full max-w-md mx-auto relative z-10 my-auto">
             {/* Loading skeleton */}
             <WelcomeScreenSkeleton />
           </div>

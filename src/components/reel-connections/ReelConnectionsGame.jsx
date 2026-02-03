@@ -831,6 +831,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           onOpenArchive={() => setShowArchive(true)}
           onOpenHowToPlay={() => setShowHowToPlay(true)}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
         />
 
         {/* Unified Modals */}
@@ -1155,6 +1156,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           onOpenArchive={() => setShowArchive(true)}
           onOpenHowToPlay={() => setShowHowToPlay(true)}
           onOpenSettings={() => setShowSettings(true)}
+          onOpenLeaderboard={() => setShowLeaderboard(true)}
         />
 
         {/* Unified Modals */}
@@ -1729,6 +1731,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         onOpenArchive={() => setShowArchive(true)}
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Unified Modals */}

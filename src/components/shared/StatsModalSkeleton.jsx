@@ -83,7 +83,7 @@ export default function StatsModalSkeleton() {
   const { reduceMotion, highContrast } = useTheme();
 
   return (
-    <div className="px-6 py-4">
+    <>
       {/* Daily Tandem Section (Blue) */}
       <SectionSkeleton
         themeColor="blue"
@@ -118,7 +118,7 @@ export default function StatsModalSkeleton() {
 
       {/* Action Buttons */}
       <div className="space-y-2 mt-4 pb-4">
-        {/* View Leaderboards Button Skeleton */}
+        {/* View Achievements Button Skeleton */}
         <div
           className={`w-full h-12 rounded-[20px] border-[3px] ${
             highContrast
@@ -127,17 +127,7 @@ export default function StatsModalSkeleton() {
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
           style={{ animationDelay: '800ms' }}
         />
-
-        {/* View Achievements Button Skeleton */}
-        <div
-          className={`w-full h-12 rounded-[20px] border-[3px] ${
-            highContrast
-              ? 'bg-hc-primary border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              : 'bg-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-          } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
-          style={{ animationDelay: '850ms' }}
-        />
       </div>
-    </div>
+    </>
   );
 }

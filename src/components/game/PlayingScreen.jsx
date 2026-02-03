@@ -16,6 +16,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 import OnScreenKeyboard from './OnScreenKeyboard';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useUIIcon } from '@/hooks/useUIIcon';
@@ -58,6 +59,7 @@ export default function PlayingScreen({
   const [showArchive, setShowArchive] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [openPaywall, setOpenPaywall] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
@@ -725,9 +727,16 @@ export default function PlayingScreen({
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        initialGame="tandem"
+        initialTab="daily"
+      />
     </>
   );
 }
