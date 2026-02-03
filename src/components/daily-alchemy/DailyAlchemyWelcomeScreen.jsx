@@ -124,8 +124,7 @@ export function DailyAlchemyWelcomeScreen({
             'transition-colors cursor-pointer'
           )}
         >
-          Combine elements to create new ones. Find the target element within 10 minutes. Fewer
-          moves = better score!
+          Combine elements to create new ones. Find the target element within 10 minutes.
         </div>
       </motion.button>
 
@@ -150,7 +149,7 @@ export function DailyAlchemyWelcomeScreen({
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
         <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
-        <span>{hasSavedProgress ? 'Continue Puzzle' : 'Start Mixing'}</span>
+        <span>{hasSavedProgress ? 'Continue Puzzle' : "Play Today's Puzzle"}</span>
       </motion.button>
 
       {/* Start Over option when there's saved progress */}
