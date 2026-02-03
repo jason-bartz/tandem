@@ -58,6 +58,13 @@ export default function AchievementsModalSkeleton() {
               : 'bg-gray-200 dark:bg-gray-700 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
           } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
         />
+        <div
+          className={`flex-1 h-9 rounded-xl border-[3px] ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border'
+              : 'bg-gray-200 dark:bg-gray-700 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+          } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        />
       </div>
 
       {/* Achievement Cards Grid Skeleton */}
