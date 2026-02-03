@@ -1218,6 +1218,25 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
               lastPlayedDate: puzzleDateRef.current,
             };
             localStorage.setItem(SOUP_STORAGE_KEYS.STATS, JSON.stringify(statsToSave));
+
+            // Check for achievement unlocks (fire-and-forget)
+            import('@/lib/achievementNotifier')
+              .then(({ checkAndNotifyAlchemyAchievements }) => {
+                checkAndNotifyAlchemyAchievements({
+                  longestStreak: statsToSave.longestStreak,
+                  totalCompleted: statsToSave.totalCompleted,
+                  firstDiscoveries: statsToSave.firstDiscoveries,
+                }).catch((achErr) => {
+                  logger.error('[ElementSoup] Failed to check achievements', {
+                    error: achErr.message,
+                  });
+                });
+              })
+              .catch((importErr) => {
+                logger.error('[ElementSoup] Failed to import achievement notifier', {
+                  error: importErr.message,
+                });
+              });
           } catch (storageErr) {
             logger.error('[ElementSoup] Failed to save stats to localStorage', {
               error: storageErr.message,

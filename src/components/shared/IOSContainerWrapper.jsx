@@ -9,6 +9,11 @@ const IOSContainer = dynamic(() => import('./IOSContainer'), {
   loading: () => <>{/* Loading... */}</>,
 });
 
+// Dynamically import AchievementToast for global notifications
+const AchievementToast = dynamic(() => import('@/components/game/AchievementToast'), {
+  ssr: false,
+});
+
 export default function IOSContainerWrapper({ children }) {
   const [isIOS, setIsIOS] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -37,5 +42,10 @@ export default function IOSContainerWrapper({ children }) {
   // Choose container based on platform
   const Container = isIOS ? IOSContainer : Fragment;
 
-  return <Container>{children}</Container>;
+  return (
+    <>
+      <Container>{children}</Container>
+      <AchievementToast />
+    </>
+  );
 }
