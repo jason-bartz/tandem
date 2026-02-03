@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import { getStripe } from '@/lib/stripe/config';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
@@ -8,6 +9,60 @@ import {
   notifySubscriptionCancelled,
   notifyPaymentFailed,
 } from '@/lib/discord';
+
+// Check if KV is available for idempotency tracking
+const isKvAvailable = !!(
+  process.env.KV_REST_API_URL &&
+  process.env.KV_REST_API_TOKEN &&
+  !process.env.KV_REST_API_URL.includes('localhost')
+);
+
+// Idempotency window: 24 hours (Stripe may retry webhooks for up to 3 days)
+const IDEMPOTENCY_TTL_SECONDS = 24 * 60 * 60;
+
+/**
+ * Check if a webhook event has already been processed
+ * Returns true if event was already processed (should be skipped)
+ *
+ * @param {string} eventId - Stripe event ID
+ * @returns {Promise<boolean>} - true if already processed
+ */
+async function isEventProcessed(eventId) {
+  if (!isKvAvailable) {
+    // If KV is not available, allow processing (fail open)
+    // This is safer than blocking all webhooks
+    return false;
+  }
+
+  try {
+    const key = `stripe_webhook:${eventId}`;
+    const exists = await kv.get(key);
+    return !!exists;
+  } catch (error) {
+    logger.error('Error checking webhook idempotency', error);
+    // Fail open to avoid blocking legitimate webhooks
+    return false;
+  }
+}
+
+/**
+ * Mark a webhook event as processed
+ *
+ * @param {string} eventId - Stripe event ID
+ */
+async function markEventProcessed(eventId) {
+  if (!isKvAvailable) {
+    return;
+  }
+
+  try {
+    const key = `stripe_webhook:${eventId}`;
+    await kv.set(key, { processedAt: Date.now() }, { ex: IDEMPOTENCY_TTL_SECONDS });
+  } catch (error) {
+    logger.error('Error marking webhook as processed', error);
+    // Non-critical - event will process but may be vulnerable to replay
+  }
+}
 
 /**
  * Stripe Webhook Handler
@@ -54,6 +109,17 @@ export async function POST(request) {
       logger.error('Webhook signature verification failed', error);
       return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
     }
+
+    // SECURITY: Check idempotency to prevent duplicate processing
+    // Stripe may retry webhooks, and network issues can cause duplicates
+    if (await isEventProcessed(event.id)) {
+      logger.info('Duplicate webhook event skipped', { eventId: event.id, type: event.type });
+      return NextResponse.json({ received: true, duplicate: true });
+    }
+
+    // Mark event as processed BEFORE handling to prevent race conditions
+    // If processing fails, the event won't be retried (Stripe will retry anyway)
+    await markEventProcessed(event.id);
 
     switch (event.type) {
       case 'checkout.session.completed':

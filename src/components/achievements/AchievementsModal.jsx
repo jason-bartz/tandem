@@ -12,7 +12,7 @@ import { LockKeyholeIcon } from 'lucide-react';
 
 /**
  * AchievementsModal - Display all achievements left panel with filtering
- * Shows user's achievement progress with tabs for Daily Tandem, Daily Mini, and Reel Connections
+ * Shows user's achievement progress with tabs for Daily Tandem, Daily Mini, Reel Connections, and Daily Alchemy
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -27,6 +27,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
   const tandemStatus = useAchievementStatus(isOpen, 'tandem');
   const miniStatus = useAchievementStatus(isOpen, 'mini');
   const reelStatus = useAchievementStatus(isOpen, 'reel');
+  const alchemyStatus = useAchievementStatus(isOpen, 'alchemy');
 
   // Get data based on active tab
   const getDisplayData = () => {
@@ -35,6 +36,8 @@ export default function AchievementsModal({ isOpen, onClose }) {
         return miniStatus.achievementData;
       case 'reel':
         return reelStatus.achievementData;
+      case 'alchemy':
+        return alchemyStatus.achievementData;
       default:
         return tandemStatus.achievementData;
     }
@@ -46,6 +49,8 @@ export default function AchievementsModal({ isOpen, onClose }) {
         return miniStatus.loading;
       case 'reel':
         return reelStatus.loading;
+      case 'alchemy':
+        return alchemyStatus.loading;
       default:
         return tandemStatus.loading;
     }
@@ -57,6 +62,8 @@ export default function AchievementsModal({ isOpen, onClose }) {
         return miniStatus.error;
       case 'reel':
         return reelStatus.error;
+      case 'alchemy':
+        return alchemyStatus.error;
       default:
         return tandemStatus.error;
     }
@@ -180,7 +187,7 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTabChange('tandem')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
@@ -190,11 +197,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
-              Tandem ({tandemStatus.achievementData.totalCount})
+              Tandem
             </button>
             <button
               onClick={() => handleTabChange('mini')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'mini'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
@@ -204,11 +211,11 @@ export default function AchievementsModal({ isOpen, onClose }) {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
-              Mini ({miniStatus.achievementData.totalCount})
+              Mini
             </button>
             <button
               onClick={() => handleTabChange('reel')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'reel'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
@@ -218,7 +225,21 @@ export default function AchievementsModal({ isOpen, onClose }) {
                     : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
-              Reel ({reelStatus.achievementData.totalCount})
+              Reel
+            </button>
+            <button
+              onClick={() => handleTabChange('alchemy')}
+              className={`flex-1 py-2 px-2 rounded-xl border-[3px] font-bold text-xs transition-all ${
+                activeTab === 'alchemy'
+                  ? highContrast
+                    ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                    : 'bg-soup-primary text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
+                  : highContrast
+                    ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
+              }`}
+            >
+              Alchemy
             </button>
           </div>
 

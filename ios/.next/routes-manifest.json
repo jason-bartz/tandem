@@ -10,6 +10,12 @@
       "internal": true,
       "statusCode": 308,
       "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    },
+    {
+      "source": "/element-soup",
+      "destination": "/daily-alchemy",
+      "statusCode": 308,
+      "regex": "^(?!/_next)/element-soup(?:/)?$"
     }
   ],
   "headers": [],

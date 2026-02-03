@@ -10,6 +10,9 @@ import {
   getMiniWinsAchievements,
   getReelStreakAchievements,
   getReelWinsAchievements,
+  getAlchemyStreakAchievements,
+  getAlchemyWinsAchievements,
+  getAlchemyFirstDiscoveryAchievements,
 } from './achievementDefinitions';
 
 /**
@@ -495,6 +498,224 @@ export function getAllQualifyingReelAchievements(stats) {
         emoji: achievement.emoji,
         threshold: achievement.threshold,
         type: 'wins',
+      });
+    }
+  }
+
+  return qualifyingAchievements;
+}
+
+// ============================================
+// DAILY ALCHEMY ACHIEVEMENT FUNCTIONS
+// ============================================
+
+/**
+ * Check which alchemy streak achievements should be unlocked
+ * @param {number} bestStreak - The player's best alchemy streak value
+ * @param {number} lastSubmittedStreak - Last streak value submitted
+ * @returns {Array} Array of achievement objects that should be unlocked
+ */
+export function checkAlchemyStreakAchievements(bestStreak, lastSubmittedStreak = 0) {
+  const streakAchievements = getAlchemyStreakAchievements();
+  const newlyUnlocked = [];
+
+  for (const achievement of streakAchievements) {
+    if (bestStreak >= achievement.threshold && lastSubmittedStreak < achievement.threshold) {
+      newlyUnlocked.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'streak',
+      });
+    }
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Check which alchemy wins achievements should be unlocked
+ * @param {number} totalWins - The player's total alchemy wins count
+ * @param {number} lastSubmittedWins - Last wins value submitted
+ * @returns {Array} Array of achievement objects that should be unlocked
+ */
+export function checkAlchemyWinsAchievements(totalWins, lastSubmittedWins = 0) {
+  const winsAchievements = getAlchemyWinsAchievements();
+  const newlyUnlocked = [];
+
+  for (const achievement of winsAchievements) {
+    if (totalWins >= achievement.threshold && lastSubmittedWins < achievement.threshold) {
+      newlyUnlocked.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'wins',
+      });
+    }
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Check which alchemy first discovery achievements should be unlocked
+ * @param {number} totalFirstDiscoveries - The player's total first discoveries count
+ * @param {number} lastSubmittedFirstDiscoveries - Last first discoveries value submitted
+ * @returns {Array} Array of achievement objects that should be unlocked
+ */
+export function checkAlchemyFirstDiscoveryAchievements(
+  totalFirstDiscoveries,
+  lastSubmittedFirstDiscoveries = 0
+) {
+  const firstDiscoveryAchievements = getAlchemyFirstDiscoveryAchievements();
+  const newlyUnlocked = [];
+
+  for (const achievement of firstDiscoveryAchievements) {
+    if (
+      totalFirstDiscoveries >= achievement.threshold &&
+      lastSubmittedFirstDiscoveries < achievement.threshold
+    ) {
+      newlyUnlocked.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'firstDiscovery',
+      });
+    }
+  }
+
+  return newlyUnlocked;
+}
+
+/**
+ * Get all newly unlocked alchemy achievements based on current stats
+ * @param {Object} stats - Player alchemy stats object with longestStreak, totalCompleted, and firstDiscoveries
+ * @param {Object} lastSubmitted - Last submitted values { streak, wins, firstDiscoveries }
+ * @returns {Array} Array of all newly unlocked achievement objects
+ */
+export function getNewlyUnlockedAlchemyAchievements(stats, lastSubmitted = {}) {
+  const { longestStreak = 0, totalCompleted = 0, firstDiscoveries = 0 } = stats;
+  const {
+    streak: lastStreak = 0,
+    wins: lastWins = 0,
+    firstDiscoveries: lastFirstDiscoveries = 0,
+  } = lastSubmitted;
+
+  const streakAchievements = checkAlchemyStreakAchievements(longestStreak, lastStreak);
+  const winsAchievements = checkAlchemyWinsAchievements(totalCompleted, lastWins);
+  const firstDiscoveryAchievements = checkAlchemyFirstDiscoveryAchievements(
+    firstDiscoveries,
+    lastFirstDiscoveries
+  );
+
+  return [...streakAchievements, ...winsAchievements, ...firstDiscoveryAchievements];
+}
+
+/**
+ * Get the highest alchemy streak threshold reached
+ * @param {number} bestStreak - The player's best alchemy streak value
+ * @returns {number} The highest threshold reached
+ */
+export function getHighestAlchemyStreakThreshold(bestStreak) {
+  const streakAchievements = getAlchemyStreakAchievements();
+  let highest = 0;
+
+  for (const achievement of streakAchievements) {
+    if (bestStreak >= achievement.threshold && achievement.threshold > highest) {
+      highest = achievement.threshold;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Get the highest alchemy wins threshold reached
+ * @param {number} totalWins - The player's total alchemy wins count
+ * @returns {number} The highest threshold reached
+ */
+export function getHighestAlchemyWinsThreshold(totalWins) {
+  const winsAchievements = getAlchemyWinsAchievements();
+  let highest = 0;
+
+  for (const achievement of winsAchievements) {
+    if (totalWins >= achievement.threshold && achievement.threshold > highest) {
+      highest = achievement.threshold;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Get the highest alchemy first discovery threshold reached
+ * @param {number} totalFirstDiscoveries - The player's total first discoveries count
+ * @returns {number} The highest threshold reached
+ */
+export function getHighestAlchemyFirstDiscoveryThreshold(totalFirstDiscoveries) {
+  const firstDiscoveryAchievements = getAlchemyFirstDiscoveryAchievements();
+  let highest = 0;
+
+  for (const achievement of firstDiscoveryAchievements) {
+    if (totalFirstDiscoveries >= achievement.threshold && achievement.threshold > highest) {
+      highest = achievement.threshold;
+    }
+  }
+
+  return highest;
+}
+
+/**
+ * Get all alchemy achievements that should be unlocked based on current stats
+ * This is used for retroactive achievement checking (e.g., for existing users)
+ * @param {Object} stats - Player alchemy stats object with longestStreak, totalCompleted, and firstDiscoveries
+ * @returns {Array} Array of all achievements that qualify based on current stats
+ */
+export function getAllQualifyingAlchemyAchievements(stats) {
+  const { longestStreak = 0, totalCompleted = 0, firstDiscoveries = 0 } = stats;
+  const qualifyingAchievements = [];
+
+  // Check all alchemy streak achievements
+  const streakAchievements = getAlchemyStreakAchievements();
+  for (const achievement of streakAchievements) {
+    if (longestStreak >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'streak',
+      });
+    }
+  }
+
+  // Check all alchemy wins achievements
+  const winsAchievements = getAlchemyWinsAchievements();
+  for (const achievement of winsAchievements) {
+    if (totalCompleted >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'wins',
+      });
+    }
+  }
+
+  // Check all alchemy first discovery achievements
+  const firstDiscoveryAchievements = getAlchemyFirstDiscoveryAchievements();
+  for (const achievement of firstDiscoveryAchievements) {
+    if (firstDiscoveries >= achievement.threshold) {
+      qualifyingAchievements.push({
+        id: achievement.id,
+        name: achievement.name,
+        emoji: achievement.emoji,
+        threshold: achievement.threshold,
+        type: 'firstDiscovery',
       });
     }
   }

@@ -80,8 +80,18 @@ export async function GET(request) {
   if (returnUrlCookie?.value) {
     try {
       returnPath = decodeURIComponent(returnUrlCookie.value);
-      // Validate the path is safe (starts with / and doesn't contain protocol)
-      if (!returnPath.startsWith('/') || returnPath.includes('://')) {
+
+      // SECURITY: Validate the path is safe to prevent open redirects
+      // Must start with single / (not //) and cannot contain protocol or other schemes
+      const isSafePath =
+        returnPath.startsWith('/') && // Must start with /
+        !returnPath.startsWith('//') && // Prevent protocol-relative URLs (//evil.com)
+        !returnPath.includes('://') && // Prevent absolute URLs with protocols
+        !returnPath.includes('\\') && // Prevent backslash tricks
+        !/^\/[^/]*@/.test(returnPath); // Prevent URL schemes like /javascript:
+
+      if (!isSafePath) {
+        logger.warn('Potentially unsafe return URL blocked', { returnPath });
         returnPath = '/';
       }
     } catch {

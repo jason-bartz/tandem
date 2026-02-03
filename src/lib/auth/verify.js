@@ -32,8 +32,23 @@ export async function verifyAuth(request) {
       ),
     });
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-      const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    if (authHeader) {
+      // Use regex to properly extract token after "Bearer " prefix
+      // This prevents issues with malformed headers or multiple occurrences
+      const match = authHeader.match(/^Bearer\s+(.+)$/i);
+
+      if (!match || !match[1]) {
+        logger.info('Invalid authorization header format', {
+          authHeaderPrefix: authHeader?.substring(0, 20),
+        });
+        return { user: null, error: 'Invalid authorization header format' };
+      }
+
+      const token = match[1].trim();
+
+      if (!token) {
+        return { user: null, error: 'Empty token in authorization header' };
+      }
 
       logger.info('Verifying token', {
         tokenLength: token.length,
