@@ -40,11 +40,14 @@ function getAvatarForUsername(username, avatars) {
   return avatars[index].id;
 }
 
+// Daily Alchemy has a 10-minute timer - scores cannot exceed this
+const SOUP_MAX_TIME_SECONDS = 600;
+
 /**
  * Generate a realistic score for a given game type
  * Uses a weighted distribution to favor mid-range scores
  *
- * @param {string} gameType - Game type (tandem, cryptic, mini, reel)
+ * @param {string} gameType - Game type (tandem, cryptic, mini, reel, soup)
  * @param {object} config - Score configuration
  * @returns {number} Score in seconds
  */
@@ -54,7 +57,11 @@ function generateRealisticScore(gameType, config) {
     cryptic: { min: config.cryptic_min_score, max: config.cryptic_max_score },
     mini: { min: config.mini_min_score, max: config.mini_max_score },
     reel: { min: config.reel_min_score, max: config.reel_max_score },
-    soup: { min: config.soup_min_score, max: config.soup_max_score },
+    // Cap soup max at 600 seconds (10 min timer) regardless of config
+    soup: {
+      min: config.soup_min_score,
+      max: Math.min(config.soup_max_score, SOUP_MAX_TIME_SECONDS),
+    },
   };
 
   const range = ranges[gameType];
@@ -135,26 +142,38 @@ function generateHintsUsed(gameType) {
 
 /**
  * Generate a random timestamp for bot submission
- * Now that we generate bots throughout the day via cron, timestamps should be
- * close to the current time (with some variance) for a natural appearance.
+ * Spreads bot submissions throughout the day up to the current time
+ * to create a natural-looking distribution on the leaderboard.
  *
- * @param {Date} date - Target date (unused now, kept for API compatibility)
- * @param {boolean} spreadThroughoutDay - If true, add variance; if false, cluster tighter
+ * @param {Date} date - Target date for the puzzle
+ * @param {boolean} spreadThroughoutDay - If true, spread across elapsed day; if false, cluster near now
  * @returns {Date} Submission timestamp
  */
-function generateSubmissionTime(_date, spreadThroughoutDay = true) {
+function generateSubmissionTime(date, spreadThroughoutDay = true) {
   const now = new Date();
+  const dateStr = date.toISOString().split('T')[0];
+  const nowDateStr = now.toISOString().split('T')[0];
 
-  if (spreadThroughoutDay) {
-    // Add random variance: -60 to +30 minutes from now
-    // Slightly biased to the past so entries appear to have just happened
-    const varianceMs = (Math.random() * 90 - 60) * 60 * 1000;
-    return new Date(now.getTime() + varianceMs);
-  } else {
-    // Tighter clustering: -15 to +5 minutes from now
-    const varianceMs = (Math.random() * 20 - 15) * 60 * 1000;
-    return new Date(now.getTime() + varianceMs);
+  // Start of the puzzle day (midnight UTC)
+  const dayStart = new Date(dateStr + 'T00:00:00.000Z');
+
+  if (spreadThroughoutDay && dateStr === nowDateStr) {
+    // Spread submissions from start of day up to now
+    // This creates a natural distribution on the leaderboard
+    const elapsedMs = now.getTime() - dayStart.getTime();
+
+    if (elapsedMs > 0) {
+      // Generate a random time between start of day and now
+      // Use a slight bias toward more recent times (beta distribution effect)
+      const randomFactor = Math.pow(Math.random(), 0.7); // Bias toward 1 (recent)
+      const randomMs = randomFactor * elapsedMs;
+      return new Date(dayStart.getTime() + randomMs);
+    }
   }
+
+  // Fallback: cluster around now with small variance
+  const varianceMs = (Math.random() * 20 - 10) * 60 * 1000; // ±10 minutes
+  return new Date(now.getTime() + varianceMs);
 }
 
 /**
@@ -472,18 +491,18 @@ export async function generateDailyBotEntries() {
       const adjustedHour = (hourOfDay + 24 - dailyOffsetHours) % 24;
       const dayProgress = Math.min(1, (adjustedHour / 24) * paceFactor); // Cap at 1
 
-      // Carryover bots should be generated ASAP (in first run of the day)
-      // to maintain their streaks. New bots are spread throughout the day.
+      // Spread ALL bots (both carryover and new) throughout the day
+      // Carryover bots are prioritized in generateBotEntries but their
+      // submission timestamps are spread naturally across elapsed time
       const carryoverCount = carryoverBots.length;
-      const newBotsTarget = targetCount - carryoverCount;
 
       // Target for this point in time (with additional per-run randomness)
       // Add a small random factor (±10%) to make each run slightly unpredictable
       const runRandomFactor = 0.9 + Math.random() * 0.2;
-      const newBotsExpectedByNow = Math.floor(newBotsTarget * dayProgress * runRandomFactor);
 
-      // Total expected: all carryover bots (always) + portion of new bots based on time
-      const expectedByNow = carryoverCount + newBotsExpectedByNow;
+      // Spread the TOTAL target count throughout the day, not just new bots
+      // This ensures carryover bots also appear gradually on the leaderboard
+      const expectedByNow = Math.floor(targetCount * dayProgress * runRandomFactor);
 
       // Check if we already have bot entries for today
       const { data: existing, error: checkError } = await supabase
@@ -501,7 +520,7 @@ export async function generateDailyBotEntries() {
       const existingCount = existing?.length || 0;
 
       logger.info(
-        `[Bot Leaderboard] ${game} - existing: ${existingCount}, expected by now: ${expectedByNow} (${carryoverCount} carryover + ${newBotsExpectedByNow} new), daily target: ${targetCount}, day progress: ${(dayProgress * 100).toFixed(1)}% (offset: ${dailyOffsetHours.toFixed(1)}h, pace: ${paceFactor.toFixed(2)}x)`
+        `[Bot Leaderboard] ${game} - existing: ${existingCount}, expected by now: ${expectedByNow}, daily target: ${targetCount} (${carryoverCount} carryover available), day progress: ${(dayProgress * 100).toFixed(1)}% (offset: ${dailyOffsetHours.toFixed(1)}h, pace: ${paceFactor.toFixed(2)}x)`
       );
 
       if (existingCount >= expectedByNow) {

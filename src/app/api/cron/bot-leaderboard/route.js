@@ -4,7 +4,8 @@ import logger from '@/lib/logger';
 
 /**
  * Vercel Cron endpoint for generating bot leaderboard entries
- * Runs once daily at 2 AM UTC to generate bot leaderboard entries
+ * Runs every 2 hours to gradually generate bot entries throughout the day
+ * Bot submission timestamps are spread naturally across elapsed time
  */
 export async function GET(request) {
   try {
