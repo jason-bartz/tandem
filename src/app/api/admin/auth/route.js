@@ -48,19 +48,13 @@ export async function POST(request) {
     // Parse and validate request body
     const { username, password } = await parseAndValidateJson(request, authCredentialsSchema);
 
-    // DEVELOPMENT ONLY: Bypass for local testing
-    // This bypass is disabled in production regardless of Host header
-    const isDevMode = process.env.NODE_ENV === 'development';
-    const isLocalhost = request.headers.get('host')?.includes('localhost');
-    const localhostBypass =
-      isDevMode && isLocalhost && username === 'delta_overseer_8688' && password === 'localhost123';
-
-    // Check credentials
+    // Check credentials against environment variables
+    // No bypasses - all authentication must use proper credentials
     const isValidUsername = username === process.env.ADMIN_USERNAME;
     const isValidPassword =
       isValidUsername && (await bcrypt.compare(password, process.env.ADMIN_PASSWORD_HASH));
 
-    const authSuccess = localhostBypass || (isValidUsername && isValidPassword);
+    const authSuccess = isValidUsername && isValidPassword;
 
     if (!authSuccess) {
       // Record failed attempt
@@ -128,15 +122,45 @@ export async function POST(request) {
   }
 }
 
+/**
+ * Extract and validate Bearer token from Authorization header
+ * Uses regex to properly parse the header and prevent edge cases
+ *
+ * @param {string|null} authHeader - The Authorization header value
+ * @returns {{ token: string|null, error: string|null }}
+ */
+function extractBearerToken(authHeader) {
+  if (!authHeader) {
+    return { token: null, error: 'No authorization header provided' };
+  }
+
+  // Use regex to properly extract token after "Bearer " prefix
+  const match = authHeader.match(/^Bearer\s+(.+)$/i);
+
+  if (!match || !match[1]) {
+    return { token: null, error: 'Invalid authorization header format' };
+  }
+
+  const token = match[1].trim();
+
+  if (!token) {
+    return { token: null, error: 'Empty token in authorization header' };
+  }
+
+  return { token, error: null };
+}
+
 export async function GET(request) {
   try {
     const authHeader = request.headers.get('authorization');
+    const { token, error: tokenError } = extractBearerToken(authHeader);
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return NextResponse.json({ success: false, error: 'No token provided' }, { status: 401 });
+    if (tokenError || !token) {
+      return NextResponse.json(
+        { success: false, error: tokenError || 'No token provided' },
+        { status: 401 }
+      );
     }
-
-    const token = authHeader.replace('Bearer ', '');
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);

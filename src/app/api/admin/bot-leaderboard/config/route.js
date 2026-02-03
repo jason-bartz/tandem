@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAdminToken } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { getBotConfig, updateBotConfig } from '@/services/botLeaderboard.service';
 import logger from '@/lib/logger';
 
@@ -9,11 +9,9 @@ import logger from '@/lib/logger';
  */
 export async function GET(request) {
   try {
-    // Verify admin authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication (GET requests skip CSRF validation)
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     // Debug: Check environment variables
     const hasServiceKey = !!process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -77,11 +75,9 @@ export async function GET(request) {
  */
 export async function PUT(request) {
   try {
-    // Verify admin authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication with CSRF validation
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const body = await request.json();
 

@@ -2,19 +2,8 @@
 
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
-import { verifyAdminToken } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import logger from '@/lib/logger';
-
-/**
- * Helper to verify admin authentication
- */
-function checkAdminAuth(request) {
-  const authHeader = request.headers.get('authorization');
-  if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
-    return false;
-  }
-  return true;
-}
 
 /**
  * Calculate puzzle number from date
@@ -34,10 +23,9 @@ function calculatePuzzleNumber(date) {
  */
 export async function GET(request) {
   try {
-    // Verify admin authentication
-    if (!checkAdminAuth(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication (GET requests skip CSRF validation)
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const supabase = createServerClient();
     const { searchParams } = new URL(request.url);
@@ -96,10 +84,9 @@ export async function GET(request) {
  */
 export async function POST(request) {
   try {
-    // Verify admin authentication
-    if (!checkAdminAuth(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication with CSRF validation
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const body = await request.json();
     const { date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
@@ -174,10 +161,9 @@ export async function POST(request) {
  */
 export async function PUT(request) {
   try {
-    // Verify admin authentication
-    if (!checkAdminAuth(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication with CSRF validation
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const body = await request.json();
     const { id, date, targetElement, targetEmoji, parMoves, solutionPath, difficulty, published } =
@@ -232,10 +218,9 @@ export async function PUT(request) {
  */
 export async function DELETE(request) {
   try {
-    // Verify admin authentication
-    if (!checkAdminAuth(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication with CSRF validation
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');

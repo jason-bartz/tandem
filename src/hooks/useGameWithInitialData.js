@@ -67,11 +67,8 @@ export function useGameWithInitialData(initialPuzzleData) {
             setPuzzle(puzzleWithData);
             setCurrentPuzzleDate(response.date);
             setError(null);
-          } else if (response) {
-            setPuzzle(response);
-            setCurrentPuzzleDate(response.date);
-            setError(null);
           } else {
+            // No puzzle available in response
             setError(
               "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
             );
@@ -102,14 +99,16 @@ export function useGameWithInitialData(initialPuzzleData) {
         if (existingResult && existingResult.won) {
           // Enter admire mode to view the completed puzzle
           const response = await puzzleService.getPuzzle(identifier);
-          const puzzleData = response && response.puzzle ? response.puzzle : response;
 
-          setPuzzle({ ...puzzleData, date: response.date || identifier });
-          setCurrentPuzzleDate(response.date || identifier);
-          setAdmireData(existingResult);
-          setGameState(GAME_STATES.ADMIRE);
-          setLoading(false);
-          return true;
+          if (response && response.puzzle) {
+            setPuzzle({ ...response.puzzle, date: response.date || identifier });
+            setCurrentPuzzleDate(response.date || identifier);
+            setAdmireData(existingResult);
+            setGameState(GAME_STATES.ADMIRE);
+            setLoading(false);
+            return true;
+          }
+          // If no puzzle found, fall through to show error
         }
       }
 
@@ -142,27 +141,9 @@ export function useGameWithInitialData(initialPuzzleData) {
         setLockedLetters([null, null, null, null]);
 
         return true;
-      } else if (response) {
-        if (response.date) {
-          setCurrentPuzzleDate(response.date);
-        }
-        setPuzzle(response);
-        // Archive puzzles should start immediately in PLAYING mode
-        // Today's puzzle shows WELCOME screen
-        setGameState(isArchive ? GAME_STATES.PLAYING : GAME_STATES.WELCOME);
-        setAnswers(['', '', '', '']);
-        setCorrectAnswers([false, false, false, false]);
-        setCheckedWrongAnswers([false, false, false, false]);
-        setMistakes(0);
-        setSolved(0);
-        setHintsUsed(0);
-        setHintedAnswers([]);
-        setUnlockedHints(1);
-        setActiveHintIndex(null);
-        setLockedLetters([null, null, null, null]);
-        return true;
       } else {
-        logger.error('[useGameWithInitialData] No response or empty response', null);
+        // No puzzle available in response
+        logger.error('[useGameWithInitialData] No puzzle in response', null, { response });
         setError(
           "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
         );

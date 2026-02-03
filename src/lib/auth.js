@@ -28,16 +28,48 @@ export function generateAdminToken(username) {
   );
 }
 
+/**
+ * Extract and validate Bearer token from Authorization header
+ * Uses regex to properly parse the header and prevent edge cases
+ *
+ * @param {string|null} authHeader - The Authorization header value
+ * @returns {{ token: string|null, error: string|null }}
+ */
+function extractBearerToken(authHeader) {
+  if (!authHeader) {
+    return { token: null, error: 'No authorization header provided' };
+  }
+
+  // Use regex to properly extract token after "Bearer " prefix
+  // This prevents issues with multiple "Bearer " occurrences or malformed headers
+  const match = authHeader.match(/^Bearer\s+(.+)$/i);
+
+  if (!match || !match[1]) {
+    return { token: null, error: 'Invalid authorization header format' };
+  }
+
+  const token = match[1].trim();
+
+  if (!token) {
+    return { token: null, error: 'Empty token in authorization header' };
+  }
+
+  return { token, error: null };
+}
+
 export async function requireAdmin(request) {
   const authHeader = request.headers.get('authorization');
+  const { token, error: tokenError } = extractBearerToken(authHeader);
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (tokenError || !token) {
     return {
-      error: NextResponse.json({ error: 'Unauthorized - No token provided' }, { status: 401 }),
+      error: NextResponse.json(
+        { error: `Unauthorized - ${tokenError || 'No token provided'}` },
+        { status: 401 }
+      ),
     };
   }
 
-  const token = authHeader.replace('Bearer ', '');
   const decoded = verifyAdminToken(token);
 
   if (!decoded) {

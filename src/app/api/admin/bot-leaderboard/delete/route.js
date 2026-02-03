@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyAdminToken } from '@/lib/auth';
+import { requireAdmin } from '@/lib/auth';
 import { deleteBotEntries } from '@/services/botLeaderboard.service';
 import logger from '@/lib/logger';
 
@@ -13,11 +13,9 @@ import logger from '@/lib/logger';
  */
 export async function DELETE(request) {
   try {
-    // Verify admin authentication
-    const authHeader = request.headers.get('authorization');
-    if (!authHeader || !verifyAdminToken(authHeader.replace('Bearer ', ''))) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
+    // Verify admin authentication with CSRF validation
+    const { error: authError } = await requireAdmin(request);
+    if (authError) return authError;
 
     const { searchParams } = new URL(request.url);
     const gameType = searchParams.get('gameType');

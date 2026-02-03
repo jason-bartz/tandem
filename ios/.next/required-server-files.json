@@ -21,14 +21,19 @@
       "path": "/_next/image",
       "loader": "default",
       "loaderFile": "",
-      "domains": ["localhost", "tandemdaily.com", "www.tandemdaily.com"],
+      "domains": [],
       "disableStaticImages": false,
       "minimumCacheTTL": 60,
       "formats": ["image/webp"],
       "dangerouslyAllowSVG": false,
       "contentSecurityPolicy": "script-src 'none'; frame-src 'none'; sandbox;",
       "contentDispositionType": "inline",
-      "remotePatterns": [],
+      "remotePatterns": [
+        { "protocol": "https", "hostname": "localhost" },
+        { "protocol": "https", "hostname": "tandemdaily.com" },
+        { "protocol": "https", "hostname": "www.tandemdaily.com" },
+        { "protocol": "https", "hostname": "*.supabase.co" }
+      ],
       "unoptimized": false
     },
     "devIndicators": { "buildActivity": true, "buildActivityPosition": "bottom-right" },
@@ -79,7 +84,7 @@
       "craCompat": false,
       "esmExternals": true,
       "fullySpecified": false,
-      "outputFileTracingRoot": "/Users/jasonbartz/Documents/Development Projects/Tandem",
+      "outputFileTracingRoot": "/Users/jasonbartz/Tandem",
       "swcTraceProfiling": false,
       "forceSwcTransforms": false,
       "largePageDataBytes": 128000,
@@ -156,9 +161,12 @@
       "trustHostHeader": false,
       "isExperimentalCompile": false
     },
-    "configFileName": "next.config.js"
+    "configFileName": "next.config.js",
+    "_originalRedirects": [
+      { "source": "/element-soup", "destination": "/daily-alchemy", "permanent": true }
+    ]
   },
-  "appDir": "/Users/jasonbartz/Documents/Development Projects/Tandem/ios",
+  "appDir": "/Users/jasonbartz/Tandem/ios",
   "relativeAppDir": "ios",
   "files": [
     ".next/routes-manifest.json",

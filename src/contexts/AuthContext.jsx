@@ -39,6 +39,28 @@ async function sha256(str) {
 }
 
 /**
+ * Validate and sanitize a return URL path for OAuth redirects
+ * Prevents open redirect vulnerabilities
+ *
+ * @param {string} path - The path to validate
+ * @returns {string} - Safe path or '/' if invalid
+ */
+function getSafeReturnPath(path) {
+  if (!path || typeof path !== 'string') return '/';
+
+  // SECURITY: Validate the path is safe to prevent open redirects
+  const isSafePath =
+    path.startsWith('/') && // Must start with /
+    !path.startsWith('//') && // Prevent protocol-relative URLs (//evil.com)
+    !path.includes('://') && // Prevent absolute URLs with protocols
+    !path.includes('\\') && // Prevent backslash tricks
+    !/^\/[^/]*@/.test(path) && // Prevent URL schemes like /javascript:
+    path.length < 500; // Reasonable length limit
+
+  return isSafePath ? path : '/';
+}
+
+/**
  * AuthProvider - Global authentication state management
  *
  * This provider wraps the app and provides authentication state and methods
@@ -412,8 +434,9 @@ export function AuthProvider({ children }) {
         return { error: null };
       } else {
         // Web: Standard OAuth redirect
-        // Store current path to return to after OAuth
-        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+        // Store current path to return to after OAuth (validated for security)
+        const safePath = getSafeReturnPath(window.location.pathname);
+        document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'google',
@@ -469,8 +492,9 @@ export function AuthProvider({ children }) {
 
         return { error: null };
       } else {
-        // Web: Standard OAuth redirect
-        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+        // Web: Standard OAuth redirect (validated for security)
+        const safePath = getSafeReturnPath(window.location.pathname);
+        document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'discord',
@@ -505,9 +529,9 @@ export function AuthProvider({ children }) {
         window.Capacitor.getPlatform() === 'ios';
 
       if (!isCapacitor) {
-        // On web, use Supabase's Apple OAuth
-        // Store current path to return to after OAuth
-        document.cookie = `auth_return_url=${encodeURIComponent(window.location.pathname)}; path=/; max-age=300; SameSite=Lax`;
+        // On web, use Supabase's Apple OAuth (validated for security)
+        const safePath = getSafeReturnPath(window.location.pathname);
+        document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
 
         const { error } = await supabase.auth.signInWithOAuth({
           provider: 'apple',

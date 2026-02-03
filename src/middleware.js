@@ -34,12 +34,55 @@ const adminCSP = {
   ].join('; '),
 };
 
+// Whitelist of allowed CORS origins
+const ALLOWED_ORIGINS = [
+  'https://www.tandemdaily.com',
+  'https://tandemdaily.com',
+  'https://tandem-game.vercel.app',
+];
+
+/**
+ * Check if an origin is allowed for CORS
+ * @param {string|null} origin - The request origin header
+ * @returns {string|null} - The allowed origin or null
+ */
+function getAllowedOrigin(origin) {
+  if (!origin) return null;
+
+  // Check static whitelist
+  if (ALLOWED_ORIGINS.includes(origin)) return origin;
+
+  // Allow localhost in development only
+  if (process.env.NODE_ENV === 'development' && origin === 'http://localhost:3000') {
+    return origin;
+  }
+
+  // Allow Capacitor iOS app origins
+  if (origin.startsWith('capacitor://') || origin.startsWith('ionic://')) {
+    return origin;
+  }
+
+  return null;
+}
+
 export async function middleware(request) {
+  // Handle CORS preflight requests with proper origin validation
   if (request.method === 'OPTIONS') {
+    const origin = request.headers.get('origin');
+    const allowedOrigin = getAllowedOrigin(origin);
+
     const response = new NextResponse(null, { status: 200 });
-    response.headers.set('Access-Control-Allow-Origin', '*');
+
+    if (allowedOrigin) {
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
+    }
+
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-CSRF-Token'
+    );
     response.headers.set('Access-Control-Max-Age', '86400');
     return response;
   }
@@ -108,34 +151,23 @@ export async function middleware(request) {
     });
   }
 
-  // Add CORS headers for API routes (but restrict for admin routes)
+  // Add CORS headers for API routes with strict origin validation
+  // SECURITY: Never use wildcard (*) to prevent cross-site request attacks
   if (request.nextUrl.pathname.startsWith('/api/')) {
-    if (request.nextUrl.pathname.startsWith('/api/admin')) {
-      // Restrict CORS for admin API routes
-      const origin = request.headers.get('origin');
-      const allowedOrigins = [
-        process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
-        'https://tandem-game.vercel.app', // Add your production domain
-        'capacitor://localhost', // Allow Capacitor iOS app
-        'ionic://localhost', // Allow Capacitor iOS app (alternative scheme)
-      ];
+    const origin = request.headers.get('origin');
+    const allowedOrigin = getAllowedOrigin(origin);
 
-      if (origin && allowedOrigins.includes(origin)) {
-        response.headers.set('Access-Control-Allow-Origin', origin);
-        response.headers.set('Access-Control-Allow-Credentials', 'true');
-      }
-    } else {
-      // Allow CORS for public API routes, including Capacitor apps
-      const origin = request.headers.get('origin');
-      if (origin && (origin.startsWith('capacitor://') || origin.startsWith('ionic://'))) {
-        response.headers.set('Access-Control-Allow-Origin', origin);
-      } else {
-        response.headers.set('Access-Control-Allow-Origin', '*');
-      }
+    if (allowedOrigin) {
+      response.headers.set('Access-Control-Allow-Origin', allowedOrigin);
+      response.headers.set('Access-Control-Allow-Credentials', 'true');
     }
+    // If origin doesn't match, don't set CORS headers - browser will block the request
 
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-    response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    response.headers.set(
+      'Access-Control-Allow-Headers',
+      'Content-Type, Authorization, X-CSRF-Token'
+    );
     response.headers.set('Access-Control-Max-Age', '86400'); // Cache preflight for 24 hours
   }
 
