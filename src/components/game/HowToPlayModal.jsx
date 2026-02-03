@@ -671,6 +671,30 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
                 ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-sky-50 dark:bg-sky-900/20 border-sky-400 dark:border-sky-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <span className="text-lg">⭐</span> Favorites
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              Keep your most-used elements within easy reach! Drag any element to the{' '}
+              <strong>star icon</strong> to add it to your Favorites bar at the top of the element
+              bank.
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
+              <li>• Save up to 12 favorite elements for quick access</li>
+              <li>• Drag a favorite back to the star icon to remove it</li>
+              <li>• Favorites persist across sessions</li>
+            </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
                 : 'bg-purple-50 dark:bg-purple-900/20 border-purple-400 dark:border-purple-600'
             }`}
           >

@@ -1008,6 +1008,10 @@ export default function Support() {
                 <strong>Search & Sort</strong>: Easily find elements in your bank
               </li>
               <li>
+                <strong>Favorites</strong>: Drag elements to the star icon to save up to 12
+                favorites for quick access
+              </li>
+              <li>
                 <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Puzzle Club)
               </li>
               <li>

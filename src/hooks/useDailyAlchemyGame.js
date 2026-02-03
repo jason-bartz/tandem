@@ -979,6 +979,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   );
 
   /**
+   * Clear all favorites
+   */
+  const clearAllFavorites = useCallback(() => {
+    setFavoriteElements(new Set());
+  }, []);
+
+  /**
    * Select an element from the bank
    * Uses refs to read current selection state, allowing a stable callback
    * that works with memoized ElementChip components
@@ -1751,6 +1758,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Favorites
     favoriteElements,
     toggleFavorite,
+    clearAllFavorites,
     isFavorite,
     showFavoritesPanel,
     setShowFavoritesPanel,

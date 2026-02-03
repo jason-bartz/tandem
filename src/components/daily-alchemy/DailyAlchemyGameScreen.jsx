@@ -501,6 +501,7 @@ export function DailyAlchemyGameScreen({
   // Favorites
   favoriteElements = new Set(),
   onToggleFavorite,
+  onClearAllFavorites,
   showFavoritesPanel = false,
   onToggleFavoritesPanel,
   maxFavorites = 15,
@@ -790,6 +791,7 @@ export function DailyAlchemyGameScreen({
           discoveredCount={freePlayMode ? discoveredCount : null}
           favoriteElements={favoriteElements}
           onToggleFavorite={onToggleFavorite}
+          onClearAllFavorites={onClearAllFavorites}
           showFavoritesPanel={showFavoritesPanel}
           onToggleFavoritesPanel={onToggleFavoritesPanel}
           maxFavorites={maxFavorites}

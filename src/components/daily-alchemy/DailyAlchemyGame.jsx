@@ -21,6 +21,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
+import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
@@ -162,6 +163,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     // Favorites
     favoriteElements,
     toggleFavorite,
+    clearAllFavorites,
     showFavoritesPanel,
     setShowFavoritesPanel,
     maxFavorites,
@@ -328,6 +330,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   // Favorites props
                   favoriteElements={favoriteElements}
                   onToggleFavorite={toggleFavorite}
+                  onClearAllFavorites={clearAllFavorites}
                   showFavoritesPanel={showFavoritesPanel}
                   onToggleFavoritesPanel={() => setShowFavoritesPanel(!showFavoritesPanel)}
                   maxFavorites={maxFavorites}
@@ -392,6 +395,16 @@ export function DailyAlchemyGame({ initialDate = null }) {
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
         !freePlayMode && <HintTutorialBanner gameType="soup" hasUsedHint={hintsRemaining < 4} />}
+
+      {/* Favorites Tutorial Banner - shows 30s after gameplay starts or 30s after hint tutorial dismissed */}
+      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
+        <FavoritesTutorialBanner
+          gameType="soup"
+          isPlaying={
+            gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE
+          }
+        />
+      )}
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
