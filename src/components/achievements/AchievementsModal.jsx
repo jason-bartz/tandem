@@ -180,42 +180,42 @@ export default function AchievementsModal({ isOpen, onClose }) {
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => handleTabChange('tandem')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'tandem'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-blue text-white border-accent-blue shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
+                    : 'bg-accent-blue text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Tandem ({tandemStatus.achievementData.totalCount})
             </button>
             <button
               onClick={() => handleTabChange('mini')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'mini'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-accent-yellow text-black border-accent-yellow shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
+                    : 'bg-accent-yellow text-black border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Mini ({miniStatus.achievementData.totalCount})
             </button>
             <button
               onClick={() => handleTabChange('reel')}
-              className={`flex-1 py-2 px-3 rounded-xl border-[2px] font-bold text-xs transition-all ${
+              className={`flex-1 py-2 px-3 rounded-xl border-[3px] font-bold text-xs transition-all ${
                 activeTab === 'reel'
                   ? highContrast
                     ? 'bg-hc-primary text-hc-text border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                    : 'bg-red-500 text-white border-red-500 shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.4)]'
+                    : 'bg-red-500 text-white border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]'
                   : highContrast
                     ? 'bg-hc-surface text-hc-text border-hc-border hover:bg-hc-surface/80'
-                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-700 hover:bg-gray-200 dark:hover:bg-gray-700'
+                    : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-black dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:bg-gray-200 dark:hover:bg-gray-700'
               }`}
             >
               Reel ({reelStatus.achievementData.totalCount})
