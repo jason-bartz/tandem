@@ -8,8 +8,12 @@ import {
   getMiniStreakAchievements,
   getAllReelAchievements,
   getReelStreakAchievements,
+  getAllAlchemyAchievements,
+  getAlchemyStreakAchievements,
+  getAlchemyFirstDiscoveryAchievements,
 } from '@/lib/achievementDefinitions';
 import { calculateAchievementProgress } from '@/lib/achievementChecker';
+import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 import logger from '@/lib/logger';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
@@ -37,6 +41,29 @@ async function loadReelStats() {
 }
 
 /**
+ * Load Daily Alchemy stats from localStorage
+ */
+async function loadAlchemyStats() {
+  if (typeof window === 'undefined') {
+    return { longestStreak: 0, totalCompleted: 0, firstDiscoveries: 0 };
+  }
+  try {
+    const stored = window.localStorage.getItem(SOUP_STORAGE_KEYS.STATS);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return {
+        longestStreak: parsed.longestStreak || 0,
+        totalCompleted: parsed.totalCompleted || 0,
+        firstDiscoveries: parsed.firstDiscoveries || 0,
+      };
+    }
+  } catch (e) {
+    logger.error('[useAchievementStatus] Error loading alchemy stats', e);
+  }
+  return { longestStreak: 0, totalCompleted: 0, firstDiscoveries: 0 };
+}
+
+/**
  * useAchievementStatus - Load and calculate achievement status
  * Determines which achievements are unlocked and progress toward locked ones
  *
@@ -61,8 +88,10 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
     try {
       let bestStreak = 0;
       let wins = 0;
+      let firstDiscoveries = 0;
       let allAchievements = [];
       let streakAchievements = [];
+      let firstDiscoveryAchievements = [];
 
       // Load stats based on game mode
       if (gameMode === 'mini') {
@@ -77,6 +106,14 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
         wins = reelStats.gamesWon || 0;
         allAchievements = getAllReelAchievements();
         streakAchievements = getReelStreakAchievements();
+      } else if (gameMode === 'alchemy') {
+        const alchemyStats = await loadAlchemyStats();
+        bestStreak = alchemyStats.longestStreak || 0;
+        wins = alchemyStats.totalCompleted || 0;
+        firstDiscoveries = alchemyStats.firstDiscoveries || 0;
+        allAchievements = getAllAlchemyAchievements();
+        streakAchievements = getAlchemyStreakAchievements();
+        firstDiscoveryAchievements = getAlchemyFirstDiscoveryAchievements();
       } else {
         // Default: Tandem
         const stats = await loadStats();
@@ -87,10 +124,25 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
       }
 
       const achievementsWithStatus = allAchievements.map((achievement) => {
-        // Determine if this is a streak or wins achievement
+        // Determine achievement type
         const isStreakAchievement = streakAchievements.some((a) => a.id === achievement.id);
+        const isFirstDiscoveryAchievement = firstDiscoveryAchievements.some(
+          (a) => a.id === achievement.id
+        );
 
-        const currentValue = isStreakAchievement ? bestStreak : wins;
+        let currentValue;
+        let type;
+        if (isStreakAchievement) {
+          currentValue = bestStreak;
+          type = 'streak';
+        } else if (isFirstDiscoveryAchievement) {
+          currentValue = firstDiscoveries;
+          type = 'firstDiscovery';
+        } else {
+          currentValue = wins;
+          type = 'wins';
+        }
+
         const isUnlocked = currentValue >= achievement.threshold;
         const progress = calculateAchievementProgress(currentValue, achievement.threshold);
 
@@ -99,7 +151,7 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
           isUnlocked,
           progress,
           currentValue,
-          type: isStreakAchievement ? 'streak' : 'wins',
+          type,
           gameMode,
         };
       });
@@ -157,6 +209,13 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
     };
   };
 
+  const getFirstDiscoveryAchievementData = () => {
+    return {
+      ...achievementData,
+      allAchievements: achievementData.allAchievements.filter((a) => a.type === 'firstDiscovery'),
+    };
+  };
+
   return {
     achievementData,
     loading,
@@ -164,6 +223,7 @@ export function useAchievementStatus(isOpen, gameMode = 'tandem') {
     reload: loadAchievementStatus,
     getStreakAchievementData,
     getWinsAchievementData,
+    getFirstDiscoveryAchievementData,
   };
 }
 

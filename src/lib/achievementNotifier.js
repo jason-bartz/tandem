@@ -12,6 +12,7 @@ import {
   getNewlyUnlockedAchievements,
   getNewlyUnlockedMiniAchievements,
   getNewlyUnlockedReelAchievements,
+  getNewlyUnlockedAlchemyAchievements,
 } from './achievementChecker';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
@@ -307,8 +308,59 @@ export async function checkAndNotifyReelAchievements(stats) {
 }
 
 /**
+ * Check and notify for Daily Alchemy achievements
+ * @param {Object} stats - Alchemy stats { longestStreak, totalCompleted, firstDiscoveries }
+ * @returns {Promise<Array>} Array of newly unlocked achievements
+ */
+export async function checkAndNotifyAlchemyAchievements(stats) {
+  try {
+    // Only track achievements for authenticated users
+    const authenticated = await isAuthenticated();
+    if (!authenticated) {
+      logger.debug('[AchievementNotifier] Skipping Alchemy achievements - user not authenticated');
+      return [];
+    }
+
+    const unlockedSet = await getUnlockedAchievements();
+
+    // Get all qualifying achievements (streaks, wins, and first discoveries)
+    const newAchievements = getNewlyUnlockedAlchemyAchievements(
+      stats,
+      { streak: 0, wins: 0, firstDiscoveries: 0 } // Compare against 0 to get all qualifying
+    ).filter((ach) => !unlockedSet.has(ach.id));
+
+    if (newAchievements.length === 0) {
+      return [];
+    }
+
+    // Show toast for the first new achievement
+    const achievementToShow = newAchievements[0];
+    const shown = showAchievementToast(achievementToShow);
+
+    // Mark all as unlocked
+    for (const ach of newAchievements) {
+      unlockedSet.add(ach.id);
+    }
+    await saveUnlockedAchievements(unlockedSet);
+
+    // Sync to database for cross-device persistence (fire-and-forget)
+    const newIds = newAchievements.map((ach) => ach.id);
+    syncAchievementsToDb(newIds);
+
+    if (shown) {
+      logger.info('[AchievementNotifier] Alchemy achievement unlocked:', achievementToShow.name);
+    }
+
+    return newAchievements;
+  } catch (error) {
+    logger.error('[AchievementNotifier] Failed to check Alchemy achievements:', error);
+    return [];
+  }
+}
+
+/**
  * Get count of unlocked achievements for each game type
- * @returns {Promise<Object>} { tandem: number, mini: number, reel: number }
+ * @returns {Promise<Object>} { tandem: number, mini: number, reel: number, alchemy: number, total: number }
  */
 export async function getUnlockedAchievementCounts() {
   try {
@@ -317,21 +369,24 @@ export async function getUnlockedAchievementCounts() {
     let tandem = 0;
     let mini = 0;
     let reel = 0;
+    let alchemy = 0;
 
     for (const id of unlockedSet) {
       if (id.includes('.mini_')) {
         mini++;
       } else if (id.includes('.reel_')) {
         reel++;
+      } else if (id.includes('.alchemy_')) {
+        alchemy++;
       } else {
         tandem++;
       }
     }
 
-    return { tandem, mini, reel, total: tandem + mini + reel };
+    return { tandem, mini, reel, alchemy, total: tandem + mini + reel + alchemy };
   } catch (error) {
     logger.error('[AchievementNotifier] Failed to get achievement counts:', error);
-    return { tandem: 0, mini: 0, reel: 0, total: 0 };
+    return { tandem: 0, mini: 0, reel: 0, alchemy: 0, total: 0 };
   }
 }
 
