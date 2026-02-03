@@ -36,6 +36,7 @@ export function ElementBank({
   // Favorites
   favoriteElements = new Set(),
   onToggleFavorite,
+  onClearAllFavorites,
   showFavoritesPanel = false,
   onToggleFavoritesPanel,
   maxFavorites = 12,
@@ -246,6 +247,7 @@ export function ElementBank({
             elements={allElements}
             favoriteElements={favoriteElements}
             onToggleFavorite={onToggleFavorite}
+            onClearAllFavorites={onClearAllFavorites}
             onSelectElement={onSelect}
             selectedA={selectedA}
             selectedB={selectedB}

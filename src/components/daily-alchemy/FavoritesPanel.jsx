@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { X, Star, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import ElementChip from './ElementChip';
@@ -14,6 +15,7 @@ export function FavoritesPanel({
   elements = [],
   favoriteElements = new Set(),
   onToggleFavorite,
+  onClearAllFavorites,
   onSelectElement,
   selectedA,
   selectedB,
@@ -97,17 +99,40 @@ export function FavoritesPanel({
               Favorites ({favoriteElements.size}/{maxFavorites})
             </h3>
           </div>
-          <button
-            onClick={onClose}
-            className={cn(
-              'p-1.5 rounded-lg',
-              'hover:bg-gray-100 dark:hover:bg-gray-700',
-              'transition-colors'
+          <div className="flex items-center gap-1">
+            {/* Clear all button */}
+            {favoriteElements.size > 0 && (
+              <button
+                onClick={onClearAllFavorites}
+                className={cn(
+                  'p-1.5 rounded-lg',
+                  'hover:bg-red-100 dark:hover:bg-red-900/30',
+                  'transition-colors'
+                )}
+                aria-label="Clear all favorites"
+                title="Clear all favorites"
+              >
+                <Image
+                  src="/icons/ui/broom.png"
+                  alt="Clear all"
+                  width={20}
+                  height={20}
+                  className="w-5 h-5"
+                />
+              </button>
             )}
-            aria-label="Close favorites panel"
-          >
-            <X className="w-5 h-5" />
-          </button>
+            <button
+              onClick={onClose}
+              className={cn(
+                'p-1.5 rounded-lg',
+                'hover:bg-gray-100 dark:hover:bg-gray-700',
+                'transition-colors'
+              )}
+              aria-label="Close favorites panel"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Favorites Grid */}
