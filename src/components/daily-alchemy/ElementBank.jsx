@@ -2,14 +2,17 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, X } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { SORT_OPTIONS } from '@/lib/daily-alchemy.constants';
 import ElementChip from './ElementChip';
+import FavoritesPanel from './FavoritesPanel';
 
 /**
  * ElementBank - Horizontally scrollable grid of discovered elements
  * Elements flow in columns: top to bottom, then continue to the right
+ * Supports drag-and-drop to add elements to favorites
  */
 // Row height: ~40px chip + 8px gap = 48px per row
 const ROW_HEIGHT = 48;
@@ -30,10 +33,19 @@ export function ElementBank({
   firstDiscoveryElements = [],
   disabled = false,
   discoveredCount = null, // Number of discovered elements (excluding starters) for Creative Mode
+  // Favorites
+  favoriteElements = new Set(),
+  onToggleFavorite,
+  showFavoritesPanel = false,
+  onToggleFavoritesPanel,
+  maxFavorites = 12,
+  allElements = [], // All elements for favorites panel (unfiltered)
 }) {
   const { highContrast } = useTheme();
   const gridContainerRef = useRef(null);
   const [rowCount, setRowCount] = useState(7);
+  const [isDraggingToFavorites, setIsDraggingToFavorites] = useState(false);
+  const [draggedElementName, setDraggedElementName] = useState(null);
 
   // Calculate how many rows can fit in available space
   const calculateRows = useCallback(() => {
@@ -67,6 +79,54 @@ export function ElementBank({
     };
   }, [calculateRows]);
 
+  // Drag handlers for adding to favorites
+  const handleDragStart = (e, element) => {
+    setDraggedElementName(element.name);
+    e.dataTransfer.setData(
+      'text/plain',
+      JSON.stringify({
+        action: 'add-favorite',
+        elementName: element.name,
+      })
+    );
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handleDragEnd = () => {
+    setDraggedElementName(null);
+    setIsDraggingToFavorites(false);
+  };
+
+  const handleFavoritesDragOver = (e) => {
+    e.preventDefault();
+    if (favoriteElements.size < maxFavorites) {
+      setIsDraggingToFavorites(true);
+    }
+  };
+
+  const handleFavoritesDragLeave = () => {
+    setIsDraggingToFavorites(false);
+  };
+
+  const handleFavoritesDrop = (e) => {
+    e.preventDefault();
+    setIsDraggingToFavorites(false);
+
+    if (favoriteElements.size >= maxFavorites) return;
+
+    try {
+      const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+      if (data.action === 'add-favorite' && data.elementName) {
+        // Only add if not already a favorite
+        if (!favoriteElements.has(data.elementName)) {
+          onToggleFavorite?.(data.elementName);
+        }
+      }
+    } catch {
+      // Invalid data
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
       {/* Header row with title and sort */}
@@ -90,7 +150,7 @@ export function ElementBank({
             const order = [
               SORT_OPTIONS.NEWEST,
               SORT_OPTIONS.ALPHABETICAL,
-              SORT_OPTIONS.EMOJI,
+              SORT_OPTIONS.MOST_USED,
               SORT_OPTIONS.FIRST_DISCOVERIES,
             ];
             const currentIndex = order.indexOf(sortOrder);
@@ -111,43 +171,89 @@ export function ElementBank({
             ? 'Newest'
             : sortOrder === SORT_OPTIONS.ALPHABETICAL
               ? 'A-Z'
-              : sortOrder === SORT_OPTIONS.EMOJI
-                ? 'Emoji'
+              : sortOrder === SORT_OPTIONS.MOST_USED
+                ? 'Most Used'
                 : '1st Disc.'}
         </button>
       </div>
 
-      {/* Search field */}
-      <div className="relative">
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search elements..."
+      {/* Search field and Favorites button */}
+      <div className="relative flex items-center gap-2">
+        <div className="relative flex-1">
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            placeholder="Search elements..."
+            className={cn(
+              'w-full px-4 py-2 pl-10',
+              'bg-white dark:bg-gray-800',
+              'border-[2px] border-black dark:border-gray-600',
+              'rounded-xl text-sm',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'focus:outline-none focus:ring-2 focus:ring-soup-primary',
+              'placeholder:text-gray-400',
+              highContrast && 'border-[3px] border-hc-border'
+            )}
+            aria-label="Search elements"
+          />
+          <Search
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+            aria-hidden="true"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => onSearchChange('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+              aria-label="Clear search"
+            >
+              <X className="w-4 h-4 text-gray-400" />
+            </button>
+          )}
+        </div>
+
+        {/* Favorites button - also a drop zone for adding favorites */}
+        <button
+          onClick={onToggleFavoritesPanel}
+          onDragOver={handleFavoritesDragOver}
+          onDragLeave={handleFavoritesDragLeave}
+          onDrop={handleFavoritesDrop}
           className={cn(
-            'w-full px-4 py-2 pl-10',
+            'flex-shrink-0',
+            'w-10 h-10',
+            'flex items-center justify-center',
             'bg-white dark:bg-gray-800',
             'border-[2px] border-black dark:border-gray-600',
-            'rounded-xl text-sm',
+            'rounded-xl',
             'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-            'focus:outline-none focus:ring-2 focus:ring-soup-primary',
-            'placeholder:text-gray-400',
+            'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+            'active:translate-y-0 active:shadow-none',
+            'transition-all duration-150',
+            showFavoritesPanel && 'bg-soup-primary/20 ring-2 ring-soup-primary',
+            isDraggingToFavorites &&
+              'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
             highContrast && 'border-[3px] border-hc-border'
           )}
-          aria-label="Search elements"
-        />
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
-          aria-hidden="true"
-        />
-        {searchQuery && (
-          <button
-            onClick={() => onSearchChange('')}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-1 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
-            aria-label="Clear search"
-          >
-            <X className="w-4 h-4 text-gray-400" />
-          </button>
+          aria-label="Open favorites"
+          aria-expanded={showFavoritesPanel}
+        >
+          <Image src="/icons/ui/favorites.png" alt="" width={24} height={24} className="w-6 h-6" />
+        </button>
+
+        {/* Favorites Panel - positioned as dropdown from button */}
+        {showFavoritesPanel && (
+          <FavoritesPanel
+            elements={allElements}
+            favoriteElements={favoriteElements}
+            onToggleFavorite={onToggleFavorite}
+            onSelectElement={onSelect}
+            selectedA={selectedA}
+            selectedB={selectedB}
+            maxFavorites={maxFavorites}
+            onClose={() => onToggleFavoritesPanel?.()}
+            recentElements={recentElements}
+            firstDiscoveryElements={firstDiscoveryElements}
+          />
         )}
       </div>
 
@@ -186,6 +292,8 @@ export function ElementBank({
               const showNewBadge = recentElements.includes(element.name);
               // Check if this element was a first discovery
               const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
+              const isDragging = draggedElementName === element.name;
+              const isFavorite = favoriteElements.has(element.name);
 
               return (
                 <ElementChip
@@ -194,8 +302,13 @@ export function ElementBank({
                   isSelected={isSelected}
                   isNew={showNewBadge}
                   isTarget={isTarget}
+                  isFavorite={isFavorite}
                   onClick={onSelect}
                   disabled={disabled}
+                  draggable={!disabled}
+                  onDragStart={(e) => handleDragStart(e, element)}
+                  onDragEnd={handleDragEnd}
+                  isDragging={isDragging}
                 />
               );
             })
