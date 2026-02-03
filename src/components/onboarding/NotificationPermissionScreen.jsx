@@ -1,5 +1,6 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { Capacitor } from '@capacitor/core';
@@ -41,19 +42,25 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 animate-fadeIn">
-      {/* White Card Container */}
-      <div className="w-full max-w-md bg-ghost-white dark:bg-gray-900 rounded-3xl shadow-2xl p-8">
+    <div className="flex flex-col items-center justify-center min-h-screen px-6 py-12 animate-fadeIn bg-accent-yellow">
+      {/* White Card Container - Neo Brutalist Style */}
+      <div
+        className={`w-full max-w-md rounded-[24px] p-8 ${
+          highContrast
+            ? 'bg-hc-surface border-[4px] border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+            : 'bg-ghost-white dark:bg-gray-900 border-[3px] border-black dark:border-gray-600 shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]'
+        }`}
+      >
         {/* Hero Icon */}
         <div className="flex justify-center mb-8">
           <div
-            className={`w-24 h-24 rounded-full flex items-center justify-center text-5xl ${
+            className={`w-24 h-24 rounded-2xl flex items-center justify-center ${
               highContrast
-                ? 'bg-hc-primary/20 border-4 border-hc-border'
-                : 'bg-sky-100 dark:bg-sky-900/30'
+                ? 'bg-hc-primary/20 border-[4px] border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-sky-100 dark:bg-sky-900/30 border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
-            🔔
+            <Image src="/icons/ui/bell.png" alt="Notifications" width={56} height={56} />
           </div>
         </div>
 
@@ -79,10 +86,10 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
         <div className="w-full space-y-4 mb-10">
           <div className="flex items-start gap-4">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
-                  : 'bg-sky-500 text-white'
+                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  : 'bg-sky-500 text-white border-[2px] border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,10 +114,10 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
 
           <div className="flex items-start gap-4">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
-                  : 'bg-sky-500 text-white'
+                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  : 'bg-sky-500 text-white border-[2px] border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -128,17 +135,17 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
                   highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-white'
                 }`}
               >
-                Three fresh puzzles waiting each day
+                Four fresh puzzles waiting each day
               </p>
             </div>
           </div>
 
           <div className="flex items-start gap-4">
             <div
-              className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
+              className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 ${
                 highContrast
-                  ? 'bg-hc-primary text-white border-2 border-hc-border'
-                  : 'bg-sky-500 text-white'
+                  ? 'bg-hc-primary text-white border-[3px] border-hc-border'
+                  : 'bg-sky-500 text-white border-[2px] border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               }`}
             >
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -168,10 +175,10 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
           <button
             onClick={handleEnableNotifications}
             disabled={requesting}
-            className={`w-full py-4 rounded-2xl font-semibold text-base transition-all active:scale-98 ${
+            className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
-                ? 'bg-hc-primary text-white border-4 border-hc-border hover:bg-hc-focus disabled:opacity-50'
-                : 'bg-sky-500 text-white hover:bg-sky-600 active:bg-sky-700 shadow-lg hover:shadow-xl disabled:opacity-50'
+                ? 'bg-hc-primary text-white border-[4px] border-hc-border hover:bg-hc-focus disabled:opacity-50 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-sky-500 text-white border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none disabled:opacity-50'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',
@@ -206,10 +213,10 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
           <button
             onClick={handleSkip}
             disabled={requesting}
-            className={`w-full py-4 rounded-2xl font-medium text-base transition-all active:scale-98 ${
+            className={`w-full py-4 rounded-xl font-bold text-base transition-all ${
               highContrast
-                ? 'bg-hc-surface text-hc-text border-2 border-hc-border hover:bg-hc-focus/10 disabled:opacity-50'
-                : 'bg-transparent text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50'
+                ? 'bg-hc-surface text-hc-text border-[4px] border-hc-border hover:bg-hc-focus/10 disabled:opacity-50 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+                : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)] active:translate-y-0 active:shadow-none disabled:opacity-50'
             }`}
             style={{
               WebkitTapHighlightColor: 'transparent',
