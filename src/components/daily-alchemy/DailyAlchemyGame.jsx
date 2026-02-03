@@ -159,6 +159,13 @@ export function DailyAlchemyGame({ initialDate = null }) {
     // Mode
     freePlayMode,
 
+    // Favorites
+    favoriteElements,
+    toggleFavorite,
+    showFavoritesPanel,
+    setShowFavoritesPanel,
+    maxFavorites,
+
     // Helpers
     formattedDate,
     targetElement,
@@ -318,6 +325,12 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   // Creative Mode autosave props
                   isAutoSaving={isAutoSaving}
                   autoSaveComplete={autoSaveComplete}
+                  // Favorites props
+                  favoriteElements={favoriteElements}
+                  onToggleFavorite={toggleFavorite}
+                  showFavoritesPanel={showFavoritesPanel}
+                  onToggleFavoritesPanel={() => setShowFavoritesPanel(!showFavoritesPanel)}
+                  maxFavorites={maxFavorites}
                 />
               )}
 

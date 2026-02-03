@@ -2,6 +2,7 @@
 export { DailyAlchemyBackground } from './DailyAlchemyBackground';
 export { ElementChip } from './ElementChip';
 export { ElementBank } from './ElementBank';
+export { FavoritesPanel } from './FavoritesPanel';
 export { CombinationArea } from './CombinationArea';
 export { TargetDisplay, StatsDisplay, StatsAndTargetRow } from './TargetDisplay';
 export { FirstDiscoveryToast } from './FirstDiscoveryToast';

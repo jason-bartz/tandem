@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -156,9 +156,18 @@ function countGraphemes(str) {
 
 /**
  * SelectionSlot - Individual slot for selected element
+ * Supports drag-and-drop to add elements
  */
-function SelectionSlot({ element, position, onClick, isShaking = false }) {
+function SelectionSlot({
+  element,
+  position,
+  onClick,
+  isShaking = false,
+  onDrop,
+  disabled = false,
+}) {
   const { highContrast, reduceMotion } = useTheme();
+  const [isDragOver, setIsDragOver] = useState(false);
 
   // Wobble animation - alternates left/right with rotation
   const wobbleDirection = position === 'first' ? 1 : -1;
@@ -167,9 +176,44 @@ function SelectionSlot({ element, position, onClick, isShaking = false }) {
   const emojiCount = element?.emoji ? countGraphemes(element.emoji) : 1;
   const isMultiEmoji = emojiCount >= 3;
 
+  const handleDragOver = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (!disabled) {
+        setIsDragOver(true);
+      }
+    },
+    [disabled]
+  );
+
+  const handleDragLeave = useCallback(() => {
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      setIsDragOver(false);
+      if (disabled) return;
+
+      try {
+        const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+        if (data.elementName && onDrop) {
+          onDrop(data.elementName, position);
+        }
+      } catch {
+        // Invalid data
+      }
+    },
+    [disabled, onDrop, position]
+  );
+
   return (
     <motion.button
       onClick={onClick}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
       className={cn(
         'w-24 h-24 sm:w-28 sm:h-28',
         'flex flex-col items-center justify-center',
@@ -179,6 +223,7 @@ function SelectionSlot({ element, position, onClick, isShaking = false }) {
         // Only show shadow when element is present
         element && 'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
+        isDragOver && !element && 'border-soup-primary bg-soup-light/50 scale-105',
         highContrast && 'border-[4px]'
       )}
       animate={
@@ -236,6 +281,7 @@ function SelectionSlot({ element, position, onClick, isShaking = false }) {
 
 /**
  * CombinationArea - Area where elements are combined
+ * Supports drag-and-drop to add elements to slots
  */
 export function CombinationArea({
   selectedA,
@@ -248,6 +294,7 @@ export function CombinationArea({
   isAnimating = false,
   disabled = false,
   combinationError = null,
+  onDropElement, // Callback when element is dropped: (elementName, position) => void
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -292,6 +339,8 @@ export function CombinationArea({
           position="first"
           onClick={onClearA}
           isShaking={isCombining || isAnimating}
+          onDrop={onDropElement}
+          disabled={disabled || isCombining || isAnimating}
         />
 
         {/* Plus Sign */}
@@ -320,6 +369,8 @@ export function CombinationArea({
           position="second"
           onClick={onClearB}
           isShaking={isCombining || isAnimating}
+          onDrop={onDropElement}
+          disabled={disabled || isCombining || isAnimating}
         />
       </div>
 

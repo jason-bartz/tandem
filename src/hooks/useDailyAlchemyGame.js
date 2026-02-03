@@ -22,12 +22,12 @@ import {
   SOUP_CONFIG,
   STARTER_ELEMENTS,
   SORT_OPTIONS,
+  MAX_FAVORITES,
   formatTime,
   generateShareText,
   getRandomMessage,
   CONGRATS_MESSAGES,
   GAME_OVER_MESSAGES,
-  getEmojiCategory,
 } from '@/lib/daily-alchemy.constants';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 
@@ -75,6 +75,27 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [elementBank, setElementBank] = useState([...STARTER_ELEMENTS]);
   const [sortOrder, setSortOrder] = useState(SORT_OPTIONS.NEWEST);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Favorites and usage tracking state
+  const [favoriteElements, setFavoriteElements] = useState(() => {
+    // Load favorites from localStorage on init
+    try {
+      const saved = localStorage.getItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
+      return saved ? new Set(JSON.parse(saved)) : new Set();
+    } catch {
+      return new Set();
+    }
+  });
+  const [elementUsageCount, setElementUsageCount] = useState(() => {
+    // Load usage counts from localStorage on init
+    try {
+      const saved = localStorage.getItem(SOUP_STORAGE_KEYS.ELEMENT_USAGE);
+      return saved ? JSON.parse(saved) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [showFavoritesPanel, setShowFavoritesPanel] = useState(false);
 
   // Selection state
   const [selectedA, setSelectedA] = useState(null);
@@ -900,6 +921,63 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isAutoSaving,
   ]);
 
+  // Persist favorites to localStorage
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS,
+        JSON.stringify([...favoriteElements])
+      );
+    } catch (err) {
+      logger.error('[DailyAlchemy] Failed to save favorites', { error: err.message });
+    }
+  }, [favoriteElements]);
+
+  // Persist usage counts to localStorage (debounced)
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      try {
+        localStorage.setItem(SOUP_STORAGE_KEYS.ELEMENT_USAGE, JSON.stringify(elementUsageCount));
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to save usage counts', { error: err.message });
+      }
+    }, 1000); // Debounce 1 second
+
+    return () => clearTimeout(timeout);
+  }, [elementUsageCount]);
+
+  /**
+   * Toggle favorite status for an element
+   * @param {string} elementName - Name of the element to toggle
+   * @returns {boolean} - New favorite status
+   */
+  const toggleFavorite = useCallback((elementName) => {
+    setFavoriteElements((prev) => {
+      const next = new Set(prev);
+      if (next.has(elementName)) {
+        next.delete(elementName);
+        return next;
+      } else if (next.size < MAX_FAVORITES) {
+        next.add(elementName);
+        return next;
+      }
+      // At max capacity, don't add
+      return prev;
+    });
+  }, []);
+
+  /**
+   * Check if an element is a favorite
+   * @param {string} elementName - Name of the element
+   * @returns {boolean}
+   */
+  const isFavorite = useCallback(
+    (elementName) => {
+      return favoriteElements.has(elementName);
+    },
+    [favoriteElements]
+  );
+
   /**
    * Select an element from the bank
    * Uses refs to read current selection state, allowing a stable callback
@@ -1022,6 +1100,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         madeCombinations.current.add(comboKey);
         setMovesCount((prev) => prev + 1);
       }
+
+      // Track element usage for "Most Used" sorting
+      setElementUsageCount((prev) => ({
+        ...prev,
+        [selectedA.name]: (prev[selectedA.name] || 0) + 1,
+        [selectedB.name]: (prev[selectedB.name] || 0) + 1,
+      }));
 
       // Add to combination path
       setCombinationPath((prev) => [
@@ -1564,23 +1649,19 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         if (!aIsFirst && bIsFirst) return 1;
         return 0; // Keep original order (newest) within each group
       });
-    } else if (sortOrder === SORT_OPTIONS.EMOJI) {
-      // Sort by emoji category (iOS keyboard order), then by emoji to group same emojis,
-      // then alphabetically by name within same emoji
+    } else if (sortOrder === SORT_OPTIONS.MOST_USED) {
+      // Sort by usage count (most used first), then alphabetically as tiebreaker
       sorted.sort((a, b) => {
-        const categoryA = getEmojiCategory(a.emoji);
-        const categoryB = getEmojiCategory(b.emoji);
-        if (categoryA !== categoryB) return categoryA - categoryB;
-        // Within same category, group by actual emoji
-        if (a.emoji !== b.emoji) return a.emoji.localeCompare(b.emoji);
-        // Within same emoji, sort alphabetically by name
+        const usageA = elementUsageCount[a.name] || 0;
+        const usageB = elementUsageCount[b.name] || 0;
+        if (usageA !== usageB) return usageB - usageA; // Higher usage first
         return a.name.localeCompare(b.name);
       });
     }
     // NEWEST is default order (newest first, which is how we add them)
 
     return sorted;
-  }, [elementBank, searchQuery, sortOrder, firstDiscoveryElements]);
+  }, [elementBank, searchQuery, sortOrder, firstDiscoveryElements, elementUsageCount]);
 
   return {
     // State
@@ -1666,6 +1747,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Mode
     freePlayMode,
+
+    // Favorites
+    favoriteElements,
+    toggleFavorite,
+    isFavorite,
+    showFavoritesPanel,
+    setShowFavoritesPanel,
+    maxFavorites: MAX_FAVORITES,
+
+    // Usage tracking
+    elementUsageCount,
 
     // Helpers
     puzzleDate: puzzleDateRef.current,

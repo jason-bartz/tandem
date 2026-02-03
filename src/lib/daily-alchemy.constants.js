@@ -48,7 +48,7 @@ export const SORT_OPTIONS = {
   NEWEST: 'newest',
   ALPHABETICAL: 'alpha',
   FIRST_DISCOVERIES: 'first_discoveries',
-  EMOJI: 'emoji',
+  MOST_USED: 'most_used',
 };
 
 /**
@@ -180,7 +180,12 @@ export const SOUP_STORAGE_KEYS = {
   LAST_PLAYED_DATE: 'soup_last_played_date',
   ELEMENT_BANK: 'soup_element_bank_',
   COMBINATIONS_TRIED: 'soup_combinations_tried_',
+  FAVORITE_ELEMENTS: 'soup_favorite_elements', // Favorite elements for quick access
+  ELEMENT_USAGE: 'soup_element_usage', // Track element usage counts for sorting
 };
+
+// Maximum number of favorite elements allowed
+export const MAX_FAVORITES = 12;
 
 // API endpoints
 export const SOUP_API = {

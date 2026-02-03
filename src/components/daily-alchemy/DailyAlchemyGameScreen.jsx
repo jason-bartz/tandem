@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
 import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
 import html2canvas from 'html2canvas';
@@ -219,10 +219,11 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      onClick={handleClose}
     >
       <motion.div
         className={cn(
@@ -232,7 +233,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'pointer-events-auto cursor-grab active:cursor-grabbing',
+          'cursor-grab active:cursor-grabbing',
           'touch-none select-none'
         )}
         style={{ y }}
@@ -248,6 +249,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         dragConstraints={{ top: -150, bottom: 150 }}
         dragElastic={0.3}
         onDragEnd={handleDragEnd}
+        onClick={(e) => e.stopPropagation()}
       >
         {result.isFirstDiscovery && (
           <motion.div
@@ -495,6 +497,13 @@ export function DailyAlchemyGameScreen({
   // Creative Mode autosave
   isAutoSaving = false,
   autoSaveComplete = false,
+
+  // Favorites
+  favoriteElements = new Set(),
+  onToggleFavorite,
+  showFavoritesPanel = false,
+  onToggleFavoritesPanel,
+  maxFavorites = 15,
 }) {
   const { highContrast } = useTheme();
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -527,6 +536,18 @@ export function DailyAlchemyGameScreen({
   const isTargetFound = freePlayMode
     ? false
     : sortedElementBank.some((el) => el.name.toLowerCase() === targetElement?.toLowerCase());
+
+  // Handle drag and drop to combination slots
+  const handleDropElement = useCallback(
+    (elementName, _position) => {
+      // Find the element by name from the element bank
+      const element = elementBank.find((el) => el.name === elementName);
+      if (element && selectElement) {
+        selectElement(element);
+      }
+    },
+    [elementBank, selectElement]
+  );
 
   return (
     <div className="flex flex-col gap-3 h-full">
@@ -748,10 +769,11 @@ export function DailyAlchemyGameScreen({
         isAnimating={isAnimating}
         disabled={isComplete && !freePlayMode}
         combinationError={combinationError}
+        onDropElement={handleDropElement}
       />
 
       {/* Element Bank - fills remaining space */}
-      <div className="flex-1 min-h-0 flex flex-col">
+      <div className="flex-1 min-h-0 flex flex-col relative">
         <ElementBank
           elements={sortedElementBank}
           selectedA={selectedA}
@@ -766,6 +788,12 @@ export function DailyAlchemyGameScreen({
           firstDiscoveryElements={firstDiscoveryElements}
           disabled={isCombining || (isComplete && !freePlayMode)}
           discoveredCount={freePlayMode ? discoveredCount : null}
+          favoriteElements={favoriteElements}
+          onToggleFavorite={onToggleFavorite}
+          showFavoritesPanel={showFavoritesPanel}
+          onToggleFavoritesPanel={onToggleFavoritesPanel}
+          maxFavorites={maxFavorites}
+          allElements={elementBank}
         />
       </div>
 

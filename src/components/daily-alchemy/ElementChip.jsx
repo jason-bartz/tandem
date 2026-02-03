@@ -2,6 +2,7 @@
 
 import { memo } from 'react';
 import { motion } from 'framer-motion';
+import { Star } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 
@@ -15,9 +16,14 @@ function ElementChipInner({
   isSelected = false,
   isNew = false,
   isTarget = false,
+  isFavorite = false,
   onClick,
   disabled = false,
   size = 'default', // 'default' | 'small' | 'large'
+  draggable = false,
+  onDragStart,
+  onDragEnd,
+  isDragging = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -37,6 +43,9 @@ function ElementChipInner({
     <motion.button
       onClick={() => !disabled && onClick?.(element)}
       disabled={disabled}
+      draggable={draggable && !disabled}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
       className={cn(
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
@@ -49,13 +58,15 @@ function ElementChipInner({
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
         'font-medium',
-        'cursor-pointer',
         'transition-all duration-150',
+        !disabled && !draggable && 'cursor-pointer',
+        draggable && !disabled && 'cursor-grab active:cursor-grabbing',
         !disabled && 'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
         !disabled && 'active:translate-y-0 active:shadow-none',
         isSelected && 'bg-[#ffce00] dark:bg-[#ffce00]/70',
         isTarget && 'bg-yellow-100 dark:bg-yellow-900/40 border-yellow-500 ring-2 ring-yellow-400',
         disabled && 'opacity-50 cursor-not-allowed',
+        isDragging && 'opacity-50',
         highContrast && 'border-[3px]'
       )}
       whileTap={!disabled && !reduceMotion ? { scale: 0.95 } : undefined}
@@ -81,8 +92,22 @@ function ElementChipInner({
         </span>
       )}
 
-      {/* NEW badge for recently discovered elements */}
-      {isNew && (
+      {/* Favorite star indicator - takes precedence over NEW badge */}
+      {isFavorite && (
+        <span
+          className={cn(
+            'absolute -top-1 -right-1',
+            'w-4 h-4 rounded-full',
+            'bg-yellow-400 border border-yellow-600',
+            'flex items-center justify-center',
+            'shadow-sm'
+          )}
+        >
+          <Star className="w-2.5 h-2.5 text-yellow-700 fill-yellow-700" />
+        </span>
+      )}
+      {/* NEW badge for recently discovered elements (only if not a favorite) */}
+      {isNew && !isFavorite && (
         <span
           className={cn(
             'absolute -top-1.5 -right-1.5',
@@ -123,8 +148,11 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.isSelected === nextProps.isSelected &&
     prevProps.isNew === nextProps.isNew &&
     prevProps.isTarget === nextProps.isTarget &&
+    prevProps.isFavorite === nextProps.isFavorite &&
     prevProps.disabled === nextProps.disabled &&
-    prevProps.size === nextProps.size
+    prevProps.size === nextProps.size &&
+    prevProps.draggable === nextProps.draggable &&
+    prevProps.isDragging === nextProps.isDragging
   );
 }
 
