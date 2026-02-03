@@ -6,7 +6,6 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import { Capacitor } from '@capacitor/core';
@@ -33,11 +32,11 @@ export default function SidebarMenu({
   onOpenHowToPlay,
   onOpenSettings,
   onOpenFeedback,
+  onOpenLeaderboard,
 }) {
   const { highContrast, reduceMotion, isDark, toggleTheme } = useTheme();
   const { user, userProfile, profileLoading } = useAuth();
   const { isActive: hasSubscription } = useSubscription();
-  const getIconPath = useUIIcon();
   const { lightTap } = useHaptics();
   const router = useRouter();
   const pathname = usePathname();
@@ -419,27 +418,27 @@ export default function SidebarMenu({
               <section>
                 <div className="space-y-2">
                   <MenuButton
-                    icon={getIconPath('how-to-play')}
+                    icon="/icons/ui/sidebar-howtoplay.png"
                     label="How to Play"
                     onClick={() => handleModalOpen(onOpenHowToPlay)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon={getIconPath('leaderboard')}
-                    label="Stats & Leaderboard"
+                    icon="/icons/ui/sidebar-stats.png"
+                    label="Statistics"
                     onClick={() => handleModalOpen(onOpenStats)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon={getIconPath('archive')}
-                    label="Puzzle Archives"
-                    onClick={() => handleModalOpen(onOpenArchive)}
+                    icon="/icons/ui/sidebar-leaderboards.png"
+                    label="Leaderboards"
+                    onClick={() => handleModalOpen(onOpenLeaderboard)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon={getIconPath('settings')}
-                    label="Settings"
-                    onClick={() => handleModalOpen(onOpenSettings)}
+                    icon="/icons/ui/sidebar-archive.png"
+                    label="Puzzle Archives"
+                    onClick={() => handleModalOpen(onOpenArchive)}
                     highContrast={highContrast}
                   />
                 </div>
@@ -551,6 +550,7 @@ export default function SidebarMenu({
 
               {/* Footer Links */}
               <section className="pt-4 border-t-[3px] border-border-main space-y-1">
+                <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} />
                 <FooterLink label="Feedback" onClick={() => handleModalOpen(onOpenFeedback)} />
                 <FooterLink label="Support" onClick={() => handleNavigation('/support')} />
                 <FooterLink label="About" onClick={() => handleNavigation('/about')} />

@@ -24,6 +24,7 @@ export default function Header({
   onOpenArchive,
   onOpenHowToPlay,
   onOpenSettings,
+  onOpenLeaderboard,
 }) {
   const { isDark, highContrast } = useTheme();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -58,9 +59,7 @@ export default function Header({
               </div>
               <h1
                 className={`text-lg font-bold ${
-                  highContrast
-                    ? 'text-hc-text'
-                    : 'text-gray-900 dark:text-gray-100'
+                  highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
                 }`}
               >
                 Tandem Daily Games
@@ -84,6 +83,7 @@ export default function Header({
         onOpenArchive={onOpenArchive}
         onOpenHowToPlay={onOpenHowToPlay}
         onOpenSettings={onOpenSettings}
+        onOpenLeaderboard={onOpenLeaderboard}
         onOpenFeedback={() => {
           setIsSidebarOpen(false);
           setTimeout(() => setShowFeedback(true), 200);

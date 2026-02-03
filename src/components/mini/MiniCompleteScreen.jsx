@@ -360,6 +360,7 @@ export default function MiniCompleteScreen({
         onClose={() => setShowMenu(false)}
         onOpenStats={() => setShowLeaderboard(true)}
         onOpenArchive={() => setShowArchive(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
     </div>
   );

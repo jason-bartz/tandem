@@ -13,6 +13,7 @@ import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import HowToPlayModal from '../game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { formatMiniTime } from '@/lib/miniUtils';
@@ -71,6 +72,7 @@ export default function MiniGameScreen({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Handle start button click
   const handleStartClick = () => {
@@ -448,10 +450,17 @@ export default function MiniGameScreen({
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        initialGame="mini"
+        initialTab="daily"
+      />
       <UnifiedArchiveCalendar
         isOpen={showArchive}
         onClose={() => setShowArchive(false)}

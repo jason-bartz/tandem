@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { usePathname } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import useUnifiedStats from '@/hooks/useUnifiedStats';
@@ -11,12 +10,11 @@ import MiniStatsSection from './MiniStatsSection';
 import ReelStatsSection from './ReelStatsSection';
 import SoupStatsSection from './SoupStatsSection';
 import AchievementsModal from '../achievements/AchievementsModal';
-import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 
 /**
  * UnifiedStatsModal - Unified statistics left panel for all games
- * Displays Daily Tandem, Daily Mini, and Reel Connections stats in a single panel
+ * Displays Daily Tandem, Daily Mini, Daily Alchemy, and Reel Connections stats in a single panel
  *
  * @param {boolean} isOpen - Whether the panel is open
  * @param {Function} onClose - Callback to close the panel
@@ -24,21 +22,11 @@ import StatsModalSkeleton from '@/components/shared/StatsModalSkeleton';
 export default function UnifiedStatsModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
-  const pathname = usePathname();
   const [animationKey, setAnimationKey] = useState(0);
   const [showAchievements, setShowAchievements] = useState(false);
-  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   // Load stats for all games
   const { tandemStats, miniStats, reelStats, soupStats, loading, error } = useUnifiedStats(isOpen);
-
-  // Determine the current game based on the URL path
-  const getCurrentGame = () => {
-    if (pathname?.includes('dailymini')) return 'mini';
-    if (pathname?.includes('reel-connections')) return 'reel';
-    if (pathname?.includes('daily-alchemy')) return 'soup';
-    return 'tandem'; // Default to tandem (home page or /game)
-  };
 
   // Trigger re-animation when modal opens
   useEffect(() => {
@@ -59,15 +47,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
   const handleCloseAchievements = () => {
     setShowAchievements(false);
-  };
-
-  const handleOpenLeaderboard = () => {
-    lightTap();
-    setShowLeaderboard(true);
-  };
-
-  const handleCloseLeaderboard = () => {
-    setShowLeaderboard(false);
   };
 
   return (
@@ -111,18 +90,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
             {/* Action Buttons - scrollable with content */}
             <div className="space-y-2 mt-4 pb-4">
-              {/* Leaderboards Button */}
-              <button
-                onClick={handleOpenLeaderboard}
-                className={`w-full py-3 px-4 rounded-[20px] border-[3px] font-semibold transition-all flex items-center justify-center ${
-                  highContrast
-                    ? 'bg-hc-primary text-hc-text border-hc-border hover:bg-hc-primary/90 shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-                    : 'bg-white text-black border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)]'
-                }`}
-              >
-                View Leaderboards
-              </button>
-
               {/* Achievements Button */}
               <button
                 onClick={handleOpenAchievements}
@@ -141,14 +108,6 @@ export default function UnifiedStatsModal({ isOpen, onClose }) {
 
       {/* Nested Achievements Panel - Opens over stats panel */}
       <AchievementsModal isOpen={showAchievements} onClose={handleCloseAchievements} />
-
-      {/* Nested Leaderboard Panel - Opens over stats panel */}
-      <LeaderboardModal
-        isOpen={showLeaderboard}
-        onClose={handleCloseLeaderboard}
-        initialGame={getCurrentGame()}
-        initialTab="daily"
-      />
     </>
   );
 }

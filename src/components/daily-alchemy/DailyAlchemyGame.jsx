@@ -23,6 +23,7 @@ import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
 /**
  * Error display component
@@ -78,6 +79,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const {
     // State
@@ -366,6 +368,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Learn to Play Banner - outside scrollable container for proper click handling */}
@@ -395,6 +398,12 @@ export function DailyAlchemyGame({ initialDate = null }) {
       />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        initialGame="soup"
+        initialTab="daily"
+      />
     </>
   );
 }
