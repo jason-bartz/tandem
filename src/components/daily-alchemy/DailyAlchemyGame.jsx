@@ -209,7 +209,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
         {/* Animated gradient background */}
         <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
-        <div className="flex-1 flex flex-col max-w-md w-full mx-auto pt-4 pt-safe-ios">
+        {/* Desktop: wider container for side-by-side layout */}
+        <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto pt-4 pt-safe-ios">
           <div
             className={cn(
               'rounded-[32px] border-[3px] flex-1 flex flex-col mx-4 mb-4 min-h-0',

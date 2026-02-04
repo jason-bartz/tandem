@@ -11,6 +11,7 @@ import { playPlunkSound } from '@/lib/sounds';
 import { StatsAndTargetRow } from './TargetDisplay';
 import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
+import { EmbeddedFavorites } from './EmbeddedFavorites';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 
 /**
@@ -599,6 +600,7 @@ export function DailyAlchemyGameScreen({
           onUseHint={onUseHint}
           hintDisabled={isCombining || isAnimating || isComplete}
           isCountdown={true}
+          centered={true}
         />
       )}
 
@@ -791,45 +793,68 @@ export function DailyAlchemyGameScreen({
         )}
       </AnimatePresence>
 
-      {/* Combination Area */}
-      <CombinationArea
-        selectedA={selectedA}
-        selectedB={selectedB}
-        onClearA={clearSelections}
-        onClearB={clearSelections}
-        onCombine={combineElements}
-        onClear={clearSelections}
-        isCombining={isCombining}
-        isAnimating={isAnimating}
-        disabled={isComplete && !freePlayMode}
-        combinationError={combinationError}
-        onDropElement={handleDropElement}
-      />
+      {/* Main game area - side-by-side on desktop, stacked on mobile */}
+      <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 lg:gap-4">
+        {/* Left column: Combination Area + Favorites on desktop */}
+        <div className="flex-shrink-0 lg:w-[340px] lg:flex lg:flex-col lg:gap-3">
+          <CombinationArea
+            selectedA={selectedA}
+            selectedB={selectedB}
+            onClearA={clearSelections}
+            onClearB={clearSelections}
+            onCombine={combineElements}
+            onClear={clearSelections}
+            isCombining={isCombining}
+            isAnimating={isAnimating}
+            disabled={isComplete && !freePlayMode}
+            combinationError={combinationError}
+            onDropElement={handleDropElement}
+          />
 
-      {/* Element Bank - fills remaining space */}
-      <div className="flex-1 min-h-0 flex flex-col relative">
-        <ElementBank
-          elements={sortedElementBank}
-          selectedA={selectedA}
-          selectedB={selectedB}
-          onSelect={selectElement}
-          sortOrder={sortOrder}
-          onSortChange={setSortOrder}
-          searchQuery={searchQuery}
-          onSearchChange={setSearchQuery}
-          targetElement={freePlayMode ? null : targetElement}
-          recentElements={recentElements}
-          firstDiscoveryElements={firstDiscoveryElements}
-          disabled={isCombining || (isComplete && !freePlayMode)}
-          discoveredCount={freePlayMode ? discoveredCount : null}
-          favoriteElements={favoriteElements}
-          onToggleFavorite={onToggleFavorite}
-          onClearAllFavorites={onClearAllFavorites}
-          showFavoritesPanel={showFavoritesPanel}
-          onToggleFavoritesPanel={onToggleFavoritesPanel}
-          maxFavorites={maxFavorites}
-          allElements={elementBank}
-        />
+          {/* Embedded Favorites - desktop only */}
+          <div className="hidden lg:block lg:flex-1 lg:min-h-0">
+            <EmbeddedFavorites
+              elements={elementBank}
+              favoriteElements={favoriteElements}
+              onToggleFavorite={onToggleFavorite}
+              onClearAllFavorites={onClearAllFavorites}
+              onSelectElement={selectElement}
+              selectedA={selectedA}
+              selectedB={selectedB}
+              maxFavorites={maxFavorites}
+              recentElements={recentElements}
+              firstDiscoveryElements={firstDiscoveryElements}
+            />
+          </div>
+        </div>
+
+        {/* Element Bank - fills remaining space */}
+        <div className="flex-1 min-h-0 flex flex-col relative">
+          <ElementBank
+            elements={sortedElementBank}
+            selectedA={selectedA}
+            selectedB={selectedB}
+            onSelect={selectElement}
+            sortOrder={sortOrder}
+            onSortChange={setSortOrder}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            targetElement={freePlayMode ? null : targetElement}
+            recentElements={recentElements}
+            firstDiscoveryElements={firstDiscoveryElements}
+            disabled={isCombining || (isComplete && !freePlayMode)}
+            discoveredCount={discoveredCount}
+            favoriteElements={favoriteElements}
+            onToggleFavorite={onToggleFavorite}
+            onClearAllFavorites={onClearAllFavorites}
+            showFavoritesPanel={showFavoritesPanel}
+            onToggleFavoritesPanel={onToggleFavoritesPanel}
+            maxFavorites={maxFavorites}
+            allElements={elementBank}
+            isDesktopSidePanel={true}
+            hideDesktopFavorites={true}
+          />
+        </div>
       </div>
 
       {/* Result Animation Overlay */}
