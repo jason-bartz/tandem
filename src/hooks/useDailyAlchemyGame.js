@@ -46,6 +46,20 @@ function getCurrentPuzzleDate() {
 }
 
 /**
+ * Generate a unique element ID from a name.
+ * Uses underscores for spaces to differentiate from hyphens in the original name.
+ * This prevents ID collisions like "God Emperor" vs "God-Emperor".
+ * @param {string} name - Element name
+ * @returns {string} Unique ID
+ */
+function generateElementId(name) {
+  return name
+    .toLowerCase()
+    .replace(/\s+/g, '_')
+    .replace(/[^a-z0-9_-]/g, '');
+}
+
+/**
  * Get formatted date string for display (MM/DD/YY format)
  */
 function getFormattedDate(dateString) {
@@ -414,7 +428,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           setStatsRecorded(true); // Don't re-record stats
           if (savedState.elementBank) {
             const restoredBank = savedState.elementBank.map((name) => ({
-              id: name.toLowerCase().replace(/\s+/g, '-'),
+              id: generateElementId(name),
               name,
               emoji: savedState.elementEmojis?.[name] || '✨',
               isStarter: STARTER_ELEMENTS.some((s) => s.name === name),
@@ -486,7 +500,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Restore element bank
     if (savedState.elementBank) {
       const restoredBank = savedState.elementBank.map((name) => ({
-        id: name.toLowerCase().replace(/\s+/g, '-'),
+        id: generateElementId(name),
         name,
         emoji: savedState.elementEmojis?.[name] || '✨',
         isStarter: STARTER_ELEMENTS.some((s) => s.name === name),
@@ -689,7 +703,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       });
 
       const restoredBank = savedGame.elementBank.map((el) => ({
-        id: el.name.toLowerCase().replace(/\s+/g, '-'),
+        id: generateElementId(el.name),
         name: el.name,
         emoji: el.emoji || '✨',
         isStarter: STARTER_ELEMENTS.some((s) => s.name === el.name),
@@ -1032,7 +1046,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    */
   const selectResultElement = useCallback((element) => {
     const elementToSelect = {
-      id: element.name.toLowerCase().replace(/\s+/g, '-'),
+      id: generateElementId(element.name),
       name: element.name,
       emoji: element.emoji,
       isStarter: false,
@@ -1144,7 +1158,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
         // Add to element bank
         const newElement = {
-          id: element.toLowerCase().replace(/\s+/g, '-'),
+          id: generateElementId(element),
           name: element,
           emoji: emoji,
           isStarter: false,
