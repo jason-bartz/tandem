@@ -405,10 +405,7 @@ function MultiPathGenerator() {
               Generating...
             </>
           ) : (
-            <>
-              <Sparkles className="w-5 h-5" />
-              Generate Paths
-            </>
+            'Just Generate'
           )}
         </button>
       </div>
@@ -1687,109 +1684,115 @@ function SingleComboEntry() {
         )}
 
         {/* Combination Formula */}
-        <div className="flex flex-wrap items-center gap-3">
-          {/* Element A */}
-          <div className="relative flex-1 min-w-[150px]">
-            <input
-              type="text"
-              value={elementA}
-              onChange={(e) => handleElementSearch('a', e.target.value)}
-              onFocus={() => elementA && handleElementSearch('a', elementA)}
-              onBlur={() =>
-                setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
-              }
-              placeholder="Element A"
-              className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium"
-            />
-            {showSuggestions.a && suggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                {suggestions.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => selectSuggestion('a', s)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                  >
-                    <span>{s.emoji}</span>
-                    <span className="font-medium">{s.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+        <div className="space-y-3">
+          {/* Element A + Element B row */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Element A */}
+            <div className="relative flex-1 min-w-0">
+              <input
+                type="text"
+                value={elementA}
+                onChange={(e) => handleElementSearch('a', e.target.value)}
+                onFocus={() => elementA && handleElementSearch('a', elementA)}
+                onBlur={() =>
+                  setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
+                }
+                placeholder="Element A"
+                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm sm:text-base"
+              />
+              {showSuggestions.a && suggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      onClick={() => selectSuggestion('a', s)}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    >
+                      <span>{s.emoji}</span>
+                      <span className="font-medium">{s.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <span className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">+</span>
+
+            {/* Element B */}
+            <div className="relative flex-1 min-w-0">
+              <input
+                type="text"
+                value={elementB}
+                onChange={(e) => handleElementSearch('b', e.target.value)}
+                onFocus={() => elementB && handleElementSearch('b', elementB)}
+                onBlur={() =>
+                  setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
+                }
+                placeholder="Element B"
+                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm sm:text-base"
+              />
+              {showSuggestions.b && suggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      onClick={() => selectSuggestion('b', s)}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    >
+                      <span>{s.emoji}</span>
+                      <span className="font-medium">{s.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          <span className="text-2xl font-bold text-purple-600">+</span>
+          {/* = Result row */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <span className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">=</span>
 
-          {/* Element B */}
-          <div className="relative flex-1 min-w-[150px]">
-            <input
-              type="text"
-              value={elementB}
-              onChange={(e) => handleElementSearch('b', e.target.value)}
-              onFocus={() => elementB && handleElementSearch('b', elementB)}
-              onBlur={() =>
-                setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
-              }
-              placeholder="Element B"
-              className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium"
-            />
-            {showSuggestions.b && suggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                {suggestions.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => selectSuggestion('b', s)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                  >
-                    <span>{s.emoji}</span>
-                    <span className="font-medium">{s.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
+            {/* Result Emoji - optional, AI will generate if empty */}
+            <div className="w-16 sm:w-20 flex-shrink-0">
+              <input
+                type="text"
+                value={emoji}
+                onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
+                placeholder="auto"
+                title="Optional - AI will generate if empty"
+                className="w-full px-2 sm:px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
+                maxLength={4}
+              />
+            </div>
 
-          <span className="text-2xl font-bold text-purple-600">=</span>
-
-          {/* Result Emoji - optional, AI will generate if empty */}
-          <div className="w-20">
-            <input
-              type="text"
-              value={emoji}
-              onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-              placeholder="auto"
-              title="Optional - AI will generate if empty"
-              className="w-full px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
-              maxLength={4}
-            />
-          </div>
-
-          {/* Result Name - Searchable */}
-          <div className="relative flex-1 min-w-[150px]">
-            <input
-              type="text"
-              value={result}
-              onChange={(e) => handleResultSearch(e.target.value)}
-              onFocus={() => result && handleResultSearch(result)}
-              onBlur={() =>
-                setTimeout(() => setShowSuggestions((prev) => ({ ...prev, result: false })), 200)
-              }
-              placeholder="Result Element (search or type new)"
-              className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold"
-            />
-            {showSuggestions.result && resultSuggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                {resultSuggestions.map((s, i) => (
-                  <button
-                    key={i}
-                    onClick={() => selectResultSuggestion(s)}
-                    className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                  >
-                    <span>{s.emoji}</span>
-                    <span className="font-medium">{s.name}</span>
-                  </button>
-                ))}
-              </div>
-            )}
+            {/* Result Name - Searchable */}
+            <div className="relative flex-1 min-w-0">
+              <input
+                type="text"
+                value={result}
+                onChange={(e) => handleResultSearch(e.target.value)}
+                onFocus={() => result && handleResultSearch(result)}
+                onBlur={() =>
+                  setTimeout(() => setShowSuggestions((prev) => ({ ...prev, result: false })), 200)
+                }
+                placeholder="Result Element"
+                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-sm sm:text-base"
+              />
+              {showSuggestions.result && resultSuggestions.length > 0 && (
+                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                  {resultSuggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      onClick={() => selectResultSuggestion(s)}
+                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                    >
+                      <span>{s.emoji}</span>
+                      <span className="font-medium">{s.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -3076,10 +3079,10 @@ function FirstDiscoveriesSection() {
           <button
             onClick={() => fetchDiscoveries(pagination.page)}
             disabled={isLoading}
-            className="px-3 py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
+            className="p-1.5 sm:px-3 sm:py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
           >
             <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-            Refresh
+            <span className="hidden sm:inline">Refresh</span>
           </button>
         </div>
       </div>
