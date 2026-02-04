@@ -405,7 +405,7 @@ function MultiPathGenerator() {
               Generating...
             </>
           ) : (
-            'Just Generate'
+            'Generate'
           )}
         </button>
       </div>
@@ -998,7 +998,8 @@ function PathwayBuilder() {
             ) : (
               <>
                 <Save className="w-5 h-5" />
-                Save Pathway
+                <span className="sm:hidden">Save</span>
+                <span className="hidden sm:inline">Save Pathway</span>
               </>
             )}
           </button>
@@ -1095,14 +1096,14 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
   }, []);
 
   return (
-    <div className="flex items-center gap-2 p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
+    <div className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
       {/* Step number */}
-      <span className="text-xs font-bold text-gray-400 w-6">{index + 1}.</span>
+      <span className="text-xs font-bold text-gray-400 w-5 sm:w-6 flex-shrink-0">{index + 1}.</span>
 
       {/* Element A */}
-      <div className="relative flex-1 min-w-[100px]">
+      <div className="relative flex-1 min-w-0">
         <div className="flex items-center gap-1">
-          {row.emojiA && <span className="text-lg">{row.emojiA}</span>}
+          {row.emojiA && <span className="text-base sm:text-lg flex-shrink-0">{row.emojiA}</span>}
           <input
             type="text"
             value={row.elementA}
@@ -1110,7 +1111,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             onFocus={() => row.elementA && handleSearch('a', row.elementA)}
             onBlur={() => closeSuggestions('a')}
             placeholder="Element A"
-            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-medium"
           />
         </div>
         {showSuggestions.a && suggestions.a.length > 0 && (
@@ -1129,12 +1130,12 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
         )}
       </div>
 
-      <span className="text-lg font-bold text-purple-500">+</span>
+      <span className="text-base sm:text-lg font-bold text-purple-500 flex-shrink-0">+</span>
 
       {/* Element B */}
-      <div className="relative flex-1 min-w-[100px]">
+      <div className="relative flex-1 min-w-0">
         <div className="flex items-center gap-1">
-          {row.emojiB && <span className="text-lg">{row.emojiB}</span>}
+          {row.emojiB && <span className="text-base sm:text-lg flex-shrink-0">{row.emojiB}</span>}
           <input
             type="text"
             value={row.elementB}
@@ -1142,7 +1143,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             onFocus={() => row.elementB && handleSearch('b', row.elementB)}
             onBlur={() => closeSuggestions('b')}
             placeholder="Element B"
-            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-medium"
           />
         </div>
         {showSuggestions.b && suggestions.b.length > 0 && (
@@ -1161,12 +1162,14 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
         )}
       </div>
 
-      <span className="text-lg font-bold text-purple-500">=</span>
+      <span className="text-base sm:text-lg font-bold text-purple-500 flex-shrink-0">=</span>
 
       {/* Result */}
-      <div className="relative flex-1 min-w-[120px]">
+      <div className="relative flex-1 min-w-0">
         <div className="flex items-center gap-1">
-          {row.resultEmoji && <span className="text-lg">{row.resultEmoji}</span>}
+          {row.resultEmoji && (
+            <span className="text-base sm:text-lg flex-shrink-0">{row.resultEmoji}</span>
+          )}
           <input
             type="text"
             value={row.result}
@@ -1174,7 +1177,7 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
             onFocus={() => row.result && handleSearch('result', row.result)}
             onBlur={() => closeSuggestions('result')}
             placeholder="Result"
-            className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-bold"
+            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-bold"
           />
         </div>
         {showSuggestions.result && suggestions.result.length > 0 && (
