@@ -379,7 +379,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             <ChevronUp className="w-4 h-4" />
-            <span>use</span>
+            <span>swipe to use</span>
           </button>
           <button
             onClick={(e) => {
@@ -396,7 +396,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             <ChevronDown className="w-4 h-4" />
-            <span>close</span>
+            <span>swipe to close</span>
           </button>
         </motion.div>
       </motion.div>
