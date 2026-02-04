@@ -4,7 +4,7 @@ import adminService from '@/services/admin.service';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 
-export default function PuzzleEditor({ initialPuzzle, onClose }) {
+export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport, onShowThemes }) {
   const [selectedDate, setSelectedDate] = useState(
     initialPuzzle?.date || new Date().toISOString().split('T')[0]
   );
@@ -294,8 +294,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
         </div>
       )}
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <div>
+        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
+          <div className="sm:w-40">
             <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
               Date
             </label>
@@ -303,13 +303,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-3 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
               style={{ boxShadow: 'var(--shadow-small)' }}
               required
             />
           </div>
 
-          <div>
+          <div className="flex-1">
             <div className="flex items-center justify-between mb-2">
               <label className="block text-xs sm:text-sm font-bold text-text-primary">Theme</label>
               <button
@@ -394,15 +394,32 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    <span>Generating...</span>
+                    <span className="hidden sm:inline">Creating...</span>
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 justify-center">
-                    <span>AI</span>
-                    <span className="hidden sm:inline">Generate</span>
-                  </span>
+                  <span>Create</span>
                 )}
               </button>
+              {onShowThemes && (
+                <button
+                  type="button"
+                  onClick={onShowThemes}
+                  className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                  style={{ boxShadow: 'var(--shadow-button)' }}
+                >
+                  Themes
+                </button>
+              )}
+              {onShowBulkImport && (
+                <button
+                  type="button"
+                  onClick={onShowBulkImport}
+                  className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
+                  style={{ boxShadow: 'var(--shadow-button)' }}
+                >
+                  Bulk Import
+                </button>
+              )}
             </div>
             {/* Theme Suggestions */}
             {themeSuggestions.length > 0 && (
@@ -568,10 +585,6 @@ export default function PuzzleEditor({ initialPuzzle, onClose }) {
                 )}
               </div>
             )}
-            <p className="text-xs text-text-secondary font-medium">
-              AI will assess difficulty based on theme complexity, vocabulary level, emoji clarity,
-              and hint directness. You can override the rating manually before saving.
-            </p>
           </div>
         </div>
 

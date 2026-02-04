@@ -22,7 +22,6 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [calendarSubTab, setCalendarSubTab] = useState('calendar'); // 'calendar', 'themes'
   const [showBulkImport, setShowBulkImport] = useState(false);
-  const [mounted, setMounted] = useState(false);
   const [feedbackCounts, setFeedbackCounts] = useState(null);
   const [submissionCounts, setSubmissionCounts] = useState(null);
   // eslint-disable-next-line no-unused-vars
@@ -247,6 +246,11 @@ export default function AdminDashboard() {
                   editingPuzzle ? { ...editingPuzzle, date: selectedDate } : { date: selectedDate }
                 }
                 onClose={handleCloseEditor}
+                onShowBulkImport={() => setShowBulkImport(true)}
+                onShowThemes={() => {
+                  setActiveEditor(null);
+                  setCalendarSubTab('themes');
+                }}
               />
             </div>
           </div>
@@ -354,14 +358,6 @@ export default function AdminDashboard() {
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
           <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Puzzle Management</h2>
-          {mounted && (
-            <button
-              onClick={() => setShowBulkImport(true)}
-              className="hidden sm:inline-block px-4 sm:px-6 py-2 sm:py-3 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
-            >
-              Bulk Import
-            </button>
-          )}
         </div>
         <p className="text-sm text-text-secondary font-medium">
           Create and manage daily puzzles for all games
@@ -490,30 +486,15 @@ export default function AdminDashboard() {
                     <h3 className="text-base sm:text-lg font-bold text-text-primary">
                       {calendarSubTab === 'calendar' ? 'All Games Calendar' : 'Theme Tracker'}
                     </h3>
-                    <div className="flex items-center space-x-1 sm:space-x-2">
+                    {calendarSubTab === 'themes' && (
                       <button
                         onClick={() => setCalendarSubTab('calendar')}
-                        className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 ${
-                          calendarSubTab === 'calendar'
-                            ? 'bg-accent-yellow border-black dark:border-white text-text-primary shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20'
-                        }`}
+                        className="px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20"
                       >
                         <Image src="/icons/ui/archive.png" alt="" width={16} height={16} />
-                        <span className="hidden sm:inline">Calendar</span>
+                        <span className="hidden sm:inline">← Back to Calendar</span>
                       </button>
-                      <button
-                        onClick={() => setCalendarSubTab('themes')}
-                        className={`px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 ${
-                          calendarSubTab === 'themes'
-                            ? 'bg-accent-pink border-black dark:border-white text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                            : 'bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-pink/20'
-                        }`}
-                      >
-                        <Image src="/icons/ui/theme.png" alt="" width={16} height={16} />
-                        <span className="hidden sm:inline">Themes</span>
-                      </button>
-                    </div>
+                    )}
                   </div>
                 </div>
 
