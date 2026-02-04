@@ -36,11 +36,9 @@ function ElementChipInner({
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
-  // Touch tracking refs
+  // Touch tracking refs for drag detection only
   const touchStartPos = useRef(null);
   const hasDragged = useRef(false);
-  // Tracks if touch already handled the click (prevents double-fire on mobile)
-  const touchHandledClick = useRef(false);
 
   const sizeClasses = {
     small: 'px-2 py-1 text-xs gap-1',
@@ -101,34 +99,20 @@ function ElementChipInner({
       if (didDrag) {
         // End drag - notify parent with final position
         onTouchDragEnd?.(true, touch.clientX, touch.clientY);
-      } else if (draggable) {
-        // Was a tap, not a drag - trigger click via touch
-        // Set flag to prevent the synthetic click event from also firing
-        touchHandledClick.current = true;
-        onClick?.(element);
       }
+      // For taps (no drag), we do nothing here - let the native click event handle it
+      // This avoids double-firing onClick on mobile
 
       // Reset touch state
       touchStartPos.current = null;
       hasDragged.current = false;
     },
-    [disabled, draggable, element, onClick, onTouchDragEnd]
+    [disabled, onTouchDragEnd]
   );
-
-  // Handle click - skip if touch already handled it (prevents double-fire on mobile)
-  const handleClick = useCallback(() => {
-    if (disabled) return;
-    if (touchHandledClick.current) {
-      // Touch already fired onClick, skip the synthetic click
-      touchHandledClick.current = false;
-      return;
-    }
-    onClick?.(element);
-  }, [disabled, onClick, element]);
 
   return (
     <motion.button
-      onClick={handleClick}
+      onClick={() => !disabled && onClick?.(element)}
       disabled={disabled}
       draggable={draggable && !disabled}
       onDragStart={onDragStart}
