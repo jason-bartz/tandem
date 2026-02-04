@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import Image from 'next/image';
 import UnifiedPuzzleCalendar from '@/components/admin/UnifiedPuzzleCalendar';
 import GameSelectorModal from '@/components/admin/GameSelectorModal';
@@ -43,10 +43,6 @@ export default function AdminDashboard() {
 
   // Calendar refresh function reference
   const refreshCalendarRef = useRef(null);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   // Handle date selection from unified calendar
   const handleDateSelect = (date, puzzles) => {
