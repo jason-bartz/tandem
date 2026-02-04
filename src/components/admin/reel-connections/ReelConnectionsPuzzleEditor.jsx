@@ -103,7 +103,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                 <button
                   onClick={onShuffle}
                   disabled={shuffleLoading}
-                  className="w-8 h-8 bg-accent-green text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-green text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1 text-xs"
                   title="Generate new movie"
                 >
                   {shuffleLoading ? (
@@ -132,22 +132,25 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                       />
                     </svg>
                   )}
+                  <span className="hidden sm:inline">Shuffle</span>
                 </button>
               )}
               <a
                 href={`https://www.imdb.com/title/${value.imdbId}/`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-8 h-8 bg-[#F5C518] text-black rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center text-xs"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-[#F5C518] text-black rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center gap-1 text-xs"
                 title="View on IMDb"
               >
-                i
+                <span className="sm:hidden">i</span>
+                <span className="hidden sm:inline">IMDb</span>
               </a>
               <button
                 onClick={handleRemove}
-                className="w-8 h-8 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold"
+                className="w-8 h-8 sm:w-auto sm:h-auto sm:px-2 sm:py-1.5 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center gap-1 text-xs"
               >
-                ×
+                <span className="sm:hidden">×</span>
+                <span className="hidden sm:inline">Clear</span>
               </button>
             </div>
           </div>
