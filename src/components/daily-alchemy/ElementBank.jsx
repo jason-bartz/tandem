@@ -19,6 +19,9 @@ const ROW_HEIGHT = 48;
 const MIN_ROWS = 3;
 const MAX_ROWS = 10;
 
+// Desktop breakpoint (matches Tailwind lg:)
+const DESKTOP_BREAKPOINT = 1024;
+
 // Touch drag threshold in pixels - movement beyond this initiates drag mode
 const TOUCH_DRAG_THRESHOLD = 10;
 
@@ -44,6 +47,8 @@ export function ElementBank({
   onToggleFavoritesPanel,
   maxFavorites = 12,
   allElements = [], // All elements for favorites panel (unfiltered)
+  isDesktopSidePanel = false, // When true, enables desktop-optimized layout
+  hideDesktopFavorites = false, // When true, hides favorites button on desktop (used when embedded favorites is shown)
 }) {
   const { highContrast } = useTheme();
   const gridContainerRef = useRef(null);
@@ -51,11 +56,27 @@ export function ElementBank({
   const [rowCount, setRowCount] = useState(7);
   const [isDraggingToFavorites, setIsDraggingToFavorites] = useState(false);
   const [draggedElementName, setDraggedElementName] = useState(null);
+  const [isDesktop, setIsDesktop] = useState(false);
 
   // Touch drag state for mobile
   const [touchDragElement, setTouchDragElement] = useState(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
   const [touchOverFavorites, setTouchOverFavorites] = useState(false);
+
+  // Detect desktop viewport
+  useEffect(() => {
+    if (!isDesktopSidePanel) {
+      setIsDesktop(false);
+      return;
+    }
+
+    const mediaQuery = window.matchMedia(`(min-width: ${DESKTOP_BREAKPOINT}px)`);
+    setIsDesktop(mediaQuery.matches);
+
+    const handleChange = (e) => setIsDesktop(e.matches);
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [isDesktopSidePanel]);
 
   // Calculate how many rows can fit in available space
   const calculateRows = useCallback(() => {
@@ -261,41 +282,49 @@ export function ElementBank({
           )}
         </div>
 
-        {/* Favorites button - also a drop zone for adding favorites */}
-        <button
-          ref={favoritesButtonRef}
-          onClick={onToggleFavoritesPanel}
-          onDragOver={handleFavoritesDragOver}
-          onDragLeave={handleFavoritesDragLeave}
-          onDrop={handleFavoritesDrop}
-          className={cn(
-            'flex-shrink-0',
-            'w-10 h-10',
-            'flex items-center justify-center',
-            'bg-white dark:bg-gray-800',
-            'border-[2px] border-black dark:border-gray-600',
-            'rounded-xl',
-            'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-            'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-            'active:translate-y-0 active:shadow-none',
-            'transition-all duration-150',
-            showFavoritesPanel && 'bg-soup-primary/20 ring-2 ring-soup-primary',
-            // Desktop drag feedback
-            isDraggingToFavorites &&
-              'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
-            // Mobile touch drag feedback
-            touchOverFavorites &&
-              'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
-            highContrast && 'border-[3px] border-hc-border'
-          )}
-          aria-label="Open favorites"
-          aria-expanded={showFavoritesPanel}
-        >
-          <Image src="/icons/ui/favorites.png" alt="" width={24} height={24} className="w-6 h-6" />
-        </button>
+        {/* Favorites button - hidden on desktop when embedded favorites is shown */}
+        {!(hideDesktopFavorites && isDesktop) && (
+          <button
+            ref={favoritesButtonRef}
+            onClick={onToggleFavoritesPanel}
+            onDragOver={handleFavoritesDragOver}
+            onDragLeave={handleFavoritesDragLeave}
+            onDrop={handleFavoritesDrop}
+            className={cn(
+              'flex-shrink-0',
+              'w-10 h-10',
+              'flex items-center justify-center',
+              'bg-white dark:bg-gray-800',
+              'border-[2px] border-black dark:border-gray-600',
+              'rounded-xl',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150',
+              showFavoritesPanel && 'bg-soup-primary/20 ring-2 ring-soup-primary',
+              // Desktop drag feedback
+              isDraggingToFavorites &&
+                'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
+              // Mobile touch drag feedback
+              touchOverFavorites &&
+                'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
+              highContrast && 'border-[3px] border-hc-border'
+            )}
+            aria-label="Open favorites"
+            aria-expanded={showFavoritesPanel}
+          >
+            <Image
+              src="/icons/ui/favorites.png"
+              alt=""
+              width={24}
+              height={24}
+              className="w-6 h-6"
+            />
+          </button>
+        )}
 
-        {/* Favorites Panel - positioned as dropdown from button */}
-        {showFavoritesPanel && (
+        {/* Favorites Panel - positioned as dropdown from button (mobile only when hideDesktopFavorites) */}
+        {showFavoritesPanel && !(hideDesktopFavorites && isDesktop) && (
           <FavoritesPanel
             elements={allElements}
             favoriteElements={favoriteElements}
@@ -312,20 +341,24 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - dynamic rows based on available space, horizontal scroll */}
+      {/* Element grid wrapper - dynamic layout based on viewport */}
       <div className="flex-1 min-h-0" ref={gridContainerRef}>
         <div
           className={cn(
             'grid gap-2',
-            'grid-flow-col auto-cols-min content-start',
-            'h-full overflow-x-auto overflow-y-hidden scrollable',
+            // Desktop side panel: vertical scroll with responsive columns
+            isDesktop
+              ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min overflow-y-auto overflow-x-hidden'
+              : // Mobile: horizontal scroll with dynamic rows
+                'grid-flow-col auto-cols-min content-start overflow-x-auto overflow-y-hidden',
+            'h-full scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
             'border-[2px] border-gray-200 dark:border-gray-700',
             'rounded-xl',
             highContrast && 'border-hc-border'
           )}
-          style={{ gridTemplateRows: `repeat(${rowCount}, min-content)` }}
+          style={!isDesktop ? { gridTemplateRows: `repeat(${rowCount}, min-content)` } : undefined}
           role="region"
           aria-label="Element bank"
         >

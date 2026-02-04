@@ -73,14 +73,18 @@ export function StatsAndTargetRow({
   onUseHint,
   hintDisabled = false,
   isCountdown = false,
+  centered = false, // When true, centers the target with stats on right
 }) {
   // Determine timer warning state for countdown mode
   const isLowTime = isCountdown && time <= 60; // Last minute
   const isCriticalTime = isCountdown && time <= 30; // Last 30 seconds
 
   return (
-    <div className="flex items-center justify-between mb-3">
-      {/* Left side - Target */}
+    <div className={cn('flex items-center mb-3', centered ? 'justify-center' : 'justify-between')}>
+      {/* Spacer for centering - takes same width as stats on right */}
+      {centered && <div className="flex-1" />}
+
+      {/* Center - Target */}
       <TargetDisplay
         targetElement={targetElement}
         targetEmoji={targetEmoji}
@@ -88,7 +92,7 @@ export function StatsAndTargetRow({
       />
 
       {/* Right side - Stats and Hints */}
-      <div className="flex items-center gap-3">
+      <div className={cn('flex items-center gap-3', centered && 'flex-1 justify-end')}>
         {/* Hint Button */}
         {hintsRemaining > 0 && onUseHint && (
           <button
