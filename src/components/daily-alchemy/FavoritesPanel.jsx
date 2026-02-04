@@ -81,17 +81,8 @@ export function FavoritesPanel({
 
   return (
     <>
-      {/* Click-outside backdrop - onTouchEnd ensures mobile touch events work on invisible elements */}
-      <div
-        className="fixed inset-0 z-40"
-        onClick={onClose}
-        onTouchEnd={(e) => {
-          // preventDefault stops the synthetic click event from firing (prevents double-fire on mobile)
-          e.preventDefault();
-          onClose?.();
-        }}
-        aria-hidden="true"
-      />
+      {/* Click-outside backdrop */}
+      <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
       <div
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
