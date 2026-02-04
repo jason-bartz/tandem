@@ -33,6 +33,9 @@ export function FavoritesPanel({
 
   const handleElementClick = (element) => {
     onSelectElement?.(element);
+    // Close the panel after selecting an element to prevent backdrop from blocking the game
+    // This fixes a mobile bug where the invisible backdrop blocks touch events
+    onClose?.();
   };
 
   // Drag handlers for removing favorites
@@ -78,8 +81,13 @@ export function FavoritesPanel({
 
   return (
     <>
-      {/* Click-outside backdrop */}
-      <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
+      {/* Click-outside backdrop - onTouchEnd ensures mobile touch events work on invisible elements */}
+      <div
+        className="fixed inset-0 z-40"
+        onClick={onClose}
+        onTouchEnd={onClose}
+        aria-hidden="true"
+      />
       <div
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
