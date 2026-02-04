@@ -80,9 +80,16 @@ export function StatsAndTargetRow({
   const isCriticalTime = isCountdown && time <= 30; // Last 30 seconds
 
   return (
-    <div className={cn('flex items-center mb-3', centered ? 'justify-center' : 'justify-between')}>
-      {/* Spacer for centering - takes same width as stats on right */}
-      {centered && <div className="flex-1" />}
+    <div
+      className={cn(
+        'flex items-center mb-3',
+        // On mobile: always justify-between (left-aligned target, right-aligned stats)
+        // On desktop with centered: center the target
+        centered ? 'justify-between lg:justify-center' : 'justify-between'
+      )}
+    >
+      {/* Spacer for centering - only visible on desktop when centered */}
+      {centered && <div className="hidden lg:block lg:flex-1" />}
 
       {/* Center - Target */}
       <TargetDisplay
@@ -92,7 +99,7 @@ export function StatsAndTargetRow({
       />
 
       {/* Right side - Stats and Hints */}
-      <div className={cn('flex items-center gap-3', centered && 'flex-1 justify-end')}>
+      <div className={cn('flex items-center gap-3', centered && 'lg:flex-1 lg:justify-end')}>
         {/* Hint Button */}
         {hintsRemaining > 0 && onUseHint && (
           <button
