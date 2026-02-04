@@ -175,6 +175,7 @@ export function FavoritesPanel({
                         isNew={showNewBadge}
                         onClick={handleElementClick}
                         size="small"
+                        disableAnimations
                       />
                     </div>
                   );

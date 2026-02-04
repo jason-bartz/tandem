@@ -14,6 +14,8 @@ import {
   playPlunkSound,
   playSoupStartSound,
   playSoupWinSound,
+  playFavoriteAddSound,
+  playFavoriteClearSound,
 } from '@/lib/sounds';
 import {
   SOUP_GAME_STATES,
@@ -959,6 +961,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return next;
       } else if (next.size < MAX_FAVORITES) {
         next.add(elementName);
+        // Play pop sound when adding a favorite
+        playFavoriteAddSound();
         return next;
       }
       // At max capacity, don't add
@@ -982,7 +986,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Clear all favorites
    */
   const clearAllFavorites = useCallback(() => {
-    setFavoriteElements(new Set());
+    // Only play sound if there are favorites to clear
+    setFavoriteElements((prev) => {
+      if (prev.size > 0) {
+        playFavoriteClearSound();
+      }
+      return new Set();
+    });
   }, []);
 
   /**
