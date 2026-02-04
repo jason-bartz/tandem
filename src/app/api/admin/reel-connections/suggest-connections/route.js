@@ -21,7 +21,7 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { difficulty = 'medium' } = body;
+    const { difficulty = 'medium', existingConnections = [] } = body;
 
     // Calculate date 90 days ago
     const ninetyDaysAgo = new Date();
@@ -59,6 +59,7 @@ export async function POST(request) {
     const result = await aiService.suggestReelConnections({
       difficulty,
       recentConnections,
+      existingConnections,
     });
 
     return NextResponse.json({

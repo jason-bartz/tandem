@@ -2185,9 +2185,14 @@ Return ONLY a JSON object with the movie title:
    * @param {Object} options - Suggestion options
    * @param {string} options.difficulty - Difficulty level (easiest, easy, medium, hardest)
    * @param {string[]} options.recentConnections - Recent connections to avoid (last 90 days)
+   * @param {string[]} options.existingConnections - Connections already in the current puzzle to avoid
    * @returns {Promise<{suggestions: Array<{connection: string, description: string}>}>}
    */
-  async suggestReelConnections({ difficulty = 'medium', recentConnections = [] }) {
+  async suggestReelConnections({
+    difficulty = 'medium',
+    recentConnections = [],
+    existingConnections = [],
+  }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -2198,7 +2203,11 @@ Return ONLY a JSON object with the movie title:
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildReelConnectionsSuggestionPrompt({ difficulty, recentConnections });
+        const prompt = this.buildReelConnectionsSuggestionPrompt({
+          difficulty,
+          recentConnections,
+          existingConnections,
+        });
         const genInfo = {
           difficulty,
           recentConnectionsCount: recentConnections.length,
@@ -2285,7 +2294,11 @@ Return ONLY a JSON object with the movie title:
   /**
    * Build prompt for Reel Connections suggestion generation
    */
-  buildReelConnectionsSuggestionPrompt({ difficulty, recentConnections }) {
+  buildReelConnectionsSuggestionPrompt({
+    difficulty,
+    recentConnections,
+    existingConnections = [],
+  }) {
     const difficultyGuidance = {
       easiest:
         'Suggest connections that involve very well-known, mainstream movies. Think blockbusters, Oscar winners, iconic franchises.',
@@ -2301,12 +2314,17 @@ Return ONLY a JSON object with the movie title:
         ? `\n\nRECENT CONNECTIONS TO AVOID (used in the last 90 days):\n${recentConnections.map((c) => `- ${c}`).join('\n')}`
         : '';
 
+    const existingConnectionsList =
+      existingConnections.length > 0
+        ? `\n\nCONNECTIONS ALREADY IN THIS PUZZLE (do not suggest similar connections):\n${existingConnections.map((c) => `- ${c}`).join('\n')}`
+        : '';
+
     return `You are suggesting connection ideas for a Reel Connections puzzle game (similar to NYT Connections but with movies).
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
 
-Generate 4 UNIQUE and CREATIVE connection ideas that would work well for this difficulty level.
-${recentConnectionsList}
+Generate 8 UNIQUE and CREATIVE connection ideas that would work well for this difficulty level.
+${recentConnectionsList}${existingConnectionsList}
 
 REQUIREMENTS:
 1. Each connection should be interesting and have an "aha!" moment
@@ -2331,8 +2349,7 @@ RESPONSE FORMAT (JSON only):
   "suggestions": [
     { "connection": "Connection Title In Title Case", "description": "Brief explanation of what movies fit this" },
     { "connection": "Another Connection", "description": "Brief explanation" },
-    { "connection": "Third Connection", "description": "Brief explanation" },
-    { "connection": "Fourth Connection", "description": "Brief explanation" }
+    ... (8 total suggestions)
   ]
 }
 
@@ -2366,7 +2383,7 @@ Return ONLY the JSON.`;
       });
 
       return {
-        suggestions: result.suggestions.slice(0, 4).map((s) => ({
+        suggestions: result.suggestions.slice(0, 8).map((s) => ({
           connection: s.connection.trim(),
           description: s.description.trim(),
         })),
