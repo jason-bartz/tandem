@@ -219,12 +219,20 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
+      className="fixed inset-0 z-50 flex items-center justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      onClick={handleClose}
     >
+      {/* Separate backdrop div for reliable click handling on mobile */}
+      <div
+        className="absolute inset-0 bg-black/30"
+        onClick={handleClose}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          handleClose();
+        }}
+      />
       <motion.div
         className={cn(
           'relative flex flex-col items-center gap-2 px-8 pt-6 pb-4',
@@ -310,6 +318,11 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               e.stopPropagation();
               handleShare();
             }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (!isSharing) handleShare();
+            }}
             disabled={isSharing}
             className={cn(
               'mt-2 flex items-center justify-center gap-2 px-5 py-2',
@@ -358,6 +371,11 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               e.stopPropagation();
               handleUse();
             }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleUse();
+            }}
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             <ChevronUp className="w-4 h-4" />
@@ -365,6 +383,11 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           </button>
           <button
             onClick={(e) => {
+              e.stopPropagation();
+              handleClose();
+            }}
+            onTouchEnd={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               handleClose();
             }}
