@@ -2949,6 +2949,7 @@ function FirstDiscoveriesSection() {
   const [error, setError] = useState(null);
   const [selectedDiscovery, setSelectedDiscovery] = useState(null);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
+  const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch discoveries
   const fetchDiscoveries = useCallback(async (page = 1) => {
@@ -3027,12 +3028,24 @@ function FirstDiscoveriesSection() {
     return `Week of ${format(weekStart)} - ${format(weekEnd)}`;
   };
 
-  const weekGroups = groupDiscoveriesByWeek(discoveries);
+  // Filter discoveries based on search query
+  const filteredDiscoveries = discoveries.filter((discovery) => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      discovery.resultElement?.toLowerCase().includes(query) ||
+      discovery.username?.toLowerCase().includes(query) ||
+      discovery.elementA?.toLowerCase().includes(query) ||
+      discovery.elementB?.toLowerCase().includes(query)
+    );
+  });
+
+  const weekGroups = groupDiscoveriesByWeek(filteredDiscoveries);
 
   return (
     <div className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6">
       {/* Header */}
-      <div className="flex items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
           <Sparkles className="w-5 h-5 text-amber-500" />
           Player First Discoveries
@@ -3040,14 +3053,35 @@ function FirstDiscoveriesSection() {
             <span className="text-sm font-normal text-text-secondary">({pagination.total})</span>
           )}
         </h3>
-        <button
-          onClick={() => fetchDiscoveries(pagination.page)}
-          disabled={isLoading}
-          className="px-3 py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
-        >
-          <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Search bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search elements or users..."
+              className="pl-9 pr-3 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary placeholder:text-gray-400 w-48 sm:w-56 focus:outline-none focus:ring-2 focus:ring-amber-500"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-gray-200 dark:hover:bg-gray-600"
+              >
+                <X className="w-3.5 h-3.5 text-gray-400" />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => fetchDiscoveries(pagination.page)}
+            disabled={isLoading}
+            className="px-3 py-1.5 text-sm font-medium rounded-lg border-[2px] border-black dark:border-white bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center gap-1.5"
+          >
+            <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            Refresh
+          </button>
+        </div>
       </div>
 
       {/* Error state */}
@@ -3073,6 +3107,20 @@ function FirstDiscoveriesSection() {
           <p className="text-sm text-text-secondary mt-1">
             First discoveries will appear here when players discover new elements
           </p>
+        </div>
+      )}
+
+      {/* No search results */}
+      {!isLoading && !error && discoveries.length > 0 && filteredDiscoveries.length === 0 && (
+        <div className="text-center py-12">
+          <Search className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+          <p className="text-text-secondary">No discoveries match "{searchQuery}"</p>
+          <button
+            onClick={() => setSearchQuery('')}
+            className="mt-2 text-sm text-amber-600 dark:text-amber-400 hover:underline"
+          >
+            Clear search
+          </button>
         </div>
       )}
 
