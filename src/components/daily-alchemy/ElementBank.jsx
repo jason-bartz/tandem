@@ -232,6 +232,8 @@ export function ElementBank({
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder="Search elements..."
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => e.preventDefault()}
             className={cn(
               'w-full px-4 py-2 pl-10',
               'bg-white dark:bg-gray-800',
