@@ -1008,8 +1008,8 @@ export default function Support() {
                 <strong>Search & Sort</strong>: Easily find elements in your bank
               </li>
               <li>
-                <strong>Favorites</strong>: Long press any element to save up to 12 favorites for
-                quick access
+                <strong>Favorites</strong>: Long press (mobile) or drag (desktop) to save up to 12
+                favorites for quick access
               </li>
               <li>
                 <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Puzzle Club)

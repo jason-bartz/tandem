@@ -20,6 +20,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying = false }) {
   const [isVisible, setIsVisible] = useState(false);
   const [shouldRender, setShouldRender] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(true); // Default to touch for SSR
   const { reduceMotion, highContrast } = useTheme();
   const { lightTap } = useHaptics();
   const timerRef = useRef(null);
@@ -27,6 +28,11 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
 
   const favoritesTutorialKey = `${gameType}FavoritesTutorialDismissed`;
   const hintTutorialKey = `${gameType}HintTutorialDismissed`;
+
+  // Detect touch device for appropriate help text
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   // Show banner after delay
   const showBannerAfterDelay = (delay = 30000) => {
@@ -191,7 +197,7 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
                 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-100'}
               `}
             >
-              Long press any element to add to{' '}
+              {isTouchDevice ? 'Long press any element to add to' : 'Drag any element to'}{' '}
               <Image
                 src="/icons/ui/favorites.png"
                 alt="favorites"
