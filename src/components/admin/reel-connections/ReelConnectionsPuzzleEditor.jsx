@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import authService from '@/services/auth.service';
-import ReelConnectionsAIGenerator from './ReelConnectionsAIGenerator';
 import logger from '@/lib/logger';
 
 const DIFFICULTY_LEVELS = [
@@ -21,7 +20,7 @@ const DIFFICULTY_LEVELS = [
 /**
  * MovieSearchInput - Searchable input for selecting movies
  */
-function MovieSearchInput({ value, onChange, groupColor }) {
+function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoading, canShuffle }) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -99,12 +98,49 @@ function MovieSearchInput({ value, onChange, groupColor }) {
               <p className="font-bold text-sm text-[#2c2c2c] truncate">{value.title}</p>
               <p className="text-xs text-[#2c2c2c]/70">{value.year}</p>
             </div>
-            <button
-              onClick={handleRemove}
-              className="flex-shrink-0 w-8 h-8 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold"
-            >
-              ×
-            </button>
+            <div className="flex flex-col gap-1 flex-shrink-0">
+              {canShuffle && (
+                <button
+                  onClick={onShuffle}
+                  disabled={shuffleLoading}
+                  className="w-8 h-8 bg-accent-green text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="Generate new movie"
+                >
+                  {shuffleLoading ? (
+                    <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                      />
+                    </svg>
+                  )}
+                </button>
+              )}
+              <button
+                onClick={handleRemove}
+                className="w-8 h-8 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold"
+              >
+                ×
+              </button>
+            </div>
           </div>
         </div>
       ) : (
@@ -158,13 +194,15 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
     DIFFICULTY_LEVELS.map((level) => ({
       difficulty: level.id,
       connection: '',
+      connectionContext: '',
       movies: [null, null, null, null],
     }))
   );
   const [selectedDate, setSelectedDate] = useState(date || '');
-  const [showAIGenerator, setShowAIGenerator] = useState(false);
-  const [aiGeneratingForGroup, setAiGeneratingForGroup] = useState(null);
-  const [aiLoading, setAiLoading] = useState(false);
+  const [generatingForGroup, setGeneratingForGroup] = useState(null);
+  const [shuffleLoading, setShuffleLoading] = useState({}); // { "groupIndex-movieIndex": true }
+  const [suggestions, setSuggestions] = useState({});
+  const [suggestionsLoading, setSuggestionsLoading] = useState({});
 
   // Track creator attribution for user-submitted puzzles
   const [creatorName, setCreatorName] = useState(puzzle?.creatorName || null);
@@ -208,12 +246,14 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
           return {
             difficulty: level.id,
             connection: existingGroup.connection || '',
+            connectionContext: existingGroup.connectionContext || '',
             movies: transformedMovies,
           };
         }
         return {
           difficulty: level.id,
           connection: '',
+          connectionContext: '',
           movies: [null, null, null, null],
         };
       });
@@ -224,6 +264,12 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
   const handleConnectionChange = (groupIndex, value) => {
     const newGroups = [...groups];
     newGroups[groupIndex].connection = value;
+    setGroups(newGroups);
+  };
+
+  const handleConnectionContextChange = (groupIndex, value) => {
+    const newGroups = [...groups];
+    newGroups[groupIndex].connectionContext = value;
     setGroups(newGroups);
   };
 
@@ -277,51 +323,133 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
     onSave(puzzleData);
   };
 
-  const handleAIGenerate = async ({ connection, difficulty }) => {
-    setAiLoading(true);
+  const handleGenerate = async (groupIndex) => {
+    const group = groups[groupIndex];
+    const connection = group.connection.trim();
+    const context = group.connectionContext?.trim() || '';
+    const difficulty = DIFFICULTY_LEVELS[groupIndex].id;
+
+    if (!connection || connection.length < 3) {
+      alert('Please enter a connection (at least 3 characters) before generating');
+      return;
+    }
+
+    setGeneratingForGroup(groupIndex);
     try {
       const response = await fetch('/api/admin/reel-connections/generate', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true),
-        body: JSON.stringify({ connection, difficulty }),
+        body: JSON.stringify({ connection, difficulty, context }),
       });
 
       const data = await response.json();
 
-      // Handle error responses
       if (!response.ok) {
         throw new Error(data.error || 'Failed to generate movies');
       }
 
-      // Handle partial success (206) - API returns verifiedMovies instead of movies
       if (response.status === 206) {
         throw new Error(data.details || 'Some movies could not be verified. Please try again.');
       }
 
-      // Validate response has required data
       if (!data.movies || !Array.isArray(data.movies) || data.movies.length !== 4) {
         throw new Error('Invalid response from AI - expected 4 movies');
       }
 
       // Update the group with AI-generated data
       const newGroups = [...groups];
-      newGroups[aiGeneratingForGroup].connection = data.connection;
-      newGroups[aiGeneratingForGroup].movies = data.movies;
+      newGroups[groupIndex].connection = data.connection;
+      newGroups[groupIndex].movies = data.movies;
       setGroups(newGroups);
-
-      setShowAIGenerator(false);
-      setAiGeneratingForGroup(null);
     } catch (error) {
       logger.error('AI generation error:', error);
       alert(error.message || 'Failed to generate movies. Please try again.');
     } finally {
-      setAiLoading(false);
+      setGeneratingForGroup(null);
     }
   };
 
-  const handleOpenAIGenerator = (groupIndex) => {
-    setAiGeneratingForGroup(groupIndex);
-    setShowAIGenerator(true);
+  const handleShuffleMovie = async (groupIndex, movieIndex) => {
+    const group = groups[groupIndex];
+    const connection = group.connection.trim();
+    const context = group.connectionContext?.trim() || '';
+    const difficulty = DIFFICULTY_LEVELS[groupIndex].id;
+
+    if (!connection || connection.length < 3) {
+      alert('Please enter a connection before shuffling movies');
+      return;
+    }
+
+    const key = `${groupIndex}-${movieIndex}`;
+    setShuffleLoading((prev) => ({ ...prev, [key]: true }));
+
+    try {
+      // Get existing movie titles to avoid duplicates
+      const existingMovies = group.movies
+        .filter((m, idx) => m !== null && idx !== movieIndex)
+        .map((m) => m.title);
+
+      const response = await fetch('/api/admin/reel-connections/regenerate-movie', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ connection, difficulty, context, existingMovies }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to generate movie');
+      }
+
+      if (!data.movie) {
+        throw new Error('Invalid response from AI');
+      }
+
+      // Update the specific movie slot
+      const newGroups = [...groups];
+      newGroups[groupIndex].movies[movieIndex] = data.movie;
+      setGroups(newGroups);
+    } catch (error) {
+      logger.error('Movie shuffle error:', error);
+      alert(error.message || 'Failed to generate movie. Please try again.');
+    } finally {
+      setShuffleLoading((prev) => ({ ...prev, [key]: false }));
+    }
+  };
+
+  const handleSuggestIdeas = async (groupIndex) => {
+    const difficulty = DIFFICULTY_LEVELS[groupIndex].id;
+
+    setSuggestionsLoading((prev) => ({ ...prev, [groupIndex]: true }));
+    setSuggestions((prev) => ({ ...prev, [groupIndex]: [] }));
+
+    try {
+      const response = await fetch('/api/admin/reel-connections/suggest-connections', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ difficulty }),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to get suggestions');
+      }
+
+      const data = await response.json();
+      setSuggestions((prev) => ({ ...prev, [groupIndex]: data.suggestions || [] }));
+    } catch (error) {
+      logger.error('Suggestions error:', error);
+      alert(error.message || 'Failed to get suggestions');
+    } finally {
+      setSuggestionsLoading((prev) => ({ ...prev, [groupIndex]: false }));
+    }
+  };
+
+  const handleSelectSuggestion = (groupIndex, suggestion) => {
+    const newGroups = [...groups];
+    newGroups[groupIndex].connection = suggestion.connection;
+    setGroups(newGroups);
+    setSuggestions((prev) => ({ ...prev, [groupIndex]: [] }));
   };
 
   return (
@@ -379,6 +507,10 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
       <div className="space-y-6">
         {groups.map((group, groupIndex) => {
           const levelInfo = DIFFICULTY_LEVELS[groupIndex];
+          const isGenerating = generatingForGroup === groupIndex;
+          const groupSuggestions = suggestions[groupIndex] || [];
+          const isSuggestionsLoading = suggestionsLoading[groupIndex];
+
           return (
             <div
               key={levelInfo.id}
@@ -391,19 +523,47 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                   </label>
                   <button
                     type="button"
-                    onClick={() => handleOpenAIGenerator(groupIndex)}
-                    disabled={loading || aiLoading}
+                    onClick={() => handleSuggestIdeas(groupIndex)}
+                    disabled={loading || isSuggestionsLoading || isGenerating}
                     className="flex items-center gap-1 px-3 py-1 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-xs font-bold"
                   >
-                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                    AI Generate
+                    {isSuggestionsLoading ? (
+                      <>
+                        <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Loading...
+                      </>
+                    ) : (
+                      <>
+                        <svg
+                          className="w-3 h-3"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                          />
+                        </svg>
+                        Suggest Ideas
+                      </>
+                    )}
                   </button>
                 </div>
                 <input
@@ -413,23 +573,111 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                   placeholder="e.g., Movies directed by Steven Spielberg"
                   className="w-full px-4 py-2 border-[3px] border-black rounded-lg bg-ghost-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red"
                 />
+
+                {/* Suggestions */}
+                {groupSuggestions.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-2">
+                    {groupSuggestions.map((suggestion, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => handleSelectSuggestion(groupIndex, suggestion)}
+                        className="px-3 py-1.5 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
+                        title={suggestion.description}
+                      >
+                        {suggestion.connection}
+                      </button>
+                    ))}
+                  </div>
+                )}
+
+                {/* Connection Context */}
+                <div className="mt-3 flex gap-2">
+                  <div className="flex-1">
+                    <label className={`block text-xs font-bold ${levelInfo.textColor} mb-1`}>
+                      Connection Context (optional)
+                    </label>
+                    <input
+                      type="text"
+                      value={group.connectionContext || ''}
+                      onChange={(e) => handleConnectionContextChange(groupIndex, e.target.value)}
+                      placeholder="e.g., exclude Arnold Schwarzenegger movies, no films from before 2000"
+                      className="w-full px-4 py-2 border-[3px] border-black rounded-lg bg-ghost-white text-[#2c2c2c] font-medium shadow-[2px_2px_0px_rgba(0,0,0,1)] focus:outline-none focus:ring-2 focus:ring-accent-red text-sm"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <button
+                      type="button"
+                      onClick={() => handleGenerate(groupIndex)}
+                      disabled={loading || isGenerating || !group.connection.trim()}
+                      className="flex items-center gap-1 px-4 py-2 bg-accent-green text-white border-[2px] border-black rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed text-sm font-bold whitespace-nowrap"
+                    >
+                      {isGenerating ? (
+                        <>
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          Generating...
+                        </>
+                      ) : (
+                        <>
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M13 10V3L4 14h7v7l9-11h-7z"
+                            />
+                          </svg>
+                          Generate
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {group.movies.map((movie, movieIndex) => (
-                  <div key={movieIndex}>
-                    <label className={`block text-xs font-bold ${levelInfo.textColor} mb-1`}>
-                      Movie {movieIndex + 1}
-                    </label>
-                    <MovieSearchInput
-                      value={movie}
-                      onChange={(selectedMovie) =>
-                        handleMovieChange(groupIndex, movieIndex, selectedMovie)
-                      }
-                      groupColor="bg-ghost-white"
-                    />
-                  </div>
-                ))}
+                {group.movies.map((movie, movieIndex) => {
+                  const shuffleKey = `${groupIndex}-${movieIndex}`;
+                  const isShuffling = shuffleLoading[shuffleKey];
+                  const canShuffle = group.connection.trim().length >= 3;
+
+                  return (
+                    <div key={movieIndex}>
+                      <label className={`block text-xs font-bold ${levelInfo.textColor} mb-1`}>
+                        Movie {movieIndex + 1}
+                      </label>
+                      <MovieSearchInput
+                        value={movie}
+                        onChange={(selectedMovie) =>
+                          handleMovieChange(groupIndex, movieIndex, selectedMovie)
+                        }
+                        groupColor="bg-ghost-white"
+                        onShuffle={() => handleShuffleMovie(groupIndex, movieIndex)}
+                        shuffleLoading={isShuffling}
+                        canShuffle={canShuffle}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           );
@@ -452,19 +700,6 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
           Cancel
         </button>
       </div>
-      {/* AI Generator Modal */}
-      {showAIGenerator && (
-        <ReelConnectionsAIGenerator
-          onGenerate={handleAIGenerate}
-          onClose={() => {
-            setShowAIGenerator(false);
-            setAiGeneratingForGroup(null);
-          }}
-          loading={aiLoading}
-          initialConnection={groups[aiGeneratingForGroup]?.connection || ''}
-          initialDifficulty={DIFFICULTY_LEVELS[aiGeneratingForGroup]?.id || 'medium'}
-        />
-      )}
     </div>
   );
 }

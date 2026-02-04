@@ -1814,9 +1814,10 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
    * @param {Object} options - Generation options
    * @param {string} options.connection - The connection/theme for the movies
    * @param {string} options.difficulty - Difficulty level (easy, medium, hard)
+   * @param {string} options.context - Additional context/constraints for movie selection
    * @returns {Promise<{connection: string, movies: string[]}>}
    */
-  async generateReelConnectionsMovies({ connection, difficulty = 'medium' }) {
+  async generateReelConnectionsMovies({ connection, difficulty = 'medium', context = '' }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -1827,7 +1828,7 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildReelConnectionsPrompt({ connection, difficulty });
+        const prompt = this.buildReelConnectionsPrompt({ connection, difficulty, context });
         const genInfo = {
           connection,
           difficulty,
@@ -1915,7 +1916,7 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
   /**
    * Build prompt for Reel Connections movie generation
    */
-  buildReelConnectionsPrompt({ connection, difficulty }) {
+  buildReelConnectionsPrompt({ connection, difficulty, context = '' }) {
     const difficultyGuidance = {
       easy: 'Choose well-known, popular movies that most people would recognize. Blockbusters and classics.',
       medium:
@@ -1923,12 +1924,16 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
       hard: 'Can include less mainstream or older films, but they must still be findable in movie databases.',
     };
 
+    const contextSection = context?.trim()
+      ? `\nADDITIONAL CONTEXT/CONSTRAINTS: ${context.trim()}\n`
+      : '';
+
     return `You are generating movies for a Reel Connections puzzle game (similar to NYT Connections but with movies).
 
 USER'S CONNECTION IDEA: "${connection}"
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
-
+${contextSection}
 REQUIREMENTS:
 1. FIRST, refine and improve the user's connection text:
    - Use proper Title Case (e.g., "Movies That Take Place In New York")
@@ -1995,6 +2000,182 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
       };
     } catch (error) {
       logger.error('Failed to parse Reel Connections response', { error, responseText });
+      throw new Error('Failed to parse AI response. Please try again.');
+    }
+  }
+
+  /**
+   * Generate a single replacement movie for Reel Connections puzzle
+   * @param {Object} options - Generation options
+   * @param {string} options.connection - The connection/theme for the movies
+   * @param {string} options.difficulty - Difficulty level (easy, medium, hard)
+   * @param {string} options.context - Additional context/constraints for movie selection
+   * @param {string[]} options.existingMovies - Movies already selected (to avoid duplicates)
+   * @returns {Promise<{movie: string}>}
+   */
+  async generateSingleReelConnectionsMovie({
+    connection,
+    difficulty = 'medium',
+    context = '',
+    existingMovies = [],
+  }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildSingleMoviePrompt({
+          connection,
+          difficulty,
+          context,
+          existingMovies,
+        });
+        const genInfo = {
+          connection,
+          difficulty,
+          existingMoviesCount: existingMovies.length,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Generating single Reel Connections movie with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 256,
+          temperature: 0.95, // High for variety
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI single movie response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseSingleMovieResponse(responseText);
+
+        this.generationCount++;
+        logger.info('Single Reel Connections movie generated successfully', {
+          movie: result.movie,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI single movie generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI single movie generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build prompt for single movie generation
+   */
+  buildSingleMoviePrompt({ connection, difficulty, context = '', existingMovies = [] }) {
+    const difficultyGuidance = {
+      easy: 'Choose a well-known, popular movie that most people would recognize.',
+      medium: 'Choose a recognizable movie that may require some movie knowledge.',
+      hard: 'Can be a less mainstream or older film, but must be findable in movie databases.',
+    };
+
+    const existingSection =
+      existingMovies.length > 0
+        ? `\nMOVIES ALREADY SELECTED (DO NOT SUGGEST THESE): ${existingMovies.join(', ')}\n`
+        : '';
+
+    const contextSection = context?.trim()
+      ? `\nADDITIONAL CONTEXT/CONSTRAINTS: ${context.trim()}\n`
+      : '';
+
+    return `Generate ONE movie for a Reel Connections puzzle game.
+
+CONNECTION: "${connection}"
+
+DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
+${existingSection}${contextSection}
+REQUIREMENTS:
+1. The movie MUST fit the connection theme
+2. It MUST be a real, well-known film findable in IMDB/OMDb
+3. It MUST have a theatrical poster available
+4. It should be DIFFERENT from any already-selected movies
+5. Prefer movies from 1990-present for better poster availability
+
+Return ONLY a JSON object with the movie title:
+{"movie": "Movie Title"}`;
+  }
+
+  /**
+   * Parse single movie AI response
+   */
+  parseSingleMovieResponse(responseText) {
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      if (!result.movie || typeof result.movie !== 'string' || result.movie.trim().length < 2) {
+        throw new Error('Missing or invalid movie title');
+      }
+
+      return {
+        movie: result.movie.trim(),
+      };
+    } catch (error) {
+      logger.error('Failed to parse single movie response', { error, responseText });
       throw new Error('Failed to parse AI response. Please try again.');
     }
   }

@@ -159,13 +159,9 @@ export default function BotLeaderboardManager() {
       <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
           <div className="flex items-center gap-3">
-            <Image src="/icons/ui/leaderboard.png" alt="" width={24} height={24} />
-            <h3 className="text-lg font-bold text-text-primary">Bot Leaderboard Manager</h3>
+            <Image src="/icons/ui/leaderboard-admin.png" alt="" width={24} height={24} />
+            <h3 className="text-lg font-bold text-text-primary">Leaderboards Manager</h3>
           </div>
-          <p className="text-sm text-text-secondary mt-2">
-            Generate synthetic leaderboard entries to simulate more active players. Bot scores
-            appear at random times throughout the day with realistic usernames and performance.
-          </p>
         </div>
 
         <div className="p-6 space-y-6">
@@ -187,21 +183,16 @@ export default function BotLeaderboardManager() {
           {/* Enable/Disable Toggle */}
           <div className="bg-bg-card rounded-lg border-[2px] border-black dark:border-white p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h4 className="font-bold text-text-primary">Bot Generation</h4>
-                <p className="text-sm text-text-secondary mt-1">
-                  Enable or disable automatic bot leaderboard entry generation
-                </p>
-              </div>
+              <h4 className="font-bold text-text-primary">Automatic Generation</h4>
               <button
                 onClick={() => handleInputChange('enabled', !formData.enabled)}
-                className={`relative w-16 h-8 rounded-full border-[3px] border-black dark:border-white transition-colors ${
+                className={`relative w-14 h-7 rounded-full border-[3px] border-black dark:border-white transition-colors flex-shrink-0 ${
                   formData.enabled ? 'bg-accent-green' : 'bg-gray-300'
                 }`}
               >
                 <div
-                  className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full border-[2px] border-black dark:border-white transition-transform ${
-                    formData.enabled ? 'translate-x-8' : 'translate-x-0'
+                  className={`absolute top-0.5 w-5 h-5 bg-white rounded-full border-[2px] border-black dark:border-white transition-transform ${
+                    formData.enabled ? 'left-[calc(100%-22px)]' : 'left-0.5'
                   }`}
                 />
               </button>
@@ -214,7 +205,7 @@ export default function BotLeaderboardManager() {
 
             <div>
               <label className="block text-sm font-medium text-text-primary mb-2">
-                Carryover Bots (for streaks)
+                Carryover Scores
               </label>
               <input
                 type="number"
@@ -224,9 +215,6 @@ export default function BotLeaderboardManager() {
                 min="0"
                 max="50"
               />
-              <p className="text-xs text-text-secondary mt-1">
-                Number of bot usernames to reuse from the previous day to create realistic streaks
-              </p>
             </div>
 
             <div className="flex items-center gap-2">
@@ -326,7 +314,7 @@ export default function BotLeaderboardManager() {
               disabled={saving}
               className="px-6 py-3 bg-accent-blue text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {saving ? 'Saving...' : 'Save Configuration'}
+              {saving ? 'Saving...' : 'Save'}
             </button>
 
             <button
@@ -334,17 +322,8 @@ export default function BotLeaderboardManager() {
               disabled={generating || !formData.enabled}
               className="px-6 py-3 bg-accent-green text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {generating ? 'Generating...' : 'Generate Now'}
+              {generating ? 'Running...' : 'Run Now'}
             </button>
-          </div>
-
-          {/* Info */}
-          <div className="bg-accent-yellow/20 border-[2px] border-accent-yellow rounded-lg p-4">
-            <p className="text-sm text-text-primary">
-              <strong>Note:</strong> Bot entries are automatically generated once daily at 2 AM UTC
-              when enabled. Use &quot;Generate Now&quot; to manually trigger generation for
-              today&apos;s puzzles.
-            </p>
           </div>
         </div>
       </div>

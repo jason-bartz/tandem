@@ -12,7 +12,7 @@ const OMDB_BASE_URL = 'http://www.omdbapi.com/';
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { connection, difficulty = 'medium' } = body;
+    const { connection, difficulty = 'medium', context = '' } = body;
 
     if (!connection || connection.trim().length < 3) {
       return NextResponse.json(
@@ -29,6 +29,7 @@ export async function POST(request) {
     const aiResult = await aiService.generateReelConnectionsMovies({
       connection: connection.trim(),
       difficulty,
+      context: context?.trim() || '',
     });
 
     // Verify each movie against OMDb and get full details
