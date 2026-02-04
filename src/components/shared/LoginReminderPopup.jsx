@@ -129,17 +129,18 @@ export default function LoginReminderPopup({
               flex items-center gap-2 px-4 py-2.5
               rounded-full shadow-lg backdrop-blur-sm
               border-2 cursor-pointer
-              transition-transform active:scale-[0.98]
+              transition-all active:scale-[0.98]
+              hover:scale-[1.02]
               ${
                 highContrast
-                  ? 'bg-hc-surface border-hc-border'
+                  ? 'bg-hc-surface border-hc-border hover:bg-hc-primary/10'
                   : isReel
-                    ? 'bg-[#1a1a2e]/95 border-[#ffce00]'
+                    ? 'bg-[#1a1a2e]/95 border-[#ffce00] hover:bg-[#1a1a2e] hover:border-[#ffe44d]'
                     : isMini
-                      ? 'bg-white/95 dark:bg-gray-800/95 border-amber-400 dark:border-amber-500'
+                      ? 'bg-white/95 dark:bg-gray-800/95 border-amber-400 dark:border-amber-500 hover:bg-white hover:border-amber-500 dark:hover:bg-gray-800 dark:hover:border-amber-400'
                       : isSoup
-                        ? 'bg-white/95 dark:bg-gray-800/95 border-green-500 dark:border-green-400'
-                        : 'bg-white/95 dark:bg-gray-800/95 border-blue-400 dark:border-blue-500'
+                        ? 'bg-white/95 dark:bg-gray-800/95 border-green-500 dark:border-green-400 hover:bg-white hover:border-green-600 dark:hover:bg-gray-800 dark:hover:border-green-300'
+                        : 'bg-white/95 dark:bg-gray-800/95 border-blue-400 dark:border-blue-500 hover:bg-white hover:border-blue-500 dark:hover:bg-gray-800 dark:hover:border-blue-400'
               }
             `}
             style={{
@@ -154,16 +155,16 @@ export default function LoginReminderPopup({
                       : '0 4px 16px rgba(59, 130, 246, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)',
             }}
           >
-            {/* Text - single line */}
+            {/* Text - single line, underlined to indicate clickability */}
             <span
               className={`
-                text-sm font-semibold whitespace-nowrap
+                text-sm font-semibold whitespace-nowrap underline decoration-1 underline-offset-2
                 ${
                   highContrast
-                    ? 'text-hc-text'
+                    ? 'text-hc-text decoration-hc-text/50'
                     : isReel
-                      ? 'text-white'
-                      : 'text-gray-800 dark:text-gray-100'
+                      ? 'text-white decoration-white/50'
+                      : 'text-gray-800 dark:text-gray-100 decoration-gray-400 dark:decoration-gray-500'
                 }
               `}
             >
