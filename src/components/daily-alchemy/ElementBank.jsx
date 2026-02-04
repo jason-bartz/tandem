@@ -19,6 +19,9 @@ const ROW_HEIGHT = 48;
 const MIN_ROWS = 3;
 const MAX_ROWS = 10;
 
+// Touch drag threshold in pixels - movement beyond this initiates drag mode
+const TOUCH_DRAG_THRESHOLD = 10;
+
 export function ElementBank({
   elements,
   selectedA,
@@ -44,9 +47,15 @@ export function ElementBank({
 }) {
   const { highContrast } = useTheme();
   const gridContainerRef = useRef(null);
+  const favoritesButtonRef = useRef(null);
   const [rowCount, setRowCount] = useState(7);
   const [isDraggingToFavorites, setIsDraggingToFavorites] = useState(false);
   const [draggedElementName, setDraggedElementName] = useState(null);
+
+  // Touch drag state for mobile
+  const [touchDragElement, setTouchDragElement] = useState(null);
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const [touchOverFavorites, setTouchOverFavorites] = useState(false);
 
   // Calculate how many rows can fit in available space
   const calculateRows = useCallback(() => {
@@ -127,6 +136,43 @@ export function ElementBank({
       // Invalid data
     }
   };
+
+  // Check if a point is over the favorites button
+  const isOverFavoritesButton = useCallback((x, y) => {
+    if (!favoritesButtonRef.current) return false;
+    const rect = favoritesButtonRef.current.getBoundingClientRect();
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
+  }, []);
+
+  // Touch drag handlers for mobile - these use a threshold to distinguish tap from drag
+  const handleTouchDragStart = useCallback((element) => {
+    setTouchDragElement(element);
+  }, []);
+
+  const handleTouchDragMove = useCallback(
+    (x, y) => {
+      if (!touchDragElement) return;
+      setIsTouchDragging(true);
+      setTouchOverFavorites(isOverFavoritesButton(x, y));
+    },
+    [touchDragElement, isOverFavoritesButton]
+  );
+
+  const handleTouchDragEnd = useCallback(
+    (didDrag, x, y) => {
+      if (didDrag && touchDragElement && isOverFavoritesButton(x, y)) {
+        // Dropped on favorites button - add to favorites
+        if (favoriteElements.size < maxFavorites && !favoriteElements.has(touchDragElement.name)) {
+          onToggleFavorite?.(touchDragElement.name);
+        }
+      }
+      // Reset touch drag state
+      setTouchDragElement(null);
+      setIsTouchDragging(false);
+      setTouchOverFavorites(false);
+    },
+    [touchDragElement, isOverFavoritesButton, favoriteElements, maxFavorites, onToggleFavorite]
+  );
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
@@ -215,6 +261,7 @@ export function ElementBank({
 
         {/* Favorites button - also a drop zone for adding favorites */}
         <button
+          ref={favoritesButtonRef}
           onClick={onToggleFavoritesPanel}
           onDragOver={handleFavoritesDragOver}
           onDragLeave={handleFavoritesDragLeave}
@@ -231,7 +278,11 @@ export function ElementBank({
             'active:translate-y-0 active:shadow-none',
             'transition-all duration-150',
             showFavoritesPanel && 'bg-soup-primary/20 ring-2 ring-soup-primary',
+            // Desktop drag feedback
             isDraggingToFavorites &&
+              'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
+            // Mobile touch drag feedback
+            touchOverFavorites &&
               'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
             highContrast && 'border-[3px] border-hc-border'
           )}
@@ -310,7 +361,14 @@ export function ElementBank({
                   draggable={!disabled}
                   onDragStart={(e) => handleDragStart(e, element)}
                   onDragEnd={handleDragEnd}
-                  isDragging={isDragging}
+                  isDragging={
+                    isDragging || (isTouchDragging && touchDragElement?.id === element.id)
+                  }
+                  // Touch drag handlers for mobile
+                  onTouchDragStart={() => handleTouchDragStart(element)}
+                  onTouchDragMove={handleTouchDragMove}
+                  onTouchDragEnd={handleTouchDragEnd}
+                  touchDragThreshold={TOUCH_DRAG_THRESHOLD}
                 />
               );
             })
