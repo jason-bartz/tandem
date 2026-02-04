@@ -16,6 +16,7 @@ import ShareButton from '../game/ShareButton';
 import LeaderboardModal from '../leaderboard/LeaderboardModal';
 import UnifiedArchiveCalendar from '../game/UnifiedArchiveCalendar';
 import SidebarMenu from '../navigation/SidebarMenu';
+import LoginReminderPopup from '../shared/LoginReminderPopup';
 
 /**
  * MiniCompleteScreen Component
@@ -40,6 +41,7 @@ export default function MiniCompleteScreen({
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [stats, setStats] = useState(null);
+  const [showLoginPopup, setShowLoginPopup] = useState(true);
 
   const perfectSolve = checksUsed === 0 && revealsUsed === 0 && mistakes === 0;
   const puzzleInfo = getMiniPuzzleInfoForDate(currentPuzzleDate);
@@ -108,6 +110,19 @@ export default function MiniCompleteScreen({
 
   return (
     <div className="min-h-screen bg-bg-main dark:bg-bg-main">
+      {/* Login reminder popup for non-authenticated users */}
+      {!user && (
+        <LoginReminderPopup
+          isVisible={showLoginPopup}
+          onSignUp={() => {
+            setShowLoginPopup(false);
+            router.push('/?signup=true');
+          }}
+          onDismiss={() => setShowLoginPopup(false)}
+          gameType="mini"
+        />
+      )}
+
       <div className="max-w-2xl mx-auto px-4 py-8">
         {/* Main completion card */}
         <div

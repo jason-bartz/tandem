@@ -7,10 +7,13 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatTime, getRandomMessage, CONGRATS_MESSAGES } from '@/lib/daily-alchemy.constants';
 import confetti from 'canvas-confetti';
 import PaywallModal from '@/components/PaywallModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
+import AuthModal from '@/components/auth/AuthModal';
 
 /**
  * StatCard - Individual stat display with custom icon image
@@ -66,9 +69,12 @@ export function DailyAlchemyCompleteScreen({
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
+  const { user } = useAuth();
   const [copied, setCopied] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(true);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
@@ -147,6 +153,19 @@ export function DailyAlchemyCompleteScreen({
 
   return (
     <div className="flex flex-col items-center flex-1 overflow-y-auto px-1">
+      {/* Login reminder popup for non-authenticated users */}
+      {!user && (
+        <LoginReminderPopup
+          isVisible={showLoginPopup}
+          onSignUp={() => {
+            setShowLoginPopup(false);
+            setShowAuthModal(true);
+          }}
+          onDismiss={() => setShowLoginPopup(false)}
+          gameType="soup"
+        />
+      )}
+
       {/* Completion Image - Daily mode only */}
       {!isArchive && (
         <motion.div
@@ -411,6 +430,14 @@ export function DailyAlchemyCompleteScreen({
 
       {/* Paywall Modal */}
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+
+      {/* Auth Modal */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        initialMode="signup"
+        onSuccess={() => setShowAuthModal(false)}
+      />
     </div>
   );
 }

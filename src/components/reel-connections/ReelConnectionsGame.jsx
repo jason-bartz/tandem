@@ -29,6 +29,7 @@ import FloatingStatsBar from './FloatingStatsBar';
 import FixedButtonBar from './FixedButtonBar';
 import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 
 // Long press duration in milliseconds
@@ -263,6 +264,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const [showSettings, setShowSettings] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(true);
   const [enlargedMovie, setEnlargedMovie] = useState(null);
   const [enlargePromptMovie, setEnlargePromptMovie] = useState(null);
   const [clapperClosed, setClapperClosed] = useState(false);
@@ -871,6 +873,19 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
       <div
         className={`!fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${highContrast ? 'bg-hc-background' : 'bg-gradient-to-b from-[#0f0f1e] via-[#1a1a2e] to-[#0f0f1e] film-grain'}`}
       >
+        {/* Login reminder popup for non-authenticated users who won */}
+        {isWin && !user && (
+          <LoginReminderPopup
+            isVisible={showLoginPopup}
+            onSignUp={() => {
+              setShowLoginPopup(false);
+              setShowAuthModal(true);
+            }}
+            onDismiss={() => setShowLoginPopup(false)}
+            gameType="reel"
+          />
+        )}
+
         <div className="min-h-full flex flex-col items-center pt-safe px-4 pb-8">
           {/* Header with Back Button and Hamburger Menu */}
           <div className="max-w-2xl w-full mx-auto px-4 flex items-center justify-between mb-3">
