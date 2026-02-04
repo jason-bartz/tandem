@@ -25,9 +25,9 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      initial={{ opacity: 0, pointerEvents: 'auto' }}
+      animate={{ opacity: 1, pointerEvents: 'auto' }}
+      exit={{ opacity: 0, pointerEvents: 'none' }}
       className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50"
       onClick={onClose}
     >
@@ -127,6 +127,8 @@ function DiscoveryCard({ discovery, onClick }) {
 
   // Track touch start position
   const handleTouchStart = useCallback((e) => {
+    // Stop propagation to prevent panel's swipe-to-dismiss from interfering
+    e.stopPropagation();
     touchStartRef.current = {
       x: e.touches[0].clientX,
       y: e.touches[0].clientY,
@@ -137,26 +139,31 @@ function DiscoveryCard({ discovery, onClick }) {
 
   // Detect if finger moved (scrolling)
   const handleTouchMove = useCallback((e) => {
+    e.stopPropagation();
     if (!touchStartRef.current) return;
 
     const deltaX = Math.abs(e.touches[0].clientX - touchStartRef.current.x);
     const deltaY = Math.abs(e.touches[0].clientY - touchStartRef.current.y);
 
-    // If moved more than 10px in any direction, it's a scroll
-    if (deltaX > 10 || deltaY > 10) {
+    // If moved more than 15px in any direction, it's a scroll (increased from 10px for better tap detection)
+    if (deltaX > 15 || deltaY > 15) {
       didScrollRef.current = true;
     }
   }, []);
 
   // Only trigger click if it was a tap (no scroll movement)
-  const handleTouchEnd = useCallback(() => {
-    if (!didScrollRef.current && touchStartRef.current) {
-      touchHandledRef.current = true;
-      onClick();
-    }
-    touchStartRef.current = null;
-    didScrollRef.current = false;
-  }, [onClick]);
+  const handleTouchEnd = useCallback(
+    (e) => {
+      e.stopPropagation();
+      if (!didScrollRef.current && touchStartRef.current) {
+        touchHandledRef.current = true;
+        onClick();
+      }
+      touchStartRef.current = null;
+      didScrollRef.current = false;
+    },
+    [onClick]
+  );
 
   // Handle keyboard/mouse clicks normally, but skip if touch already handled
   const handleClick = useCallback(
@@ -167,6 +174,8 @@ function DiscoveryCard({ discovery, onClick }) {
         e.preventDefault();
         return;
       }
+      // Reset touch ref on every click to prevent stale state issues on touch-enabled desktops
+      touchHandledRef.current = false;
       onClick();
     },
     [onClick]
