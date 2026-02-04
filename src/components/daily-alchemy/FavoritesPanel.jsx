@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -27,6 +27,12 @@ export function FavoritesPanel({
   const { highContrast } = useTheme();
   const [draggedElement, setDraggedElement] = useState(null);
   const [isOverDropZone, setIsOverDropZone] = useState(false);
+  const [isTouchDevice, setIsTouchDevice] = useState(false);
+
+  // Detect touch device for appropriate help text
+  useEffect(() => {
+    setIsTouchDevice('ontouchstart' in window || navigator.maxTouchPoints > 0);
+  }, []);
 
   // Get favorite elements as array
   const favoritesList = elements.filter((el) => favoriteElements.has(el.name));
@@ -150,7 +156,9 @@ export function FavoritesPanel({
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
               <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
-                <span>Long press any element to add to</span>
+                <span>
+                  {isTouchDevice ? 'Long press any element to add to' : 'Drag any element to'}
+                </span>
                 <Image
                   src="/icons/ui/favorites.png"
                   alt="favorites"

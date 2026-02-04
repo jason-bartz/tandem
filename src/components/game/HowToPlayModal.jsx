@@ -681,11 +681,11 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
               Keep your most-used elements within easy reach! <strong>Long press</strong> any
-              element to add it to your Favorites.
+              element on mobile or <strong>drag</strong> it to the star icon on desktop.
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
               <li>• Save up to 12 favorite elements for quick access</li>
-              <li>• Long press a favorite to remove it</li>
+              <li>• Long press or drag a favorite to remove it</li>
               <li>• Favorites persist across sessions</li>
             </ul>
           </div>
