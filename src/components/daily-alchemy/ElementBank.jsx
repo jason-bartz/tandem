@@ -158,6 +158,19 @@ export function ElementBank({
     [touchDragElement, isOverFavoritesButton, favoriteElements, maxFavorites, onToggleFavorite]
   );
 
+  // Long press handler for adding/removing favorites
+  const handleLongPress = useCallback(
+    (element) => {
+      // Toggle favorite - if already a favorite, remove it; otherwise add if not at max
+      if (favoriteElements.has(element.name)) {
+        onToggleFavorite?.(element.name);
+      } else if (favoriteElements.size < maxFavorites) {
+        onToggleFavorite?.(element.name);
+      }
+    },
+    [favoriteElements, maxFavorites, onToggleFavorite]
+  );
+
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
       {/* Header row with title and sort */}
@@ -401,6 +414,8 @@ export function ElementBank({
                   isDragging={
                     isDragging || (isTouchDragging && touchDragElement?.id === element.id)
                   }
+                  // Long press to toggle favorites
+                  onLongPress={!disabled ? handleLongPress : undefined}
                   // Touch drag handlers for mobile
                   onTouchDragStart={() => handleTouchDragStart(element)}
                   onTouchDragMove={handleTouchDragMove}

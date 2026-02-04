@@ -191,15 +191,14 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
                 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-100'}
               `}
             >
-              Drag elements to the{' '}
+              Long press any element to add to{' '}
               <Image
                 src="/icons/ui/favorites.png"
                 alt="favorites"
                 width={20}
                 height={20}
                 className="inline-block w-5 h-5"
-              />{' '}
-              for quick access!
+              />
             </span>
 
             {/* Close Button */}

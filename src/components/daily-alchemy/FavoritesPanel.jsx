@@ -150,7 +150,7 @@ export function FavoritesPanel({
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
               <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
-                <span>Drag elements to the</span>
+                <span>Long press any element to add to</span>
                 <Image
                   src="/icons/ui/favorites.png"
                   alt="favorites"
@@ -158,7 +158,6 @@ export function FavoritesPanel({
                   height={16}
                   className="w-4 h-4 inline-block"
                 />
-                <span>for quick access!</span>
               </p>
             </div>
           ) : (
