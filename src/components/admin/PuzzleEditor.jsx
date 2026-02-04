@@ -372,7 +372,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                 type="button"
                 onClick={handleGenerateWithAI}
                 disabled={generating || loading || suggestingThemes}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ boxShadow: 'var(--shadow-button)' }}
                 title="Generate puzzle with AI"
               >
