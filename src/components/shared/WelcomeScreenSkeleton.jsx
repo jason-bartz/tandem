@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Capacitor } from '@capacitor/core';
 import { useTheme } from '@/contexts/ThemeContext';
 import { ASSET_VERSION } from '@/lib/constants';
 
@@ -60,15 +61,15 @@ function GameCardSkeleton({
           }`}
         />
 
-        {/* Content skeleton */}
+        {/* Content skeleton - matches actual GameCard structure */}
         <div className="flex-1 min-w-0">
-          {/* Title */}
+          {/* Title: text-xl font-bold mb-1 */}
           <div
-            className={`h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-2 ${
+            className={`h-7 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg mb-1 ${
               !reduceMotion ? 'skeleton-shimmer' : ''
             }`}
           />
-          {/* Description */}
+          {/* Description: text-sm leading-snug mb-2 */}
           <div
             className={`h-4 w-full bg-gray-200 dark:bg-gray-700 rounded mb-1 ${
               !reduceMotion ? 'skeleton-shimmer' : ''
@@ -79,9 +80,9 @@ function GameCardSkeleton({
               !reduceMotion ? 'skeleton-shimmer' : ''
             }`}
           />
-          {/* Puzzle number */}
+          {/* Puzzle number: text-sm font-medium */}
           <div
-            className={`h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded ${
+            className={`h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded ${
               !reduceMotion ? 'skeleton-shimmer' : ''
             }`}
           />
@@ -168,25 +169,25 @@ export default function WelcomeScreenSkeleton() {
 
       {/* Main content with padding for fixed header */}
       <main
-        className={`min-h-screen pt-[calc(70px+env(safe-area-inset-top))] pb-safe ${
+        className={`min-h-screen flex flex-col pt-[calc(70px+env(safe-area-inset-top))] pb-safe ${
           highContrast ? 'bg-hc-background' : 'bg-bg-primary dark:bg-bg-primary'
         }`}
       >
-        <div className="max-w-2xl w-full mx-auto px-4 py-6 animate-fade-in">
-          {/* Greeting Skeleton */}
+        <div className="flex-1 max-w-2xl w-full mx-auto px-4 py-6 animate-fade-in">
+          {/* Greeting Skeleton - matches text-2xl (h-8), text-base (h-6) */}
           <div className="text-center mb-6">
             <div
-              className={`h-8 w-48 mx-auto mb-2 bg-gray-200 dark:bg-gray-700 rounded-lg ${
+              className={`h-8 w-48 mx-auto mb-1 bg-gray-200 dark:bg-gray-700 rounded-lg ${
                 !reduceMotion ? 'skeleton-shimmer' : ''
               }`}
             />
             <div
-              className={`h-5 w-64 mx-auto mb-1 bg-gray-200 dark:bg-gray-700 rounded ${
+              className={`h-6 w-64 mx-auto mb-1 bg-gray-200 dark:bg-gray-700 rounded ${
                 !reduceMotion ? 'skeleton-shimmer' : ''
               }`}
             />
             <div
-              className={`h-5 w-56 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${
+              className={`h-6 w-56 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${
                 !reduceMotion ? 'skeleton-shimmer' : ''
               }`}
             />
@@ -218,36 +219,80 @@ export default function WelcomeScreenSkeleton() {
             />
           </div>
 
-          {/* About Section Skeleton */}
-          <div className="mt-8 text-center">
+          {/* About Section Skeleton - matches actual AboutSection structure */}
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            {/* Title: text-sm font-bold mb-2 */}
             <div
-              className={`h-5 w-48 mx-auto mb-2 bg-gray-200 dark:bg-gray-700 rounded ${
+              className={`h-5 w-48 mb-2 bg-gray-200 dark:bg-gray-700 rounded ${
+                !reduceMotion ? 'skeleton-shimmer' : ''
+              }`}
+            />
+            {/* Description: text-sm leading-relaxed (multi-line paragraph) */}
+            <div
+              className={`h-4 w-full mb-1 bg-gray-200 dark:bg-gray-700 rounded ${
                 !reduceMotion ? 'skeleton-shimmer' : ''
               }`}
             />
             <div
-              className={`h-4 w-64 mx-auto bg-gray-200 dark:bg-gray-700 rounded ${
+              className={`h-4 w-full mb-1 bg-gray-200 dark:bg-gray-700 rounded ${
                 !reduceMotion ? 'skeleton-shimmer' : ''
               }`}
             />
+            <div
+              className={`h-4 w-3/4 mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                !reduceMotion ? 'skeleton-shimmer' : ''
+              }`}
+            />
+            {/* Subscribe CTA: text-sm font-medium */}
+            <div
+              className={`h-5 w-44 bg-gray-200 dark:bg-gray-700 rounded ${
+                !reduceMotion ? 'skeleton-shimmer' : ''
+              }`}
+            />
+
+            {/* App Store section (web only - hidden on native iOS) */}
+            {!Capacitor.isNativePlatform() && (
+              <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
+                {/* Title: text-sm font-bold mb-3 */}
+                <div
+                  className={`h-5 w-64 mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                    !reduceMotion ? 'skeleton-shimmer' : ''
+                  }`}
+                />
+                {/* App Store badge: 120x40 */}
+                <div
+                  className={`h-10 w-[120px] bg-gray-200 dark:bg-gray-700 rounded ${
+                    !reduceMotion ? 'skeleton-shimmer' : ''
+                  }`}
+                />
+              </div>
+            )}
           </div>
         </div>
 
-        {/* Footer Skeleton */}
+        {/* Footer Skeleton - matches actual Footer structure */}
         <div className="max-w-2xl w-full mx-auto px-4">
           <footer className="pt-8 pb-4">
             <div className="text-center">
+              {/* Copyright: text-xs mb-3 */}
               <div
-                className={`h-3 w-32 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                className={`h-4 w-32 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
                   !reduceMotion ? 'skeleton-shimmer' : ''
                 }`}
               />
+              {/* Description: text-xs mb-3 */}
               <div
-                className={`h-3 w-56 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
+                className={`h-4 w-72 mx-auto mb-3 bg-gray-200 dark:bg-gray-700 rounded ${
                   !reduceMotion ? 'skeleton-shimmer' : ''
                 }`}
               />
+              {/* Social icons: 3 buttons with w-10 h-10 and gap-4 */}
               <div className="flex items-center justify-center gap-4">
+                <div
+                  className={`w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 ${
+                    !reduceMotion ? 'skeleton-shimmer' : ''
+                  }`}
+                />
                 <div
                   className={`w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 ${
                     !reduceMotion ? 'skeleton-shimmer' : ''
