@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -284,7 +285,7 @@ export function ElementBank({
 
         {/* Favorites button - hidden on desktop when embedded favorites is shown */}
         {!(hideDesktopFavorites && isDesktop) && (
-          <button
+          <motion.button
             ref={favoritesButtonRef}
             onClick={onToggleFavoritesPanel}
             onDragOver={handleFavoritesDragOver}
@@ -292,24 +293,52 @@ export function ElementBank({
             onDrop={handleFavoritesDrop}
             className={cn(
               'flex-shrink-0',
-              'w-10 h-10',
-              'flex items-center justify-center',
-              'bg-white dark:bg-gray-800',
+              'h-10',
+              'flex items-center justify-center gap-2',
               'border-[2px] border-black dark:border-gray-600',
               'rounded-xl',
               'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
               'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
               'active:translate-y-0 active:shadow-none',
-              'transition-all duration-150',
-              showFavoritesPanel && 'bg-soup-primary/20 ring-2 ring-soup-primary',
+              // Background colors based on state
+              !touchOverFavorites &&
+                !isDraggingToFavorites &&
+                !showFavoritesPanel &&
+                'bg-white dark:bg-gray-800',
+              showFavoritesPanel &&
+                !touchOverFavorites &&
+                'bg-soup-primary/20 ring-2 ring-soup-primary',
               // Desktop drag feedback
               isDraggingToFavorites &&
+                !touchOverFavorites &&
                 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
-              // Mobile touch drag feedback
-              touchOverFavorites &&
-                'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500 scale-110',
+              // Mobile touch drag feedback - yellow highlight with ring
+              touchOverFavorites && 'bg-yellow-100 dark:bg-yellow-900/30 ring-2 ring-yellow-500',
               highContrast && 'border-[3px] border-hc-border'
             )}
+            // Animate width expansion when touch dragging over
+            initial={false}
+            animate={
+              touchOverFavorites
+                ? {
+                    width: 'auto',
+                    paddingLeft: 12,
+                    paddingRight: 14,
+                    scale: 1.05,
+                  }
+                : {
+                    width: 40,
+                    paddingLeft: 0,
+                    paddingRight: 0,
+                    scale: 1,
+                  }
+            }
+            transition={{
+              width: { type: 'spring', stiffness: 400, damping: 25 },
+              paddingLeft: { type: 'spring', stiffness: 400, damping: 25 },
+              paddingRight: { type: 'spring', stiffness: 400, damping: 25 },
+              scale: { type: 'spring', stiffness: 500, damping: 20 },
+            }}
             aria-label="Open favorites"
             aria-expanded={showFavoritesPanel}
           >
@@ -318,9 +347,22 @@ export function ElementBank({
               alt=""
               width={24}
               height={24}
-              className="w-6 h-6"
+              className="w-6 h-6 flex-shrink-0"
             />
-          </button>
+            <AnimatePresence>
+              {touchOverFavorites && (
+                <motion.span
+                  initial={{ opacity: 0, width: 0 }}
+                  animate={{ opacity: 1, width: 'auto' }}
+                  exit={{ opacity: 0, width: 0 }}
+                  transition={{ duration: 0.2, ease: 'easeOut' }}
+                  className="text-sm font-semibold text-gray-700 dark:text-gray-200 whitespace-nowrap overflow-hidden"
+                >
+                  Favorites
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </motion.button>
         )}
 
         {/* Favorites Panel - positioned as dropdown from button (mobile only when hideDesktopFavorites) */}

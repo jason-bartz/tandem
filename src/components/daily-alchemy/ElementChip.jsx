@@ -1,10 +1,13 @@
 'use client';
 
-import { memo, useRef, useCallback } from 'react';
+import { memo, useRef, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Star } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
+
+// Hold duration in ms before element is ready to drag (150ms = quick response)
+const TOUCH_HOLD_DURATION = 150;
 
 /**
  * ElementChip - Small clickable chip for displaying an element
@@ -12,8 +15,9 @@ import { cn } from '@/lib/utils';
  * Memoized to prevent unnecessary re-renders when parent updates
  *
  * Touch drag behavior:
- * - If touch moves less than threshold, treated as a tap (onClick fires)
- * - If touch moves more than threshold, treated as a drag (onTouchDragStart/Move/End fire)
+ * - Quick tap: treated as click (onClick fires)
+ * - Hold 150ms: element "pops" to show it's ready to drag
+ * - Movement after hold: initiates drag mode
  */
 function ElementChipInner({
   element,
@@ -38,9 +42,13 @@ function ElementChipInner({
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
-  // Touch tracking refs for drag detection only
+  // Touch tracking refs for drag detection
   const touchStartPos = useRef(null);
   const hasDragged = useRef(false);
+  const holdTimeoutRef = useRef(null);
+
+  // Visual state for hold-to-drag feedback
+  const [isHoldReady, setIsHoldReady] = useState(false);
 
   const sizeClasses = {
     small: 'px-2 py-1 text-xs gap-1',
@@ -54,7 +62,7 @@ function ElementChipInner({
     large: 'text-lg',
   };
 
-  // Touch event handlers for mobile drag
+  // Touch event handlers for mobile drag with hold-to-drag
   const handleTouchStart = useCallback(
     (e) => {
       if (disabled || !draggable) return;
@@ -62,6 +70,12 @@ function ElementChipInner({
       const touch = e.touches[0];
       touchStartPos.current = { x: touch.clientX, y: touch.clientY };
       hasDragged.current = false;
+      setIsHoldReady(false);
+
+      // Start hold timer - after TOUCH_HOLD_DURATION, element is ready to drag
+      holdTimeoutRef.current = setTimeout(() => {
+        setIsHoldReady(true);
+      }, TOUCH_HOLD_DURATION);
     },
     [disabled, draggable]
   );
@@ -75,8 +89,17 @@ function ElementChipInner({
       const dy = touch.clientY - touchStartPos.current.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
+      // Use a smaller threshold (5px) once hold is ready, or standard threshold otherwise
+      const effectiveThreshold = isHoldReady ? 5 : touchDragThreshold;
+
       // Check if movement exceeds threshold
-      if (distance >= touchDragThreshold) {
+      if (distance >= effectiveThreshold) {
+        // Clear hold timer if still pending
+        if (holdTimeoutRef.current) {
+          clearTimeout(holdTimeoutRef.current);
+          holdTimeoutRef.current = null;
+        }
+
         if (!hasDragged.current) {
           // First time crossing threshold - initiate drag
           hasDragged.current = true;
@@ -88,12 +111,29 @@ function ElementChipInner({
         onTouchDragMove?.(touch.clientX, touch.clientY);
       }
     },
-    [disabled, draggable, touchDragThreshold, element, onTouchDragStart, onTouchDragMove]
+    [
+      disabled,
+      draggable,
+      touchDragThreshold,
+      isHoldReady,
+      element,
+      onTouchDragStart,
+      onTouchDragMove,
+    ]
   );
 
   const handleTouchEnd = useCallback(
     (e) => {
-      if (disabled) return;
+      // Clear hold timer
+      if (holdTimeoutRef.current) {
+        clearTimeout(holdTimeoutRef.current);
+        holdTimeoutRef.current = null;
+      }
+
+      if (disabled) {
+        setIsHoldReady(false);
+        return;
+      }
 
       const didDrag = hasDragged.current;
       const touch = e.changedTouches[0];
@@ -108,6 +148,7 @@ function ElementChipInner({
       // Reset touch state
       touchStartPos.current = null;
       hasDragged.current = false;
+      setIsHoldReady(false);
     },
     [disabled, onTouchDragEnd]
   );
@@ -119,7 +160,7 @@ function ElementChipInner({
       draggable={draggable && !disabled}
       onDragStart={onDragStart}
       onDragEnd={onDragEnd}
-      // Touch handlers for mobile drag with threshold
+      // Touch handlers for mobile drag with hold detection
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -156,8 +197,21 @@ function ElementChipInner({
       }}
       whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
       initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0, opacity: 0 } : false}
-      animate={isNew && !reduceMotion && !disableAnimations ? { scale: 1, opacity: 1 } : undefined}
-      transition={!disableAnimations ? { type: 'spring', stiffness: 500, damping: 25 } : undefined}
+      animate={
+        // Hold-ready "pop" animation takes precedence for drag feedback
+        isHoldReady && !reduceMotion && !disableAnimations
+          ? { scale: 1.08, y: -2 }
+          : isNew && !reduceMotion && !disableAnimations
+            ? { scale: 1, opacity: 1 }
+            : { scale: 1, y: 0 }
+      }
+      transition={
+        isHoldReady
+          ? { type: 'spring', stiffness: 400, damping: 15 }
+          : !disableAnimations
+            ? { type: 'spring', stiffness: 500, damping: 25 }
+            : undefined
+      }
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
