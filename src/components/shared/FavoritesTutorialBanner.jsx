@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Star } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 
@@ -183,14 +183,6 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
                 : '0 4px 16px rgba(14, 165, 233, 0.25), 0 2px 8px rgba(0, 0, 0, 0.1)',
             }}
           >
-            {/* Star Icon */}
-            <Star
-              className={`w-5 h-5 flex-shrink-0 ${
-                highContrast ? 'text-hc-text' : 'text-sky-500 dark:text-sky-400'
-              }`}
-              fill="currentColor"
-            />
-
             {/* Text */}
             <span
               className={`
@@ -198,7 +190,7 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
                 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-100'}
               `}
             >
-              Drag elements to ⭐ for quick access!
+              Drag elements to the ⭐ for quick access!
             </span>
 
             {/* Close Button */}
