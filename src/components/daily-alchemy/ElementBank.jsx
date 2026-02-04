@@ -11,15 +11,10 @@ import ElementChip from './ElementChip';
 import FavoritesPanel from './FavoritesPanel';
 
 /**
- * ElementBank - Horizontally scrollable grid of discovered elements
- * Elements flow in columns: top to bottom, then continue to the right
+ * ElementBank - Flexbox flow layout for discovered elements (like Infinite Craft)
+ * Elements are sized to their content and fill beside each other naturally
  * Supports drag-and-drop to add elements to favorites
  */
-// Row height: ~40px chip + 8px gap = 48px per row
-const ROW_HEIGHT = 48;
-const MIN_ROWS = 3;
-const MAX_ROWS = 10;
-
 // Desktop breakpoint (matches Tailwind lg:)
 const DESKTOP_BREAKPOINT = 1024;
 
@@ -54,7 +49,6 @@ export function ElementBank({
   const { highContrast } = useTheme();
   const gridContainerRef = useRef(null);
   const favoritesButtonRef = useRef(null);
-  const [rowCount, setRowCount] = useState(7);
   const [isDraggingToFavorites, setIsDraggingToFavorites] = useState(false);
   const [draggedElementName, setDraggedElementName] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
@@ -78,38 +72,6 @@ export function ElementBank({
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [isDesktopSidePanel]);
-
-  // Calculate how many rows can fit in available space
-  const calculateRows = useCallback(() => {
-    if (!gridContainerRef.current) return;
-
-    const containerHeight = gridContainerRef.current.clientHeight;
-    // Subtract padding (16px = p-2 * 2)
-    const availableHeight = containerHeight - 16;
-    const calculatedRows = Math.floor(availableHeight / ROW_HEIGHT);
-    const clampedRows = Math.max(MIN_ROWS, Math.min(MAX_ROWS, calculatedRows));
-
-    setRowCount(clampedRows);
-  }, []);
-
-  // Set up ResizeObserver to detect container size changes
-  useEffect(() => {
-    const container = gridContainerRef.current;
-    if (!container) return;
-
-    // Initial calculation
-    calculateRows();
-
-    const resizeObserver = new ResizeObserver(() => {
-      calculateRows();
-    });
-
-    resizeObserver.observe(container);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [calculateRows]);
 
   // Drag handlers for adding to favorites
   const handleDragStart = (e, element) => {
@@ -383,24 +345,22 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - dynamic layout based on viewport */}
-      <div className="flex-1 min-h-0" ref={gridContainerRef}>
+      {/* Element grid wrapper - relative container for absolute positioning */}
+      <div className="flex-1 min-h-0 relative" ref={gridContainerRef}>
         <div
           className={cn(
-            'grid gap-2',
-            // Desktop side panel: vertical scroll with responsive columns
-            isDesktop
-              ? 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 auto-rows-min overflow-y-auto overflow-x-hidden'
-              : // Mobile: horizontal scroll with dynamic rows
-                'grid-flow-col auto-cols-min content-start overflow-x-auto overflow-y-hidden',
-            'h-full scrollable',
+            // Absolute positioning to constrain scrollable area to parent bounds
+            'absolute inset-0',
+            // Flexbox flow layout (like Infinite Craft) - elements sized to content, fill beside each other
+            'flex flex-row flex-wrap gap-2 content-start items-start',
+            'overflow-y-auto overflow-x-hidden',
+            'scrollable',
             'p-2',
             'bg-gray-50 dark:bg-gray-900/50',
             'border-[2px] border-gray-200 dark:border-gray-700',
             'rounded-xl',
             highContrast && 'border-hc-border'
           )}
-          style={!isDesktop ? { gridTemplateRows: `repeat(${rowCount}, min-content)` } : undefined}
           role="region"
           aria-label="Element bank"
         >
