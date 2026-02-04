@@ -228,6 +228,8 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       onTouchEnd={(e) => {
         // Only close if touch ended on the backdrop itself, not the card
         if (e.target === e.currentTarget) {
+          // preventDefault stops the synthetic click event from firing (prevents double-fire on mobile)
+          e.preventDefault();
           handleClose();
         }
       }}
@@ -315,6 +317,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           <motion.button
             onClick={handleShare}
             onTouchEnd={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               if (!isSharing) handleShare();
             }}
@@ -365,6 +368,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           <button
             onClick={handleUse}
             onTouchEnd={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               handleUse();
             }}
@@ -376,6 +380,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           <button
             onClick={handleClose}
             onTouchEnd={(e) => {
+              e.preventDefault();
               e.stopPropagation();
               handleClose();
             }}
