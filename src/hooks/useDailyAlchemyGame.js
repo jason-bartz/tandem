@@ -1096,6 +1096,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Check if this is a new element for the player (before animation)
       const isNew = !discoveredElements.current.has(element);
 
+      // IMPORTANT: Add to discoveredElements immediately to prevent race conditions
+      // where multiple concurrent API calls could all pass the isNew check
+      if (isNew) {
+        discoveredElements.current.add(element);
+      }
+
       // API done - now start the animation
       setIsCombining(false);
       setIsAnimating(true);
@@ -1153,7 +1159,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
       // Handle new element discovery
       if (isNew) {
-        discoveredElements.current.add(element);
         setNewDiscoveries((prev) => prev + 1);
 
         // Add to element bank
