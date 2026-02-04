@@ -8,16 +8,18 @@ import { cn } from '@/lib/utils';
 
 // Hold duration in ms before element is ready to drag (150ms = quick response)
 const TOUCH_HOLD_DURATION = 150;
+// Long press duration for favorites (shorter than typical long press for snappy feel)
+const LONG_PRESS_DURATION = 300;
 
 /**
  * ElementChip - Small clickable chip for displaying an element
  * Designed to fit many elements in a grid layout
  * Memoized to prevent unnecessary re-renders when parent updates
  *
- * Touch drag behavior:
+ * Touch behavior:
  * - Quick tap: treated as click (onClick fires)
- * - Hold 150ms: element "pops" to show it's ready to drag
- * - Movement after hold: initiates drag mode
+ * - Long press (300ms): triggers onLongPress (favorites toggle) with pop animation
+ * - Desktop drag: standard drag-and-drop still works
  */
 function ElementChipInner({
   element,
@@ -32,11 +34,13 @@ function ElementChipInner({
   onDragStart,
   onDragEnd,
   isDragging = false,
-  // Touch drag handlers for mobile
+  // Long press handler for favorites
+  onLongPress,
+  // Touch drag handlers for mobile (deprecated but kept for backwards compatibility)
   onTouchDragStart,
   onTouchDragMove,
   onTouchDragEnd,
-  touchDragThreshold = 10,
+  touchDragThreshold: _touchDragThreshold = 10, // eslint-disable-line no-unused-vars
   // Disable all framer-motion animations
   disableAnimations = false,
 }) {
@@ -46,9 +50,12 @@ function ElementChipInner({
   const touchStartPos = useRef(null);
   const hasDragged = useRef(false);
   const holdTimeoutRef = useRef(null);
+  const longPressTimeoutRef = useRef(null);
+  const longPressTriggeredRef = useRef(false);
 
-  // Visual state for hold-to-drag feedback
+  // Visual state for hold-to-drag feedback and long press pop
   const [isHoldReady, setIsHoldReady] = useState(false);
+  const [isLongPressPop, setIsLongPressPop] = useState(false);
 
   const sizeClasses = {
     small: 'px-2 py-1 text-xs gap-1',
@@ -62,95 +69,123 @@ function ElementChipInner({
     large: 'text-lg',
   };
 
-  // Touch event handlers for mobile drag with hold-to-drag
+  // Touch event handlers for mobile with long press to favorite
   const handleTouchStart = useCallback(
     (e) => {
-      if (disabled || !draggable) return;
+      if (disabled) return;
 
       const touch = e.touches[0];
       touchStartPos.current = { x: touch.clientX, y: touch.clientY };
       hasDragged.current = false;
+      longPressTriggeredRef.current = false;
       setIsHoldReady(false);
+      setIsLongPressPop(false);
 
-      // Start hold timer - after TOUCH_HOLD_DURATION, element is ready to drag
-      holdTimeoutRef.current = setTimeout(() => {
-        setIsHoldReady(true);
-      }, TOUCH_HOLD_DURATION);
+      // Start hold timer for visual feedback
+      if (draggable) {
+        holdTimeoutRef.current = setTimeout(() => {
+          setIsHoldReady(true);
+        }, TOUCH_HOLD_DURATION);
+      }
+
+      // Start long press timer for favorites
+      if (onLongPress) {
+        longPressTimeoutRef.current = setTimeout(() => {
+          // Only trigger if we haven't moved significantly
+          if (!hasDragged.current && !longPressTriggeredRef.current) {
+            longPressTriggeredRef.current = true;
+            setIsLongPressPop(true);
+            onLongPress(element);
+            // Reset pop state after animation
+            setTimeout(() => {
+              setIsLongPressPop(false);
+              setIsHoldReady(false);
+            }, 200);
+          }
+        }, LONG_PRESS_DURATION);
+      }
     },
-    [disabled, draggable]
+    [disabled, draggable, onLongPress, element]
   );
 
   const handleTouchMove = useCallback(
     (e) => {
-      if (disabled || !draggable || !touchStartPos.current) return;
+      if (disabled || !touchStartPos.current) return;
 
       const touch = e.touches[0];
       const dx = touch.clientX - touchStartPos.current.x;
       const dy = touch.clientY - touchStartPos.current.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      // Use a smaller threshold (5px) once hold is ready, or standard threshold otherwise
-      const effectiveThreshold = isHoldReady ? 5 : touchDragThreshold;
+      // Movement threshold to cancel long press
+      const movementThreshold = 10;
 
-      // Check if movement exceeds threshold
-      if (distance >= effectiveThreshold) {
-        // Clear hold timer if still pending
+      // Check if movement exceeds threshold - cancel long press
+      if (distance >= movementThreshold) {
+        // Clear all timers - movement cancels long press
         if (holdTimeoutRef.current) {
           clearTimeout(holdTimeoutRef.current);
           holdTimeoutRef.current = null;
         }
+        if (longPressTimeoutRef.current) {
+          clearTimeout(longPressTimeoutRef.current);
+          longPressTimeoutRef.current = null;
+        }
+        setIsHoldReady(false);
 
         if (!hasDragged.current) {
-          // First time crossing threshold - initiate drag
           hasDragged.current = true;
           onTouchDragStart?.(element);
         }
         // Prevent scrolling while dragging
-        e.preventDefault();
-        // Notify parent of drag position
-        onTouchDragMove?.(touch.clientX, touch.clientY);
+        if (draggable) {
+          e.preventDefault();
+          onTouchDragMove?.(touch.clientX, touch.clientY);
+        }
       }
     },
-    [
-      disabled,
-      draggable,
-      touchDragThreshold,
-      isHoldReady,
-      element,
-      onTouchDragStart,
-      onTouchDragMove,
-    ]
+    [disabled, draggable, element, onTouchDragStart, onTouchDragMove]
   );
 
   const handleTouchEnd = useCallback(
     (e) => {
-      // Clear hold timer
+      // Clear all timers
       if (holdTimeoutRef.current) {
         clearTimeout(holdTimeoutRef.current);
         holdTimeoutRef.current = null;
       }
+      if (longPressTimeoutRef.current) {
+        clearTimeout(longPressTimeoutRef.current);
+        longPressTimeoutRef.current = null;
+      }
 
       if (disabled) {
         setIsHoldReady(false);
+        setIsLongPressPop(false);
         return;
       }
 
       const didDrag = hasDragged.current;
+      const didLongPress = longPressTriggeredRef.current;
       const touch = e.changedTouches[0];
 
-      if (didDrag) {
+      if (didDrag && draggable) {
         // End drag - notify parent with final position
         onTouchDragEnd?.(true, touch.clientX, touch.clientY);
       }
-      // For taps (no drag), we do nothing here - let the native click event handle it
+      // For taps (no drag, no long press), we do nothing here - let the native click event handle it
       // This avoids double-firing onClick on mobile
 
       // Reset touch state
       touchStartPos.current = null;
       hasDragged.current = false;
-      setIsHoldReady(false);
+      longPressTriggeredRef.current = false;
+      // Only reset visual state if long press wasn't triggered (it handles its own reset)
+      if (!didLongPress) {
+        setIsHoldReady(false);
+      }
     },
-    [disabled, onTouchDragEnd]
+    [disabled, draggable, onTouchDragEnd]
   );
 
   return (
@@ -198,19 +233,24 @@ function ElementChipInner({
       whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
       initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0, opacity: 0 } : false}
       animate={
-        // Hold-ready "pop" animation takes precedence for drag feedback
-        isHoldReady && !reduceMotion && !disableAnimations
-          ? { scale: 1.08, y: -2 }
-          : isNew && !reduceMotion && !disableAnimations
-            ? { scale: 1, opacity: 1 }
-            : { scale: 1, y: 0 }
+        // Long press "pop" animation for favorites feedback (bigger pop)
+        isLongPressPop && !reduceMotion && !disableAnimations
+          ? { scale: 1.15, y: -4 }
+          : // Hold-ready "pop" animation takes precedence for drag feedback
+            isHoldReady && !reduceMotion && !disableAnimations
+            ? { scale: 1.08, y: -2 }
+            : isNew && !reduceMotion && !disableAnimations
+              ? { scale: 1, opacity: 1 }
+              : { scale: 1, y: 0 }
       }
       transition={
-        isHoldReady
-          ? { type: 'spring', stiffness: 400, damping: 15 }
-          : !disableAnimations
-            ? { type: 'spring', stiffness: 500, damping: 25 }
-            : undefined
+        isLongPressPop
+          ? { type: 'spring', stiffness: 500, damping: 12 }
+          : isHoldReady
+            ? { type: 'spring', stiffness: 400, damping: 15 }
+            : !disableAnimations
+              ? { type: 'spring', stiffness: 500, damping: 25 }
+              : undefined
       }
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
@@ -293,7 +333,8 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.draggable === nextProps.draggable &&
     prevProps.isDragging === nextProps.isDragging &&
     prevProps.touchDragThreshold === nextProps.touchDragThreshold &&
-    prevProps.disableAnimations === nextProps.disableAnimations
+    prevProps.disableAnimations === nextProps.disableAnimations &&
+    prevProps.onLongPress === nextProps.onLongPress
   );
 }
 

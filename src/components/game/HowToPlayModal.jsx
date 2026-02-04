@@ -680,13 +680,12 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               <span className="text-lg">⭐</span> Favorites
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
-              Keep your most-used elements within easy reach! Drag any element to the{' '}
-              <strong>star icon</strong> to add it to your Favorites bar at the top of the element
-              bank.
+              Keep your most-used elements within easy reach! <strong>Long press</strong> any
+              element to add it to your Favorites.
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
               <li>• Save up to 12 favorite elements for quick access</li>
-              <li>• Drag a favorite back to the star icon to remove it</li>
+              <li>• Long press a favorite to remove it</li>
               <li>• Favorites persist across sessions</li>
             </ul>
           </div>

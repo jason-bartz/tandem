@@ -202,9 +202,7 @@ export function EmbeddedFavorites({
               {isOverAddZone ? 'Drop to add!' : 'No favorites yet'}
             </p>
             {!isOverAddZone && (
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Drag elements here for quick access
-              </p>
+              <p className="text-xs text-gray-400 dark:text-gray-500">Long press elements to add</p>
             )}
           </div>
         ) : (
