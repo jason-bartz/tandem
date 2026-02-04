@@ -81,8 +81,8 @@ export function FavoritesPanel({
 
   return (
     <>
-      {/* Click-outside backdrop */}
-      <div className="fixed inset-0 z-40" onClick={onClose} aria-hidden="true" />
+      {/* Click-outside backdrop - bg-black/0 makes it "visible" to mobile touch events */}
+      <div className="fixed inset-0 z-40 bg-black/0" onClick={onClose} aria-hidden="true" />
       <div
         className={cn(
           'absolute left-0 right-0 top-full mt-2 z-50',
