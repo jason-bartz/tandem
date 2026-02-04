@@ -9,6 +9,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
     initialPuzzle?.date || new Date().toISOString().split('T')[0]
   );
   const [theme, setTheme] = useState(initialPuzzle?.theme || '');
+  const [themeContext, setThemeContext] = useState('');
   const [puzzles, setPuzzles] = useState(
     initialPuzzle?.puzzles || [
       { emoji: '', answer: '', hint: '' },
@@ -27,6 +28,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
   );
   const [themeSuggestions, setThemeSuggestions] = useState([]);
   const [suggestingThemes, setSuggestingThemes] = useState(false);
+  const [shufflingEmoji, setShufflingEmoji] = useState(null); // Track which puzzle is being shuffled
 
   useEffect(() => {
     if (initialPuzzle) {
@@ -200,7 +202,10 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
         }
       } else {
         // Generate full puzzle
-        const options = theme.trim() ? { themeHint: theme.trim() } : {};
+        const options = {
+          ...(theme.trim() && { themeHint: theme.trim() }),
+          ...(themeContext.trim() && { themeContext: themeContext.trim() }),
+        };
         const result = await adminService.generatePuzzle(selectedDate, options);
 
         if (result.success) {
@@ -266,7 +271,51 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
   const handleSelectThemeSuggestion = (suggestion) => {
     setTheme(suggestion.theme);
     setThemeSuggestions([]); // Clear suggestions after selection
-    setMessage(`Selected theme: "${suggestion.theme}" - Click AI Generate to create the puzzle.`);
+    setMessage(`Selected theme: "${suggestion.theme}" - Click Create to generate the puzzle.`);
+  };
+
+  const handleShuffleEmojiPair = async (index) => {
+    if (!theme.trim()) {
+      setMessage('Please enter a theme before shuffling emoji pairs.');
+      return;
+    }
+
+    const puzzle = puzzles[index];
+    if (!puzzle.answer.trim()) {
+      setMessage('Please enter an answer before shuffling the emoji pair.');
+      return;
+    }
+
+    setShufflingEmoji(index);
+    setMessage(`Generating new emoji pair for "${puzzle.answer}"...`);
+
+    try {
+      const response = await fetch('/api/admin/tandem/regenerate-emoji-pair', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({
+          theme: theme.trim(),
+          answer: puzzle.answer.trim(),
+          context: themeContext.trim() || '',
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to generate emoji pair');
+      }
+
+      const newPuzzles = [...puzzles];
+      newPuzzles[index].emoji = data.emoji;
+      setPuzzles(newPuzzles);
+      setMessage(`New emoji pair generated for "${puzzle.answer}"`);
+    } catch (error) {
+      setMessage(`Error: ${error.message || 'Failed to generate emoji pair'}`);
+      logger.error('Shuffle emoji pair error', error);
+    } finally {
+      setShufflingEmoji(null);
+    }
   };
 
   // Format date as "Day MM/DD/YYYY"
@@ -282,172 +331,156 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
 
   return (
     <div className="bg-bg-surface rounded-lg p-3 sm:p-6 h-full w-full overflow-x-auto">
-      {initialPuzzle && (
-        <div
-          className="mb-4 p-3 bg-accent-blue/20 border-[3px] border-accent-blue rounded-lg"
-          style={{ boxShadow: 'var(--shadow-small)' }}
-        >
-          <p className="text-xs sm:text-sm text-text-primary font-bold">
-            {initialPuzzle.theme ? 'Editing' : 'Creating'} puzzle for{' '}
-            {formatDateDisplay(initialPuzzle.date)}
+      {/* Header with date and Themes button */}
+      <div className="flex justify-between items-start mb-4">
+        <div className="flex-1">
+          <h3 className="text-lg font-bold text-text-primary mb-1">
+            {initialPuzzle?.theme ? 'Edit Puzzle' : 'Create New Puzzle'}
+          </h3>
+          <p className="text-sm text-text-secondary font-medium">
+            {formatDateDisplay(selectedDate)}
           </p>
         </div>
-      )}
+        <div className="flex gap-2 flex-shrink-0">
+          {onShowThemes && (
+            <button
+              type="button"
+              onClick={onShowThemes}
+              className="px-3 py-2 bg-accent-pink text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-sm"
+            >
+              Themes
+            </button>
+          )}
+        </div>
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
-        <div className="flex flex-col sm:flex-row gap-4 sm:gap-6">
-          <div className="sm:w-40">
-            <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">
-              Date
-            </label>
+        <div>
+          <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">Theme</label>
+          <div className="flex gap-2">
             <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="w-full px-3 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              type="text"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              placeholder="e.g., Things found in a kitchen"
+              className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
               style={{ boxShadow: 'var(--shadow-small)' }}
               required
             />
-          </div>
-
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-xs sm:text-sm font-bold text-text-primary">Theme</label>
-              <button
-                type="button"
-                onClick={handleSuggestThemes}
-                disabled={suggestingThemes || generating || loading}
-                className="text-xs sm:text-sm text-accent-pink hover:text-accent-pink/80 font-bold flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                {suggestingThemes ? (
-                  <>
-                    <svg className="animate-spin h-3 w-3 sm:h-4 sm:w-4" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span>Getting ideas...</span>
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="h-3 w-3 sm:h-4 sm:w-4"
-                      fill="none"
+            <button
+              type="button"
+              onClick={handleGenerateWithAI}
+              disabled={generating || loading || suggestingThemes}
+              className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: 'var(--shadow-button)' }}
+              title="Generate puzzle with AI"
+            >
+              {generating ? (
+                <span className="flex items-center gap-2 justify-center">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
                       stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                      />
-                    </svg>
-                    <span>Suggest Themes</span>
-                  </>
-                )}
-              </button>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={theme}
-                onChange={(e) => setTheme(e.target.value)}
-                placeholder="e.g., Things found in a kitchen"
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-                style={{ boxShadow: 'var(--shadow-small)' }}
-                required
-              />
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">Creating...</span>
+                </span>
+              ) : (
+                <span>Create</span>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={handleSuggestThemes}
+              disabled={suggestingThemes || generating || loading}
+              className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-yellow text-[#2c2c2c] border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: 'var(--shadow-button)' }}
+              title="Get theme suggestions"
+            >
+              {suggestingThemes ? (
+                <span className="flex items-center gap-2 justify-center">
+                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                      fill="none"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <span className="hidden sm:inline">...</span>
+                </span>
+              ) : (
+                <span>Suggest</span>
+              )}
+            </button>
+            {onShowBulkImport && (
               <button
                 type="button"
-                onClick={handleGenerateWithAI}
-                disabled={generating || loading || suggestingThemes}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={onShowBulkImport}
+                className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
                 style={{ boxShadow: 'var(--shadow-button)' }}
-                title="Generate puzzle with AI"
               >
-                {generating ? (
-                  <span className="flex items-center gap-2 justify-center">
-                    <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <span className="hidden sm:inline">Creating...</span>
-                  </span>
-                ) : (
-                  <span>Create</span>
-                )}
+                Bulk Import
               </button>
-              {onShowThemes && (
-                <button
-                  type="button"
-                  onClick={onShowThemes}
-                  className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-pink text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
-                  style={{ boxShadow: 'var(--shadow-button)' }}
-                >
-                  Themes
-                </button>
-              )}
-              {onShowBulkImport && (
-                <button
-                  type="button"
-                  onClick={onShowBulkImport}
-                  className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
-                  style={{ boxShadow: 'var(--shadow-button)' }}
-                >
-                  Bulk Import
-                </button>
-              )}
-            </div>
-            {/* Theme Suggestions */}
-            {themeSuggestions.length > 0 && (
-              <div className="mt-3 space-y-2">
-                <label className="block text-xs font-bold text-text-secondary">
-                  Click to use a suggestion:
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {themeSuggestions.map((suggestion, index) => (
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => handleSelectThemeSuggestion(suggestion)}
-                      disabled={generating || loading}
-                      className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-accent-pink hover:bg-accent-pink/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                      style={{ boxShadow: 'var(--shadow-small)' }}
-                    >
-                      <div className="font-bold text-xs sm:text-sm text-text-primary">
-                        {suggestion.theme}
-                      </div>
-                      <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
-                        {suggestion.description}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
             )}
+          </div>
+          {/* Theme Suggestions */}
+          {themeSuggestions.length > 0 && (
+            <div className="mt-3 space-y-2">
+              <label className="block text-xs font-bold text-text-secondary">
+                Click to use a suggestion:
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {themeSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleSelectThemeSuggestion(suggestion)}
+                    disabled={generating || loading}
+                    className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-accent-pink hover:bg-accent-pink/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ boxShadow: 'var(--shadow-small)' }}
+                  >
+                    <div className="font-bold text-xs sm:text-sm text-text-primary">
+                      {suggestion.theme}
+                    </div>
+                    <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
+                      {suggestion.description}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+          {/* Theme Context */}
+          <div className="mt-3">
+            <label className="block text-xs font-bold text-text-secondary mb-1">
+              Theme Context (optional)
+            </label>
+            <input
+              type="text"
+              value={themeContext}
+              onChange={(e) => setThemeContext(e.target.value)}
+              placeholder="e.g., exclude stove and coffee maker as answers"
+              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+            />
           </div>
         </div>
 
@@ -468,14 +501,57 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                 </div>
                 <div className="space-y-3">
                   <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <input
-                      type="text"
-                      value={puzzle.emoji}
-                      onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
-                      placeholder="Emoji pair (e.g., 🍳🔥)"
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
-                      required
-                    />
+                    <div className="flex-1 flex gap-2">
+                      <input
+                        type="text"
+                        value={puzzle.emoji}
+                        onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
+                        placeholder="Emoji pair (e.g., 🍳🔥)"
+                        className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => handleShuffleEmojiPair(index)}
+                        disabled={
+                          shufflingEmoji === index || generating || loading || !puzzle.answer.trim()
+                        }
+                        className="px-3 py-2 bg-accent-green text-white border-[2px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        title="Generate new emoji pair"
+                      >
+                        {shufflingEmoji === index ? (
+                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                        ) : (
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                            />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
                     <input
                       type="text"
                       value={puzzle.answer}
