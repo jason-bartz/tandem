@@ -23,13 +23,8 @@ export async function POST(request) {
     const body = await request.json();
     const { difficulty = 'medium', existingConnections = [] } = body;
 
-    // Calculate date 90 days ago
-    const ninetyDaysAgo = new Date();
-    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
-    const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
-
-    // Fetch recent connections from the last 90 days
-    const { data: recentGroups, error: fetchError } = await supabase
+    // Fetch ALL historical connections to avoid duplicates and similar patterns
+    const { data: allGroups, error: fetchError } = await supabase
       .from('reel_connections_groups')
       .select(
         `
@@ -37,34 +32,51 @@ export async function POST(request) {
         puzzle:reel_connections_puzzles!inner(date)
       `
       )
-      .gte('puzzle.date', ninetyDaysAgoStr)
       .order('puzzle(date)', { ascending: false });
 
     if (fetchError) {
-      logger.error('Error fetching recent connections:', fetchError);
-      // Continue without recent connections rather than failing
+      logger.error('Error fetching historical connections:', fetchError);
+      // Continue without historical connections rather than failing
     }
 
-    // Extract unique connection strings
-    const recentConnections = recentGroups
-      ? [...new Set(recentGroups.map((g) => g.connection).filter(Boolean))]
+    // Extract unique connection strings from all history
+    const allConnections = allGroups
+      ? [...new Set(allGroups.map((g) => g.connection).filter(Boolean))]
       : [];
 
-    logger.info('Fetched recent connections for suggestion', {
-      count: recentConnections.length,
-      ninetyDaysAgo: ninetyDaysAgoStr,
+    // Separate recent (last 90 days) from older connections for prioritization
+    const ninetyDaysAgo = new Date();
+    ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
+    const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
+
+    const recentConnections = allGroups
+      ? [
+          ...new Set(
+            allGroups
+              .filter((g) => g.puzzle?.date >= ninetyDaysAgoStr)
+              .map((g) => g.connection)
+              .filter(Boolean)
+          ),
+        ]
+      : [];
+
+    logger.info('Fetched historical connections for suggestion', {
+      totalCount: allConnections.length,
+      recentCount: recentConnections.length,
     });
 
     // Generate suggestions using AI
     const result = await aiService.suggestReelConnections({
       difficulty,
       recentConnections,
+      allConnections,
       existingConnections,
     });
 
     return NextResponse.json({
       suggestions: result.suggestions,
       recentConnectionsCount: recentConnections.length,
+      totalConnectionsCount: allConnections.length,
     });
   } catch (error) {
     logger.error('AI suggestion error:', error);

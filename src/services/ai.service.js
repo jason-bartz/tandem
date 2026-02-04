@@ -2201,6 +2201,7 @@ Return ONLY a JSON object with the movie title:
   async suggestReelConnections({
     difficulty = 'medium',
     recentConnections = [],
+    allConnections = [],
     existingConnections = [],
   }) {
     const client = this.getClient();
@@ -2216,6 +2217,7 @@ Return ONLY a JSON object with the movie title:
         const prompt = this.buildReelConnectionsSuggestionPrompt({
           difficulty,
           recentConnections,
+          allConnections,
           existingConnections,
         });
         const genInfo = {
@@ -2307,6 +2309,7 @@ Return ONLY a JSON object with the movie title:
   buildReelConnectionsSuggestionPrompt({
     difficulty,
     recentConnections,
+    allConnections = [],
     existingConnections = [],
   }) {
     const difficultyGuidance = {
@@ -2319,9 +2322,91 @@ Return ONLY a JSON object with the movie title:
         'Suggest connections that can include less mainstream films, cult classics, or more obscure categories. For movie enthusiasts.',
     };
 
+    // Categorize connections by type to identify overused patterns
+    const categorizeConnections = (connections) => {
+      const categories = {
+        actorDirector: [], // Actor/Director filmographies
+        titlePattern: [], // Title-based patterns (colors, numbers, words)
+        theme: [], // Thematic connections
+        setting: [], // Location/time period settings
+        genre: [], // Genre-specific
+        awards: [], // Award-related
+        adaptation: [], // Book/comic adaptations
+        other: [],
+      };
+
+      connections.forEach((conn) => {
+        const lower = conn.toLowerCase();
+        if (
+          lower.includes('filmography') ||
+          lower.includes('starring') ||
+          lower.includes('directed by') ||
+          lower.includes('films of') ||
+          lower.includes('movies of')
+        ) {
+          categories.actorDirector.push(conn);
+        } else if (
+          lower.includes('title') ||
+          lower.includes('word') ||
+          lower.includes('name') ||
+          lower.includes('color') ||
+          lower.includes('number')
+        ) {
+          categories.titlePattern.push(conn);
+        } else if (
+          lower.includes('set in') ||
+          lower.includes('set during') ||
+          lower.includes('takes place') ||
+          lower.includes('located in')
+        ) {
+          categories.setting.push(conn);
+        } else if (
+          lower.includes('based on') ||
+          lower.includes('adapted from') ||
+          lower.includes('novel') ||
+          lower.includes('book')
+        ) {
+          categories.adaptation.push(conn);
+        } else if (
+          lower.includes('oscar') ||
+          lower.includes('award') ||
+          lower.includes('nominated') ||
+          lower.includes('golden globe')
+        ) {
+          categories.awards.push(conn);
+        } else if (
+          lower.includes('horror') ||
+          lower.includes('comedy') ||
+          lower.includes('drama') ||
+          lower.includes('action') ||
+          lower.includes('thriller')
+        ) {
+          categories.genre.push(conn);
+        } else {
+          categories.theme.push(conn);
+        }
+      });
+
+      return categories;
+    };
+
+    const categories = categorizeConnections(allConnections);
+    const overusedCategories = Object.entries(categories)
+      .filter(([_, conns]) => conns.length >= 5)
+      .map(([cat, conns]) => `${cat} (${conns.length} used)`)
+      .join(', ');
+
+    // Build connection history section
     const recentConnectionsList =
       recentConnections.length > 0
-        ? `\n\nRECENT CONNECTIONS TO AVOID (used in the last 90 days):\n${recentConnections.map((c) => `- ${c}`).join('\n')}`
+        ? `\n\nRECENT CONNECTIONS (last 90 days) - MUST AVOID:\n${recentConnections.map((c) => `- ${c}`).join('\n')}`
+        : '';
+
+    // Include older connections but make it clear they should also be avoided
+    const olderConnections = allConnections.filter((c) => !recentConnections.includes(c));
+    const olderConnectionsList =
+      olderConnections.length > 0
+        ? `\n\nALL HISTORICAL CONNECTIONS (also avoid duplicates and similar ideas):\n${olderConnections.map((c) => `- ${c}`).join('\n')}`
         : '';
 
     const existingConnectionsList =
@@ -2329,30 +2414,44 @@ Return ONLY a JSON object with the movie title:
         ? `\n\nCONNECTIONS ALREADY IN THIS PUZZLE (do not suggest similar connections):\n${existingConnections.map((c) => `- ${c}`).join('\n')}`
         : '';
 
+    const overusedWarning =
+      overusedCategories.length > 0
+        ? `\n\nOVERUSED CATEGORIES (try to avoid these types): ${overusedCategories}`
+        : '';
+
     return `You are suggesting connection ideas for a Reel Connections puzzle game (similar to NYT Connections but with movies).
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
 
 Generate 8 UNIQUE and CREATIVE connection ideas that would work well for this difficulty level.
-${recentConnectionsList}${existingConnectionsList}
+${recentConnectionsList}${olderConnectionsList}${existingConnectionsList}${overusedWarning}
 
-REQUIREMENTS:
-1. Each connection should be interesting and have an "aha!" moment
-2. Connections should have at least 4 well-known movies that fit
-3. Avoid overly generic connections like "Action Movies" or "Oscar Winners"
-4. Think creatively: themes, settings, actor connections, title patterns, time periods, etc.
-5. DO NOT repeat or closely resemble any of the recent connections listed above
-6. Use proper Title Case formatting
+CRITICAL REQUIREMENTS FOR AVOIDING DUPLICATES AND SIMILAR CONNECTIONS:
+1. DO NOT use ANY connection that is identical to those listed above
+2. DO NOT use connections that are SIMILAR to those listed above. Similar means:
+   - Same concept with different wording (e.g., "Films With Colors In Titles" ≈ "Movies With Color Names")
+   - Same actor/director (if "Tom Hanks Filmography" exists, don't suggest "Tom Hanks Movies")
+   - Same time period (if "Films Set In The 1980s" exists, don't suggest "80s Movies")
+   - Same theme with slight variation (if "Movies Where Dogs Die" exists, don't suggest "Films Where Pets Die")
+   - Same pattern type (if we have many "Movies With X In The Title" connections, avoid more title-based patterns)
+3. If you're unsure whether a connection is too similar, err on the side of NOT suggesting it
 
-GOOD CONNECTION EXAMPLES:
-- "Movies With Colors In The Title" (Blue Velvet, The Green Mile, etc.)
-- "Films Set During World War II"
-- "Movies Where The Dog Dies"
-- "Tom Hanks Filmography"
-- "Movies Based On Stephen King Novels"
-- "Films With One-Word Titles That Are Names"
-- "Movies That Take Place On A Single Day"
-- "Directorial Debuts"
+ADDITIONAL REQUIREMENTS:
+4. Each connection should be interesting and have an "aha!" moment
+5. Connections should have at least 4 well-known movies that fit
+6. Avoid overly generic connections like "Action Movies" or "Oscar Winners"
+7. Think creatively: unique themes, unexpected commonalities, clever wordplay, surprising shared elements
+8. Use proper Title Case formatting
+9. Prioritize FRESH and ORIGINAL ideas that bring variety to our puzzle collection
+
+GOOD CONNECTION EXAMPLES (for inspiration only - do not copy if similar exists):
+- "Movies Where The Villain Wins"
+- "Films Shot In A Single Location"
+- "Movies With Unreliable Narrators"
+- "Ensemble Cast Films"
+- "Movies That Break The Fourth Wall"
+- "Films With Twist Endings"
+- "Movies Set On Planes"
 
 RESPONSE FORMAT (JSON only):
 {
