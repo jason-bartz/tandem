@@ -224,15 +224,6 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       onClick={handleClose}
-      // onTouchEnd ensures mobile touch events work on the backdrop overlay
-      onTouchEnd={(e) => {
-        // Only close if touch ended on the backdrop itself, not the card
-        if (e.target === e.currentTarget) {
-          // preventDefault stops the synthetic click event from firing (prevents double-fire on mobile)
-          e.preventDefault();
-          handleClose();
-        }
-      }}
     >
       <motion.div
         className={cn(
@@ -315,11 +306,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         {/* Share button for first discoveries */}
         {result.isFirstDiscovery && (
           <motion.button
-            onClick={handleShare}
-            onTouchEnd={(e) => {
-              e.preventDefault();
+            onClick={(e) => {
               e.stopPropagation();
-              if (!isSharing) handleShare();
+              handleShare();
             }}
             disabled={isSharing}
             className={cn(
@@ -329,7 +318,6 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               'rounded-xl font-bold text-sm',
               'transition-colors duration-150',
               'disabled:opacity-70',
-              'touch-auto',
               highContrast && 'border-[3px]'
             )}
             initial={{ opacity: 0, y: 10, boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
@@ -366,25 +354,21 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           transition={{ delay: 0.6 }}
         >
           <button
-            onClick={handleUse}
-            onTouchEnd={(e) => {
-              e.preventDefault();
+            onClick={(e) => {
               e.stopPropagation();
               handleUse();
             }}
-            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors touch-auto"
+            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             <ChevronUp className="w-4 h-4" />
             <span>use</span>
           </button>
           <button
-            onClick={handleClose}
-            onTouchEnd={(e) => {
-              e.preventDefault();
+            onClick={(e) => {
               e.stopPropagation();
               handleClose();
             }}
-            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors touch-auto"
+            className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
             <ChevronDown className="w-4 h-4" />
             <span>close</span>
