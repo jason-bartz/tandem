@@ -131,20 +131,25 @@ function ElementChipInner({
           clearTimeout(longPressTimeoutRef.current);
           longPressTimeoutRef.current = null;
         }
-        setIsHoldReady(false);
 
-        if (!hasDragged.current) {
+        // Only enter drag mode if hold timer already completed (isHoldReady was true)
+        // This allows normal scrolling to work without blocking
+        if (!hasDragged.current && isHoldReady) {
           hasDragged.current = true;
           onTouchDragStart?.(element);
         }
-        // Prevent scrolling while dragging
-        if (draggable) {
+
+        // Reset hold ready state after checking it
+        setIsHoldReady(false);
+
+        // Prevent scrolling ONLY while actively dragging (after hold delay completed)
+        if (draggable && hasDragged.current) {
           e.preventDefault();
           onTouchDragMove?.(touch.clientX, touch.clientY);
         }
       }
     },
-    [disabled, draggable, element, onTouchDragStart, onTouchDragMove]
+    [disabled, draggable, element, onTouchDragStart, onTouchDragMove, isHoldReady]
   );
 
   const handleTouchEnd = useCallback(
