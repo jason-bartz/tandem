@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, Star, Trash2 } from 'lucide-react';
+import { X, Trash2 } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -97,7 +97,13 @@ export function FavoritesPanel({
         {/* Header */}
         <div className="flex items-center justify-between p-3 border-b-2 border-black dark:border-gray-600">
           <div className="flex items-center gap-2">
-            <Star className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            <Image
+              src="/icons/ui/favorites.png"
+              alt=""
+              width={20}
+              height={20}
+              className="w-5 h-5"
+            />
             <h3 className="font-bold text-sm">
               Favorites ({favoriteElements.size}/{maxFavorites})
             </h3>
@@ -143,8 +149,16 @@ export function FavoritesPanel({
           {favoritesList.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
-              <p className="text-xs text-gray-400 dark:text-gray-500">
-                Drag elements to the ⭐️ for quick access!
+              <p className="text-xs text-gray-400 dark:text-gray-500 flex items-center justify-center gap-1">
+                <span>Drag elements to the</span>
+                <Image
+                  src="/icons/ui/favorites.png"
+                  alt="favorites"
+                  width={16}
+                  height={16}
+                  className="w-4 h-4 inline-block"
+                />
+                <span>for quick access!</span>
               </p>
             </div>
           ) : (
