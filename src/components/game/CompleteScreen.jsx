@@ -25,6 +25,7 @@ import Settings from '@/components/Settings';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/auth/AuthModal';
 import GlobalNavigation from '@/components/navigation/GlobalNavigation';
+import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 
@@ -54,6 +55,7 @@ export default function CompleteScreen({
   const [showRevealAnswers, setShowRevealAnswers] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showLoginPopup, setShowLoginPopup] = useState(true);
   const [congratsMessage, setCongratsMessage] = useState('');
   const { celebration, lightTap } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
@@ -143,6 +145,19 @@ export default function CompleteScreen({
       onOpenSettings={() => setShowSettings(true)}
       onOpenLeaderboard={() => setShowLeaderboard(true)}
     >
+      {/* Login reminder popup for non-authenticated users who won */}
+      {won && !user && !authLoading && (
+        <LoginReminderPopup
+          isVisible={showLoginPopup}
+          onSignUp={() => {
+            setShowLoginPopup(false);
+            setShowAuthModal(true);
+          }}
+          onDismiss={() => setShowLoginPopup(false)}
+          gameType="tandem"
+        />
+      )}
+
       <div className="animate-fade-in -mt-16">
         {/* Main completion card */}
         <div
