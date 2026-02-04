@@ -219,7 +219,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-50 flex items-center justify-center"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/30"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
@@ -234,7 +234,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
           'cursor-grab active:cursor-grabbing',
-          'touch-none select-none'
+          'select-none'
         )}
         style={{ y }}
         initial={!reduceMotion ? { scale: 0, rotate: -10, opacity: 0 } : { opacity: 0 }}
