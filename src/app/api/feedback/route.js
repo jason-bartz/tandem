@@ -14,6 +14,7 @@ import { withRateLimit } from '@/lib/security/rateLimiter';
 import logger from '@/lib/logger';
 import { sendEmail } from '@/lib/email/emailService';
 import { generateFeedbackNotificationEmail } from '@/lib/email/templates/feedbackNotification';
+import { notifyUserFeedback } from '@/lib/discord';
 
 /**
  * Send feedback notification email to admin
@@ -143,6 +144,22 @@ export async function POST(request) {
       logger.error('Failed to send feedback notification email', {
         feedbackId: createdEntry.id,
         error: emailError.message,
+      });
+    });
+
+    // Send Discord notification asynchronously
+    notifyUserFeedback({
+      category: createdEntry.category,
+      message: createdEntry.message,
+      email: createdEntry.email,
+      username: user.user_metadata?.username || user.user_metadata?.display_name,
+      allowContact: createdEntry.allowContact,
+      platform: createdEntry.platform,
+    }).catch((discordError) => {
+      // Log Discord errors but don't fail the request
+      logger.error('Failed to send feedback Discord notification', {
+        feedbackId: createdEntry.id,
+        error: discordError.message,
       });
     });
 

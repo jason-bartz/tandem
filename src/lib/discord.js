@@ -192,3 +192,55 @@ export async function notifyFirstDiscovery({ element, emoji, username, discovere
     webhookUrl: DISCORD_FIRST_DISCOVERY_WEBHOOK_URL,
   });
 }
+
+/**
+ * Send a user feedback/bug report notification
+ */
+export async function notifyUserFeedback({
+  category,
+  message,
+  email,
+  username,
+  allowContact,
+  platform,
+}) {
+  const DISCORD_BUG_REPORTS_WEBHOOK_URL = process.env.DISCORD_BUG_REPORTS_WEBHOOK_URL;
+
+  // Category emoji mapping
+  const categoryEmoji = {
+    'Bug Report': '🪲',
+    'Feature Request': '💡',
+    'Game Feedback': '🎮',
+    Other: '📝',
+  };
+
+  // Category to Discord notification type mapping
+  const categoryType = {
+    'Bug Report': 'error',
+    'Feature Request': 'info',
+    'Game Feedback': 'success',
+    Other: 'info',
+  };
+
+  const emoji = categoryEmoji[category] || '📝';
+  const type = categoryType[category] || 'info';
+
+  // Truncate message if too long for Discord embed (max 1024 chars per field)
+  const truncatedMessage = message.length > 1000 ? message.substring(0, 997) + '...' : message;
+
+  const fields = [
+    { name: 'Message', value: truncatedMessage, inline: false },
+    { name: 'Email', value: email || 'Not provided', inline: true },
+    { name: 'Username', value: username || 'Anonymous', inline: true },
+    { name: 'Platform', value: platform || 'Unknown', inline: true },
+    { name: 'Can Contact', value: allowContact ? 'Yes' : 'No', inline: true },
+  ];
+
+  await sendDiscordNotification({
+    title: `${emoji} ${category}`,
+    description: `New feedback submitted from **${username || email || 'Anonymous'}**`,
+    type,
+    fields,
+    webhookUrl: DISCORD_BUG_REPORTS_WEBHOOK_URL,
+  });
+}
