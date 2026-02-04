@@ -8,6 +8,7 @@ import ThemeTracker from '@/components/admin/ThemeTracker';
 import BulkImport from '@/components/admin/BulkImport';
 import MiniPuzzleEditor from '@/components/admin/mini/MiniPuzzleEditor';
 import ReelConnectionsPuzzleEditor from '@/components/admin/reel-connections/ReelConnectionsPuzzleEditor';
+import ConnectionTracker from '@/components/admin/reel-connections/ConnectionTracker';
 import DailyAlchemyPuzzleEditor from '@/components/admin/daily-alchemy/DailyAlchemyPuzzleEditor';
 import ElementManager from '@/components/admin/daily-alchemy/ElementManager';
 import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
@@ -38,6 +39,9 @@ export default function AdminDashboard() {
 
   // Themes modal state (for viewing themes while in puzzle editor)
   const [showThemesModal, setShowThemesModal] = useState(false);
+
+  // Connections modal state (for viewing connections while in reel editor)
+  const [showConnectionsModal, setShowConnectionsModal] = useState(false);
 
   // Loading states for save operations
   const [miniLoading, setMiniLoading] = useState(false);
@@ -308,6 +312,7 @@ export default function AdminDashboard() {
               onSave={handleSaveReelPuzzle}
               onCancel={handleCloseEditor}
               loading={reelLoading}
+              onShowConnections={() => setShowConnectionsModal(true)}
             />
           </div>
         );
@@ -611,6 +616,47 @@ export default function AdminDashboard() {
                   setSelectedDate(puzzle.date);
                   setEditingPuzzle(puzzle);
                   setActiveEditor('tandem');
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Connections modal (for viewing connections while in reel editor) */}
+      {showConnectionsModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white flex items-center justify-between">
+              <h3 className="text-base sm:text-lg font-bold text-text-primary">
+                Connection Tracker
+              </h3>
+              <button
+                onClick={() => setShowConnectionsModal(false)}
+                className="p-2 hover:bg-bg-card rounded-lg transition-colors"
+              >
+                <svg
+                  className="w-5 h-5 text-text-primary"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+            <div className="p-4 sm:p-6 overflow-y-auto flex-1">
+              <ConnectionTracker
+                onEditPuzzle={(puzzle) => {
+                  setShowConnectionsModal(false);
+                  setSelectedDate(puzzle.date);
+                  setEditingPuzzle(puzzle);
+                  setActiveEditor('reel');
                 }}
               />
             </div>
