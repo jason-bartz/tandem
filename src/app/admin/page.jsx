@@ -440,20 +440,6 @@ export default function AdminDashboard() {
             )}
           </button>
           <button
-            onClick={() => setActiveTab('leaderboards')}
-            className={`
-              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
-              ${
-                activeTab === 'leaderboards'
-                  ? 'border-accent-purple text-text-primary bg-accent-purple/20'
-                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
-              }
-            `}
-          >
-            <Image src="/icons/ui/leaderboard.png" alt="" width={20} height={20} />
-            <span className="hidden sm:inline">Leaderboards</span>
-          </button>
-          <button
             onClick={() => setActiveTab('avatars')}
             className={`
               py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
@@ -464,8 +450,22 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <span className="text-lg">🐾</span>
+            <Image src="/icons/ui/avatars.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Avatars</span>
+          </button>
+          <button
+            onClick={() => setActiveTab('leaderboards')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'leaderboards'
+                  ? 'border-accent-purple text-text-primary bg-accent-purple/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/icons/ui/leaderboard-admin.png" alt="" width={20} height={20} />
+            <span className="hidden sm:inline">Leaderboards</span>
           </button>
         </nav>
       </div>
