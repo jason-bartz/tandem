@@ -217,8 +217,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
     <motion.div
       className="fixed inset-0 z-50 flex items-center justify-center"
       initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
+      animate={{ opacity: 1, pointerEvents: 'auto' }}
+      exit={{ opacity: 0, pointerEvents: 'none' }}
+      transition={{ duration: 0.15 }}
     >
       {/* Separate backdrop div for reliable click handling on mobile */}
       {/* IMPORTANT: Directly call onComplete() instead of handleClose() to bypass animation issues on mobile */}
