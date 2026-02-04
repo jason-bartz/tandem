@@ -116,6 +116,7 @@ class AdminService {
         includePastDays: options.includePastDays || 180,
         includeFutureDays: options.includeFutureDays || 14,
         ...(options.themeHint && { themeHint: options.themeHint }),
+        ...(options.themeContext && { themeContext: options.themeContext }),
       };
 
       const headers = await this.getAuthHeaders(true);

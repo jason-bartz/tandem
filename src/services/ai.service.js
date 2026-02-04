@@ -62,7 +62,7 @@ class AIService {
    * @param {string} options.themeHint - Optional theme hint from user
    * @returns {Promise<{theme: string, puzzles: Array<{emoji: string, answer: string, hint: string}>}>}
    */
-  async generatePuzzle({ date, pastPuzzles = [], excludeThemes = [], themeHint }) {
+  async generatePuzzle({ date, pastPuzzles = [], excludeThemes = [], themeHint, themeContext }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -74,7 +74,13 @@ class AIService {
     // Retry logic for production reliability
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildPrompt({ date, pastPuzzles, excludeThemes, themeHint });
+        const prompt = this.buildPrompt({
+          date,
+          pastPuzzles,
+          excludeThemes,
+          themeHint,
+          themeContext,
+        });
         const genInfo = {
           date,
           model: this.model,
@@ -341,7 +347,7 @@ class AIService {
   /**
    * Build the prompt for AI puzzle generation
    */
-  buildPrompt({ date, pastPuzzles, excludeThemes, themeHint }) {
+  buildPrompt({ date, pastPuzzles, excludeThemes, themeHint, themeContext }) {
     const recentThemes = pastPuzzles
       .slice(0, 30)
       .map((p) => p.theme)
@@ -353,14 +359,18 @@ class AIService {
         ? `\nRecent/excluded themes to avoid:\n${allExcludedThemes.map((t) => `- ${t}`).join('\n')}`
         : '';
 
+    const contextNote = themeContext
+      ? `\n\nADDITIONAL CONTEXT/CONSTRAINTS FROM USER:\n${themeContext}`
+      : '';
+
     const themeInstructions = themeHint
       ? `USER REQUESTED THEME: "${themeHint}"
-Generate 4 emoji-word pairs that fit this theme. IMPORTANT: You must refine and polish the theme text to match our standard formatting style before outputting it. Focus on creating excellent, guessable emoji pairs that match this theme.`
-      : `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.`;
+Generate 4 emoji-word pairs that fit this theme. IMPORTANT: You must refine and polish the theme text to match our standard formatting style before outputting it. Focus on creating excellent, guessable emoji pairs that match this theme.${contextNote}`
+      : `You are creating a daily emoji puzzle game. Generate ONE puzzle with a creative theme and 4 emoji-word pairs.${contextNote}`;
 
     const themeRequirements = themeHint
       ? `
-THEME PROVIDED BY USER: "${themeHint}"
+THEME PROVIDED BY USER: "${themeHint}"${contextNote ? `\nUSER CONTEXT: ${themeContext}` : ''}
 CRITICAL THEME REFINEMENT REQUIREMENTS:
 - Use "${themeHint}" as your INSPIRATION and guide
 - You MUST refine and format the theme to match our standard patterns:
@@ -369,7 +379,7 @@ CRITICAL THEME REFINEMENT REQUIREMENTS:
   * Ensure proper grammar and article usage (e.g., "Things That Go Bump in the Night" not "things that go bump in the night")
   * Match our established theme patterns (see examples below)
 - Stay true to the user's concept but present it professionally
-- Focus on finding 4 excellent answers that fit this refined theme perfectly`
+- Focus on finding 4 excellent answers that fit this refined theme perfectly${themeContext ? `\n- IMPORTANT: Follow the user's additional context/constraints: ${themeContext}` : ''}`
       : `
 THEME REQUIREMENTS:
 - Create a DIVERSE, CREATIVE theme that connects 4 words in an interesting way
@@ -2423,7 +2433,7 @@ Return ONLY the JSON.`;
 
         const message = await client.messages.create({
           model: this.model,
-          max_tokens: 512,
+          max_tokens: 1024, // Increased for 8 suggestions
           temperature: 1.0, // High temperature for creative variety
           messages: [
             {
@@ -2510,7 +2520,7 @@ In this game:
 - Players see emoji pairs and must guess the words
 - The theme is revealed AFTER solving - creating an "aha!" moment
 
-Generate 4 UNIQUE and CREATIVE theme suggestions.
+Generate 8 UNIQUE and CREATIVE theme suggestions.
 ${recentThemesList}
 
 REQUIREMENTS:
@@ -2518,6 +2528,7 @@ REQUIREMENTS:
 2. Avoid overly generic themes like "Things" or "Stuff"
 3. DO NOT repeat or closely resemble any recent themes listed above
 4. Think creatively across different pattern types
+5. Provide a diverse mix of theme types - don't make them all similar
 
 THEME PATTERN TYPES (use variety):
 - Direct categories: "Musical Instruments", "Kitchen Appliances"
@@ -2547,7 +2558,11 @@ RESPONSE FORMAT (JSON only):
     { "theme": "Theme Title", "description": "Brief explanation with example answers" },
     { "theme": "Another Theme", "description": "Brief explanation with example answers" },
     { "theme": "Third Theme", "description": "Brief explanation with example answers" },
-    { "theme": "Fourth Theme", "description": "Brief explanation with example answers" }
+    { "theme": "Fourth Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Fifth Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Sixth Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Seventh Theme", "description": "Brief explanation with example answers" },
+    { "theme": "Eighth Theme", "description": "Brief explanation with example answers" }
   ]
 }
 
@@ -2581,7 +2596,7 @@ Return ONLY the JSON.`;
       });
 
       return {
-        suggestions: result.suggestions.slice(0, 4).map((s) => ({
+        suggestions: result.suggestions.slice(0, 8).map((s) => ({
           theme: s.theme.trim(),
           description: s.description.trim(),
         })),
@@ -2590,6 +2605,145 @@ Return ONLY the JSON.`;
       logger.error('Failed to parse Tandem theme suggestions', { error, responseText });
       throw new Error('Failed to parse AI suggestions. Please try again.');
     }
+  }
+
+  /**
+   * Generate a single emoji pair for a given theme and answer
+   * @param {Object} options - Generation options
+   * @param {string} options.theme - The puzzle theme
+   * @param {string} options.answer - The answer word to represent with emojis
+   * @param {string} options.context - Optional additional context/constraints
+   * @returns {Promise<{emoji: string}>}
+   */
+  async generateSingleEmojiPair({ theme, answer, context = '' }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const contextNote = context ? `\n\nADDITIONAL CONTEXT:\n${context}` : '';
+
+        const prompt = `You are generating an emoji pair for a Daily Tandem puzzle game.
+
+THEME: ${theme}
+ANSWER WORD: ${answer}
+${contextNote}
+
+Generate a CREATIVE emoji pair (2-4 emojis) that represents the answer word "${answer}" in relation to the theme "${theme}".
+
+REQUIREMENTS:
+1. The emoji pair should visually represent or hint at the answer word
+2. Use 2-4 emojis that work together to suggest the answer
+3. The emojis should be clever and fun, creating an "aha!" moment
+4. Avoid using emojis that literally spell out or directly show the answer
+
+EXAMPLES:
+- For "STOVE" in "Kitchen Items": 🍳🔥 (cooking + fire)
+- For "GUITAR" in "Musical Instruments": 🎸🎵 (guitar + music)
+- For "UMBRELLA" in "Rainy Day Items": ☔🌧️ (rain protection + rain)
+
+RESPONSE FORMAT (JSON only):
+{
+  "emoji": "🔥🍳"
+}
+
+Return ONLY the JSON.`;
+
+        logger.info('Generating single emoji pair with AI', {
+          theme,
+          answer,
+          hasContext: !!context,
+          attempt: attempt + 1,
+        });
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 128,
+          temperature: 1.0,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI emoji pair response received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        // Parse the response
+        const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+          throw new Error('No JSON found in response');
+        }
+
+        const result = JSON.parse(jsonMatch[0]);
+
+        if (!result.emoji || typeof result.emoji !== 'string') {
+          throw new Error('Missing emoji in response');
+        }
+
+        this.generationCount++;
+        logger.info('Single emoji pair generated successfully', {
+          theme,
+          answer,
+          emoji: result.emoji,
+          duration,
+        });
+
+        return { emoji: result.emoji.trim() };
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI emoji pair generation attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI emoji pair generation failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
   }
 
   /**

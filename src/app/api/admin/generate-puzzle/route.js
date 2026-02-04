@@ -13,6 +13,7 @@ const generatePuzzleSchema = z.object({
   includePastDays: z.number().min(7).max(365).optional().default(180),
   includeFutureDays: z.number().min(0).max(90).optional().default(14),
   themeHint: z.string().max(100).optional(),
+  themeContext: z.string().max(500).optional(),
 });
 
 export async function POST(request) {
@@ -49,7 +50,8 @@ export async function POST(request) {
 
     // Parse and validate request body
     const body = await parseAndValidateJson(request, generatePuzzleSchema);
-    const { date, excludeThemes, includePastDays, includeFutureDays, themeHint } = body;
+    const { date, excludeThemes, includePastDays, includeFutureDays, themeHint, themeContext } =
+      body;
 
     // Get recent and future puzzles for context (to ensure variety)
     const startDate = new Date(date);
@@ -85,6 +87,7 @@ export async function POST(request) {
       pastPuzzles,
       excludeThemes,
       themeHint,
+      themeContext,
     });
     const duration = logger.timeEnd('generate-puzzle', startTime);
 
