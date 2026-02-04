@@ -85,7 +85,11 @@ export function FavoritesPanel({
       <div
         className="fixed inset-0 z-40"
         onClick={onClose}
-        onTouchEnd={onClose}
+        onTouchEnd={(e) => {
+          // preventDefault stops the synthetic click event from firing (prevents double-fire on mobile)
+          e.preventDefault();
+          onClose?.();
+        }}
         aria-hidden="true"
       />
       <div
@@ -149,8 +153,7 @@ export function FavoritesPanel({
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>
               <p className="text-xs text-gray-400 dark:text-gray-500">
-                Drag elements to the <Star className="w-3 h-3 inline text-yellow-500" /> button to
-                save them
+                Drag elements to the ⭐️ for quick access!
               </p>
             </div>
           ) : (

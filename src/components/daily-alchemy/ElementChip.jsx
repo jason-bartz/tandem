@@ -101,6 +101,8 @@ function ElementChipInner({
         onTouchDragEnd?.(true, touch.clientX, touch.clientY);
       } else if (draggable) {
         // Was a tap, not a drag - trigger click
+        // preventDefault stops the synthetic click event from firing (prevents double-selection on mobile)
+        e.preventDefault();
         onClick?.(element);
       }
 
