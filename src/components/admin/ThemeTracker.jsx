@@ -257,7 +257,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
         <p className="text-text-primary font-bold">Error: {error}</p>
         <button
           onClick={fetchAllPuzzles}
-          className="mt-2 px-4 py-2 bg-accent-red border-[3px] border-border-main text-white rounded font-bold hover:translate-y-[-2px] transition-transform"
+          className="mt-2 px-4 py-2 bg-accent-red border-[3px] border-black text-white rounded font-bold hover:translate-y-[-2px] transition-transform"
           style={{ boxShadow: 'var(--shadow-button)' }}
         >
           Retry
@@ -269,12 +269,12 @@ export default function ThemeTracker({ onEditPuzzle }) {
   return (
     <div className="space-y-4 sm:space-y-6">
       <div
-        className="bg-bg-surface rounded-lg border-[3px] border-border-main p-4 sm:p-6"
+        className="bg-bg-surface rounded-lg border-[3px] border-black p-4 sm:p-6"
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 text-center">
           <div
-            className="p-3 bg-bg-card rounded-lg border-[2px] border-border-main"
+            className="p-3 bg-bg-card rounded-lg border-[2px] border-black"
             style={{ boxShadow: 'var(--shadow-small)' }}
           >
             <div className="text-xl sm:text-2xl font-bold text-text-primary">{stats.total}</div>
@@ -314,17 +314,17 @@ export default function ThemeTracker({ onEditPuzzle }) {
       </div>
 
       <div
-        className="bg-bg-surface rounded-lg border-[3px] border-border-main"
+        className="bg-bg-surface rounded-lg border-[3px] border-black"
         style={{ boxShadow: 'var(--shadow-card)' }}
       >
-        <div className="p-3 sm:p-4 border-b-[3px] border-border-main">
+        <div className="p-3 sm:p-4 border-b-[3px] border-black">
           <div className="flex flex-col gap-3 sm:gap-4">
             <input
               type="text"
               placeholder="Search themes, dates, or answers..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
               style={{ boxShadow: 'var(--shadow-small)' }}
             />
 
@@ -333,7 +333,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange({ ...dateRange, start: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 style={{ boxShadow: 'var(--shadow-small)' }}
                 placeholder="Start Date"
               />
@@ -341,7 +341,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange({ ...dateRange, end: e.target.value })}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 style={{ boxShadow: 'var(--shadow-small)' }}
                 placeholder="End Date"
               />
@@ -351,7 +351,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
+                className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-blue"
                 style={{ boxShadow: 'var(--shadow-small)' }}
               >
                 <option value="date">Sort by Date</option>
@@ -361,7 +361,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
 
               <button
                 onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-border-main bg-bg-card text-text-primary rounded-lg font-bold hover:bg-accent-yellow/20 transition-colors"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black bg-bg-card text-text-primary rounded-lg font-bold hover:bg-accent-yellow/20 transition-colors"
                 style={{ boxShadow: 'var(--shadow-small)' }}
               >
                 {sortOrder === 'asc' ? '↑' : '↓'}
@@ -369,7 +369,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
 
               <button
                 onClick={() => setShowDuplicatesOnly(!showDuplicatesOnly)}
-                className={`px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg font-bold border-[3px] border-border-main transition-transform whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg font-bold border-[3px] border-black transition-transform whitespace-nowrap ${
                   showDuplicatesOnly
                     ? 'bg-accent-red text-white hover:translate-y-[-2px]'
                     : 'bg-bg-card text-text-primary hover:bg-accent-red/20'
@@ -381,7 +381,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
 
               <button
                 onClick={exportToCSV}
-                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue border-[3px] border-border-main text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform whitespace-nowrap"
+                className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue border-[3px] border-black text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform whitespace-nowrap"
                 style={{ boxShadow: 'var(--shadow-button)' }}
               >
                 Export
@@ -391,7 +391,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
         </div>
 
         <div className="overflow-x-auto -mx-3 sm:mx-0">
-          <table className="min-w-full divide-y-[3px] divide-border-main">
+          <table className="min-w-full divide-y-[3px] divide-black">
             <thead className="bg-bg-card">
               <tr>
                 <th className="px-3 sm:px-6 py-2 sm:py-3 text-left text-[10px] sm:text-xs font-bold text-text-primary uppercase tracking-wider">
@@ -414,7 +414,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-bg-surface divide-y-[2px] divide-border-main">
+            <tbody className="bg-bg-surface divide-y-[2px] divide-black">
               {filteredAndSortedPuzzles.map((puzzle) => {
                 const similarThemes = findSimilarThemes[puzzle.date] || [];
 
@@ -437,7 +437,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                       <span
                         className={`inline-flex px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-xs rounded font-bold border-[2px] ${
                           puzzle.status === 'past'
-                            ? 'bg-text-muted/20 border-border-main text-text-primary'
+                            ? 'bg-text-muted/20 border-black text-text-primary'
                             : 'bg-accent-blue/20 border-accent-blue text-text-primary'
                         }`}
                       >
@@ -449,7 +449,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                         {puzzle.puzzles.map((p, idx) => (
                           <span
                             key={idx}
-                            className="text-[10px] sm:text-xs bg-bg-card border-[2px] border-border-main px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-medium"
+                            className="text-[10px] sm:text-xs bg-bg-card border-[2px] border-black px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-medium"
                           >
                             {p.emoji} {p.answer}
                           </span>
@@ -462,7 +462,7 @@ export default function ThemeTracker({ onEditPuzzle }) {
                     <td className="px-3 sm:px-6 py-2 sm:py-4 whitespace-nowrap">
                       <button
                         onClick={() => onEditPuzzle && onEditPuzzle(puzzle)}
-                        className="px-2 sm:px-3 py-1 bg-accent-green border-[2px] border-border-main text-white text-[10px] sm:text-xs rounded font-bold hover:translate-y-[-1px] transition-transform"
+                        className="px-2 sm:px-3 py-1 bg-accent-green border-[2px] border-black text-white text-[10px] sm:text-xs rounded font-bold hover:translate-y-[-1px] transition-transform"
                         style={{ boxShadow: 'var(--shadow-small)' }}
                       >
                         Edit
