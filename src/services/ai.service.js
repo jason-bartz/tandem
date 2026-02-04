@@ -3714,106 +3714,91 @@ Respond in JSON format:
    * Build the prompt for element combination generation
    */
   buildElementCombinationPrompt(elementA, elementB) {
-    return `You are generating results for an element combination game similar to popular element-mixing puzzle games.
+    return `You are generating results for an element combination game in the style of Infinite Craft - a creative, chaotic, and endlessly entertaining element mixer.
 
 TASK: Determine what results from combining these two elements:
 Element 1: ${elementA}
 Element 2: ${elementB}
 
 CORE PHILOSOPHY:
-The best combinations feel INTUITIVE and SATISFYING. When a player sees the result, they should think "Oh, that makes sense!" or "Haha, that's clever!" The game should feel like discovery, not random guessing.
+This is a CREATIVE SANDBOX. Results should range from logical and satisfying to hilariously absurd. The game rewards experimentation with surprising, funny, and sometimes chaotic results. Players should think "That's perfect!" OR "LOL what?!" - both are valid.
+
+THE CREATIVITY SPECTRUM:
+Early/basic elements should feel intuitive and grounded. As combinations get more abstract or conceptual, EMBRACE THE CHAOS:
+
+GROUNDED (basic elements):
+- Fire + Water = Steam
+- Earth + Water = Mud
+- Fire + Earth = Lava
+
+CREATIVE (mid-level):
+- Dragon + Internet = Viral Video
+- Wizard + Lawyer = Legal Magic
+- Gamer + Sunlight = Myth
+
+CHAOTIC (abstract/conceptual):
+- Controversy + Birthday = Gender Reveal Party
+- Divorce + Fire = Gender Reveal Wildfire
+- Meme + Brain Rot = Skibidi Toilet
+- Dating + Desperation = Looksmaxxing
+- Charm + Gen Z = Rizzler
 
 THINK BIGGER - ESCALATE SCOPE:
-When combining elements, especially similar or thematically aligned ones, aim for LARGER, more significant concepts:
-
-Physical things → Collections → Institutions → Systems:
-- Tank + Tank = Army (not "Two Tanks" or "Tank Squad")
-- Book + Book = Library (not "Book Collection")
-- Tree + Tree = Forest (natural progression)
-- House + House = Neighborhood
-
-Abstract concepts → Movements → Eras → Cultural Phenomena:
-- Nuclear Standoff + Nuclear Standoff = Cold War
-- Protest + Protest = Revolution
-- Apocalypse + Wasteland = Mad Max (iconic cultural touchstone)
+When combining similar elements, aim for LARGER concepts:
+- Tank + Tank = Army
+- Book + Book = Library
 - War + War = World War
+- Meme + Meme = Internet Culture
+- Drama + Drama = Reality TV
 
-ASK YOURSELF: "Is my result BIGGER than the inputs?" If combining two tanks produces something tank-sized, think bigger.
+POP CULTURE IS FAIR GAME:
+Lean into recognizable references - movies, memes, internet culture, celebrities, viral moments:
+- Wizard + Ring = Gandalf
+- Monster + Japan = Godzilla
+- Electric + Mouse = Pikachu
+- Boy + Wizard + School = Harry Potter
+- War + Wizard = Harry Potter and the Iraq War (absurdist mashups are great!)
+- Neighbor + Meme = Skibidi Neighbor
 
-WHAT MAKES A GREAT COMBINATION:
+HUMOR & ABSURDITY:
+The game thrives on unexpected, funny results. Don't be afraid to be:
+- Satirical: Corporate + Soul = LinkedIn
+- Absurdist: Clown + Loneliness = Imaginary Clown Friend
+- Self-aware: Mistake + Internet = Account Deleted
+- Edgy: Beauty + Obsession = Looksmaxxing
+- Chaotic: Goth + Perfection = The Ultimate Sexy Goth Girlfriend
 
-1. LOGICAL CONNECTIONS: The result should follow naturally from the inputs
-   - Fire + Water = Steam (obvious physical reaction)
-   - Earth + Water = Mud (natural mixture)
-   - Army + Earth = Trench (meaningful progression)
+WORDPLAY & PUNS:
+- Sand + Witch = Sandwich
+- Knight + Mare = Nightmare
+- Relation + Ship = Relationship
+- Toxic + Ship = Titanic
 
-2. POP CULTURE & FICTION: Lean into WIDELY recognizable references (~70%+ of English speakers should know it)
-   - Wizard + Ring = Gandalf (Lord of the Rings - classic)
-   - Monster + Japan = Godzilla (iconic kaiju)
-   - Bat + Man = Batman (DC classic)
-   - Space + Wizard = Jedi (Star Wars)
-   - Electric + Mouse = Pikachu (globally known)
-   - Hero + Spider = Spider-Man (Marvel)
-   - Plumber + Mushroom = Mario (beloved character)
+ANTI-PATTERNS - AVOID THESE:
 
-3. PLAYFUL WORDPLAY: Puns and compound words that click naturally
-   - Sun + Flower = Sunflower (compound word)
-   - Sand + Witch = Sandwich (fun pun)
-   - Knight + Mare = Nightmare (clever wordplay)
-   - Neighborhood + Wind = Gossip (metaphorical but intuitive)
+1. LAZY ADJECTIVE NAMING:
+   - Fire + Lizard = "Fire Lizard" ✗ → "Dragon" ✓
+   - Big + Dog = "Big Dog" ✗ → "Clifford" ✓ or "Wolf" ✓
 
-4. THEMATIC BUILDS: Results that connect meaningfully to both inputs
-   - Fire + Lizard = Dragon (exciting, makes sense)
-   - Ocean + Horse = Seahorse (natural fit)
-   - Snow + Man = Snowman (satisfying)
+2. BORING LITERAL COMBINATIONS:
+   - Internet + Person = "Online Person" ✗ → "Influencer" ✓ or "Terminally Online" ✓
 
-ANTI-PATTERNS - NEVER DO THESE:
-
-1. LAZY ADJECTIVE NAMING: Never just prepend an adjective from one input
-   - Engine + Chicken = "Mechanical Chicken" ✗ (lazy)
-   - Engine + Chicken = "Clockwork" ✓ or "Automaton" ✓ (transformation)
-   - Fire + Lizard = "Fire Lizard" ✗ (boring)
-   - Fire + Lizard = "Dragon" ✓ (exciting)
-
-2. WORD MASHUPS: Never just combine/concatenate the words nonsensically
-   - Ninja + Archipelago = "Ninja Hopping" ✗ (meaningless)
-   - Ninja + Archipelago = "Hidden Village" ✓ or "Shadow Isles" ✓ (meaningful)
-
-3. NICHE OBSCURITY: Avoid references only hardcore fans would know
-   - Obscure video game lore, recent memes, deep fandom references ✗
-   - Classic movies, main Pokémon, major superheroes, Star Wars ✓
-   - Ask: "Would most people recognize this?"
-
-4. STAGNANT SAME-ELEMENT: Don't just reference what the element does
-   - Ninja + Ninja = "Shadow Clone" ✗ (anime technique, doesn't scale up)
-   - Ninja + Ninja = "Clan" ✓ or "Dojo" ✓ or "Assassin Order" ✓ (scales up)
+3. GENERIC FILLER:
+   - Weird + Thing = "Strange Object" ✗ → "SCP" ✓ or "Cryptid" ✓
 
 RULES:
 1. ALWAYS return a result - there are no "failed" combinations
-2. BOTH inputs must contribute to the result (no wildcard transformations)
-3. Favor recognizable pop culture references where they fit naturally
-4. NO profanity or offensive content
-5. Keep element names concise (1-3 words max)
-6. Choose 1-2 appropriate emojis (1 is preferred)
+2. BOTH inputs should influence the result somehow
+3. Humor and absurdity are ENCOURAGED, especially for abstract combinations
+4. Element names can be 1-6 words - longer names are fine for funny/specific concepts
+5. Choose 1-2 appropriate emojis (1 is preferred)
+6. Be creative, be funny, be surprising
 
-SAME ELEMENT COMBINATIONS - SCALE UP:
-When combining identical or similar elements, create something LARGER in scope:
-
-Physical objects → Groups/Collections:
-- Tank + Tank = Army
-- Wolf + Wolf = Pack
-- House + House = Neighborhood
-- Robot + Robot = Factory
-
-Abstract/Forces → Intensity/Phenomena:
+SAME ELEMENT COMBINATIONS - SCALE UP OR GO META:
 - Fire + Fire = Inferno
-- Wind + Wind = Hurricane
-- Fear + Fear = Terror
-
-Concepts → Movements/Eras:
-- War + War = World War
-- Idea + Idea = Philosophy
-- Trade + Trade = Economy
+- Meme + Meme = Brainrot
+- Chaos + Chaos = Internet
+- Influencer + Influencer = Drama
 
 Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
 {"element": "ResultName", "emoji": "🔥"}`;
@@ -3851,8 +3836,8 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
         throw new Error('Invalid response: missing or invalid emoji');
       }
 
-      // Clean up the element name
-      const element = result.element.trim().substring(0, 100); // Cap at 100 chars
+      // Clean up the element name (allow longer names for creative/funny concepts)
+      const element = result.element.trim().substring(0, 150); // Cap at 150 chars
 
       // Clean up emoji (allow 1-3 emojis, cap at 30 chars)
       const emoji = result.emoji.trim().substring(0, 30);
