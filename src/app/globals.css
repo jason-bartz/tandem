@@ -50,9 +50,9 @@
   --admin-text-muted: #a39d96;
   --admin-border-main: #c4bfb8;
   --admin-border-light: #e5e1db;
-  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 0.12);
-  --admin-shadow-button: 2px 2px 0px rgba(0, 0, 0, 0.15);
-  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.1);
+  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 1);
+  --admin-shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
+  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
 }
 
 [data-theme='dark'] {
@@ -104,9 +104,9 @@
   --admin-text-muted: #8b949e;
   --admin-border-main: #525964;
   --admin-border-light: #444c56;
-  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 0.4);
-  --admin-shadow-button: 2px 2px 0px rgba(0, 0, 0, 0.4);
-  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 0.3);
+  --admin-shadow-card: 3px 3px 0px rgba(0, 0, 0, 1);
+  --admin-shadow-button: 3px 3px 0px rgba(0, 0, 0, 1);
+  --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
 }
 
 /* Custom scrollbar styling for modals */
