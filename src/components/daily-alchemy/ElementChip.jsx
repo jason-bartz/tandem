@@ -33,6 +33,8 @@ function ElementChipInner({
   onTouchDragMove,
   onTouchDragEnd,
   touchDragThreshold = 10,
+  // Disable all framer-motion animations
+  disableAnimations = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -152,10 +154,10 @@ function ElementChipInner({
         touchAction: draggable ? 'manipulation' : undefined,
         WebkitUserSelect: draggable ? 'none' : undefined,
       }}
-      whileTap={!disabled && !reduceMotion ? { scale: 0.95 } : undefined}
-      initial={isNew && !reduceMotion ? { scale: 0, opacity: 0 } : false}
-      animate={isNew && !reduceMotion ? { scale: 1, opacity: 1 } : undefined}
-      transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+      whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
+      initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0, opacity: 0 } : false}
+      animate={isNew && !reduceMotion && !disableAnimations ? { scale: 1, opacity: 1 } : undefined}
+      transition={!disableAnimations ? { type: 'spring', stiffness: 500, damping: 25 } : undefined}
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
@@ -236,7 +238,8 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.size === nextProps.size &&
     prevProps.draggable === nextProps.draggable &&
     prevProps.isDragging === nextProps.isDragging &&
-    prevProps.touchDragThreshold === nextProps.touchDragThreshold
+    prevProps.touchDragThreshold === nextProps.touchDragThreshold &&
+    prevProps.disableAnimations === nextProps.disableAnimations
   );
 }
 

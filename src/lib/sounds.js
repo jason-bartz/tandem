@@ -1028,3 +1028,141 @@ export function playNewElementSound() {
     osc.stop(currentTime + start + duration);
   });
 }
+
+// Play a satisfying "pop" sound when adding an element to favorites
+export function playFavoriteAddSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Bubbly pop - quick pitch drop like a bubble popping
+  const pop = context.createOscillator();
+  const popGain = context.createGain();
+
+  pop.type = 'sine';
+  pop.frequency.setValueAtTime(600, currentTime);
+  pop.frequency.exponentialRampToValueAtTime(200, currentTime + 0.08);
+
+  popGain.gain.setValueAtTime(0, currentTime);
+  popGain.gain.linearRampToValueAtTime(0.15, currentTime + 0.005);
+  popGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
+
+  pop.connect(popGain);
+  popGain.connect(context.destination);
+
+  pop.start(currentTime);
+  pop.stop(currentTime + 0.12);
+
+  // Layer 2: Bright "ding" overtone for satisfaction
+  const ding = context.createOscillator();
+  const dingGain = context.createGain();
+
+  ding.type = 'triangle';
+  ding.frequency.setValueAtTime(1200, currentTime + 0.02);
+
+  dingGain.gain.setValueAtTime(0, currentTime + 0.02);
+  dingGain.gain.linearRampToValueAtTime(0.08, currentTime + 0.025);
+  dingGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.12);
+
+  ding.connect(dingGain);
+  dingGain.connect(context.destination);
+
+  ding.start(currentTime + 0.02);
+  ding.stop(currentTime + 0.15);
+
+  // Layer 3: Subtle sparkle for star-like feel
+  const sparkle = context.createOscillator();
+  const sparkleGain = context.createGain();
+
+  sparkle.type = 'sine';
+  sparkle.frequency.setValueAtTime(2000, currentTime + 0.03);
+
+  sparkleGain.gain.setValueAtTime(0, currentTime + 0.03);
+  sparkleGain.gain.linearRampToValueAtTime(0.04, currentTime + 0.035);
+  sparkleGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
+
+  sparkle.connect(sparkleGain);
+  sparkleGain.connect(context.destination);
+
+  sparkle.start(currentTime + 0.03);
+  sparkle.stop(currentTime + 0.12);
+}
+
+// Play a "sweep" sound when clearing all favorites with the broom
+export function playFavoriteClearSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Descending whoosh - like sweeping away
+  const whoosh = context.createOscillator();
+  const whooshGain = context.createGain();
+
+  whoosh.type = 'sawtooth';
+  whoosh.frequency.setValueAtTime(800, currentTime);
+  whoosh.frequency.exponentialRampToValueAtTime(100, currentTime + 0.25);
+
+  // Lowpass filter to make it softer
+  const filter = context.createBiquadFilter();
+  filter.type = 'lowpass';
+  filter.frequency.setValueAtTime(2000, currentTime);
+  filter.frequency.exponentialRampToValueAtTime(500, currentTime + 0.2);
+  filter.Q.value = 1;
+
+  whooshGain.gain.setValueAtTime(0, currentTime);
+  whooshGain.gain.linearRampToValueAtTime(0.06, currentTime + 0.02);
+  whooshGain.gain.setValueAtTime(0.05, currentTime + 0.1);
+  whooshGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.3);
+
+  whoosh.connect(filter);
+  filter.connect(whooshGain);
+  whooshGain.connect(context.destination);
+
+  whoosh.start(currentTime);
+  whoosh.stop(currentTime + 0.35);
+
+  // Layer 2: Soft brush texture using noise-like effect
+  const brushNotes = [
+    { freq: 400, start: 0, duration: 0.08 },
+    { freq: 300, start: 0.06, duration: 0.08 },
+    { freq: 200, start: 0.12, duration: 0.1 },
+  ];
+
+  brushNotes.forEach(({ freq, start, duration }) => {
+    const brush = context.createOscillator();
+    const brushGain = context.createGain();
+
+    brush.type = 'triangle';
+    brush.frequency.setValueAtTime(freq, currentTime + start);
+    brush.frequency.exponentialRampToValueAtTime(freq * 0.5, currentTime + start + duration);
+
+    brushGain.gain.setValueAtTime(0, currentTime + start);
+    brushGain.gain.linearRampToValueAtTime(0.03, currentTime + start + 0.01);
+    brushGain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    brush.connect(brushGain);
+    brushGain.connect(context.destination);
+
+    brush.start(currentTime + start);
+    brush.stop(currentTime + start + duration + 0.05);
+  });
+
+  // Layer 3: Final soft thud - like dust settling
+  const thud = context.createOscillator();
+  const thudGain = context.createGain();
+
+  thud.type = 'sine';
+  thud.frequency.setValueAtTime(120, currentTime + 0.2);
+
+  thudGain.gain.setValueAtTime(0, currentTime + 0.2);
+  thudGain.gain.linearRampToValueAtTime(0.06, currentTime + 0.21);
+  thudGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.35);
+
+  thud.connect(thudGain);
+  thudGain.connect(context.destination);
+
+  thud.start(currentTime + 0.2);
+  thud.stop(currentTime + 0.4);
+}

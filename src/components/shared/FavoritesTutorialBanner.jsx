@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
+import Image from 'next/image';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 
@@ -186,11 +187,19 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
             {/* Text */}
             <span
               className={`
-                text-sm font-semibold whitespace-nowrap
+                text-sm font-semibold whitespace-nowrap flex items-center gap-1
                 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-100'}
               `}
             >
-              Drag elements to the ⭐ for quick access!
+              Drag elements to the{' '}
+              <Image
+                src="/icons/ui/favorites.png"
+                alt="favorites"
+                width={20}
+                height={20}
+                className="inline-block w-5 h-5"
+              />{' '}
+              for quick access!
             </span>
 
             {/* Close Button */}
