@@ -587,8 +587,8 @@ export default function AdminDashboard() {
       {/* Themes modal (for viewing themes while in puzzle editor) */}
       {showThemesModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white flex items-center justify-between">
+          <div className="bg-bg-surface rounded-lg border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">Theme Tracker</h3>
               <button
                 onClick={() => setShowThemesModal(false)}
@@ -626,8 +626,8 @@ export default function AdminDashboard() {
       {/* Connections modal (for viewing connections while in reel editor) */}
       {showConnectionsModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] w-full max-w-6xl max-h-[90vh] flex flex-col">
-            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white flex items-center justify-between">
+          <div className="bg-bg-surface rounded-lg border-[3px] border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] w-full max-w-6xl max-h-[90vh] flex flex-col">
+            <div className="px-4 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black flex items-center justify-between">
               <h3 className="text-base sm:text-lg font-bold text-text-primary">
                 Connection Tracker
               </h3>
