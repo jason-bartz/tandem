@@ -98,7 +98,7 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
               <p className="font-bold text-sm text-[#2c2c2c] truncate">{value.title}</p>
               <p className="text-xs text-[#2c2c2c]/70">{value.year}</p>
             </div>
-            <div className="flex flex-col gap-1 flex-shrink-0">
+            <div className="flex flex-row sm:flex-col gap-1 flex-shrink-0">
               {canShuffle && (
                 <button
                   onClick={onShuffle}
@@ -134,6 +134,15 @@ function MovieSearchInput({ value, onChange, groupColor, onShuffle, shuffleLoadi
                   )}
                 </button>
               )}
+              <a
+                href={`https://www.imdb.com/title/${value.imdbId}/`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-8 h-8 bg-[#F5C518] text-black rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold flex items-center justify-center text-xs"
+                title="View on IMDb"
+              >
+                i
+              </a>
               <button
                 onClick={handleRemove}
                 className="w-8 h-8 bg-accent-red text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] font-bold"
@@ -600,7 +609,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                 <div className="mt-3 flex gap-2">
                   <div className="flex-1">
                     <label className={`block text-xs font-bold ${levelInfo.textColor} mb-1`}>
-                      Connection Context (optional)
+                      Connection Context
                     </label>
                     <input
                       type="text"
@@ -637,22 +646,7 @@ export default function ReelConnectionsPuzzleEditor({ puzzle, date, onSave, onCa
                           Generating...
                         </>
                       ) : (
-                        <>
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M13 10V3L4 14h7v7l9-11h-7z"
-                            />
-                          </svg>
-                          Generate
-                        </>
+                        'Generate'
                       )}
                     </button>
                   </div>
