@@ -23,7 +23,6 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const { mediumTap, lightTap } = useHaptics();
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
-  const [swipeDirection, setSwipeDirection] = useState(null); // 'up' | 'down' | null
   const controls = useAnimation();
   const shareCardRef = useRef(null);
 
@@ -151,8 +150,6 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
     // Don't allow interactions while sharing
     if (isSharing) return;
 
-    setSwipeDirection('up');
-
     // Play plunk sound and haptic
     playPlunkSound();
     mediumTap();
@@ -174,8 +171,6 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const handleClose = async () => {
     // Don't allow interactions while sharing
     if (isSharing) return;
-
-    setSwipeDirection('down');
 
     // Light haptic for dismiss
     lightTap();
@@ -225,12 +220,14 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       exit={{ opacity: 0 }}
     >
       {/* Separate backdrop div for reliable click handling on mobile */}
+      {/* IMPORTANT: Directly call onComplete() instead of handleClose() to bypass animation issues on mobile */}
       <div
         className="absolute inset-0 bg-black/30"
-        onClick={handleClose}
+        onClick={() => onComplete?.()}
         onTouchEnd={(e) => {
           e.preventDefault();
-          handleClose();
+          e.stopPropagation();
+          onComplete?.();
         }}
       />
       <motion.div
@@ -247,11 +244,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
         style={{ y }}
         initial={!reduceMotion ? { scale: 0, rotate: -10, opacity: 0 } : { opacity: 0 }}
         animate={controls}
-        exit={
-          !reduceMotion
-            ? { scale: 0.5, opacity: 0, y: swipeDirection === 'up' ? -600 : 600 }
-            : { opacity: 0 }
-        }
+        exit={{ opacity: 0, scale: 0.8, transition: { duration: 0.15 } }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         drag="y"
         dragConstraints={{ top: -150, bottom: 150 }}
@@ -369,12 +362,18 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleUse();
+              mediumTap();
+              playPlunkSound();
+              onSelectElement?.({ name: result.element, emoji: result.emoji });
+              onComplete?.();
             }}
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleUse();
+              mediumTap();
+              playPlunkSound();
+              onSelectElement?.({ name: result.element, emoji: result.emoji });
+              onComplete?.();
             }}
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
@@ -384,12 +383,14 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           <button
             onClick={(e) => {
               e.stopPropagation();
-              handleClose();
+              lightTap();
+              onComplete?.();
             }}
             onTouchEnd={(e) => {
               e.preventDefault();
               e.stopPropagation();
-              handleClose();
+              lightTap();
+              onComplete?.();
             }}
             className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
           >
@@ -832,7 +833,8 @@ export function DailyAlchemyGameScreen({
       </div>
 
       {/* Result Animation Overlay */}
-      <AnimatePresence mode="wait">
+      {/* Removed mode="wait" to prevent exit animation from blocking */}
+      <AnimatePresence>
         {lastResult && !isComplete && (
           <ResultAnimation
             key={`${lastResult.element}-${lastResult.from.join('-')}`}
