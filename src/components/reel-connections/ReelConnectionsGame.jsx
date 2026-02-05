@@ -1130,19 +1130,19 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               <div
                 className={`mt-4 pt-4 border-t-2 ${highContrast ? 'border-hc-border' : 'border-white/20'}`}
               >
-                <p className={`text-sm mb-3 ${highContrast ? 'text-hc-text/80' : 'text-white/80'}`}>
-                  Your progress will be lost! Create a free account to join the leaderboard, track
-                  your stats, and sync across devices!
+                <p className={`text-sm ${highContrast ? 'text-hc-text/80' : 'text-white/80'}`}>
+                  Your progress will be lost!{' '}
+                  <button
+                    onClick={() => {
+                      lightTap();
+                      setShowAuthModal(true);
+                    }}
+                    className={`hover:underline font-semibold ${highContrast ? 'text-hc-primary' : 'text-[#39b6ff]'}`}
+                  >
+                    Create a free account
+                  </button>{' '}
+                  to join the leaderboard, track your stats, and sync across devices!
                 </p>
-                <button
-                  onClick={() => {
-                    lightTap();
-                    setShowAuthModal(true);
-                  }}
-                  className={`px-6 py-2.5 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-sm ${highContrast ? 'bg-hc-primary text-white border-hc-border' : 'bg-[#39b6ff] text-white border-black'}`}
-                >
-                  Create Free Account
-                </button>
               </div>
             )}
 
