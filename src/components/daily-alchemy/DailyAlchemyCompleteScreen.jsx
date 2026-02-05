@@ -16,7 +16,7 @@ import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import AuthModal from '@/components/auth/AuthModal';
 
 /**
- * StatCard - Individual stat display with custom icon image
+ * StatCard - Individual stat display with custom icon image (square layout)
  */
 function StatCard({ iconSrc, label, value, highlight = false }) {
   const { highContrast } = useTheme();
@@ -24,7 +24,8 @@ function StatCard({ iconSrc, label, value, highlight = false }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-3 p-3',
+        'flex flex-col items-center justify-center p-3',
+        'aspect-square',
         'bg-white dark:bg-gray-800',
         'border-[2px] border-black',
         'rounded-xl',
@@ -33,17 +34,15 @@ function StatCard({ iconSrc, label, value, highlight = false }) {
         highContrast && 'border-[3px]'
       )}
     >
-      <Image src={iconSrc} alt="" width={24} height={24} className="w-6 h-6" />
-      <div>
-        <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
-        <div
-          className={cn(
-            'font-bold text-gray-900 dark:text-white',
-            highlight && 'text-soup-dark dark:text-soup-primary'
-          )}
-        >
-          {value}
-        </div>
+      <Image src={iconSrc} alt="" width={24} height={24} className="w-6 h-6 mb-1" />
+      <div className="text-xs text-gray-500 dark:text-gray-400">{label}</div>
+      <div
+        className={cn(
+          'font-bold text-gray-900 dark:text-white text-lg',
+          highlight && 'text-soup-dark dark:text-soup-primary'
+        )}
+      >
+        {value}
       </div>
     </div>
   );
@@ -66,6 +65,7 @@ export function DailyAlchemyCompleteScreen({
   onStartFreePlay,
   onViewArchive,
   isArchive = false,
+  hintsUsed = 0,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
@@ -84,10 +84,9 @@ export function DailyAlchemyCompleteScreen({
     }
   };
 
-  // Calculate par comparison
+  // Calculate par comparison - numerical format
   const parDiff = movesCount - parMoves;
-  const parText =
-    parDiff === 0 ? 'At Par!' : parDiff < 0 ? `${parDiff} Under Par!` : `+${parDiff} Over Par`;
+  const parText = parDiff === 0 ? '0' : parDiff < 0 ? `${parDiff}` : `+${parDiff}`;
   const isUnderPar = parDiff < 0;
 
   // Trigger confetti on mount - green, yellow, white theme
@@ -229,15 +228,16 @@ export function DailyAlchemyCompleteScreen({
         )}
       </motion.div>
 
-      {/* Stats Grid - Time and Par only */}
+      {/* Stats Grid - Time, Par, and Hints */}
       <motion.div
-        className="grid grid-cols-2 gap-3 w-full max-w-sm mb-6"
+        className="grid grid-cols-3 gap-3 w-full max-w-sm mb-6"
         initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         <StatCard iconSrc="/icons/ui/stopwatch.png" label="Time" value={formatTime(elapsedTime)} />
         <StatCard iconSrc="/icons/ui/par.png" label="Par" value={parText} highlight={isUnderPar} />
+        <StatCard iconSrc="/icons/ui/hint.png" label="Hints" value={hintsUsed} />
       </motion.div>
 
       {/* First Discoveries List */}
