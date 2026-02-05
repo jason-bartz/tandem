@@ -195,7 +195,7 @@ export default function LeftSidePanel({
       {/* Panel */}
       <div
         ref={panelRef}
-        className={`absolute left-0 top-0 bottom-0 w-[90vw] animate-slide-in-left shadow-2xl ${
+        className={`absolute left-0 top-0 bottom-0 w-[90vw] flex flex-col animate-slide-in-left shadow-2xl ${
           theme === 'dark' ? 'bg-gray-900' : 'bg-ghost-white'
         }`}
         style={{
@@ -213,7 +213,7 @@ export default function LeftSidePanel({
         {/* Header */}
         {(title || showCloseButton) && (
           <div
-            className={`flex items-center justify-between px-6 py-4 border-b-[3px] ${
+            className={`shrink-0 flex items-center justify-between px-6 py-4 border-b-[3px] ${
               theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
             } ${headerClassName}`}
           >
@@ -255,14 +255,9 @@ export default function LeftSidePanel({
         {/* Content */}
         <div
           ref={contentRef}
-          className={`flex-1 overflow-y-auto modal-scrollbar ${
+          className={`flex-1 min-h-0 overflow-y-auto modal-scrollbar ${
             footer ? 'pb-0' : 'pb-6'
           } ${contentClassName}`}
-          style={{
-            maxHeight: footer
-              ? 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 64px - 72px)' // Subtract header + footer
-              : 'calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 64px)', // Subtract header
-          }}
         >
           {children}
         </div>
@@ -270,7 +265,7 @@ export default function LeftSidePanel({
         {/* Footer */}
         {footer && (
           <div
-            className={`px-6 py-4 border-t-[3px] ${
+            className={`shrink-0 px-6 py-4 border-t-[3px] ${
               theme === 'dark' ? 'border-gray-800' : 'border-gray-200'
             }`}
           >
