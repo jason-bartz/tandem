@@ -39,7 +39,7 @@ export function DailyAlchemyWelcomeScreen({
   };
 
   return (
-    <div className="flex flex-col items-center flex-1 px-4 pb-8">
+    <div className="flex flex-col items-center w-full px-4 pb-8">
       {/* Archive Badge */}
       {isArchive && (
         <motion.div
