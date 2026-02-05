@@ -252,6 +252,30 @@ export const PAR_MESSAGES = {
   OVER: ['Got there!', 'Mission complete!', 'Target acquired!'],
 };
 
+// Hint message templates - {element} will be replaced with the target element name
+export const HINT_PHRASES = [
+  'What elements create {element}?',
+  'How would you create {element}?',
+  'Which two elements combine to create {element}?',
+  'Try to make {element}!',
+  'Hint: Create {element}',
+  'Can you figure out how to make {element}?',
+  'Think about what makes {element}...',
+  'What could combine into {element}?',
+  'Your next goal: {element}',
+  'Focus on creating {element}',
+  'The path leads through {element}',
+  'You need {element} next',
+  'Consider: what forms {element}?',
+  'Combine something to get {element}',
+  'Work toward {element}',
+  'What two things make {element}?',
+  'Aim for {element}',
+  'Next step: discover {element}',
+  'Look for a way to make {element}',
+  'The answer involves {element}',
+];
+
 // Confetti colors for celebration (alchemical theme)
 export const CONFETTI_COLORS = [
   '#22c55e', // Green
@@ -350,15 +374,20 @@ export function getRandomMessage(messages) {
  * @param {number} params.moves - Number of moves
  * @param {number} params.par - Par value
  * @param {number} params.firstDiscoveries - Number of first discoveries
+ * @param {number} params.hintsUsed - Number of hints used
  * @returns {string} Share text
  */
-export function generateShareText({ date, time, moves, par, firstDiscoveries = 0 }) {
+export function generateShareText({ date, time, moves, par, firstDiscoveries = 0, hintsUsed = 0 }) {
   const dateObj = new Date(date + 'T00:00:00');
   const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}/${String(dateObj.getFullYear()).slice(-2)}`;
 
   let text = `Daily Alchemy ${formattedDate}\n`;
   text += `⏱️ ${formatTime(time)}\n`;
   text += `🧮 ${moves} moves (Par: ${par})\n`;
+
+  if (hintsUsed > 0) {
+    text += `💡 Hints: ${hintsUsed}\n`;
+  }
 
   if (firstDiscoveries > 0) {
     text += `🏆 First discoveries: ${firstDiscoveries}\n`;

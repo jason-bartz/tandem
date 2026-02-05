@@ -520,8 +520,9 @@ export function DailyAlchemyGameScreen({
   combinationError = null,
 
   // Hints
-  hintsRemaining = 0,
   onUseHint,
+  currentHintMessage = null,
+  onClearHintMessage,
 
   // Creative Mode save
   onSaveCreative,
@@ -597,7 +598,6 @@ export function DailyAlchemyGameScreen({
           targetEmoji={targetEmoji}
           parMoves={parMoves}
           isTargetFound={isTargetFound}
-          hintsRemaining={hintsRemaining}
           onUseHint={onUseHint}
           hintDisabled={isCombining || isAnimating || isComplete}
           isCountdown={true}
@@ -810,6 +810,8 @@ export function DailyAlchemyGameScreen({
             disabled={isComplete && !freePlayMode}
             combinationError={combinationError}
             onDropElement={handleDropElement}
+            hintMessage={currentHintMessage}
+            onDismissHint={onClearHintMessage}
           />
 
           {/* Embedded Favorites - desktop only */}
