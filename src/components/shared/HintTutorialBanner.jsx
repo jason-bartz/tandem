@@ -26,12 +26,12 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
   const learnToPlayKey = `${gameType}LearnToPlayDismissed`;
   const hintTutorialKey = `${gameType}HintTutorialDismissed`;
 
-  // Show banner after delay (5 seconds after learn-to-play is dismissed)
+  // Show banner after delay (15 seconds after learn-to-play is dismissed)
   const showBannerAfterDelay = () => {
     setShouldRender(true);
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 5000);
+    }, 15000);
     return timer;
   };
 
