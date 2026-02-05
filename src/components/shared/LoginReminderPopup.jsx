@@ -168,7 +168,7 @@ export default function LoginReminderPopup({
                 }
               `}
             >
-              Sign up to save stats & compete!
+              Sign up for free and join the leaderboard!
             </span>
 
             {/* Close Button */}
