@@ -270,7 +270,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
             </header>
 
             {/* Content Area */}
-            <div className="flex-1 flex flex-col p-4 sm:p-6 min-h-0 overflow-y-auto overflow-x-hidden scrollable">
+            <div className="flex-1 p-4 sm:p-6 min-h-0 overflow-y-auto overflow-x-hidden scrollable">
               {/* Welcome Screen */}
               {gameState === SOUP_GAME_STATES.WELCOME && (
                 <DailyAlchemyWelcomeScreen
@@ -288,57 +288,59 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 />
               )}
 
-              {/* Active Gameplay */}
+              {/* Active Gameplay - wrapped in flex container for h-full to work */}
               {(gameState === SOUP_GAME_STATES.PLAYING ||
                 gameState === SOUP_GAME_STATES.ADMIRE) && (
-                <DailyAlchemyGameScreen
-                  targetElement={targetElement}
-                  targetEmoji={targetEmoji}
-                  parMoves={parMoves}
-                  remainingTime={remainingTime}
-                  movesCount={movesCount}
-                  formatTime={formatTime}
-                  elementBank={elementBank}
-                  sortedElementBank={sortedElementBank}
-                  sortOrder={sortOrder}
-                  setSortOrder={setSortOrder}
-                  searchQuery={searchQuery}
-                  setSearchQuery={setSearchQuery}
-                  selectedA={selectedA}
-                  selectedB={selectedB}
-                  selectElement={selectElement}
-                  selectResultElement={selectResultElement}
-                  clearSelections={clearSelections}
-                  isCombining={isCombining}
-                  isAnimating={isAnimating}
-                  combineElements={combineElements}
-                  lastResult={lastResult}
-                  clearLastResult={clearLastResult}
-                  recentElements={recentElements}
-                  firstDiscoveryElements={firstDiscoveryElements}
-                  isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
-                  freePlayMode={freePlayMode}
-                  combinationError={combinationError}
-                  onUseHint={useHint}
-                  currentHintMessage={currentHintMessage}
-                  onClearHintMessage={clearHintMessage}
-                  // Creative Mode save props
-                  onSaveCreative={saveCreativeMode}
-                  onClearCreative={clearCreativeMode}
-                  isSavingCreative={isSavingCreative}
-                  creativeSaveSuccess={creativeSaveSuccess}
-                  isLoadingCreative={isLoadingCreative}
-                  // Creative Mode autosave props
-                  isAutoSaving={isAutoSaving}
-                  autoSaveComplete={autoSaveComplete}
-                  // Favorites props
-                  favoriteElements={favoriteElements}
-                  onToggleFavorite={toggleFavorite}
-                  onClearAllFavorites={clearAllFavorites}
-                  showFavoritesPanel={showFavoritesPanel}
-                  onToggleFavoritesPanel={() => setShowFavoritesPanel(!showFavoritesPanel)}
-                  maxFavorites={maxFavorites}
-                />
+                <div className="flex flex-col h-full">
+                  <DailyAlchemyGameScreen
+                    targetElement={targetElement}
+                    targetEmoji={targetEmoji}
+                    parMoves={parMoves}
+                    remainingTime={remainingTime}
+                    movesCount={movesCount}
+                    formatTime={formatTime}
+                    elementBank={elementBank}
+                    sortedElementBank={sortedElementBank}
+                    sortOrder={sortOrder}
+                    setSortOrder={setSortOrder}
+                    searchQuery={searchQuery}
+                    setSearchQuery={setSearchQuery}
+                    selectedA={selectedA}
+                    selectedB={selectedB}
+                    selectElement={selectElement}
+                    selectResultElement={selectResultElement}
+                    clearSelections={clearSelections}
+                    isCombining={isCombining}
+                    isAnimating={isAnimating}
+                    combineElements={combineElements}
+                    lastResult={lastResult}
+                    clearLastResult={clearLastResult}
+                    recentElements={recentElements}
+                    firstDiscoveryElements={firstDiscoveryElements}
+                    isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
+                    freePlayMode={freePlayMode}
+                    combinationError={combinationError}
+                    onUseHint={useHint}
+                    currentHintMessage={currentHintMessage}
+                    onClearHintMessage={clearHintMessage}
+                    // Creative Mode save props
+                    onSaveCreative={saveCreativeMode}
+                    onClearCreative={clearCreativeMode}
+                    isSavingCreative={isSavingCreative}
+                    creativeSaveSuccess={creativeSaveSuccess}
+                    isLoadingCreative={isLoadingCreative}
+                    // Creative Mode autosave props
+                    isAutoSaving={isAutoSaving}
+                    autoSaveComplete={autoSaveComplete}
+                    // Favorites props
+                    favoriteElements={favoriteElements}
+                    onToggleFavorite={toggleFavorite}
+                    onClearAllFavorites={clearAllFavorites}
+                    showFavoritesPanel={showFavoritesPanel}
+                    onToggleFavoritesPanel={() => setShowFavoritesPanel(!showFavoritesPanel)}
+                    maxFavorites={maxFavorites}
+                  />
+                </div>
               )}
 
               {/* Complete Screen */}
