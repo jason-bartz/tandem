@@ -1151,10 +1151,10 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               href="https://discord.com/invite/uSxtYQXtHN"
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full mt-6 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer ${
+              className={`w-full mt-6 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
                 highContrast
                   ? 'bg-hc-background border-[3px] border-hc-border hover:bg-hc-surface'
-                  : 'bg-black/20 border-[3px] border-white/20 hover:bg-black/30 hover:border-white/30'
+                  : 'bg-white/90 border-[3px] border-white/30 hover:bg-white hover:border-white/50'
               }`}
             >
               {/* Discord Logo */}
@@ -1176,7 +1176,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                     New
                   </span>
                 </div>
-                <p className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-white/70'}`}>
+                <p className={`text-xs ${highContrast ? 'text-hc-text/70' : 'text-gray-600'}`}>
                   Share your favorite movies, discuss film recommendations, and report bugs
                 </p>
               </div>

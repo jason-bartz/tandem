@@ -440,7 +440,7 @@ export default function CompleteScreen({
               href="https://discord.com/invite/uSxtYQXtHN"
               target="_blank"
               rel="noopener noreferrer"
-              className={`w-full mt-6 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer ${
+              className={`w-full mt-8 p-4 flex items-center gap-3 rounded-xl transition-colors cursor-pointer text-left ${
                 highContrast
                   ? 'bg-hc-surface border-[3px] border-hc-border hover:bg-hc-focus'
                   : 'bg-gray-50 dark:bg-gray-800 border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)] hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400 dark:hover:border-gray-500'

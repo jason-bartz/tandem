@@ -362,6 +362,7 @@ export default function MiniCompleteScreen({
             className="
               w-full mt-6 p-4
               flex items-center gap-3
+              text-left
               bg-gray-50 dark:bg-gray-700
               border-[3px] border-gray-300 dark:border-gray-600
               rounded-xl
