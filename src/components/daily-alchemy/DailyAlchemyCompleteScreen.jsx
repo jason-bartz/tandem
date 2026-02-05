@@ -151,7 +151,7 @@ export function DailyAlchemyCompleteScreen({
   };
 
   return (
-    <div className="flex flex-col items-center flex-1 overflow-y-auto px-1">
+    <div className="flex flex-col items-center w-full px-1 pb-8">
       {/* Login reminder popup for non-authenticated users */}
       {!user && (
         <LoginReminderPopup
