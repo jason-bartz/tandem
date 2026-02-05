@@ -30,6 +30,7 @@ import {
   getRandomMessage,
   CONGRATS_MESSAGES,
   GAME_OVER_MESSAGES,
+  HINT_PHRASES,
 } from '@/lib/daily-alchemy.constants';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 
@@ -68,6 +69,16 @@ function getFormattedDate(dateString) {
   const day = String(date.getDate()).padStart(2, '0');
   const year = String(date.getFullYear()).slice(-2);
   return `${month}/${day}/${year}`;
+}
+
+/**
+ * Get a random hint phrase with element name interpolated
+ * @param {string} elementName - The element to hint about
+ * @returns {string} Formatted hint message
+ */
+function getRandomHintPhrase(elementName) {
+  const template = HINT_PHRASES[Math.floor(Math.random() * HINT_PHRASES.length)];
+  return template.replace('{element}', elementName);
 }
 
 /**
@@ -146,7 +157,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [statsRecorded, setStatsRecorded] = useState(false);
 
   // Hint state
-  const [hintsRemaining, setHintsRemaining] = useState(4);
+  const [hintsUsed, setHintsUsed] = useState(0);
+  const [currentHintMessage, setCurrentHintMessage] = useState(null);
+  const [currentHintElement, setCurrentHintElement] = useState(null); // Track which element the hint is suggesting
   const [solutionPath, setSolutionPath] = useState([]);
 
   // Creative Mode save state
@@ -461,7 +474,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           setNewDiscoveries(0);
           setFirstDiscoveries(0);
           setFirstDiscoveryElements([]);
-          setHintsRemaining(4); // Reset hints for fresh start
+          setHintsUsed(0); // Reset hints for fresh start
+          setCurrentHintMessage(null);
+          setCurrentHintElement(null);
           setGameState(SOUP_GAME_STATES.WELCOME);
         }
 
@@ -514,9 +529,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     if (savedState.movesCount) setMovesCount(savedState.movesCount);
     if (savedState.newDiscoveries) setNewDiscoveries(savedState.newDiscoveries);
     if (savedState.firstDiscoveries) setFirstDiscoveries(savedState.firstDiscoveries);
-    if (typeof savedState.hintsRemaining === 'number') {
-      setHintsRemaining(savedState.hintsRemaining);
+    if (typeof savedState.hintsUsed === 'number') {
+      setHintsUsed(savedState.hintsUsed);
     }
+    // Clear any hint message on restore (player will request new hint if needed)
+    setCurrentHintMessage(null);
+    setCurrentHintElement(null);
 
     // Restore timer state - calculate startTime so the timer continues from where it left off
     const restoredElapsed = savedState.elapsedTime || 0;
@@ -567,7 +585,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         elapsedTime,
         newDiscoveries,
         firstDiscoveries,
-        hintsRemaining,
+        hintsUsed,
         completed: false,
         savedAt: Date.now(),
       };
@@ -586,7 +604,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     elapsedTime,
     newDiscoveries,
     firstDiscoveries,
-    hintsRemaining,
+    hintsUsed,
   ]);
 
   // Save progress immediately when timer is paused (ensures elapsedTime is saved before user exits)
@@ -626,7 +644,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setIsComplete(false);
     setStatsRecorded(false);
     setCompletionStats(null);
-    setHintsRemaining(4);
+    setHintsUsed(0);
+    setCurrentHintMessage(null);
+    setCurrentHintElement(null);
 
     // Start timer for daily puzzle
     setStartTime(Date.now());
@@ -1194,6 +1214,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Clear both selection slots after combination
       setSelectedA(null);
       setSelectedB(null);
+
+      // Only clear hint message if the user created the hinted element
+      if (currentHintElement && element.toLowerCase() === currentHintElement.toLowerCase()) {
+        setCurrentHintMessage(null);
+        setCurrentHintElement(null);
+      }
     } catch (err) {
       logger.error('[ElementSoup] Failed to combine elements', { error: err.message });
       // Show inline error instead of global error screen
@@ -1216,6 +1242,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     soupCombine,
     soupNewElement,
     soupFirstDiscovery,
+    currentHintElement,
   ]);
 
   /**
@@ -1384,7 +1411,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
                   movesCount,
                   firstDiscoveries,
                   newDiscoveries,
-                  hintsUsed: 4 - hintsRemaining,
+                  hintsUsed,
                 },
               }),
             },
@@ -1410,7 +1437,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     newDiscoveries,
     firstDiscoveries,
     isFirstAttempt,
-    hintsRemaining,
+    hintsUsed,
   ]);
 
   /**
@@ -1484,8 +1511,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       moves: movesCount,
       par: puzzle.parMoves,
       firstDiscoveries,
+      hintsUsed,
     });
-  }, [puzzle, isComplete, elapsedTime, movesCount, firstDiscoveries]);
+  }, [puzzle, isComplete, elapsedTime, movesCount, firstDiscoveries, hintsUsed]);
 
   /**
    * Reset game (for same puzzle)
@@ -1507,7 +1535,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setIsGameOver(false); // Reset game over state
     setStatsRecorded(false);
     setCompletionStats(null);
-    setHintsRemaining(4); // Reset hints
+    setHintsUsed(0); // Reset hints
+    setCurrentHintMessage(null);
+    setCurrentHintElement(null);
     setStartTime(Date.now());
     setElapsedTime(0);
     setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Reset countdown
@@ -1528,15 +1558,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, []);
 
   /**
-   * Use a hint - selects BOTH elements from the solution path that will help reach the target
+   * Use a hint - displays a message about which element to create next.
+   * Uses the same smart algorithm to determine WHICH step to hint about,
+   * but shows a message instead of auto-selecting elements.
+   *
    * Prioritizes steps later in the solution path (closer to the target).
    * Within a step, prefers non-starter elements.
-   * Only shows starter elements if that's all that's available.
-   *
-   * Each hint press inserts both elements of the next combination into the combo area.
    */
   const useHint = useCallback(() => {
-    if (hintsRemaining <= 0 || !solutionPath || solutionPath.length === 0) return;
+    if (!solutionPath || solutionPath.length === 0) return;
     if (freePlayMode || isComplete || isCombining || isAnimating) return;
 
     // Play the hint sound
@@ -1545,15 +1575,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
 
     // Create lowercase set for case-insensitive comparison
-    // This ensures hint filtering works regardless of case differences between
-    // discoveredElements and solutionPath
     const discoveredLower = new Set(
       Array.from(discoveredElements.current).map((e) => e.toLowerCase())
     );
 
     // Find all steps where the player hasn't discovered the result yet
     // but has both inputs available (can make progress)
-    // Track the original index to prioritize steps closer to the target
     const availableSteps = solutionPath
       .map((step, index) => ({ ...step, pathIndex: index }))
       .filter((step) => {
@@ -1564,19 +1591,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         );
       });
 
-    let stepForHint = null;
-    let firstElementName = null;
-    let secondElementName = null;
+    let hintElementName = null;
 
     if (availableSteps.length > 0) {
       // Prioritize steps later in the solution path (closer to target)
-      // Then use starter count as a tiebreaker
       const sortedSteps = [...availableSteps].sort((a, b) => {
-        // First: prefer later steps (higher index = closer to target)
         if (a.pathIndex !== b.pathIndex) {
           return b.pathIndex - a.pathIndex;
         }
-        // Tiebreaker: fewer starters is better (use lowercase for comparison)
+        // Tiebreaker: fewer starters is better
         const aStarterCount =
           (starterNames.has(a.elementA.toLowerCase()) ? 1 : 0) +
           (starterNames.has(a.elementB.toLowerCase()) ? 1 : 0);
@@ -1586,10 +1609,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return aStarterCount - bStarterCount;
       });
 
-      const bestStep = sortedSteps[0];
-      stepForHint = bestStep;
-      firstElementName = bestStep.elementA;
-      secondElementName = bestStep.elementB;
+      hintElementName = sortedSteps[0].result;
     } else {
       // No steps where player has both inputs - find the LAST step in the path
       // where the result isn't discovered (closest to target) and work backwards
@@ -1618,46 +1638,29 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           });
 
           if (earlierStep) {
-            stepForHint = earlierStep;
-            firstElementName = earlierStep.elementA;
-            secondElementName = earlierStep.elementB;
+            hintElementName = earlierStep.result;
           }
         }
       }
     }
 
-    if (stepForHint && firstElementName && secondElementName) {
-      // Find both elements in the element bank
-      const firstElement = elementBank.find(
-        (el) => el.name.toLowerCase() === firstElementName.toLowerCase()
-      );
-      const secondElement = elementBank.find(
-        (el) => el.name.toLowerCase() === secondElementName.toLowerCase()
-      );
-
-      if (firstElement && secondElement) {
-        // Clear any existing selections first, then select both hint elements
-        setSelectedA(null);
-        setSelectedB(null);
-        // Use setTimeout to ensure state is cleared before selecting
-        setTimeout(() => {
-          setSelectedA(firstElement);
-          setSelectedB(secondElement);
-        }, 50);
-      }
+    // Set the hint message with a random phrase and track the hinted element
+    if (hintElementName) {
+      setCurrentHintMessage(getRandomHintPhrase(hintElementName));
+      setCurrentHintElement(hintElementName); // Track which element we're hinting about
     }
 
-    // Decrement hints
-    setHintsRemaining((prev) => prev - 1);
-  }, [
-    hintsRemaining,
-    solutionPath,
-    freePlayMode,
-    isComplete,
-    isCombining,
-    isAnimating,
-    elementBank,
-  ]);
+    // Increment hints used counter
+    setHintsUsed((prev) => prev + 1);
+  }, [solutionPath, freePlayMode, isComplete, isCombining, isAnimating]);
+
+  /**
+   * Clear the current hint message and tracked hint element
+   */
+  const clearHintMessage = useCallback(() => {
+    setCurrentHintMessage(null);
+    setCurrentHintElement(null);
+  }, []);
 
   /**
    * Memoized sorted and filtered element bank
@@ -1775,8 +1778,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     autoSaveComplete,
 
     // Hints
-    hintsRemaining,
+    hintsUsed,
     useHint,
+    currentHintMessage,
+    clearHintMessage,
 
     // Solution path (for reveal on game over)
     solutionPath,

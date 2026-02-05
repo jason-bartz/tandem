@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
+import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 
@@ -295,6 +296,8 @@ export function CombinationArea({
   disabled = false,
   combinationError = null,
   onDropElement, // Callback when element is dropped: (elementName, position) => void
+  hintMessage = null, // Current hint message to display
+  onDismissHint, // Callback to dismiss hint message
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -328,6 +331,68 @@ export function CombinationArea({
             )}
           >
             {combinationError}
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Hint Message Banner - styled to match Daily Tandem */}
+      <AnimatePresence>
+        {hintMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10, height: 0 }}
+            animate={{ opacity: 1, y: 0, height: 'auto' }}
+            exit={{ opacity: 0, y: -10, height: 0 }}
+            className="mb-3"
+          >
+            <div
+              className={cn(
+                'px-3 py-2 sm:px-4 sm:py-3',
+                'rounded-xl sm:rounded-2xl',
+                'border-[3px]',
+                highContrast
+                  ? 'bg-hc-warning border-hc-warning shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                  : 'bg-accent-yellow dark:bg-yellow-600 border-accent-yellow dark:border-yellow-700 shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+                'flex items-start gap-2'
+              )}
+            >
+              <Image
+                src="/icons/ui/hint.png"
+                alt=""
+                width={20}
+                height={20}
+                className="w-5 h-5 flex-shrink-0 mt-0.5"
+              />
+              <p
+                className={cn(
+                  'text-sm sm:text-base flex-1 leading-relaxed',
+                  highContrast
+                    ? 'text-hc-text font-bold'
+                    : 'text-gray-900 dark:text-gray-100 font-semibold'
+                )}
+              >
+                {hintMessage}
+              </p>
+              {onDismissHint && (
+                <button
+                  onClick={onDismissHint}
+                  className={cn(
+                    'p-1 sm:p-1.5 rounded-lg transition-colors flex-shrink-0',
+                    highContrast
+                      ? 'hover:bg-hc-surface focus:bg-hc-surface'
+                      : 'hover:bg-yellow-500 dark:hover:bg-yellow-700 focus:bg-yellow-500 dark:focus:bg-yellow-700',
+                    'focus:outline-none focus:ring-2 focus:ring-yellow-800'
+                  )}
+                  aria-label="Dismiss hint"
+                >
+                  <X
+                    className={cn(
+                      'w-4 h-4',
+                      highContrast ? 'text-hc-text' : 'text-gray-900 dark:text-gray-100'
+                    )}
+                  />
+                </button>
+              )}
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
