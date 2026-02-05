@@ -69,7 +69,6 @@ export function StatsAndTargetRow({
   targetEmoji,
   parMoves,
   isTargetFound = false,
-  hintsRemaining = 0,
   onUseHint,
   hintDisabled = false,
   isCountdown = false,
@@ -100,8 +99,8 @@ export function StatsAndTargetRow({
 
       {/* Right side - Stats and Hints */}
       <div className={cn('flex items-center gap-3', centered && 'lg:flex-1 lg:justify-end')}>
-        {/* Hint Button */}
-        {hintsRemaining > 0 && onUseHint && (
+        {/* Hint Button - unlimited hints */}
+        {onUseHint && (
           <button
             onClick={onUseHint}
             disabled={hintDisabled}
@@ -111,8 +110,8 @@ export function StatsAndTargetRow({
                 ? 'opacity-40 cursor-not-allowed'
                 : 'hover:scale-105 hover:opacity-80 active:scale-95 cursor-pointer'
             )}
-            aria-label={`Use hint (${hintsRemaining} of 4 remaining)`}
-            title="Use hint"
+            aria-label="Use hint"
+            title="Get a hint"
           >
             <Image
               src="/icons/ui/hint.png"
@@ -121,7 +120,7 @@ export function StatsAndTargetRow({
               height={22}
               className="w-[22px] h-[22px]"
             />
-            <span className="font-bold text-text-primary text-sm">{hintsRemaining}/4</span>
+            <span className="font-bold text-text-primary text-sm">Hint</span>
           </button>
         )}
 
