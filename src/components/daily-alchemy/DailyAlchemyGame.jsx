@@ -151,8 +151,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
     autoSaveComplete,
 
     // Hints
-    hintsRemaining,
+    hintsUsed,
     useHint,
+    currentHintMessage,
+    clearHintMessage,
 
     // Solution path (for reveal on game over)
     solutionPath,
@@ -317,8 +319,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   isComplete={isComplete || gameState === SOUP_GAME_STATES.ADMIRE}
                   freePlayMode={freePlayMode}
                   combinationError={combinationError}
-                  hintsRemaining={hintsRemaining}
                   onUseHint={useHint}
+                  currentHintMessage={currentHintMessage}
+                  onClearHintMessage={clearHintMessage}
                   // Creative Mode save props
                   onSaveCreative={saveCreativeMode}
                   onClearCreative={clearCreativeMode}
@@ -357,6 +360,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                   onStartFreePlay={startFreePlay}
                   onViewArchive={() => setShowArchive(true)}
                   isArchive={isArchive}
+                  hintsUsed={hintsUsed}
                 />
               )}
 
@@ -395,7 +399,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
-        !freePlayMode && <HintTutorialBanner gameType="soup" hasUsedHint={hintsRemaining < 4} />}
+        !freePlayMode && <HintTutorialBanner gameType="soup" hasUsedHint={hintsUsed > 0} />}
 
       {/* Favorites Tutorial Banner - shows 30s after gameplay starts or 30s after hint tutorial dismissed */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
