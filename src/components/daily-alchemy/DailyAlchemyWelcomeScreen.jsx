@@ -115,12 +115,13 @@ export function DailyAlchemyWelcomeScreen({
         <div
           className={cn(
             'p-4',
-            'bg-soup-light/50 dark:bg-soup-primary/10',
-            'border-2 border-soup-light dark:border-soup-primary/30',
+            'bg-gray-50 dark:bg-gray-800',
+            'border-[3px] border-gray-300 dark:border-gray-600',
             'rounded-xl',
-            'text-sm text-soup-dark dark:text-soup-primary',
-            'hover:bg-soup-light/70 dark:hover:bg-soup-primary/20',
-            'hover:border-soup-primary/50 dark:hover:border-soup-primary/50',
+            'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+            'text-sm text-gray-600 dark:text-gray-300',
+            'hover:bg-gray-100 dark:hover:bg-gray-700',
+            'hover:border-gray-400 dark:hover:border-gray-500',
             'transition-colors cursor-pointer'
           )}
         >
@@ -227,11 +228,12 @@ export function DailyAlchemyWelcomeScreen({
         className={cn(
           'w-full max-w-sm mt-6 p-4',
           'flex items-center gap-3',
-          'bg-[#5865F2]/10 dark:bg-[#5865F2]/20',
-          'border-2 border-[#5865F2]/30 dark:border-[#5865F2]/40',
+          'bg-gray-50 dark:bg-gray-800',
+          'border-[3px] border-gray-300 dark:border-gray-600',
           'rounded-xl',
-          'hover:bg-[#5865F2]/20 dark:hover:bg-[#5865F2]/30',
-          'hover:border-[#5865F2]/50',
+          'shadow-[3px_3px_0px_rgba(0,0,0,0.15)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+          'hover:bg-gray-100 dark:hover:bg-gray-700',
+          'hover:border-gray-400 dark:hover:border-gray-500',
           'transition-colors cursor-pointer'
         )}
         initial={!reduceMotion ? { opacity: 0, y: 10 } : false}
