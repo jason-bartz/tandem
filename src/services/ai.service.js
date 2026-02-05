@@ -1,6 +1,7 @@
 import Anthropic from '@anthropic-ai/sdk';
 import { generateText, createGateway } from 'ai';
 import logger from '@/lib/logger';
+import { validateElementSafety } from '@/utils/validation/childSafetyFilter';
 
 class AIService {
   constructor() {
@@ -4135,17 +4136,30 @@ Respond in JSON format:
       const duration = Date.now() - startTime;
       const parsed = this.parseElementCombinationResponse(result.text);
 
-      logger.info('Element combination generated successfully', {
-        elementA,
-        elementB,
-        result: parsed.element,
-        emoji: parsed.emoji,
-        duration,
-        modelUsed: result.modelUsed,
-        providerMode,
-      });
+      // Apply child safety filter - this is ALWAYS active regardless of adult content settings
+      const safeResult = validateElementSafety(parsed.element, parsed.emoji);
 
-      return parsed;
+      if (safeResult.blocked) {
+        logger.warn('Element combination blocked by child safety filter', {
+          elementA,
+          elementB,
+          duration,
+          modelUsed: result.modelUsed,
+          providerMode,
+        });
+      } else {
+        logger.info('Element combination generated successfully', {
+          elementA,
+          elementB,
+          result: safeResult.element,
+          emoji: safeResult.emoji,
+          duration,
+          modelUsed: result.modelUsed,
+          providerMode,
+        });
+      }
+
+      return { element: safeResult.element, emoji: safeResult.emoji };
     } catch (error) {
       const duration = Date.now() - startTime;
 
@@ -4244,6 +4258,9 @@ RULES:
 4. Element names can be 1-6 words - longer names are fine for funny/specific concepts
 5. Choose 1-2 appropriate emojis (1 is preferred)
 6. Be creative, be funny, be surprising
+
+ABSOLUTE SAFETY REQUIREMENT:
+NEVER generate any content involving minors in sexual, exploitative, or inappropriate contexts. This includes but is not limited to: CSAM references, sexualized children, child abuse, or any combination that could be interpreted as child exploitation. If inputs would lead to such content, redirect to a completely different, safe concept instead.
 
 SAME ELEMENT COMBINATIONS - SCALE UP OR GO META:
 - Fire + Fire = Inferno
