@@ -100,19 +100,21 @@ function generateHintsUsed(gameType) {
     return 0;
   }
 
-  // Daily Alchemy (soup) has 0-4 hints available
+  // Daily Alchemy (soup) has unlimited hints - generate 3-25 for realistic distribution
   if (gameType === 'soup') {
+    // Use a distribution that favors lower hint counts but allows up to 25
+    // Most players use 5-12 hints, with some using more
     const rand = Math.random();
-    // 3% chance of 0 hints (almost never)
-    // 7% chance of 1 hint (very rare)
-    // 15% chance of 2 hints
-    // 25% chance of 3 hints
-    // 50% chance of 4 hints (heavily weighted)
-    if (rand < 0.03) return 0;
-    if (rand < 0.1) return 1;
-    if (rand < 0.25) return 2;
-    if (rand < 0.5) return 3;
-    return 4;
+    // 5% chance of 3-4 hints (very skilled)
+    // 15% chance of 5-7 hints (skilled)
+    // 40% chance of 8-12 hints (average)
+    // 30% chance of 13-18 hints (struggling)
+    // 10% chance of 19-25 hints (needed lots of help)
+    if (rand < 0.05) return 3 + Math.floor(Math.random() * 2); // 3-4
+    if (rand < 0.2) return 5 + Math.floor(Math.random() * 3); // 5-7
+    if (rand < 0.6) return 8 + Math.floor(Math.random() * 5); // 8-12
+    if (rand < 0.9) return 13 + Math.floor(Math.random() * 6); // 13-18
+    return 19 + Math.floor(Math.random() * 7); // 19-25
   }
 
   // Reel Connections has only 1 hint available
