@@ -1,83 +1,139 @@
-export const siteConfig = {
-  name: 'Tandem',
-  title: 'Tandem | Daily Word Games, Mini Crosswords & More',
-  titleTemplate: '%s | Tandem',
-  description:
-    'Tandem Daily Games: Free daily word puzzles including Mini Crosswords, emoji word games, and Reel Connections. Fresh twists on favorites like Wordle and NYT Connections. New puzzles every day at midnight.',
-  shortDescription: 'Daily word games: Mini Crosswords, emoji puzzles, and more',
-  url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com',
-  ogImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/images/tandem-og.png`,
-  twitterImage: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com'}/images/tandem-og.png`,
-  locale: 'en_US',
-  type: 'website',
-  keywords: [
-    // Primary game keywords
-    'daily word games',
-    'mini crossword',
-    'free mini crossword',
-    'daily crossword',
-    'word puzzle',
-    'daily puzzle',
-    // Wordle/Connections-related keywords
-    'wordle alternative',
-    'games like wordle',
-    'nyt connections alternative',
-    'connections game',
-    'like wordle',
-    'similar to wordle',
-    'daily wordle alternative',
-    // Core game keywords
-    'emoji game',
-    'word game',
-    'brain teaser',
-    'daily challenge',
-    'puzzle game',
-    'tandem daily games',
-    'free word game',
-    'online puzzle',
-    'daily word game',
-    'movie trivia game',
-    'reel connections',
-    'brain training',
-    'emoji word puzzle',
-    'word guessing game',
-    'daily brain teaser',
-  ],
-  authors: [
-    {
-      name: 'Tandem Game',
-      url: 'https://tandemdaily.com',
-    },
-  ],
-  creator: 'Tandem Game',
-  publisher: 'Tandem Game',
-  category: 'Games',
-  classification: 'Puzzle Game',
+const isStandalone = process.env.NEXT_PUBLIC_STANDALONE_ALCHEMY === 'true';
 
-  // Social Media
-  twitter: {
-    card: 'summary_large_image',
-    site: '@tandemgame',
-    creator: '@tandemgame',
-  },
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com';
 
-  // Theme colors for different contexts
-  themeColors: {
-    light: '#0EA5E9', // Sky-500
-    dark: '#14B8A6', // Teal-600
-  },
+export const siteConfig = isStandalone
+  ? {
+      name: 'Daily Alchemy',
+      title: 'Daily Alchemy | Element Combination Puzzle Game',
+      titleTemplate: '%s | Daily Alchemy',
+      description:
+        'Combine elements to discover new ones and reach the daily target. A free daily puzzle game where you mix and match elements to create compounds. New puzzle every day at midnight.',
+      shortDescription: 'Combine elements to reach the daily target - free daily puzzle',
+      url: baseUrl,
+      ogImage: `${baseUrl}/images/dailyalchemy-og.png`,
+      twitterImage: `${baseUrl}/images/dailyalchemy-og.png`,
+      locale: 'en_US',
+      type: 'website',
+      keywords: [
+        'daily alchemy',
+        'element combination game',
+        'alchemy puzzle',
+        'daily puzzle game',
+        'element mixing game',
+        'combination puzzle',
+        'free puzzle game',
+        'daily challenge',
+        'brain teaser',
+        'element discovery game',
+        'crafting game',
+        'alchemy game online',
+        'little alchemy alternative',
+        'element game',
+        'free daily game',
+      ],
+      authors: [{ name: 'Daily Alchemy', url: baseUrl }],
+      creator: 'Daily Alchemy',
+      publisher: 'Daily Alchemy',
+      category: 'Games',
+      classification: 'Puzzle Game',
+      twitter: {
+        card: 'summary_large_image',
+        site: '@dailyalchemy',
+        creator: '@dailyalchemy',
+      },
+      themeColors: {
+        light: '#7ed957', // soup-primary green
+        dark: '#5cb83c',
+      },
+      appleStatusBar: 'black-translucent',
+      verification: {
+        google: '',
+        bing: '',
+        yandex: '',
+        pinterest: '',
+      },
+    }
+  : {
+      name: 'Tandem',
+      title: 'Tandem | Daily Word Games, Mini Crosswords & More',
+      titleTemplate: '%s | Tandem',
+      description:
+        'Tandem Daily Games: Free daily word puzzles including Mini Crosswords, emoji word games, and Reel Connections. Fresh twists on favorites like Wordle and NYT Connections. New puzzles every day at midnight.',
+      shortDescription: 'Daily word games: Mini Crosswords, emoji puzzles, and more',
+      url: baseUrl,
+      ogImage: `${baseUrl}/images/tandem-og.png`,
+      twitterImage: `${baseUrl}/images/tandem-og.png`,
+      locale: 'en_US',
+      type: 'website',
+      keywords: [
+        // Primary game keywords
+        'daily word games',
+        'mini crossword',
+        'free mini crossword',
+        'daily crossword',
+        'word puzzle',
+        'daily puzzle',
+        // Wordle/Connections-related keywords
+        'wordle alternative',
+        'games like wordle',
+        'nyt connections alternative',
+        'connections game',
+        'like wordle',
+        'similar to wordle',
+        'daily wordle alternative',
+        // Core game keywords
+        'emoji game',
+        'word game',
+        'brain teaser',
+        'daily challenge',
+        'puzzle game',
+        'tandem daily games',
+        'free word game',
+        'online puzzle',
+        'daily word game',
+        'movie trivia game',
+        'reel connections',
+        'brain training',
+        'emoji word puzzle',
+        'word guessing game',
+        'daily brain teaser',
+      ],
+      authors: [
+        {
+          name: 'Tandem Game',
+          url: 'https://tandemdaily.com',
+        },
+      ],
+      creator: 'Tandem Game',
+      publisher: 'Tandem Game',
+      category: 'Games',
+      classification: 'Puzzle Game',
 
-  // Apple specific
-  appleStatusBar: 'black-translucent',
+      // Social Media
+      twitter: {
+        card: 'summary_large_image',
+        site: '@tandemgame',
+        creator: '@tandemgame',
+      },
 
-  // Verification codes (add your actual codes when ready)
-  verification: {
-    google: '', // Google Search Console verification
-    bing: '', // Bing Webmaster Tools
-    yandex: '', // Yandex
-    pinterest: '', // Pinterest
-  },
-};
+      // Theme colors for different contexts
+      themeColors: {
+        light: '#0EA5E9', // Sky-500
+        dark: '#14B8A6', // Teal-600
+      },
+
+      // Apple specific
+      appleStatusBar: 'black-translucent',
+
+      // Verification codes (add your actual codes when ready)
+      verification: {
+        google: '', // Google Search Console verification
+        bing: '', // Bing Webmaster Tools
+        yandex: '', // Yandex
+        pinterest: '', // Pinterest
+      },
+    };
 
 // Generate dynamic metadata based on puzzle info
 export function generatePuzzleMetadata(puzzleInfo) {
@@ -267,6 +323,47 @@ export function generateBreadcrumbs(path = []) {
 
 // Generate FAQ structured data for SEO
 export function generateFAQSchema() {
+  if (isStandalone) {
+    return {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: [
+        {
+          '@type': 'Question',
+          name: 'How do you play Daily Alchemy?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Combine elements to create new ones and reach the daily target element. Start with basic elements like Water, Fire, Earth, and Air, then mix them together to discover new compounds. You have 10 minutes and a par number of moves to reach the target.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Is Daily Alchemy free to play?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes! Daily Alchemy is completely free to play, including the full archive of past puzzles and Creative Mode. A new puzzle is released every day at midnight.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'What is Creative Mode?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Creative Mode lets you combine elements endlessly with no goal or timer. Discover new elements at your own pace with pure experimentation and discovery.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'When are new Daily Alchemy puzzles released?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'A new Daily Alchemy puzzle is released every day at midnight Eastern Time. Come back daily for a fresh target element to discover!',
+          },
+        },
+      ],
+    };
+  }
+
   return {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',

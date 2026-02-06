@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState, useCallback } from 'rea
 import { useAuth } from '@/contexts/AuthContext';
 import subscriptionService from '@/services/subscriptionService';
 import logger from '@/lib/logger';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 const CACHE_KEY = 'tandem_subscription_cache';
 
@@ -43,8 +44,18 @@ const SubscriptionContext = createContext({
 export function SubscriptionProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
 
-  // Eager hydration from localStorage
+  // Eager hydration from localStorage (skipped on standalone)
   const [subscription, setSubscription] = useState(() => {
+    if (isStandaloneAlchemy) {
+      return {
+        isActive: true,
+        tier: 'standalone',
+        expiryDate: null,
+        cancelAtPeriodEnd: false,
+        loading: false,
+      };
+    }
+
     if (typeof window !== 'undefined') {
       const cached = localStorage.getItem(CACHE_KEY);
       if (cached) {
@@ -79,6 +90,9 @@ export function SubscriptionProvider({ children }) {
    * Caches result to localStorage for next load
    */
   const refreshStatus = useCallback(async () => {
+    // Standalone mode: subscription is always active, no API calls needed
+    if (isStandaloneAlchemy) return;
+
     // If not authenticated, clear subscription state
     if (!user) {
       const clearedState = {
@@ -139,6 +153,7 @@ export function SubscriptionProvider({ children }) {
    * This ensures subscription is always in sync with auth
    */
   useEffect(() => {
+    if (isStandaloneAlchemy) return;
     if (!authLoading) {
       // Set loading immediately when user changes to invalidate stale cache
       // This ensures components show loading state while we fetch fresh data
