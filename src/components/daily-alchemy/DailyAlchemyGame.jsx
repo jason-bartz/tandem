@@ -209,11 +209,20 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
   return (
     <>
-      <div className={cn('fixed inset-0 flex flex-col overflow-hidden')}>
+      <div
+        className={cn(
+          'fixed inset-0 flex flex-col overflow-hidden',
+          isStandaloneAlchemy &&
+            gameState === SOUP_GAME_STATES.WELCOME &&
+            'bg-white dark:bg-gray-900'
+        )}
+      >
         {/* Ad banner - only renders on standalone ad-supported site */}
         <AdBanner />
-        {/* Animated gradient background */}
-        <DailyAlchemyBackground />
+        {/* Animated gradient background - hidden on standalone welcome (white bg instead) */}
+        {!(isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME) && (
+          <DailyAlchemyBackground />
+        )}
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         {/* Desktop: wider container for side-by-side layout */}
         <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto pt-4 pt-safe-ios">
@@ -249,7 +258,11 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 <button
                   onClick={() => {
                     lightTap();
-                    router.push('/');
+                    if (isStandaloneAlchemy) {
+                      window.location.href = '/daily-alchemy';
+                    } else {
+                      router.push('/');
+                    }
                   }}
                   className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
                   title="Back to Home"
@@ -276,7 +289,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 {isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME ? (
                   <div className="flex items-center gap-2">
                     <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
-                    <span className="text-white text-lg font-bold drop-shadow-sm">
+                    <span className="text-gray-800 dark:text-gray-200 text-lg font-bold">
                       Daily Alchemy
                     </span>
                   </div>
