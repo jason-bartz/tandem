@@ -86,13 +86,72 @@ export default function StatsModalSkeleton() {
   if (isStandaloneAlchemy) {
     return (
       <>
-        {/* Element Soup Section (Green) - only section on standalone */}
-        <SectionSkeleton
-          themeColor="green"
-          reduceMotion={reduceMotion}
-          highContrast={highContrast}
-          index={0}
-        />
+        {/* Stats card (no header) */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-soup-primary dark:bg-soup-hover border-black shadow-[4px_4px_0px_#000]'
+          }`}
+        >
+          <div className="px-4 pt-4 pb-4">
+            <div className="grid grid-cols-4 gap-3">
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  className={`rounded-xl p-2 text-center ${
+                    highContrast ? 'bg-hc-surface/50' : 'bg-white/20'
+                  }`}
+                >
+                  <div
+                    className={`h-6 w-10 mx-auto rounded bg-white/20 mb-1 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  />
+                  <div
+                    className={`h-3 w-full rounded bg-white/20 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    style={{ animationDelay: `${i * 100 + 50}ms` }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Discoveries card */}
+        <div
+          className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${
+            highContrast
+              ? 'bg-hc-surface border-hc-border shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              : 'bg-white dark:bg-gray-800 border-black shadow-[4px_4px_0px_#000]'
+          }`}
+        >
+          <div className="px-4 py-4">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <div
+                  className={`w-5 h-5 rounded bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  style={{ animationDelay: '400ms' }}
+                />
+                <div
+                  className={`h-4 w-28 rounded bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  style={{ animationDelay: '450ms' }}
+                />
+              </div>
+              <div
+                className={`h-7 w-10 rounded bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                style={{ animationDelay: '500ms' }}
+              />
+            </div>
+            <div
+              className={`w-full h-11 rounded-[20px] border-[3px] ${
+                highContrast
+                  ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                  : 'bg-soup-primary/50 border-black shadow-[3px_3px_0px_#000]'
+              } ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+              style={{ animationDelay: '550ms' }}
+            />
+          </div>
+        </div>
       </>
     );
   }

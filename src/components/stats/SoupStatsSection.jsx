@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
 import StatCard from './StatCard';
 import StatsSection from './StatsSection';
@@ -8,6 +8,7 @@ import { getStreakMilestone } from '@/lib/streakMilestones';
 import { useCounterAnimation } from '@/hooks/useAnimation';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
+import { useAuth } from '@/contexts/AuthContext';
 import FirstDiscoveriesModal from '@/components/daily-alchemy/FirstDiscoveriesModal';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
@@ -22,8 +23,33 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
  */
 export default function SoupStatsSection({ stats, animationKey }) {
   const [showFirstDiscoveries, setShowFirstDiscoveries] = useState(false);
+  const [discoveriesCount, setDiscoveriesCount] = useState(null);
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
+  const { session } = useAuth();
+
+  // Fetch actual first discoveries count from API (standalone only)
+  const fetchDiscoveriesCount = useCallback(async () => {
+    if (!isStandaloneAlchemy || !session) return;
+    try {
+      const response = await fetch('/api/daily-alchemy/discoveries', {
+        credentials: 'include',
+        headers: {
+          ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
+        },
+      });
+      if (response.ok) {
+        const data = await response.json();
+        setDiscoveriesCount((data.discoveries || []).length);
+      }
+    } catch {
+      // Fall back to stats value
+    }
+  }, [session]);
+
+  useEffect(() => {
+    fetchDiscoveriesCount();
+  }, [fetchDiscoveriesCount]);
 
   // Format average time (seconds to MM:SS)
   const formatTime = (seconds) => {
@@ -112,7 +138,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
                   highContrast ? 'text-hc-text' : 'text-soup-dark dark:text-soup-primary'
                 }`}
               >
-                {stats.firstDiscoveries || 0}
+                {discoveriesCount !== null ? discoveriesCount : stats.firstDiscoveries || 0}
               </span>
             </div>
 
