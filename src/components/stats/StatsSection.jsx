@@ -60,20 +60,22 @@ export default function StatsSection({ title, emoji, icon, themeColor, children 
 
   return (
     <div className={`rounded-2xl border-[3px] overflow-hidden mb-4 ${getBackgroundColors()}`}>
-      {/* Section Header */}
-      <div className={`px-4 py-3`}>
-        <h3 className={`text-lg font-bold flex items-center ${getTextColor()}`}>
-          {icon ? (
-            <Image src={icon} alt="" width={24} height={24} className="mr-2" />
-          ) : emoji ? (
-            <span className="mr-2">{emoji}</span>
-          ) : null}
-          {title}
-        </h3>
-      </div>
+      {/* Section Header - hidden when title is null (standalone) */}
+      {title && (
+        <div className={`px-4 py-3`}>
+          <h3 className={`text-lg font-bold flex items-center ${getTextColor()}`}>
+            {icon ? (
+              <Image src={icon} alt="" width={24} height={24} className="mr-2" />
+            ) : emoji ? (
+              <span className="mr-2">{emoji}</span>
+            ) : null}
+            {title}
+          </h3>
+        </div>
+      )}
 
       {/* Section Content */}
-      <div className="px-4 pb-4">{children}</div>
+      <div className={`px-4 pb-4 ${!title ? 'pt-4' : ''}`}>{children}</div>
     </div>
   );
 }

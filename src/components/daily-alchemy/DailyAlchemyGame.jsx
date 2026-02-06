@@ -212,24 +212,20 @@ export function DailyAlchemyGame({ initialDate = null }) {
       <div
         className={cn(
           'fixed inset-0 flex flex-col overflow-hidden',
-          isStandaloneAlchemy &&
-            gameState === SOUP_GAME_STATES.WELCOME &&
-            'bg-white dark:bg-gray-900'
+          isStandaloneAlchemy && 'bg-white dark:bg-gray-900'
         )}
       >
         {/* Ad banner - only renders on standalone ad-supported site */}
         <AdBanner />
-        {/* Animated gradient background - hidden on standalone welcome (white bg instead) */}
-        {!(isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME) && (
-          <DailyAlchemyBackground />
-        )}
+        {/* Background - green on main site, white on standalone */}
+        <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         {/* Desktop: wider container for side-by-side layout */}
         <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto pt-4 pt-safe-ios">
           <div
             className={cn(
               'flex-1 flex flex-col mx-4 mb-4 min-h-0',
-              isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME
+              isStandaloneAlchemy
                 ? 'rounded-none border-0'
                 : cn(
                     'rounded-[32px] border-[3px]',
@@ -243,7 +239,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
             <header
               className={cn(
                 'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0',
-                isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME
+                isStandaloneAlchemy
                   ? 'pt-3'
                   : cn(
                       'rounded-t-[29px]',
