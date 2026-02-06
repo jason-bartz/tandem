@@ -28,11 +28,12 @@ export default function SoupStatsSection({ stats, animationKey }) {
   const { lightTap } = useHaptics();
   const { session } = useAuth();
 
-  // Fetch actual first discoveries count from API (standalone only)
+  // Fetch this player's first discoveries count from API (standalone only)
+  // The API filters by user_id - pagination.total is this player's personal count
   const fetchDiscoveriesCount = useCallback(async () => {
     if (!isStandaloneAlchemy || !session) return;
     try {
-      const response = await fetch('/api/daily-alchemy/discoveries', {
+      const response = await fetch('/api/daily-alchemy/discoveries?limit=1', {
         credentials: 'include',
         headers: {
           ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
@@ -40,7 +41,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
       });
       if (response.ok) {
         const data = await response.json();
-        setDiscoveriesCount(data.pagination?.total ?? (data.discoveries || []).length);
+        setDiscoveriesCount(data.pagination?.total ?? 0);
       }
     } catch {
       // Fall back to stats value

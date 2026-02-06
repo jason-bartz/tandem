@@ -217,6 +217,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
   const { highContrast } = useTheme();
   const { session } = useAuth();
   const [discoveries, setDiscoveries] = useState([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedDiscovery, setSelectedDiscovery] = useState(null);
@@ -228,7 +229,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
     setError(null);
 
     try {
-      const response = await fetch('/api/daily-alchemy/discoveries', {
+      const response = await fetch('/api/daily-alchemy/discoveries?limit=200', {
         credentials: 'include',
         headers: {
           ...(session?.access_token && { Authorization: `Bearer ${session.access_token}` }),
@@ -241,6 +242,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
 
       const data = await response.json();
       setDiscoveries(data.discoveries || []);
+      setTotalCount(data.pagination?.total ?? (data.discoveries || []).length);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -330,8 +332,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
         ) : (
           <>
             <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
-              You discovered {discoveries.length} element{discoveries.length !== 1 ? 's' : ''}{' '}
-              before anyone else
+              You discovered {totalCount} element{totalCount !== 1 ? 's' : ''} before anyone else
             </p>
             <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
               {discoveries.map((discovery) => (
