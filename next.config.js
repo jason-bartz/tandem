@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 
 const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
+const isStandalone = process.env.NEXT_PUBLIC_STANDALONE_ALCHEMY === 'true';
 
 const nextConfig = {
   reactStrictMode: true,
@@ -10,13 +11,24 @@ const nextConfig = {
 
   // Redirects for renamed routes
   async redirects() {
-    return [
+    const redirects = [
       {
         source: '/element-soup',
         destination: '/daily-alchemy',
         permanent: true,
       },
     ];
+
+    // Standalone mode: redirect all routes to Daily Alchemy
+    if (isStandalone) {
+      redirects.push(
+        { source: '/', destination: '/daily-alchemy', permanent: false },
+        { source: '/dailymini', destination: '/daily-alchemy', permanent: false },
+        { source: '/reel-connections', destination: '/daily-alchemy', permanent: false }
+      );
+    }
+
+    return redirects;
   },
 
   // IMPORTANT: Disable source maps in production for security
@@ -28,6 +40,8 @@ const nextConfig = {
       { protocol: 'https', hostname: 'tandemdaily.com' },
       { protocol: 'https', hostname: 'www.tandemdaily.com' },
       { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: 'dailyalchemy.fun' },
+      { protocol: 'https', hostname: 'www.dailyalchemy.fun' },
     ],
     unoptimized: isCapacitorBuild,
   },

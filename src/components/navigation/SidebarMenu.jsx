@@ -11,6 +11,7 @@ import { useHoroscope } from '@/hooks/useHoroscope';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { ASSET_VERSION } from '@/lib/constants';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * SidebarMenu - Sliding sidebar navigation menu
@@ -385,8 +386,8 @@ export default function SidebarMenu({
                       </svg>
                     </div>
 
-                    {/* Daily Horoscope - Integrated in same box */}
-                    {zodiacData && horoscope && !horoscopeLoading && (
+                    {/* Daily Horoscope - Integrated in same box (hidden on standalone) */}
+                    {!isStandaloneAlchemy && zodiacData && horoscope && !horoscopeLoading && (
                       <div
                         className={`mt-3 pt-3 border-t-2 ${
                           highContrast
@@ -444,109 +445,128 @@ export default function SidebarMenu({
                 </div>
               </section>
 
-              {/* Word Puzzles Section */}
-              <section>
-                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
-                  Word Puzzles
-                </h3>
-                <div className="space-y-2">
-                  <GameButton
-                    icon="/icons/ui/tandem.png"
-                    label="Daily Tandem"
-                    onClick={() => handleNavigation('/')}
-                    isActive={pathname === '/'}
-                    gameColor="blue"
-                    highContrast={highContrast}
-                    subtitle="Decipher four groups of emoji clues"
-                  />
-                  <GameButton
-                    icon="/icons/ui/mini.png"
-                    label="Daily Mini"
-                    onClick={() => handleNavigation('/dailymini')}
-                    isActive={pathname === '/dailymini'}
-                    gameColor="yellow"
-                    highContrast={highContrast}
-                    subtitle="Classic 5x5 mini crossword"
-                  />
-                  <GameButton
-                    icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
-                    label="Daily Alchemy"
-                    onClick={() => handleNavigation('/daily-alchemy')}
-                    isActive={pathname === '/daily-alchemy'}
-                    gameColor="green"
-                    highContrast={highContrast}
-                    subtitle="Combine elements to make discoveries"
-                  />
-                </div>
-              </section>
+              {/* Games Section */}
+              {isStandaloneAlchemy ? (
+                <section>
+                  <div className="space-y-2">
+                    <GameButton
+                      icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                      label="Daily Alchemy"
+                      onClick={() => handleNavigation('/daily-alchemy')}
+                      isActive={pathname === '/daily-alchemy'}
+                      gameColor="green"
+                      highContrast={highContrast}
+                      subtitle="Combine elements to make discoveries"
+                    />
+                  </div>
+                </section>
+              ) : (
+                <>
+                  {/* Word Puzzles Section */}
+                  <section>
+                    <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                      Word Puzzles
+                    </h3>
+                    <div className="space-y-2">
+                      <GameButton
+                        icon="/icons/ui/tandem.png"
+                        label="Daily Tandem"
+                        onClick={() => handleNavigation('/')}
+                        isActive={pathname === '/'}
+                        gameColor="blue"
+                        highContrast={highContrast}
+                        subtitle="Decipher four groups of emoji clues"
+                      />
+                      <GameButton
+                        icon="/icons/ui/mini.png"
+                        label="Daily Mini"
+                        onClick={() => handleNavigation('/dailymini')}
+                        isActive={pathname === '/dailymini'}
+                        gameColor="yellow"
+                        highContrast={highContrast}
+                        subtitle="Classic 5x5 mini crossword"
+                      />
+                      <GameButton
+                        icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                        label="Daily Alchemy"
+                        onClick={() => handleNavigation('/daily-alchemy')}
+                        isActive={pathname === '/daily-alchemy'}
+                        gameColor="green"
+                        highContrast={highContrast}
+                        subtitle="Combine elements to make discoveries"
+                      />
+                    </div>
+                  </section>
 
-              {/* Other Games Section */}
-              <section>
-                <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
-                  Other Games
-                </h3>
-                <div className="space-y-2">
-                  <GameButton
-                    icon="/icons/ui/movie.png"
-                    label="Reel Connections"
-                    onClick={() => handleNavigation('/reel-connections')}
-                    isActive={pathname === '/reel-connections'}
-                    gameColor="red"
-                    highContrast={highContrast}
-                    subtitle="Create four groups of four movies"
-                  />
-                  {/* Create Puzzle - Shows paywall if not subscribed */}
-                  <button
-                    onClick={() => {
-                      if (hasSubscription) {
-                        handleNavigation('/create-puzzle');
-                      } else if (Capacitor.isNativePlatform()) {
-                        // On iOS, navigate to account page for subscription
-                        handleNavigation('/account');
-                      } else {
-                        lightTap();
-                        onClose();
-                        // Trigger paywall modal on web
-                        window.dispatchEvent(new CustomEvent('openPaywall'));
-                      }
-                    }}
-                    style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
-                    className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
-                      pathname === '/create-puzzle'
-                        ? highContrast
-                          ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]'
-                        : highContrast
-                          ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                          : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                    }`}
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
-                      <svg
-                        className="w-5 h-5 text-white"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
+                  {/* Other Games Section */}
+                  <section>
+                    <h3 className="text-xs font-bold text-text-secondary tracking-wider mb-3 px-1">
+                      Other Games
+                    </h3>
+                    <div className="space-y-2">
+                      <GameButton
+                        icon="/icons/ui/movie.png"
+                        label="Reel Connections"
+                        onClick={() => handleNavigation('/reel-connections')}
+                        isActive={pathname === '/reel-connections'}
+                        gameColor="red"
+                        highContrast={highContrast}
+                        subtitle="Create four groups of four movies"
+                      />
+                      {/* Create Puzzle - Shows paywall if not subscribed */}
+                      <button
+                        onClick={() => {
+                          if (hasSubscription) {
+                            handleNavigation('/create-puzzle');
+                          } else if (Capacitor.isNativePlatform()) {
+                            // On iOS, navigate to account page for subscription
+                            handleNavigation('/account');
+                          } else {
+                            lightTap();
+                            onClose();
+                            // Trigger paywall modal on web
+                            window.dispatchEvent(new CustomEvent('openPaywall'));
+                          }
+                        }}
+                        style={!highContrast ? { backgroundColor: '#64748b' } : undefined}
+                        className={`w-full p-3 rounded-2xl border-[3px] flex items-center gap-3 transition-all ${
+                          pathname === '/create-puzzle'
+                            ? highContrast
+                              ? 'bg-hc-primary border-hc-border shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'border-border-main shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.6)]'
+                            : highContrast
+                              ? 'bg-hc-surface border-hc-border hover:bg-hc-primary shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'border-border-main shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]'
+                        }`}
                       >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 4v16m8-8H4"
-                        />
-                      </svg>
+                        <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                          <svg
+                            className="w-5 h-5 text-white"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 4v16m8-8H4"
+                            />
+                          </svg>
+                        </div>
+                        <div className="flex flex-col items-start">
+                          <span className="text-base font-bold text-white whitespace-nowrap">
+                            Create Puzzle
+                          </span>
+                          <span className="text-[10px] text-white opacity-90">
+                            Submit your own Reel Connections
+                          </span>
+                        </div>
+                      </button>
                     </div>
-                    <div className="flex flex-col items-start">
-                      <span className="text-base font-bold text-white whitespace-nowrap">
-                        Create Puzzle
-                      </span>
-                      <span className="text-[10px] text-white opacity-90">
-                        Submit your own Reel Connections
-                      </span>
-                    </div>
-                  </button>
-                </div>
-              </section>
+                  </section>
+                </>
+              )}
 
               {/* Footer Links */}
               <section className="pt-4 border-t-[3px] border-border-main space-y-1">

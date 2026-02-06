@@ -39,6 +39,8 @@ const ALLOWED_ORIGINS = [
   'https://www.tandemdaily.com',
   'https://tandemdaily.com',
   'https://tandem-game.vercel.app',
+  'https://dailyalchemy.fun',
+  'https://www.dailyalchemy.fun',
 ];
 
 /**

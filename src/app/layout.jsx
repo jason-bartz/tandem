@@ -15,6 +15,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ASSET_VERSION } from '@/lib/constants';
 import PostHogProvider from '@/components/providers/PostHogProvider';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 // Plus Jakarta Sans - Variable font for optimal performance
 // Following Apple HIG: Use variable fonts when available for better scaling
@@ -181,9 +182,13 @@ export default function RootLayout({ children }) {
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 
         {/* Preload game icons for instant display on home page */}
-        <link rel="preload" href="/icons/ui/tandem.png" as="image" type="image/png" />
-        <link rel="preload" href="/icons/ui/mini.png" as="image" type="image/png" />
-        <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
+        {!isStandaloneAlchemy && (
+          <>
+            <link rel="preload" href="/icons/ui/tandem.png" as="image" type="image/png" />
+            <link rel="preload" href="/icons/ui/mini.png" as="image" type="image/png" />
+            <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
+          </>
+        )}
         <link
           rel="preload"
           href={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
@@ -230,7 +235,7 @@ export default function RootLayout({ children }) {
                 <SubscriptionProvider>
                   <IOSContainerWrapper>{children}</IOSContainerWrapper>
                   <AuthModalManager />
-                  <PaywallModalManager />
+                  {!isStandaloneAlchemy && <PaywallModalManager />}
                   <FirstTimeSetupManager />
                 </SubscriptionProvider>
               </AuthProvider>

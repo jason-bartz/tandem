@@ -3,19 +3,21 @@ import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import Image from 'next/image';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' }) {
   const { highContrast } = useTheme();
-  const [activeGame, setActiveGame] = useState(defaultTab); // 'tandem', 'mini', 'soup', or 'reel'
+  const effectiveDefaultTab = isStandaloneAlchemy ? 'soup' : defaultTab;
+  const [activeGame, setActiveGame] = useState(effectiveDefaultTab);
   const [, setExpandedSection] = useState(null);
 
   // Reset to default tab when modal opens
   useEffect(() => {
     if (isOpen) {
-      setActiveGame(defaultTab);
+      setActiveGame(effectiveDefaultTab);
       setExpandedSection(null);
     }
-  }, [isOpen, defaultTab]);
+  }, [isOpen, effectiveDefaultTab]);
 
   return (
     <LeftSidePanel
@@ -25,61 +27,63 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
       maxWidth="650px"
       contentClassName="px-6 py-4"
     >
-      {/* Game Mode Tabs */}
-      <div className="flex gap-2 mb-6">
-        <button
-          onClick={() => {
-            setActiveGame('tandem');
-            setExpandedSection(null);
-          }}
-          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
-            activeGame === 'tandem'
-              ? 'bg-[#38b6ff] text-white border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
-          }`}
-        >
-          Tandem
-        </button>
-        <button
-          onClick={() => {
-            setActiveGame('mini');
-            setExpandedSection(null);
-          }}
-          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
-            activeGame === 'mini'
-              ? 'bg-[#FFEB3B] text-gray-900 border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
-          }`}
-        >
-          Mini
-        </button>
-        <button
-          onClick={() => {
-            setActiveGame('soup');
-            setExpandedSection(null);
-          }}
-          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
-            activeGame === 'soup'
-              ? 'bg-green-500 text-white border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
-          }`}
-        >
-          Alchemy
-        </button>
-        <button
-          onClick={() => {
-            setActiveGame('reel');
-            setExpandedSection(null);
-          }}
-          className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
-            activeGame === 'reel'
-              ? 'bg-red-500 text-white border-black shadow-[3px_3px_0px_#000]'
-              : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
-          }`}
-        >
-          Reel
-        </button>
-      </div>
+      {/* Game Mode Tabs - hidden on standalone (only alchemy) */}
+      {!isStandaloneAlchemy && (
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => {
+              setActiveGame('tandem');
+              setExpandedSection(null);
+            }}
+            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+              activeGame === 'tandem'
+                ? 'bg-[#38b6ff] text-white border-black shadow-[3px_3px_0px_#000]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+            }`}
+          >
+            Tandem
+          </button>
+          <button
+            onClick={() => {
+              setActiveGame('mini');
+              setExpandedSection(null);
+            }}
+            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+              activeGame === 'mini'
+                ? 'bg-[#FFEB3B] text-gray-900 border-black shadow-[3px_3px_0px_#000]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+            }`}
+          >
+            Mini
+          </button>
+          <button
+            onClick={() => {
+              setActiveGame('soup');
+              setExpandedSection(null);
+            }}
+            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+              activeGame === 'soup'
+                ? 'bg-green-500 text-white border-black shadow-[3px_3px_0px_#000]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+            }`}
+          >
+            Alchemy
+          </button>
+          <button
+            onClick={() => {
+              setActiveGame('reel');
+              setExpandedSection(null);
+            }}
+            className={`flex-1 px-2 py-3 rounded-2xl border-[3px] font-bold text-xs transition-all ${
+              activeGame === 'reel'
+                ? 'bg-red-500 text-white border-black shadow-[3px_3px_0px_#000]'
+                : 'bg-ghost-white dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-black shadow-[3px_3px_0px_#000] hover:bg-gray-50 dark:hover:bg-gray-600'
+            }`}
+          >
+            Reel
+          </button>
+        </div>
+      )}
 
       {/* Daily Tandem Content */}
       {activeGame === 'tandem' && (
@@ -579,12 +583,12 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               Hint System
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
-              Stuck? You get <strong>four hints per puzzle</strong>. Tap a hint icon in the stats
-              bar to get help.
+              Stuck? Tap the <strong>Hint</strong> button in the stats bar to get help.
             </p>
             <p className={`text-sm ${highContrast ? 'text-white' : ''}`}>
-              Each hint will <strong>select both elements</strong> of a combination that's part of
-              the solution path, ready for you to combine!
+              Each hint will show you <strong>which element to create next</strong> on the path to
+              your target. You can use as many hints as you need, but they&apos;ll be tracked in
+              your stats!
             </p>
           </div>
 

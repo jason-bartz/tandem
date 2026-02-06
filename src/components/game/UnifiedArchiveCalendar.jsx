@@ -18,6 +18,7 @@ import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
 import { SOUP_STORAGE_KEYS } from '@/lib/daily-alchemy.constants';
 import { ASSET_VERSION } from '@/lib/constants';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 const REEL_STORAGE_KEY = 'reel-connections-stats';
 
@@ -58,7 +59,8 @@ export default function UnifiedArchiveCalendar({
   const router = useRouter();
   const { highContrast } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
-  const [activeTab, setActiveTab] = useState(defaultTab);
+  const effectiveDefaultTab = isStandaloneAlchemy ? 'soup' : defaultTab;
+  const [activeTab, setActiveTab] = useState(effectiveDefaultTab);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -438,9 +440,9 @@ export default function UnifiedArchiveCalendar({
   // Reset to default tab when opening
   useEffect(() => {
     if (isOpen) {
-      setActiveTab(defaultTab);
+      setActiveTab(effectiveDefaultTab);
     }
-  }, [isOpen, defaultTab]);
+  }, [isOpen, effectiveDefaultTab]);
 
   /**
    * Navigate to previous month
@@ -708,11 +710,12 @@ export default function UnifiedArchiveCalendar({
                 : 'bg-green-500/30 dark:bg-green-500/30'
         }
         footer={
-          /* Tab Buttons - 4 tabs, no icons to fit */
-          <div className="flex gap-1.5">
-            <button
-              onClick={() => setActiveTab('tandem')}
-              className={`
+          isStandaloneAlchemy ? null : (
+            /* Tab Buttons - 4 tabs, no icons to fit */
+            <div className="flex gap-1.5">
+              <button
+                onClick={() => setActiveTab('tandem')}
+                className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
                 border-[3px]
@@ -730,18 +733,18 @@ export default function UnifiedArchiveCalendar({
                       : 'bg-accent-blue/20 text-accent-blue border-accent-blue/50 dark:border-accent-blue/30 hover:bg-accent-blue/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-              aria-label="Tandem Archive"
-              aria-pressed={activeTab === 'tandem'}
-            >
-              Tandem
-            </button>
-            <button
-              onClick={() => setActiveTab('mini')}
-              className={`
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+                aria-label="Tandem Archive"
+                aria-pressed={activeTab === 'tandem'}
+              >
+                Tandem
+              </button>
+              <button
+                onClick={() => setActiveTab('mini')}
+                className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
                 border-[3px]
@@ -759,18 +762,18 @@ export default function UnifiedArchiveCalendar({
                       : 'bg-accent-yellow/20 text-yellow-700 dark:text-yellow-500 border-accent-yellow/50 dark:border-accent-yellow/30 hover:bg-accent-yellow/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-              aria-label="Mini Archive"
-              aria-pressed={activeTab === 'mini'}
-            >
-              Mini
-            </button>
-            <button
-              onClick={() => setActiveTab('reel')}
-              className={`
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+                aria-label="Mini Archive"
+                aria-pressed={activeTab === 'mini'}
+              >
+                Mini
+              </button>
+              <button
+                onClick={() => setActiveTab('reel')}
+                className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
                 border-[3px]
@@ -788,18 +791,18 @@ export default function UnifiedArchiveCalendar({
                       : 'bg-red-500/20 text-red-600 dark:text-red-400 border-red-500/50 dark:border-red-500/30 hover:bg-red-500/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-              aria-label="Reel Archive"
-              aria-pressed={activeTab === 'reel'}
-            >
-              Reel
-            </button>
-            <button
-              onClick={() => setActiveTab('soup')}
-              className={`
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+                aria-label="Reel Archive"
+                aria-pressed={activeTab === 'reel'}
+              >
+                Reel
+              </button>
+              <button
+                onClick={() => setActiveTab('soup')}
+                className={`
                 flex-1 py-2.5 px-2
                 rounded-xl
                 border-[3px]
@@ -817,16 +820,17 @@ export default function UnifiedArchiveCalendar({
                       : 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/50 dark:border-green-500/30 hover:bg-green-500/30 shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
                 }
               `}
-              style={{
-                WebkitTapHighlightColor: 'transparent',
-                touchAction: 'manipulation',
-              }}
-              aria-label="Alchemy Archive"
-              aria-pressed={activeTab === 'soup'}
-            >
-              Alchemy
-            </button>
-          </div>
+                style={{
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation',
+                }}
+                aria-label="Alchemy Archive"
+                aria-pressed={activeTab === 'soup'}
+              >
+                Alchemy
+              </button>
+            </div>
+          )
         }
       >
         {/* Month/Year Navigation */}

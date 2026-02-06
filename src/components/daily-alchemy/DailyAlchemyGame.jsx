@@ -25,6 +25,7 @@ import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
+import AdBanner from '@/components/shared/AdBanner';
 
 /**
  * Error display component
@@ -208,6 +209,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
   return (
     <>
       <div className={cn('fixed inset-0 flex flex-col overflow-hidden')}>
+        {/* Ad banner - only renders on standalone ad-supported site */}
+        <AdBanner />
         {/* Animated gradient background */}
         <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
