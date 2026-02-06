@@ -1,22 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import { DailyAlchemyBackground } from './DailyAlchemyBackground';
-
-const LOADING_MESSAGES = [
-  'Heating up the elements...',
-  'Stirring the primordial soup...',
-  'Gathering molecules...',
-  'Mixing the ingredients...',
-  'Calibrating combinations...',
-  'Preparing the cauldron...',
-  'Summoning atoms...',
-  'Brewing discoveries...',
-  'Aligning particles...',
-  'Charging the reactor...',
-];
 
 /**
  * DailyAlchemyLoadingSkeleton - Loading skeleton for Element Soup game
@@ -24,46 +10,6 @@ const LOADING_MESSAGES = [
  */
 export function DailyAlchemyLoadingSkeleton() {
   const { highContrast, reduceMotion } = useTheme();
-  const [messages, setMessages] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isVisible, setIsVisible] = useState(true);
-
-  useEffect(() => {
-    // Shuffle messages on mount for random order
-    const shuffled = [...LOADING_MESSAGES].sort(() => Math.random() - 0.5);
-    setMessages(shuffled);
-    setCurrentIndex(0);
-  }, []);
-
-  useEffect(() => {
-    if (messages.length === 0) return;
-
-    let timeoutId = null;
-
-    const interval = setInterval(() => {
-      // Fade out
-      setIsVisible(false);
-      timeoutId = setTimeout(() => {
-        // Change to next message in shuffled order
-        setCurrentIndex((prevIndex) => {
-          const nextIndex = (prevIndex + 1) % messages.length;
-          // If we've cycled through all messages, reshuffle
-          if (nextIndex === 0) {
-            const reshuffled = [...messages].sort(() => Math.random() - 0.5);
-            setMessages(reshuffled);
-          }
-          return nextIndex;
-        });
-        // Fade back in
-        setIsVisible(true);
-      }, 150);
-    }, 2000);
-
-    return () => {
-      clearInterval(interval);
-      if (timeoutId) clearTimeout(timeoutId);
-    };
-  }, [messages]);
 
   const shimmerClass = !reduceMotion ? 'skeleton-shimmer' : '';
 
@@ -230,31 +176,6 @@ export function DailyAlchemyLoadingSkeleton() {
           </div>
         </div>
       </main>
-
-      {/* Centered Loading Message */}
-      <div className="fixed inset-0 flex items-center justify-center z-10 pointer-events-none">
-        <div
-          className={cn(
-            'bg-white dark:bg-gray-800',
-            'rounded-2xl',
-            'border-[3px] border-soup-primary',
-            'shadow-[6px_6px_0px_rgba(0,0,0,0.3)]',
-            'px-8 py-6',
-            'text-center',
-            'mx-4'
-          )}
-        >
-          <p
-            className={cn(
-              'text-gray-800 dark:text-white text-lg font-bold',
-              'transition-opacity duration-150',
-              isVisible ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            {messages[currentIndex] || 'Loading...'}
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
