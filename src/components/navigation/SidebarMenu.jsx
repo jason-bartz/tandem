@@ -432,13 +432,13 @@ export default function SidebarMenu({
                   />
                   <MenuButton
                     icon="/icons/ui/sidebar-leaderboards.png"
-                    label="Leaderboards"
+                    label={isStandaloneAlchemy ? 'Leaderboard' : 'Leaderboards'}
                     onClick={() => handleModalOpen(onOpenLeaderboard)}
                     highContrast={highContrast}
                   />
                   <MenuButton
                     icon="/icons/ui/sidebar-archive.png"
-                    label="Puzzle Archives"
+                    label={isStandaloneAlchemy ? 'Puzzle Archive' : 'Puzzle Archives'}
                     onClick={() => handleModalOpen(onOpenArchive)}
                     highContrast={highContrast}
                   />
