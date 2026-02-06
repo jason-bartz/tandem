@@ -446,21 +446,7 @@ export default function SidebarMenu({
               </section>
 
               {/* Games Section */}
-              {isStandaloneAlchemy ? (
-                <section>
-                  <div className="space-y-2">
-                    <GameButton
-                      icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
-                      label="Daily Alchemy"
-                      onClick={() => handleNavigation('/daily-alchemy')}
-                      isActive={pathname === '/daily-alchemy'}
-                      gameColor="green"
-                      highContrast={highContrast}
-                      subtitle="Combine elements to make discoveries"
-                    />
-                  </div>
-                </section>
-              ) : (
+              {isStandaloneAlchemy ? null : (
                 <>
                   {/* Word Puzzles Section */}
                   <section>

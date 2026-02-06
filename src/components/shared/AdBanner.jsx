@@ -54,14 +54,11 @@ export default function AdBanner() {
           }
         }}
       />
-      <div
-        className="w-full flex justify-center bg-gray-100 dark:bg-gray-900"
-        style={{ minHeight: '90px' }}
-      >
+      <div className="w-full flex justify-center">
         <ins
           ref={adRef}
           className="adsbygoogle"
-          style={{ display: 'block', width: '100%', maxWidth: '728px', height: '90px' }}
+          style={{ display: 'block', width: '100%', maxWidth: '728px' }}
           data-ad-client={ADSENSE_CLIENT_ID}
           data-ad-slot={ADSENSE_SLOT_ID}
           data-ad-format="horizontal"

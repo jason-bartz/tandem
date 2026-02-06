@@ -21,6 +21,7 @@ import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { validateUsername } from '@/utils/profanityFilter';
 import logger from '@/lib/logger';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -674,7 +675,7 @@ export default function AccountPage() {
                             {formatDate(user?.created_at)}
                           </span>
                         </div>
-                        {zodiacData && (
+                        {!isStandaloneAlchemy && zodiacData && (
                           <div className="flex justify-between items-center">
                             <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
                               Tandem Zodiac Sign
@@ -687,7 +688,7 @@ export default function AccountPage() {
                       </div>
 
                       {/* Daily Horoscope */}
-                      {zodiacData && horoscope && (
+                      {!isStandaloneAlchemy && zodiacData && horoscope && (
                         <div className="mt-4 pt-4 border-t-2 border-purple-200 dark:border-purple-800">
                           <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">
                             Today&apos;s Horoscope
@@ -706,177 +707,181 @@ export default function AccountPage() {
                     </div>
                   </section>
 
-                  {/* Subscription Section */}
-                  <section>
-                    <div className="flex items-center justify-between mb-4">
-                      <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                        Subscription
-                      </h2>
-                      {subscription?.isActive && (
-                        <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-green-500 text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
-                          ✓ ACTIVE
-                        </span>
-                      )}
-                    </div>
-
-                    {loading ? (
-                      <div className="text-center py-8">
-                        <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent mx-auto"></div>
+                  {/* Subscription Section (hidden on standalone - free site) */}
+                  {!isStandaloneAlchemy && (
+                    <section>
+                      <div className="flex items-center justify-between mb-4">
+                        <h2 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                          Subscription
+                        </h2>
+                        {subscription?.isActive && (
+                          <span className="px-3 py-1.5 rounded-full text-xs font-bold bg-green-500 text-white border-2 border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]">
+                            ✓ ACTIVE
+                          </span>
+                        )}
                       </div>
-                    ) : subscription?.isActive ? (
-                      <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
-                        {/* Active Subscription Info */}
-                        <div className="space-y-4">
-                          <div>
-                            <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
-                              Current Plan
-                            </p>
-                            <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-                              {getTierName(subscription.tier || subscription.productId)}
-                            </p>
-                            <p className="text-sm text-gray-600 dark:text-gray-400">
-                              {getTierDescription(subscription.tier || subscription.productId)}
-                            </p>
-                          </div>
 
-                          {subscription.expiryDate &&
-                            subscription.expiryDate !== '2099-12-31T00:00:00.000Z' &&
-                            !isSoulmatesTier(subscription.tier || subscription.productId) && (
-                              <div
-                                className={`p-3 rounded-xl border-2 ${
-                                  subscription.cancelAtPeriodEnd
-                                    ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
-                                    : 'bg-ghost-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
-                                }`}
-                              >
-                                <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
-                                  {subscription.cancelAtPeriodEnd
-                                    ? '⚠️ Expires on'
-                                    : '🔄 Renews on'}
-                                </p>
-                                <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
-                                  {formatDate(subscription.expiryDate)}
-                                </p>
-                                {subscription.cancelAtPeriodEnd && (
-                                  <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
-                                    Your subscription will not auto-renew
+                      {loading ? (
+                        <div className="text-center py-8">
+                          <div className="animate-spin rounded-full h-8 w-8 border-4 border-teal-500 border-t-transparent mx-auto"></div>
+                        </div>
+                      ) : subscription?.isActive ? (
+                        <div className="bg-gradient-to-br from-green-50 to-teal-50 dark:from-green-900/20 dark:to-teal-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                          {/* Active Subscription Info */}
+                          <div className="space-y-4">
+                            <div>
+                              <p className="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                Current Plan
+                              </p>
+                              <p className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+                                {getTierName(subscription.tier || subscription.productId)}
+                              </p>
+                              <p className="text-sm text-gray-600 dark:text-gray-400">
+                                {getTierDescription(subscription.tier || subscription.productId)}
+                              </p>
+                            </div>
+
+                            {subscription.expiryDate &&
+                              subscription.expiryDate !== '2099-12-31T00:00:00.000Z' &&
+                              !isSoulmatesTier(subscription.tier || subscription.productId) && (
+                                <div
+                                  className={`p-3 rounded-xl border-2 ${
+                                    subscription.cancelAtPeriodEnd
+                                      ? 'bg-orange-50 dark:bg-orange-900/20 border-orange-300 dark:border-orange-700'
+                                      : 'bg-ghost-white/50 dark:bg-black/20 border-teal-200 dark:border-teal-800'
+                                  }`}
+                                >
+                                  <p className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                                    {subscription.cancelAtPeriodEnd
+                                      ? '⚠️ Expires on'
+                                      : '🔄 Renews on'}
                                   </p>
-                                )}
-                              </div>
-                            )}
+                                  <p className="text-sm font-bold text-gray-800 dark:text-gray-200">
+                                    {formatDate(subscription.expiryDate)}
+                                  </p>
+                                  {subscription.cancelAtPeriodEnd && (
+                                    <p className="text-xs text-orange-700 dark:text-orange-300 mt-1">
+                                      Your subscription will not auto-renew
+                                    </p>
+                                  )}
+                                </div>
+                              )}
 
-                          {/* Benefits */}
-                          <div className="pt-4 border-t-2 border-teal-200 dark:border-teal-800 space-y-2">
-                            <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
-                              Your Benefits
-                            </p>
-                            <div className="space-y-2">
-                              <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">
-                                  ✓
-                                </span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Unlimited archive access
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">
-                                  ✓
-                                </span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Ad-free experience
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">
-                                  ✓
-                                </span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Daily Tandem Hard Mode
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">
-                                  ✓
-                                </span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Create & share Reel Connections puzzles
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-green-600 dark:text-green-400 text-sm">
-                                  ✓
-                                </span>
-                                <span className="text-sm text-gray-700 dark:text-gray-300">
-                                  Daily Alchemy Creative Mode
-                                </span>
+                            {/* Benefits */}
+                            <div className="pt-4 border-t-2 border-teal-200 dark:border-teal-800 space-y-2">
+                              <p className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide mb-3">
+                                Your Benefits
+                              </p>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400 text-sm">
+                                    ✓
+                                  </span>
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    Unlimited archive access
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400 text-sm">
+                                    ✓
+                                  </span>
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    Ad-free experience
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400 text-sm">
+                                    ✓
+                                  </span>
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    Daily Tandem Hard Mode
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400 text-sm">
+                                    ✓
+                                  </span>
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    Create & share Reel Connections puzzles
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-green-600 dark:text-green-400 text-sm">
+                                    ✓
+                                  </span>
+                                  <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    Daily Alchemy Creative Mode
+                                  </span>
+                                </div>
                               </div>
                             </div>
+
+                            {/* Manage Button or Lifetime Membership Thank You */}
+                            {isSoulmatesTier(subscription.tier || subscription.productId) ? (
+                              <p className="text-sm text-gray-600 dark:text-gray-400 text-center pt-2 italic">
+                                Thank you for being an early believer and lifetime supporter!
+                              </p>
+                            ) : isWeb ? (
+                              <button
+                                onClick={handleManageAccount}
+                                className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                              >
+                                Manage Subscription
+                              </button>
+                            ) : (
+                              <p className="text-xs text-gray-600 dark:text-gray-400 text-center pt-2">
+                                Manage via App Store
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="bg-gradient-to-br from-teal-50 to-sky-50 dark:from-teal-900/20 dark:to-sky-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
+                          <div className="flex items-center justify-center gap-2 mb-4">
+                            <Image
+                              src="/icons/ui/tandem-unlimited.png"
+                              alt="Tandem Puzzle Club"
+                              width={28}
+                              height={28}
+                              className="object-contain"
+                            />
+                            <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
+                              Tandem Puzzle Club
+                            </h3>
                           </div>
 
-                          {/* Manage Button or Lifetime Membership Thank You */}
-                          {isSoulmatesTier(subscription.tier || subscription.productId) ? (
-                            <p className="text-sm text-gray-600 dark:text-gray-400 text-center pt-2 italic">
-                              Thank you for being an early believer and lifetime supporter!
-                            </p>
-                          ) : isWeb ? (
-                            <button
-                              onClick={handleManageAccount}
-                              className="w-full py-3 px-4 rounded-xl border-[3px] font-semibold transition-all bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-black shadow-[3px_3px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-                            >
-                              Manage Subscription
-                            </button>
-                          ) : (
-                            <p className="text-xs text-gray-600 dark:text-gray-400 text-center pt-2">
-                              Manage via App Store
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="bg-gradient-to-br from-teal-50 to-sky-50 dark:from-teal-900/20 dark:to-sky-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
-                        <div className="flex items-center justify-center gap-2 mb-4">
-                          <Image
-                            src="/icons/ui/tandem-unlimited.png"
-                            alt="Tandem Puzzle Club"
-                            width={28}
-                            height={28}
-                            className="object-contain"
-                          />
-                          <h3 className="text-xl font-bold text-gray-800 dark:text-gray-200">
-                            Tandem Puzzle Club
-                          </h3>
-                        </div>
+                          {/* Benefits Grid */}
+                          <div className="grid grid-cols-1 gap-2 mb-6">
+                            {[
+                              'Archive access for all past puzzles',
+                              'Sync progress across devices',
+                              'Ad-free experience',
+                              'Daily Tandem Hard Mode',
+                              'Create & share Reel Connections puzzles',
+                              'Daily Alchemy Creative Mode',
+                              'Support solo developer',
+                            ].map((benefit, idx) => (
+                              <div key={idx} className="flex items-start gap-2">
+                                <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">
+                                  ✓
+                                </span>
+                                <p className="text-sm text-gray-700 dark:text-gray-300">
+                                  {benefit}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
 
-                        {/* Benefits Grid */}
-                        <div className="grid grid-cols-1 gap-2 mb-6">
-                          {[
-                            'Archive access for all past puzzles',
-                            'Sync progress across devices',
-                            'Ad-free experience',
-                            'Daily Tandem Hard Mode',
-                            'Create & share Reel Connections puzzles',
-                            'Daily Alchemy Creative Mode',
-                            'Support solo developer',
-                          ].map((benefit, idx) => (
-                            <div key={idx} className="flex items-start gap-2">
-                              <span className="text-teal-600 dark:text-teal-400 font-bold mt-0.5">
-                                ✓
-                              </span>
-                              <p className="text-sm text-gray-700 dark:text-gray-300">{benefit}</p>
-                            </div>
-                          ))}
+                          <button
+                            onClick={() => setShowPaywall(true)}
+                            className="w-full py-3.5 px-6 rounded-xl border-[3px] font-bold text-lg transition-all bg-teal-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
+                          >
+                            Become a Member
+                          </button>
                         </div>
-
-                        <button
-                          onClick={() => setShowPaywall(true)}
-                          className="w-full py-3.5 px-6 rounded-xl border-[3px] font-bold text-lg transition-all bg-teal-500 text-white border-black shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]"
-                        >
-                          Become a Member
-                        </button>
-                      </div>
-                    )}
-                  </section>
+                      )}
+                    </section>
+                  )}
 
                   {/* Account Actions Section */}
                   <section className="space-y-3">

@@ -680,7 +680,7 @@ export default function UnifiedArchiveCalendar({
       return {
         icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
         alt: 'Alchemy',
-        text: 'Alchemy Puzzle Archive',
+        text: isStandaloneAlchemy ? 'Daily Puzzle Archive' : 'Alchemy Puzzle Archive',
       };
     }
   };

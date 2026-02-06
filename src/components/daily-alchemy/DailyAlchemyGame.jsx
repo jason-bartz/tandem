@@ -26,6 +26,7 @@ import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import AdBanner from '@/components/shared/AdBanner';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * Error display component
@@ -218,49 +219,72 @@ export function DailyAlchemyGame({ initialDate = null }) {
         <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto pt-4 pt-safe-ios">
           <div
             className={cn(
-              'rounded-[32px] border-[3px] flex-1 flex flex-col mx-4 mb-4 min-h-0',
-              highContrast
-                ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+              'flex-1 flex flex-col mx-4 mb-4 min-h-0',
+              isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME
+                ? 'rounded-none border-0'
+                : cn(
+                    'rounded-[32px] border-[3px]',
+                    highContrast
+                      ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                      : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
+                  )
             )}
           >
             {/* Header - back button, title/date, and hamburger menu */}
             <header
               className={cn(
-                'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0 rounded-t-[29px]',
-                highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
+                'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0',
+                isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME
+                  ? 'pt-3'
+                  : cn(
+                      'rounded-t-[29px]',
+                      highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
+                    )
               )}
             >
-              {/* Back button */}
-              <button
-                onClick={() => {
-                  lightTap();
-                  router.push('/');
-                }}
-                className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
-                title="Back to Home"
-              >
-                <svg
-                  className="w-5 h-5 text-gray-600 dark:text-gray-300"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
+              {/* Back button - hidden on standalone welcome (no page to go back to) */}
+              {isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME ? (
+                <div className="w-8 h-8 flex-shrink-0" />
+              ) : (
+                <button
+                  onClick={() => {
+                    lightTap();
+                    router.push('/');
+                  }}
+                  className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                  title="Back to Home"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    className="w-5 h-5 text-gray-600 dark:text-gray-300"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 19l-7-7 7-7"
+                    />
+                  </svg>
+                </button>
+              )}
 
               {/* Center content - Title and date */}
               <div className="flex-1 flex flex-col items-center">
-                <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
-                  {freePlayMode ? 'Creative Mode' : `Daily Puzzle ${formattedDate}`}
-                </span>
+                {isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME ? (
+                  <div className="flex items-center gap-2">
+                    <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
+                    <span className="text-white text-lg font-bold drop-shadow-sm">
+                      Daily Alchemy
+                    </span>
+                  </div>
+                ) : (
+                  <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
+                    {freePlayMode ? 'Creative Mode' : `Daily Puzzle ${formattedDate}`}
+                  </span>
+                )}
               </div>
 
               {/* Hamburger menu */}

@@ -8,6 +8,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import PaywallModal from '@/components/PaywallModal';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * DailyAlchemyWelcomeScreen - Initial screen before game starts
@@ -149,7 +150,9 @@ export function DailyAlchemyWelcomeScreen({
         transition={{ delay: 0.45 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
+        {!isStandaloneAlchemy && (
+          <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
+        )}
         <span>{hasSavedProgress ? 'Continue Puzzle' : "Play Today's Puzzle"}</span>
       </motion.button>
 
