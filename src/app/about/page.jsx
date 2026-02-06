@@ -14,6 +14,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import platformService from '@/core/platform/platform';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function AboutPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -98,23 +99,49 @@ export default function AboutPage() {
                     <div className="px-8 pb-8">
                       {/* Founder Message */}
                       <div className="space-y-4 text-gray-700 dark:text-gray-300 leading-relaxed">
-                        <p>I&apos;m Jason, creator of Tandem Daily Games.</p>
                         <p>
-                          We&apos;re surrounded by infinite scrolling and algorithms designed to
-                          keep us trapped. I wanted to build something different. Something peaceful
-                          that you solve, share with friends, and then move on with your day.
+                          I&apos;m Jason, creator of{' '}
+                          {isStandaloneAlchemy ? 'Daily Alchemy.' : 'Tandem Daily Games.'}
                         </p>
-                        <p>
-                          These games are meant to be a companion to your daily puzzle routine.
-                          Whether you&apos;re already solving Wordle or playing Sudoku, these games
-                          offer fresh challenges that respect your time.
-                        </p>
-                        <p>
-                          I&apos;m committed to keeping our games ad-free forever. No endless
-                          content trying to steal your attention. Just simple, fun puzzles that
-                          reward curiosity and let you share &quot;aha!&quot; moments with friends.
-                          Hope you enjoy!
-                        </p>
+                        {isStandaloneAlchemy ? (
+                          <>
+                            <p>
+                              We&apos;re surrounded by infinite scrolling and algorithms designed to
+                              keep us trapped. I wanted to build something different. Something
+                              peaceful that you solve, share with friends, and then move on with
+                              your day.
+                            </p>
+                            <p>
+                              Daily Alchemy is meant to be a companion to your daily puzzle routine.
+                              Whether you&apos;re already solving Wordle or playing Sudoku, this
+                              game offers a fresh challenge that respects your time.
+                            </p>
+                            <p>
+                              Just a simple, fun puzzle that rewards curiosity and lets you share
+                              &quot;aha!&quot; moments with friends. Hope you enjoy!
+                            </p>
+                          </>
+                        ) : (
+                          <>
+                            <p>
+                              We&apos;re surrounded by infinite scrolling and algorithms designed to
+                              keep us trapped. I wanted to build something different. Something
+                              peaceful that you solve, share with friends, and then move on with
+                              your day.
+                            </p>
+                            <p>
+                              These games are meant to be a companion to your daily puzzle routine.
+                              Whether you&apos;re already solving Wordle or playing Sudoku, these
+                              games offer fresh challenges that respect your time.
+                            </p>
+                            <p>
+                              I&apos;m committed to keeping our games ad-free forever. No endless
+                              content trying to steal your attention. Just simple, fun puzzles that
+                              reward curiosity and let you share &quot;aha!&quot; moments with
+                              friends. Hope you enjoy!
+                            </p>
+                          </>
+                        )}
 
                         {/* Founder Image and Info */}
                         <div className="flex flex-col items-center pt-6 border-t-[3px] border-black dark:border-white">
@@ -137,13 +164,15 @@ export default function AboutPage() {
                             </a>
                           </p>
                           <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-                            Founder and Puzzlemaster
+                            {isStandaloneAlchemy
+                              ? 'Founder and Master Alchemist'
+                              : 'Founder and Puzzlemaster'}
                           </p>
                         </div>
                       </div>
 
-                      {/* Support Section - Web only (not allowed in iOS App Store) */}
-                      {isWeb && (
+                      {/* Support Section - Web only (not allowed in iOS App Store), hidden on standalone */}
+                      {isWeb && !isStandaloneAlchemy && (
                         <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
                           <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
                             Our Tandem Puzzle Club subscribers and generous supporters help keep the
@@ -178,7 +207,7 @@ export default function AboutPage() {
                           href="/"
                           className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
                         >
-                          Back to the puzzles
+                          {isStandaloneAlchemy ? 'Back to Puzzle' : 'Back to the puzzles'}
                         </Link>
                       </div>
                     </div>

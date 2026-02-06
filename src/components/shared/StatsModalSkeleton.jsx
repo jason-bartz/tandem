@@ -1,5 +1,6 @@
 'use client';
 import { useTheme } from '@/contexts/ThemeContext';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * Skeleton for a single stats section
@@ -81,6 +82,20 @@ function SectionSkeleton({ themeColor, reduceMotion, highContrast, index }) {
 
 export default function StatsModalSkeleton() {
   const { reduceMotion, highContrast } = useTheme();
+
+  if (isStandaloneAlchemy) {
+    return (
+      <>
+        {/* Element Soup Section (Green) - only section on standalone */}
+        <SectionSkeleton
+          themeColor="green"
+          reduceMotion={reduceMotion}
+          highContrast={highContrast}
+          index={0}
+        />
+      </>
+    );
+  }
 
   return (
     <>

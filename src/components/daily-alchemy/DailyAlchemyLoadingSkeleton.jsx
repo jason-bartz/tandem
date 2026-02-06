@@ -3,10 +3,12 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import { DailyAlchemyBackground } from './DailyAlchemyBackground';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * DailyAlchemyLoadingSkeleton - Loading skeleton for Element Soup game
  * Matches the structure of DailyAlchemyWelcomeScreen
+ * On standalone, uses white background instead of green
  */
 export function DailyAlchemyLoadingSkeleton() {
   const { highContrast, reduceMotion } = useTheme();
@@ -14,22 +16,36 @@ export function DailyAlchemyLoadingSkeleton() {
   const shimmerClass = !reduceMotion ? 'skeleton-shimmer' : '';
 
   return (
-    <div className="fixed inset-0 flex flex-col">
-      {/* Animated gradient background */}
+    <div
+      className={cn(
+        'fixed inset-0 flex flex-col',
+        isStandaloneAlchemy && 'bg-white dark:bg-gray-900'
+      )}
+    >
+      {/* Background - green on main site, white on standalone */}
       <DailyAlchemyBackground />
       {/* Header Skeleton */}
       <header
         className={cn(
-          'fixed top-0 left-0 right-0 z-40 pt-safe border-b-[3px]',
-          highContrast
-            ? 'bg-hc-surface border-hc-border'
-            : 'bg-ghost-white dark:bg-bg-card border-border-main'
+          'fixed top-0 left-0 right-0 z-40 pt-safe',
+          isStandaloneAlchemy
+            ? 'bg-white dark:bg-gray-900'
+            : cn(
+                'border-b-[3px]',
+                highContrast
+                  ? 'bg-hc-surface border-hc-border'
+                  : 'bg-ghost-white dark:bg-bg-card border-border-main'
+              )
         )}
       >
         <div className="max-w-2xl w-full mx-auto px-4">
           <div className="flex items-center justify-between h-[60px]">
-            {/* Back button placeholder */}
-            <div className={`w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 ${shimmerClass}`} />
+            {/* Back button placeholder - empty space on standalone */}
+            {isStandaloneAlchemy ? (
+              <div className="w-8 h-8" />
+            ) : (
+              <div className={`w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 ${shimmerClass}`} />
+            )}
 
             {/* Title placeholder */}
             <div className={`h-6 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg ${shimmerClass}`} />

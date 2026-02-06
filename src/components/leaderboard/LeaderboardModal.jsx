@@ -6,6 +6,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import DailyLeaderboard from './DailyLeaderboard';
 import StreakLeaderboard from './StreakLeaderboard';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * LeaderboardModal - Main leaderboard left panel component
@@ -38,7 +39,7 @@ export default function LeaderboardModal({
     }
   }, [isOpen, initialGame, gameType]);
 
-  const gameButtons = [
+  const allGameButtons = [
     {
       id: 'tandem',
       label: 'Tandem',
@@ -69,6 +70,11 @@ export default function LeaderboardModal({
     },
   ];
 
+  // On standalone, only show Alchemy
+  const gameButtons = isStandaloneAlchemy
+    ? allGameButtons.filter((g) => g.id === 'soup')
+    : allGameButtons;
+
   const handleGameChange = (gameId) => {
     lightTap();
     setActiveGame(gameId);
@@ -90,28 +96,30 @@ export default function LeaderboardModal({
         </p>
       }
     >
-      {/* Game Toggle Buttons */}
-      <div className="px-4 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
-        <div className="flex gap-2">
-          {gameButtons.map((game) => (
-            <button
-              key={game.id}
-              onClick={() => handleGameChange(game.id)}
-              className={`flex-1 py-2 px-2 rounded-xl border-[2px] font-bold text-xs transition-all ${
-                activeGame === game.id
-                  ? highContrast
-                    ? `${game.hcBgColor} text-hc-text border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
-                    : `${game.bgColor} ${game.textColor} border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
-                  : highContrast
-                    ? 'bg-hc-surface text-hc-text border-hc-border'
-                    : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
-              }`}
-            >
-              {game.label}
-            </button>
-          ))}
+      {/* Game Toggle Buttons - hidden on standalone (only one game) */}
+      {!isStandaloneAlchemy && (
+        <div className="px-4 py-3 border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+          <div className="flex gap-2">
+            {gameButtons.map((game) => (
+              <button
+                key={game.id}
+                onClick={() => handleGameChange(game.id)}
+                className={`flex-1 py-2 px-2 rounded-xl border-[2px] font-bold text-xs transition-all ${
+                  activeGame === game.id
+                    ? highContrast
+                      ? `${game.hcBgColor} text-hc-text border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
+                      : `${game.bgColor} ${game.textColor} border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]`
+                    : highContrast
+                      ? 'bg-hc-surface text-hc-text border-hc-border'
+                      : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300 dark:border-gray-600'
+                }`}
+              >
+                {game.label}
+              </button>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Tab Navigation */}
       <div className="flex border-b-[3px] border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
