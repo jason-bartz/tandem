@@ -40,7 +40,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
       });
       if (response.ok) {
         const data = await response.json();
-        setDiscoveriesCount((data.discoveries || []).length);
+        setDiscoveriesCount(data.pagination?.total ?? (data.discoveries || []).length);
       }
     } catch {
       // Fall back to stats value
