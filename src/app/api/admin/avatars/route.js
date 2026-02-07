@@ -40,6 +40,7 @@ export async function GET(request) {
  * - id: string (unique identifier, e.g., "berry")
  * - display_name: string (e.g., "Berry")
  * - bio: string (character description)
+ * - alchemy_bio: string (optional, alchemy-themed character description for dailyalchemy.fun)
  * - is_active: boolean (optional, defaults to false)
  */
 export async function POST(request) {
@@ -53,6 +54,7 @@ export async function POST(request) {
     const id = formData.get('id');
     const displayName = formData.get('display_name');
     const bio = formData.get('bio');
+    const alchemyBio = formData.get('alchemy_bio') || null;
     const isActive = formData.get('is_active') === 'true';
 
     // Validate required fields
@@ -135,6 +137,7 @@ export async function POST(request) {
         id,
         display_name: displayName,
         bio,
+        alchemy_bio: alchemyBio,
         image_path: imagePath,
         is_active: isActive,
         sort_order: sortOrder,
@@ -185,7 +188,7 @@ export async function PUT(request) {
     }
 
     // Only allow specific fields to be updated
-    const allowedFields = ['display_name', 'bio', 'is_active', 'sort_order'];
+    const allowedFields = ['display_name', 'bio', 'alchemy_bio', 'is_active', 'sort_order'];
     const filteredUpdates = {};
     for (const field of allowedFields) {
       if (updates[field] !== undefined) {

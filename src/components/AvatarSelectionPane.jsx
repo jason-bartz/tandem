@@ -22,6 +22,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import avatarService from '@/services/avatar.service';
 import BottomPanel from '@/components/shared/BottomPanel';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 import logger from '@/lib/logger';
 
 export default function AvatarSelectionPane({
@@ -256,7 +257,7 @@ export default function AvatarSelectionPane({
               highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-300'
             }`}
           >
-            {expandedAvatarData.bio}
+            {(isStandaloneAlchemy && expandedAvatarData.alchemy_bio) || expandedAvatarData.bio}
           </div>
 
           {/* Action Buttons */}

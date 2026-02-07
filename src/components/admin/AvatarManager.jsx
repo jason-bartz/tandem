@@ -16,6 +16,7 @@ export default function AvatarManager() {
     id: '',
     display_name: '',
     bio: '',
+    alchemy_bio: '',
     is_active: false,
   });
   const [selectedImage, setSelectedImage] = useState(null);
@@ -100,6 +101,7 @@ export default function AvatarManager() {
       id: '',
       display_name: '',
       bio: '',
+      alchemy_bio: '',
       is_active: false,
     });
     setSelectedImage(null);
@@ -128,6 +130,9 @@ export default function AvatarManager() {
       formData.append('id', uploadForm.id);
       formData.append('display_name', uploadForm.display_name);
       formData.append('bio', uploadForm.bio);
+      if (uploadForm.alchemy_bio) {
+        formData.append('alchemy_bio', uploadForm.alchemy_bio);
+      }
       formData.append('is_active', uploadForm.is_active.toString());
 
       const token = await authService.getToken();
@@ -193,6 +198,7 @@ export default function AvatarManager() {
           id: editingAvatar.id,
           display_name: editingAvatar.display_name,
           bio: editingAvatar.bio,
+          alchemy_bio: editingAvatar.alchemy_bio || null,
         }),
       });
 
@@ -385,6 +391,23 @@ export default function AvatarManager() {
                     />
                   </div>
 
+                  {/* Alchemy Bio (optional) */}
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Alchemy Bio{' '}
+                      <span className="text-text-secondary font-normal">
+                        (optional, for dailyalchemy.fun)
+                      </span>
+                    </label>
+                    <textarea
+                      value={uploadForm.alchemy_bio}
+                      onChange={(e) => handleUploadFormChange('alchemy_bio', e.target.value)}
+                      placeholder="Alchemy-themed character personality for standalone site..."
+                      rows={4}
+                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                    />
+                  </div>
+
                   {/* Is Active */}
                   <div className="flex items-center gap-2">
                     <input
@@ -471,6 +494,23 @@ export default function AvatarManager() {
                     />
                   </div>
 
+                  {/* Alchemy Bio */}
+                  <div>
+                    <label className="block text-sm font-medium text-text-primary mb-2">
+                      Alchemy Bio{' '}
+                      <span className="text-text-secondary font-normal">(dailyalchemy.fun)</span>
+                    </label>
+                    <textarea
+                      value={editingAvatar.alchemy_bio || ''}
+                      onChange={(e) =>
+                        setEditingAvatar({ ...editingAvatar, alchemy_bio: e.target.value })
+                      }
+                      placeholder="Alchemy-themed bio (leave empty to use default bio)"
+                      rows={4}
+                      className="w-full px-3 py-2 border-[3px] border-black dark:border-white rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue resize-none"
+                    />
+                  </div>
+
                   {/* Actions */}
                   <div className="flex gap-3 pt-4 border-t-[3px] border-black dark:border-white">
                     <button
@@ -526,6 +566,11 @@ export default function AvatarManager() {
                     </div>
                     <p className="text-xs text-text-secondary mt-1">ID: {avatar.id}</p>
                     <p className="text-sm text-text-secondary mt-1 line-clamp-2">{avatar.bio}</p>
+                    {avatar.alchemy_bio && (
+                      <p className="text-xs text-accent-blue mt-1 line-clamp-1">
+                        Alchemy: {avatar.alchemy_bio}
+                      </p>
+                    )}
                   </div>
                 </div>
 
