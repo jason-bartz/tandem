@@ -854,7 +854,6 @@ export function DailyAlchemyGameScreen({
             recentElements={recentElements}
             firstDiscoveryElements={firstDiscoveryElements}
             disabled={isCombining || (isComplete && !freePlayMode)}
-            discoveredCount={discoveredCount}
             favoriteElements={favoriteElements}
             onToggleFavorite={onToggleFavorite}
             onClearAllFavorites={onClearAllFavorites}
