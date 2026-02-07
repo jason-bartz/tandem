@@ -55,7 +55,7 @@ export default function AccountPage() {
   // iOS users access this page from within the app after signing in via Settings
   useEffect(() => {
     if (!authLoading && !user && isWeb) {
-      router.push(isStandaloneAlchemy ? '/daily-alchemy' : '/?auth=required');
+      router.push(isStandaloneAlchemy ? '/daily-alchemy?auth=required' : '/?auth=required');
     }
   }, [user, authLoading, router, isWeb]);
 
