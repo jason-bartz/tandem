@@ -25,7 +25,6 @@ import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
-import AdBanner from '@/components/shared/AdBanner';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
@@ -216,8 +215,6 @@ export function DailyAlchemyGame({ initialDate = null }) {
         )}
         style={isStandaloneAlchemy ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
       >
-        {/* Ad banner - only renders on standalone ad-supported site */}
-        <AdBanner />
         {/* Background - green on main site, white on standalone */}
         <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
