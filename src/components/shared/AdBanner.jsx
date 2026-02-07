@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Script from 'next/script';
 import { isAdSupported } from '@/lib/standalone';
 
@@ -12,10 +12,13 @@ const ADSENSE_SLOT_ID = process.env.NEXT_PUBLIC_ADSENSE_SLOT_ID;
  *
  * Only renders when NEXT_PUBLIC_AD_SUPPORTED=true and AdSense env vars are configured.
  * Renders a responsive display ad at the top of the page.
+ * Starts collapsed and only expands when an ad actually fills the slot,
+ * preventing layout shift from unfilled ad placeholders.
  */
 export default function AdBanner() {
   const adRef = useRef(null);
   const adInitialized = useRef(false);
+  const [adFilled, setAdFilled] = useState(false);
 
   useEffect(() => {
     if (!isAdSupported || !ADSENSE_CLIENT_ID || !ADSENSE_SLOT_ID) return;
@@ -29,6 +32,31 @@ export default function AdBanner() {
     } catch {
       // AdSense not ready yet - will be pushed when script loads
     }
+  }, []);
+
+  // Watch for AdSense injecting content (iframe) into the ins element
+  useEffect(() => {
+    if (!isAdSupported || !ADSENSE_CLIENT_ID || !ADSENSE_SLOT_ID) return;
+    const insEl = adRef.current;
+    if (!insEl) return;
+
+    const observer = new MutationObserver(() => {
+      // AdSense injects an iframe when an ad fills
+      if (insEl.querySelector('iframe')) {
+        setAdFilled(true);
+        observer.disconnect();
+      }
+    });
+
+    observer.observe(insEl, { childList: true, subtree: true });
+
+    // Also check if already filled (race condition)
+    if (insEl.querySelector('iframe')) {
+      setAdFilled(true);
+      observer.disconnect();
+    }
+
+    return () => observer.disconnect();
   }, []);
 
   if (!isAdSupported || !ADSENSE_CLIENT_ID || !ADSENSE_SLOT_ID) {
@@ -54,7 +82,13 @@ export default function AdBanner() {
           }
         }}
       />
-      <div className="w-full flex justify-center">
+      <div
+        className="w-full flex justify-center"
+        style={{
+          overflow: 'hidden',
+          height: adFilled ? 'auto' : 0,
+        }}
+      >
         <ins
           ref={adRef}
           className="adsbygoogle"
