@@ -439,13 +439,13 @@ export function CombinationArea({
         />
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex gap-3">
+      {/* Action Buttons - aligned to match element slots above */}
+      <div className="flex items-center justify-center gap-3 sm:gap-4">
         <button
           onClick={onClear}
           disabled={(!selectedA && !selectedB) || isCombining || isAnimating || disabled}
           className={cn(
-            'flex-1 py-3',
+            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-3',
             'bg-gray-200 dark:bg-gray-700',
             'border-[3px] border-black dark:border-gray-600',
             'rounded-xl font-bold',
@@ -462,11 +462,14 @@ export function CombinationArea({
           Clear
         </button>
 
+        {/* Spacer matching plus icon width */}
+        <div className="w-8" aria-hidden="true" />
+
         <motion.button
           onClick={() => canCombine && onCombine()}
           disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
-            'flex-1 py-3',
+            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-3',
             'bg-soup-primary text-black',
             'border-[3px] border-black',
             'rounded-xl font-bold',
