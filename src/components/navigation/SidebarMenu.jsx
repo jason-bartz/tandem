@@ -556,7 +556,9 @@ export default function SidebarMenu({
 
               {/* Footer Links */}
               <section className="pt-4 border-t-[3px] border-border-main space-y-1">
-                <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} />
+                {!isStandaloneAlchemy && (
+                  <FooterLink label="Settings" onClick={() => handleModalOpen(onOpenSettings)} />
+                )}
                 <FooterLink label="Feedback" onClick={() => handleModalOpen(onOpenFeedback)} />
                 <FooterLink label="Support" onClick={() => handleNavigation('/support')} />
                 <FooterLink label="About" onClick={() => handleNavigation('/about')} />
