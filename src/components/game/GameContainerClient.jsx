@@ -26,7 +26,25 @@ import subscriptionService from '@/services/subscriptionService';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 // gameCenterService removed - Game Center integration deprecated
 
+// Standalone redirect component - prevents any Tandem game hooks from running
+function StandaloneRedirect() {
+  useEffect(() => {
+    window.location.replace('/daily-alchemy');
+  }, []);
+  return <div className="fixed inset-0 bg-white dark:bg-gray-900" />;
+}
+
 export default function GameContainerClient({ initialPuzzleData }) {
+  // On standalone, show blank white screen and redirect immediately
+  // This prevents yellow Tandem background from ever flashing
+  if (isStandaloneAlchemy) {
+    return <StandaloneRedirect />;
+  }
+
+  return <TandemGameContainer initialPuzzleData={initialPuzzleData} />;
+}
+
+function TandemGameContainer({ initialPuzzleData }) {
   const searchParams = useSearchParams();
   const game = useGameWithInitialData(initialPuzzleData);
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp);
@@ -36,13 +54,6 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { isMobilePhone, isSmallPhone } = useDeviceType();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
-
-  // Standalone Daily Alchemy should never show the Tandem home page
-  useEffect(() => {
-    if (isStandaloneAlchemy) {
-      window.location.replace('/daily-alchemy');
-    }
-  }, []);
 
   // Load archive puzzle from URL date parameter
   const { loadPuzzle } = game;
