@@ -1,12 +1,42 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
+const DAILY_ALCHEMY_HOSTS = ['dailyalchemy.fun', 'www.dailyalchemy.fun'];
+
+function isDailyAlchemyDomain(host) {
+  if (!host) return false;
+  // Strip port for local development
+  const hostname = host.split(':')[0];
+  return DAILY_ALCHEMY_HOSTS.includes(hostname);
+}
+
 export async function middleware(request) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  const host = request.headers.get('host');
+  const isAlchemyDomain = isDailyAlchemyDomain(host);
+  const pathname = request.nextUrl.pathname;
+
+  // Daily Alchemy standalone domain: redirect other game routes to root
+  if (isAlchemyDomain && (pathname === '/dailymini' || pathname === '/reel-connections')) {
+    return NextResponse.redirect(new URL('/', request.url));
+  }
+
+  // Rewrite root to /daily-alchemy on the standalone domain
+  const shouldRewriteToAlchemy = isAlchemyDomain && pathname === '/';
+
+  function buildResponse() {
+    if (shouldRewriteToAlchemy) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/daily-alchemy';
+      return NextResponse.rewrite(url, {
+        request: { headers: request.headers },
+      });
+    }
+    return NextResponse.next({
+      request: { headers: request.headers },
+    });
+  }
+
+  let response = buildResponse();
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -18,9 +48,7 @@ export async function middleware(request) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-          response = NextResponse.next({
-            request,
-          });
+          response = buildResponse();
           cookiesToSet.forEach(({ name, value, options }) =>
             response.cookies.set(name, value, options)
           );
