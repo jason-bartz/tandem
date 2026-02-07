@@ -14,7 +14,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import platformService from '@/core/platform/platform';
-import { isStandaloneAlchemy } from '@/lib/standalone';
+import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function AboutPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -72,7 +72,7 @@ export default function AboutPage() {
                     {/* Header with back button, title, and hamburger menu */}
                     <div className="flex items-center justify-between p-6 pb-4">
                       <Link
-                        href="/"
+                        href={homePath}
                         className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
                         aria-label="Back to game"
                       >
@@ -206,7 +206,7 @@ export default function AboutPage() {
                         }
                       >
                         <Link
-                          href="/"
+                          href={homePath}
                           className="block w-full text-center px-6 py-3 bg-[#38b6ff] hover:bg-[#38b6ff]/90 text-white font-semibold rounded-2xl border-[3px] border-black dark:border-white transition-all"
                         >
                           {isStandaloneAlchemy ? 'Back to Puzzle' : 'Back to the puzzles'}

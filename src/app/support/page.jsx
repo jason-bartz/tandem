@@ -13,7 +13,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { ASSET_VERSION } from '@/lib/constants';
-import { isStandaloneAlchemy } from '@/lib/standalone';
+import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function Support() {
   useTheme();
@@ -1526,7 +1526,7 @@ export default function Support() {
                   {/* Header with back button, title, and hamburger menu */}
                   <div className="flex items-center justify-between p-6 pb-4 border-b-[3px] border-black dark:border-white">
                     <Link
-                      href="/"
+                      href={homePath}
                       className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
                       aria-label="Back to game"
                     >

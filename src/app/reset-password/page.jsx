@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import logger from '@/lib/logger';
+import { homePath } from '@/lib/standalone';
 
 /**
  * Reset Password Page
@@ -140,7 +141,7 @@ export default function ResetPasswordPage() {
 
       // Redirect to home page after 2 seconds
       setTimeout(() => {
-        router.push('/');
+        router.push(homePath);
       }, 2000);
     } catch (err) {
       logger.error('Password update error', err);
@@ -193,7 +194,7 @@ export default function ResetPasswordPage() {
               <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
             </div>
             <button
-              onClick={() => router.push('/')}
+              onClick={() => router.push(homePath)}
               className="w-full p-4 text-white rounded-[20px] text-base font-bold cursor-pointer transition-all tracking-wider bg-accent-pink border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:hover:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none"
             >
               Back to Home
@@ -270,7 +271,7 @@ export default function ResetPasswordPage() {
 
         <div className="mt-6 text-center">
           <button
-            onClick={() => router.push('/')}
+            onClick={() => router.push(homePath)}
             className="text-sm font-semibold text-gray-700 dark:text-gray-300 hover:text-accent-pink dark:hover:text-accent-pink transition-colors"
           >
             Back to home

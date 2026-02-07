@@ -11,7 +11,7 @@ import { useHoroscope } from '@/hooks/useHoroscope';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { ASSET_VERSION } from '@/lib/constants';
-import { isStandaloneAlchemy } from '@/lib/standalone';
+import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 /**
  * SidebarMenu - Sliding sidebar navigation menu
@@ -457,8 +457,8 @@ export default function SidebarMenu({
                       <GameButton
                         icon="/icons/ui/tandem.png"
                         label="Daily Tandem"
-                        onClick={() => handleNavigation('/')}
-                        isActive={pathname === '/'}
+                        onClick={() => handleNavigation(homePath)}
+                        isActive={pathname === homePath}
                         gameColor="blue"
                         highContrast={highContrast}
                         subtitle="Decipher four groups of emoji clues"

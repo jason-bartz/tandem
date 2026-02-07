@@ -25,7 +25,7 @@ import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
-import { isStandaloneAlchemy } from '@/lib/standalone';
+import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 /**
  * Error display component
@@ -200,7 +200,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
       <div className="fixed inset-0 flex items-center justify-center px-4">
         <DailyAlchemyBackground />
         <div className="max-w-md w-full">
-          <ErrorDisplay error={error} onGoBack={() => router.push('/')} />
+          <ErrorDisplay error={error} onGoBack={() => router.push(homePath)} />
         </div>
       </div>
     );
