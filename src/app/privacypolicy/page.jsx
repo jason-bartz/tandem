@@ -29,19 +29,20 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Welcome to Tandem Daily Games ("we," "our," or "us"), daily word puzzle games developed
-            by Good Vibes Games. We respect your privacy and are committed to protecting your
-            personal data. This privacy policy explains how we collect, use, and safeguard
-            information when you play our games at tandemdaily.com (the "Service").
+            Welcome to Good Vibes Games ("we," "our," or "us"), the developer of daily puzzle games
+            including Tandem Daily Games and Daily Alchemy. We respect your privacy and are
+            committed to protecting your personal data. This privacy policy explains how we collect,
+            use, and safeguard information when you use our services at tandemdaily.com,
+            dailyalchemy.fun, or through our iOS app (collectively, the "Service").
           </p>
           <p>
-            By using Tandem Daily Games, you agree to the collection and use of information in
-            accordance with this policy.
+            By using any of our games or services, you agree to the collection and use of
+            information in accordance with this policy.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: January 27, 2026
+            <strong>Last Updated</strong>: February 6, 2026
           </p>
         </div>
       ),
@@ -227,7 +228,52 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">11. Payment Information (Web Only)</h4>
+            <h4 className="font-semibold mb-2">11. AI-Processed Gameplay Data</h4>
+            <p className="mb-2">
+              In Daily Alchemy, element combinations are processed by a third-party artificial
+              intelligence system (Anthropic Claude). When you combine two elements:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your selected element names are sent to the AI system to generate a result</li>
+              <li>
+                The AI system autonomously determines the resulting element name and emoji — we do
+                not control, curate, or pre-approve individual AI outputs
+              </li>
+              <li>
+                Generated combinations are cached in our database so the same input always produces
+                the same result
+              </li>
+              <li>No personally identifiable information is sent to the AI system</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Only element names are transmitted to the AI provider. Your identity, account
+              information, and gameplay history are never shared with the AI system. AI-generated
+              results are stored in our database for consistency and are not re-generated on each
+              play.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">12. Advertising Data (dailyalchemy.fun Only)</h4>
+            <p className="mb-2">
+              The standalone Daily Alchemy site at dailyalchemy.fun displays advertisements through
+              Google AdSense. Google may collect:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Cookies for ad personalization and frequency capping</li>
+              <li>Anonymous device and browser identifiers</li>
+              <li>General geographic location for ad targeting</li>
+              <li>Browsing activity across sites that use Google advertising services</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Advertising data collection is governed by Google's privacy policy. You can opt
+              out of personalized ads through Google's Ad Settings or by using the NAI opt-out tool.
+              No advertising is displayed on tandemdaily.com or in our iOS app.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">13. Payment Information (Web Only)</h4>
             <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Stripe customer ID (for managing subscriptions)</li>
@@ -314,13 +360,17 @@ export default function PrivacyPolicy() {
       title: 'Cookies and Tracking',
       content: (
         <div className="space-y-4 text-sm">
-          <p>Tandem uses minimal tracking:</p>
+          <p>Our services use minimal tracking:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>
               <strong>localStorage</strong>: For game state and preferences (not cookies)
             </li>
             <li>
-              <strong>No Advertising</strong>: We do not serve ads or use advertising networks
+              <strong>Advertising (dailyalchemy.fun only)</strong>: The standalone Daily Alchemy
+              site at dailyalchemy.fun displays advertisements served by Google AdSense. Google may
+              use cookies and similar technologies to serve ads based on your browsing activity. You
+              can manage your ad preferences through Google's Ad Settings. No advertising is
+              displayed on tandemdaily.com or in our iOS app.
             </li>
             <li>
               <strong>No Social Media Tracking</strong>: Social sharing features do not track your
@@ -378,6 +428,15 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Google OAuth</strong>: If you sign in with Google, authentication data is
               shared with Google according to their privacy policy
+            </li>
+            <li>
+              <strong>Anthropic (AI Provider)</strong>: Element names only are sent to Anthropic's
+              Claude AI system to generate Daily Alchemy combinations. No personal data is shared.
+            </li>
+            <li>
+              <strong>Google AdSense (dailyalchemy.fun only)</strong>: Advertising data is shared
+              with Google for ad serving on the standalone Daily Alchemy site. Google's privacy
+              policy governs this data.
             </li>
             <li>
               <strong>PostHog (Analytics)</strong>: Anonymous usage data is shared with PostHog for
@@ -574,9 +633,9 @@ export default function PrivacyPolicy() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Our Service is hosted on Vercel's global infrastructure. By using Tandem, you consent to
-            your information being processed in the United States and other countries where Vercel
-            operates data centers.
+            Our Service is hosted on Vercel's global infrastructure. By using our games, you consent
+            to your information being processed in the United States and other countries where
+            Vercel operates data centers.
           </p>
         </div>
       ),
@@ -662,7 +721,7 @@ export default function PrivacyPolicy() {
               <strong>Good Vibes Games</strong>
             </p>
             <p>Email: support@goodvibesgames.com</p>
-            <p>Website: tandemdaily.com</p>
+            <p>Websites: tandemdaily.com | dailyalchemy.fun</p>
           </div>
         </div>
       ),
@@ -740,7 +799,7 @@ export default function PrivacyPolicy() {
                   <div className="mx-6 mt-6 mb-6 p-4 bg-ghost-white dark:bg-gray-900 rounded-2xl border-[3px] border-black dark:border-white">
                     <h3 className="font-semibold mb-3 text-gray-800 dark:text-gray-200">Summary</h3>
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                      Tandem Daily Games are designed with privacy in mind:
+                      Our games are designed with privacy in mind:
                     </p>
                     <ul className="text-sm space-y-2">
                       <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
@@ -769,7 +828,9 @@ export default function PrivacyPolicy() {
                             clipRule="evenodd"
                           />
                         </svg>
-                        <span>No ads or advertising networks</span>
+                        <span>
+                          No ads on tandemdaily.com or iOS app (ads on dailyalchemy.fun only)
+                        </span>
                       </li>
                       <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
                         <svg
@@ -889,7 +950,7 @@ export default function PrivacyPolicy() {
                     {/* Thank you message */}
                     <div className="mt-6 p-4 bg-[#7ed957]/20 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                        Thank you for playing <strong>Tandem Daily Games</strong>!
+                        Thank you for playing our games!
                       </p>
                     </div>
                   </div>
