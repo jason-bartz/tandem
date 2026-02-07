@@ -1,15 +1,18 @@
 'use client';
 
 import { useEffect } from 'react';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * DailyAlchemyFavicon - Client component for dynamic favicon switching
  *
  * Swaps to Daily Alchemy branded favicons on mount and restores
  * original favicons on unmount (when navigating away).
+ * Uses standalone-specific favicons on dailyalchemy.fun.
  */
 export default function DailyAlchemyFavicon() {
   useEffect(() => {
+    const prefix = isStandaloneAlchemy ? 'daily-alchemy-fun' : 'daily-alchemy';
     const faviconLinks = document.querySelectorAll('link[rel*="icon"]');
     const originalFavicons = new Map();
 
@@ -22,18 +25,18 @@ export default function DailyAlchemyFavicon() {
 
       if (rel === 'icon' || rel === 'shortcut icon') {
         if (sizes === '16x16') {
-          link.href = '/icons/daily-alchemy-favicon-16x16.png';
+          link.href = `/icons/${prefix}-favicon-16x16.png`;
         } else if (sizes === '32x32') {
-          link.href = '/icons/daily-alchemy-favicon-32x32.png';
+          link.href = `/icons/${prefix}-favicon-32x32.png`;
         } else if (sizes === '192x192' || sizes === '512x512') {
           // Android chrome icons - use largest available
-          link.href = '/icons/daily-alchemy-favicon-32x32.png';
+          link.href = `/icons/${prefix}-favicon-32x32.png`;
         } else if (!sizes || sizes === 'any') {
           // Default .ico fallback
-          link.href = '/icons/daily-alchemy-favicon.ico';
+          link.href = `/icons/${prefix}-favicon.ico`;
         }
       } else if (rel === 'apple-touch-icon') {
-        link.href = '/icons/daily-alchemy-apple-touch-icon.png';
+        link.href = `/icons/${prefix}-apple-touch-icon.png`;
       }
     });
 
