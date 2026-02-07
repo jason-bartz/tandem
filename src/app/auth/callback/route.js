@@ -7,6 +7,8 @@ import logger from '@/lib/logger';
 // For static export (Capacitor builds), we can't have dynamic routes
 // This route is only needed for web OAuth, not native iOS
 const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
+const isStandaloneAlchemy = process.env.NEXT_PUBLIC_STANDALONE_ALCHEMY === 'true';
+const standaloneHome = '/daily-alchemy';
 
 /**
  * OAuth Callback Handler
@@ -37,7 +39,8 @@ export async function GET(request) {
     if (error) {
       logger.error('OAuth callback error', error);
       // Redirect to home with error
-      return NextResponse.redirect(`${requestUrl.origin}/?auth_error=true`);
+      const errorPath = isStandaloneAlchemy ? standaloneHome : '/';
+      return NextResponse.redirect(`${requestUrl.origin}${errorPath}?auth_error=true`);
     }
 
     // Get the authenticated user
@@ -68,14 +71,15 @@ export async function GET(request) {
 
     // For email confirmations, redirect with success message
     if (type === 'signup') {
-      return NextResponse.redirect(`${requestUrl.origin}/?email_confirmed=true`);
+      const confirmPath = isStandaloneAlchemy ? standaloneHome : '/';
+      return NextResponse.redirect(`${requestUrl.origin}${confirmPath}?email_confirmed=true`);
     }
   }
 
   // Get the stored return URL from cookie (set before OAuth redirect)
   const cookieStore = await cookies();
   const returnUrlCookie = cookieStore.get('auth_return_url');
-  let returnPath = '/';
+  let returnPath = isStandaloneAlchemy ? standaloneHome : '/';
 
   if (returnUrlCookie?.value) {
     try {
@@ -92,10 +96,10 @@ export async function GET(request) {
 
       if (!isSafePath) {
         logger.warn('Potentially unsafe return URL blocked', { returnPath });
-        returnPath = '/';
+        returnPath = isStandaloneAlchemy ? standaloneHome : '/';
       }
     } catch {
-      returnPath = '/';
+      returnPath = isStandaloneAlchemy ? standaloneHome : '/';
     }
   }
 
