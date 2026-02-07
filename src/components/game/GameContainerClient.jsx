@@ -23,6 +23,7 @@ import { Preferences } from '@capacitor/preferences';
 import { App as CapApp } from '@capacitor/app';
 import notificationService from '@/services/notificationService';
 import subscriptionService from '@/services/subscriptionService';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 // gameCenterService removed - Game Center integration deprecated
 
 export default function GameContainerClient({ initialPuzzleData }) {
@@ -35,6 +36,13 @@ export default function GameContainerClient({ initialPuzzleData }) {
   const { isMobilePhone, isSmallPhone } = useDeviceType();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [onboardingChecked, setOnboardingChecked] = useState(false);
+
+  // Standalone Daily Alchemy should never show the Tandem home page
+  useEffect(() => {
+    if (isStandaloneAlchemy) {
+      window.location.replace('/daily-alchemy');
+    }
+  }, []);
 
   // Load archive puzzle from URL date parameter
   const { loadPuzzle } = game;
