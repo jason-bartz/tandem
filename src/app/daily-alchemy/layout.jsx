@@ -10,12 +10,19 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com';
  * for the Daily Alchemy game route.
  */
 
+const alchemyTitle = isStandalone
+  ? 'Daily Alchemy | Infinite Element Crafting'
+  : 'Daily Alchemy - Element Combination Puzzle Game';
+const alchemyDescription = isStandalone
+  ? 'Free browser alchemy game — combine elements to craft infinite discoveries. Mix fire, water, earth & air to create hundreds of new elements. Daily puzzle + endless Creative Mode.'
+  : 'Combine elements to discover new ones and reach the daily target.';
+
 export const metadata = {
-  title: 'Daily Alchemy - Element Combination Puzzle Game',
-  description: 'Combine elements to discover new ones and reach the daily target.',
+  title: alchemyTitle,
+  description: alchemyDescription,
   openGraph: {
-    title: 'Daily Alchemy - Element Combination Puzzle Game',
-    description: 'Combine elements to discover new ones and reach the daily target.',
+    title: alchemyTitle,
+    description: alchemyDescription,
     type: 'website',
     url: isStandalone ? siteUrl : `${siteUrl}/daily-alchemy`,
     siteName: isStandalone ? 'Daily Alchemy' : 'Tandem Daily',
@@ -24,14 +31,14 @@ export const metadata = {
         url: '/images/dailyalchemy-og.png',
         width: 1200,
         height: 630,
-        alt: 'Daily Alchemy Game',
+        alt: isStandalone ? 'Daily Alchemy - Infinite Element Crafting Game' : 'Daily Alchemy Game',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Daily Alchemy - Element Combination Puzzle Game',
-    description: 'Combine elements to discover new ones and reach the daily target.',
+    title: alchemyTitle,
+    description: alchemyDescription,
     images: ['/images/dailyalchemy-og.png'],
   },
 };

@@ -5,33 +5,17 @@ const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://tandemdaily.com';
 export const siteConfig = isStandalone
   ? {
       name: 'Daily Alchemy',
-      title: 'Daily Alchemy | Element Combination Puzzle Game',
+      title: 'Daily Alchemy | Infinite Element Crafting',
       titleTemplate: '%s | Daily Alchemy',
       description:
-        'Combine elements to discover new ones and reach the daily target. A free daily puzzle game where you mix and match elements to create compounds. New puzzle every day at midnight.',
-      shortDescription: 'Combine elements to reach the daily target - free daily puzzle',
+        'Free browser alchemy game — combine elements to craft infinite discoveries. Mix fire, water, earth & air to create hundreds of new elements. Play the daily puzzle or explore endlessly in Creative Mode. No download required.',
+      shortDescription:
+        'Free infinite element crafting game — combine elements to discover new ones',
       url: baseUrl,
       ogImage: `${baseUrl}/images/dailyalchemy-og.png`,
       twitterImage: `${baseUrl}/images/dailyalchemy-og.png`,
       locale: 'en_US',
       type: 'website',
-      keywords: [
-        'daily alchemy',
-        'element combination game',
-        'alchemy puzzle',
-        'daily puzzle game',
-        'element mixing game',
-        'combination puzzle',
-        'free puzzle game',
-        'daily challenge',
-        'brain teaser',
-        'element discovery game',
-        'crafting game',
-        'alchemy game online',
-        'little alchemy alternative',
-        'element game',
-        'free daily game',
-      ],
       authors: [{ name: 'Daily Alchemy', url: baseUrl }],
       creator: 'Daily Alchemy',
       publisher: 'Daily Alchemy',
@@ -66,39 +50,6 @@ export const siteConfig = isStandalone
       twitterImage: `${baseUrl}/images/tandem-og.png`,
       locale: 'en_US',
       type: 'website',
-      keywords: [
-        // Primary game keywords
-        'daily word games',
-        'mini crossword',
-        'free mini crossword',
-        'daily crossword',
-        'word puzzle',
-        'daily puzzle',
-        // Wordle/Connections-related keywords
-        'wordle alternative',
-        'games like wordle',
-        'nyt connections alternative',
-        'connections game',
-        'like wordle',
-        'similar to wordle',
-        'daily wordle alternative',
-        // Core game keywords
-        'emoji game',
-        'word game',
-        'brain teaser',
-        'daily challenge',
-        'puzzle game',
-        'tandem daily games',
-        'free word game',
-        'online puzzle',
-        'daily word game',
-        'movie trivia game',
-        'reel connections',
-        'brain training',
-        'emoji word puzzle',
-        'word guessing game',
-        'daily brain teaser',
-      ],
       authors: [
         {
           name: 'Tandem Game',
@@ -194,14 +145,6 @@ export function generateStructuredData(puzzleInfo) {
         publisher: {
           '@id': `${siteConfig.url}/#organization`,
         },
-        potentialAction: {
-          '@type': 'SearchAction',
-          target: {
-            '@type': 'EntryPoint',
-            urlTemplate: `${siteConfig.url}/?s={search_term_string}`,
-          },
-          'query-input': 'required name=search_term_string',
-        },
       },
       {
         '@type': 'Organization',
@@ -239,7 +182,9 @@ export function generateStructuredData(puzzleInfo) {
         '@id': `${siteConfig.url}/#game`,
         name: siteConfig.name,
         description: siteConfig.description,
-        genre: ['Puzzle', 'Word Game'],
+        genre: isStandalone
+          ? ['Puzzle', 'Crafting', 'Alchemy', 'Strategy']
+          : ['Puzzle', 'Word Game'],
         numberOfPlayers: {
           '@type': 'QuantitativeValue',
           minValue: 1,
@@ -247,19 +192,17 @@ export function generateStructuredData(puzzleInfo) {
         },
         playMode: 'SinglePlayer',
         applicationCategory: 'GameApplication',
-        applicationSubCategory: 'Puzzle Game',
+        applicationSubCategory: isStandalone ? 'Crafting Puzzle Game' : 'Puzzle Game',
         operatingSystem: 'Any',
+        ...(isStandalone && {
+          gamePlatform: ['Web Browser', 'Mobile Browser'],
+          inLanguage: 'en',
+        }),
         offers: {
           '@type': 'Offer',
           price: '0',
           priceCurrency: 'USD',
-        },
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: '4.8',
-          ratingCount: '1250',
-          bestRating: '5',
-          worstRating: '1',
+          availability: 'https://schema.org/InStock',
         },
       },
     ],
@@ -330,10 +273,18 @@ export function generateFAQSchema() {
       mainEntity: [
         {
           '@type': 'Question',
-          name: 'How do you play Daily Alchemy?',
+          name: 'What is Daily Alchemy?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Combine elements to create new ones and reach the daily target element. Start with basic elements like Water, Fire, Earth, and Air, then mix them together to discover new compounds. You have 10 minutes and a par number of moves to reach the target.',
+            text: 'Daily Alchemy is a free browser-based element crafting game. Combine basic elements like Water, Fire, Earth, and Air to discover hundreds of new elements. It features a daily puzzle with a target element to reach, plus an endless Creative Mode for infinite crafting. No download or account required.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'How do you play an element crafting game?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Start with basic elements and drag them together to combine. For example, mix Water + Fire to create Steam, or Earth + Water to create Mud. Keep combining to discover increasingly complex elements. In Daily Alchemy, the daily puzzle challenges you to reach a specific target element within a par number of moves.',
           },
         },
         {
@@ -341,15 +292,23 @@ export function generateFAQSchema() {
           name: 'Is Daily Alchemy free to play?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Yes! Daily Alchemy is completely free to play, including the full archive of past puzzles and Creative Mode. A new puzzle is released every day at midnight.',
+            text: 'Yes! Daily Alchemy is 100% free to play in your browser with no download required. This includes the daily puzzle, the full archive of past puzzles, and the endless Creative Mode. A new puzzle is released every day at midnight.',
           },
         },
         {
           '@type': 'Question',
-          name: 'What is Creative Mode?',
+          name: 'What is Creative Mode in Daily Alchemy?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'Creative Mode lets you combine elements endlessly with no goal or timer. Discover new elements at your own pace with pure experimentation and discovery.',
+            text: 'Creative Mode is an endless sandbox where you can combine elements freely with no goal, timer, or move limit. Experiment at your own pace to discover new elements and see how many unique combinations you can find. It is perfect for players who enjoy open-ended crafting and exploration.',
+          },
+        },
+        {
+          '@type': 'Question',
+          name: 'Can I play Daily Alchemy on my phone?',
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: 'Yes! Daily Alchemy is fully optimized for mobile browsers. Simply visit dailyalchemy.fun on any phone or tablet — no app download needed. The touch-friendly interface makes combining elements easy on any screen size.',
           },
         },
         {
@@ -357,7 +316,7 @@ export function generateFAQSchema() {
           name: 'When are new Daily Alchemy puzzles released?',
           acceptedAnswer: {
             '@type': 'Answer',
-            text: 'A new Daily Alchemy puzzle is released every day at midnight Eastern Time. Come back daily for a fresh target element to discover!',
+            text: 'A new Daily Alchemy puzzle is released every day at midnight Eastern Time. You can also play any past puzzle from the archive at any time, completely free.',
           },
         },
       ],
