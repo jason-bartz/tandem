@@ -19,16 +19,23 @@ const nextConfig = {
       },
     ];
 
-    // Standalone mode: redirect all routes to Daily Alchemy
+    // Standalone mode: redirect other game routes to Daily Alchemy
     if (isStandalone) {
       redirects.push(
-        { source: '/', destination: '/daily-alchemy', permanent: false },
         { source: '/dailymini', destination: '/daily-alchemy', permanent: false },
         { source: '/reel-connections', destination: '/daily-alchemy', permanent: false }
       );
     }
 
     return redirects;
+  },
+
+  // Standalone mode: serve Daily Alchemy at the root path
+  async rewrites() {
+    if (isStandalone) {
+      return [{ source: '/', destination: '/daily-alchemy' }];
+    }
+    return [];
   },
 
   // IMPORTANT: Disable source maps in production for security

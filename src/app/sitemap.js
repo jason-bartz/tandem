@@ -1,10 +1,12 @@
 import { siteConfig } from '@/lib/seo-config';
 
+const isStandalone = process.env.NEXT_PUBLIC_STANDALONE_ALCHEMY === 'true';
+
 export default function sitemap() {
   const baseUrl = siteConfig.url;
   const currentDate = new Date().toISOString();
 
-  // Generate last 30 days of puzzle URLs
+  // Generate last 30 days of puzzle archive URLs
   const puzzleUrls = [];
   const today = new Date();
 
@@ -14,11 +16,43 @@ export default function sitemap() {
     const dateStr = date.toISOString().split('T')[0];
 
     puzzleUrls.push({
-      url: `${baseUrl}/archive/${dateStr}`,
+      url: isStandalone
+        ? `${baseUrl}/daily-alchemy?date=${dateStr}`
+        : `${baseUrl}/archive/${dateStr}`,
       lastModified: date.toISOString(),
       changeFrequency: 'never',
       priority: 0.6,
     });
+  }
+
+  if (isStandalone) {
+    return [
+      {
+        url: baseUrl,
+        lastModified: currentDate,
+        changeFrequency: 'daily',
+        priority: 1.0,
+      },
+      {
+        url: `${baseUrl}/daily-alchemy`,
+        lastModified: currentDate,
+        changeFrequency: 'daily',
+        priority: 1.0,
+      },
+      {
+        url: `${baseUrl}/privacy`,
+        lastModified: currentDate,
+        changeFrequency: 'yearly',
+        priority: 0.3,
+      },
+      {
+        url: `${baseUrl}/terms`,
+        lastModified: currentDate,
+        changeFrequency: 'yearly',
+        priority: 0.3,
+      },
+      ...puzzleUrls,
+    ];
   }
 
   return [
