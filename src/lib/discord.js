@@ -172,6 +172,11 @@ export async function notifyNewSignup({ email, provider }) {
  * Send a first discovery notification (Element Soup)
  */
 export async function notifyFirstDiscovery({ element, emoji, username, discoveredAt }) {
+  if (!DISCORD_FIRST_DISCOVERY_WEBHOOK_URL) {
+    logger.warn('Discord first discovery webhook URL not configured, skipping notification');
+    return;
+  }
+
   const date = discoveredAt
     ? new Date(discoveredAt).toLocaleDateString('en-US', {
         month: 'short',
@@ -205,6 +210,11 @@ export async function notifyUserFeedback({
   platform,
 }) {
   const DISCORD_BUG_REPORTS_WEBHOOK_URL = process.env.DISCORD_BUG_REPORTS_WEBHOOK_URL;
+
+  if (!DISCORD_BUG_REPORTS_WEBHOOK_URL) {
+    logger.warn('Discord bug reports webhook URL not configured, skipping notification');
+    return;
+  }
 
   // Category emoji mapping
   const categoryEmoji = {
