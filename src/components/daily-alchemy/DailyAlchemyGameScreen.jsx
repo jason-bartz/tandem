@@ -13,6 +13,9 @@ import { CombinationArea } from './CombinationArea';
 import { ElementBank } from './ElementBank';
 import { EmbeddedFavorites } from './EmbeddedFavorites';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
+import { isStandaloneAlchemy } from '@/lib/standalone';
+
+const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
 /**
  * ResultAnimation - Shows the result of a combination
@@ -82,7 +85,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
             await navigator.share({
               files: [file],
               title: `First Discovery: ${result.element}`,
-              text: `I'm the first player to discover ${result.emoji} ${result.element} in Daily Alchemy!\n\nPlay now at tandemdaily.com/daily-alchemy`,
+              text: `I'm the first player to discover ${result.emoji} ${result.element} in Daily Alchemy!\n\nPlay now at ${shareUrl}`,
             });
             setIsSharing(false);
             return;
@@ -101,7 +104,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               (navigator.userAgent.includes('Mac') && 'ontouchend' in document));
           if (isIOS) {
             // On iOS, fall back to text share instead of download
-            const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
+            const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
             try {
               await navigator.clipboard.writeText(shareText);
               setCopied(true);
@@ -133,7 +136,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fall back to text share
-      const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\nwww.tandemdaily.com/daily-alchemy`;
+      const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
       try {
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
@@ -455,9 +458,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
 
                 {/* Branding */}
                 <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                  <span className="text-xs font-bold text-gray-400">
-                    tandemdaily.com/daily-alchemy
-                  </span>
+                  <span className="text-xs font-bold text-gray-400">{shareUrl}</span>
                 </div>
               </div>
             </div>
