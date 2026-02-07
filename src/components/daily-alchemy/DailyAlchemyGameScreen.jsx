@@ -625,35 +625,8 @@ export function DailyAlchemyGameScreen({
             Menu
           </button>
 
-          {/* Stats - hidden when menu is open */}
+          {/* Sliding buttons container - positioned right after Menu button */}
           <AnimatePresence>
-            {!isCreativeMenuOpen && (
-              <motion.div
-                className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                <span>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    {discoveredCount}
-                  </span>{' '}
-                  created
-                </span>
-                <span className="text-gray-300 dark:text-gray-600">|</span>
-                <span>
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">
-                    {firstDiscoveryElements.length}
-                  </span>{' '}
-                  first
-                </span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Sliding buttons container */}
-          <AnimatePresence mode="popLayout">
             {isCreativeMenuOpen && (
               <motion.div
                 className="flex items-center gap-2 pr-1 pb-1 overflow-hidden"
@@ -730,6 +703,33 @@ export function DailyAlchemyGameScreen({
                   <Trash2 className="w-4 h-4" />
                   <span>Start Fresh</span>
                 </motion.button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Stats - hidden when menu is open */}
+          <AnimatePresence>
+            {!isCreativeMenuOpen && (
+              <motion.div
+                className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
+              >
+                <span>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">
+                    {discoveredCount}
+                  </span>{' '}
+                  created
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span>
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">
+                    {firstDiscoveryElements.length}
+                  </span>{' '}
+                  first
+                </span>
               </motion.div>
             )}
           </AnimatePresence>
