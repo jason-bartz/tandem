@@ -17,7 +17,7 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function Support() {
   useTheme();
-  const [activeGame, setActiveGame] = useState('tandem'); // 'tandem', 'mini', 'soup', or 'reel'
+  const [activeGame, setActiveGame] = useState(isStandaloneAlchemy ? 'soup' : 'tandem'); // 'tandem', 'mini', 'soup', or 'reel'
   const [activeSection, setActiveSection] = useState(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -1554,98 +1554,100 @@ export default function Support() {
                   </div>
 
                   {/* Game Toggle */}
-                  <div className="p-6 pb-4">
-                    <div className="grid grid-cols-4 gap-2">
-                      <button
-                        onClick={() => {
-                          setActiveGame('tandem');
-                          setActiveSection(null);
-                        }}
-                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                          activeGame === 'tandem'
-                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <Image
-                            src={tandemIcon}
-                            alt="Daily Tandem"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                          />
-                          <span className="hidden sm:inline">Tandem</span>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveGame('mini');
-                          setActiveSection(null);
-                        }}
-                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                          activeGame === 'mini'
-                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <Image
-                            src={`/icons/ui/mini.png?v=${ASSET_VERSION}`}
-                            alt="Daily Mini"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5 rounded-lg"
-                          />
-                          <span className="hidden sm:inline">Mini</span>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveGame('soup');
-                          setActiveSection(null);
-                        }}
-                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                          activeGame === 'soup'
-                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <Image
-                            src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
-                            alt="Daily Alchemy"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                          />
-                          <span className="hidden sm:inline">Alchemy</span>
-                        </div>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveGame('reel');
-                          setActiveSection(null);
-                        }}
-                        className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
-                          activeGame === 'reel'
-                            ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
-                        }`}
-                      >
-                        <div className="flex items-center justify-center gap-1">
-                          <Image
-                            src={`/icons/ui/movie.png?v=${ASSET_VERSION}`}
-                            alt="Reel Connections"
-                            width={20}
-                            height={20}
-                            className="w-5 h-5"
-                          />
-                          <span className="hidden sm:inline">Reel</span>
-                        </div>
-                      </button>
+                  {!isStandaloneAlchemy && (
+                    <div className="p-6 pb-4">
+                      <div className="grid grid-cols-4 gap-2">
+                        <button
+                          onClick={() => {
+                            setActiveGame('tandem');
+                            setActiveSection(null);
+                          }}
+                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                            activeGame === 'tandem'
+                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            <Image
+                              src={tandemIcon}
+                              alt="Daily Tandem"
+                              width={20}
+                              height={20}
+                              className="w-5 h-5"
+                            />
+                            <span className="hidden sm:inline">Tandem</span>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveGame('mini');
+                            setActiveSection(null);
+                          }}
+                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                            activeGame === 'mini'
+                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            <Image
+                              src={`/icons/ui/mini.png?v=${ASSET_VERSION}`}
+                              alt="Daily Mini"
+                              width={20}
+                              height={20}
+                              className="w-5 h-5 rounded-lg"
+                            />
+                            <span className="hidden sm:inline">Mini</span>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveGame('soup');
+                            setActiveSection(null);
+                          }}
+                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                            activeGame === 'soup'
+                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            <Image
+                              src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                              alt="Daily Alchemy"
+                              width={20}
+                              height={20}
+                              className="w-5 h-5"
+                            />
+                            <span className="hidden sm:inline">Alchemy</span>
+                          </div>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveGame('reel');
+                            setActiveSection(null);
+                          }}
+                          className={`px-2 py-3 rounded-2xl border-[3px] font-bold text-sm transition-all ${
+                            activeGame === 'reel'
+                              ? 'bg-ghost-white text-black border-black shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                              : 'bg-ghost-white/50 text-black/60 border-black/30 hover:bg-ghost-white/70'
+                          }`}
+                        >
+                          <div className="flex items-center justify-center gap-1">
+                            <Image
+                              src={`/icons/ui/movie.png?v=${ASSET_VERSION}`}
+                              alt="Reel Connections"
+                              width={20}
+                              height={20}
+                              className="w-5 h-5"
+                            />
+                            <span className="hidden sm:inline">Reel</span>
+                          </div>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  )}
 
                   {/* Content */}
                   <div className="p-6 pt-0">
