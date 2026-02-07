@@ -10,6 +10,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function PrivacyPolicy() {
   const [activeSection, setActiveSection] = useState(null);
@@ -693,7 +694,9 @@ export default function PrivacyPolicy() {
 
   return (
     <>
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+      <div
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-bg-primary'}`}
+      >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">

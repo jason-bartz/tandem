@@ -13,6 +13,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { ASSET_VERSION } from '@/lib/constants';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 export default function Support() {
   useTheme();
@@ -1089,34 +1090,35 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">Using Hints</h4>
             <p className="text-sm mb-3">
-              Stuck on a puzzle? You get <strong>four hints per puzzle</strong>. Look for the hint
-              icons in the stats bar at the top of the game screen.
+              Stuck on a puzzle? Tap the <strong>Hint</strong> button in the stats bar to get
+              guidance on what to create next.
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-2">How Hints Work</h4>
             <ul className="list-disc list-inside text-sm space-y-1">
               <li>
-                <strong>Tap a hint icon</strong> to use one of your hints
+                <strong>Tap the Hint button</strong> to see a message about which element you should
+                try to create
               </li>
               <li>
-                <strong>Both elements will be selected</strong> for a combination that's part of the
-                solution path to the target
+                <strong>The hint shows the result</strong> — figure out which two elements combine
+                to make it!
               </li>
               <li>
-                <strong>Just tap Combine</strong> to create the element and progress toward the
-                target
+                <strong>Unlimited hints available</strong> — use as many as you need
               </li>
               <li>
-                <strong>Hints disappear</strong> as you use them — you can see how many remain
+                <strong>Hints are tracked</strong> — your total hints used appears in your
+                completion stats and share text
               </li>
             </ul>
           </div>
           <div className="p-3 bg-green-50 dark:bg-green-900/30 rounded-lg border-2 border-green-400">
             <p className="font-semibold mb-1">Pro Tip</p>
             <p className="text-sm">
-              Save your hints for when you're truly stuck. Try experimenting with different
-              combinations first — you might discover an unexpected path to the target!
+              Try to solve puzzles with fewer hints for bragging rights! Your hint count is shared
+              when you share your results.
             </p>
           </div>
         </div>
@@ -1202,16 +1204,16 @@ export default function Support() {
                 <p className="font-medium">Q: What if I can't find the target element?</p>
                 <p>
                   A: Keep experimenting! There are often multiple paths to the target. Try building
-                  up related elements and combining them in new ways. You can also use one of your
-                  four hints to get a nudge in the right direction.
+                  up related elements and combining them in new ways. You can also use the Hint
+                  button to get a nudge in the right direction.
                 </p>
               </div>
               <div>
                 <p className="font-medium">Q: How does the hint system work?</p>
                 <p>
-                  A: You get four hints per puzzle. Tap a hint icon in the stats bar to use one.
-                  Each hint selects both elements of a combination that's part of the solution path
-                  — just tap Combine to make progress! Hint icons disappear as you use them.
+                  A: Tap the Hint button in the stats bar to get help. Each hint shows you which
+                  element to create next — figure out which two elements combine to make it! You can
+                  use unlimited hints, but they're tracked in your stats and share text.
                 </p>
               </div>
               <div>
@@ -1508,7 +1510,9 @@ export default function Support() {
 
   return (
     <>
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-bg-primary">
+      <div
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-bg-primary'}`}
+      >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center pt-safe pb-6">
           <div className="w-full max-w-xl mx-auto p-6 relative z-10 my-auto">
