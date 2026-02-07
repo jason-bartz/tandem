@@ -530,10 +530,6 @@ export function DailyAlchemyGameScreen({
   isSavingCreative = false,
   creativeSaveSuccess = false,
 
-  // Creative Mode autosave
-  isAutoSaving = false,
-  autoSaveComplete = false,
-
   // Favorites
   favoriteElements = new Set(),
   onToggleFavorite,
@@ -607,7 +603,7 @@ export function DailyAlchemyGameScreen({
 
       {/* Creative Mode Header with collapsible menu */}
       {freePlayMode && (
-        <div className="flex items-center gap-2 py-2 px-3">
+        <div className="flex items-center gap-2 py-2">
           {/* Menu toggle button */}
           <button
             onClick={() => setIsCreativeMenuOpen(!isCreativeMenuOpen)}
@@ -628,18 +624,30 @@ export function DailyAlchemyGameScreen({
             Menu
           </button>
 
-          {/* Autosave indicator - hidden when menu is open */}
+          {/* Stats - hidden when menu is open */}
           <AnimatePresence>
-            {!isCreativeMenuOpen && (isAutoSaving || autoSaveComplete) && (
-              <motion.span
-                className="text-xs text-gray-400 dark:text-gray-500 ml-1"
-                initial={{ opacity: 0, x: -5 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -5 }}
-                transition={{ duration: 0.2 }}
+            {!isCreativeMenuOpen && (
+              <motion.div
+                className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.15 }}
               >
-                {isAutoSaving ? 'autosaving...' : 'autosaved'}
-              </motion.span>
+                <span>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">
+                    {discoveredCount}
+                  </span>{' '}
+                  created
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span>
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">
+                    {firstDiscoveryElements.length}
+                  </span>{' '}
+                  first
+                </span>
+              </motion.div>
             )}
           </AnimatePresence>
 
