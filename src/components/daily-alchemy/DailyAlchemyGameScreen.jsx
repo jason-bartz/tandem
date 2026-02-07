@@ -656,14 +656,13 @@ export function DailyAlchemyGameScreen({
           <AnimatePresence mode="popLayout">
             {isCreativeMenuOpen && (
               <motion.div
-                className="flex items-center gap-2 pr-1 pb-1"
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 'auto', opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
+                className="flex items-center gap-2 pr-1 pb-1 overflow-hidden"
+                initial={{ width: 0 }}
+                animate={{ width: 'auto' }}
+                exit={{ width: 0 }}
                 transition={{
                   duration: 0.25,
                   ease: [0.4, 0, 0.2, 1],
-                  opacity: { duration: 0.15 },
                 }}
               >
                 {/* Save button */}
@@ -686,9 +685,9 @@ export function DailyAlchemyGameScreen({
                     creativeSaveSuccess && 'bg-green-500',
                     highContrast && 'border-[3px] border-hc-border'
                   )}
-                  initial={{ x: -10, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -10, opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{
                     duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
@@ -719,9 +718,9 @@ export function DailyAlchemyGameScreen({
                     'transition-all duration-150',
                     highContrast && 'border-[3px] border-hc-border'
                   )}
-                  initial={{ x: -10, opacity: 0 }}
-                  animate={{ x: 0, opacity: 1 }}
-                  exit={{ x: -10, opacity: 0 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
                   transition={{
                     duration: 0.2,
                     ease: [0.4, 0, 0.2, 1],
