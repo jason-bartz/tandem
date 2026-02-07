@@ -8,6 +8,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import { cn } from '@/lib/utils';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * FirstDiscoveryDetail - Popup showing details of a selected discovery
@@ -265,25 +266,27 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
       headerClassName="border-b-0"
       contentClassName="p-0 relative"
     >
-      {/* Game name header with icon */}
-      <div
-        className={cn(
-          'px-6 py-3 border-b-[3px] border-gray-200 dark:border-gray-700',
-          highContrast ? 'bg-hc-success/20' : 'bg-green-500/30 dark:bg-green-500/30'
-        )}
-      >
-        <div className="flex items-center gap-2">
-          <Image src="/icons/ui/daily-alchemy.png" alt="" width={20} height={20} />
-          <p
-            className={cn(
-              'text-sm font-semibold',
-              highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
-            )}
-          >
-            Daily Alchemy
-          </p>
+      {/* Game name header with icon - hidden on standalone */}
+      {!isStandaloneAlchemy && (
+        <div
+          className={cn(
+            'px-6 py-3 border-b-[3px] border-gray-200 dark:border-gray-700',
+            highContrast ? 'bg-hc-success/20' : 'bg-green-500/30 dark:bg-green-500/30'
+          )}
+        >
+          <div className="flex items-center gap-2">
+            <Image src="/icons/ui/daily-alchemy.png" alt="" width={20} height={20} />
+            <p
+              className={cn(
+                'text-sm font-semibold',
+                highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
+              )}
+            >
+              Daily Alchemy
+            </p>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Content */}
       <div className="p-4">

@@ -406,7 +406,9 @@ export default function AccountPage() {
 
   if (authLoading || (loading && user)) {
     return (
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+      <div
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+      >
         <div className="min-h-screen flex items-center justify-center py-6">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
             <div className="relative">
@@ -470,7 +472,9 @@ export default function AccountPage() {
 
   return (
     <>
-      <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+      <div
+        className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+      >
         {/* Scrollable content container */}
         <div className="min-h-screen flex items-center justify-center py-6 pt-safe">
           <div className="w-full max-w-2xl mx-auto p-6 relative z-10 my-auto">
@@ -1051,7 +1055,9 @@ function IOSSignInPage() {
   };
 
   return (
-    <div className="fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden bg-accent-yellow">
+    <div
+      className={`fixed inset-0 w-full h-full overflow-y-auto overflow-x-hidden ${isStandaloneAlchemy ? 'bg-white dark:bg-gray-900' : 'bg-accent-yellow'}`}
+    >
       <div className="min-h-screen flex items-center justify-center py-6">
         <div className="w-full max-w-md mx-auto p-6">
           <div className="relative">
