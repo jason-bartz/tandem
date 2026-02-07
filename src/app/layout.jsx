@@ -190,7 +190,11 @@ export default function RootLayout({ children }) {
         )}
         <link
           rel="preload"
-          href={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+          href={
+            isStandaloneAlchemy
+              ? `/icons/daily-alchemy-logo.png?v=${ASSET_VERSION}`
+              : `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`
+          }
           as="image"
           type="image/png"
         />
