@@ -109,6 +109,15 @@
   --admin-shadow-small: 2px 2px 0px rgba(0, 0, 0, 1);
 }
 
+/* Standalone Daily Alchemy - override yellow backgrounds with white */
+:root.standalone-alchemy {
+  --bg-primary: #ffffff;
+}
+
+[data-theme='dark'].standalone-alchemy {
+  --bg-primary: #111827;
+}
+
 /* Custom scrollbar styling for modals */
 .modal-scrollbar::-webkit-scrollbar {
   width: 8px;
