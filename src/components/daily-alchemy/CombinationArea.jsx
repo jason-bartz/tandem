@@ -96,15 +96,7 @@ function CombineIconCycler({ isActive }) {
   if (!isActive) return null;
 
   if (reduceMotion) {
-    return (
-      <Image
-        src={`/icons/ui/create-button/${currentIcon}.webp`}
-        alt=""
-        width={20}
-        height={20}
-        className="w-5 h-5"
-      />
-    );
+    return <img src={`/icons/ui/create-button/${currentIcon}.webp`} alt="" className="w-5 h-5" />;
   }
 
   return (
@@ -118,13 +110,7 @@ function CombineIconCycler({ isActive }) {
           transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           className="absolute inset-0"
         >
-          <Image
-            src={`/icons/ui/create-button/${currentIcon}.webp`}
-            alt=""
-            width={20}
-            height={20}
-            className="w-5 h-5"
-          />
+          <img src={`/icons/ui/create-button/${currentIcon}.webp`} alt="" className="w-5 h-5" />
         </motion.div>
       </AnimatePresence>
     </div>
