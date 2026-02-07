@@ -29,18 +29,19 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            By accessing or playing Tandem Daily Games ("the Games") at tandemdaily.com or through
-            our iOS app, you agree to be bound by these Terms of Use ("Terms"). If you do not agree
-            to these Terms, please do not use the Games.
+            By accessing or playing any games developed by Good Vibes Games ("the Games"), including
+            at tandemdaily.com, dailyalchemy.fun, or through our iOS app, you agree to be bound by
+            these Terms of Use ("Terms"). If you do not agree to these Terms, please do not use the
+            Games.
           </p>
           <p>
             These Terms apply to all users of the Games, including those who access them through our
-            website, progressive web app (PWA), or iOS application.
+            websites, progressive web apps (PWA), standalone game sites, or iOS application.
           </p>
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: January 27, 2026
+            <strong>Last Updated</strong>: February 6, 2026
           </p>
         </div>
       ),
@@ -51,7 +52,7 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            We offer daily word puzzle games provided by Good Vibes Games ("we," "us," or "our") for
+            We offer daily puzzle games provided by Good Vibes Games ("we," "us," or "our") for
             entertainment purposes:
           </p>
           <ul className="list-disc list-inside space-y-2 text-gray-600 dark:text-gray-400 mb-3">
@@ -68,18 +69,21 @@ export default function TermsOfUse() {
             </li>
             <li>
               <strong>Daily Alchemy</strong>: Combine elements to discover new compounds and reach
-              target elements
+              target elements (also available as a standalone game at dailyalchemy.fun)
             </li>
           </ul>
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>One free daily puzzle for all users</li>
-            <li>Archive of past puzzles (subscription required for full access)</li>
+            <li>
+              Archive of past puzzles (subscription required for full access on tandemdaily.com)
+            </li>
             <li>Statistics tracking and streak counting</li>
             <li>Global leaderboards for competition (requires free account)</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
             <li>iCloud sync across devices (iOS only)</li>
-            <li>Optional in-app purchases for premium features</li>
+            <li>Optional in-app purchases for premium features (tandemdaily.com and iOS)</li>
+            <li>Free ad-supported access to Daily Alchemy at dailyalchemy.fun</li>
           </ul>
         </div>
       ),
@@ -260,45 +264,68 @@ export default function TermsOfUse() {
           <div>
             <h4 className="font-semibold mb-2">Use of Artificial Intelligence</h4>
             <p>
-              Daily Alchemy uses artificial intelligence (AI) to generate element combinations. When
-              you combine two elements, an AI system determines the resulting element based on
-              creative interpretation of the inputs. This AI-generated content is provided for
-              entertainment purposes only.
+              Daily Alchemy uses a third-party artificial intelligence system (Anthropic Claude) to
+              generate element combinations, names, emojis, and related game content. When you
+              combine two elements, the AI system autonomously determines the resulting element.
+              Good Vibes Games does not control, curate, select, or pre-approve individual AI
+              outputs — the AI independently generates all combination results in real time based on
+              its own interpretation of the inputs.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Scope of AI-Generated Content</h4>
+            <p className="mb-2">
+              AI-generated content in our games may include, but is not limited to:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Element names and descriptions created from player-initiated combinations</li>
+              <li>Emoji assignments for generated elements</li>
+              <li>Daily puzzle clues and hints</li>
+              <li>Any other game content produced by AI systems</li>
+            </ul>
+            <p className="mt-2">
+              All AI-generated content is provided for entertainment purposes only and should not be
+              interpreted as scientific, educational, factual, or representative of the views or
+              opinions of Good Vibes Games.
             </p>
           </div>
 
           <div>
             <h4 className="font-semibold mb-2">No Warranties on AI Content</h4>
             <p className="mb-2">
-              AI-generated content is provided "as is" without warranties of any kind. We do not
+              Because AI outputs are generated autonomously by a third-party system, we provide
+              AI-generated content strictly "as is" without warranties of any kind. We do not
               guarantee that AI-generated content will be:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Accurate, complete, or factually correct</li>
               <li>Free from errors, inconsistencies, or unexpected outputs</li>
               <li>Suitable for any purpose beyond entertainment</li>
-              <li>Representative of our views or opinions</li>
+              <li>Free from content that some users may find surprising or objectionable</li>
+              <li>Consistent with any real-world scientific or factual information</li>
             </ul>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Limitation of Liability</h4>
+            <h4 className="font-semibold mb-2">Limitation of Liability for AI Content</h4>
             <p>
               Good Vibes Games shall not be liable for any claims, damages, or losses arising from
               AI-generated content, including but not limited to inaccurate information, unexpected
-              combinations, or any reliance on such content. AI-generated element combinations in
-              Daily Alchemy are fictional and should not be interpreted as scientific, educational,
-              or factual information.
+              or offensive combinations, or any reliance on such content. You acknowledge that AI
+              systems may produce unpredictable results and that Good Vibes Games has no direct
+              control over the specific outputs generated by the AI system for any given combination
+              of inputs.
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Content Moderation</h4>
+            <h4 className="font-semibold mb-2">Content Reporting</h4>
             <p>
-              While we make reasonable efforts to review and moderate AI-generated content, we
-              cannot guarantee that all content will meet every user's expectations. If you
-              encounter AI-generated content that appears inappropriate or incorrect, please report
-              it through our feedback form.
+              While we implement reasonable safeguards and review AI-generated content where
+              practicable, we cannot review every output in advance. If you encounter AI-generated
+              content that appears inappropriate, offensive, or incorrect, please report it through
+              our feedback form so we can take corrective action.
             </p>
           </div>
         </div>
@@ -625,6 +652,48 @@ export default function TermsOfUse() {
       ),
     },
     {
+      id: 'advertising',
+      title: 'Advertising (dailyalchemy.fun)',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Ad-Supported Content</h4>
+            <p>
+              The standalone Daily Alchemy site at dailyalchemy.fun is a free, ad-supported service.
+              Advertisements are served by Google AdSense and may appear during gameplay. By using
+              dailyalchemy.fun, you acknowledge and agree to the display of advertisements as part
+              of the free service.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Third-Party Advertisers</h4>
+            <p className="mb-2">
+              Advertisements are provided by third-party advertising networks. We do not:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Control the content of third-party advertisements</li>
+              <li>Endorse any products or services advertised</li>
+              <li>Guarantee the accuracy of advertising content</li>
+            </ul>
+            <p className="mt-2">
+              Any interactions with advertised products or services are solely between you and the
+              advertiser. Good Vibes Games is not responsible for any transactions or disputes
+              arising from third-party advertisements.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Ad-Free Experience</h4>
+            <p>
+              No advertisements are displayed on tandemdaily.com or in our iOS app. Tandem Puzzle
+              Club subscribers enjoy an entirely ad-free experience across all platforms.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
       id: 'governing-law',
       title: 'Governing Law',
       content: (
@@ -656,7 +725,7 @@ export default function TermsOfUse() {
               <strong>Good Vibes Games</strong>
             </p>
             <p>Email: support@goodvibesgames.com</p>
-            <p>Website: tandemdaily.com</p>
+            <p>Websites: tandemdaily.com | dailyalchemy.fun</p>
           </div>
         </div>
       ),
@@ -739,11 +808,15 @@ export default function TermsOfUse() {
                     <ul className="text-sm space-y-1">
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
-                        Free to play daily puzzle
+                        Free to play daily puzzles
                       </li>
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
-                        Optional subscriptions for archive access
+                        Daily Alchemy also available free at dailyalchemy.fun (ad-supported)
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        AI-generated game content provided as-is
                       </li>
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
@@ -752,10 +825,6 @@ export default function TermsOfUse() {
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
                         Personal, non-commercial use only
-                      </li>
-                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <span className="text-[#ff66c4]">•</span>
-                        Subscriptions managed through Apple or Stripe
                       </li>
                     </ul>
                   </div>
@@ -803,7 +872,7 @@ export default function TermsOfUse() {
                     {/* Agreement statement */}
                     <div className="mt-6 p-4 bg-[#ff66c4]/20 border-[3px] border-black rounded-2xl shadow-[4px_4px_0px_rgba(0,0,0,1)]">
                       <p className="text-sm text-center text-gray-700 dark:text-gray-300">
-                        By playing <strong>Tandem Daily Games</strong>, you agree to these terms
+                        By playing our games, you agree to these terms
                       </p>
                     </div>
                   </div>
