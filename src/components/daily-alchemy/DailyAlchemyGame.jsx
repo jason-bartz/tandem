@@ -221,7 +221,12 @@ export function DailyAlchemyGame({ initialDate = null }) {
         <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         {/* Desktop: wider container for side-by-side layout */}
-        <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto pt-4 pt-safe-ios">
+        <div
+          className={cn(
+            'flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto',
+            isStandaloneAlchemy ? 'pt-1' : 'pt-4 pt-safe-ios'
+          )}
+        >
           <div
             className={cn(
               'flex-1 flex flex-col mx-4 mb-4 min-h-0',
