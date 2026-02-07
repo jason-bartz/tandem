@@ -214,6 +214,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
           'fixed inset-0 flex flex-col overflow-hidden',
           isStandaloneAlchemy && 'bg-white dark:bg-gray-900'
         )}
+        style={isStandaloneAlchemy ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
       >
         {/* Ad banner - only renders on standalone ad-supported site */}
         <AdBanner />
@@ -224,7 +225,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
         <div
           className={cn(
             'flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto',
-            isStandaloneAlchemy ? 'pt-1' : 'pt-4 pt-safe-ios'
+            !isStandaloneAlchemy && 'pt-4 pt-safe-ios'
           )}
         >
           <div
