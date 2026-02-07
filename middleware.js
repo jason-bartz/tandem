@@ -1,7 +1,16 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 
+const isStandaloneAlchemy = process.env.NEXT_PUBLIC_STANDALONE_ALCHEMY === 'true';
+
 export async function middleware(request) {
+  // Standalone Daily Alchemy: redirect root to /daily-alchemy
+  if (isStandaloneAlchemy && request.nextUrl.pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/daily-alchemy';
+    return NextResponse.redirect(url);
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
