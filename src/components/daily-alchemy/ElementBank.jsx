@@ -34,7 +34,6 @@ export function ElementBank({
   recentElements = [],
   firstDiscoveryElements = [],
   disabled = false,
-  discoveredCount = null, // Number of discovered elements (excluding starters) for Creative Mode
   // Favorites
   favoriteElements = new Set(),
   onToggleFavorite,
@@ -183,11 +182,6 @@ export function ElementBank({
           )}
         >
           Element Bank
-          {discoveredCount !== null && (
-            <span className="ml-1.5 font-normal text-soup-primary dark:text-soup-primary">
-              ({discoveredCount})
-            </span>
-          )}
         </h3>
         <button
           onClick={() => {
