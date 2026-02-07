@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
-import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown } from 'lucide-react';
+import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown, X } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -605,24 +605,35 @@ export function DailyAlchemyGameScreen({
       {/* Creative Mode Header with collapsible menu */}
       {freePlayMode && (
         <div className="flex items-center gap-2 py-2">
-          {/* Menu toggle button */}
+          {/* Menu / X toggle button */}
           <button
             onClick={() => setIsCreativeMenuOpen(!isCreativeMenuOpen)}
-            className={cn(
-              'flex items-center justify-center px-3 py-2',
-              'text-sm font-bold',
-              'text-gray-700 dark:text-gray-300',
-              'bg-gray-100 dark:bg-gray-700',
-              'border-[2px] border-black dark:border-gray-600',
-              'rounded-xl',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
-              'transition-all duration-150',
-              highContrast && 'border-[3px] border-hc-border'
-            )}
+            className="flex items-center justify-center w-10 h-9 text-gray-700 dark:text-gray-300"
           >
-            Menu
+            <AnimatePresence mode="wait" initial={false}>
+              {isCreativeMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                  exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+                  transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+                >
+                  <X className="w-5 h-5 stroke-[2.5]" />
+                </motion.div>
+              ) : (
+                <motion.span
+                  key="menu"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
+                  className="text-sm font-bold"
+                >
+                  Menu
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
 
           {/* Sliding buttons container - positioned right after Menu button */}
@@ -634,8 +645,8 @@ export function DailyAlchemyGameScreen({
                 animate={{ width: 'auto' }}
                 exit={{ width: 0 }}
                 transition={{
-                  duration: 0.25,
-                  ease: [0.4, 0, 0.2, 1],
+                  duration: 0.3,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
               >
                 {/* Save button */}
@@ -662,8 +673,8 @@ export function DailyAlchemyGameScreen({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    duration: 0.2,
-                    ease: [0.4, 0, 0.2, 1],
+                    duration: 0.15,
+                    delay: 0.1,
                   }}
                 >
                   {isSavingCreative ? (
@@ -695,9 +706,8 @@ export function DailyAlchemyGameScreen({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{
-                    duration: 0.2,
-                    ease: [0.4, 0, 0.2, 1],
-                    delay: 0.03,
+                    duration: 0.15,
+                    delay: 0.15,
                   }}
                 >
                   <Trash2 className="w-4 h-4" />
@@ -707,32 +717,28 @@ export function DailyAlchemyGameScreen({
             )}
           </AnimatePresence>
 
-          {/* Stats - hidden when menu is open */}
-          <AnimatePresence>
-            {!isCreativeMenuOpen && (
-              <motion.div
-                className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.15 }}
-              >
-                <span>
-                  <span className="font-semibold text-gray-700 dark:text-gray-200">
-                    {discoveredCount}
-                  </span>{' '}
-                  created
-                </span>
-                <span className="text-gray-300 dark:text-gray-600">|</span>
-                <span>
-                  <span className="font-semibold text-amber-600 dark:text-amber-400">
-                    {firstDiscoveryElements.length}
-                  </span>{' '}
-                  first
-                </span>
-              </motion.div>
+          {/* Stats - hidden on mobile when menu open, always visible on desktop */}
+          <div
+            className={cn(
+              'items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap',
+              'transition-opacity duration-200',
+              isCreativeMenuOpen ? 'hidden md:flex' : 'flex'
             )}
-          </AnimatePresence>
+          >
+            <span>
+              <span className="font-semibold text-gray-700 dark:text-gray-200">
+                {discoveredCount}
+              </span>{' '}
+              created
+            </span>
+            <span className="text-gray-300 dark:text-gray-600">|</span>
+            <span>
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                {firstDiscoveryElements.length}
+              </span>{' '}
+              first
+            </span>
+          </div>
         </div>
       )}
 
