@@ -174,7 +174,11 @@ export default function RootLayout({ children }) {
   const faqSchema = generateFAQSchema();
 
   return (
-    <html lang="en" suppressHydrationWarning className="scroll-smooth">
+    <html
+      lang="en"
+      suppressHydrationWarning
+      className={`scroll-smooth${isStandaloneAlchemy ? ' standalone-alchemy' : ''}`}
+    >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
