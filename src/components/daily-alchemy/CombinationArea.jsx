@@ -1,27 +1,46 @@
 'use client';
 
-import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 
-const LOADING_PHRASES = [
-  'Transmuting elements...',
-  'Harmonizing atoms...',
-  'Summoning new compounds...',
-  'Defying periodic table...',
-  'Channeling elemental energy...',
-  'Stirring primordial soup...',
-  'Bending thermodynamics...',
-  'Rewriting chemistry...',
-  'Manifesting matter...',
-  'Compressing possibility...',
-  'Making something from nothing...',
-  'Unlocking atomic secrets...',
-  'Reshaping fundamental forces...',
-  'Defying Newton...',
+const COMBINE_ICONS = [
+  'biohazard',
+  'book-dead',
+  'castle',
+  'cauldron',
+  'crystal-ball',
+  'disease',
+  'dna',
+  'explosion',
+  'flask',
+  'ghost',
+  'hat-wizard',
+  'hockey-mask',
+  'industrial-pollution',
+  'magic-wand',
+  'meteor',
+  'octopus',
+  'physics',
+  'planet-ringed',
+  'shrimp',
+  'snail',
+  'staff-wizard',
+  'story-book',
+  'sword',
+  't-rex',
+  'telescope',
+  'tubes',
+  'ufo',
+  'unicorn',
+  'user-alien',
+  'user-robot',
+  'wave',
+  'whale',
+  'yin-yang',
 ];
 
 /**
@@ -37,54 +56,77 @@ function shuffleArray(array) {
 }
 
 /**
- * LoadingPhraseMarquee - Scrolling marquee of loading phrases
+ * CombineIconCycler - Cycles through icons with a spin transition
  */
-function LoadingPhraseMarquee({ isActive }) {
+function CombineIconCycler({ isActive }) {
   const { reduceMotion } = useTheme();
-  const [shuffledPhrases, setShuffledPhrases] = useState([]);
+  const [currentIcon, setCurrentIcon] = useState(COMBINE_ICONS[0]);
+  const [iconKey, setIconKey] = useState(0);
+  const queueRef = useRef([]);
+  const lastIconRef = useRef(null);
 
-  // Shuffle phrases when combining starts
   useEffect(() => {
-    if (isActive) {
-      setShuffledPhrases(shuffleArray(LOADING_PHRASES));
-    }
+    if (!isActive) return;
+
+    // Initialize queue and show first icon
+    queueRef.current = shuffleArray(COMBINE_ICONS);
+    const first = queueRef.current.shift();
+    lastIconRef.current = first;
+    setCurrentIcon(first);
+    setIconKey(0);
+
+    const interval = setInterval(() => {
+      // Reshuffle when exhausted, avoiding repeat at boundary
+      if (queueRef.current.length === 0) {
+        const newQueue = shuffleArray(COMBINE_ICONS);
+        if (newQueue[0] === lastIconRef.current) {
+          newQueue.push(newQueue.shift());
+        }
+        queueRef.current = newQueue;
+      }
+      const next = queueRef.current.shift();
+      lastIconRef.current = next;
+      setCurrentIcon(next);
+      setIconKey((k) => k + 1);
+    }, 500);
+
+    return () => clearInterval(interval);
   }, [isActive]);
 
-  // Create the marquee text by joining all phrases
-  const marqueeText = useMemo(() => {
-    if (shuffledPhrases.length === 0) return '';
-    return shuffledPhrases.join('      ');
-  }, [shuffledPhrases]);
+  if (!isActive) return null;
 
-  if (!isActive || shuffledPhrases.length === 0) {
-    return null;
-  }
-
-  // For reduced motion, just show a single phrase
   if (reduceMotion) {
-    return <span className="truncate max-w-[120px]">{shuffledPhrases[0]}</span>;
+    return (
+      <Image
+        src={`/icons/ui/create-button/${currentIcon}.webp`}
+        alt=""
+        width={20}
+        height={20}
+        className="w-5 h-5"
+      />
+    );
   }
 
   return (
-    <div className="overflow-hidden max-w-[140px] sm:max-w-[160px]">
-      <motion.div
-        className="whitespace-nowrap"
-        animate={{
-          x: ['15%', '-50%'],
-        }}
-        transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: 4,
-            ease: 'linear',
-          },
-        }}
-      >
-        <span>{marqueeText}</span>
-        <span className="px-6"></span>
-        <span>{marqueeText}</span>
-      </motion.div>
+    <div className="relative w-5 h-5">
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={iconKey}
+          initial={{ opacity: 0, rotate: -180, scale: 0.5 }}
+          animate={{ opacity: 1, rotate: 0, scale: 1 }}
+          exit={{ opacity: 0, rotate: 180, scale: 0.5 }}
+          transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+          className="absolute inset-0"
+        >
+          <Image
+            src={`/icons/ui/create-button/${currentIcon}.webp`}
+            alt=""
+            width={20}
+            height={20}
+            className="w-5 h-5"
+          />
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }
@@ -445,7 +487,7 @@ export function CombinationArea({
           onClick={onClear}
           disabled={(!selectedA && !selectedB) || isCombining || isAnimating || disabled}
           className={cn(
-            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-3',
+            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',
             'bg-gray-200 dark:bg-gray-700',
             'border-[3px] border-black dark:border-gray-600',
             'rounded-xl font-bold',
@@ -469,7 +511,7 @@ export function CombinationArea({
           onClick={() => canCombine && onCombine()}
           disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
-            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-3',
+            'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',
             'bg-soup-primary text-black',
             'border-[3px] border-black',
             'rounded-xl font-bold',
@@ -493,7 +535,7 @@ export function CombinationArea({
           }
         >
           <span className="flex items-center justify-center">
-            {isCombining ? <LoadingPhraseMarquee isActive={isCombining} /> : 'Combine'}
+            {isCombining ? <CombineIconCycler isActive={isCombining} /> : 'Combine'}
           </span>
         </motion.button>
       </div>
