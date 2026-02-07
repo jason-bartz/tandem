@@ -21,7 +21,7 @@ import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import { validateUsername } from '@/utils/profanityFilter';
 import logger from '@/lib/logger';
-import { isStandaloneAlchemy } from '@/lib/standalone';
+import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function AccountPage() {
   const router = useRouter();
@@ -55,7 +55,7 @@ export default function AccountPage() {
   // iOS users access this page from within the app after signing in via Settings
   useEffect(() => {
     if (!authLoading && !user && isWeb) {
-      router.push('/?auth=required');
+      router.push(isStandaloneAlchemy ? '/daily-alchemy' : '/?auth=required');
     }
   }, [user, authLoading, router, isWeb]);
 
@@ -220,7 +220,7 @@ export default function AccountPage() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.push('/');
+      router.push(homePath);
     } catch (error) {
       logger.error('Failed to sign out', error);
       // Force clear on iOS if normal sign out fails
@@ -240,7 +240,7 @@ export default function AccountPage() {
       if (typeof localStorage !== 'undefined') {
         localStorage.clear();
       }
-      router.push('/');
+      router.push(homePath);
       // Force reload to clear React state
       window.location.reload();
     } catch (error) {
@@ -291,7 +291,7 @@ export default function AccountPage() {
 
     // Sign out and redirect to home
     await signOut();
-    router.push('/');
+    router.push(homePath);
   };
 
   const handlePurchaseComplete = async () => {
@@ -484,7 +484,7 @@ export default function AccountPage() {
                 {/* Header with back button, title, and hamburger menu */}
                 <div className="flex items-start justify-between p-6 pb-4">
                   <Link
-                    href="/"
+                    href={homePath}
                     className="flex items-center justify-center w-10 h-10 hover:opacity-70 transition-opacity"
                     aria-label="Back to game"
                   >
@@ -1067,7 +1067,7 @@ function IOSSignInPage() {
               <button
                 onClick={() => {
                   lightTap();
-                  router.push('/');
+                  router.push(homePath);
                 }}
                 className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 mb-6"
               >
