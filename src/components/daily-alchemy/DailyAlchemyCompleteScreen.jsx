@@ -174,7 +174,7 @@ export function DailyAlchemyCompleteScreen({
           transition={{ delay: 0.05 }}
         >
           <Image
-            src="/images/dailyalchemy-end.png"
+            src="/images/daily-alchemy-friends.webp"
             alt="Puzzle Complete"
             width={84}
             height={84}
