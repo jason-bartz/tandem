@@ -362,7 +362,7 @@ export function ElementBank({
             'flex flex-row flex-wrap gap-2 content-start items-start',
             'overflow-y-auto overflow-x-hidden',
             'scrollable',
-            'p-0 md:p-2',
+            'pt-2 p-0 md:p-2',
             'md:bg-gray-50 md:dark:bg-gray-900/50',
             'border-0 md:border-[2px] md:border-gray-200 md:dark:border-gray-700',
             'md:rounded-xl',
