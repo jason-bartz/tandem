@@ -3,6 +3,7 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import { Starfield } from './Starfield';
 
 /**
  * DailyAlchemyBackground - Solid green background for Daily Alchemy
@@ -12,9 +13,13 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
 export function DailyAlchemyBackground({ className }) {
   const { highContrast } = useTheme();
 
-  // Standalone uses white background
+  // Standalone uses white background with animated starfield
   if (isStandaloneAlchemy) {
-    return <div className={cn('absolute inset-0 -z-10 bg-white dark:bg-gray-900', className)} />;
+    return (
+      <div className={cn('absolute inset-0 -z-10 bg-white dark:bg-gray-900', className)}>
+        <Starfield />
+      </div>
+    );
   }
 
   // For high contrast mode, use solid background
