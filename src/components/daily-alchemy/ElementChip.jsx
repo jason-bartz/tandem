@@ -255,6 +255,14 @@ function ElementChipInner({
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
+      {/* Golden inner glow for first discoveries (light mode only) */}
+      {element.isFirstDiscovery && !isSelected && !isTarget && (
+        <span
+          className="absolute inset-0 rounded-lg pointer-events-none shadow-[inset_0_0_6px_rgba(234,179,8,0.3)] dark:shadow-none"
+          aria-hidden="true"
+        />
+      )}
+
       {/* Gold shimmer effect for first discoveries */}
       {element.isFirstDiscovery && !isSelected && !isTarget && !reduceMotion && (
         <span
