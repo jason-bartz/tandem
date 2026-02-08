@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
+import { isStandaloneAlchemy } from '@/lib/standalone';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
@@ -165,8 +166,8 @@ export function DailyAlchemyCompleteScreen({
         />
       )}
 
-      {/* Completion Image - Daily mode only */}
-      {!isArchive && (
+      {/* Completion Image - Daily mode only, hidden on standalone */}
+      {!isArchive && !isStandaloneAlchemy && (
         <motion.div
           className="mb-1 -mt-1"
           initial={!reduceMotion ? { opacity: 0, scale: 0.8 } : false}

@@ -362,11 +362,11 @@ export function ElementBank({
             'flex flex-row flex-wrap gap-2 content-start items-start',
             'overflow-y-auto overflow-x-hidden',
             'scrollable',
-            'p-2',
-            'bg-gray-50 dark:bg-gray-900/50',
-            'border-[2px] border-gray-200 dark:border-gray-700',
-            'rounded-xl',
-            highContrast && 'border-hc-border'
+            'p-0 md:p-2',
+            'md:bg-gray-50 md:dark:bg-gray-900/50',
+            'border-0 md:border-[2px] md:border-gray-200 md:dark:border-gray-700',
+            'md:rounded-xl',
+            highContrast && 'md:border-hc-border'
           )}
           role="region"
           aria-label="Element bank"
