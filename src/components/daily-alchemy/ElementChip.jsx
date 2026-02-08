@@ -171,7 +171,6 @@ function ElementChipInner({
       }
 
       const didDrag = hasDragged.current;
-      const didLongPress = longPressTriggeredRef.current;
       const touch = e.changedTouches[0];
 
       if (didDrag && draggable) {
@@ -185,10 +184,9 @@ function ElementChipInner({
       touchStartPos.current = null;
       hasDragged.current = false;
       longPressTriggeredRef.current = false;
-      // Only reset visual state if long press wasn't triggered (it handles its own reset)
-      if (!didLongPress) {
-        setIsHoldReady(false);
-      }
+      // Always reset visual state on touch end to prevent stuck pressed state
+      setIsHoldReady(false);
+      setIsLongPressPop(false);
     },
     [disabled, draggable, onTouchDragEnd]
   );
