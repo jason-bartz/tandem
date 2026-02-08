@@ -240,7 +240,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           'relative flex flex-col items-center gap-2 px-8 pt-6 pb-4',
           'bg-white dark:bg-gray-800',
           'border-[4px] border-black dark:border-gray-600',
-          result.isFirstDiscovery && 'bg-yellow-50 dark:bg-yellow-900/30',
+          result.isFirstDiscovery && 'bg-yellow-50 dark:bg-gray-800',
           'rounded-2xl',
           'shadow-[6px_6px_0px_rgba(0,0,0,1)]',
           'cursor-grab active:cursor-grabbing',

@@ -207,11 +207,7 @@ function ElementChipInner({
       className={cn(
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
-        !isSelected && !isTarget && !element.isFirstDiscovery && 'bg-white dark:bg-gray-800',
-        element.isFirstDiscovery &&
-          !isSelected &&
-          !isTarget &&
-          'bg-yellow-50 dark:bg-yellow-900/30',
+        !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
         'border-[2px] border-black dark:border-gray-600',
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
