@@ -2,6 +2,7 @@
  * Daily Alchemy Game Constants
  * Centralized configuration for the Daily Alchemy game
  */
+import { isStandaloneAlchemy } from '@/lib/standalone';
 
 // Game configuration
 export const SOUP_CONFIG = {
@@ -393,7 +394,8 @@ export function generateShareText({ date, time, moves, par, firstDiscoveries = 0
     text += `🏆 First discoveries: ${firstDiscoveries}\n`;
   }
 
-  text += `\ntandemdaily.com/daily-alchemy`;
+  const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
+  text += `\n${shareUrl}`;
 
   return text;
 }
