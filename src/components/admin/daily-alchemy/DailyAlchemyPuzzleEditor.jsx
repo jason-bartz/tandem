@@ -606,20 +606,6 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
             />
             {errors.parMoves && <p className="text-red-500 text-xs mt-1">{errors.parMoves}</p>}
           </div>
-
-          <div>
-            <label className="block text-xs font-bold text-text-primary mb-1">Published</label>
-            <label className="flex items-center gap-2 cursor-pointer mt-1">
-              <input
-                type="checkbox"
-                checked={formData.published}
-                onChange={(e) => handleChange('published', e.target.checked)}
-                className="w-4 h-4 rounded border-2 border-black"
-                disabled={loading}
-              />
-              <span className="text-xs text-text-primary">Available to players</span>
-            </label>
-          </div>
         </div>
 
         {/* Action Buttons */}
