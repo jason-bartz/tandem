@@ -91,7 +91,7 @@ export default function ElementManager() {
  * Modes: AI Generator, Manual Pathway, Single Combo
  */
 function CreateSection() {
-  const [createMode, setCreateMode] = useState('ai'); // 'ai', 'pathway', 'single'
+  const [createMode, setCreateMode] = useState('ai'); // 'ai', 'pathway'
 
   return (
     <div className="space-y-4">
@@ -123,31 +123,12 @@ function CreateSection() {
             <Route className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
             Manual Pathway
           </button>
-          <button
-            onClick={() => setCreateMode('single')}
-            className={`px-2.5 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] transition-all flex items-center gap-1.5 sm:gap-2 ${
-              createMode === 'single'
-                ? 'bg-amber-500 text-white border-black shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                : 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 border-amber-300 dark:border-amber-700 hover:bg-amber-100 dark:hover:bg-amber-900/30'
-            }`}
-          >
-            <Beaker className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-            Single Combo
-          </button>
         </div>
-        <p className="text-[10px] sm:text-xs text-text-secondary mt-2 sm:mt-3">
-          {createMode === 'ai' &&
-            'Enter a target element and AI will generate multiple paths from starter elements.'}
-          {createMode === 'pathway' &&
-            'Build a complete pathway step-by-step with full control over each combination.'}
-          {createMode === 'single' && 'Quickly add a single element combination.'}
-        </p>
       </div>
 
       {/* Mode Content */}
       {createMode === 'ai' && <MultiPathGenerator />}
       {createMode === 'pathway' && <PathwayBuilder />}
-      {createMode === 'single' && <SingleComboEntry />}
     </div>
   );
 }
@@ -380,7 +361,7 @@ function MultiPathGenerator() {
   return (
     <div className="space-y-4">
       {/* Input Section */}
-      <div className="flex gap-3">
+      <div className="flex gap-2">
         <div className="flex-1 relative">
           <input
             type="text"
@@ -388,20 +369,20 @@ function MultiPathGenerator() {
             onChange={(e) => setTargetInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && !isGenerating && generatePaths()}
             placeholder="Enter target element (e.g., Robot, Volcano, Pizza)"
-            className="w-full px-4 py-3 pl-10 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-lg"
+            className="w-full px-3 py-2 pl-9 rounded-md border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary text-sm"
             disabled={isGenerating}
           />
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
         </div>
         <button
           onClick={generatePaths}
           disabled={isGenerating || !targetInput.trim()}
-          className="px-6 py-3 bg-green-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-          style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+          className="px-3 py-2 text-sm bg-green-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-green-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+          style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
         >
           {isGenerating ? (
             <>
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               Generating...
             </>
           ) : (
@@ -578,12 +559,11 @@ function MultiPathGenerator() {
 
       {/* Empty State */}
       {!isGenerating && !paths && !error && (
-        <div className="p-8 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600">
-          <Sparkles className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-lg font-bold text-text-secondary">
+        <div className="p-6 text-center bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600">
+          <p className="text-sm font-bold text-text-secondary">
             Enter a target element to generate paths
           </p>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-xs text-gray-500 mt-1">
             The AI will create 3 different paths from Earth, Water, Fire, and Wind
           </p>
         </div>
@@ -932,15 +912,11 @@ function PathwayBuilder() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-[3px] border-purple-500 p-6">
-        <h3 className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-2 flex items-center gap-2">
-          <GitBranch className="w-5 h-5" />
+      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-[3px] border-purple-500 p-4 sm:p-6">
+        <h3 className="text-base font-bold text-purple-600 dark:text-purple-400 mb-3 flex items-center gap-2">
+          <GitBranch className="w-4 h-4" />
           Build a Pathway
         </h3>
-        <p className="text-sm text-text-secondary mb-4">
-          Add rows to build a complete pathway. Start from starter elements and work toward your
-          target. Emojis are optional - AI will generate them if needed.
-        </p>
 
         {/* Error Display */}
         {error && (
@@ -967,15 +943,15 @@ function PathwayBuilder() {
         {/* Add Row Button */}
         <button
           onClick={addRow}
-          className="mt-4 px-4 py-2 bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-lg border-[2px] border-purple-500 border-dashed hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-2"
+          className="mt-3 px-3 py-1.5 text-sm bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 font-bold rounded-md border-[2px] border-purple-500 border-dashed hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors flex items-center gap-1.5"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-3.5 h-3.5" />
           Add Step
         </button>
 
         {/* Save Button */}
-        <div className="mt-6 flex items-center justify-between">
-          <div className="text-sm text-text-secondary">
+        <div className="mt-4 flex items-center justify-between">
+          <div className="text-xs sm:text-sm text-text-secondary">
             {rows.length} step{rows.length !== 1 ? 's' : ''}
             {finalElement && (
               <span>
@@ -987,17 +963,17 @@ function PathwayBuilder() {
           <button
             onClick={savePathway}
             disabled={isSaving || !isValid}
-            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-sm bg-purple-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-1.5"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             {isSaving ? (
               <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                 Saving...
               </>
             ) : (
               <>
-                <Save className="w-5 h-5" />
+                <Save className="w-4 h-4" />
                 <span className="sm:hidden">Save</span>
                 <span className="hidden sm:inline">Save Pathway</span>
               </>
@@ -1506,571 +1482,6 @@ function EmojiEditor({ pathway, saveResults, onDone }) {
               <span className="text-lg">{editedEmojis[step.result] || step.resultEmoji}</span>
               <span className="font-bold">{step.result}</span>
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/**
- * SingleComboEntry - Form for manually adding a single element combination
- */
-function SingleComboEntry() {
-  const [elementA, setElementA] = useState('');
-  const [elementB, setElementB] = useState('');
-  const [result, setResult] = useState('');
-  const [emoji, setEmoji] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-
-  // Autocomplete state
-  const [showSuggestions, setShowSuggestions] = useState({ a: false, b: false, result: false });
-  const [suggestions, setSuggestions] = useState([]);
-  const [resultSuggestions, setResultSuggestions] = useState([]);
-
-  // Conflict detection state
-  const [existingCombo, setExistingCombo] = useState(null);
-  const [isCheckingConflict, setIsCheckingConflict] = useState(false);
-
-  // Search for elements
-  const searchElements = useCallback(async (query) => {
-    if (!query || query.length < 1) return [];
-
-    try {
-      const token = await authService.getToken();
-      const response = await fetch(
-        `/api/admin/daily-alchemy/elements?q=${encodeURIComponent(query)}&limit=8`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.elements || [];
-      }
-    } catch (err) {
-      logger.error('[ManualComboEntry] Search error', { error: err.message });
-    }
-    return [];
-  }, []);
-
-  // Check if combination already exists
-  const checkExistingCombination = useCallback(async (elA, elB) => {
-    if (!elA?.trim() || !elB?.trim()) {
-      setExistingCombo(null);
-      return;
-    }
-
-    setIsCheckingConflict(true);
-    try {
-      const token = await authService.getToken();
-      const response = await fetch(
-        `/api/admin/daily-alchemy/check-combination?elementA=${encodeURIComponent(elA.trim())}&elementB=${encodeURIComponent(elB.trim())}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        if (data.exists) {
-          setExistingCombo({
-            result: data.result,
-            emoji: data.emoji,
-          });
-        } else {
-          setExistingCombo(null);
-        }
-      }
-    } catch (err) {
-      logger.error('[ManualComboEntry] Conflict check error', { error: err.message });
-      setExistingCombo(null);
-    } finally {
-      setIsCheckingConflict(false);
-    }
-  }, []);
-
-  const handleElementSearch = useCallback(
-    async (field, value) => {
-      if (field === 'a') {
-        setElementA(value);
-      } else {
-        setElementB(value);
-      }
-
-      if (value.length >= 1) {
-        const results = await searchElements(value);
-        // Include starter elements in suggestions
-        const starters = STARTER_ELEMENTS.filter((s) =>
-          s.name.toLowerCase().includes(value.toLowerCase())
-        ).map((s) => ({ name: s.name, emoji: s.emoji }));
-        const combined = [
-          ...starters,
-          ...results.filter((r) => !starters.find((s) => s.name === r.name)),
-        ];
-        setSuggestions(combined.slice(0, 8));
-        setShowSuggestions({ a: field === 'a', b: field === 'b' });
-      } else {
-        setShowSuggestions({ a: false, b: false });
-      }
-    },
-    [searchElements]
-  );
-
-  const selectSuggestion = useCallback(
-    (field, element) => {
-      if (field === 'a') {
-        setElementA(element.name);
-        // Check for existing combination with current elementB
-        checkExistingCombination(element.name, elementB);
-      } else {
-        setElementB(element.name);
-        // Check for existing combination with current elementA
-        checkExistingCombination(elementA, element.name);
-      }
-      setShowSuggestions({ a: false, b: false, result: false });
-    },
-    [elementA, elementB, checkExistingCombination]
-  );
-
-  // Search for result elements
-  const handleResultSearch = useCallback(
-    async (value) => {
-      setResult(value);
-
-      if (value.length >= 1) {
-        const results = await searchElements(value);
-        // Include starter elements in suggestions
-        const starters = STARTER_ELEMENTS.filter((s) =>
-          s.name.toLowerCase().includes(value.toLowerCase())
-        ).map((s) => ({ name: s.name, emoji: s.emoji }));
-        const combined = [
-          ...starters,
-          ...results.filter((r) => !starters.find((s) => s.name === r.name)),
-        ];
-        setResultSuggestions(combined.slice(0, 8));
-        setShowSuggestions((prev) => ({ ...prev, result: true }));
-      } else {
-        setShowSuggestions((prev) => ({ ...prev, result: false }));
-      }
-    },
-    [searchElements]
-  );
-
-  // Select result from suggestions
-  const selectResultSuggestion = useCallback((element) => {
-    setResult(element.name);
-    setEmoji(element.emoji);
-    setShowSuggestions((prev) => ({ ...prev, result: false }));
-  }, []);
-
-  // Debounced conflict check when typing (not selecting from dropdown)
-  useEffect(() => {
-    if (!elementA.trim() || !elementB.trim()) {
-      setExistingCombo(null);
-      return;
-    }
-
-    const timeoutId = setTimeout(() => {
-      checkExistingCombination(elementA, elementB);
-    }, 500);
-
-    return () => clearTimeout(timeoutId);
-  }, [elementA, elementB, checkExistingCombination]);
-
-  const handleSave = useCallback(async () => {
-    // Validation - emoji is optional, AI will generate if needed
-    if (!elementA.trim() || !elementB.trim() || !result.trim()) {
-      setError('Please fill in element A, element B, and result');
-      return;
-    }
-
-    setIsSaving(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const token = await authService.getToken();
-
-      // Use manual-pathway endpoint which auto-generates emojis if needed
-      const response = await fetch('/api/admin/daily-alchemy/manual-pathway', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          steps: [
-            {
-              elementA: elementA.trim(),
-              elementB: elementB.trim(),
-              result: result.trim(),
-              resultEmoji: emoji.trim() || undefined,
-            },
-          ],
-          finalElement: result.trim(),
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || data.error || 'Failed to save combination');
-      }
-
-      if (data.created > 0) {
-        // Get the emoji from the response (which may have been AI-generated)
-        const resultEmoji = data.pathway?.steps?.[0]?.resultEmoji || emoji || '✨';
-        setSuccess(`Created: ${elementA} + ${elementB} = ${resultEmoji} ${result}`);
-        // Clear form
-        setElementA('');
-        setElementB('');
-        setResult('');
-        setEmoji('');
-        setExistingCombo(null);
-      } else {
-        setSuccess(`Combination already exists (${elementA} + ${elementB})`);
-      }
-
-      logger.info('[ManualComboEntry] Combination saved', {
-        created: data.created,
-        skipped: data.skipped,
-      });
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsSaving(false);
-    }
-  }, [elementA, elementB, result, emoji]);
-
-  return (
-    <div className="space-y-6">
-      <div className="bg-purple-50 dark:bg-purple-900/20 rounded-xl border-[3px] border-purple-500 p-6">
-        <h3 className="text-lg font-bold text-purple-600 dark:text-purple-400 mb-4 flex items-center gap-2">
-          <Beaker className="w-5 h-5" />
-          Add Element Combination
-        </h3>
-
-        {/* Error Display */}
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border-[2px] border-red-500 rounded-lg flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-red-500" />
-            <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-
-        {/* Success Display */}
-        {success && (
-          <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border-[2px] border-green-500 rounded-lg flex items-center gap-2">
-            <Check className="w-4 h-4 text-green-500" />
-            <p className="text-sm text-green-600 dark:text-green-400">{success}</p>
-          </div>
-        )}
-
-        {/* Existing Combination Warning */}
-        {existingCombo && (
-          <div className="mb-4 p-3 bg-amber-50 dark:bg-amber-900/20 border-[2px] border-amber-500 rounded-lg">
-            <div className="flex items-center gap-2">
-              <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-              <div className="flex-1">
-                <p className="text-sm font-bold text-amber-600 dark:text-amber-400">
-                  Combination already exists
-                </p>
-                <p className="text-sm text-amber-600 dark:text-amber-400">
-                  <span className="font-medium">{elementA}</span>
-                  {' + '}
-                  <span className="font-medium">{elementB}</span>
-                  {' = '}
-                  <span className="text-lg">{existingCombo.emoji}</span>{' '}
-                  <span className="font-bold">{existingCombo.result}</span>
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Checking indicator */}
-        {isCheckingConflict && elementA && elementB && (
-          <div className="mb-4 p-2 flex items-center gap-2 text-sm text-text-secondary">
-            <div className="w-4 h-4 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-            Checking for existing combination...
-          </div>
-        )}
-
-        {/* Combination Formula */}
-        <div className="space-y-3">
-          {/* Desktop: horizontal layout */}
-          <div className="hidden sm:block space-y-3">
-            {/* Element A + Element B row */}
-            <div className="flex items-center gap-3">
-              {/* Element A */}
-              <div className="relative flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={elementA}
-                  onChange={(e) => handleElementSearch('a', e.target.value)}
-                  onFocus={() => elementA && handleElementSearch('a', elementA)}
-                  onBlur={() =>
-                    setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
-                  }
-                  placeholder="Element A"
-                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-base"
-                />
-                {showSuggestions.a && suggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {suggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => selectSuggestion('a', s)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                      >
-                        <span>{s.emoji}</span>
-                        <span className="font-medium">{s.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <span className="text-2xl font-bold text-purple-600 flex-shrink-0">+</span>
-
-              {/* Element B */}
-              <div className="relative flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={elementB}
-                  onChange={(e) => handleElementSearch('b', e.target.value)}
-                  onFocus={() => elementB && handleElementSearch('b', elementB)}
-                  onBlur={() =>
-                    setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
-                  }
-                  placeholder="Element B"
-                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-base"
-                />
-                {showSuggestions.b && suggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {suggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => selectSuggestion('b', s)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                      >
-                        <span>{s.emoji}</span>
-                        <span className="font-medium">{s.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-
-            {/* = Result row */}
-            <div className="flex items-center gap-3">
-              <span className="text-2xl font-bold text-purple-600 flex-shrink-0">=</span>
-
-              {/* Result Emoji */}
-              <div className="w-20 flex-shrink-0">
-                <input
-                  type="text"
-                  value={emoji}
-                  onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-                  placeholder="auto"
-                  title="Optional - AI will generate if empty"
-                  className="w-full px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
-                  maxLength={4}
-                />
-              </div>
-
-              {/* Result Name */}
-              <div className="relative flex-1 min-w-0">
-                <input
-                  type="text"
-                  value={result}
-                  onChange={(e) => handleResultSearch(e.target.value)}
-                  onFocus={() => result && handleResultSearch(result)}
-                  onBlur={() =>
-                    setTimeout(
-                      () => setShowSuggestions((prev) => ({ ...prev, result: false })),
-                      200
-                    )
-                  }
-                  placeholder="Result Element"
-                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-base"
-                />
-                {showSuggestions.result && resultSuggestions.length > 0 && (
-                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                    {resultSuggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => selectResultSuggestion(s)}
-                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
-                      >
-                        <span>{s.emoji}</span>
-                        <span className="font-medium">{s.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Mobile: stacked row layout */}
-          <div className="sm:hidden space-y-2">
-            {/* Element A */}
-            <div className="relative">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-medium text-gray-400 w-6 flex-shrink-0">A</span>
-                <input
-                  type="text"
-                  value={elementA}
-                  onChange={(e) => handleElementSearch('a', e.target.value)}
-                  onFocus={() => elementA && handleElementSearch('a', elementA)}
-                  onBlur={() =>
-                    setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
-                  }
-                  placeholder="Element A"
-                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm"
-                />
-              </div>
-              {showSuggestions.a && suggestions.length > 0 && (
-                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectSuggestion('a', s)}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-                    >
-                      <span>{s.emoji}</span>
-                      <span className="font-medium">{s.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* + Element B */}
-            <div className="relative">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
-                  +
-                </span>
-                <input
-                  type="text"
-                  value={elementB}
-                  onChange={(e) => handleElementSearch('b', e.target.value)}
-                  onFocus={() => elementB && handleElementSearch('b', elementB)}
-                  onBlur={() =>
-                    setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
-                  }
-                  placeholder="Element B"
-                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm"
-                />
-              </div>
-              {showSuggestions.b && suggestions.length > 0 && (
-                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                  {suggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectSuggestion('b', s)}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-                    >
-                      <span>{s.emoji}</span>
-                      <span className="font-medium">{s.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* = Result */}
-            <div className="relative">
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
-                  =
-                </span>
-                <div className="w-12 flex-shrink-0">
-                  <input
-                    type="text"
-                    value={emoji}
-                    onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-                    placeholder="auto"
-                    title="Optional - AI will generate if empty"
-                    className="w-full px-1 py-2.5 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-xl text-center placeholder:text-[10px] placeholder:text-gray-400"
-                    maxLength={4}
-                  />
-                </div>
-                <input
-                  type="text"
-                  value={result}
-                  onChange={(e) => handleResultSearch(e.target.value)}
-                  onFocus={() => result && handleResultSearch(result)}
-                  onBlur={() =>
-                    setTimeout(
-                      () => setShowSuggestions((prev) => ({ ...prev, result: false })),
-                      200
-                    )
-                  }
-                  placeholder="Result Element"
-                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-sm"
-                />
-              </div>
-              {showSuggestions.result && resultSuggestions.length > 0 && (
-                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                  {resultSuggestions.map((s, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectResultSuggestion(s)}
-                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-                    >
-                      <span>{s.emoji}</span>
-                      <span className="font-medium">{s.name}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Save Button */}
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={handleSave}
-            disabled={isSaving || !elementA || !elementB || !result}
-            className="px-6 py-3 bg-purple-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-purple-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
-          >
-            {isSaving ? (
-              <>
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Plus className="w-5 h-5" />
-                Add Combination
-              </>
-            )}
-          </button>
-        </div>
-      </div>
-
-      {/* Quick Reference */}
-      <div className="bg-gray-50 dark:bg-gray-900 rounded-lg border-[2px] border-dashed border-gray-300 dark:border-gray-600 p-4">
-        <h4 className="font-bold text-text-secondary mb-2">Starter Elements</h4>
-        <div className="flex flex-wrap gap-3">
-          {STARTER_ELEMENTS.map((el) => (
-            <span
-              key={el.id}
-              className="px-3 py-1.5 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 text-sm flex items-center gap-1.5"
-            >
-              <span>{el.emoji}</span>
-              <span className="font-medium">{el.name}</span>
-            </span>
           ))}
         </div>
       </div>
