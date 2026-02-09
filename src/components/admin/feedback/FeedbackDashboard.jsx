@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import adminService from '@/services/admin.service';
 import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS, FEEDBACK_STATUS_OPTIONS } from '@/lib/constants';
 import FeedbackDashboardSkeleton from '@/components/shared/FeedbackDashboardSkeleton';
@@ -44,13 +44,26 @@ export default function FeedbackDashboard({ onCountsChange }) {
   const [error, setError] = useState('');
   const [statusFilter, setStatusFilter] = useState(FEEDBACK_STATUS.NEW);
   const [categoryFilter, setCategoryFilter] = useState('all');
-  const [sortOrder, setSortOrder] = useState('newest'); // 'newest' or 'oldest'
+  const [sortOrder, setSortOrder] = useState('newest');
   const [updatingId, setUpdatingId] = useState(null);
   const [commentDrafts, setCommentDrafts] = useState({});
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterRef = useRef(null);
 
   useEffect(() => {
     loadFeedback(statusFilter);
   }, [statusFilter]);
+
+  // Close filter dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilterDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filteredFeedback = useMemo(() => {
     const filtered =
@@ -58,7 +71,6 @@ export default function FeedbackDashboard({ onCountsChange }) {
         ? feedback
         : feedback.filter((entry) => entry.category === categoryFilter);
 
-    // Sort by created date
     const sorted = [...filtered].sort((a, b) => {
       const dateA = new Date(a.createdAt);
       const dateB = new Date(b.createdAt);
@@ -79,6 +91,9 @@ export default function FeedbackDashboard({ onCountsChange }) {
       count: counts?.[option.value] || 0,
     }));
   }, [counts]);
+
+  const activeFilterCount =
+    (categoryFilter !== 'all' ? 1 : 0) + (statusFilter !== FEEDBACK_STATUS.NEW ? 1 : 0);
 
   const loadFeedback = async (status) => {
     setLoading(true);
@@ -103,7 +118,6 @@ export default function FeedbackDashboard({ onCountsChange }) {
     if (!newStatus) return;
     setUpdatingId(entryId);
 
-    // Immediately remove from current view
     setFeedback((prev) => prev.filter((entry) => entry.id !== entryId));
 
     try {
@@ -114,7 +128,6 @@ export default function FeedbackDashboard({ onCountsChange }) {
       }
     } catch (updateError) {
       setError(updateError.message || 'Failed to update status');
-      // Reload on error to restore state
       loadFeedback(statusFilter);
     } finally {
       setUpdatingId(null);
@@ -146,131 +159,136 @@ export default function FeedbackDashboard({ onCountsChange }) {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header with Status Tabs */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
-              Feedback Management
-            </p>
-            <h2 className="text-2xl font-black text-text-primary">Player Feedback</h2>
-          </div>
-          {summary && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Total:</span>
-              <span className="text-2xl font-black text-text-primary">
-                {summary.reduce((acc, item) => acc + item.count, 0)}
-              </span>
-            </div>
-          )}
+    <div className="space-y-4">
+      {/* Header */}
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
+            Feedback Management
+          </p>
+          <h2 className="text-2xl font-black text-text-primary">Player Feedback</h2>
         </div>
-
-        {/* Status Tabs */}
         {summary && (
-          <div className="flex gap-1.5 sm:gap-2 border-b-[3px] border-black dark:border-white overflow-x-auto">
-            {summary.map((item) => {
-              const isActive = statusFilter === item.value;
-              const colorClasses = {
-                [FEEDBACK_STATUS.NEW]: 'bg-accent-red',
-                [FEEDBACK_STATUS.IN_REVIEW]: 'bg-accent-blue',
-                [FEEDBACK_STATUS.RESOLVED]: 'bg-accent-green',
-                [FEEDBACK_STATUS.ARCHIVED]: 'bg-gray-500',
-              };
-
-              const color = colorClasses[item.value];
-
-              return (
-                <button
-                  key={item.value}
-                  onClick={() => setStatusFilter(item.value)}
-                  className={`relative px-3 sm:px-4 py-2 sm:py-3 border-[3px] border-black dark:border-white font-bold text-xs sm:text-sm transition-all rounded-t-lg whitespace-nowrap ${
-                    isActive
-                      ? `${color} text-white border-b-[0px] mb-[-3px] z-10 shadow-none`
-                      : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span className="hidden sm:inline">{item.label}</span>
-                    <span className="sm:hidden">{item.label.split(' ')[0]}</span>
-                    <span
-                      className={`min-w-[20px] sm:min-w-[24px] px-1 sm:px-1.5 py-0.5 rounded text-xs font-black ${
-                        isActive
-                          ? 'bg-ghost-white/20 text-white'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      {item.count}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Total:</span>
+            <span className="text-2xl font-black text-text-primary">
+              {summary.reduce((acc, item) => acc + item.count, 0)}
+            </span>
           </div>
         )}
+      </div>
 
-        {/* Category Filters and Sort */}
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">
-              Filter:
-            </span>
-            <div className="flex flex-wrap gap-1.5 sm:gap-2">
-              <button
-                onClick={() => setCategoryFilter('all')}
-                className={`px-2.5 sm:px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
-                  categoryFilter === 'all'
-                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                All
-              </button>
-              {FEEDBACK_CATEGORIES.map((category) => (
-                <button
-                  key={category.value}
-                  onClick={() => setCategoryFilter(category.value)}
-                  className={`px-2.5 sm:px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all whitespace-nowrap ${
-                    categoryFilter === category.value
-                      ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                      : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  {category.label}
-                </button>
-              ))}
-            </div>
-          </div>
+      {/* Sort & Filter Row */}
+      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+        {/* Sort Toggle */}
+        <button
+          onClick={() => setSortOrder((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
+          className="flex items-center gap-1.5 text-sm font-bold text-text-primary hover:text-accent-blue transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+          <span>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</span>
+        </button>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider shrink-0">
-              Sort:
-            </span>
-            <div className="flex gap-1.5 sm:gap-2">
-              <button
-                onClick={() => setSortOrder('newest')}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
-                  sortOrder === 'newest'
-                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <span className="hidden sm:inline">Newest First</span>
-                <span className="sm:hidden">Newest</span>
-              </button>
-              <button
-                onClick={() => setSortOrder('oldest')}
-                className={`flex-1 sm:flex-none px-3 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs font-bold transition-all ${
-                  sortOrder === 'oldest'
-                    ? 'bg-black dark:bg-ghost-white text-white dark:text-black shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
-                    : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                }`}
-              >
-                <span className="hidden sm:inline">Oldest First</span>
-                <span className="sm:hidden">Oldest</span>
-              </button>
+        {/* Filter Button */}
+        <div className="relative" ref={filterRef}>
+          <button
+            onClick={() => setShowFilterDropdown((prev) => !prev)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+              showFilterDropdown || activeFilterCount > 0
+                ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white'
+                : 'bg-ghost-white dark:bg-gray-800 text-text-primary border-black dark:border-white hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
+            </svg>
+            <span>Filter</span>
+            {activeFilterCount > 0 && (
+              <span className="ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-accent-red text-white text-[10px] font-black">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* Filter Dropdown */}
+          {showFilterDropdown && (
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-gray-800 border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] z-50 overflow-hidden">
+              {/* Status Section */}
+              <div className="p-3 border-b-[2px] border-black/10 dark:border-white/10">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  Status
+                </span>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {FEEDBACK_STATUS_OPTIONS.map((option) => {
+                    const isActive = statusFilter === option.value;
+                    const count = counts?.[option.value] || 0;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setStatusFilter(option.value)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                          isActive
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        {option.label}
+                        <span
+                          className={`ml-1 ${isActive ? 'text-white/60 dark:text-black/60' : 'text-gray-400 dark:text-gray-500'}`}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Type Section */}
+              <div className="p-3">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  Type
+                </span>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  <button
+                    onClick={() => setCategoryFilter('all')}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                      categoryFilter === 'all'
+                        ? 'bg-black dark:bg-white text-white dark:text-black'
+                        : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                    }`}
+                  >
+                    All
+                  </button>
+                  {FEEDBACK_CATEGORIES.map((category) => (
+                    <button
+                      key={category.value}
+                      onClick={() => setCategoryFilter(category.value)}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                        categoryFilter === category.value
+                          ? 'bg-black dark:bg-white text-white dark:text-black'
+                          : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                      }`}
+                    >
+                      {category.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
