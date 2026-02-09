@@ -335,7 +335,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6 overflow-visible">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 overflow-visible">
         {/* Basic Info */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
@@ -526,34 +526,32 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Generate Path Button */}
-        <div className="p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border-[3px] border-orange-500">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-                <Route className="w-5 h-5 text-orange-500" />
-                Solution Path
-              </h3>
-              <p className="text-sm text-text-secondary">
-                Generate the shortest path from starter elements to your target
-              </p>
-            </div>
+        <div className="p-3 sm:p-4 bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-900/20 dark:to-amber-900/20 rounded-lg border-[3px] border-orange-500">
+          <div className="flex items-center justify-between gap-2">
+            <h3 className="text-base sm:text-lg font-bold text-text-primary flex items-center gap-2">
+              <Route className="w-4 h-4 sm:w-5 sm:h-5 text-orange-500" />
+              Solution Path
+            </h3>
             <button
               type="button"
               onClick={generatePath}
               disabled={loading || isGeneratingPath || !formData.targetElement}
-              className="px-4 py-2 bg-orange-500 text-white font-bold rounded-lg border-[2px] border-black hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center gap-2"
-              style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+              className="px-3 py-1.5 text-sm bg-orange-500 text-white font-bold rounded-md border-[2px] border-black hover:bg-orange-600 transition-colors disabled:opacity-50 flex items-center gap-1.5 flex-shrink-0"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             >
               {isGeneratingPath ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   Generating...
                 </>
               ) : (
-                'Generate Path'
+                'Generate'
               )}
             </button>
           </div>
+          <p className="text-xs text-text-secondary mt-1.5">
+            Generate the shortest path from starter elements to your target
+          </p>
 
           {/* Path Error */}
           {pathError && (
@@ -631,21 +629,21 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4 border-t-2 border-black dark:border-white">
+        <div className="flex gap-2 sm:gap-3 pt-4 border-t-2 border-black dark:border-white">
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 font-bold bg-green-500 text-white rounded-lg border-[3px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-5 py-2 text-sm sm:text-base font-bold bg-green-500 text-white rounded-md sm:rounded-lg border-[2px] sm:border-[3px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
-            {loading ? 'Saving...' : puzzle ? 'Update Puzzle' : 'Create Puzzle'}
+            {loading ? 'Saving...' : puzzle ? 'Update' : 'Create'}
           </button>
           <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-3 font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[3px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-3 sm:px-5 py-2 text-sm sm:text-base font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] sm:border-[3px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             Cancel
           </button>

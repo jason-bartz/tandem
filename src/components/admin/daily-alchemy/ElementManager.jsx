@@ -2701,8 +2701,7 @@ function FirstDiscoveriesSection() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <h3 className="text-lg font-bold text-text-primary flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-amber-500" />
-          Player First Discoveries
+          First Discoveries
           {pagination.total > 0 && (
             <span className="text-sm font-normal text-text-secondary">({pagination.total})</span>
           )}
