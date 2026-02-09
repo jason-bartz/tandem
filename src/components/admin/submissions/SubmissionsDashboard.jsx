@@ -152,19 +152,46 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
 
   if (loading && submissions.length === 0) {
     return (
-      <div className="space-y-6">
-        <div className="animate-pulse">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-48 mb-4"></div>
-          <div className="flex gap-2 mb-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-24"></div>
-            ))}
+      <div className="space-y-4">
+        {/* Header Skeleton */}
+        <div className="flex items-end justify-between">
+          <div>
+            <div className="h-3 w-32 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse" />
+            <div className="h-7 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
           </div>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-48 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
-            ))}
-          </div>
+          <div className="h-7 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        </div>
+        {/* Sort & Filter Row Skeleton */}
+        <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+          <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+          <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+        </div>
+        {/* Card Skeletons */}
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="bg-bg-surface rounded-xl border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.2)] animate-pulse"
+            >
+              <div className="p-4 border-b-[2px] border-black/10 dark:border-white/10">
+                <div className="flex justify-between">
+                  <div>
+                    <div className="h-5 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-2" />
+                    <div className="h-3 w-20 bg-gray-200 dark:bg-gray-700 rounded" />
+                  </div>
+                  <div className="h-7 w-24 bg-gray-200 dark:bg-gray-700 rounded-lg" />
+                </div>
+              </div>
+              <div className="p-4 space-y-3">
+                {[1, 2, 3, 4].map((j) => (
+                  <div key={j} className="flex items-center gap-3">
+                    <div className="h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded" />
+                    <div className="h-4 w-48 bg-gray-200 dark:bg-gray-700 rounded" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
