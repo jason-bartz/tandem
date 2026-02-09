@@ -259,26 +259,38 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const advanceToNextCell = useCallback(() => {
     if (!selectedCell) return;
 
-    let { row, col } = selectedCell;
+    const { row, col } = selectedCell;
     const grid = formData.grid;
 
     if (currentDirection === 'across') {
-      // Move right, skip black squares
-      do {
-        col++;
-      } while (col < 5 && grid[row][col] === '■');
-
-      if (col < 5) {
-        setSelectedCell({ row, col });
+      // Move right, wrapping to next row when reaching end
+      let r = row;
+      let c = col + 1;
+      while (r < 5) {
+        while (c < 5) {
+          if (grid[r][c] !== '■') {
+            setSelectedCell({ row: r, col: c });
+            return;
+          }
+          c++;
+        }
+        r++;
+        c = 0;
       }
     } else {
-      // Move down, skip black squares
-      do {
-        row++;
-      } while (row < 5 && grid[row][col] === '■');
-
-      if (row < 5) {
-        setSelectedCell({ row, col });
+      // Move down, wrapping to next column when reaching end
+      let r = row + 1;
+      let c = col;
+      while (c < 5) {
+        while (r < 5) {
+          if (grid[r][c] !== '■') {
+            setSelectedCell({ row: r, col: c });
+            return;
+          }
+          r++;
+        }
+        c++;
+        r = 0;
       }
     }
   }, [selectedCell, formData.grid, currentDirection]);
@@ -286,32 +298,44 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const goToPreviousCell = useCallback(() => {
     if (!selectedCell) return;
 
-    let { row, col } = selectedCell;
+    const { row, col } = selectedCell;
     const grid = formData.grid;
 
     if (currentDirection === 'across') {
-      // Move left, skip black squares
-      do {
-        col--;
-      } while (col >= 0 && grid[row][col] === '■');
-
-      if (col >= 0) {
-        const newGrid = formData.grid.map((r) => [...r]);
-        newGrid[row][col] = '';
-        setFormData((prev) => ({ ...prev, grid: newGrid }));
-        setSelectedCell({ row, col });
+      // Move left, wrapping to previous row when reaching start
+      let r = row;
+      let c = col - 1;
+      while (r >= 0) {
+        while (c >= 0) {
+          if (grid[r][c] !== '■') {
+            const newGrid = formData.grid.map((rowArr) => [...rowArr]);
+            newGrid[r][c] = '';
+            setFormData((prev) => ({ ...prev, grid: newGrid }));
+            setSelectedCell({ row: r, col: c });
+            return;
+          }
+          c--;
+        }
+        r--;
+        c = 4;
       }
     } else {
-      // Move up, skip black squares
-      do {
-        row--;
-      } while (row >= 0 && grid[row][col] === '■');
-
-      if (row >= 0) {
-        const newGrid = formData.grid.map((r) => [...r]);
-        newGrid[row][col] = '';
-        setFormData((prev) => ({ ...prev, grid: newGrid }));
-        setSelectedCell({ row, col });
+      // Move up, wrapping to previous column when reaching start
+      let r = row - 1;
+      let c = col;
+      while (c >= 0) {
+        while (r >= 0) {
+          if (grid[r][c] !== '■') {
+            const newGrid = formData.grid.map((rowArr) => [...rowArr]);
+            newGrid[r][c] = '';
+            setFormData((prev) => ({ ...prev, grid: newGrid }));
+            setSelectedCell({ row: r, col: c });
+            return;
+          }
+          r--;
+        }
+        c--;
+        r = 4;
       }
     }
   }, [selectedCell, formData.grid, currentDirection]);
@@ -628,15 +652,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     }
   };
 
-  const clearGrid = () => {
-    setFormData((prev) => ({
-      ...prev,
-      grid: Array(5)
-        .fill()
-        .map(() => Array(5).fill('')),
-    }));
-  };
-
   const clearAll = () => {
     if (!confirm('Clear all grid content and clues? This cannot be undone.')) {
       return;
@@ -834,36 +849,26 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   }, [selectedCell, handleBackspaceInGrid, handleArrowKey, handleLetterInGrid]);
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6">
-      <div className="flex justify-between items-start mb-6">
-        <h2 className="text-2xl font-black text-text-primary">
-          {puzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-3 sm:p-4">
+      <div className="mb-4">
+        <h2 className="text-lg font-black text-text-primary whitespace-nowrap">
+          {puzzle ? 'Edit puzzle' : 'Create new puzzle'}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 mt-2">
           <button
             onClick={autofillGrid}
             disabled={loading || isGenerating}
-            className="px-3 py-1.5 text-xs font-bold bg-accent-blue text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
+            className="px-2.5 py-1 text-xs font-bold bg-accent-blue text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             title="Generate complete puzzle using AI"
           >
             {isGenerating ? 'Generating...' : 'AI Generate'}
           </button>
           <button
-            onClick={clearGrid}
-            type="button"
-            disabled={isGenerating}
-            className="px-3 py-1.5 text-xs font-bold bg-orange-500 text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            title="Clear grid letters only"
-          >
-            Clear Grid
-          </button>
-          <button
             onClick={clearAll}
             type="button"
             disabled={isGenerating}
-            className="px-3 py-1.5 text-xs font-bold bg-red-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
+            className="px-2.5 py-1 text-xs font-bold bg-red-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             title="Clear grid, clues, and stats"
           >
@@ -872,30 +877,27 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {/* Basic Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Date *</label>
+            <label className="block text-xs font-bold text-text-primary mb-1">Date *</label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
-            <p className="text-xs text-text-secondary mt-1">
-              Puzzle number will be auto-calculated from date
-            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Difficulty</label>
+            <label className="block text-xs font-bold text-text-primary mb-1">Difficulty</label>
             <select
               value={formData.difficulty}
               onChange={(e) => handleChange('difficulty', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             >
               <option value="easy">Easy</option>
@@ -906,18 +908,18 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
 
         {/* Grid Editor with Word Suggestions */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3">
           {/* Grid */}
           <div className="lg:col-span-2">
-            <div className="flex items-center justify-between mb-2">
-              <label className="text-sm font-bold text-text-primary">
-                5×5 Grid * (Click cells to edit, double-click for black square ■)
+            <div className="flex items-center justify-between mb-1.5">
+              <label className="text-xs font-bold text-text-primary">
+                5×5 Grid * (dbl-click for ■)
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-1.5">
                 <button
                   type="button"
                   onClick={() => setCurrentDirection('across')}
-                  className={`px-2 py-1 text-xs font-bold rounded border-[2px] ${
+                  className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'across'
                       ? 'bg-accent-yellow text-gray-900 border-black'
                       : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
@@ -928,7 +930,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 <button
                   type="button"
                   onClick={() => setCurrentDirection('down')}
-                  className={`px-2 py-1 text-xs font-bold rounded border-[2px] ${
+                  className={`px-2 py-0.5 text-xs font-bold rounded border-[2px] ${
                     currentDirection === 'down'
                       ? 'bg-accent-yellow text-gray-900 border-black'
                       : 'bg-ghost-white dark:bg-gray-700 text-text-primary border-gray-300'
@@ -938,8 +940,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 </button>
               </div>
             </div>
-            <div className="inline-block bg-gray-100 dark:bg-gray-900 p-4 rounded-lg">
-              <div className="grid grid-cols-5 gap-1">
+            <div className="inline-block bg-gray-100 dark:bg-gray-900 p-2 sm:p-3 rounded-lg">
+              <div className="grid grid-cols-5 gap-0.5">
                 {formData.grid.map((row, rowIndex) =>
                   row.map((cell, colIndex) => (
                     <input
@@ -949,20 +951,17 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                       value={cell === '■' ? '■' : cell}
                       onChange={(e) => {
                         let newValue = e.target.value.toUpperCase();
-                        // Handle period as black square
                         if (newValue === '.') {
                           newValue = '■';
                         }
                         if (newValue === '' || /^[A-Z■]$/.test(newValue)) {
                           handleGridChange(rowIndex, colIndex, newValue);
-                          // If a letter was typed, auto-advance
                           if (/^[A-Z]$/.test(newValue)) {
                             setTimeout(() => advanceToNextCell(), 0);
                           }
                         }
                       }}
                       onKeyDown={(e) => {
-                        // Prevent default input behavior for special keys
                         if (
                           e.key === 'ArrowUp' ||
                           e.key === 'ArrowDown' ||
@@ -976,7 +975,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                       onDoubleClick={() => toggleBlackSquare(rowIndex, colIndex)}
                       onClick={() => setSelectedCell({ row: rowIndex, col: colIndex })}
                       onFocus={() => setSelectedCell({ row: rowIndex, col: colIndex })}
-                      className={`grid-cell w-12 h-12 text-center text-lg font-bold uppercase border-[2px] ${
+                      className={`grid-cell w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-bold uppercase border-[2px] ${
                         cell === '■'
                           ? 'bg-black text-white border-black'
                           : selectedCell?.row === rowIndex && selectedCell?.col === colIndex
@@ -991,10 +990,9 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                 )}
               </div>
             </div>
-            <p className="text-xs text-text-secondary mt-2">
-              Tip: Type to fill letters and auto-advance. Type <strong>.</strong> (period) for black
-              squares. Use arrows to navigate, Space to toggle direction. Current word is
-              highlighted in blue.
+            <p className="text-xs text-text-secondary mt-1.5">
+              Type letters to auto-advance. <strong>.</strong> for black squares. Space toggles
+              direction. Arrows to navigate.
             </p>
             {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
           </div>
@@ -1104,12 +1102,11 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
 
         {/* Clues Header with Generate Button */}
-        <div className="flex justify-between items-center py-3 border-t-2 border-black dark:border-white">
+        <div className="flex justify-between items-center py-2 border-t-2 border-black dark:border-white">
           <div>
-            <h3 className="text-lg font-black text-text-primary">Clues</h3>
+            <h3 className="text-sm font-black text-text-primary">Clues</h3>
             <p className="text-xs text-text-secondary">
-              {gridWords.across.length + gridWords.down.length} words detected • Clues auto-sync
-              with grid
+              {gridWords.across.length + gridWords.down.length} words detected
             </p>
           </div>
           <button
@@ -1120,30 +1117,28 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
               isGeneratingClues ||
               (gridWords.across.length === 0 && gridWords.down.length === 0)
             }
-            className="px-4 py-2 text-sm font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-2.5 py-1 text-xs font-bold bg-purple-600 text-white rounded-lg border-[2px] border-black hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             title="Generate AI clues for all words"
           >
-            {isGeneratingClues ? 'Generating...' : 'Generate All Clues'}
+            {isGeneratingClues ? 'Generating...' : 'Generate Clues'}
           </button>
         </div>
 
         {/* Across Clues */}
         <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-bold text-text-primary">
-              Across ({formData.clues.across.length})
-            </label>
-          </div>
-          <div className="space-y-2">
+          <label className="text-xs font-bold text-text-primary mb-1 block">
+            Across ({formData.clues.across.length})
+          </label>
+          <div className="space-y-1.5">
             {formData.clues.across.length === 0 ? (
               <p className="text-xs text-text-secondary italic">
                 No across words detected. Fill in the grid to create words.
               </p>
             ) : (
               formData.clues.across.map((clue, index) => (
-                <div key={index} className="grid grid-cols-12 gap-2 items-start">
-                  <div className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-center font-bold">
+                <div key={index} className="grid grid-cols-12 gap-1.5 items-start">
+                  <div className="col-span-1 px-1.5 py-1.5 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-xs text-center font-bold">
                     {clue.number}
                   </div>
                   <input
@@ -1151,10 +1146,10 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                     placeholder="Enter clue..."
                     value={clue.clue || ''}
                     onChange={(e) => handleClueChange('across', index, 'clue', e.target.value)}
-                    className="col-span-8 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
+                    className="col-span-8 px-2 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs"
                     disabled={loading}
                   />
-                  <div className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm uppercase font-mono font-bold text-center">
+                  <div className="col-span-3 px-2 py-1.5 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-xs uppercase font-mono font-bold text-center">
                     {clue.answer}
                   </div>
                 </div>
@@ -1165,20 +1160,18 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
 
         {/* Down Clues */}
         <div>
-          <div className="flex justify-between items-center mb-2">
-            <label className="text-sm font-bold text-text-primary">
-              Down ({formData.clues.down.length})
-            </label>
-          </div>
-          <div className="space-y-2">
+          <label className="text-xs font-bold text-text-primary mb-1 block">
+            Down ({formData.clues.down.length})
+          </label>
+          <div className="space-y-1.5">
             {formData.clues.down.length === 0 ? (
               <p className="text-xs text-text-secondary italic">
                 No down words detected. Fill in the grid to create words.
               </p>
             ) : (
               formData.clues.down.map((clue, index) => (
-                <div key={index} className="grid grid-cols-12 gap-2 items-start">
-                  <div className="col-span-1 px-2 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm text-center font-bold">
+                <div key={index} className="grid grid-cols-12 gap-1.5 items-start">
+                  <div className="col-span-1 px-1.5 py-1.5 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-xs text-center font-bold">
                     {clue.number}
                   </div>
                   <input
@@ -1186,10 +1179,10 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                     placeholder="Enter clue..."
                     value={clue.clue || ''}
                     onChange={(e) => handleClueChange('down', index, 'clue', e.target.value)}
-                    className="col-span-8 px-3 py-2 rounded-lg border-[2px] border-black dark:border-white text-sm"
+                    className="col-span-8 px-2 py-1.5 rounded-lg border-[2px] border-black dark:border-white text-xs"
                     disabled={loading}
                   />
-                  <div className="col-span-3 px-3 py-2 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-sm uppercase font-mono font-bold text-center">
+                  <div className="col-span-3 px-2 py-1.5 rounded-lg border-[2px] border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-700 text-xs uppercase font-mono font-bold text-center">
                     {clue.answer}
                   </div>
                 </div>
@@ -1200,12 +1193,12 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-3 pt-4 border-t-2 border-black dark:border-white">
+        <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
           <button
             type="submit"
             disabled={loading}
-            className="px-6 py-3 font-bold bg-accent-yellow text-gray-900 rounded-lg border-[3px] border-black hover:translate-y-[-2px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-4 py-1.5 text-sm font-bold bg-accent-yellow text-gray-900 rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             {loading ? 'Saving...' : puzzle ? 'Update Puzzle' : 'Create Puzzle'}
           </button>
@@ -1213,8 +1206,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-6 py-3 font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[3px] border-black dark:border-white hover:translate-y-[-2px] transition-all"
-            style={{ boxShadow: '3px 3px 0px rgba(0, 0, 0, 1)' }}
+            className="px-4 py-1.5 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             Cancel
           </button>
