@@ -2929,11 +2929,11 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
 
   return (
     <div
-      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 overflow-y-auto"
       onClick={onClose}
     >
       <div
-        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)] relative"
+        className="bg-white dark:bg-gray-800 rounded-xl border-[3px] border-black dark:border-white p-6 max-w-md w-full shadow-[6px_6px_0px_rgba(0,0,0,1)] relative my-auto"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Close button */}
@@ -2955,7 +2955,17 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
               {/* Element display */}
               <div className="text-center mb-6">
                 <span className="text-6xl mb-3 block">{discovery.resultEmoji}</span>
-                <h3 className="text-2xl font-bold text-gray-900">{discovery.resultElement}</h3>
+                <h3
+                  className={`font-bold text-gray-900 ${
+                    discovery.resultElement.length > 40
+                      ? 'text-base'
+                      : discovery.resultElement.length > 25
+                        ? 'text-lg'
+                        : 'text-2xl'
+                  }`}
+                >
+                  {discovery.resultElement}
+                </h3>
                 <div className="flex items-center justify-center gap-2 mt-2">
                   <span className="text-amber-500">✨</span>
                   <span className="text-sm font-medium text-amber-600">First Discovery</span>
@@ -2972,16 +2982,16 @@ function FirstDiscoveryDetailModal({ discovery, onClose }) {
                     Created By Combining
                   </p>
                   <div className="flex items-center justify-center gap-3">
-                    <div className="flex flex-col items-center">
+                    <div className="flex flex-col items-center flex-1 min-w-0">
                       <span className="text-3xl mb-1">{discovery.elementAEmoji || '✨'}</span>
-                      <span className="font-bold text-gray-900 text-sm text-center">
+                      <span className="font-bold text-gray-900 text-sm text-center break-words">
                         {discovery.elementA}
                       </span>
                     </div>
-                    <span className="text-blue-500 font-bold text-2xl">+</span>
-                    <div className="flex flex-col items-center">
+                    <span className="text-blue-500 font-bold text-2xl shrink-0">+</span>
+                    <div className="flex flex-col items-center flex-1 min-w-0">
                       <span className="text-3xl mb-1">{discovery.elementBEmoji || '✨'}</span>
-                      <span className="font-bold text-gray-900 text-sm text-center">
+                      <span className="font-bold text-gray-900 text-sm text-center break-words">
                         {discovery.elementB}
                       </span>
                     </div>
