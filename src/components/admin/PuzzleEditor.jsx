@@ -346,7 +346,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
             <button
               type="button"
               onClick={onShowThemes}
-              className="px-3 py-2 bg-accent-pink text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-2px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-sm"
+              className="px-2.5 py-1.5 bg-accent-pink text-white border-[2px] border-black dark:border-white font-bold rounded-md hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs sm:text-sm"
             >
               Themes
             </button>
@@ -356,28 +356,30 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
 
       <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
         <div>
-          <label className="block text-xs sm:text-sm font-bold text-text-primary mb-2">Theme</label>
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              placeholder="e.g., Things found in a kitchen"
-              className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
-              style={{ boxShadow: 'var(--shadow-small)' }}
-              required
-            />
+          <label className="block text-xs sm:text-sm font-bold text-text-primary mb-1.5">
+            Theme
+          </label>
+          <input
+            type="text"
+            value={theme}
+            onChange={(e) => setTheme(e.target.value)}
+            placeholder="e.g., Things found in a kitchen"
+            className="w-full px-3 py-1.5 sm:py-2 text-sm border-[2px] sm:border-[3px] border-black dark:border-white rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+            style={{ boxShadow: 'var(--shadow-small)' }}
+            required
+          />
+          <div className="flex gap-1.5 sm:gap-2 mt-2">
             <button
               type="button"
               onClick={handleGenerateWithAI}
               disabled={generating || loading || suggestingThemes}
-              className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ boxShadow: 'var(--shadow-button)' }}
+              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
               title="Generate puzzle with AI"
             >
               {generating ? (
-                <span className="flex items-center gap-2 justify-center">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <span className="flex items-center gap-1.5 justify-center">
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -393,7 +395,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  <span className="hidden sm:inline">Creating...</span>
+                  <span>Creating...</span>
                 </span>
               ) : (
                 <span>Create</span>
@@ -403,13 +405,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               type="button"
               onClick={handleSuggestThemes}
               disabled={suggestingThemes || generating || loading}
-              className="px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-yellow text-[#2c2c2c] border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ boxShadow: 'var(--shadow-button)' }}
+              className="px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-yellow text-[#2c2c2c] border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
               title="Get theme suggestions"
             >
               {suggestingThemes ? (
-                <span className="flex items-center gap-2 justify-center">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                <span className="flex items-center gap-1.5 justify-center">
+                  <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -425,7 +427,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  <span className="hidden sm:inline">...</span>
+                  <span>...</span>
                 </span>
               ) : (
                 <span>Suggest</span>
@@ -435,8 +437,8 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               <button
                 type="button"
                 onClick={onShowBulkImport}
-                className="hidden sm:inline-block px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-blue text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
-                style={{ boxShadow: 'var(--shadow-button)' }}
+                className="hidden sm:inline-block px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-blue text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform"
+                style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
               >
                 Bulk Import
               </button>
@@ -470,7 +472,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
             </div>
           )}
           {/* Theme Context */}
-          <div className="mt-3">
+          <div className="mt-2">
             <label className="block text-xs font-bold text-text-secondary mb-1">
               Theme Context (optional)
             </label>
@@ -479,7 +481,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               value={themeContext}
               onChange={(e) => setThemeContext(e.target.value)}
               placeholder="e.g., exclude stove and coffee maker as answers"
-              className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+              className="w-full px-3 py-1.5 sm:py-2 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md sm:rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
             />
           </div>
         </div>
@@ -489,25 +491,23 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
             Puzzle Pairs
           </label>
           <div
-            className="space-y-4 sm:space-y-5 p-3 sm:p-4 border-[3px] border-black dark:border-white rounded-lg"
+            className="space-y-3 sm:space-y-4 p-2.5 sm:p-4 border-[2px] sm:border-[3px] border-black dark:border-white rounded-md sm:rounded-lg"
             style={{ boxShadow: 'var(--shadow-small)' }}
           >
             {puzzles.map((puzzle, index) => (
-              <div key={index} className="p-3 sm:p-4 bg-bg-card rounded-lg">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="text-xs sm:text-sm font-bold text-text-primary">
-                    Puzzle #{index + 1}
-                  </span>
+              <div key={index} className="p-2.5 sm:p-4 bg-bg-card rounded-md sm:rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-bold text-text-primary">Puzzle #{index + 1}</span>
                 </div>
-                <div className="space-y-3">
-                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-                    <div className="flex-1 flex gap-2">
+                <div className="space-y-2">
+                  <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2">
+                    <div className="flex-1 flex gap-1.5">
                       <input
                         type="text"
                         value={puzzle.emoji}
                         onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
-                        placeholder="Emoji pair (e.g., 🍳🔥)"
-                        className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                        placeholder="🍳🔥"
+                        className="flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                         required
                       />
                       <button
@@ -516,11 +516,11 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                         disabled={
                           shufflingEmoji === index || generating || loading || !puzzle.answer.trim()
                         }
-                        className="px-3 py-2 bg-accent-green text-white border-[2px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                        className="px-2.5 py-1.5 bg-accent-green text-white border-[2px] border-black dark:border-white rounded-md font-bold hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                         title="Generate new emoji pair"
                       >
                         {shufflingEmoji === index ? (
-                          <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
                             <circle
                               className="opacity-25"
                               cx="12"
@@ -537,7 +537,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                           </svg>
                         ) : (
                           <svg
-                            className="w-4 h-4"
+                            className="w-3.5 h-3.5"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -556,9 +556,9 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       type="text"
                       value={puzzle.answer}
                       onChange={(e) => handlePuzzleChange(index, 'answer', e.target.value)}
-                      placeholder="ANSWER (E.G., STOVE)"
+                      placeholder="ANSWER"
                       maxLength={30}
-                      className="flex-1 px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                      className="flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-bold uppercase focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                       required
                     />
                   </div>
@@ -567,11 +567,11 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       type="text"
                       value={puzzle.hint}
                       onChange={(e) => handlePuzzleChange(index, 'hint', e.target.value)}
-                      placeholder="💡 Hint (e.g., 'Kitchen cooking surface')"
+                      placeholder="💡 Hint"
                       maxLength={60}
-                      className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[2px] border-accent-yellow rounded-lg bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
+                      className="w-full px-2.5 py-1.5 text-sm border-[2px] border-accent-yellow rounded-md bg-accent-yellow/10 text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-yellow placeholder:text-text-muted"
                     />
-                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-text-muted font-bold">
+                    <span className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-text-muted font-bold">
                       {puzzle.hint?.length || 0}/60
                     </span>
                   </div>
@@ -586,16 +586,16 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
             Difficulty Assessment
           </label>
           <div
-            className="bg-accent-pink/10 border-[3px] border-accent-pink rounded-lg p-4 space-y-3"
+            className="bg-accent-pink/10 border-[2px] sm:border-[3px] border-accent-pink rounded-md sm:rounded-lg p-3 sm:p-4 space-y-2 sm:space-y-3"
             style={{ boxShadow: 'var(--shadow-small)' }}
           >
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
               <div className="flex-1">
-                <label className="block text-xs font-bold text-text-primary mb-2">Rating</label>
+                <label className="block text-xs font-bold text-text-primary mb-1.5">Rating</label>
                 <select
                   value={difficultyRating}
                   onChange={(e) => setDifficultyRating(e.target.value)}
-                  className="w-full px-3 sm:px-4 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
+                  className="w-full px-2.5 py-1.5 text-sm border-[2px] sm:border-[3px] border-black dark:border-white rounded-md sm:rounded-lg bg-bg-card text-text-primary font-bold focus:outline-none focus:ring-2 focus:ring-accent-pink"
                   style={{ boxShadow: 'var(--shadow-small)' }}
                 >
                   <option value="">Not assessed</option>
@@ -611,13 +611,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                   type="button"
                   onClick={handleAssessDifficulty}
                   disabled={assessingDifficulty || generating || loading}
-                  className="w-full sm:w-auto px-3 sm:px-4 py-2 text-sm sm:text-base bg-accent-orange text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{ boxShadow: 'var(--shadow-button)' }}
+                  className="w-full sm:w-auto px-2.5 sm:px-3 py-1.5 text-xs sm:text-sm bg-accent-orange text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
                   title="Assess difficulty using AI"
                 >
                   {assessingDifficulty ? (
-                    <span className="flex items-center gap-2 justify-center">
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                    <span className="flex items-center gap-1.5 justify-center">
+                      <svg className="animate-spin h-3.5 w-3.5" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -636,9 +636,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                       <span>Assessing...</span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1 justify-center">
-                      <span>Assess Difficulty</span>
-                    </span>
+                    <span>Assess</span>
                   )}
                 </button>
               </div>
@@ -679,16 +677,16 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-3">
+        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white bg-bg-card text-text-primary rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
-            style={{ boxShadow: 'var(--shadow-button)' }}
+            className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-bg-card text-text-primary rounded-md sm:rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
-            ← Back to Calendar
+            ← Back
           </button>
-          <div className="flex flex-col sm:flex-row gap-3 sm:space-x-4">
+          <div className="flex gap-2 sm:gap-3">
             <button
               type="button"
               onClick={() => {
@@ -703,18 +701,18 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                 setDifficultyFactors(null);
                 setMessage('');
               }}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base border-[3px] border-black dark:border-white bg-accent-orange text-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform"
-              style={{ boxShadow: 'var(--shadow-button)' }}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-accent-orange text-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             >
               Clear
             </button>
             <button
               type="submit"
               disabled={loading || !validateForm()}
-              className="w-full sm:w-auto px-4 sm:px-6 py-2 text-sm sm:text-base bg-accent-green text-white border-[3px] border-black dark:border-white rounded-lg font-bold hover:translate-y-[-2px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ boxShadow: 'var(--shadow-button)' }}
+              className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
             >
-              {loading ? 'Saving...' : 'Save Puzzle'}
+              {loading ? 'Saving...' : 'Save'}
             </button>
           </div>
         </div>
