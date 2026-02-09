@@ -360,11 +360,11 @@ export default function AdminDashboard() {
     <div className="px-2 py-3 sm:px-4 sm:py-5 md:p-6">
       <div className="mb-6">
         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-4">
-          <h2 className="text-xl sm:text-2xl font-bold text-text-primary">Puzzle Management</h2>
+          <h2 className="text-xl sm:text-2xl font-bold text-text-primary">
+            Puzzle & Game Management
+          </h2>
         </div>
-        <p className="text-sm text-text-secondary font-medium">
-          Create and manage daily puzzles for all games
-        </p>
+        <p className="text-sm text-text-secondary font-medium">Manage Daily Puzzles and Settings</p>
       </div>
 
       {/* Main tabs: Calendar and Feedback */}
