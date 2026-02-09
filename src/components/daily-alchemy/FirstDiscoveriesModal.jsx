@@ -29,7 +29,7 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
       initial={{ opacity: 0, pointerEvents: 'auto' }}
       animate={{ opacity: 1, pointerEvents: 'auto' }}
       exit={{ opacity: 0, pointerEvents: 'none' }}
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50"
+      className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/50 overflow-y-auto"
       onClick={onClose}
     >
       <motion.div
@@ -43,6 +43,7 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
           'border-[3px] border-black dark:border-gray-600',
           'rounded-xl',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          'my-auto',
           highContrast && 'border-[4px] border-hc-border'
         )}
         onClick={(e) => e.stopPropagation()}
@@ -64,7 +65,16 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
         {/* Result element */}
         <div className="text-center mb-4">
           <div className="text-5xl mb-2">{discovery.resultEmoji}</div>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white">
+          <h3
+            className={cn(
+              'font-bold text-gray-900 dark:text-white',
+              discovery.resultElement.length > 40
+                ? 'text-sm'
+                : discovery.resultElement.length > 25
+                  ? 'text-base'
+                  : 'text-xl'
+            )}
+          >
             {discovery.resultElement}
           </h3>
         </div>
