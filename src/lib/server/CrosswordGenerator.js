@@ -1,80 +1,131 @@
 /**
- * Enhanced Crossword Puzzle Generator
+ * Crossword Puzzle Generator — CSP Solver with Scored Word Dictionary
  *
- * Implements two-level heuristic constraint satisfaction algorithm:
- * - Level 1 (Slot Selection): Most Constrained Variable (MCV) - select slot with fewest possibilities
- * - Level 2 (Word Selection): Least Constraining Value (LCV) - select word that maximizes remaining possibilities
+ * Inspired by CrossFire by Beekeeper Labs. Uses constraint satisfaction
+ * with AC-3 propagation, MRV slot selection, and backtracking search
+ * against a scored word dictionary (WordIndex).
  *
- * Based on research from bakitybacon/minicrossword with significant enhancements:
- * - Pattern caching for performance
- * - Word frequency filtering for difficulty control
- * - Forward checking for early pruning
- * - Explicit move stack for efficient backtracking
- * - Real-time progress tracking
+ * Key features:
+ * - Position-letter index for near-instant candidate lookup
+ * - AC-3 arc consistency for constraint propagation
+ * - MRV (Minimum Remaining Values) heuristic for slot selection
+ * - Word-score-weighted candidate ordering
+ * - Grid Score and Final Score (CrossFire-style)
+ * - Quick Fill with randomness for varied results
+ * - Seed word support for themed puzzles
+ * - Candidate list generation for interactive UI
  */
 
-// import { Trie } from './TrieGenerator.js';
 import logger from '@/lib/logger';
 
 const BLACK_SQUARE = '■';
 const EMPTY_CELL = '';
+const GRID_SIZE = 5;
 
 export default class CrosswordGenerator {
-  constructor(trie, options = {}) {
-    this.trie = trie;
-    this.grid = Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(EMPTY_CELL));
-    this.solution = Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(EMPTY_CELL));
-    this.wordSlots = []; // All detected word slots
-    this.placedWords = []; // {word, direction, startRow, startCol}
-    this.moveStack = []; // Stack for backtracking
-    this.maxRetries = options.maxRetries || 100;
-    this.minFrequency = options.minFrequency || 0; // Word frequency threshold (0-100)
-    this.excludeWords = new Set((options.excludeWords || []).map((w) => w.toUpperCase())); // Words to exclude (from recent puzzles)
+  /**
+   * @param {import('./WordIndex').default} wordIndex - WordIndex instance (loaded)
+   * @param {object} options
+   * @param {number} [options.maxRetries=50] - Max full attempts for generate()
+   * @param {number} [options.minScore=5] - Minimum word score threshold (1-100)
+   * @param {string[]} [options.excludeWords=[]] - Words to exclude (recent puzzles)
+   * @param {number} [options.timeoutMs=10000] - Max time per solve attempt
+   * @param {number} [options.minFrequency] - Alias for minScore (backward compat)
+   */
+  constructor(wordIndex, options = {}) {
+    this.wordIndex = wordIndex;
+    this.minScore = options.minScore || options.minFrequency || 5;
+    this.maxRetries = options.maxRetries || 50;
+    this.timeoutMs = options.timeoutMs || 10000;
+    this.excludeWords = new Set((options.excludeWords || []).map((w) => w.toUpperCase()));
+
+    // Randomize mode: when true, _backtrack uses pre-shuffled domain order
+    this._randomize = false;
+
+    // Internal state — reset per attempt
+    this.grid = this._emptyGrid();
+    this.solution = this._emptyGrid();
+    this.slots = [];
+    this.placedWords = [];
     this.complete = false;
 
-    // Progress tracking
-    this.generationStats = {
+    // Crossing map: built once after detectSlots, maps slotId → [{crossSlot, posInThis, posInCross}]
+    this.crossings = new Map();
+
+    // Stats
+    this.stats = {
       totalAttempts: 0,
       backtrackCount: 0,
       slotsFilled: 0,
-      startTime: null,
       patternSearches: 0,
-      flexibilityCalculations: 0,
+      startTime: null,
       excludedWordsCount: this.excludeWords.size,
     };
   }
 
+  // ─── Public API ───────────────────────────────────────────────────
+
   /**
-   * Generate a crossword puzzle
+   * Generate a complete crossword puzzle.
+   * Backward-compatible with old API: generate(mode, existingGrid, symmetry)
+   *
    * @param {string} mode - 'scratch' or 'fill'
-   * @param {Array} existingGrid - Optional existing grid with black squares
-   * @param {string} symmetry - Optional symmetry type
-   * @returns {object} {success, grid, solution, words, stats}
+   * @param {string[][]|null} existingGrid - Grid with letters/blacks for 'fill' mode
+   * @param {string} symmetry - 'none'|'rotational'|'horizontal'|'vertical'
+   * @returns {{ success, grid, solution, words, stats }}
    */
   generate(mode = 'scratch', existingGrid = null, symmetry = 'none') {
+    this.stats.startTime = Date.now();
     let attempts = 0;
     let success = false;
-    this.generationStats.startTime = Date.now();
 
     while (!success && attempts < this.maxRetries) {
       attempts++;
-      this.generationStats.totalAttempts = attempts;
+      this.stats.totalAttempts = attempts;
 
       try {
-        if (mode === 'scratch') {
-          this.generateFromScratch(symmetry);
+        this._reset();
+
+        if (mode === 'fill' && existingGrid) {
+          this._loadGrid(existingGrid);
         } else {
-          this.fillExistingPattern(existingGrid);
+          this._applyRandomPattern(symmetry);
         }
 
-        success = this.complete;
-      } catch (error) {
-        logger.debug(`Attempt ${attempts} failed:`, error.message);
-        this.reset();
+        this._detectSlots();
+        this._buildCrossingMap();
+        this._initDomains();
+
+        // Initial AC-3 propagation
+        if (!this._ac3Full()) {
+          throw new Error('Initial AC-3 found unsolvable grid pattern');
+        }
+
+        // Solve with backtracking
+        const solved = this._solve();
+        if (!solved) {
+          throw new Error('Backtracking exhausted without solution');
+        }
+
+        // Quality check
+        const quality = this._calculateQuality();
+        if (quality.score < 0 || quality.twoLetterWords > 4) {
+          throw new Error(
+            `Quality too low: score=${quality.score}, 2-letter=${quality.twoLetterWords}`
+          );
+        }
+
+        // Copy solution
+        this.solution = this.grid.map((row) => [...row]);
+        this.stats.qualityScore = quality.score;
+        this.stats.twoLetterWords = quality.twoLetterWords;
+        this.stats.threeLetterWords = quality.threeLetterWords;
+        this.stats.fourPlusWords = quality.fourPlusWords;
+        this.stats.averageWordScore = quality.averageWordScore;
+        this.complete = true;
+        success = true;
+      } catch (err) {
+        logger.debug(`[Generator] Attempt ${attempts} failed: ${err.message}`);
       }
     }
 
@@ -82,85 +133,271 @@ export default class CrosswordGenerator {
       throw new Error(`Failed to generate puzzle after ${this.maxRetries} attempts`);
     }
 
-    const elapsedTime = Date.now() - this.generationStats.startTime;
-    logger.info(`Successfully generated puzzle in ${attempts} attempt(s) (${elapsedTime}ms)`);
-    logger.debug(`Cache stats:`, this.trie.getStats().cacheStats);
+    const elapsedTime = Date.now() - this.stats.startTime;
+    logger.info(
+      `[Generator] Success in ${attempts} attempt(s), ${elapsedTime}ms, ` +
+        `${this.stats.backtrackCount} backtracks`
+    );
 
     return {
       success: true,
-      grid: this.getGridWithBlackSquares(),
+      grid: this._getBlackSquareGrid(),
       solution: this.solution,
-      words: this.placedWords,
+      words: this.placedWords.map((pw) => ({
+        word: pw.word,
+        direction: pw.direction,
+        startRow: pw.startRow,
+        startCol: pw.startCol,
+      })),
       stats: {
-        ...this.generationStats,
+        ...this.stats,
         elapsedTime,
-        cacheHitRate: this.trie.getCacheHitRate(),
-        cacheSize: this.trie.patternCache.size,
+        // Backward-compat fields
+        flexibilityCalculations: 0,
+        cacheHitRate: 0,
+        cacheSize: 0,
       },
     };
   }
 
   /**
-   * Reset generator state for new attempt
+   * Quick Fill: fill the current grid state with randomness.
+   * Each call produces a different valid fill.
+   *
+   * @param {string[][]} currentGrid - Current grid state
+   * @param {object} [options]
+   * @param {number} [options.minScore] - Override min score
+   * @param {string[]} [options.excludeWords] - Additional exclusions
+   * @returns {{ success, solution, words, qualityScore, averageWordScore, elapsedMs }}
    */
-  reset() {
-    this.grid = Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(EMPTY_CELL));
-    this.solution = Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(EMPTY_CELL));
-    this.wordSlots = [];
-    this.placedWords = [];
-    this.moveStack = [];
-    this.complete = false;
-    this.generationStats.slotsFilled = 0;
-    this.generationStats.backtrackCount = 0;
-  }
+  quickFill(currentGrid, options = {}) {
+    const startTime = Date.now();
+    this.stats.startTime = startTime;
+    const maxAttempts = options.attempts || 5;
+    const earlyExitScore = 70;
 
-  /**
-   * Generate puzzle from scratch with black square pattern
-   */
-  generateFromScratch(symmetry) {
-    // Create black square pattern
-    this.createBlackSquarePattern(symmetry);
-
-    // Detect word slots
-    this.detectWordSlots();
-
-    // Fill the puzzle using enhanced algorithm
-    this.fillPuzzleWithHeuristics();
-  }
-
-  /**
-   * Fill existing pattern (smart autofill mode)
-   */
-  fillExistingPattern(existingGrid) {
-    if (!existingGrid) {
-      throw new Error('Existing grid required for fill mode');
+    // Apply options once before the loop
+    if (options.minScore !== undefined) this.minScore = options.minScore;
+    if (options.excludeWords) {
+      for (const w of options.excludeWords) this.excludeWords.add(w.toUpperCase());
     }
 
-    // Copy existing grid (preserving black squares and any letters)
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        this.grid[row][col] = existingGrid[row][col] || EMPTY_CELL;
+    // Enable randomized backtracking
+    this._randomize = true;
+
+    let bestResult = null;
+    let bestAvgScore = -1;
+
+    for (let attempt = 0; attempt < maxAttempts; attempt++) {
+      this._reset();
+      this._loadGrid(currentGrid);
+      this._detectSlots();
+      this._buildCrossingMap();
+      this._initDomains();
+
+      if (!this._ac3Full()) {
+        // Grid is unsolvable — no point retrying
+        this._randomize = false;
+        return { success: false, error: 'No valid fill exists for this grid' };
+      }
+
+      // Shuffle domains for randomness (each attempt gets different order)
+      for (const slot of this.slots) {
+        if (!slot.filled) {
+          slot.domain = this._shuffleWithScoreBias(slot.domain);
+        }
+      }
+
+      const solved = this._solve();
+      if (!solved) continue;
+
+      const quality = this._calculateQuality();
+
+      if (quality.averageWordScore > bestAvgScore) {
+        bestAvgScore = quality.averageWordScore;
+        bestResult = {
+          success: true,
+          solution: this.grid.map((row) => [...row]),
+          words: this.placedWords.map((pw) => ({
+            word: pw.word,
+            direction: pw.direction,
+            startRow: pw.startRow,
+            startCol: pw.startCol,
+          })),
+          qualityScore: quality.score,
+          averageWordScore: quality.averageWordScore,
+          elapsedMs: Date.now() - startTime,
+        };
+
+        // Early exit if quality is already great
+        if (bestAvgScore >= earlyExitScore) break;
       }
     }
 
-    // Detect word slots
-    this.detectWordSlots();
+    this._randomize = false;
 
-    // Fill the puzzle using enhanced algorithm
-    this.fillPuzzleWithHeuristics();
+    if (!bestResult) {
+      return { success: false, error: 'Could not complete fill' };
+    }
+
+    bestResult.elapsedMs = Date.now() - startTime;
+    return bestResult;
   }
 
   /**
-   * High-quality pattern templates for 5x5 crosswords
-   * Each pattern is designed for good word lengths and connectivity
+   * Get scored candidates for a specific slot (for interactive UI).
+   *
+   * @param {string[][]} currentGrid - Current grid state
+   * @param {string} slotId - e.g. "across-0-0"
+   * @param {object} [options]
+   * @param {number} [options.limit=100] - Max candidates to return
+   * @param {boolean} [options.computeGridScore=true] - Whether to compute grid scores
+   * @returns {{ candidates: Array<{word, wordScore, gridScore, viable}>, slot, totalCandidates }}
    */
-  getQualityPatterns() {
+  getCandidatesForSlot(currentGrid, slotId, options = {}) {
+    const limit = options.limit || 100;
+    const computeGridScore = options.computeGridScore !== false;
+
+    this._reset();
+    this._loadGrid(currentGrid);
+    this._detectSlots();
+    this._buildCrossingMap();
+    this._initDomains();
+    this._ac3Full();
+
+    const slot = this.slots.find((s) => s.id === slotId);
+    if (!slot) {
+      return { candidates: [], slot: null, totalCandidates: 0, error: 'Slot not found' };
+    }
+
+    const domain = slot.domain.filter((w) => !this._isExcluded(w));
+    const totalCandidates = domain.length;
+
+    // Score and sort
+    let candidates = domain.map((word) => ({
+      word,
+      wordScore: this.wordIndex.getScore(word),
+      gridScore: 0,
+      viable: true,
+    }));
+
+    // Sort by word score first
+    candidates.sort((a, b) => b.wordScore - a.wordScore);
+
+    // Compute grid scores for top candidates
+    if (computeGridScore && candidates.length > 0) {
+      const toScore = candidates.slice(0, limit);
+      for (const cand of toScore) {
+        cand.gridScore = this._computeGridScore(slot, cand.word);
+        if (cand.gridScore < 0.01) cand.viable = false;
+      }
+      // Re-sort by grid score * word score
+      toScore.sort(
+        (a, b) => b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
+      );
+      candidates = toScore;
+    } else {
+      candidates = candidates.slice(0, limit);
+    }
+
+    return {
+      candidates,
+      slot: { id: slot.id, direction: slot.direction, length: slot.length, pattern: slot.pattern },
+      totalCandidates,
+    };
+  }
+
+  /**
+   * Find the most constrained unfilled slot (Best Location).
+   *
+   * @param {string[][]} currentGrid
+   * @returns {{ slot, domainSize, reason } | null}
+   */
+  findBestLocation(currentGrid) {
+    this._reset();
+    this._loadGrid(currentGrid);
+    this._detectSlots();
+    this._buildCrossingMap();
+    this._initDomains();
+    this._ac3Full();
+
+    let best = null;
+    let minDomain = Infinity;
+
+    for (const slot of this.slots) {
+      if (slot.filled) continue;
+      const size = slot.domain.length;
+      if (size < minDomain) {
+        minDomain = size;
+        best = slot;
+      }
+    }
+
+    if (!best) return null;
+
+    return {
+      slot: {
+        id: best.id,
+        direction: best.direction,
+        startRow: best.startRow,
+        startCol: best.startCol,
+        length: best.length,
+      },
+      domainSize: minDomain,
+      reason:
+        minDomain === 0
+          ? 'Dead end — no valid words for this slot'
+          : `Most constrained slot (${minDomain} valid word${minDomain !== 1 ? 's' : ''})`,
+    };
+  }
+
+  // ─── Grid Setup ───────────────────────────────────────────────────
+
+  _emptyGrid() {
+    return Array.from({ length: GRID_SIZE }, () => Array(GRID_SIZE).fill(EMPTY_CELL));
+  }
+
+  _reset() {
+    this.grid = this._emptyGrid();
+    this.solution = this._emptyGrid();
+    this.slots = [];
+    this.placedWords = [];
+    this.crossings = new Map();
+    this.complete = false;
+    this.stats.slotsFilled = 0;
+    this.stats.backtrackCount = 0;
+    this.stats.patternSearches = 0;
+  }
+
+  _loadGrid(existingGrid) {
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        const cell = existingGrid[r]?.[c] || EMPTY_CELL;
+        this.grid[r][c] = cell;
+      }
+    }
+  }
+
+  _getBlackSquareGrid() {
+    return this.grid.map((row) =>
+      row.map((cell) => (cell === BLACK_SQUARE ? BLACK_SQUARE : EMPTY_CELL))
+    );
+  }
+
+  // ─── Pattern Templates ────────────────────────────────────────────
+
+  /** Quality 5×5 patterns with rotational symmetry already applied */
+  _getPatterns() {
     return [
-      // Pattern 1: Corner blacks (2-4 blacks, good for longer words)
+      // Pattern 1: Open grid, single center black
+      [
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 1, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+      ],
+      // Pattern 2: Symmetric diagonal pair
       [
         [0, 0, 0, 0, 0],
         [0, 1, 0, 0, 0],
@@ -168,7 +405,7 @@ export default class CrosswordGenerator {
         [0, 0, 0, 1, 0],
         [0, 0, 0, 0, 0],
       ],
-      // Pattern 2: Diagonal (2 blacks, creates 3-4 letter words)
+      // Pattern 3: Symmetric center column
       [
         [0, 0, 0, 0, 0],
         [0, 0, 1, 0, 0],
@@ -176,15 +413,7 @@ export default class CrosswordGenerator {
         [0, 0, 1, 0, 0],
         [0, 0, 0, 0, 0],
       ],
-      // Pattern 3: Center cross (minimal blacks, longer words)
-      [
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 1, 0, 0],
-        [0, 0, 0, 0, 0],
-        [0, 0, 0, 0, 0],
-      ],
-      // Pattern 4: L-shape (2-3 blacks, varied word lengths)
+      // Pattern 4: Symmetric off-center
       [
         [0, 0, 0, 0, 0],
         [0, 0, 0, 1, 0],
@@ -192,659 +421,430 @@ export default class CrosswordGenerator {
         [0, 1, 0, 0, 0],
         [0, 0, 0, 0, 0],
       ],
-      // Pattern 5: Alternating (3-4 blacks, balanced)
+      // Pattern 5: Wide open (no blacks — all 5-letter words)
       [
         [0, 0, 0, 0, 0],
-        [0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0],
-        [0, 1, 0, 0, 0],
+        [0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
       ],
-      // Pattern 6: Minimal (1-2 blacks only)
+      // Pattern 6: Two symmetric pairs
       [
-        [0, 0, 0, 0, 0],
         [0, 0, 0, 0, 0],
         [0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0],
+        [0, 1, 0, 1, 0],
         [0, 0, 0, 0, 0],
       ],
     ];
   }
 
-  /**
-   * Apply symmetry to a pattern
-   */
-  applySymmetryToPattern(pattern, symmetry) {
-    const newPattern = pattern.map((row) => [...row]);
+  _applyRandomPattern(symmetry) {
+    const patterns = this._getPatterns();
+    const base = patterns[Math.floor(Math.random() * patterns.length)];
 
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (pattern[row][col] === 1) {
-          // Apply symmetry
-          if (symmetry === 'rotational') {
-            const symRow = 4 - row;
-            const symCol = 4 - col;
-            newPattern[symRow][symCol] = 1;
-          } else if (symmetry === 'horizontal') {
-            const symRow = 4 - row;
-            newPattern[symRow][col] = 1;
-          } else if (symmetry === 'vertical') {
-            const symCol = 4 - col;
-            newPattern[row][symCol] = 1;
-          } else if (symmetry === 'diagonal-ne-sw') {
-            const symRow = 4 - col;
-            const symCol = 4 - row;
-            if (symRow >= 0 && symRow < 5 && symCol >= 0 && symCol < 5) {
-              newPattern[symRow][symCol] = 1;
-            }
-          } else if (symmetry === 'diagonal-nw-se') {
-            newPattern[col][row] = 1;
+    // Apply symmetry enforcement
+    const pattern = base.map((row) => [...row]);
+    if (symmetry === 'rotational' || symmetry === 'none') {
+      // Patterns already have rotational symmetry built in
+      for (let r = 0; r < GRID_SIZE; r++) {
+        for (let c = 0; c < GRID_SIZE; c++) {
+          if (base[r][c] === 1) {
+            pattern[GRID_SIZE - 1 - r][GRID_SIZE - 1 - c] = 1;
           }
         }
       }
     }
 
-    return newPattern;
-  }
-
-  /**
-   * Create black square pattern with optional symmetry
-   * Now uses quality templates instead of random placement
-   */
-  createBlackSquarePattern(symmetry) {
-    const patterns = this.getQualityPatterns();
-
-    // Select a random high-quality pattern
-    const selectedPattern = patterns[Math.floor(Math.random() * patterns.length)];
-
-    // Apply symmetry
-    const finalPattern = this.applySymmetryToPattern(selectedPattern, symmetry);
-
-    // Apply pattern to grid
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (finalPattern[row][col] === 1) {
-          this.grid[row][col] = BLACK_SQUARE;
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        if (pattern[r][c] === 1) {
+          this.grid[r][c] = BLACK_SQUARE;
         }
       }
     }
-
-    // Validate pattern quality
-    if (!this.isPatternValid()) {
-      logger.debug('[Generator] Pattern quality check failed, using minimal pattern');
-      // Fallback to minimal pattern (center black only)
-      this.grid = Array(5)
-        .fill(null)
-        .map(() => Array(5).fill(EMPTY_CELL));
-      this.grid[2][2] = BLACK_SQUARE;
-    }
   }
 
-  /**
-   * Validate that a pattern meets quality standards
-   */
-  isPatternValid() {
-    // Count black squares
-    let blackCount = 0;
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (this.grid[row][col] === BLACK_SQUARE) {
-          blackCount++;
-        }
-      }
-    }
+  // ─── Slot Detection ───────────────────────────────────────────────
 
-    // Reject if too many blacks (more than 40% of grid)
-    if (blackCount > 10) {
-      logger.debug(`[Quality] Too many black squares: ${blackCount}`);
-      return false;
-    }
+  _detectSlots() {
+    this.slots = [];
 
-    // Check for entire rows or columns of blacks
-    for (let row = 0; row < 5; row++) {
-      if (this.grid[row].every((cell) => cell === BLACK_SQUARE)) {
-        logger.debug(`[Quality] Entire row ${row} is black`);
-        return false;
-      }
-    }
-
-    for (let col = 0; col < 5; col++) {
-      if (this.grid.every((row) => row[col] === BLACK_SQUARE)) {
-        logger.debug(`[Quality] Entire column ${col} is black`);
-        return false;
-      }
-    }
-
-    // Check connectivity (no sections isolated by blacks)
-    if (!this.isGridConnected()) {
-      logger.debug('[Quality] Grid not fully connected');
-      return false;
-    }
-
-    return true;
-  }
-
-  /**
-   * Check if all white squares are connected (flood fill)
-   */
-  isGridConnected() {
-    const visited = Array(5)
-      .fill(null)
-      .map(() => Array(5).fill(false));
-    let whiteSquares = 0;
-    let startRow = -1,
-      startCol = -1;
-
-    // Count white squares and find starting position
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (this.grid[row][col] !== BLACK_SQUARE) {
-          whiteSquares++;
-          if (startRow === -1) {
-            startRow = row;
-            startCol = col;
+    // Across slots
+    for (let r = 0; r < GRID_SIZE; r++) {
+      let c = 0;
+      while (c < GRID_SIZE) {
+        if (this.grid[r][c] !== BLACK_SQUARE) {
+          let length = 0;
+          const startCol = c;
+          while (c < GRID_SIZE && this.grid[r][c] !== BLACK_SQUARE) {
+            length++;
+            c++;
           }
-        }
-      }
-    }
-
-    if (whiteSquares === 0) return false;
-
-    // Flood fill from starting position
-    const stack = [[startRow, startCol]];
-    let visitedCount = 0;
-
-    while (stack.length > 0) {
-      const [row, col] = stack.pop();
-
-      if (row < 0 || row >= 5 || col < 0 || col >= 5) continue;
-      if (visited[row][col]) continue;
-      if (this.grid[row][col] === BLACK_SQUARE) continue;
-
-      visited[row][col] = true;
-      visitedCount++;
-
-      // Add neighbors
-      stack.push([row - 1, col], [row + 1, col], [row, col - 1], [row, col + 1]);
-    }
-
-    return visitedCount === whiteSquares;
-  }
-
-  /**
-   * Remove cells that can't form valid words (length < 3 preferred)
-   */
-  removeIsolatedCells() {
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (this.grid[row][col] !== BLACK_SQUARE) {
-          const hasAcross = this.getWordLength(row, col, 'across') >= 2;
-          const hasDown = this.getWordLength(row, col, 'down') >= 2;
-
-          if (!hasAcross && !hasDown) {
-            this.grid[row][col] = BLACK_SQUARE;
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * Get word length from a starting position
-   */
-  getWordLength(row, col, direction) {
-    let length = 0;
-
-    if (direction === 'across') {
-      for (let c = col; c < 5 && this.grid[row][c] !== BLACK_SQUARE; c++) {
-        length++;
-      }
-    } else {
-      for (let r = row; r < 5 && this.grid[r][col] !== BLACK_SQUARE; r++) {
-        length++;
-      }
-    }
-
-    return length;
-  }
-
-  /**
-   * Detect all word slots in the grid
-   */
-  detectWordSlots() {
-    this.wordSlots = [];
-
-    // Detect across slots
-    for (let row = 0; row < 5; row++) {
-      let col = 0;
-      while (col < 5) {
-        if (this.grid[row][col] !== BLACK_SQUARE) {
-          const length = this.getWordLength(row, col, 'across');
-
           if (length >= 2) {
-            const pattern = this.getPattern(row, col, 'across', length);
-            this.wordSlots.push({
-              id: `across-${row}-${col}`,
-              direction: 'across',
-              startRow: row,
-              startCol: col,
-              length,
-              pattern,
-              filled: false,
-            });
+            this.slots.push(this._makeSlot('across', r, startCol, length));
           }
-
-          col += length;
         } else {
-          col++;
+          c++;
         }
       }
     }
 
-    // Detect down slots
-    for (let col = 0; col < 5; col++) {
-      let row = 0;
-      while (row < 5) {
-        if (this.grid[row][col] !== BLACK_SQUARE) {
-          const length = this.getWordLength(row, col, 'down');
-
+    // Down slots
+    for (let c = 0; c < GRID_SIZE; c++) {
+      let r = 0;
+      while (r < GRID_SIZE) {
+        if (this.grid[r][c] !== BLACK_SQUARE) {
+          let length = 0;
+          const startRow = r;
+          while (r < GRID_SIZE && this.grid[r][c] !== BLACK_SQUARE) {
+            length++;
+            r++;
+          }
           if (length >= 2) {
-            const pattern = this.getPattern(row, col, 'down', length);
-            this.wordSlots.push({
-              id: `down-${row}-${col}`,
-              direction: 'down',
-              startRow: row,
-              startCol: col,
-              length,
-              pattern,
-              filled: false,
-            });
+            this.slots.push(this._makeSlot('down', startRow, c, length));
           }
-
-          row += length;
         } else {
-          row++;
+          r++;
         }
       }
     }
 
-    logger.debug(`Detected ${this.wordSlots.length} word slots`);
+    logger.debug(`[Generator] Detected ${this.slots.length} word slots`);
   }
 
-  /**
-   * Get current pattern for a word slot
-   */
-  getPattern(row, col, direction, length) {
+  _makeSlot(direction, startRow, startCol, length) {
+    const id = `${direction}-${startRow}-${startCol}`;
+
+    // Read current pattern from grid
     let pattern = '';
-
+    const cells = [];
     for (let i = 0; i < length; i++) {
-      const r = direction === 'across' ? row : row + i;
-      const c = direction === 'across' ? col + i : col;
+      const r = direction === 'across' ? startRow : startRow + i;
+      const c = direction === 'across' ? startCol + i : startCol;
       const cell = this.grid[r][c];
-
-      pattern += cell && cell !== BLACK_SQUARE && cell !== EMPTY_CELL ? cell : '.';
+      pattern += cell && cell !== EMPTY_CELL && cell !== BLACK_SQUARE ? cell : '.';
+      cells.push({ row: r, col: c });
     }
 
-    return pattern;
-  }
-
-  /**
-   * Calculate quality score for a completed puzzle
-   * Higher score = better quality
-   */
-  calculatePuzzleQuality() {
-    let score = 100;
-
-    // Count word lengths
-    const wordLengths = this.placedWords.map((w) => w.word.length);
-    const twoLetterWords = wordLengths.filter((len) => len === 2).length;
-    const threeLetterWords = wordLengths.filter((len) => len === 3).length;
-    const fourPlusWords = wordLengths.filter((len) => len >= 4).length;
-
-    // Heavy penalty for 2-letter words
-    score -= twoLetterWords * 30;
-
-    // Bonus for 3+ letter words
-    score += threeLetterWords * 10;
-    score += fourPlusWords * 20;
-
-    // Count black squares
-    let blackCount = 0;
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        if (this.grid[row][col] === BLACK_SQUARE) {
-          blackCount++;
-        }
-      }
-    }
-
-    // Penalty for too many blacks
-    if (blackCount > 6) {
-      score -= (blackCount - 6) * 10;
-    }
-
-    // Bonus for having enough words
-    score += this.placedWords.length * 5;
+    // Check if already filled (all letters present)
+    const filled = !pattern.includes('.');
 
     return {
-      score,
-      twoLetterWords,
-      threeLetterWords,
-      fourPlusWords,
-      blackCount,
-      totalWords: this.placedWords.length,
-    };
-  }
-
-  /**
-   * Fill the puzzle using two-level heuristic algorithm
-   *
-   * Algorithm:
-   * 1. Select most constrained slot (MCV - fewest possibilities)
-   * 2. For that slot, evaluate each candidate word by tentatively placing it
-   * 3. Calculate total remaining possibilities across ALL unfilled slots
-   * 4. Sort words by flexibility (most-to-least remaining possibilities)
-   * 5. Try words in that order (most flexible first = LCV)
-   * 6. Backtrack if no solution found
-   */
-  fillPuzzleWithHeuristics() {
-    const success = this.backtrackWithHeuristics();
-
-    if (!success) {
-      throw new Error('Could not fill puzzle');
-    }
-
-    // Calculate quality score
-    const quality = this.calculatePuzzleQuality();
-    logger.debug('[Generator] Puzzle quality:', quality);
-
-    // Reject low-quality puzzles (too many 2-letter words)
-    // Relaxed thresholds to allow generation while still maintaining quality
-    const MIN_QUALITY_SCORE = -50; // Threshold (very lenient)
-    const MAX_TWO_LETTER_WORDS = 6; // Allow up to 6 two-letter words
-    if (quality.score < MIN_QUALITY_SCORE || quality.twoLetterWords > MAX_TWO_LETTER_WORDS) {
-      throw new Error(
-        `Puzzle quality too low (score: ${quality.score}, 2-letter words: ${quality.twoLetterWords})`
-      );
-    }
-
-    // Copy grid to solution
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        this.solution[row][col] = this.grid[row][col];
-      }
-    }
-
-    this.generationStats.qualityScore = quality.score;
-    this.generationStats.twoLetterWords = quality.twoLetterWords;
-    this.generationStats.threeLetterWords = quality.threeLetterWords;
-    this.generationStats.fourPlusWords = quality.fourPlusWords;
-
-    this.complete = true;
-  }
-
-  /**
-   * Enhanced backtracking with two-level heuristics
-   */
-  backtrackWithHeuristics() {
-    // Base case: all slots filled
-    if (this.placedWords.length >= this.wordSlots.length) {
-      return true;
-    }
-
-    // Level 1: Select most constrained slot (MCV)
-    const slot = this.selectMostConstrainedSlot();
-
-    if (!slot) {
-      return false; // No unfilled slots (shouldn't happen)
-    }
-
-    // Update pattern based on current grid state
-    slot.pattern = this.getPattern(slot.startRow, slot.startCol, slot.direction, slot.length);
-
-    // Forward checking: ensure slot has at least one possibility
-    if (!this.canBeCompleted(slot)) {
-      return false; // Dead end - backtrack early
-    }
-
-    // Get candidate words with frequency filtering
-    const candidates = this.getCandidateWordsWithFrequency(slot);
-
-    if (candidates.length === 0) {
-      return false; // No valid words for this slot
-    }
-
-    // Level 2: Order words by flexibility (LCV - least constraining first)
-    const orderedCandidates = this.orderWordsByFlexibility(slot, candidates);
-
-    // Try each candidate in order
-    for (const { word } of orderedCandidates) {
-      // Place word
-      if (this.placeWord(word, slot)) {
-        this.generationStats.slotsFilled++;
-
-        // Recursively fill next slot
-        if (this.backtrackWithHeuristics()) {
-          return true;
-        }
-
-        // Backtrack: remove word
-        this.removeWord(slot);
-        this.generationStats.backtrackCount++;
-        this.generationStats.slotsFilled--;
-      }
-    }
-
-    return false;
-  }
-
-  /**
-   * Select most constrained slot (MCV heuristic)
-   * Returns the unfilled slot with the FEWEST valid word possibilities
-   */
-  selectMostConstrainedSlot() {
-    let mostConstrainedSlot = null;
-    let minPossibilities = Infinity;
-
-    for (const slot of this.wordSlots) {
-      if (slot.filled) continue;
-
-      // Update pattern
-      slot.pattern = this.getPattern(slot.startRow, slot.startCol, slot.direction, slot.length);
-
-      // Count possibilities
-      const possibilities = this.trie.searchByPatternWithFrequency(slot.pattern, this.minFrequency);
-      const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
-
-      // Select slot with minimum possibilities
-      if (availableCount < minPossibilities) {
-        minPossibilities = availableCount;
-        mostConstrainedSlot = slot;
-      }
-    }
-
-    return mostConstrainedSlot;
-  }
-
-  /**
-   * Order words by flexibility (LCV heuristic) with word length preference
-   * For each candidate word, calculate how many total possibilities remain after placing it
-   * Return words sorted by flexibility (MOST to LEAST remaining possibilities)
-   * BONUS: Prefer longer words (3+ letters) for better puzzle quality
-   */
-  orderWordsByFlexibility(slot, candidates) {
-    this.generationStats.flexibilityCalculations += candidates.length;
-
-    const scoredWords = candidates.map((word) => {
-      // Tentatively place the word
-      const saveState = this.saveGridState();
-      this.placeWordTemporary(word, slot);
-
-      // Calculate total remaining possibilities across ALL unfilled slots
-      const totalPossibilities = this.calculateTotalPossibilities();
-
-      // Restore grid state
-      this.restoreGridState(saveState);
-
-      // Calculate adjusted score (flexibility + word length bonus)
-      let adjustedScore = totalPossibilities;
-
-      // Moderate preference for longer words (not too aggressive)
-      if (word.length >= 5) {
-        adjustedScore += 30; // Bonus for 5-letter words
-      } else if (word.length === 4) {
-        adjustedScore += 20; // Bonus for 4-letter words
-      } else if (word.length === 3) {
-        adjustedScore += 10; // Small bonus for 3-letter words
-      }
-      // 2-letter words: no bonus, but not penalized
-
-      return {
-        word,
-        flexibility: totalPossibilities,
-        adjustedScore,
-      };
-    });
-
-    // Sort by adjusted score (descending - highest score first)
-    scoredWords.sort((a, b) => b.adjustedScore - a.adjustedScore);
-
-    return scoredWords;
-  }
-
-  /**
-   * Calculate total possibilities remaining across all unfilled slots
-   * This is the core of the "maximize possibilities remaining" algorithm
-   */
-  calculateTotalPossibilities() {
-    let total = 0;
-
-    for (const slot of this.wordSlots) {
-      if (slot.filled) continue;
-
-      // Update pattern
-      const pattern = this.getPattern(slot.startRow, slot.startCol, slot.direction, slot.length);
-
-      // Get possibilities
-      const possibilities = this.trie.searchByPatternWithFrequency(pattern, this.minFrequency);
-      const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
-
-      total += availableCount;
-    }
-
-    return total;
-  }
-
-  /**
-   * Forward checking: can this slot be completed?
-   * Returns false if slot has zero valid possibilities (early pruning)
-   */
-  canBeCompleted(slot) {
-    const possibilities = this.trie.searchByPatternWithFrequency(slot.pattern, this.minFrequency);
-    const availableCount = possibilities.filter((w) => !this.isWordUsed(w)).length;
-
-    return availableCount > 0;
-  }
-
-  /**
-   * Get candidate words for a slot with frequency filtering
-   */
-  getCandidateWordsWithFrequency(slot) {
-    this.generationStats.patternSearches++;
-
-    const matches = this.trie.searchByPatternWithFrequency(slot.pattern, this.minFrequency);
-
-    if (matches.length === 0) {
-      return [];
-    }
-
-    // Filter out already-used words (avoid duplicates)
-    const available = matches.filter((w) => !this.isWordUsed(w));
-
-    return available;
-  }
-
-  /**
-   * Check if word is already used (in this puzzle OR in recent puzzles)
-   */
-  isWordUsed(word) {
-    const upperWord = word.toUpperCase();
-    // Check if used in current puzzle
-    if (this.placedWords.some((pw) => pw.word === upperWord)) {
-      return true;
-    }
-    // Check if in exclusion list (from recent puzzles)
-    if (this.excludeWords.has(upperWord)) {
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Place a word in the grid
-   */
-  placeWord(word, slot) {
-    const { direction, startRow, startCol, length } = slot;
-
-    if (word.length !== length) {
-      return false;
-    }
-
-    // Check if word can be placed
-    for (let i = 0; i < length; i++) {
-      const row = direction === 'across' ? startRow : startRow + i;
-      const col = direction === 'across' ? startCol + i : startCol;
-      const currentCell = this.grid[row][col];
-
-      if (currentCell && currentCell !== EMPTY_CELL && currentCell !== word[i]) {
-        return false; // Conflict
-      }
-    }
-
-    // Save previous state to move stack
-    const previousState = this.saveSlotState(slot);
-    this.moveStack.push({ slot, previousState });
-
-    // Place word
-    for (let i = 0; i < length; i++) {
-      const row = direction === 'across' ? startRow : startRow + i;
-      const col = direction === 'across' ? startCol + i : startCol;
-      this.grid[row][col] = word[i];
-    }
-
-    // Track placed word
-    this.placedWords.push({
-      word,
+      id,
       direction,
       startRow,
       startCol,
-    });
+      length,
+      pattern,
+      cells,
+      filled,
+      word: filled ? pattern : null,
+      domain: [], // populated by _initDomains
+    };
+  }
 
-    slot.filled = true;
+  // ─── Crossing Map ─────────────────────────────────────────────────
+
+  /**
+   * Build a map of which slots cross which other slots, and at what positions.
+   * crossings.get(slotId) = [{ crossSlot, posInThis, posInCross }]
+   */
+  _buildCrossingMap() {
+    this.crossings = new Map();
+
+    // Build cell → slot lookup
+    const cellToSlot = new Map(); // "r,c" → [{slot, posInSlot}]
+    for (const slot of this.slots) {
+      for (let i = 0; i < slot.cells.length; i++) {
+        const key = `${slot.cells[i].row},${slot.cells[i].col}`;
+        if (!cellToSlot.has(key)) cellToSlot.set(key, []);
+        cellToSlot.get(key).push({ slot, posInSlot: i });
+      }
+    }
+
+    // For each cell with 2 slots (across + down), record the crossing
+    for (const entries of cellToSlot.values()) {
+      if (entries.length === 2) {
+        const [a, b] = entries;
+
+        if (!this.crossings.has(a.slot.id)) this.crossings.set(a.slot.id, []);
+        this.crossings.get(a.slot.id).push({
+          crossSlot: b.slot,
+          posInThis: a.posInSlot,
+          posInCross: b.posInSlot,
+        });
+
+        if (!this.crossings.has(b.slot.id)) this.crossings.set(b.slot.id, []);
+        this.crossings.get(b.slot.id).push({
+          crossSlot: a.slot,
+          posInThis: b.posInSlot,
+          posInCross: a.posInSlot,
+        });
+      }
+    }
+  }
+
+  // ─── Domain Initialization ────────────────────────────────────────
+
+  _initDomains() {
+    for (const slot of this.slots) {
+      if (slot.filled) {
+        slot.domain = [slot.word];
+        this.placedWords.push({
+          word: slot.word,
+          direction: slot.direction,
+          startRow: slot.startRow,
+          startCol: slot.startCol,
+        });
+        continue;
+      }
+
+      this.stats.patternSearches++;
+      const candidates = this.wordIndex.getCandidatesAboveThreshold(slot.pattern, this.minScore);
+      slot.domain = candidates.filter((w) => !this._isExcluded(w));
+    }
+  }
+
+  _isExcluded(word) {
+    if (this.excludeWords.has(word)) return true;
+    if (this.placedWords.some((pw) => pw.word === word)) return true;
+    return false;
+  }
+
+  // ─── AC-3 Constraint Propagation ──────────────────────────────────
+
+  /**
+   * Full AC-3: enforce arc consistency across all crossing slot pairs.
+   * Returns false if any domain becomes empty (unsolvable).
+   */
+  _ac3Full() {
+    // Initialize queue with all arcs
+    const queue = [];
+    for (const slot of this.slots) {
+      const crossings = this.crossings.get(slot.id) || [];
+      for (const crossing of crossings) {
+        queue.push({ slot, crossing });
+      }
+    }
+
+    return this._ac3(queue);
+  }
+
+  /**
+   * AC-3 from a specific slot (after placing a word).
+   * Only enqueues arcs involving neighbors of the changed slot.
+   */
+  _ac3FromSlot(changedSlot) {
+    const queue = [];
+    const crossings = this.crossings.get(changedSlot.id) || [];
+
+    for (const crossing of crossings) {
+      // The crossing slot needs to be checked against all ITS neighbors
+      const neighborCrossings = this.crossings.get(crossing.crossSlot.id) || [];
+      for (const nc of neighborCrossings) {
+        queue.push({ slot: crossing.crossSlot, crossing: nc });
+      }
+    }
+
+    return this._ac3(queue);
+  }
+
+  /**
+   * Core AC-3 algorithm.
+   * For each arc (slotA, slotB at crossing), remove words from slotA's domain
+   * that have no compatible word in slotB's domain at the crossing letter.
+   */
+  _ac3(queue) {
+    const inQueue = new Set(queue.map((q) => `${q.slot.id}→${q.crossing.crossSlot.id}`));
+
+    while (queue.length > 0) {
+      const { slot, crossing } = queue.shift();
+      const arcKey = `${slot.id}→${crossing.crossSlot.id}`;
+      inQueue.delete(arcKey);
+
+      if (slot.filled) continue;
+
+      const { crossSlot, posInThis, posInCross } = crossing;
+
+      // What letters are possible at the crossing position in the cross slot?
+      const crossLetters = new Set();
+      for (const word of crossSlot.domain) {
+        crossLetters.add(word[posInCross]);
+      }
+
+      // Filter this slot's domain to only words whose letter at posInThis is in crossLetters
+      const before = slot.domain.length;
+      slot.domain = slot.domain.filter((word) => crossLetters.has(word[posInThis]));
+
+      if (slot.domain.length === 0) return false; // Dead end
+
+      // If domain changed, re-enqueue arcs for this slot's other neighbors
+      if (slot.domain.length < before) {
+        const myCrossings = this.crossings.get(slot.id) || [];
+        for (const mc of myCrossings) {
+          if (mc.crossSlot.id === crossSlot.id) continue; // Skip the one we just checked
+          const key = `${mc.crossSlot.id}→${slot.id}`;
+          if (!inQueue.has(key)) {
+            // Enqueue the reverse arc: neighbor checking against this slot
+            const revCrossings = this.crossings.get(mc.crossSlot.id) || [];
+            const revCrossing = revCrossings.find((rc) => rc.crossSlot.id === slot.id);
+            if (revCrossing) {
+              queue.push({ slot: mc.crossSlot, crossing: revCrossing });
+              inQueue.add(key);
+            }
+          }
+        }
+      }
+    }
 
     return true;
   }
 
-  /**
-   * Place word temporarily (for flexibility calculation only)
-   */
-  placeWordTemporary(word, slot) {
-    const { direction, startRow, startCol, length } = slot;
+  // ─── Backtracking Solver ──────────────────────────────────────────
 
-    for (let i = 0; i < length; i++) {
-      const row = direction === 'across' ? startRow : startRow + i;
-      const col = direction === 'across' ? startCol + i : startCol;
-      this.grid[row][col] = word[i];
-    }
+  _solve() {
+    const deadline = this.stats.startTime + this.timeoutMs;
 
-    slot.filled = true;
+    const result = this._backtrack(deadline);
+    return result;
   }
 
-  /**
-   * Remove a word from the grid (backtracking)
-   */
-  removeWord(slot) {
-    // Remove from placed words
+  _backtrack(deadline) {
+    // Check timeout
+    if (Date.now() > deadline) return false;
+
+    // All slots filled?
+    const unfilled = this.slots.filter((s) => !s.filled);
+    if (unfilled.length === 0) return true;
+
+    // MRV: pick slot with smallest domain
+    let bestSlot = null;
+    let minSize = Infinity;
+    for (const slot of unfilled) {
+      const size = slot.domain.length;
+      if (size < minSize) {
+        minSize = size;
+        bestSlot = slot;
+      }
+      if (size === 0) return false; // Dead end
+    }
+
+    // Try each word in this slot's domain
+    // In randomize mode, use the pre-shuffled domain order for variety.
+    // Otherwise, sort by word score (highest first) for deterministic quality.
+    const orderedDomain = this._randomize
+      ? [...bestSlot.domain]
+      : [...bestSlot.domain].sort(
+          (a, b) => (this.wordIndex.getScore(b) || 0) - (this.wordIndex.getScore(a) || 0)
+        );
+
+    for (const word of orderedDomain) {
+      // Skip if already placed in this puzzle
+      if (this.placedWords.some((pw) => pw.word === word)) continue;
+
+      // Save state for backtracking
+      const savedDomains = new Map();
+      for (const slot of this.slots) {
+        savedDomains.set(slot.id, [...slot.domain]);
+      }
+      const savedGridCells = [];
+      for (const cell of bestSlot.cells) {
+        savedGridCells.push(this.grid[cell.row][cell.col]);
+      }
+
+      // Place word
+      this._placeWord(bestSlot, word);
+
+      // Propagate constraints
+      if (this._ac3FromSlot(bestSlot)) {
+        // Forward check: ensure no unfilled neighbor has empty domain
+        let viable = true;
+        const neighbors = this.crossings.get(bestSlot.id) || [];
+        for (const { crossSlot } of neighbors) {
+          if (!crossSlot.filled && crossSlot.domain.length === 0) {
+            viable = false;
+            break;
+          }
+        }
+
+        if (viable && this._backtrack(deadline)) {
+          return true;
+        }
+      }
+
+      // Backtrack: undo placement, restore domains
+      this._unplaceWord(bestSlot, savedGridCells);
+      for (const slot of this.slots) {
+        slot.domain = savedDomains.get(slot.id);
+      }
+      this.stats.backtrackCount++;
+    }
+
+    return false;
+  }
+
+  _placeWord(slot, word) {
+    for (let i = 0; i < slot.length; i++) {
+      this.grid[slot.cells[i].row][slot.cells[i].col] = word[i];
+    }
+    slot.filled = true;
+    slot.word = word;
+    slot.domain = [word];
+    this.placedWords.push({
+      word,
+      direction: slot.direction,
+      startRow: slot.startRow,
+      startCol: slot.startCol,
+    });
+    this.stats.slotsFilled++;
+
+    // Update patterns of crossing slots
+    const crossings = this.crossings.get(slot.id) || [];
+    for (const { crossSlot, posInThis, posInCross } of crossings) {
+      if (!crossSlot.filled) {
+        const patArr = crossSlot.pattern.split('');
+        patArr[posInCross] = word[posInThis];
+        crossSlot.pattern = patArr.join('');
+
+        // Filter domain to match new constraint
+        const letter = word[posInThis];
+        crossSlot.domain = crossSlot.domain.filter(
+          (w) => w[posInCross] === letter && !this.placedWords.some((pw) => pw.word === w)
+        );
+      }
+    }
+  }
+
+  _unplaceWord(slot, savedGridCells) {
+    // Restore grid cells (only cells not part of other placed words)
+    for (let i = 0; i < slot.cells.length; i++) {
+      const { row, col } = slot.cells[i];
+      // Check if this cell is part of another placed word (crossing)
+      const isShared = this.placedWords.some((pw) => {
+        if (
+          pw.word === slot.word &&
+          pw.direction === slot.direction &&
+          pw.startRow === slot.startRow &&
+          pw.startCol === slot.startCol
+        ) {
+          return false; // Skip the word we're removing
+        }
+        const otherSlot = this.slots.find(
+          (s) =>
+            s.direction === pw.direction && s.startRow === pw.startRow && s.startCol === pw.startCol
+        );
+        return otherSlot?.cells.some((c) => c.row === row && c.col === col);
+      });
+
+      if (!isShared) {
+        this.grid[row][col] = savedGridCells[i];
+      }
+    }
+
+    slot.filled = false;
+    slot.word = null;
     this.placedWords = this.placedWords.filter(
       (pw) =>
         !(
@@ -853,88 +853,127 @@ export default class CrosswordGenerator {
           pw.startCol === slot.startCol
         )
     );
+    this.stats.slotsFilled--;
 
-    // Pop from move stack and restore state
-    if (this.moveStack.length > 0) {
-      const { previousState } = this.moveStack.pop();
-      this.restoreSlotState(slot, previousState);
+    // Restore pattern
+    let pattern = '';
+    for (const cell of slot.cells) {
+      const val = this.grid[cell.row][cell.col];
+      pattern += val && val !== EMPTY_CELL && val !== BLACK_SQUARE ? val : '.';
     }
-
-    slot.filled = false;
+    slot.pattern = pattern;
   }
 
-  /**
-   * Save slot state for backtracking
-   */
-  saveSlotState(slot) {
-    const { direction, startRow, startCol, length } = slot;
-    const cells = [];
+  // ─── Scoring ──────────────────────────────────────────────────────
 
-    for (let i = 0; i < length; i++) {
-      const row = direction === 'across' ? startRow : startRow + i;
-      const col = direction === 'across' ? startCol + i : startCol;
-      cells.push(this.grid[row][col]);
+  /**
+   * Compute Grid Score for placing a candidate word in a slot.
+   * Grid Score = geometric mean of (neighbor domain sizes after / before).
+   * Higher = less constraining = better.
+   */
+  _computeGridScore(slot, word) {
+    const crossings = this.crossings.get(slot.id) || [];
+    if (crossings.length === 0) return 10; // No crossings = perfect
+
+    let logSum = 0;
+    let count = 0;
+
+    for (const { crossSlot, posInThis, posInCross } of crossings) {
+      if (crossSlot.filled) continue;
+
+      const letter = word[posInThis];
+      const before = crossSlot.domain.length;
+      if (before === 0) return 0;
+
+      // Count how many words in the cross slot's domain have the right letter
+      let after = 0;
+      for (const w of crossSlot.domain) {
+        if (w[posInCross] === letter) after++;
+      }
+
+      if (after === 0) return 0; // Non-viable
+
+      logSum += Math.log(after / before);
+      count++;
     }
 
-    return cells;
+    if (count === 0) return 10;
+    return Math.exp(logSum / count) * 10; // Scale to ~0-10 range
   }
 
-  /**
-   * Restore slot state
-   */
-  restoreSlotState(slot, previousState) {
-    const { direction, startRow, startCol, length } = slot;
+  _calculateQuality() {
+    const wordLengths = this.placedWords.map((pw) => pw.word.length);
+    const twoLetterWords = wordLengths.filter((l) => l === 2).length;
+    const threeLetterWords = wordLengths.filter((l) => l === 3).length;
+    const fourPlusWords = wordLengths.filter((l) => l >= 4).length;
 
-    for (let i = 0; i < length; i++) {
-      const row = direction === 'across' ? startRow : startRow + i;
-      const col = direction === 'across' ? startCol + i : startCol;
+    // Average word score from dictionary
+    let totalScore = 0;
+    for (const pw of this.placedWords) {
+      totalScore += this.wordIndex.getScore(pw.word);
+    }
+    const averageWordScore =
+      this.placedWords.length > 0
+        ? Math.round((totalScore / this.placedWords.length) * 10) / 10
+        : 0;
 
-      // Only restore if not part of another word
-      const isPartOfOtherWord = this.placedWords.some((pw) => {
-        if (
-          pw.direction === slot.direction &&
-          pw.startRow === slot.startRow &&
-          pw.startCol === slot.startCol
-        ) {
-          return false; // Skip current slot
-        }
-        if (pw.direction === 'across') {
-          return pw.startRow === row && pw.startCol <= col && col < pw.startCol + pw.word.length;
-        } else {
-          return pw.startCol === col && pw.startRow <= row && row < pw.startRow + pw.word.length;
-        }
-      });
+    // Quality formula
+    let score = 100;
+    score -= twoLetterWords * 30;
+    score += threeLetterWords * 10;
+    score += fourPlusWords * 20;
+    score += this.placedWords.length * 5;
 
-      if (!isPartOfOtherWord) {
-        this.grid[row][col] = previousState[i];
+    // Bonus/penalty based on average word score
+    if (averageWordScore >= 50) score += 20;
+    else if (averageWordScore >= 30) score += 10;
+    else if (averageWordScore < 15) score -= 20;
+
+    // Black square count
+    let blackCount = 0;
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        if (this.grid[r][c] === BLACK_SQUARE) blackCount++;
       }
     }
+    if (blackCount > 6) score -= (blackCount - 6) * 10;
+
+    return {
+      score,
+      twoLetterWords,
+      threeLetterWords,
+      fourPlusWords,
+      averageWordScore,
+      blackCount,
+      totalWords: this.placedWords.length,
+    };
   }
 
-  /**
-   * Save complete grid state
-   */
-  saveGridState() {
-    return this.grid.map((row) => [...row]);
-  }
+  // ─── Utilities ────────────────────────────────────────────────────
 
   /**
-   * Restore complete grid state
+   * Shuffle an array with bias toward higher-scored words.
+   * Splits into score tiers and shuffles within each tier.
    */
-  restoreGridState(savedState) {
-    for (let row = 0; row < 5; row++) {
-      for (let col = 0; col < 5; col++) {
-        this.grid[row][col] = savedState[row][col];
+  _shuffleWithScoreBias(words) {
+    // Group into tiers: 75+, 50-74, 25-49, 1-24
+    const tiers = [[], [], [], []];
+    for (const word of words) {
+      const score = this.wordIndex.getScore(word);
+      if (score >= 75) tiers[0].push(word);
+      else if (score >= 50) tiers[1].push(word);
+      else if (score >= 25) tiers[2].push(word);
+      else tiers[3].push(word);
+    }
+
+    // Fisher-Yates shuffle within each tier
+    for (const tier of tiers) {
+      for (let i = tier.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [tier[i], tier[j]] = [tier[j], tier[i]];
       }
     }
-  }
 
-  /**
-   * Get grid with black squares (for display)
-   */
-  getGridWithBlackSquares() {
-    return this.grid.map((row) =>
-      row.map((cell) => (cell === BLACK_SQUARE ? BLACK_SQUARE : EMPTY_CELL))
-    );
+    return [...tiers[0], ...tiers[1], ...tiers[2], ...tiers[3]];
   }
 }

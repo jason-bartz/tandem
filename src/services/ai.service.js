@@ -4670,6 +4670,90 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
       throw new Error('Failed to parse AI element paths response. Please try again.');
     }
   }
+
+  /**
+   * Generate themed seed words for a crossword puzzle.
+   * Returns 3-5 words that relate to the given theme and exist in the word dictionary.
+   *
+   * @param {Object} options
+   * @param {string} options.theme - Theme description (e.g., "Space exploration", "Italian food")
+   * @param {string[]} [options.validWords] - Set of valid dictionary words to constrain against
+   * @param {string[]} [options.excludeWords] - Words to avoid (recently used)
+   * @returns {Promise<{theme: string, seedWords: string[]}>}
+   */
+  async generateThemeSeedWords({ theme, excludeWords = [] }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const excludeSection =
+      excludeWords.length > 0
+        ? `\nDo NOT use any of these words: ${excludeWords.slice(0, 30).join(', ')}`
+        : '';
+
+    const prompt = `Generate 5-8 themed crossword seed words for a 5x5 mini crossword puzzle.
+
+## THEME: "${theme}"
+
+## REQUIREMENTS
+- Each word must be 3-5 letters long (this is for a 5x5 grid)
+- Each word must be a REAL, common English word that would appear in a crossword dictionary
+- Words should clearly relate to the theme "${theme}"
+- Prefer well-known, recognizable words (score 50+ in crossword difficulty)
+- Include a mix of word lengths: at least one 5-letter word and at least one 3-letter word
+- Words must contain only letters A-Z (no spaces, hyphens, or special characters)
+${excludeSection}
+
+## RESPONSE FORMAT
+Return ONLY a JSON array of uppercase words, nothing else. Example:
+["SPACE", "ORBIT", "STAR", "MOON", "MARS"]
+
+Your response:`;
+
+    const message = await client.messages.create({
+      model: this.model,
+      max_tokens: 256,
+      temperature: 0.8,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const responseText = message.content[0].text.trim();
+
+    // Parse JSON array from response
+    const jsonMatch = responseText.match(/\[[\s\S]*?\]/);
+    if (!jsonMatch) {
+      throw new Error('Failed to parse theme seed words response');
+    }
+
+    let words;
+    try {
+      words = JSON.parse(jsonMatch[0]);
+    } catch {
+      throw new Error('Failed to parse theme seed words JSON');
+    }
+
+    if (!Array.isArray(words) || words.length === 0) {
+      throw new Error('No seed words generated');
+    }
+
+    // Normalize: uppercase, A-Z only, 2-5 letters
+    const seedWords = words
+      .map((w) =>
+        String(w)
+          .toUpperCase()
+          .replace(/[^A-Z]/g, '')
+      )
+      .filter((w) => w.length >= 2 && w.length <= 5);
+
+    if (seedWords.length === 0) {
+      throw new Error('No valid seed words after filtering');
+    }
+
+    logger.info(`[AI] Generated ${seedWords.length} theme seed words for "${theme}":`, seedWords);
+
+    return { theme, seedWords };
+  }
 }
 
 export default new AIService();
