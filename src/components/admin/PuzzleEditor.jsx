@@ -501,13 +501,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
                 </div>
                 <div className="space-y-2">
                   <div className="flex flex-col sm:flex-row gap-1.5 sm:gap-2">
-                    <div className="flex-1 flex gap-1.5">
+                    <div className="flex gap-1.5 sm:flex-1">
                       <input
                         type="text"
                         value={puzzle.emoji}
                         onChange={(e) => handlePuzzleChange(index, 'emoji', e.target.value)}
-                        placeholder="🍳🔥"
-                        className="flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
+                        placeholder="Emoji Pair"
+                        className="w-28 sm:flex-1 px-2.5 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-md bg-bg-surface text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-green focus:border-accent-green"
                         required
                       />
                       <button
