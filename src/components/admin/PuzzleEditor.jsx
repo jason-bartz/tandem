@@ -677,44 +677,44 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row sm:justify-between gap-2 sm:gap-3">
+        <div className="flex gap-2 sm:gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="w-full sm:w-auto px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-bg-card text-text-primary rounded-md sm:rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-bg-card text-text-primary rounded-md sm:rounded-lg font-bold hover:bg-text-muted/20 transition-colors"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
-            ← Back
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">Back to Calendar</span>
           </button>
-          <div className="flex gap-2 sm:gap-3">
-            <button
-              type="button"
-              onClick={() => {
-                setTheme('');
-                setPuzzles([
-                  { emoji: '', answer: '', hint: '' },
-                  { emoji: '', answer: '', hint: '' },
-                  { emoji: '', answer: '', hint: '' },
-                  { emoji: '', answer: '', hint: '' },
-                ]);
-                setDifficultyRating('');
-                setDifficultyFactors(null);
-                setMessage('');
-              }}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-accent-orange text-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform"
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            >
-              Clear
-            </button>
-            <button
-              type="submit"
-              disabled={loading || !validateForm()}
-              className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            >
-              {loading ? 'Saving...' : 'Save'}
-            </button>
-          </div>
+          <button
+            type="submit"
+            disabled={loading || !validateForm()}
+            className="flex-1 sm:flex-none px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          >
+            <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
+            <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setTheme('');
+              setPuzzles([
+                { emoji: '', answer: '', hint: '' },
+                { emoji: '', answer: '', hint: '' },
+                { emoji: '', answer: '', hint: '' },
+                { emoji: '', answer: '', hint: '' },
+              ]);
+              setDifficultyRating('');
+              setDifficultyFactors(null);
+              setMessage('');
+            }}
+            className="px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-[2px] border-black dark:border-white bg-accent-orange text-white rounded-md sm:rounded-lg font-bold hover:translate-y-[-1px] transition-transform"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          >
+            Clear
+          </button>
         </div>
       </form>
     </div>

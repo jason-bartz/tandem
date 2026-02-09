@@ -625,21 +625,46 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         {/* Action Buttons */}
         <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
           <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-1.5 text-sm font-bold bg-green-500 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-          >
-            {loading ? 'Saving...' : puzzle ? 'Update' : 'Create'}
-          </button>
-          <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-1.5 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
-            Cancel
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">Back to Calendar</span>
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-green-500 text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          >
+            <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
+            <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setFormData({
+                date: formData.date,
+                targetElement: '',
+                targetEmoji: '✨',
+                parMoves: '',
+                difficulty: 'medium',
+                solutionPath: [],
+                published: true,
+              });
+              setTargetSearch('');
+              setSearchResults([]);
+              setPathError(null);
+              setErrors({});
+            }}
+            disabled={loading}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-orange text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          >
+            Clear
           </button>
         </div>
       </form>

@@ -711,18 +711,37 @@ export default function ReelConnectionsPuzzleEditor({
 
       <div className="flex gap-2 mt-4">
         <button
-          onClick={handleSave}
-          disabled={loading}
-          className="px-4 py-1.5 text-sm bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? 'Saving...' : 'Save Puzzle'}
-        </button>
-        <button
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-1.5 text-sm bg-bg-card text-text-primary border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-bg-card text-text-primary border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"
         >
-          Cancel
+          <span className="sm:hidden">Back</span>
+          <span className="hidden sm:inline">Back to Calendar</span>
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={loading}
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
+          <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
+        </button>
+        <button
+          onClick={() => {
+            setGroups(
+              DIFFICULTY_LEVELS.map((level) => ({
+                difficulty: level.id,
+                connection: '',
+                connectionContext: '',
+                movies: [null, null, null, null],
+              }))
+            );
+            setSuggestions({});
+          }}
+          disabled={loading}
+          className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-orange text-white border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"
+        >
+          Clear
         </button>
       </div>
     </div>
