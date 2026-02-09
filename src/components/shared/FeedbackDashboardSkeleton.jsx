@@ -5,51 +5,11 @@
  */
 export default function FeedbackDashboardSkeleton() {
   return (
-    <div className="space-y-6">
-      {/* Header Skeleton */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <div>
-            <div className="h-3 w-40 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse" />
-            <div className="h-7 w-48 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="h-4 w-12 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="h-7 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-          </div>
-        </div>
-
-        {/* Status Tabs Skeleton */}
-        <div className="flex gap-2 border-b-[3px] border-black dark:border-white pb-1 overflow-x-auto">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="px-4 py-3 border-[3px] border-black dark:border-white rounded-t-lg bg-ghost-white dark:bg-gray-800 animate-pulse"
-              style={{ animationDelay: `${i * 100}ms` }}
-            >
-              <div className="flex items-center gap-2">
-                <div className="h-3 w-16 bg-gray-300 dark:bg-gray-600 rounded" />
-                <div className="h-5 w-8 bg-gray-300 dark:bg-gray-600 rounded" />
-              </div>
-            </div>
-          ))}
-        </div>
-
-        {/* Filters Skeleton */}
-        <div className="flex flex-col gap-3">
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div className="h-3 w-12 bg-gray-300 dark:bg-gray-700 rounded animate-pulse" />
-            <div className="flex flex-wrap gap-2">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div
-                  key={i}
-                  className="h-7 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg border-[2px] border-black dark:border-white animate-pulse"
-                  style={{ animationDelay: `${i * 50}ms` }}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
+    <div className="space-y-4">
+      {/* Sort & Filter Row Skeleton */}
+      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+        <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+        <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
       </div>
 
       {/* Feedback Entry Cards Skeleton */}

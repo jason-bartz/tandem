@@ -267,7 +267,7 @@ export default function AvatarManager() {
               onClick={() => setShowUploadForm(true)}
               className="px-4 py-2 bg-accent-green text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
             >
-              + Add Avatar
+              + Add
             </button>
           </div>
           <p className="text-sm text-text-secondary mt-2">
@@ -574,16 +574,16 @@ export default function AvatarManager() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-text-muted/20">
+                <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-text-muted/20">
                   <button
                     onClick={() => setEditingAvatar({ ...avatar })}
-                    className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-accent-blue text-accent-blue hover:bg-accent-blue/20"
+                    className="px-2 py-1 text-xs font-bold rounded-md border-[2px] border-accent-blue text-accent-blue hover:bg-accent-blue/20"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleToggleActive(avatar)}
-                    className={`flex-1 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+                    className={`flex-1 min-w-0 px-2 py-1 text-xs font-bold rounded-md border-[2px] transition-all truncate ${
                       avatar.is_active
                         ? 'bg-text-muted/20 border-text-muted text-text-secondary hover:bg-text-muted/30'
                         : 'bg-accent-green/20 border-accent-green text-accent-green hover:bg-accent-green/30'
@@ -593,7 +593,7 @@ export default function AvatarManager() {
                   </button>
                   <button
                     onClick={() => handleDelete(avatar)}
-                    className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-accent-red text-accent-red hover:bg-accent-red/20"
+                    className="px-2 py-1 text-xs font-bold rounded-md border-[2px] border-accent-red text-accent-red hover:bg-accent-red/20"
                   >
                     Delete
                   </button>
@@ -604,7 +604,7 @@ export default function AvatarManager() {
 
           {avatars.length === 0 && (
             <div className="text-center py-12 text-text-secondary">
-              No avatars found. Click &quot;Add Avatar&quot; to create one.
+              No avatars found. Click &quot;Add&quot; to create one.
             </div>
           )}
         </div>
