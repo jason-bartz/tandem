@@ -109,7 +109,7 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div className="admin-theme min-h-screen bg-accent-yellow">
+    <div className="admin-theme min-h-screen bg-white">
       <nav className="bg-bg-surface border-b-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
@@ -122,7 +122,7 @@ export default function AdminLayout({ children }) {
                 href="/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="hidden sm:inline-block px-4 py-2 border-[3px] border-black dark:border-white bg-accent-blue text-white rounded-xl font-bold hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                className="hidden sm:inline-block px-3 py-1 text-sm border-[2px] border-black dark:border-white bg-accent-blue text-white rounded-lg font-bold hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
               >
                 View Game
               </a>
@@ -131,7 +131,7 @@ export default function AdminLayout({ children }) {
                   await storageService.remove('adminToken');
                   router.push('/admin/login');
                 }}
-                className="px-4 py-2 border-[3px] border-black dark:border-white bg-accent-red text-white rounded-xl font-bold hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+                className="px-3 py-1 text-sm border-[2px] border-black dark:border-white bg-accent-red text-white rounded-lg font-bold hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)]"
               >
                 Logout
               </button>
@@ -140,7 +140,7 @@ export default function AdminLayout({ children }) {
         </div>
       </nav>
       <main className="py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
-        <div className="bg-bg-card rounded-[32px] border-[3px] border-black dark:border-white p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto shadow-[6px_6px_0px_rgba(0,0,0,1)] dark:shadow-[6px_6px_0px_rgba(255,255,255,0.3)] overflow-visible">
+        <div className="p-4 sm:p-6 min-h-[600px] w-full max-w-7xl mx-auto overflow-visible">
           {children}
         </div>
       </main>
