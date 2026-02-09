@@ -2,46 +2,10 @@ import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/lib/auth';
 import CrosswordGenerator from '@/lib/server/CrosswordGenerator';
 import { getWordIndex } from '@/lib/server/WordIndex';
-import { createServerClient } from '@/lib/supabase/server';
-import { extractWordsFromPuzzles } from '@/lib/miniUtils';
 import aiService from '@/services/ai.service';
 import logger from '@/lib/logger';
 
 export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
-
-const DEDUP_LOOKBACK_DAYS = 30;
-const EXCLUSION_PERCENTAGE = 0.8;
-
-/**
- * Fetch recently used words to exclude from fills
- */
-async function getRecentlyUsedWords(lookbackDays = DEDUP_LOOKBACK_DAYS) {
-  try {
-    const supabase = createServerClient();
-    const startDate = new Date();
-    startDate.setDate(startDate.getDate() - lookbackDays);
-    const startDateStr = startDate.toISOString().split('T')[0];
-
-    const { data: puzzles, error } = await supabase
-      .from('mini_puzzles')
-      .select('solution')
-      .gte('date', startDateStr)
-      .order('date', { ascending: false });
-
-    if (error) {
-      logger.error('[Fill API] Error fetching recent puzzles:', error);
-      return [];
-    }
-
-    const allWords = extractWordsFromPuzzles(puzzles);
-    const shuffled = allWords.sort(() => Math.random() - 0.5);
-    const excludeCount = Math.ceil(shuffled.length * EXCLUSION_PERCENTAGE);
-    return shuffled.slice(0, excludeCount);
-  } catch (error) {
-    logger.error('[Fill API] Error in getRecentlyUsedWords:', error);
-    return [];
-  }
-}
 
 /**
  * POST /api/admin/mini/fill
@@ -77,23 +41,13 @@ export async function POST(request) {
       );
     }
 
-    // Load word index and get excluded words
+    // Load word index
     const wordIndex = getWordIndex();
     const excludeWords = options.excludeWords || [];
 
-    // Add recently used words to exclusion list
-    let recentWords = [];
-    try {
-      recentWords = await getRecentlyUsedWords();
-    } catch (err) {
-      logger.warn('[Fill API] Could not fetch recent words:', err.message);
-    }
-
-    const allExcluded = [...excludeWords, ...recentWords];
-
     const generator = new CrosswordGenerator(wordIndex, {
       minScore,
-      excludeWords: allExcluded,
+      excludeWords,
       timeoutMs: 5000,
     });
 
@@ -124,7 +78,7 @@ export async function POST(request) {
       case 'quickfill': {
         const result = generator.quickFill(grid, {
           minScore,
-          excludeWords: allExcluded,
+          excludeWords: excludeWords,
         });
 
         if (!result.success) {
@@ -192,7 +146,7 @@ export async function POST(request) {
         // Generate seed words from AI
         const aiResult = await aiService.generateThemeSeedWords({
           theme,
-          excludeWords: allExcluded,
+          excludeWords: excludeWords,
         });
 
         // Validate each word against the master dictionary
@@ -236,7 +190,7 @@ export async function POST(request) {
         // Step 1: Get theme seed words from AI
         const seedResult = await aiService.generateThemeSeedWords({
           theme: fillTheme,
-          excludeWords: allExcluded,
+          excludeWords: excludeWords,
         });
 
         // Step 2: Validate against dictionary
@@ -320,13 +274,13 @@ export async function POST(request) {
           // Try to fill around the seed words
           const fillGen = new CrosswordGenerator(idx, {
             minScore,
-            excludeWords: allExcluded,
+            excludeWords: excludeWords,
             timeoutMs: 5000,
           });
 
           const fillResult = fillGen.quickFill(seedGrid, {
             minScore,
-            excludeWords: allExcluded,
+            excludeWords: excludeWords,
           });
 
           if (fillResult.success) {
