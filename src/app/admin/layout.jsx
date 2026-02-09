@@ -110,7 +110,7 @@ export default function AdminLayout({ children }) {
   // Render authenticated admin layout
   return (
     <div className="admin-theme min-h-screen bg-white">
-      <nav className="bg-bg-surface border-b-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
+      <nav className="bg-bg-surface border-b-[1.5px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex-1"></div>

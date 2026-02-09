@@ -1504,6 +1504,11 @@ body {
   display: none;
 }
 
+/* Override body background when admin theme is active (prevents overscroll color bleed) */
+body:has(.admin-theme) {
+  background-color: #ffffff;
+}
+
 /* Admin-specific styling for better readability */
 .admin-theme {
   --bg-primary: var(--admin-bg-primary);
