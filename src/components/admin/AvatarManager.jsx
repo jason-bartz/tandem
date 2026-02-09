@@ -265,9 +265,9 @@ export default function AvatarManager() {
             </div>
             <button
               onClick={() => setShowUploadForm(true)}
-              className="px-4 py-2 bg-accent-green text-white border-[3px] border-black dark:border-white font-bold rounded-xl hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(255,255,255,0.3)]"
+              className="px-2.5 py-1 text-xs bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-md hover:translate-y-[-2px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(255,255,255,0.3)] whitespace-nowrap"
             >
-              + Add
+              Add
             </button>
           </div>
           <p className="text-sm text-text-secondary mt-2">
