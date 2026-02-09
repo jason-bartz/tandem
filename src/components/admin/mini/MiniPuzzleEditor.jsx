@@ -1237,8 +1237,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             </div>
 
             {/* Grid with Preview Support */}
-            <div className="inline-block bg-gray-100 dark:bg-gray-900 p-2 sm:p-3 rounded-lg">
-              <div className="grid grid-cols-5 gap-0.5">
+            <div className="inline-block rounded-lg overflow-hidden border-2 border-black dark:border-white">
+              <div className="grid grid-cols-5">
                 {formData.grid.map((row, rowIndex) =>
                   row.map((cell, colIndex) => {
                     const cellKey = `${rowIndex},${colIndex}`;
@@ -1279,14 +1279,16 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
                           }
                           onClick={() => setSelectedCell({ row: rowIndex, col: colIndex })}
                           onFocus={() => setSelectedCell({ row: rowIndex, col: colIndex })}
-                          className={`grid-cell w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-bold uppercase border-[2px] ${
+                          className={`grid-cell w-10 h-10 sm:w-12 sm:h-12 text-center text-base sm:text-lg font-bold uppercase border-r border-b border-gray-400 dark:border-gray-500 ${
+                            colIndex === 4 ? 'border-r-0' : ''
+                          } ${rowIndex === 4 ? 'border-b-0' : ''} ${
                             cell === '■'
-                              ? 'bg-black text-white border-black'
+                              ? 'bg-black text-white'
                               : isSelected
-                                ? 'bg-accent-blue text-white border-black ring-2 ring-yellow-400'
+                                ? 'bg-accent-blue text-white ring-2 ring-yellow-400 ring-inset'
                                 : isInWord
-                                  ? 'bg-blue-100 dark:bg-blue-900/40 border-black dark:border-white'
-                                  : 'bg-ghost-white dark:bg-gray-800 border-black dark:border-white'
+                                  ? 'bg-blue-100 dark:bg-blue-900/40'
+                                  : 'bg-white dark:bg-gray-800'
                           }`}
                           style={previewLetter && !cell ? { color: 'transparent' } : undefined}
                           disabled={loading}
@@ -1305,8 +1307,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
             </div>
 
             <p className="text-xs text-text-secondary mt-1.5">
-              Type letters to auto-advance. <strong>.</strong> for black squares. Double-click or
-              Space to toggle direction. Arrows to navigate.
+              Type letters to auto-advance. <strong>.</strong> for black squares. Space to toggle
+              direction. Arrows to navigate.
             </p>
             {errors.grid && <p className="text-red-500 text-xs mt-1">{errors.grid}</p>}
           </div>
