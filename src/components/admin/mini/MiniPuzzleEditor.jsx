@@ -916,13 +916,14 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     }
   }, [gridWords.across, gridWords.down]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Auto-evaluate grid quality when board is filled
+  // Auto-evaluate grid quality when board is filled (debounced to avoid lag while typing)
   useEffect(() => {
-    if (isBoardFilled) {
-      evaluateGrid();
-    } else {
+    if (!isBoardFilled) {
       setFillScores(null);
+      return;
     }
+    const timer = setTimeout(() => evaluateGrid(), 500);
+    return () => clearTimeout(timer);
   }, [isBoardFilled, formData.grid]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Fetch candidates when slot selection changes
