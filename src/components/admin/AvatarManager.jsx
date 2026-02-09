@@ -576,6 +576,12 @@ export default function AvatarManager() {
 
                 <div className="flex items-center gap-2 mt-3 pt-3 border-t border-text-muted/20">
                   <button
+                    onClick={() => setEditingAvatar({ ...avatar })}
+                    className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-accent-blue text-accent-blue hover:bg-accent-blue/20"
+                  >
+                    Edit
+                  </button>
+                  <button
                     onClick={() => handleToggleActive(avatar)}
                     className={`flex-1 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
                       avatar.is_active
@@ -584,12 +590,6 @@ export default function AvatarManager() {
                     }`}
                   >
                     {avatar.is_active ? 'Deactivate' : 'Activate'}
-                  </button>
-                  <button
-                    onClick={() => setEditingAvatar({ ...avatar })}
-                    className="px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] border-accent-blue text-accent-blue hover:bg-accent-blue/20"
-                  >
-                    Edit
                   </button>
                   <button
                     onClick={() => handleDelete(avatar)}

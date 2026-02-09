@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import adminService from '@/services/admin.service';
 import { SUBMISSION_STATUS, SUBMISSION_STATUS_OPTIONS } from '@/lib/constants';
 import logger from '@/lib/logger';
@@ -46,10 +46,23 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
   const [updatingId, setUpdatingId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [notesDrafts, setNotesDrafts] = useState({});
+  const [showFilterDropdown, setShowFilterDropdown] = useState(false);
+  const filterRef = useRef(null);
 
   useEffect(() => {
     loadSubmissions(statusFilter);
   }, [statusFilter]);
+
+  // Close filter dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setShowFilterDropdown(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const filteredSubmissions = useMemo(() => {
     const sorted = [...submissions].sort((a, b) => {
@@ -69,6 +82,8 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
       count: counts?.[option.value] || 0,
     }));
   }, [counts]);
+
+  const activeFilterCount = statusFilter !== SUBMISSION_STATUS.PENDING ? 1 : 0;
 
   const loadSubmissions = async (status) => {
     setLoading(true);
@@ -92,7 +107,6 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
     if (!newStatus) return;
     setUpdatingId(submissionId);
 
-    // Immediately remove from current view if status changed
     if (newStatus !== statusFilter) {
       setSubmissions((prev) => prev.filter((s) => s.id !== submissionId));
     }
@@ -157,78 +171,104 @@ export default function SubmissionsDashboard({ onCountsChange, onImportToEditor 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3">
-          <div>
-            <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
-              User Submissions
-            </p>
-            <h2 className="text-2xl font-black text-text-primary">Puzzle Submissions</h2>
-          </div>
-          {summary && (
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-500">Total:</span>
-              <span className="text-2xl font-black text-text-primary">
-                {summary.reduce((acc, item) => acc + item.count, 0)}
-              </span>
-            </div>
-          )}
+      <div className="flex items-end justify-between">
+        <div>
+          <p className="text-xs font-bold tracking-[0.2em] text-gray-500 uppercase mb-1">
+            User Submissions
+          </p>
+          <h2 className="text-2xl font-black text-text-primary">Puzzle Submissions</h2>
         </div>
-
-        {/* Status Tabs */}
         {summary && (
-          <div className="flex gap-1.5 sm:gap-2 border-b-[3px] border-black dark:border-white overflow-x-auto">
-            {summary.map((item) => {
-              const isActive = statusFilter === item.value;
-              const colorClasses = {
-                [SUBMISSION_STATUS.PENDING]: 'bg-accent-yellow',
-                [SUBMISSION_STATUS.APPROVED]: 'bg-accent-green',
-                [SUBMISSION_STATUS.NEEDS_EDIT]: 'bg-accent-blue',
-                [SUBMISSION_STATUS.ARCHIVED]: 'bg-gray-500',
-              };
-
-              const color = colorClasses[item.value];
-
-              return (
-                <button
-                  key={item.value}
-                  onClick={() => setStatusFilter(item.value)}
-                  className={`relative px-3 sm:px-4 py-2 sm:py-3 border-[3px] border-black dark:border-white font-bold text-xs sm:text-sm transition-all rounded-t-lg whitespace-nowrap ${
-                    isActive
-                      ? `${color} ${item.value === SUBMISSION_STATUS.PENDING ? 'text-gray-900' : 'text-white'} border-b-[0px] mb-[-3px] z-10 shadow-none`
-                      : 'bg-ghost-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <span>{item.label}</span>
-                    <span
-                      className={`min-w-[20px] sm:min-w-[24px] px-1 sm:px-1.5 py-0.5 rounded text-xs font-black ${
-                        isActive
-                          ? 'bg-white/20 text-inherit'
-                          : 'bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      {item.count}
-                    </span>
-                  </div>
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-500">Total:</span>
+            <span className="text-2xl font-black text-text-primary">
+              {summary.reduce((acc, item) => acc + item.count, 0)}
+            </span>
           </div>
         )}
+      </div>
 
-        {/* Sort Controls */}
-        <div className="flex items-center gap-3">
-          <select
-            value={sortOrder}
-            onChange={(e) => setSortOrder(e.target.value)}
-            className="px-3 py-2 border-[2px] border-black dark:border-white rounded-lg bg-bg-card text-text-primary font-medium text-sm"
+      {/* Sort & Filter Row */}
+      <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
+        {/* Sort Toggle */}
+        <button
+          onClick={() => setSortOrder((prev) => (prev === 'newest' ? 'oldest' : 'newest'))}
+          className="flex items-center gap-1.5 text-sm font-bold text-text-primary hover:text-accent-blue transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
+            />
+          </svg>
+          <span>{sortOrder === 'newest' ? 'Newest' : 'Oldest'}</span>
+        </button>
+
+        {/* Filter Button */}
+        <div className="relative" ref={filterRef}>
+          <button
+            onClick={() => setShowFilterDropdown((prev) => !prev)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-bold rounded-lg border-[2px] transition-all ${
+              showFilterDropdown || activeFilterCount > 0
+                ? 'bg-black dark:bg-white text-white dark:text-black border-black dark:border-white'
+                : 'bg-ghost-white dark:bg-gray-800 text-text-primary border-black dark:border-white hover:bg-gray-100 dark:hover:bg-gray-700'
+            }`}
           >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
-          </select>
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
+              />
+            </svg>
+            <span>Filter</span>
+            {activeFilterCount > 0 && (
+              <span className="ml-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-accent-red text-white text-[10px] font-black">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
+          {/* Filter Dropdown */}
+          {showFilterDropdown && (
+            <div className="absolute right-0 top-full mt-2 w-72 sm:w-80 bg-white dark:bg-gray-800 border-[3px] border-black dark:border-white rounded-xl shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] z-50 overflow-hidden">
+              {/* Status Section */}
+              <div className="p-3">
+                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wider">
+                  Status
+                </span>
+                <div className="flex flex-wrap gap-1.5 mt-2">
+                  {SUBMISSION_STATUS_OPTIONS.map((option) => {
+                    const isActive = statusFilter === option.value;
+                    const count = counts?.[option.value] || 0;
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setStatusFilter(option.value)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
+                          isActive
+                            ? 'bg-black dark:bg-white text-white dark:text-black'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'
+                        }`}
+                      >
+                        {option.label}
+                        <span
+                          className={`ml-1 ${isActive ? 'text-white/60 dark:text-black/60' : 'text-gray-400 dark:text-gray-500'}`}
+                        >
+                          {count}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

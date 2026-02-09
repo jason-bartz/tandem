@@ -374,7 +374,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           </button>
           <button
             onClick={goToPreviousMonth}
-            className="p-2 font-bold bg-bg-card border-[2px] border-black dark:border-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -387,7 +387,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           </button>
           <button
             onClick={goToNextMonth}
-            className="p-2 font-bold bg-bg-card border-[2px] border-black dark:border-white rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
+            className="p-2 font-bold bg-bg-card rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-all"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -420,7 +420,7 @@ export default function UnifiedPuzzleCalendar({ onSelectDate, onRefresh }) {
           {/* Mobile: dot, Desktop: icon */}
           <span className="sm:hidden w-2 h-2 rounded-full bg-accent-green"></span>
           <Image src={GAMES.soup.icon} alt="" width={16} height={16} className="hidden sm:block" />
-          <span>Soup</span>
+          <span>Alchemy</span>
         </div>
         <div className="flex items-center gap-1.5">
           {/* Mobile: dot, Desktop: icon */}
