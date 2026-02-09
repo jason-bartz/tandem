@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
+import { Plus, Minus, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -199,6 +199,7 @@ function SelectionSlot({
   isShaking = false,
   onDrop,
   disabled = false,
+  isActive = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const [isDragOver, setIsDragOver] = useState(false);
@@ -258,6 +259,8 @@ function SelectionSlot({
         element && 'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
         !element && 'border-dashed hover:border-soup-primary/70 hover:bg-soup-light/30',
         isDragOver && !element && 'border-soup-primary bg-soup-light/50 scale-105',
+        // Active slot highlight
+        isActive && 'ring-[3px] ring-soup-primary ring-offset-1',
         highContrast && 'border-[4px]'
       )}
       animate={
@@ -291,7 +294,9 @@ function SelectionSlot({
       whileHover={!reduceMotion && !isShaking ? { scale: 1.02 } : undefined}
       whileTap={!reduceMotion && !isShaking ? { scale: 0.98 } : undefined}
       aria-label={
-        element ? `Selected: ${element.name}. Click to deselect.` : `Select ${position} element`
+        element
+          ? `Selected: ${element.name}. Click to target this slot.`
+          : `Select ${position} element`
       }
     >
       {element ? (
@@ -320,8 +325,7 @@ function SelectionSlot({
 export function CombinationArea({
   selectedA,
   selectedB,
-  onClearA,
-  onClearB,
+  onSelectSlot, // Callback when slot is clicked: (position) => void
   onCombine,
   onClear,
   isCombining,
@@ -331,6 +335,12 @@ export function CombinationArea({
   onDropElement, // Callback when element is dropped: (elementName, position) => void
   hintMessage = null, // Current hint message to display
   onDismissHint, // Callback to dismiss hint message
+  // Subtraction mode
+  isSubtractMode = false,
+  onToggleOperator, // Callback to toggle between + and -
+  freePlayMode = false,
+  // Active slot
+  activeSlot = null, // 'first' | 'second' | null
 }) {
   const { highContrast, reduceMotion } = useTheme();
 
@@ -435,40 +445,93 @@ export function CombinationArea({
         <SelectionSlot
           element={selectedA}
           position="first"
-          onClick={onClearA}
+          onClick={() => onSelectSlot?.('first')}
           isShaking={isCombining || isAnimating}
           onDrop={onDropElement}
           disabled={disabled || isCombining || isAnimating}
+          isActive={activeSlot === 'first'}
         />
 
-        {/* Plus Sign */}
-        <motion.div
-          className="flex items-center justify-center w-8 h-8"
+        {/* Operator Sign - clickable toggle in Creative Mode */}
+        <motion.button
+          className={cn(
+            'flex items-center justify-center w-8 h-8',
+            freePlayMode && !isCombining && !isAnimating && 'cursor-pointer'
+          )}
+          onClick={() => {
+            if (freePlayMode && !isCombining && !isAnimating) {
+              onToggleOperator?.();
+            }
+          }}
           animate={
             !reduceMotion && (isCombining || isAnimating)
               ? { scale: 1.3, rotate: 180 }
               : { scale: 1, rotate: 0 }
           }
           transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          whileTap={
+            freePlayMode && !isCombining && !isAnimating && !reduceMotion
+              ? { scale: 0.85 }
+              : undefined
+          }
+          aria-label={
+            freePlayMode
+              ? `Toggle operator. Currently ${isSubtractMode ? 'subtract' : 'combine'}. Click to switch.`
+              : undefined
+          }
+          type="button"
         >
-          <Plus
-            className={cn(
-              'w-6 h-6 sm:w-8 sm:h-8',
-              'text-gray-400 dark:text-gray-500',
-              (isCombining || isAnimating) && 'text-soup-primary',
-              highContrast && 'text-hc-text'
+          <AnimatePresence mode="wait" initial={false}>
+            {isSubtractMode ? (
+              <motion.div
+                key="minus"
+                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <Minus
+                  className={cn(
+                    'w-6 h-6 sm:w-8 sm:h-8',
+                    'text-gray-400 dark:text-gray-500',
+                    (isCombining || isAnimating) && 'text-soup-primary',
+                    freePlayMode &&
+                      !isCombining &&
+                      !isAnimating &&
+                      'text-red-400 dark:text-red-400',
+                    highContrast && 'text-hc-text'
+                  )}
+                />
+              </motion.div>
+            ) : (
+              <motion.div
+                key="plus"
+                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
+                animate={{ opacity: 1, rotate: 0, scale: 1 }}
+                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
+                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
+              >
+                <Plus
+                  className={cn(
+                    'w-6 h-6 sm:w-8 sm:h-8',
+                    'text-gray-400 dark:text-gray-500',
+                    (isCombining || isAnimating) && 'text-soup-primary',
+                    highContrast && 'text-hc-text'
+                  )}
+                />
+              </motion.div>
             )}
-            aria-hidden="true"
-          />
-        </motion.div>
+          </AnimatePresence>
+        </motion.button>
 
         <SelectionSlot
           element={selectedB}
           position="second"
-          onClick={onClearB}
+          onClick={() => onSelectSlot?.('second')}
           isShaking={isCombining || isAnimating}
           onDrop={onDropElement}
           disabled={disabled || isCombining || isAnimating}
+          isActive={activeSlot === 'second'}
         />
       </div>
 
@@ -519,14 +582,26 @@ export function CombinationArea({
           whileTap={canCombine && !reduceMotion ? { scale: 0.98 } : undefined}
           aria-label={
             isCombining || isAnimating
-              ? 'Combining...'
+              ? isSubtractMode
+                ? 'Subtracting...'
+                : 'Combining...'
               : canCombine
-                ? `Combine ${selectedA?.name} and ${selectedB?.name}`
-                : 'Select two elements to combine'
+                ? isSubtractMode
+                  ? `Subtract ${selectedB?.name} from ${selectedA?.name}`
+                  : `Combine ${selectedA?.name} and ${selectedB?.name}`
+                : isSubtractMode
+                  ? 'Select two elements to subtract'
+                  : 'Select two elements to combine'
           }
         >
           <span className="flex items-center justify-center">
-            {isCombining ? <CombineIconCycler isActive={isCombining} /> : 'Combine'}
+            {isCombining ? (
+              <CombineIconCycler isActive={isCombining} />
+            ) : isSubtractMode ? (
+              'Subtract'
+            ) : (
+              'Combine'
+            )}
           </span>
         </motion.button>
       </div>

@@ -105,6 +105,12 @@ export function DailyAlchemyGame({ initialDate = null }) {
     selectElement,
     selectResultElement,
     clearSelections,
+    activeSlot,
+    setActiveSlot,
+
+    // Operator mode
+    isSubtractMode,
+    toggleOperatorMode,
 
     // Combination
     isCombining,
@@ -350,6 +356,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       selectElement={selectElement}
                       selectResultElement={selectResultElement}
                       clearSelections={clearSelections}
+                      activeSlot={activeSlot}
+                      setActiveSlot={setActiveSlot}
+                      isSubtractMode={isSubtractMode}
+                      toggleOperatorMode={toggleOperatorMode}
                       isCombining={isCombining}
                       isAnimating={isAnimating}
                       combineElements={combineElements}

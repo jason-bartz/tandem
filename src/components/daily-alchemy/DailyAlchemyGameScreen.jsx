@@ -104,7 +104,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
               (navigator.userAgent.includes('Mac') && 'ontouchend' in document));
           if (isIOS) {
             // On iOS, fall back to text share instead of download
-            const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
+            const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} ${result.operator || '+'} ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
             try {
               await navigator.clipboard.writeText(shareText);
               setCopied(true);
@@ -136,7 +136,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       setTimeout(() => setCopied(false), 2000);
     } catch {
       // Fall back to text share
-      const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} + ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
+      const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} ${result.operator || '+'} ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
       try {
         await navigator.clipboard.writeText(shareText);
         setCopied(true);
@@ -296,7 +296,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
-          {result.from[0]} + {result.from[1]}
+          {result.from[0]} {result.operator || '+'} {result.from[1]}
         </motion.span>
         {result.isNew && !result.isFirstDiscovery && (
           <motion.span
@@ -437,7 +437,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
                           {result.from[0]}
                         </span>
                       </div>
-                      <span className="text-blue-500 font-bold text-2xl">+</span>
+                      <span className="text-blue-500 font-bold text-2xl">
+                        {result.operator || '+'}
+                      </span>
                       <div className="flex flex-col items-center">
                         <span className="text-3xl mb-1">{result.fromEmojis?.[1] || '✨'}</span>
                         <span className="font-bold text-gray-900 text-sm text-center">
@@ -497,6 +499,12 @@ export function DailyAlchemyGameScreen({
   selectElement,
   selectResultElement,
   clearSelections,
+  activeSlot,
+  setActiveSlot,
+
+  // Operator mode
+  isSubtractMode = false,
+  toggleOperatorMode,
 
   // Combination
   isCombining,
@@ -815,8 +823,7 @@ export function DailyAlchemyGameScreen({
           <CombinationArea
             selectedA={selectedA}
             selectedB={selectedB}
-            onClearA={clearSelections}
-            onClearB={clearSelections}
+            onSelectSlot={setActiveSlot}
             onCombine={combineElements}
             onClear={clearSelections}
             isCombining={isCombining}
@@ -826,6 +833,10 @@ export function DailyAlchemyGameScreen({
             onDropElement={handleDropElement}
             hintMessage={currentHintMessage}
             onDismissHint={onClearHintMessage}
+            isSubtractMode={isSubtractMode}
+            onToggleOperator={toggleOperatorMode}
+            freePlayMode={freePlayMode}
+            activeSlot={activeSlot}
           />
 
           {/* Embedded Favorites - desktop only */}

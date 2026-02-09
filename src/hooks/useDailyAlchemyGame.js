@@ -127,6 +127,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Selection state
   const [selectedA, setSelectedA] = useState(null);
   const [selectedB, setSelectedB] = useState(null);
+  const [activeSlot, setActiveSlot] = useState(null); // 'first' | 'second' | null
+
+  // Subtraction mode (Creative Mode only)
+  const [isSubtractMode, setIsSubtractMode] = useState(false);
 
   // Combination state
   const [isCombining, setIsCombining] = useState(false); // API loading state
@@ -192,8 +196,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   // Refs for selection state (allows stable callback for memoized components)
   const selectedARef = useRef(selectedA);
   const selectedBRef = useRef(selectedB);
+  const activeSlotRef = useRef(activeSlot);
   selectedARef.current = selectedA;
   selectedBRef.current = selectedB;
+  activeSlotRef.current = activeSlot;
 
   // Load puzzle on mount (skip in free play mode)
   useEffect(() => {
@@ -625,6 +631,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Reset to daily puzzle mode (not Creative Mode)
     setFreePlayMode(false);
+    setIsSubtractMode(false);
 
     // Reset element bank to starter elements for daily puzzle
     setElementBank([...STARTER_ELEMENTS]);
@@ -1032,7 +1039,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   /**
    * Select an element from the bank
    * Uses refs to read current selection state, allowing a stable callback
-   * that works with memoized ElementChip components
+   * that works with memoized ElementChip components.
+   * Respects activeSlot to fill the targeted slot.
    */
   const selectElement = useCallback((element) => {
     // Play plunk sound when selecting an element
@@ -1041,15 +1049,34 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Read current values from refs (not stale closure values)
     const currentA = selectedARef.current;
     const currentB = selectedBRef.current;
+    const active = activeSlotRef.current;
 
-    if (!currentA) {
+    if (active === 'first') {
       setSelectedA(element);
-    } else if (!currentB) {
-      // (Same element selected is valid in Element Soup)
+      // If B is empty, auto-move focus to B; otherwise stay on first for continued replacement
+      if (!currentB) {
+        setActiveSlot('second');
+      }
+    } else if (active === 'second') {
       setSelectedB(element);
+      // If A is empty, auto-move focus to A; otherwise stay on second for continued replacement
+      if (!currentA) {
+        setActiveSlot('first');
+      }
     } else {
-      // Both slots full - replace the second
-      setSelectedB(element);
+      // No active slot - fill first empty
+      if (!currentA) {
+        setSelectedA(element);
+        setActiveSlot('second'); // next click fills B
+      } else if (!currentB) {
+        setSelectedB(element);
+        // Both full now, keep activeSlot as 'second' for continued replacement
+        setActiveSlot('second');
+      } else {
+        // Both full, no active slot set - replace B (legacy behavior)
+        setSelectedB(element);
+        setActiveSlot('second');
+      }
     }
   }, []);
 
@@ -1059,6 +1086,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const clearSelections = useCallback(() => {
     setSelectedA(null);
     setSelectedB(null);
+    setActiveSlot(null);
   }, []);
 
   /**
@@ -1074,10 +1102,18 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     setSelectedA(elementToSelect);
     setSelectedB(null);
+    setActiveSlot('second'); // Focus second slot so next element fills B
   }, []);
 
   /**
-   * Combine the selected elements
+   * Toggle between combine and subtract mode (Creative Mode only)
+   */
+  const toggleOperatorMode = useCallback(() => {
+    setIsSubtractMode((prev) => !prev);
+  }, []);
+
+  /**
+   * Combine (or subtract) the selected elements
    */
   const combineElements = useCallback(async () => {
     if (!selectedA || !selectedB || isCombining || isAnimating) return;
@@ -1088,6 +1124,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     const ANIMATION_DURATION = 600; // ms - wiggle + bang animation
 
     const currentUserId = user?.id || null;
+    const currentMode = isSubtractMode ? 'subtract' : 'combine';
 
     try {
       const url = getApiUrl(SOUP_API.COMBINE);
@@ -1098,6 +1135,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           elementA: selectedA.name,
           elementB: selectedB.name,
           userId: currentUserId,
+          mode: currentMode,
         }),
       });
 
@@ -1146,10 +1184,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
       setIsAnimating(false);
 
-      // Create a normalized combination key (sort alphabetically so A+B == B+A)
-      const comboKey = [selectedA.name.toLowerCase(), selectedB.name.toLowerCase()]
-        .sort()
-        .join('+');
+      // Create a normalized combination key
+      // For combine: sort alphabetically so A+B == B+A
+      // For subtract: order matters so A-B !== B-A
+      const comboKey =
+        currentMode === 'subtract'
+          ? `${selectedA.name.toLowerCase()}-${selectedB.name.toLowerCase()}`
+          : [selectedA.name.toLowerCase(), selectedB.name.toLowerCase()].sort().join('+');
       const isFirstTimeCombination = !madeCombinations.current.has(comboKey);
 
       // Only count moves for first-time combinations (duplicates don't count against par)
@@ -1174,6 +1215,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           elementB: selectedB.name,
           result: element,
           isDuplicate: !isFirstTimeCombination,
+          operator: currentMode === 'subtract' ? '-' : '+',
         },
       ]);
 
@@ -1209,11 +1251,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         isFirstDiscovery,
         from: [selectedA.name, selectedB.name],
         fromEmojis: [selectedA.emoji, selectedB.emoji],
+        operator: currentMode === 'subtract' ? '-' : '+',
       });
 
       // Clear both selection slots after combination
       setSelectedA(null);
       setSelectedB(null);
+      setActiveSlot(null);
 
       // Only clear hint message if the user created the hinted element
       if (currentHintElement && element.toLowerCase() === currentHintElement.toLowerCase()) {
@@ -1223,7 +1267,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     } catch (err) {
       logger.error('[ElementSoup] Failed to combine elements', { error: err.message });
       // Show inline error instead of global error screen
-      setCombinationError("Hmm, couldn't find a combination. Try a different pair!");
+      const errorMsg = isSubtractMode
+        ? "Hmm, couldn't figure out that subtraction. Try a different pair!"
+        : "Hmm, couldn't find a combination. Try a different pair!";
+      setCombinationError(errorMsg);
       setIsCombining(false);
       setIsAnimating(false);
       // Clear selections so user can try again
@@ -1236,6 +1283,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     selectedB,
     isCombining,
     isAnimating,
+    isSubtractMode,
     user,
     authLoading,
     clearSelections,
@@ -1724,6 +1772,12 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     selectElement,
     selectResultElement,
     clearSelections,
+    activeSlot,
+    setActiveSlot,
+
+    // Operator mode
+    isSubtractMode,
+    toggleOperatorMode,
 
     // Combination
     isCombining,

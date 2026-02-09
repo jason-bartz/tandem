@@ -97,7 +97,7 @@ async function releaseDiscoveryLock(cacheKey) {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { elementA, elementB, userId } = body;
+    const { elementA, elementB, userId, mode = 'combine' } = body;
 
     // Validate required fields
     if (!elementA || !elementB) {
@@ -107,8 +107,14 @@ export async function POST(request) {
       );
     }
 
-    // Normalize the combination key (alphabetically sorted, lowercase)
-    const cacheKey = normalizeKey(elementA, elementB);
+    const isSubtract = mode === 'subtract';
+
+    // Normalize the combination key
+    // For combine: alphabetically sorted (A+B == B+A)
+    // For subtract: order-dependent (A-B !== B-A)
+    const cacheKey = isSubtract
+      ? `${elementA.toLowerCase().trim()}-minus-${elementB.toLowerCase().trim()}`
+      : normalizeKey(elementA, elementB);
 
     logger.info('[ElementSoup] Processing combination', {
       elementA,
@@ -212,7 +218,9 @@ export async function POST(request) {
       });
 
       // Generate via AI
-      const aiResult = await aiService.generateElementCombination(elementA, elementB);
+      const aiResult = isSubtract
+        ? await aiService.generateElementSubtraction(elementA, elementB)
+        : await aiService.generateElementCombination(elementA, elementB);
 
       // Double-check DB in case another request finished first (race condition)
       const { data: raceCheck } = await supabase
