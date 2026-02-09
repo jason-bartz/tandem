@@ -864,16 +864,6 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           >
             {isGenerating ? 'Generating...' : 'AI Generate'}
           </button>
-          <button
-            onClick={clearAll}
-            type="button"
-            disabled={isGenerating}
-            className="px-2.5 py-1 text-xs font-bold bg-red-600 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-            title="Clear grid, clues, and stats"
-          >
-            Clear All
-          </button>
         </div>
       </div>
 
@@ -1195,21 +1185,33 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
         {/* Action Buttons */}
         <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
           <button
-            type="submit"
-            disabled={loading}
-            className="px-4 py-1.5 text-sm font-bold bg-accent-yellow text-gray-900 rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
-            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
-          >
-            {loading ? 'Saving...' : puzzle ? 'Update Puzzle' : 'Create Puzzle'}
-          </button>
-          <button
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-4 py-1.5 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
-            Cancel
+            <span className="sm:hidden">Back</span>
+            <span className="hidden sm:inline">Back to Calendar</span>
+          </button>
+          <button
+            type="submit"
+            disabled={loading}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-yellow text-gray-900 rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+          >
+            <span className="sm:hidden">{loading ? 'Saving...' : 'Save'}</span>
+            <span className="hidden sm:inline">{loading ? 'Saving...' : 'Save Puzzle'}</span>
+          </button>
+          <button
+            type="button"
+            onClick={clearAll}
+            disabled={isGenerating}
+            className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-red-600 text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+            title="Clear grid, clues, and stats"
+          >
+            Clear
           </button>
         </div>
       </form>
