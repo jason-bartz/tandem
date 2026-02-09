@@ -84,6 +84,7 @@ export default function CandidateList({
               {' of '}
               {totalCandidates.toLocaleString()}
               {' viable'}
+              {filter && ` (${sortedCandidates.length} shown)`}
             </>
           ) : (
             'No matches'
