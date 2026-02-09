@@ -224,7 +224,8 @@ export function DailyAlchemyCompleteScreen({
         </div>
         {winningCombination && (
           <div className="mt-2 text-sm text-gray-500 dark:text-gray-400">
-            {winningCombination.elementA} + {winningCombination.elementB}
+            {winningCombination.elementA} {winningCombination.operator || '+'}{' '}
+            {winningCombination.elementB}
           </div>
         )}
       </motion.div>

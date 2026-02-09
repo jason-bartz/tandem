@@ -4273,6 +4273,180 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
   }
 
   /**
+   * Generate an element subtraction result (A minus B)
+   * Uses the same provider routing as combination
+   */
+  async generateElementSubtraction(elementA, elementB) {
+    const startTime = Date.now();
+    const providerMode = this.alchemyProvider;
+
+    logger.info('Generating element subtraction', {
+      elementA,
+      elementB,
+      providerMode,
+      primaryModel: this.alchemyPrimaryModel,
+      fallbackModel: this.alchemyFallbackModel,
+    });
+
+    const prompt = this.buildElementSubtractionPrompt(elementA, elementB);
+
+    try {
+      let result;
+
+      if (providerMode === 'claude-only') {
+        result = await this._generateWithAnthropic(prompt, {
+          maxTokens: 100,
+          temperature: 0.8,
+        });
+      } else if (providerMode === 'llama-only') {
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 100,
+          temperature: 0.8,
+          fallbackModels: [],
+        });
+      } else {
+        result = await this._generateWithGateway(prompt, {
+          model: this.alchemyPrimaryModel,
+          maxTokens: 100,
+          temperature: 0.8,
+          fallbackModels: [this.alchemyFallbackModel],
+        });
+      }
+
+      const duration = Date.now() - startTime;
+      const parsed = this.parseElementCombinationResponse(result.text);
+
+      const safeResult = validateElementSafety(parsed.element, parsed.emoji);
+
+      if (safeResult.blocked) {
+        logger.warn('Element subtraction blocked by child safety filter', {
+          elementA,
+          elementB,
+          duration,
+          modelUsed: result.modelUsed,
+          providerMode,
+        });
+      } else {
+        logger.info('Element subtraction generated successfully', {
+          elementA,
+          elementB,
+          result: safeResult.element,
+          emoji: safeResult.emoji,
+          duration,
+          modelUsed: result.modelUsed,
+          providerMode,
+        });
+      }
+
+      return { element: safeResult.element, emoji: safeResult.emoji };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+
+      logger.error('Element subtraction generation failed', {
+        elementA,
+        elementB,
+        error: error.message,
+        duration,
+        providerMode,
+      });
+
+      throw new Error(`Element subtraction generation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Build the prompt for element subtraction generation
+   */
+  buildElementSubtractionPrompt(elementA, elementB) {
+    return `You are generating results for an element SUBTRACTION game - a creative twist on the element combination genre.
+
+TASK: Determine what remains when you SUBTRACT one element from another:
+Base Element: ${elementA}
+Subtract: ${elementB}
+
+WHAT IS SUBTRACTION?
+Remove the essence, concept, or defining quality of the second element from the first. What's LEFT when you take that away?
+
+CORE PHILOSOPHY:
+This is a CREATIVE SANDBOX. Results should range from logical and satisfying to hilariously absurd. The game rewards experimentation with surprising, funny, and sometimes chaotic results. Players should think "That's perfect!" OR "LOL what?!" - both are valid.
+
+THE CREATIVITY SPECTRUM:
+Simple subtractions should feel intuitive. As they get more abstract, EMBRACE THE CHAOS:
+
+GROUNDED (basic elements):
+- Volcano - Fire = Mountain
+- Ocean - Water = Trench
+- Storm - Wind = Rain
+- Human - Intelligence = Politician
+
+CREATIVE (mid-level):
+- Pizza - Italy = Flatbread
+- Superhero - Powers = Cosplayer
+- Dragon - Wings = Dinosaur
+- Internet - Truth = Social Media
+
+CHAOTIC (abstract/conceptual):
+- Love - Trust = Situationship
+- Monday - Coffee = Depression
+- Influencer - WiFi = Nobody
+- Music - Talent = Autotune
+- Corporate - Soul = Amazon
+
+POP CULTURE IS FAIR GAME:
+Lean into recognizable references:
+- Superman - Kryptonite = God
+- Star Wars - Space = Medieval Times
+- Godzilla - Radiation = Lizard
+- Harry Potter - Magic = Orphan
+
+HUMOR & ABSURDITY:
+The game thrives on unexpected, funny results. Don't be afraid to be:
+- Satirical: Billionaire - Ethics = Elon Musk
+- Absurdist: Universe - Everything = Void
+- Self-aware: Game - Fun = Work
+- Edgy: Gym Bro - Legs = Chicken
+
+WORDPLAY & PUNS:
+- Carpet - Car = Pet
+- Pineapple - Pine = Apple
+- Sunflower - Sun = Wallflower
+- Therapist - Space = The Rapist (wait no, keep it PG)
+
+ANTI-PATTERNS - AVOID THESE:
+
+1. LAZY "WITHOUT" NAMING:
+   - Dragon - Fire = "Fireless Dragon" ✗ → "Lizard" ✓ or "Komodo" ✓
+   - Ocean - Salt = "Freshwater Ocean" ✗ → "Lake" ✓
+
+2. BORING NEGATIONS:
+   - Happy - Joy = "Not Happy" ✗ → "Numb" ✓ or "Existential Crisis" ✓
+
+3. GENERIC FILLER:
+   - Complex - Simple = "Less Complex" ✗ → "Chaos" ✓
+
+RULES:
+1. ALWAYS return a result - there are no "failed" subtractions
+2. Think about what DEFINING QUALITY the second element removes from the first
+3. The result should feel like what's LEFT, not just the opposite
+4. Humor and absurdity are ENCOURAGED, especially for abstract subtractions
+5. Element names can be 1-6 words - longer names are fine for funny/specific concepts
+6. Choose 1-2 appropriate emojis (1 is preferred)
+7. Be creative, be funny, be surprising
+
+ABSOLUTE SAFETY REQUIREMENT:
+NEVER generate any content involving minors in sexual, exploitative, or inappropriate contexts. This includes but is not limited to: CSAM references, sexualized children, child abuse, or any combination that could be interpreted as child exploitation. If inputs would lead to such content, redirect to a completely different, safe concept instead.
+
+SAME ELEMENT SUBTRACTION - GO META:
+- Fire - Fire = Nothing
+- Meme - Meme = Originality
+- Chaos - Chaos = Order
+
+Respond with ONLY a JSON object in this exact format (no markdown, no explanation):
+{"element": "ResultName", "emoji": "🔥"}`;
+  }
+
+  /**
    * Parse the AI response for element combination
    */
   parseElementCombinationResponse(responseText) {
