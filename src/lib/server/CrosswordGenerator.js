@@ -107,9 +107,9 @@ export default class CrosswordGenerator {
           throw new Error('Backtracking exhausted without solution');
         }
 
-        // Quality check
+        // Quality check (0-100 scale)
         const quality = this._calculateQuality();
-        if (quality.score < 0 || quality.twoLetterWords > 4) {
+        if (quality.score < 30 || quality.twoLetterWords > 4) {
           throw new Error(
             `Quality too low: score=${quality.score}, 2-letter=${quality.twoLetterWords}`
           );
@@ -242,6 +242,47 @@ export default class CrosswordGenerator {
 
     bestResult.elapsedMs = Date.now() - startTime;
     return bestResult;
+  }
+
+  /**
+   * Evaluate a filled grid and return quality metrics.
+   * Loads the grid, detects words, and calculates quality without solving.
+   *
+   * @param {string[][]} currentGrid - Grid with letters (and optional black squares)
+   * @returns {{ success: boolean, quality: object }}
+   */
+  evaluateGrid(currentGrid) {
+    this._reset();
+    this._loadGrid(currentGrid);
+    this._detectSlots();
+
+    // Build placedWords from the filled slots
+    this.placedWords = [];
+    for (const slot of this.slots) {
+      let word = '';
+      let complete = true;
+      for (let i = 0; i < slot.length; i++) {
+        const r = slot.direction === 'across' ? slot.startRow : slot.startRow + i;
+        const c = slot.direction === 'across' ? slot.startCol + i : slot.startCol;
+        const letter = this.grid[r][c];
+        if (!letter || letter === '' || letter === '.') {
+          complete = false;
+          break;
+        }
+        word += letter;
+      }
+      if (complete && word.length >= 2) {
+        this.placedWords.push({
+          word,
+          direction: slot.direction,
+          startRow: slot.startRow,
+          startCol: slot.startCol,
+        });
+      }
+    }
+
+    const quality = this._calculateQuality();
+    return { success: true, quality };
   }
 
   /**
@@ -901,51 +942,96 @@ export default class CrosswordGenerator {
     return Math.exp(logSum / count) * 10; // Scale to ~0-10 range
   }
 
+  /**
+   * Calculate grid quality on a 0-100 scale based on professional crossword standards.
+   *
+   * Components (weights sum to 100):
+   *   - Average Word Score (40%): Overall fill quality from dictionary scores
+   *   - Weakest Word (20%): Puzzle is only as strong as its worst entry
+   *   - Consistency (20%): Penalizes grids with multiple weak entries (score < 40)
+   *   - Word Length (10%): Penalizes 2-letter words, rewards longer fill
+   *   - Letter Variety (10%): Diverse letter usage indicates better construction
+   */
   _calculateQuality() {
-    const wordLengths = this.placedWords.map((pw) => pw.word.length);
-    const twoLetterWords = wordLengths.filter((l) => l === 2).length;
-    const threeLetterWords = wordLengths.filter((l) => l === 3).length;
-    const fourPlusWords = wordLengths.filter((l) => l >= 4).length;
-
-    // Average word score from dictionary
-    let totalScore = 0;
-    for (const pw of this.placedWords) {
-      totalScore += this.wordIndex.getScore(pw.word);
+    const totalWords = this.placedWords.length;
+    if (totalWords === 0) {
+      return {
+        score: 0,
+        averageWordScore: 0,
+        minWordScore: 0,
+        weakWordCount: 0,
+        weakWords: [],
+        twoLetterWords: 0,
+        threeLetterWords: 0,
+        fourPlusWords: 0,
+        letterVariety: 0,
+        blackCount: 0,
+        totalWords: 0,
+      };
     }
-    const averageWordScore =
-      this.placedWords.length > 0
-        ? Math.round((totalScore / this.placedWords.length) * 10) / 10
-        : 0;
 
-    // Quality formula
-    let score = 100;
-    score -= twoLetterWords * 30;
-    score += threeLetterWords * 10;
-    score += fourPlusWords * 20;
-    score += this.placedWords.length * 5;
+    // Gather per-word scores and lengths
+    const wordData = this.placedWords.map((pw) => ({
+      word: pw.word,
+      score: this.wordIndex.getScore(pw.word),
+      length: pw.word.length,
+    }));
 
-    // Bonus/penalty based on average word score
-    if (averageWordScore >= 50) score += 20;
-    else if (averageWordScore >= 30) score += 10;
-    else if (averageWordScore < 15) score -= 20;
+    const scores = wordData.map((w) => w.score);
+    const avgScore = scores.reduce((a, b) => a + b, 0) / totalWords;
+    const minScore = Math.min(...scores);
 
-    // Black square count
+    const weakThreshold = 40;
+    const weakWords = wordData.filter((w) => w.score < weakThreshold);
+
+    const twoLetterWords = wordData.filter((w) => w.length === 2).length;
+    const threeLetterWords = wordData.filter((w) => w.length === 3).length;
+    const fourPlusWords = wordData.filter((w) => w.length >= 4).length;
+
+    // 1. Average Word Score (40 points max)
+    const avgComponent = Math.min(40, avgScore * 0.4);
+
+    // 2. Weakest Word (20 points max) — scale so score 50+ gets full marks
+    const minComponent = Math.min(20, minScore * 0.4);
+
+    // 3. Consistency (20 points max) — penalize each weak word
+    const consistencyComponent = Math.max(0, 20 - weakWords.length * 4);
+
+    // 4. Word Length (10 points max) — penalize 2-letter words
+    const lengthComponent = Math.max(0, Math.min(10, 10 - twoLetterWords * 3));
+
+    // 5. Letter Variety (10 points max)
+    const allLetters = [];
     let blackCount = 0;
     for (let r = 0; r < GRID_SIZE; r++) {
       for (let c = 0; c < GRID_SIZE; c++) {
-        if (this.grid[r][c] === BLACK_SQUARE) blackCount++;
+        if (this.grid[r][c] === BLACK_SQUARE) {
+          blackCount++;
+        } else if (this.grid[r][c]) {
+          allLetters.push(this.grid[r][c]);
+        }
       }
     }
-    if (blackCount > 6) score -= (blackCount - 6) * 10;
+    const uniqueLetters = new Set(allLetters).size;
+    // 13+ unique letters out of 26 gets full marks
+    const varietyComponent = Math.min(10, (uniqueLetters / 26) * 20);
+
+    const score = Math.round(
+      avgComponent + minComponent + consistencyComponent + lengthComponent + varietyComponent
+    );
 
     return {
-      score,
+      score: Math.max(0, Math.min(100, score)),
+      averageWordScore: Math.round(avgScore * 10) / 10,
+      minWordScore: minScore,
+      weakWordCount: weakWords.length,
+      weakWords: weakWords.map((w) => w.word),
       twoLetterWords,
       threeLetterWords,
       fourPlusWords,
-      averageWordScore,
+      letterVariety: uniqueLetters,
       blackCount,
-      totalWords: this.placedWords.length,
+      totalWords,
     };
   }
 

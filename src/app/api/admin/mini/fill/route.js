@@ -146,6 +146,15 @@ export async function POST(request) {
         });
       }
 
+      case 'evaluate': {
+        const result = generator.evaluateGrid(grid);
+        return NextResponse.json({
+          success: true,
+          quality: result.quality,
+          elapsedMs: Date.now() - startTime,
+        });
+      }
+
       case 'bestlocation': {
         const result = generator.findBestLocation(grid);
 
@@ -360,7 +369,7 @@ export async function POST(request) {
         return NextResponse.json(
           {
             success: false,
-            error: `Unknown action: ${action}. Use: candidates, quickfill, bestlocation, themeseed, themedFill`,
+            error: `Unknown action: ${action}. Use: candidates, quickfill, evaluate, bestlocation, themeseed, themedFill`,
           },
           { status: 400 }
         );

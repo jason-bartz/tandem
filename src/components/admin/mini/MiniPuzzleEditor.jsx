@@ -59,6 +59,7 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
   const [status, setStatus] = useState('Ready');
   const [gridHistory, setGridHistory] = useState([]);
   const [fillScores, setFillScores] = useState(null);
+  const [isEvaluating, setIsEvaluating] = useState(false);
 
   // ─── Phase 5: Theme Seed State ───────────────────────────────
   const [themeInput, setThemeInput] = useState('');
@@ -564,10 +565,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       if (result.success) {
         setGridHistory((prev) => [...prev, formData.grid.map((r) => [...r])]);
         setFormData((prev) => ({ ...prev, grid: result.solution }));
-        setFillScores({
-          avgWordScore: result.averageWordScore,
-          qualityScore: result.qualityScore,
-        });
+        // Scores will be populated by the auto-evaluate effect
+        setFillScores(null);
         setStatus(`Filled in ${result.elapsedMs}ms (avg score: ${result.averageWordScore})`);
       } else {
         setStatus(`Fill failed: ${result.error || 'Unknown error'}`);
@@ -685,10 +684,8 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       if (result.success) {
         setGridHistory((prev) => [...prev, formData.grid.map((r) => [...r])]);
         setFormData((prev) => ({ ...prev, grid: result.solution }));
-        setFillScores({
-          avgWordScore: result.averageWordScore,
-          qualityScore: result.qualityScore,
-        });
+        // Scores will be populated by the auto-evaluate effect
+        setFillScores(null);
         const seedList = result.seedWords?.map((s) => s.word).join(', ') || '';
         setStatus(`Themed fill complete (${result.elapsedMs}ms, seeds: ${seedList})`);
         setSeedWords(
@@ -712,6 +709,34 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
       setIsGenerating(false);
     }
   }, [themeInput, isGenerating, formData.grid]);
+
+  // ─── Grid Evaluation ──────────────────────────────────────────
+  const evaluateGrid = useCallback(async () => {
+    if (isEvaluating) return;
+    setIsEvaluating(true);
+
+    try {
+      const response = await fetch('/api/admin/mini/fill', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({
+          action: 'evaluate',
+          grid: formData.grid,
+        }),
+      });
+
+      if (!response.ok) return;
+      const result = await response.json();
+
+      if (result.success && result.quality) {
+        setFillScores(result.quality);
+      }
+    } catch {
+      // Silently fail — evaluation is non-critical
+    } finally {
+      setIsEvaluating(false);
+    }
+  }, [formData.grid, isEvaluating]);
 
   // ─── Clue Management ───────────────────────────────────────────
   const handleClueChange = (direction, index, field, value) => {
@@ -891,6 +916,15 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
     }
   }, [gridWords.across, gridWords.down]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Auto-evaluate grid quality when board is filled
+  useEffect(() => {
+    if (isBoardFilled) {
+      evaluateGrid();
+    } else {
+      setFillScores(null);
+    }
+  }, [isBoardFilled, formData.grid]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Fetch candidates when slot selection changes
   useEffect(() => {
     if (currentSlotId) {
@@ -969,11 +1003,54 @@ export default function MiniPuzzleEditor({ puzzle, date, onSave, onCancel, loadi
           >
             {status}
           </div>
-          {fillScores && isBoardFilled && (
-            <div className="px-3 py-0.5 text-[11px] font-bold rounded-full border bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 border-amber-300">
-              Avg: {fillScores.avgWordScore} &middot; Quality: {fillScores.qualityScore}
-            </div>
-          )}
+          {fillScores &&
+            isBoardFilled &&
+            (() => {
+              const s = fillScores.score;
+              const { label, bg, text, border } =
+                s >= 85
+                  ? {
+                      label: 'Excellent',
+                      bg: 'bg-green-100 dark:bg-green-900/30',
+                      text: 'text-green-700 dark:text-green-400',
+                      border: 'border-green-300',
+                    }
+                  : s >= 70
+                    ? {
+                        label: 'Good',
+                        bg: 'bg-teal-100 dark:bg-teal-900/30',
+                        text: 'text-teal-700 dark:text-teal-400',
+                        border: 'border-teal-300',
+                      }
+                    : s >= 55
+                      ? {
+                          label: 'Average',
+                          bg: 'bg-amber-100 dark:bg-amber-900/30',
+                          text: 'text-amber-700 dark:text-amber-400',
+                          border: 'border-amber-300',
+                        }
+                      : s >= 40
+                        ? {
+                            label: 'Below Avg',
+                            bg: 'bg-orange-100 dark:bg-orange-900/30',
+                            text: 'text-orange-700 dark:text-orange-400',
+                            border: 'border-orange-300',
+                          }
+                        : {
+                            label: 'Poor',
+                            bg: 'bg-red-100 dark:bg-red-900/30',
+                            text: 'text-red-700 dark:text-red-400',
+                            border: 'border-red-300',
+                          };
+              return (
+                <div
+                  className={`px-3 py-0.5 text-[11px] font-bold rounded-full border ${bg} ${text} ${border}`}
+                  title={`Avg: ${fillScores.averageWordScore} · Min: ${fillScores.minWordScore}${fillScores.weakWordCount > 0 ? ` · ${fillScores.weakWordCount} weak` : ''} · ${fillScores.letterVariety} unique letters`}
+                >
+                  {s} &middot; {label}
+                </div>
+              );
+            })()}
         </div>
       </div>
 
