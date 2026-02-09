@@ -1,14 +1,17 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, memo } from 'react';
+
+const RENDER_LIMIT = 200;
 
 /**
  * CandidateList — CrossFire-style scored candidate word list
  *
  * Shows all viable words for the selected slot with Word Score and Grid Score columns.
- * Supports sorting, filtering, click-to-place, and hover preview.
+ * Supports filtering, click-to-place, and hover preview.
+ * Filter searches ALL candidates; only top RENDER_LIMIT are rendered to keep typing fast.
  */
-export default function CandidateList({
+export default memo(function CandidateList({
   candidates,
   totalCandidates,
   viableCandidates,
@@ -18,8 +21,8 @@ export default function CandidateList({
   onHoverWord,
   disabled,
 }) {
-  const sortBy = 'combined';
   const [filter, setFilter] = useState('');
+  const [showAll, setShowAll] = useState(false);
 
   const sortedCandidates = useMemo(() => {
     if (!candidates || candidates.length === 0) return [];
@@ -31,33 +34,19 @@ export default function CandidateList({
     }
 
     const sorted = [...filtered];
-    switch (sortBy) {
-      case 'wordScore':
-        sorted.sort((a, b) => b.wordScore - a.wordScore || a.word.localeCompare(b.word));
-        break;
-      case 'gridScore':
-        sorted.sort((a, b) => b.gridScore - a.gridScore || b.wordScore - a.wordScore);
-        break;
-      case 'score':
-        sorted.sort(
-          (a, b) =>
-            b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
-        );
-        break;
-      case 'alpha':
-        sorted.sort((a, b) => a.word.localeCompare(b.word));
-        break;
-      case 'combined':
-      default:
-        sorted.sort(
-          (a, b) =>
-            b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
-        );
-        break;
-    }
+    sorted.sort(
+      (a, b) => b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
+    );
 
     return sorted;
-  }, [candidates, sortBy, filter]);
+  }, [candidates, filter]);
+
+  const visibleCandidates = useMemo(() => {
+    if (showAll || filter) return sortedCandidates;
+    return sortedCandidates.slice(0, RENDER_LIMIT);
+  }, [sortedCandidates, showAll, filter]);
+
+  const hiddenCount = sortedCandidates.length - visibleCandidates.length;
 
   if (!slot) {
     return (
@@ -93,7 +82,10 @@ export default function CandidateList({
       <input
         type="text"
         value={filter}
-        onChange={(e) => setFilter(e.target.value)}
+        onChange={(e) => {
+          setFilter(e.target.value);
+          setShowAll(false);
+        }}
         placeholder="Filter..."
         className="w-full px-2 py-1 text-xs rounded border-[2px] border-gray-300 dark:border-gray-600 bg-ghost-white dark:bg-gray-800 text-text-primary mb-2"
       />
@@ -118,7 +110,7 @@ export default function CandidateList({
           </div>
 
           <div className="space-y-0">
-            {sortedCandidates.map((cand, i) => (
+            {visibleCandidates.map((cand, i) => (
               <button
                 key={cand.word}
                 type="button"
@@ -151,8 +143,18 @@ export default function CandidateList({
               </button>
             ))}
           </div>
+
+          {hiddenCount > 0 && (
+            <button
+              type="button"
+              onClick={() => setShowAll(true)}
+              className="w-full py-2 text-[11px] font-bold text-accent-blue hover:underline"
+            >
+              Show {hiddenCount} more...
+            </button>
+          )}
         </div>
       )}
     </div>
   );
-}
+});
