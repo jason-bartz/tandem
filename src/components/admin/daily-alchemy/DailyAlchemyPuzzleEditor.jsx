@@ -328,34 +328,34 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const exactMatch = searchResults.some((el) => el.name.toLowerCase() === searchText.toLowerCase());
 
   return (
-    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-4 sm:p-6 overflow-visible">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-black text-text-primary">
-          {puzzle ? 'Edit' : 'Create'} Daily Alchemy Puzzle
+    <div className="bg-ghost-white dark:bg-gray-800 rounded-2xl border-[3px] border-black dark:border-white p-3 sm:p-4 overflow-visible">
+      <div className="mb-4">
+        <h2 className="text-lg font-black text-text-primary">
+          {puzzle ? 'Edit puzzle' : 'Create new puzzle'}
         </h2>
       </div>
 
-      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6 overflow-visible">
+      <form onSubmit={handleSubmit} className="space-y-4 overflow-visible">
         {/* Basic Info */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Date *</label>
+            <label className="block text-xs font-bold text-text-primary mb-1">Date *</label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Difficulty</label>
+            <label className="block text-xs font-bold text-text-primary mb-1">Difficulty</label>
             <select
               value={formData.difficulty}
               onChange={(e) => handleChange('difficulty', e.target.value)}
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             >
               <option value="easy">Easy</option>
@@ -367,7 +367,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
         {/* Target Element - Searchable */}
         <div ref={dropdownRef} className="relative z-20">
-          <label className="block text-sm font-bold text-text-primary mb-2">Target Element *</label>
+          <label className="block text-xs font-bold text-text-primary mb-1">Target Element *</label>
           <div className="relative">
             <input
               ref={inputRef}
@@ -375,7 +375,6 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               value={targetSearch}
               onChange={(e) => {
                 setTargetSearch(e.target.value);
-                // Clear the selected element if user starts typing something different
                 if (formData.targetElement) {
                   const currentDisplay = `${formData.targetEmoji} ${formData.targetElement}`;
                   if (e.target.value !== currentDisplay) {
@@ -395,25 +394,23 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
                 }
               }}
               onKeyDown={(e) => {
-                // Select first result on Enter
                 if (e.key === 'Enter' && searchResults.length > 0 && !formData.targetElement) {
                   e.preventDefault();
                   selectTargetElement(searchResults[0]);
                 }
-                // Close dropdown on Escape
                 if (e.key === 'Escape') {
                   setShowDropdown(false);
                 }
               }}
               placeholder="Search for an element..."
-              className={`w-full px-4 py-3 pl-10 rounded-lg border-[2px] ${
+              className={`w-full px-3 py-1.5 pl-8 text-sm rounded-lg border-[2px] ${
                 formData.targetElement
                   ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
                   : 'border-black dark:border-white bg-ghost-white dark:bg-gray-700'
-              } text-text-primary text-lg`}
+              } text-text-primary`}
               disabled={loading}
             />
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             {targetSearch && (
               <button
                 type="button"
@@ -595,45 +592,42 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
         </div>
 
         {/* Par Value and Published */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Par Moves *</label>
+            <label className="block text-xs font-bold text-text-primary mb-1">Par Moves *</label>
             <input
               type="number"
               value={formData.parMoves}
               onChange={handleParChange}
               min="1"
               placeholder="Auto-set from path"
-              className="w-full px-3 py-2 rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
+              className="w-full px-2 py-1.5 text-sm rounded-lg border-[2px] border-black dark:border-white bg-ghost-white dark:bg-gray-700 text-text-primary"
               disabled={loading}
             />
             {errors.parMoves && <p className="text-red-500 text-xs mt-1">{errors.parMoves}</p>}
-            <p className="text-xs text-text-secondary mt-1">
-              Auto-fills when you generate a path, but you can adjust manually
-            </p>
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-text-primary mb-2">Published</label>
-            <label className="flex items-center gap-3 cursor-pointer">
+            <label className="block text-xs font-bold text-text-primary mb-1">Published</label>
+            <label className="flex items-center gap-2 cursor-pointer mt-1">
               <input
                 type="checkbox"
                 checked={formData.published}
                 onChange={(e) => handleChange('published', e.target.checked)}
-                className="w-5 h-5 rounded border-2 border-black"
+                className="w-4 h-4 rounded border-2 border-black"
                 disabled={loading}
               />
-              <span className="text-sm text-text-primary">Make puzzle available to players</span>
+              <span className="text-xs text-text-primary">Available to players</span>
             </label>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex gap-2 sm:gap-3 pt-4 border-t-2 border-black dark:border-white">
+        <div className="flex gap-2 pt-3 border-t-2 border-black dark:border-white">
           <button
             type="submit"
             disabled={loading}
-            className="px-3 sm:px-5 py-2 text-sm sm:text-base font-bold bg-green-500 text-white rounded-md sm:rounded-lg border-[2px] sm:border-[3px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
+            className="px-4 py-1.5 text-sm font-bold bg-green-500 text-white rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             {loading ? 'Saving...' : puzzle ? 'Update' : 'Create'}
@@ -642,7 +636,7 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="px-3 sm:px-5 py-2 text-sm sm:text-base font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-md sm:rounded-lg border-[2px] sm:border-[3px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
+            className="px-4 py-1.5 text-sm font-bold bg-ghost-white dark:bg-gray-700 text-text-primary rounded-lg border-[2px] border-black dark:border-white hover:translate-y-[-1px] transition-all"
             style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
           >
             Cancel
