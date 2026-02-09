@@ -42,38 +42,38 @@ export default function ElementManager() {
   return (
     <div className="space-y-4 sm:space-y-6">
       {/* Main Tabs */}
-      <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+      <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
         <button
           onClick={() => setActiveTab('library')}
-          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'library'
-              ? 'bg-blue-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              ? 'bg-blue-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               : 'bg-bg-card text-text-secondary hover:bg-blue-100 dark:hover:bg-blue-900/20'
           }`}
         >
-          <Grid3X3 className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Grid3X3 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Library
         </button>
         <button
           onClick={() => setActiveTab('create')}
-          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'create'
-              ? 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              ? 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               : 'bg-bg-card text-text-secondary hover:bg-green-100 dark:hover:bg-green-900/20'
           }`}
         >
-          <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           Create
         </button>
         <button
           onClick={() => setActiveTab('discoveries')}
-          className={`px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base font-bold rounded-lg sm:rounded-xl border-[2px] sm:border-[3px] border-black dark:border-white transition-all flex items-center gap-1.5 sm:gap-2 ${
+          className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 text-xs sm:text-sm font-bold rounded-md sm:rounded-lg border-[2px] border-black dark:border-white transition-all flex items-center gap-1 sm:gap-1.5 ${
             activeTab === 'discoveries'
-              ? 'bg-amber-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)] sm:shadow-[4px_4px_0px_rgba(0,0,0,1)]'
+              ? 'bg-amber-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,1)]'
               : 'bg-bg-card text-text-secondary hover:bg-amber-100 dark:hover:bg-amber-900/20'
           }`}
         >
-          <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
+          <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span className="hidden sm:inline">First </span>Discoveries
         </button>
       </div>
@@ -1096,116 +1096,230 @@ function PathwayRow({ row, index, onUpdate, onRemove, canRemove }) {
   }, []);
 
   return (
-    <div className="flex items-center gap-1.5 sm:gap-2 p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
-      {/* Step number */}
-      <span className="text-xs font-bold text-gray-400 w-5 sm:w-6 flex-shrink-0">{index + 1}.</span>
+    <div className="p-2 sm:p-3 bg-white dark:bg-gray-800 rounded-lg border-[2px] border-black/10 dark:border-white/10">
+      {/* Desktop: single row | Mobile: stacked rows */}
+      <div className="hidden sm:flex items-center gap-2">
+        {/* Step number */}
+        <span className="text-xs font-bold text-gray-400 w-6 flex-shrink-0">{index + 1}.</span>
 
-      {/* Element A */}
-      <div className="relative flex-1 min-w-0">
-        <div className="flex items-center gap-1">
-          {row.emojiA && <span className="text-base sm:text-lg flex-shrink-0">{row.emojiA}</span>}
-          <input
-            type="text"
-            value={row.elementA}
-            onChange={(e) => handleSearch('a', e.target.value)}
-            onFocus={() => row.elementA && handleSearch('a', row.elementA)}
-            onBlur={() => closeSuggestions('a')}
-            placeholder="Element A"
-            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-medium"
-          />
-        </div>
-        {showSuggestions.a && suggestions.a.length > 0 && (
-          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
-            {suggestions.a.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => selectSuggestion('a', s)}
-                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-              >
-                <span>{s.emoji}</span>
-                <span className="font-medium">{s.name}</span>
-              </button>
-            ))}
+        {/* Element A */}
+        <div className="relative flex-1 min-w-0">
+          <div className="flex items-center gap-1">
+            {row.emojiA && <span className="text-lg flex-shrink-0">{row.emojiA}</span>}
+            <input
+              type="text"
+              value={row.elementA}
+              onChange={(e) => handleSearch('a', e.target.value)}
+              onFocus={() => row.elementA && handleSearch('a', row.elementA)}
+              onBlur={() => closeSuggestions('a')}
+              placeholder="Element A"
+              className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            />
           </div>
-        )}
-      </div>
-
-      <span className="text-base sm:text-lg font-bold text-purple-500 flex-shrink-0">+</span>
-
-      {/* Element B */}
-      <div className="relative flex-1 min-w-0">
-        <div className="flex items-center gap-1">
-          {row.emojiB && <span className="text-base sm:text-lg flex-shrink-0">{row.emojiB}</span>}
-          <input
-            type="text"
-            value={row.elementB}
-            onChange={(e) => handleSearch('b', e.target.value)}
-            onFocus={() => row.elementB && handleSearch('b', row.elementB)}
-            onBlur={() => closeSuggestions('b')}
-            placeholder="Element B"
-            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-medium"
-          />
-        </div>
-        {showSuggestions.b && suggestions.b.length > 0 && (
-          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
-            {suggestions.b.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => selectSuggestion('b', s)}
-                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-              >
-                <span>{s.emoji}</span>
-                <span className="font-medium">{s.name}</span>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      <span className="text-base sm:text-lg font-bold text-purple-500 flex-shrink-0">=</span>
-
-      {/* Result */}
-      <div className="relative flex-1 min-w-0">
-        <div className="flex items-center gap-1">
-          {row.resultEmoji && (
-            <span className="text-base sm:text-lg flex-shrink-0">{row.resultEmoji}</span>
+          {showSuggestions.a && suggestions.a.length > 0 && (
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.a.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('a', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
           )}
-          <input
-            type="text"
-            value={row.result}
-            onChange={(e) => handleSearch('result', e.target.value)}
-            onFocus={() => row.result && handleSearch('result', row.result)}
-            onBlur={() => closeSuggestions('result')}
-            placeholder="Result"
-            className="w-full px-1.5 sm:px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-xs sm:text-sm font-bold"
-          />
         </div>
-        {showSuggestions.result && suggestions.result.length > 0 && (
-          <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
-            {suggestions.result.map((s, i) => (
-              <button
-                key={i}
-                onClick={() => selectSuggestion('result', s)}
-                className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
-              >
-                <span>{s.emoji}</span>
-                <span className="font-medium">{s.name}</span>
-              </button>
-            ))}
+
+        <span className="text-lg font-bold text-purple-500 flex-shrink-0">+</span>
+
+        {/* Element B */}
+        <div className="relative flex-1 min-w-0">
+          <div className="flex items-center gap-1">
+            {row.emojiB && <span className="text-lg flex-shrink-0">{row.emojiB}</span>}
+            <input
+              type="text"
+              value={row.elementB}
+              onChange={(e) => handleSearch('b', e.target.value)}
+              onFocus={() => row.elementB && handleSearch('b', row.elementB)}
+              onBlur={() => closeSuggestions('b')}
+              placeholder="Element B"
+              className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            />
           </div>
+          {showSuggestions.b && suggestions.b.length > 0 && (
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.b.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('b', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <span className="text-lg font-bold text-purple-500 flex-shrink-0">=</span>
+
+        {/* Result */}
+        <div className="relative flex-1 min-w-0">
+          <div className="flex items-center gap-1">
+            {row.resultEmoji && <span className="text-lg flex-shrink-0">{row.resultEmoji}</span>}
+            <input
+              type="text"
+              value={row.result}
+              onChange={(e) => handleSearch('result', e.target.value)}
+              onFocus={() => row.result && handleSearch('result', row.result)}
+              onBlur={() => closeSuggestions('result')}
+              placeholder="Result"
+              className="w-full px-2 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-bold"
+            />
+          </div>
+          {showSuggestions.result && suggestions.result.length > 0 && (
+            <div className="absolute z-20 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.result.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('result', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Remove button */}
+        {canRemove && (
+          <button
+            onClick={onRemove}
+            className="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+            title="Remove step"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
         )}
       </div>
 
-      {/* Remove button */}
-      {canRemove && (
-        <button
-          onClick={onRemove}
-          className="p-1.5 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
-          title="Remove step"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
-      )}
+      {/* Mobile: stacked row layout */}
+      <div className="flex sm:hidden flex-col gap-2">
+        <div className="flex items-center justify-between">
+          <span className="text-xs font-bold text-gray-400">Step {index + 1}</span>
+          {canRemove && (
+            <button
+              onClick={onRemove}
+              className="p-1 text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 rounded transition-colors"
+              title="Remove step"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+
+        {/* Element A row */}
+        <div className="relative">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-medium text-gray-400 w-6 flex-shrink-0">A</span>
+            {row.emojiA && <span className="text-base flex-shrink-0">{row.emojiA}</span>}
+            <input
+              type="text"
+              value={row.elementA}
+              onChange={(e) => handleSearch('a', e.target.value)}
+              onFocus={() => row.elementA && handleSearch('a', row.elementA)}
+              onBlur={() => closeSuggestions('a')}
+              placeholder="Element A"
+              className="flex-1 px-2.5 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            />
+          </div>
+          {showSuggestions.a && suggestions.a.length > 0 && (
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.a.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('a', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* + Element B row */}
+        <div className="relative">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
+              +
+            </span>
+            {row.emojiB && <span className="text-base flex-shrink-0">{row.emojiB}</span>}
+            <input
+              type="text"
+              value={row.elementB}
+              onChange={(e) => handleSearch('b', e.target.value)}
+              onFocus={() => row.elementB && handleSearch('b', row.elementB)}
+              onBlur={() => closeSuggestions('b')}
+              placeholder="Element B"
+              className="flex-1 px-2.5 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-medium"
+            />
+          </div>
+          {showSuggestions.b && suggestions.b.length > 0 && (
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.b.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('b', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* = Result row */}
+        <div className="relative">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
+              =
+            </span>
+            {row.resultEmoji && <span className="text-base flex-shrink-0">{row.resultEmoji}</span>}
+            <input
+              type="text"
+              value={row.result}
+              onChange={(e) => handleSearch('result', e.target.value)}
+              onFocus={() => row.result && handleSearch('result', row.result)}
+              onBlur={() => closeSuggestions('result')}
+              placeholder="Result"
+              className="flex-1 px-2.5 py-1.5 rounded border-[2px] border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-text-primary text-sm font-bold"
+            />
+          </div>
+          {showSuggestions.result && suggestions.result.length > 0 && (
+            <div className="absolute z-20 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-40 overflow-y-auto">
+              {suggestions.result.map((s, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectSuggestion('result', s)}
+                  className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
+                >
+                  <span>{s.emoji}</span>
+                  <span className="font-medium">{s.name}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -1688,28 +1802,147 @@ function SingleComboEntry() {
 
         {/* Combination Formula */}
         <div className="space-y-3">
-          {/* Element A + Element B row */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Desktop: horizontal layout */}
+          <div className="hidden sm:block space-y-3">
+            {/* Element A + Element B row */}
+            <div className="flex items-center gap-3">
+              {/* Element A */}
+              <div className="relative flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={elementA}
+                  onChange={(e) => handleElementSearch('a', e.target.value)}
+                  onFocus={() => elementA && handleElementSearch('a', elementA)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
+                  }
+                  placeholder="Element A"
+                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-base"
+                />
+                {showSuggestions.a && suggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectSuggestion('a', s)}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <span>{s.emoji}</span>
+                        <span className="font-medium">{s.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <span className="text-2xl font-bold text-purple-600 flex-shrink-0">+</span>
+
+              {/* Element B */}
+              <div className="relative flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={elementB}
+                  onChange={(e) => handleElementSearch('b', e.target.value)}
+                  onFocus={() => elementB && handleElementSearch('b', elementB)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
+                  }
+                  placeholder="Element B"
+                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-base"
+                />
+                {showSuggestions.b && suggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {suggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectSuggestion('b', s)}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <span>{s.emoji}</span>
+                        <span className="font-medium">{s.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* = Result row */}
+            <div className="flex items-center gap-3">
+              <span className="text-2xl font-bold text-purple-600 flex-shrink-0">=</span>
+
+              {/* Result Emoji */}
+              <div className="w-20 flex-shrink-0">
+                <input
+                  type="text"
+                  value={emoji}
+                  onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
+                  placeholder="auto"
+                  title="Optional - AI will generate if empty"
+                  className="w-full px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
+                  maxLength={4}
+                />
+              </div>
+
+              {/* Result Name */}
+              <div className="relative flex-1 min-w-0">
+                <input
+                  type="text"
+                  value={result}
+                  onChange={(e) => handleResultSearch(e.target.value)}
+                  onFocus={() => result && handleResultSearch(result)}
+                  onBlur={() =>
+                    setTimeout(
+                      () => setShowSuggestions((prev) => ({ ...prev, result: false })),
+                      200
+                    )
+                  }
+                  placeholder="Result Element"
+                  className="w-full px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-base"
+                />
+                {showSuggestions.result && resultSuggestions.length > 0 && (
+                  <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                    {resultSuggestions.map((s, i) => (
+                      <button
+                        key={i}
+                        onClick={() => selectResultSuggestion(s)}
+                        className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      >
+                        <span>{s.emoji}</span>
+                        <span className="font-medium">{s.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Mobile: stacked row layout */}
+          <div className="sm:hidden space-y-2">
             {/* Element A */}
-            <div className="relative flex-1 min-w-0">
-              <input
-                type="text"
-                value={elementA}
-                onChange={(e) => handleElementSearch('a', e.target.value)}
-                onFocus={() => elementA && handleElementSearch('a', elementA)}
-                onBlur={() =>
-                  setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
-                }
-                placeholder="Element A"
-                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm sm:text-base"
-              />
+            <div className="relative">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-medium text-gray-400 w-6 flex-shrink-0">A</span>
+                <input
+                  type="text"
+                  value={elementA}
+                  onChange={(e) => handleElementSearch('a', e.target.value)}
+                  onFocus={() => elementA && handleElementSearch('a', elementA)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions({ ...showSuggestions, a: false }), 200)
+                  }
+                  placeholder="Element A"
+                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm"
+                />
+              </div>
               {showSuggestions.a && suggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {suggestions.map((s, i) => (
                     <button
                       key={i}
                       onClick={() => selectSuggestion('a', s)}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
                     >
                       <span>{s.emoji}</span>
                       <span className="font-medium">{s.name}</span>
@@ -1719,28 +1952,31 @@ function SingleComboEntry() {
               )}
             </div>
 
-            <span className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">+</span>
-
-            {/* Element B */}
-            <div className="relative flex-1 min-w-0">
-              <input
-                type="text"
-                value={elementB}
-                onChange={(e) => handleElementSearch('b', e.target.value)}
-                onFocus={() => elementB && handleElementSearch('b', elementB)}
-                onBlur={() =>
-                  setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
-                }
-                placeholder="Element B"
-                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm sm:text-base"
-              />
+            {/* + Element B */}
+            <div className="relative">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
+                  +
+                </span>
+                <input
+                  type="text"
+                  value={elementB}
+                  onChange={(e) => handleElementSearch('b', e.target.value)}
+                  onFocus={() => elementB && handleElementSearch('b', elementB)}
+                  onBlur={() =>
+                    setTimeout(() => setShowSuggestions({ ...showSuggestions, b: false }), 200)
+                  }
+                  placeholder="Element B"
+                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-medium text-sm"
+                />
+              </div>
               {showSuggestions.b && suggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {suggestions.map((s, i) => (
                     <button
                       key={i}
                       onClick={() => selectSuggestion('b', s)}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
                     >
                       <span>{s.emoji}</span>
                       <span className="font-medium">{s.name}</span>
@@ -1749,45 +1985,46 @@ function SingleComboEntry() {
                 </div>
               )}
             </div>
-          </div>
 
-          {/* = Result row */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            <span className="text-xl sm:text-2xl font-bold text-purple-600 flex-shrink-0">=</span>
-
-            {/* Result Emoji - optional, AI will generate if empty */}
-            <div className="w-16 sm:w-20 flex-shrink-0">
-              <input
-                type="text"
-                value={emoji}
-                onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
-                placeholder="auto"
-                title="Optional - AI will generate if empty"
-                className="w-full px-2 sm:px-3 py-3 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-2xl text-center placeholder:text-sm placeholder:text-gray-400"
-                maxLength={4}
-              />
-            </div>
-
-            {/* Result Name - Searchable */}
-            <div className="relative flex-1 min-w-0">
-              <input
-                type="text"
-                value={result}
-                onChange={(e) => handleResultSearch(e.target.value)}
-                onFocus={() => result && handleResultSearch(result)}
-                onBlur={() =>
-                  setTimeout(() => setShowSuggestions((prev) => ({ ...prev, result: false })), 200)
-                }
-                placeholder="Result Element"
-                className="w-full px-3 sm:px-4 py-3 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-sm sm:text-base"
-              />
+            {/* = Result */}
+            <div className="relative">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-purple-500 w-6 flex-shrink-0 text-center">
+                  =
+                </span>
+                <div className="w-12 flex-shrink-0">
+                  <input
+                    type="text"
+                    value={emoji}
+                    onChange={(e) => setEmoji(e.target.value.slice(0, 4))}
+                    placeholder="auto"
+                    title="Optional - AI will generate if empty"
+                    className="w-full px-1 py-2.5 rounded-lg border-[2px] border-dashed border-gray-400 dark:border-gray-500 bg-white dark:bg-gray-700 text-text-primary text-xl text-center placeholder:text-[10px] placeholder:text-gray-400"
+                    maxLength={4}
+                  />
+                </div>
+                <input
+                  type="text"
+                  value={result}
+                  onChange={(e) => handleResultSearch(e.target.value)}
+                  onFocus={() => result && handleResultSearch(result)}
+                  onBlur={() =>
+                    setTimeout(
+                      () => setShowSuggestions((prev) => ({ ...prev, result: false })),
+                      200
+                    )
+                  }
+                  placeholder="Result Element"
+                  className="flex-1 px-3 py-2.5 rounded-lg border-[2px] border-black dark:border-white bg-white dark:bg-gray-700 text-text-primary font-bold text-sm"
+                />
+              </div>
               {showSuggestions.result && resultSuggestions.length > 0 && (
-                <div className="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                <div className="absolute z-10 left-8 right-0 mt-1 bg-white dark:bg-gray-800 border-[2px] border-black dark:border-white rounded-lg shadow-lg max-h-48 overflow-y-auto">
                   {resultSuggestions.map((s, i) => (
                     <button
                       key={i}
                       onClick={() => selectResultSuggestion(s)}
-                      className="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2"
+                      className="w-full px-3 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center gap-2 text-sm"
                     >
                       <span>{s.emoji}</span>
                       <span className="font-medium">{s.name}</span>
