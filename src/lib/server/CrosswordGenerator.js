@@ -287,17 +287,18 @@ export default class CrosswordGenerator {
 
   /**
    * Get scored candidates for a specific slot (for interactive UI).
+   * Returns ALL viable candidates with word scores. Grid scores are computed
+   * for all candidates (or top N for very large domains to stay responsive).
    *
    * @param {string[][]} currentGrid - Current grid state
    * @param {string} slotId - e.g. "across-0-0"
    * @param {object} [options]
-   * @param {number} [options.limit=100] - Max candidates to return
    * @param {boolean} [options.computeGridScore=true] - Whether to compute grid scores
    * @returns {{ candidates: Array<{word, wordScore, gridScore, viable}>, slot, totalCandidates }}
    */
   getCandidatesForSlot(currentGrid, slotId, options = {}) {
-    const limit = options.limit || 100;
     const computeGridScore = options.computeGridScore !== false;
+    const gridScoreLimit = 2000; // compute grid scores for up to this many
 
     this._reset();
     this._loadGrid(currentGrid);
@@ -314,7 +315,7 @@ export default class CrosswordGenerator {
     const domain = slot.domain.filter((w) => !this._isExcluded(w));
     const totalCandidates = domain.length;
 
-    // Score and sort
+    // Score all candidates
     let candidates = domain.map((word) => ({
       word,
       wordScore: this.wordIndex.getScore(word),
@@ -325,20 +326,29 @@ export default class CrosswordGenerator {
     // Sort by word score first
     candidates.sort((a, b) => b.wordScore - a.wordScore);
 
-    // Compute grid scores for top candidates
+    // Compute grid scores (for all, or top N for very large domains)
     if (computeGridScore && candidates.length > 0) {
-      const toScore = candidates.slice(0, limit);
-      for (const cand of toScore) {
+      const scoreable =
+        candidates.length <= gridScoreLimit ? candidates : candidates.slice(0, gridScoreLimit);
+      for (const cand of scoreable) {
         cand.gridScore = this._computeGridScore(slot, cand.word);
         if (cand.gridScore < 0.01) cand.viable = false;
       }
-      // Re-sort by grid score * word score
-      toScore.sort(
-        (a, b) => b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
-      );
-      candidates = toScore;
-    } else {
-      candidates = candidates.slice(0, limit);
+      // Sort scored candidates by combined score, then append unscored
+      if (candidates.length > gridScoreLimit) {
+        const scored = candidates.slice(0, gridScoreLimit);
+        const unscored = candidates.slice(gridScoreLimit);
+        scored.sort(
+          (a, b) =>
+            b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
+        );
+        candidates = [...scored, ...unscored];
+      } else {
+        candidates.sort(
+          (a, b) =>
+            b.gridScore * b.wordScore - a.gridScore * a.wordScore || b.wordScore - a.wordScore
+        );
+      }
     }
 
     return {

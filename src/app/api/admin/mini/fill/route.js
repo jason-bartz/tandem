@@ -107,7 +107,6 @@ export async function POST(request) {
         }
 
         const result = generator.getCandidatesForSlot(grid, slotId, {
-          limit: options.limit || 100,
           computeGridScore: options.computeGridScore !== false,
         });
 
