@@ -16,8 +16,8 @@ module.exports = {
           'system-ui',
           'sans-serif',
         ],
-        jua: ['Jua', 'sans-serif'],
-        'lilita-one': ['Lilita One', 'sans-serif'],
+        jua: ['var(--font-jua)', 'sans-serif'],
+        'lilita-one': ['var(--font-lilita-one)', 'sans-serif'],
       },
       height: {
         screen: ['100vh', '100dvh'], // Support for dynamic viewport height
