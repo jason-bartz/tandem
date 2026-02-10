@@ -13,6 +13,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import platformService from '@/core/platform/platform';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
@@ -25,6 +26,7 @@ export default function AboutPage() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const breadcrumbSchema = generateBreadcrumbs([{ name: 'About', path: '/about' }]);
 
@@ -258,6 +260,7 @@ export default function AboutPage() {
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Modals */}
@@ -266,6 +269,7 @@ export default function AboutPage() {
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <FeedbackPane isOpen={showFeedback} onClose={() => setShowFeedback(false)} />
+      <LeaderboardModal isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
     </>
   );
 }
