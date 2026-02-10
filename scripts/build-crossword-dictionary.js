@@ -49,6 +49,11 @@ const SOURCE_FILES = [
     priority: 4,
     description: 'Chris Jones crossword wordlist (~176K entries)',
   },
+  {
+    file: 'XwiWordList.dict',
+    priority: 5,
+    description: 'XWI word list (~253K entries)',
+  },
 
   // Supplementary themed lists (small, specialized)
   { file: 'tech.dict', priority: 5, description: 'Tech terms (~1.8K entries)' },

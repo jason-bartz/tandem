@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
-import { Check, Save, Trash2, Loader2, ChevronUp, ChevronDown, X } from 'lucide-react';
+import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -533,11 +533,11 @@ export function DailyAlchemyGameScreen({
   currentHintMessage = null,
   onClearHintMessage,
 
-  // Creative Mode save
-  onSaveCreative,
-  onClearCreative,
-  isSavingCreative = false,
-  creativeSaveSuccess = false,
+  // Creative Mode saves
+  onOpenSavesModal,
+  isAutoSaving = false,
+  autoSaveComplete = false,
+  isSlotSwitching = false,
 
   // Favorites
   favoriteElements = new Set(),
@@ -548,32 +548,9 @@ export function DailyAlchemyGameScreen({
   maxFavorites = 15,
 }) {
   const { highContrast } = useTheme();
-  const [showClearConfirm, setShowClearConfirm] = useState(false);
-  const [isCreativeMenuOpen, setIsCreativeMenuOpen] = useState(false);
-
-  // Auto-close creative menu after 3 seconds of inactivity
-  useEffect(() => {
-    if (!isCreativeMenuOpen) return;
-
-    const timer = setTimeout(() => {
-      setIsCreativeMenuOpen(false);
-    }, 3000);
-
-    return () => clearTimeout(timer);
-  }, [isCreativeMenuOpen]);
 
   // Calculate discovered elements (excluding starters) - use unfiltered elementBank for accurate count
   const discoveredCount = elementBank.length - STARTER_ELEMENTS.length;
-
-  // Handle clear with confirmation
-  const handleClearClick = () => {
-    setShowClearConfirm(true);
-  };
-
-  const handleClearConfirm = async () => {
-    await onClearCreative?.();
-    setShowClearConfirm(false);
-  };
   // Check if target is found (not applicable in free play mode)
   const isTargetFound = freePlayMode
     ? false
@@ -610,129 +587,58 @@ export function DailyAlchemyGameScreen({
         />
       )}
 
-      {/* Creative Mode Header with collapsible menu */}
+      {/* Creative Mode Header with Saves button and auto-save indicator */}
       {freePlayMode && (
         <div className="flex items-center gap-2 py-2">
-          {/* Menu / X toggle button */}
+          {/* Saves button */}
           <button
-            onClick={() => setIsCreativeMenuOpen(!isCreativeMenuOpen)}
-            className="flex items-center justify-center w-10 h-9 text-gray-700 dark:text-gray-300"
+            onClick={onOpenSavesModal}
+            disabled={isSlotSwitching}
+            className={cn(
+              'flex items-center gap-1.5 px-4 py-2',
+              'text-sm font-bold',
+              'bg-soup-primary text-white',
+              'border-[2px] border-black dark:border-gray-600',
+              'rounded-xl',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150',
+              'disabled:opacity-50 disabled:cursor-not-allowed',
+              highContrast && 'border-[3px] border-hc-border'
+            )}
           >
-            <AnimatePresence mode="wait" initial={false}>
-              {isCreativeMenuOpen ? (
-                <motion.div
-                  key="close"
-                  initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-                  animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                  exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-                  transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                >
-                  <X className="w-5 h-5 stroke-[2.5]" />
-                </motion.div>
-              ) : (
-                <motion.span
-                  key="menu"
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  transition={{ duration: 0.15, ease: [0.4, 0, 0.2, 1] }}
-                  className="text-sm font-bold"
-                >
-                  Menu
-                </motion.span>
-              )}
-            </AnimatePresence>
+            <FolderOpen className="w-4 h-4" />
+            <span>Saves</span>
           </button>
 
-          {/* Sliding buttons container - positioned right after Menu button */}
+          {/* Auto-save indicator */}
           <AnimatePresence>
-            {isCreativeMenuOpen && (
-              <motion.div
-                className="flex items-center gap-2 pr-1 pb-1 overflow-hidden"
-                initial={{ width: 0 }}
-                animate={{ width: 'auto' }}
-                exit={{ width: 0 }}
-                transition={{
-                  duration: 0.3,
-                  ease: [0.25, 0.1, 0.25, 1],
-                }}
+            {(isAutoSaving || autoSaveComplete) && (
+              <motion.span
+                className="text-xs text-gray-400 dark:text-gray-500 flex items-center gap-1"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                {/* Save button */}
-                <motion.button
-                  onClick={() => {
-                    onSaveCreative?.();
-                  }}
-                  disabled={isSavingCreative}
-                  className={cn(
-                    'flex items-center gap-1.5 px-4 py-2 whitespace-nowrap',
-                    'text-sm font-bold',
-                    'bg-soup-primary text-white',
-                    'border-[2px] border-black dark:border-gray-600',
-                    'rounded-xl',
-                    'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-                    'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-                    'active:translate-y-0 active:shadow-none',
-                    'transition-all duration-150',
-                    'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-                    creativeSaveSuccess && 'bg-green-500',
-                    highContrast && 'border-[3px] border-hc-border'
-                  )}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 0.15,
-                    delay: 0.1,
-                  }}
-                >
-                  {isSavingCreative ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : creativeSaveSuccess ? (
-                    <Check className="w-4 h-4" />
-                  ) : (
-                    <Save className="w-4 h-4" />
-                  )}
-                  <span>{creativeSaveSuccess ? 'Saved!' : 'Save'}</span>
-                </motion.button>
-
-                {/* Start Fresh button */}
-                <motion.button
-                  onClick={handleClearClick}
-                  className={cn(
-                    'flex items-center gap-1.5 px-4 py-2 whitespace-nowrap',
-                    'text-sm font-bold',
-                    'bg-red-500 text-white',
-                    'border-[2px] border-black dark:border-gray-600',
-                    'rounded-xl',
-                    'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-                    'hover:bg-red-600 hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-                    'active:translate-y-0 active:shadow-none',
-                    'transition-all duration-150',
-                    highContrast && 'border-[3px] border-hc-border'
-                  )}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{
-                    duration: 0.15,
-                    delay: 0.15,
-                  }}
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>Start Fresh</span>
-                </motion.button>
-              </motion.div>
+                {isAutoSaving ? (
+                  <>
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                    <span>Saving...</span>
+                  </>
+                ) : (
+                  <>
+                    <Check className="w-3 h-3 text-green-500" />
+                    <span>Saved</span>
+                  </>
+                )}
+              </motion.span>
             )}
           </AnimatePresence>
 
-          {/* Stats - hidden on mobile when menu open, always visible on desktop */}
-          <div
-            className={cn(
-              'items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap',
-              'transition-opacity duration-200',
-              isCreativeMenuOpen ? 'hidden md:flex' : 'flex'
-            )}
-          >
+          {/* Stats */}
+          <div className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
             <span>
               <span className="font-semibold text-gray-700 dark:text-gray-200">
                 {discoveredCount}
@@ -749,72 +655,6 @@ export function DailyAlchemyGameScreen({
           </div>
         </div>
       )}
-
-      {/* Clear Confirmation Modal */}
-      <AnimatePresence>
-        {showClearConfirm && (
-          <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setShowClearConfirm(false)}
-          >
-            <motion.div
-              className={cn(
-                'flex flex-col gap-4 p-6 mx-4 max-w-sm',
-                'bg-white dark:bg-gray-800',
-                'border-[3px] border-black dark:border-gray-600',
-                'rounded-2xl',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]'
-              )}
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">Start Fresh?</h3>
-              <p className="text-sm text-gray-600 dark:text-gray-400">
-                This will delete your saved progress and reset your element bank to the 4 starter
-                elements. This cannot be undone.
-              </p>
-              <div className="flex gap-3 mt-2">
-                <button
-                  onClick={() => setShowClearConfirm(false)}
-                  className={cn(
-                    'flex-1 px-4 py-2',
-                    'text-sm font-medium',
-                    'bg-gray-100 dark:bg-gray-700',
-                    'text-gray-700 dark:text-gray-300',
-                    'border-2 border-gray-300 dark:border-gray-600',
-                    'rounded-xl',
-                    'hover:bg-gray-200 dark:hover:bg-gray-600',
-                    'transition-colors'
-                  )}
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleClearConfirm}
-                  className={cn(
-                    'flex-1 px-4 py-2',
-                    'text-sm font-bold',
-                    'bg-red-500 text-white',
-                    'border-2 border-red-600',
-                    'rounded-xl',
-                    'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
-                    'hover:bg-red-600',
-                    'active:translate-y-[1px] active:shadow-none',
-                    'transition-all duration-150'
-                  )}
-                >
-                  Start Fresh
-                </button>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       {/* Main game area - side-by-side on desktop, stacked on mobile */}
       <div className="flex-1 min-h-0 flex flex-col lg:flex-row gap-3 lg:gap-4">

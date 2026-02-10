@@ -57,8 +57,17 @@ async function getAuthenticatedUser(request) {
 }
 
 /**
- * GET /api/daily-alchemy/creative/save
- * Load user's Creative Mode save
+ * Parse and validate a slot number (1-3), returning the value or a default of 1
+ */
+function parseSlotNumber(value) {
+  const slot = parseInt(value, 10);
+  if (isNaN(slot) || slot < 1 || slot > 3) return null;
+  return slot;
+}
+
+/**
+ * GET /api/daily-alchemy/creative/save?slot=1
+ * Load user's Creative Mode save for a specific slot
  * Returns the saved element bank and stats if exists
  */
 export async function GET(request) {
@@ -69,11 +78,20 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get the user's creative mode save
+    const { searchParams } = new URL(request.url);
+    const slotParam = searchParams.get('slot');
+    const slot = slotParam ? parseSlotNumber(slotParam) : 1;
+
+    if (!slot) {
+      return NextResponse.json({ error: 'Invalid slot number (must be 1-3)' }, { status: 400 });
+    }
+
+    // Get the user's creative mode save for this slot
     const { data: save, error: fetchError } = await supabase
       .from('daily_alchemy_creative_saves')
       .select('*')
       .eq('user_id', user.id)
+      .eq('slot_number', slot)
       .single();
 
     if (fetchError && fetchError.code !== 'PGRST116') {
@@ -99,6 +117,8 @@ export async function GET(request) {
         totalDiscoveries: save.total_discoveries || 0,
         firstDiscoveries: save.first_discoveries || 0,
         firstDiscoveryElements: save.first_discovery_elements || [],
+        slotNumber: save.slot_number,
+        slotName: save.slot_name || null,
         lastPlayedAt: save.last_played_at,
         createdAt: save.created_at,
       },
@@ -115,6 +135,7 @@ export async function GET(request) {
  * POST /api/daily-alchemy/creative/save
  * Save user's Creative Mode progress
  * Body:
+ * - slotNumber: number (1-3, default 1)
  * - elementBank: Array<{name: string, emoji: string, isStarter: boolean}>
  * - totalMoves: number
  * - totalDiscoveries: number
@@ -130,8 +151,19 @@ export async function POST(request) {
     }
 
     const body = await request.json();
-    const { elementBank, totalMoves, totalDiscoveries, firstDiscoveries, firstDiscoveryElements } =
-      body;
+    const {
+      slotNumber: rawSlot,
+      elementBank,
+      totalMoves,
+      totalDiscoveries,
+      firstDiscoveries,
+      firstDiscoveryElements,
+    } = body;
+
+    const slotNumber = rawSlot ? parseSlotNumber(rawSlot) : 1;
+    if (!slotNumber) {
+      return NextResponse.json({ error: 'Invalid slot number (must be 1-3)' }, { status: 400 });
+    }
 
     if (!elementBank || !Array.isArray(elementBank)) {
       return NextResponse.json({ error: 'Missing required field: elementBank' }, { status: 400 });
@@ -141,6 +173,7 @@ export async function POST(request) {
     const { error: saveError } = await supabase.from('daily_alchemy_creative_saves').upsert(
       {
         user_id: user.id,
+        slot_number: slotNumber,
         element_bank: elementBank,
         total_moves: totalMoves || 0,
         total_discoveries: totalDiscoveries || 0,
@@ -149,7 +182,7 @@ export async function POST(request) {
         last_played_at: new Date().toISOString(),
       },
       {
-        onConflict: 'user_id',
+        onConflict: 'user_id, slot_number',
       }
     );
 
@@ -160,6 +193,7 @@ export async function POST(request) {
 
     logger.info('[DailyAlchemy] Creative mode save successful', {
       userId: user.id,
+      slotNumber,
       elementCount: elementBank.length,
     });
 
@@ -176,8 +210,68 @@ export async function POST(request) {
 }
 
 /**
- * DELETE /api/daily-alchemy/creative/save
- * Clear user's Creative Mode save (reset to fresh state)
+ * PATCH /api/daily-alchemy/creative/save
+ * Rename a creative mode save slot
+ * Body:
+ * - slotNumber: number (1-3)
+ * - name: string (max 30 chars, or null to reset)
+ */
+export async function PATCH(request) {
+  try {
+    const { user, supabase } = await getAuthenticatedUser(request);
+
+    if (!user || !supabase) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const { slotNumber: rawSlot, name } = body;
+
+    const slotNumber = parseSlotNumber(rawSlot);
+    if (!slotNumber) {
+      return NextResponse.json({ error: 'Invalid slot number (must be 1-3)' }, { status: 400 });
+    }
+
+    // Validate name
+    const trimmedName = name ? String(name).trim().slice(0, 30) : null;
+
+    const { error: updateError, count } = await supabase
+      .from('daily_alchemy_creative_saves')
+      .update({ slot_name: trimmedName }, { count: 'exact' })
+      .eq('user_id', user.id)
+      .eq('slot_number', slotNumber);
+
+    if (updateError) {
+      logger.error('[DailyAlchemy] Failed to rename creative save slot', { error: updateError });
+      return NextResponse.json({ error: 'Failed to rename slot' }, { status: 500 });
+    }
+
+    if (count === 0) {
+      return NextResponse.json({ error: 'Save slot not found' }, { status: 404 });
+    }
+
+    logger.info('[DailyAlchemy] Creative mode slot renamed', {
+      userId: user.id,
+      slotNumber,
+      name: trimmedName,
+    });
+
+    return NextResponse.json({
+      success: true,
+      slotNumber,
+      name: trimmedName,
+    });
+  } catch (error) {
+    logger.error('[DailyAlchemy] Unexpected error in PATCH /api/daily-alchemy/creative/save', {
+      error: error.message,
+    });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+/**
+ * DELETE /api/daily-alchemy/creative/save?slot=1
+ * Clear user's Creative Mode save for a specific slot
  */
 export async function DELETE(request) {
   try {
@@ -187,18 +281,27 @@ export async function DELETE(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Delete the save
+    const { searchParams } = new URL(request.url);
+    const slotParam = searchParams.get('slot');
+    const slot = slotParam ? parseSlotNumber(slotParam) : 1;
+
+    if (!slot) {
+      return NextResponse.json({ error: 'Invalid slot number (must be 1-3)' }, { status: 400 });
+    }
+
+    // Delete the save for this slot
     const { error: deleteError } = await supabase
       .from('daily_alchemy_creative_saves')
       .delete()
-      .eq('user_id', user.id);
+      .eq('user_id', user.id)
+      .eq('slot_number', slot);
 
     if (deleteError) {
       logger.error('[DailyAlchemy] Failed to delete creative save', { error: deleteError });
       return NextResponse.json({ error: 'Failed to clear save' }, { status: 500 });
     }
 
-    logger.info('[DailyAlchemy] Creative mode save cleared', { userId: user.id });
+    logger.info('[DailyAlchemy] Creative mode save cleared', { userId: user.id, slot });
 
     return NextResponse.json({
       success: true,
