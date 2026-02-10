@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
@@ -14,6 +14,7 @@ import { DailyAlchemyCompleteScreen } from './DailyAlchemyCompleteScreen';
 import { DailyAlchemyGameOverScreen } from './DailyAlchemyGameOverScreen';
 import { DailyAlchemyLoadingSkeleton } from './DailyAlchemyLoadingSkeleton';
 import { DailyAlchemyBackground } from './DailyAlchemyBackground';
+import { SavesModal } from './SavesModal';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -82,6 +83,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
+  const [showSavesModal, setShowSavesModal] = useState(false);
 
   const {
     // State
@@ -146,16 +148,18 @@ export function DailyAlchemyGame({ initialDate = null }) {
     resumeGame,
     hasSavedProgress,
 
-    // Creative Mode save
-    saveCreativeMode,
-    clearCreativeMode,
-    isSavingCreative,
-    creativeSaveSuccess,
-    isLoadingCreative,
-
     // Creative Mode autosave
     isAutoSaving,
     autoSaveComplete,
+
+    // Multi-slot Creative Mode
+    activeSaveSlot,
+    slotSummaries,
+    loadSlotSummaries,
+    switchSlot,
+    renameSlot,
+    clearSlot,
+    isSlotSwitching,
 
     // Hints
     hintsUsed,
@@ -186,7 +190,13 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
   // Pause timer when sidebar or modals are open, resume when closed
   const isAnyModalOpen =
-    isSidebarOpen || showStats || showArchive || showHowToPlay || showSettings || showFeedback;
+    isSidebarOpen ||
+    showStats ||
+    showArchive ||
+    showHowToPlay ||
+    showSettings ||
+    showFeedback ||
+    showSavesModal;
 
   useEffect(() => {
     if (isAnyModalOpen) {
@@ -195,6 +205,20 @@ export function DailyAlchemyGame({ initialDate = null }) {
       resumeTimer();
     }
   }, [isAnyModalOpen, pauseTimer, resumeTimer]);
+
+  // Saves modal handlers
+  const handleOpenSavesModal = useCallback(async () => {
+    await loadSlotSummaries();
+    setShowSavesModal(true);
+  }, [loadSlotSummaries]);
+
+  const handleSwitchSlot = useCallback(
+    async (slotNumber) => {
+      await switchSlot(slotNumber);
+      setShowSavesModal(false);
+    },
+    [switchSlot]
+  );
 
   // Render based on game state
   if (loading) {
@@ -373,15 +397,11 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       onUseHint={useHint}
                       currentHintMessage={currentHintMessage}
                       onClearHintMessage={clearHintMessage}
-                      // Creative Mode save props
-                      onSaveCreative={saveCreativeMode}
-                      onClearCreative={clearCreativeMode}
-                      isSavingCreative={isSavingCreative}
-                      creativeSaveSuccess={creativeSaveSuccess}
-                      isLoadingCreative={isLoadingCreative}
-                      // Creative Mode autosave props
+                      // Creative Mode saves
+                      onOpenSavesModal={handleOpenSavesModal}
                       isAutoSaving={isAutoSaving}
                       autoSaveComplete={autoSaveComplete}
+                      isSlotSwitching={isSlotSwitching}
                       // Favorites props
                       favoriteElements={favoriteElements}
                       onToggleFavorite={toggleFavorite}
@@ -487,6 +507,16 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onClose={() => setShowLeaderboard(false)}
         initialGame="soup"
         initialTab="daily"
+      />
+      <SavesModal
+        isOpen={showSavesModal}
+        onClose={() => setShowSavesModal(false)}
+        slotSummaries={slotSummaries}
+        activeSaveSlot={activeSaveSlot}
+        onSwitchSlot={handleSwitchSlot}
+        onRenameSlot={renameSlot}
+        onClearSlot={clearSlot}
+        isSlotSwitching={isSlotSwitching}
       />
     </>
   );
