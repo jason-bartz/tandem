@@ -317,16 +317,16 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
               {/* Center content - Title and date */}
               <div className="flex-1 flex flex-col items-center">
-                {isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME ? (
+                {(isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME) || freePlayMode ? (
                   <div className="flex items-center gap-2">
                     <Image src="/icons/ui/daily-alchemy.png" alt="" width={24} height={24} />
-                    <span className="text-gray-800 dark:text-gray-200 text-lg font-bold">
+                    <span className="text-gray-800 dark:text-gray-200 text-lg font-fredoka font-semibold">
                       Daily Alchemy
                     </span>
                   </div>
                 ) : (
                   <span className="text-gray-600 dark:text-gray-300 text-sm font-medium">
-                    {freePlayMode ? 'Creative Mode' : `Daily Puzzle ${formattedDate}`}
+                    {`Daily Puzzle ${formattedDate}`}
                   </span>
                 )}
               </div>
