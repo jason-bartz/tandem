@@ -554,6 +554,26 @@ export default function SidebarMenu({
                 </>
               )}
 
+              {/* Tandem Daily CTA - Standalone Only */}
+              {isStandaloneAlchemy && (
+                <section className="pt-4 border-t-[3px] border-border-main">
+                  <a
+                    href="https://tandemdaily.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="block p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] transition-all"
+                  >
+                    <p className="text-sm font-bold text-text-primary mb-1">More Daily Games</p>
+                    <p className="text-xs text-text-secondary leading-relaxed">
+                      Find more daily word games, mini crosswords, and movie puzzles at{' '}
+                      <span className="font-semibold text-text-primary underline">
+                        TandemDaily.com
+                      </span>
+                    </p>
+                  </a>
+                </section>
+              )}
+
               {/* Footer Links */}
               <section className="pt-4 border-t-[3px] border-border-main space-y-1">
                 {!isStandaloneAlchemy && (
