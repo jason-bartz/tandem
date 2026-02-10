@@ -578,8 +578,8 @@ export default function SidebarMenu({
                   <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
                     <p className="text-xs text-text-secondary leading-relaxed mb-3">
                       Generous supporters help keep this game ad-free and the daily puzzle free for
-                      everyone. Your support helps cover server hosting and the AI costs behind each
-                      day&apos;s puzzle.
+                      everyone. Your support helps cover our servers and the AI that powers the
+                      alchemy.
                     </p>
                     <a
                       href="https://buymeacoffee.com/jasonbartz"
