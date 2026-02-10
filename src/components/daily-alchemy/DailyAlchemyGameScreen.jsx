@@ -14,6 +14,7 @@ import { ElementBank } from './ElementBank';
 import { EmbeddedFavorites } from './EmbeddedFavorites';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import { SunburstRays } from './SunburstRays';
 
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
@@ -224,6 +225,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       exit={{ opacity: 0, pointerEvents: 'none' }}
       transition={{ duration: 0.15 }}
     >
+      {/* Sunburst rays for first discoveries - renders behind backdrop */}
+      {result.isFirstDiscovery && <SunburstRays />}
+
       {/* Separate backdrop div for reliable click handling on mobile */}
       {/* IMPORTANT: Directly call onComplete() instead of handleClose() to bypass animation issues on mobile */}
       <div
