@@ -28,6 +28,7 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const { mediumTap, lightTap } = useHaptics();
   const [copied, setCopied] = useState(false);
   const [isSharing, setIsSharing] = useState(false);
+  const [dismissing, setDismissing] = useState(false);
   const controls = useAnimation();
   const shareCardRef = useRef(null);
 
@@ -155,6 +156,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
     // Don't allow interactions while sharing
     if (isSharing) return;
 
+    // Immediately hide sunburst so it doesn't linger during card animation
+    setDismissing(true);
+
     // Play plunk sound and haptic
     playPlunkSound();
     mediumTap();
@@ -176,6 +180,9 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
   const handleClose = async () => {
     // Don't allow interactions while sharing
     if (isSharing) return;
+
+    // Immediately hide sunburst so it doesn't linger during card animation
+    setDismissing(true);
 
     // Light haptic for dismiss
     lightTap();
@@ -226,16 +233,20 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
       transition={{ duration: 0.15 }}
     >
       {/* Sunburst rays for first discoveries - renders behind backdrop */}
-      {result.isFirstDiscovery && <SunburstRays />}
+      {result.isFirstDiscovery && !dismissing && <SunburstRays />}
 
       {/* Separate backdrop div for reliable click handling on mobile */}
       {/* IMPORTANT: Directly call onComplete() instead of handleClose() to bypass animation issues on mobile */}
       <div
         className="absolute inset-0 bg-black/30"
-        onClick={() => onComplete?.()}
+        onClick={() => {
+          setDismissing(true);
+          onComplete?.();
+        }}
         onTouchEnd={(e) => {
           e.preventDefault();
           e.stopPropagation();
+          setDismissing(true);
           onComplete?.();
         }}
       />
