@@ -227,6 +227,8 @@ function ElementChipInner({
         // This makes touch interactions more responsive on mobile
         touchAction: draggable ? 'manipulation' : undefined,
         WebkitUserSelect: draggable ? 'none' : undefined,
+        // Prevent Safari's native long-press callout/drag preview (causes double-image ghost)
+        WebkitTouchCallout: 'none',
       }}
       whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
       initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0, opacity: 0 } : false}
