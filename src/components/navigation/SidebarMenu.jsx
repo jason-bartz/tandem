@@ -10,6 +10,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
+import Image from 'next/image';
 import { ASSET_VERSION } from '@/lib/constants';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
@@ -554,9 +555,10 @@ export default function SidebarMenu({
                 </>
               )}
 
-              {/* Tandem Daily CTA - Standalone Only */}
+              {/* Tandem Daily CTA & Support - Standalone Only */}
               {isStandaloneAlchemy && (
-                <section className="pt-4 border-t-[3px] border-border-main">
+                <section className="pt-4 border-t-[3px] border-border-main space-y-4">
+                  {/* More Games CTA */}
                   <a
                     href="https://tandemdaily.com"
                     target="_blank"
@@ -567,10 +569,34 @@ export default function SidebarMenu({
                     <p className="text-xs text-text-secondary leading-relaxed">
                       Find more daily word games, mini crosswords, and movie puzzles at{' '}
                       <span className="font-semibold text-text-primary underline">
-                        TandemDaily.com
+                        Tandem Daily games
                       </span>
                     </p>
                   </a>
+
+                  {/* Support Section */}
+                  <div className="p-4 rounded-2xl border-[3px] border-border-main bg-surface-primary shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
+                    <p className="text-xs text-text-secondary leading-relaxed mb-3">
+                      Generous supporters help keep this game ad-free and the daily puzzle free for
+                      everyone. Your support helps cover server hosting and the AI costs behind each
+                      day&apos;s puzzle.
+                    </p>
+                    <a
+                      href="https://buymeacoffee.com/jasonbartz"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-xl border-[3px] border-black transition-all"
+                    >
+                      <Image
+                        src="/ui/shared/coffee.png"
+                        alt="Coffee cup"
+                        width={20}
+                        height={20}
+                        className="w-5 h-5"
+                      />
+                      Buy me a coffee
+                    </a>
+                  </div>
                 </section>
               )}
 
