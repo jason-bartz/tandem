@@ -597,7 +597,7 @@ export function DailyAlchemyGameScreen({
             className={cn(
               'flex items-center gap-1.5 px-4 py-2',
               'text-sm font-bold',
-              'bg-soup-primary text-white',
+              'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200',
               'border-[2px] border-black dark:border-gray-600',
               'rounded-xl',
               'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
