@@ -47,7 +47,7 @@ export default function AdminLogin() {
         >
           <div className="text-center mb-8">
             <div className="flex justify-center mb-4">
-              <img src="/icons/tandem-admin-logo.png" alt="Tandem Admin" className="h-16" />
+              <img src="/branding/admin-login-logo.png" alt="Tandem Admin" className="h-16" />
             </div>
             <p className="text-text-secondary font-medium">Sign in to manage puzzles</p>
           </div>

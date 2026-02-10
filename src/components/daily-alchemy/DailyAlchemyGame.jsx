@@ -38,7 +38,7 @@ function ErrorDisplay({ error, onGoBack }) {
     <div className="flex flex-col items-center justify-center min-h-[400px] px-4 text-center">
       <div className="mb-6">
         <Image
-          src="/images/tandem_asleep.png"
+          src="/game/tandem/asleep.png"
           alt="Puzzlemaster asleep"
           width={120}
           height={120}
@@ -319,7 +319,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
               <div className="flex-1 flex flex-col items-center">
                 {(isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME) || freePlayMode ? (
                   <div className="flex items-center gap-2">
-                    <Image src="/icons/ui/daily-alchemy.png" alt="" width={24} height={24} />
+                    <Image src="/ui/games/daily-alchemy.png" alt="" width={24} height={24} />
                     <span className="text-gray-800 dark:text-gray-200 text-lg font-lilita-one font-semibold">
                       Daily Alchemy
                     </span>

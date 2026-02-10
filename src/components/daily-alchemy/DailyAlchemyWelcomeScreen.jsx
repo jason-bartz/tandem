@@ -88,11 +88,11 @@ export function DailyAlchemyWelcomeScreen({
         {/* Par and Timer Display */}
         <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-1.5">
-            <Image src="/icons/ui/par.png" alt="" width={16} height={16} />
+            <Image src="/ui/stats/par.png" alt="" width={16} height={16} />
             <span>Par: {parMoves} moves</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <Image src="/icons/ui/stopwatch.png" alt="" width={16} height={16} />
+            <Image src="/ui/stats/stopwatch.png" alt="" width={16} height={16} />
             <span>10:00 limit</span>
           </div>
         </div>
@@ -151,7 +151,7 @@ export function DailyAlchemyWelcomeScreen({
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
         {!isStandaloneAlchemy && (
-          <Image src="/icons/ui/cauldron.png?v=2" alt="" width={24} height={24} />
+          <Image src="/ui/shared/cauldron.png?v=2" alt="" width={24} height={24} />
         )}
         <span>{hasSavedProgress ? 'Continue Puzzle' : "Play Today's Puzzle"}</span>
       </motion.button>
@@ -203,7 +203,7 @@ export function DailyAlchemyWelcomeScreen({
       >
         {!hasSubscription && (
           <Image
-            src="/icons/ui/lock.png"
+            src="/ui/shared/lock.png"
             alt="Locked"
             width={20}
             height={20}

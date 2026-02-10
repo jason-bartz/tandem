@@ -36,12 +36,12 @@ export default function AdminLayout({ children }) {
 
       if (link.rel === 'icon' || link.rel === 'shortcut icon') {
         if (link.sizes === '16x16' || link.getAttribute('sizes') === '16x16') {
-          link.href = '/icons/admin-favicon-16x16.png';
+          link.href = '/favicons/admin/favicon-16x16.png';
         } else if (link.sizes === '32x32' || link.getAttribute('sizes') === '32x32') {
-          link.href = '/icons/admin-favicon-32x32.png';
+          link.href = '/favicons/admin/favicon-32x32.png';
         } else {
           // Default icon (no size specified)
-          link.href = '/icons/admin-favicon-32x32.png';
+          link.href = '/favicons/admin/favicon-32x32.png';
         }
       }
     });
@@ -115,7 +115,7 @@ export default function AdminLayout({ children }) {
           <div className="flex justify-between items-center h-16">
             <div className="flex-1"></div>
             <div className="flex items-center justify-center">
-              <Image src="/icons/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
+              <Image src="/branding/admin-logo.png" alt="Tandem Admin" width={120} height={40} />
             </div>
             <div className="flex-1 flex items-center justify-end space-x-3 sm:space-x-4">
               <a

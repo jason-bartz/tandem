@@ -671,14 +671,14 @@ export default function UnifiedArchiveCalendar({
   // Get title with logo based on active tab
   const getTabTitle = () => {
     if (activeTab === 'tandem') {
-      return { icon: '/icons/ui/tandem.png', alt: 'Tandem', text: 'Tandem Puzzle Archive' };
+      return { icon: '/ui/games/tandem.png', alt: 'Tandem', text: 'Tandem Puzzle Archive' };
     } else if (activeTab === 'mini') {
-      return { icon: '/icons/ui/mini.png', alt: 'Mini', text: 'Mini Puzzle Archive' };
+      return { icon: '/ui/games/mini.png', alt: 'Mini', text: 'Mini Puzzle Archive' };
     } else if (activeTab === 'reel') {
-      return { icon: '/icons/ui/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
+      return { icon: '/ui/games/movie.png', alt: 'Reel', text: 'Reel Puzzle Archive' };
     } else {
       return {
-        icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
+        icon: `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`,
         alt: 'Alchemy',
         text: isStandaloneAlchemy ? 'Daily Puzzle Archive' : 'Alchemy Puzzle Archive',
       };

@@ -110,7 +110,7 @@ export default function SidebarMenu({
 
     // Try database profile first (preferred)
     if (userProfile?.avatar_image_path) {
-      return userProfile.avatar_image_path;
+      return userProfile.avatar_image_path.replace('/images/avatars/', '/avatars/');
     }
 
     // Fallback to legacy avatar_url
@@ -224,7 +224,7 @@ export default function SidebarMenu({
                 transition={{ duration: 0.2 }}
               >
                 <img
-                  src={isDark ? '/icons/ui/light-mode.png' : '/icons/ui/dark-mode.png'}
+                  src={isDark ? '/ui/shared/light-mode.png' : '/ui/shared/dark-mode.png'}
                   alt=""
                   className="w-6 h-6"
                 />
@@ -280,7 +280,7 @@ export default function SidebarMenu({
                         }`}
                       >
                         <img
-                          src="/images/avatars/default-profile.png"
+                          src="/avatars/default.png"
                           alt="Guest"
                           className="w-full h-full object-cover"
                         />
@@ -339,7 +339,7 @@ export default function SidebarMenu({
                             onError={(e) => {
                               // Fallback to default profile image on error
                               e.target.onerror = null;
-                              e.target.src = '/images/avatars/default-profile.png';
+                              e.target.src = '/avatars/default.png';
                             }}
                           />
                         ) : username ? (
@@ -350,7 +350,7 @@ export default function SidebarMenu({
                         ) : (
                           /* Default profile image as final fallback */
                           <img
-                            src="/images/avatars/default-profile.png"
+                            src="/avatars/default.png"
                             alt="Default profile"
                             className="w-full h-full object-cover"
                           />
@@ -419,25 +419,25 @@ export default function SidebarMenu({
               <section>
                 <div className="space-y-2">
                   <MenuButton
-                    icon="/icons/ui/sidebar-howtoplay.png"
+                    icon="/ui/sidebar/howtoplay.png"
                     label="How to Play"
                     onClick={() => handleModalOpen(onOpenHowToPlay)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon="/icons/ui/sidebar-stats.png"
+                    icon="/ui/sidebar/stats.png"
                     label="Player Stats"
                     onClick={() => handleModalOpen(onOpenStats)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon="/icons/ui/sidebar-leaderboards.png"
+                    icon="/ui/sidebar/leaderboards.png"
                     label={isStandaloneAlchemy ? 'Leaderboard' : 'Leaderboards'}
                     onClick={() => handleModalOpen(onOpenLeaderboard)}
                     highContrast={highContrast}
                   />
                   <MenuButton
-                    icon="/icons/ui/sidebar-archive.png"
+                    icon="/ui/sidebar/archive.png"
                     label={isStandaloneAlchemy ? 'Puzzle Archive' : 'Puzzle Archives'}
                     onClick={() => handleModalOpen(onOpenArchive)}
                     highContrast={highContrast}
@@ -455,7 +455,7 @@ export default function SidebarMenu({
                     </h3>
                     <div className="space-y-2">
                       <GameButton
-                        icon="/icons/ui/tandem.png"
+                        icon="/ui/games/tandem.png"
                         label="Daily Tandem"
                         onClick={() => handleNavigation(homePath)}
                         isActive={pathname === homePath}
@@ -464,7 +464,7 @@ export default function SidebarMenu({
                         subtitle="Decipher four groups of emoji clues"
                       />
                       <GameButton
-                        icon="/icons/ui/mini.png"
+                        icon="/ui/games/mini.png"
                         label="Daily Mini"
                         onClick={() => handleNavigation('/dailymini')}
                         isActive={pathname === '/dailymini'}
@@ -473,7 +473,7 @@ export default function SidebarMenu({
                         subtitle="Classic 5x5 mini crossword"
                       />
                       <GameButton
-                        icon={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                        icon={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
                         label="Daily Alchemy"
                         onClick={() => handleNavigation('/daily-alchemy')}
                         isActive={pathname === '/daily-alchemy'}
@@ -491,7 +491,7 @@ export default function SidebarMenu({
                     </h3>
                     <div className="space-y-2">
                       <GameButton
-                        icon="/icons/ui/movie.png"
+                        icon="/ui/games/movie.png"
                         label="Reel Connections"
                         onClick={() => handleNavigation('/reel-connections')}
                         isActive={pathname === '/reel-connections'}

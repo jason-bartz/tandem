@@ -27,7 +27,7 @@ export default function MiniStatsSection({ stats, animationKey }) {
   const animatedLongestStreak = useCounterAnimation(stats.longestStreak || 0, animationKey);
 
   return (
-    <StatsSection title="Daily Mini" icon="/icons/ui/mini.png" themeColor="yellow">
+    <StatsSection title="Daily Mini" icon="/ui/games/mini.png" themeColor="yellow">
       {/* All Stats in a Row */}
       <div className="grid grid-cols-4 gap-3">
         <StatCard value={animatedCompleted} label="Played" />

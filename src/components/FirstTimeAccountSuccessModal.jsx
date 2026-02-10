@@ -269,14 +269,14 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
                 title="Generate random username"
               >
                 <Image
-                  src="/icons/ui/dice.png"
+                  src="/ui/shared/dice.png"
                   alt=""
                   width={24}
                   height={24}
                   className="dark:hidden"
                 />
                 <Image
-                  src="/icons/ui/dice-dark.png"
+                  src="/ui/shared/dice-dark.png"
                   alt=""
                   width={24}
                   height={24}
@@ -317,7 +317,7 @@ export default function FirstTimeAccountSuccessModal({ isOpen, onClose, userId }
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 flex-shrink-0 relative rounded-full overflow-hidden bg-gray-200 dark:bg-gray-700 border-2 border-gray-300 dark:border-gray-600">
                 <Image
-                  src="/images/avatars/default-profile.png"
+                  src="/avatars/default.png"
                   alt=""
                   width={40}
                   height={40}

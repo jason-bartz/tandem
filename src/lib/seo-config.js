@@ -12,8 +12,8 @@ export const siteConfig = isStandalone
       shortDescription:
         'Free infinite element crafting game — combine elements to discover new ones',
       url: baseUrl,
-      ogImage: `${baseUrl}/images/dailyalchemy-og.png`,
-      twitterImage: `${baseUrl}/images/dailyalchemy-og.png`,
+      ogImage: `${baseUrl}/og/daily-alchemy.png`,
+      twitterImage: `${baseUrl}/og/daily-alchemy.png`,
       locale: 'en_US',
       type: 'website',
       authors: [{ name: 'Daily Alchemy', url: baseUrl }],
@@ -46,8 +46,8 @@ export const siteConfig = isStandalone
         'Tandem Daily Games: Free daily word puzzles including Mini Crosswords, emoji word games, and Reel Connections. Fresh twists on favorites like Wordle and NYT Connections. New puzzles every day at midnight.',
       shortDescription: 'Daily word games: Mini Crosswords, emoji puzzles, and more',
       url: baseUrl,
-      ogImage: `${baseUrl}/images/tandem-og.png`,
-      twitterImage: `${baseUrl}/images/tandem-og.png`,
+      ogImage: `${baseUrl}/og/tandem.png`,
+      twitterImage: `${baseUrl}/og/tandem.png`,
       locale: 'en_US',
       type: 'website',
       authors: [
@@ -153,7 +153,7 @@ export function generateStructuredData(puzzleInfo) {
         url: siteConfig.url,
         logo: {
           '@type': 'ImageObject',
-          url: `${siteConfig.url}/images/main-logo.webp`,
+          url: `${siteConfig.url}/branding/logo.webp`,
           width: 512,
           height: 512,
         },

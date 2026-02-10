@@ -159,7 +159,7 @@ export default function BotLeaderboardManager() {
       <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="px-6 py-4 border-b-[3px] border-black dark:border-white">
           <div className="flex items-center gap-3">
-            <Image src="/icons/ui/leaderboard-admin.png" alt="" width={24} height={24} />
+            <Image src="/ui/shared/leaderboard-admin.png" alt="" width={24} height={24} />
             <h3 className="text-lg font-bold text-text-primary">Leaderboards Manager</h3>
           </div>
         </div>
@@ -236,13 +236,13 @@ export default function BotLeaderboardManager() {
             <h4 className="font-bold text-text-primary">Per-Game Settings</h4>
 
             {[
-              { name: 'Daily Tandem', key: 'tandem', icon: '/icons/ui/tandem.png' },
-              { name: 'Daily Mini', key: 'mini', icon: '/icons/ui/mini.png' },
-              { name: 'Reel Connections', key: 'reel', icon: '/icons/ui/movie.png' },
+              { name: 'Daily Tandem', key: 'tandem', icon: '/ui/games/tandem.png' },
+              { name: 'Daily Mini', key: 'mini', icon: '/ui/games/mini.png' },
+              { name: 'Reel Connections', key: 'reel', icon: '/ui/games/movie.png' },
               {
                 name: 'Daily Alchemy',
                 key: 'soup',
-                icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
+                icon: `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`,
               },
             ].map((game) => (
               <div

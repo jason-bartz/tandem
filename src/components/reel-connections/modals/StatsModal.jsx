@@ -343,7 +343,10 @@ function LeaderboardEntry({ entry, rank, isCurrentUser, isStreak }) {
       {/* Avatar */}
       <div className="relative w-8 h-8 rounded-full overflow-hidden border-2 border-white/20 flex-shrink-0">
         <Image
-          src={entry.avatar_image_path || entry.avatar_url || '/images/avatars/default-profile.png'}
+          src={(entry.avatar_image_path || entry.avatar_url || '/avatars/default.png').replace(
+            '/images/avatars/',
+            '/avatars/'
+          )}
           alt={entry.username || 'Anonymous'}
           fill
           className="object-cover"

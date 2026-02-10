@@ -22,7 +22,7 @@ export default function TandemStatsSection({ stats, animationKey }) {
   const animatedWinRate = useCounterAnimation(winRate, animationKey);
 
   return (
-    <StatsSection title="Daily Tandem" icon="/icons/ui/tandem.png" themeColor="blue">
+    <StatsSection title="Daily Tandem" icon="/ui/games/tandem.png" themeColor="blue">
       {/* All Stats in a Row */}
       <div className="grid grid-cols-4 gap-3">
         <StatCard value={animatedPlayed} label="Played" />

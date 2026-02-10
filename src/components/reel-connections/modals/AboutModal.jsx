@@ -28,7 +28,12 @@ export default function AboutModal({ isOpen, onClose }) {
         {/* Founder Image and Info */}
         <div className="flex flex-col items-center pt-5 border-t border-white/10">
           <div className="relative w-24 h-24 rounded-full overflow-hidden border-[3px] border-[#ffce00] mb-3 shadow-[3px_3px_0px_rgba(0,0,0,0.5)]">
-            <Image src="/images/jason-bartz.webp" alt="Jason Bartz" fill className="object-cover" />
+            <Image
+              src="/branding/jason-bartz.webp"
+              alt="Jason Bartz"
+              fill
+              className="object-cover"
+            />
           </div>
           <p className="text-center font-semibold text-white">
             <a

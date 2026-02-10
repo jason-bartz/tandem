@@ -204,7 +204,7 @@ export default function CompleteScreen({
                 title="Return to Welcome Screen"
               >
                 <Image
-                  src={`${theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png'}?v=${ASSET_VERSION}`}
+                  src={`${theme === 'dark' ? '/ui/games/tandem-dark.png' : '/ui/games/tandem.png'}?v=${ASSET_VERSION}`}
                   alt="Tandem Logo"
                   width={96}
                   height={96}
@@ -353,7 +353,7 @@ export default function CompleteScreen({
                 }`}
               >
                 <span className="flex items-center justify-center gap-2">
-                  <Image src="/icons/ui/open-book.png" alt="" width={20} height={20} />
+                  <Image src="/ui/shared/open-book.png" alt="" width={20} height={20} />
                   Reveal Correct Answers
                 </span>
               </button>
@@ -401,7 +401,7 @@ export default function CompleteScreen({
               <div className="flex items-center justify-center gap-2">
                 {!hasSubscription && (
                   <Image
-                    src="/icons/ui/lock.png"
+                    src="/ui/shared/lock.png"
                     alt="Locked"
                     width={20}
                     height={20}

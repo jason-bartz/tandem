@@ -165,7 +165,7 @@ const CalendarDayCell = memo(
             {isLocked ? (
               // Lock icon - replaces status indicator when puzzle is locked
               <Image
-                src={`/icons/ui/lock${highContrast ? '' : ''}.png`}
+                src={`/ui/shared/lock${highContrast ? '' : ''}.png`}
                 alt="Locked"
                 width={16}
                 height={16}
@@ -199,7 +199,7 @@ const CalendarDayCell = memo(
             {/* Dark mode lock icon */}
             {isLocked && (
               <Image
-                src="/icons/ui/lock-dark.png"
+                src="/ui/shared/lock-dark.png"
                 alt="Locked"
                 width={16}
                 height={16}

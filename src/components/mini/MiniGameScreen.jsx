@@ -313,7 +313,7 @@ export default function MiniGameScreen({
                   title="Check answers"
                 >
                   <Image
-                    src="/icons/ui/check.png"
+                    src="/ui/shared/check.png"
                     alt="Check"
                     width={20}
                     height={20}
@@ -335,7 +335,7 @@ export default function MiniGameScreen({
                   title="Reveal answers"
                 >
                   <Image
-                    src="/icons/ui/eye.png"
+                    src="/ui/shared/eye.png"
                     alt="Reveal"
                     width={20}
                     height={20}

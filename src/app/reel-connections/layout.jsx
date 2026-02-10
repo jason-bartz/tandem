@@ -23,18 +23,18 @@ export default function ReelConnectionsLayout({ children }) {
 
       if (rel === 'icon' || rel === 'shortcut icon') {
         if (sizes === '16x16') {
-          link.href = '/icons/reel-connections-favicon-16x16.png';
+          link.href = '/favicons/reel-connections/favicon-16x16.png';
         } else if (sizes === '32x32') {
-          link.href = '/icons/reel-connections-favicon-32x32.png';
+          link.href = '/favicons/reel-connections/favicon-32x32.png';
         } else if (sizes === '192x192' || sizes === '512x512') {
           // Android chrome icons - keep as-is or update if you have larger RC icons
-          link.href = '/icons/reel-connections-favicon-32x32.png';
+          link.href = '/favicons/reel-connections/favicon-32x32.png';
         } else if (!sizes || sizes === 'any') {
           // Default .ico fallback
-          link.href = '/icons/reel-connections-favicon.ico';
+          link.href = '/favicons/reel-connections/favicon.ico';
         }
       } else if (rel === 'apple-touch-icon') {
-        link.href = '/icons/reel-connections-apple-touch-icon.png';
+        link.href = '/favicons/reel-connections/apple-touch-icon.png';
       }
     });
 

@@ -104,7 +104,7 @@ export function FavoritesPanel({
         <div className="flex items-center justify-between p-3 border-b-2 border-black dark:border-gray-600">
           <div className="flex items-center gap-2">
             <Image
-              src="/icons/ui/favorites.png"
+              src="/ui/shared/favorites.png"
               alt=""
               width={20}
               height={20}
@@ -128,7 +128,7 @@ export function FavoritesPanel({
                 title="Clear all favorites"
               >
                 <Image
-                  src="/icons/ui/broom.png"
+                  src="/ui/shared/broom.png"
                   alt="Clear all"
                   width={20}
                   height={20}
@@ -160,7 +160,7 @@ export function FavoritesPanel({
                   {isTouchDevice ? 'Long press any element to add to' : 'Drag any element to'}
                 </span>
                 <Image
-                  src="/icons/ui/favorites.png"
+                  src="/ui/shared/favorites.png"
                   alt="favorites"
                   width={16}
                   height={16}

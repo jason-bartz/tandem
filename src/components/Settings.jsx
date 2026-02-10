@@ -297,8 +297,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                       <img
                         src={
                           theme === 'dark'
-                            ? '/icons/App_Store_Badge_US-UK_RGB_blk_092917.svg'
-                            : '/icons/App_Store_Badge_US-UK_RGB_wht_092917.svg'
+                            ? '/branding/app-store-badge-black.svg'
+                            : '/branding/app-store-badge-white.svg'
                         }
                         alt="Download on the App Store"
                         className="h-10"
@@ -395,8 +395,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           <img
                             src={
                               theme === 'dark'
-                                ? '/icons/ui/hardmode-dark.png'
-                                : '/icons/ui/hardmode.png'
+                                ? '/ui/shared/hardmode-dark.png'
+                                : '/ui/shared/hardmode.png'
                             }
                             alt="Hard Mode"
                             className="w-4 h-4"
@@ -446,8 +446,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                           <img
                             src={
                               theme === 'dark'
-                                ? '/icons/ui/hardmode-dark.png'
-                                : '/icons/ui/hardmode.png'
+                                ? '/ui/shared/hardmode-dark.png'
+                                : '/ui/shared/hardmode.png'
                             }
                             alt="Hard Mode"
                             className="w-4 h-4 opacity-50"
@@ -772,8 +772,8 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                         <img
                           src={
                             theme === 'dark'
-                              ? '/icons/ui/dark-mode.png'
-                              : '/icons/ui/light-mode.png'
+                              ? '/ui/shared/dark-mode.png'
+                              : '/ui/shared/light-mode.png'
                           }
                           alt={theme === 'dark' ? 'Dark mode' : 'Light mode'}
                           className="w-4 h-4"
@@ -813,7 +813,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                             : 'bg-teal-600 border-black dark:border-gray-600'
                         }`}
                       >
-                        <img src="/icons/ui/eye.png" alt="High Contrast" className="w-4 h-4" />
+                        <img src="/ui/shared/eye.png" alt="High Contrast" className="w-4 h-4" />
                       </span>
                     </button>
                     <p
@@ -855,7 +855,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                               : 'bg-ghost-white dark:bg-gray-600'
                         }`}
                       >
-                        <img src="/icons/ui/motion.png" alt="Motion" className="w-4 h-4" />
+                        <img src="/ui/shared/motion.png" alt="Motion" className="w-4 h-4" />
                       </span>
                     </button>
                     <p

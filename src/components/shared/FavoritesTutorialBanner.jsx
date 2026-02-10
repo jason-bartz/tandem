@@ -199,7 +199,7 @@ export default function FavoritesTutorialBanner({ gameType = 'soup', isPlaying =
             >
               {isTouchDevice ? 'Long press any element to add to' : 'Drag any element to'}{' '}
               <Image
-                src="/icons/ui/favorites.png"
+                src="/ui/shared/favorites.png"
                 alt="favorites"
                 width={20}
                 height={20}

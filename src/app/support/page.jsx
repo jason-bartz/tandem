@@ -27,7 +27,7 @@ export default function Support() {
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
 
-  const tandemIcon = `/icons/ui/tandem.png?v=${ASSET_VERSION}`;
+  const tandemIcon = `/ui/games/tandem.png?v=${ASSET_VERSION}`;
 
   // Daily Tandem sections
   const tandemSections = [
@@ -981,7 +981,7 @@ export default function Support() {
           {/* Demo GIF */}
           <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
             <img
-              src="/screenshots/dailyalchemy-howto.gif"
+              src="/game/daily-alchemy/howto.gif"
               alt="Daily Alchemy gameplay demo"
               className="w-full h-auto"
             />
@@ -1592,7 +1592,7 @@ export default function Support() {
                         >
                           <div className="flex items-center justify-center gap-1">
                             <Image
-                              src={`/icons/ui/mini.png?v=${ASSET_VERSION}`}
+                              src={`/ui/games/mini.png?v=${ASSET_VERSION}`}
                               alt="Daily Mini"
                               width={20}
                               height={20}
@@ -1614,7 +1614,7 @@ export default function Support() {
                         >
                           <div className="flex items-center justify-center gap-1">
                             <Image
-                              src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                              src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
                               alt="Daily Alchemy"
                               width={20}
                               height={20}
@@ -1636,7 +1636,7 @@ export default function Support() {
                         >
                           <div className="flex items-center justify-center gap-1">
                             <Image
-                              src={`/icons/ui/movie.png?v=${ASSET_VERSION}`}
+                              src={`/ui/games/movie.png?v=${ASSET_VERSION}`}
                               alt="Reel Connections"
                               width={20}
                               height={20}

@@ -175,7 +175,7 @@ export function DailyAlchemyCompleteScreen({
           transition={{ delay: 0.05 }}
         >
           <Image
-            src="/images/daily-alchemy-friends.webp"
+            src="/game/daily-alchemy/complete.webp"
             alt="Puzzle Complete"
             width={84}
             height={84}
@@ -237,9 +237,9 @@ export function DailyAlchemyCompleteScreen({
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <StatCard iconSrc="/icons/ui/stopwatch.png" label="Time" value={formatTime(elapsedTime)} />
-        <StatCard iconSrc="/icons/ui/par.png" label="Par" value={parText} highlight={isUnderPar} />
-        <StatCard iconSrc="/icons/ui/hint.png" label="Hints" value={hintsUsed} />
+        <StatCard iconSrc="/ui/stats/stopwatch.png" label="Time" value={formatTime(elapsedTime)} />
+        <StatCard iconSrc="/ui/stats/par.png" label="Par" value={parText} highlight={isUnderPar} />
+        <StatCard iconSrc="/ui/shared/hint.png" label="Hints" value={hintsUsed} />
       </motion.div>
 
       {/* First Discoveries List */}
@@ -260,7 +260,7 @@ export function DailyAlchemyCompleteScreen({
         >
           <div className="flex items-center gap-2 mb-2 text-yellow-700 dark:text-yellow-400 font-semibold text-sm">
             <Image
-              src="/icons/ui/discovery.png"
+              src="/ui/stats/discovery.png"
               alt=""
               width={16}
               height={16}
@@ -366,7 +366,7 @@ export function DailyAlchemyCompleteScreen({
           >
             {!hasSubscription && (
               <Image
-                src="/icons/ui/lock.png"
+                src="/ui/shared/lock.png"
                 alt="Locked"
                 width={20}
                 height={20}
@@ -412,7 +412,7 @@ export function DailyAlchemyCompleteScreen({
       >
         {!hasSubscription && (
           <Image
-            src="/icons/ui/lock.png"
+            src="/ui/shared/lock.png"
             alt="Locked"
             width={20}
             height={20}

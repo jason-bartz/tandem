@@ -312,7 +312,7 @@ export function ElementBank({
             aria-expanded={showFavoritesPanel}
           >
             <Image
-              src="/icons/ui/favorites.png"
+              src="/ui/shared/favorites.png"
               alt=""
               width={24}
               height={24}

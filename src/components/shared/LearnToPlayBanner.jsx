@@ -135,7 +135,7 @@ export default function LearnToPlayBanner({ gameType = 'tandem', onOpenHowToPlay
           >
             {/* Hint Icon */}
             <Image
-              src="/icons/ui/hint.png"
+              src="/ui/shared/hint.png"
               alt=""
               width={20}
               height={20}

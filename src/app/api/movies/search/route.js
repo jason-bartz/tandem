@@ -67,7 +67,7 @@ export async function GET(request) {
       imdbId: movie.imdbID,
       title: movie.Title,
       year: movie.Year,
-      poster: movie.Poster !== 'N/A' ? movie.Poster : '/icons/ui/movie.png',
+      poster: movie.Poster !== 'N/A' ? movie.Poster : '/ui/games/movie.png',
     }));
 
     return NextResponse.json({ movies });

@@ -197,7 +197,7 @@ export default function MiniCompleteScreen({
           {/* Logo */}
           <div className="w-24 h-24 mx-auto mb-6">
             <Image
-              src="/icons/ui/mini.png"
+              src="/ui/games/mini.png"
               alt="Daily Mini"
               width={96}
               height={96}
@@ -312,7 +312,7 @@ export default function MiniCompleteScreen({
               <div className="flex items-center justify-center gap-2">
                 {!hasSubscription && (
                   <Image
-                    src="/icons/ui/lock.png"
+                    src="/ui/shared/lock.png"
                     alt="Locked"
                     width={20}
                     height={20}

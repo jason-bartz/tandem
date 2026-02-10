@@ -153,25 +153,25 @@ export const FEEDBACK_CATEGORIES = [
     value: 'Bug Report',
     label: 'Bug Report',
     description: 'Something is broken or not working as expected',
-    icon: 'bug',
+    icon: '/ui/shared/bug.png',
   },
   {
     value: 'Feature Request',
     label: 'Feature Request',
     description: 'Ideas that would make Tandem better',
-    icon: 'feature',
+    icon: '/ui/shared/feature.png',
   },
   {
     value: 'Game Feedback',
     label: 'Game Feedback',
     description: 'Thoughts about puzzles, balance, or vibes',
-    icon: 'feedback-2',
+    icon: '/ui/shared/feedback-2.png',
   },
   {
     value: 'Other',
     label: 'Other',
     description: 'Anything else you want to share with the team',
-    icon: 'other',
+    icon: '/ui/shared/other.png',
   },
 ];
 

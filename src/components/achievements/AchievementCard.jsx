@@ -58,7 +58,7 @@ export default function AchievementCard({ achievement, index = 0 }) {
       {/* Locked Overlay */}
       {!isUnlocked && (
         <div className="absolute inset-0 rounded-2xl bg-black/20 dark:bg-black/40 backdrop-blur-[1px] z-10 flex items-center justify-center">
-          <img src="/icons/ui/lock.png" alt="Locked" className="w-8 h-8 opacity-60" />
+          <img src="/ui/shared/lock.png" alt="Locked" className="w-8 h-8 opacity-60" />
         </div>
       )}
 

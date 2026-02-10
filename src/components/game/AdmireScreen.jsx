@@ -103,7 +103,7 @@ export default function AdmireScreen({
                 title="Return to Welcome Screen"
               >
                 <Image
-                  src={`${theme === 'dark' ? '/icons/ui/tandem-dark.png' : '/icons/ui/tandem.png'}?v=${ASSET_VERSION}`}
+                  src={`${theme === 'dark' ? '/ui/games/tandem-dark.png' : '/ui/games/tandem.png'}?v=${ASSET_VERSION}`}
                   alt="Tandem Logo"
                   width={96}
                   height={96}
@@ -222,7 +222,7 @@ export default function AdmireScreen({
             {admireData?.hintsUsed > 0 && (
               <div className="text-sm text-gray-600 dark:text-gray-400 mb-6 flex items-center justify-center gap-1.5">
                 <Image
-                  src="/icons/ui/hint.png"
+                  src="/ui/shared/hint.png"
                   alt="Hint"
                   width={16}
                   height={16}

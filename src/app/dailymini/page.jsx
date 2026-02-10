@@ -105,7 +105,7 @@ export default function DailyMiniPage() {
         >
           <div className="mb-6">
             <Image
-              src="/images/tandem_asleep.png"
+              src="/game/tandem/asleep.png"
               alt="Puzzlemaster asleep"
               width={120}
               height={120}

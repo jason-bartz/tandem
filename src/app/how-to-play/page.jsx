@@ -38,9 +38,9 @@ export default function HowToPlayPage() {
 
   // Tab configuration
   const tabs = [
-    { id: 'tandem', label: 'Tandem', icon: '/icons/ui/tandem.png', color: '#38b6ff' },
-    { id: 'mini', label: 'Mini', icon: '/icons/ui/mini.png', color: '#ffce00' },
-    { id: 'reel', label: 'Reel', icon: '/icons/ui/movie.png', color: '#ef4444' },
+    { id: 'tandem', label: 'Tandem', icon: '/ui/games/tandem.png', color: '#38b6ff' },
+    { id: 'mini', label: 'Mini', icon: '/ui/games/mini.png', color: '#ffce00' },
+    { id: 'reel', label: 'Reel', icon: '/ui/games/movie.png', color: '#ef4444' },
   ];
 
   // Tandem sections

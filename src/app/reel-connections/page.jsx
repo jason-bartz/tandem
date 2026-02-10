@@ -21,7 +21,7 @@ export const metadata = {
     siteName: 'Tandem Daily',
     images: [
       {
-        url: '/images/reel-connections-og.png',
+        url: '/og/reel-connections.png',
         width: 1200,
         height: 630,
         alt: 'Reel Connections Game Board',
@@ -32,7 +32,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: 'Reel Connections - Movie Puzzle Game',
     description: 'Create four groups of four movies that share something in common.',
-    images: ['/images/reel-connections-og.png'],
+    images: ['/og/reel-connections.png'],
   },
   themeColor: '#1a1a2e',
 };

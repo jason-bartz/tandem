@@ -271,7 +271,7 @@ function TandemGameContainer({ initialPuzzleData }) {
         <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
           <div className="mb-6">
             <Image
-              src="/images/tandem_asleep.png"
+              src="/game/tandem/asleep.png"
               alt="Puzzlemaster asleep"
               width={120}
               height={120}

@@ -149,7 +149,7 @@ export default function AboutPage() {
                         <div className="flex flex-col items-center pt-6 border-t-[3px] border-black dark:border-white">
                           <div className="relative w-32 h-32 rounded-full overflow-hidden border-[3px] border-black dark:border-white mb-4">
                             <Image
-                              src="/images/jason-bartz.webp"
+                              src="/branding/jason-bartz.webp"
                               alt="Jason Bartz"
                               fill
                               className="object-cover"
@@ -188,7 +188,7 @@ export default function AboutPage() {
                             className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
                           >
                             <Image
-                              src="/icons/ui/coffee.png"
+                              src="/ui/shared/coffee.png"
                               alt="Coffee cup"
                               width={24}
                               height={24}
