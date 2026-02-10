@@ -169,6 +169,9 @@ module.exports = {
 
         // Scroll text animation for long element names
         'scroll-text': 'scrollText 3s linear infinite',
+
+        // First discovery sunburst rays
+        'sunburst-spin': 'sunburstSpin 20s linear infinite',
       },
       transitionDuration: {
         instant: '100ms',
@@ -469,6 +472,11 @@ module.exports = {
           '0%, 10%': { transform: 'translateX(0)' },
           '45%, 55%': { transform: 'translateX(-35%)' },
           '90%, 100%': { transform: 'translateX(0)' },
+        },
+        // First discovery sunburst rays
+        sunburstSpin: {
+          '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
+          '100%': { transform: 'translate(-50%, -50%) rotate(360deg)' },
         },
       },
     },

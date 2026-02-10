@@ -395,6 +395,17 @@ body {
   outline-offset: 2px !important;
 }
 
+/* First Discovery Sunburst Rays - responsive fade radius */
+.sunburst-rays {
+  --sunburst-mask-end: 85%;
+}
+
+@media (min-width: 1024px) {
+  .sunburst-rays {
+    --sunburst-mask-end: 55%;
+  }
+}
+
 /* Performance Optimization */
 .will-change-transform {
   will-change: transform;
