@@ -460,6 +460,8 @@ export function CombinationArea({
               'border-[3px] border-black dark:border-gray-600 rounded-lg',
               'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
               'overflow-hidden',
+              // Force GPU compositing so Safari maintains overflow clip during color transitions
+              '[backface-visibility:hidden]',
               highContrast && 'border-[4px]'
             )}
           >
