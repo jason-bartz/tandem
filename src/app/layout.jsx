@@ -1,6 +1,7 @@
 import './globals.css';
 import '@/styles/ios-optimizations.css';
 import localFont from 'next/font/local';
+import { Jua, Lilita_One } from 'next/font/google';
 // Script import removed - not currently used
 import { siteConfig, generateFAQSchema } from '@/lib/seo-config';
 import IOSContainerWrapper from '@/components/shared/IOSContainerWrapper';
@@ -37,6 +38,20 @@ const plusJakartaSans = localFont({
   fallback: ['-apple-system', 'BlinkMacSystemFont', 'system-ui', 'sans-serif'],
   // Adjust font metrics for better optical alignment (Apple HIG recommendation)
   adjustFontFallback: 'Arial',
+});
+
+const jua = Jua({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-jua',
+  display: 'swap',
+});
+
+const lilitaOne = Lilita_One({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-lilita-one',
+  display: 'swap',
 });
 
 export const metadata = {
@@ -177,7 +192,7 @@ export default function RootLayout({ children }) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`scroll-smooth${isStandaloneAlchemy ? ' standalone-alchemy' : ''}`}
+      className={`scroll-smooth ${jua.variable} ${lilitaOne.variable}${isStandaloneAlchemy ? ' standalone-alchemy' : ''}`}
     >
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
