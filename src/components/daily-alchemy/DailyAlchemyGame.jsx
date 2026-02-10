@@ -320,7 +320,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                 {(isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME) || freePlayMode ? (
                   <div className="flex items-center gap-2">
                     <Image src="/icons/ui/daily-alchemy.png" alt="" width={24} height={24} />
-                    <span className="text-gray-800 dark:text-gray-200 text-lg font-fredoka font-semibold">
+                    <span className="text-gray-800 dark:text-gray-200 text-lg font-lilita-one font-semibold">
                       Daily Alchemy
                     </span>
                   </div>

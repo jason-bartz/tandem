@@ -77,7 +77,7 @@ export function DailyAlchemyWelcomeScreen({
           <span className="text-4xl">{targetEmoji}</span>
           <h1
             className={cn(
-              'text-2xl font-jua text-gray-900 dark:text-white',
+              'text-2xl font-lilita-one text-gray-900 dark:text-white',
               highContrast && 'text-hc-text'
             )}
           >
