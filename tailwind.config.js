@@ -17,6 +17,7 @@ module.exports = {
           'sans-serif',
         ],
         jua: ['Jua', 'sans-serif'],
+        fredoka: ['Fredoka', 'sans-serif'],
       },
       height: {
         screen: ['100vh', '100dvh'], // Support for dynamic viewport height
