@@ -452,77 +452,79 @@ export function CombinationArea({
           isActive={activeSlot === 'first'}
         />
 
-        {/* Operator Sign - clickable toggle in Creative Mode */}
-        <motion.button
-          className={cn(
-            'flex items-center justify-center w-8 h-8',
-            freePlayMode && !isCombining && !isAnimating && 'cursor-pointer'
-          )}
-          onClick={() => {
-            if (freePlayMode && !isCombining && !isAnimating) {
-              onToggleOperator?.();
-            }
-          }}
-          animate={
-            !reduceMotion && (isCombining || isAnimating)
-              ? { scale: 1.3, rotate: 180 }
-              : { scale: 1, rotate: 0 }
-          }
-          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-          whileTap={
-            freePlayMode && !isCombining && !isAnimating && !reduceMotion
-              ? { scale: 0.85 }
-              : undefined
-          }
-          aria-label={
-            freePlayMode
-              ? `Toggle operator. Currently ${isSubtractMode ? 'subtract' : 'combine'}. Click to switch.`
-              : undefined
-          }
-          type="button"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            {isSubtractMode ? (
-              <motion.div
-                key="minus"
-                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <Minus
-                  className={cn(
-                    'w-6 h-6 sm:w-8 sm:h-8',
-                    'text-gray-400 dark:text-gray-500',
-                    (isCombining || isAnimating) && 'text-soup-primary',
-                    freePlayMode &&
-                      !isCombining &&
-                      !isAnimating &&
-                      'text-red-400 dark:text-red-400',
-                    highContrast && 'text-hc-text'
-                  )}
-                />
-              </motion.div>
-            ) : (
-              <motion.div
-                key="plus"
-                initial={{ opacity: 0, rotate: -90, scale: 0.5 }}
-                animate={{ opacity: 1, rotate: 0, scale: 1 }}
-                exit={{ opacity: 0, rotate: 90, scale: 0.5 }}
-                transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
-              >
-                <Plus
-                  className={cn(
-                    'w-6 h-6 sm:w-8 sm:h-8',
-                    'text-gray-400 dark:text-gray-500',
-                    (isCombining || isAnimating) && 'text-soup-primary',
-                    highContrast && 'text-hc-text'
-                  )}
-                />
-              </motion.div>
+        {/* Operator - Segmented pill toggle in Creative Mode, static icon otherwise */}
+        {freePlayMode ? (
+          <div
+            className={cn(
+              'flex items-center',
+              'border-[3px] border-black dark:border-gray-600 rounded-lg',
+              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+              'overflow-hidden',
+              highContrast && 'border-[4px]'
             )}
-          </AnimatePresence>
-        </motion.button>
+          >
+            <button
+              type="button"
+              onClick={() => {
+                if (!isCombining && !isAnimating && isSubtractMode) {
+                  onToggleOperator?.();
+                }
+              }}
+              disabled={isCombining || isAnimating}
+              className={cn(
+                'w-8 h-8 flex items-center justify-center transition-colors duration-200',
+                !isSubtractMode
+                  ? 'bg-soup-primary text-black'
+                  : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+                'disabled:cursor-not-allowed'
+              )}
+              aria-label="Switch to combine mode"
+              aria-pressed={!isSubtractMode}
+            >
+              <Plus className="w-5 h-5" />
+            </button>
+            <div className="w-[2px] bg-black dark:bg-gray-600 self-stretch" />
+            <button
+              type="button"
+              onClick={() => {
+                if (!isCombining && !isAnimating && !isSubtractMode) {
+                  onToggleOperator?.();
+                }
+              }}
+              disabled={isCombining || isAnimating}
+              className={cn(
+                'w-8 h-8 flex items-center justify-center transition-colors duration-200',
+                isSubtractMode
+                  ? 'bg-red-400 dark:bg-red-500 text-white'
+                  : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+                'disabled:cursor-not-allowed'
+              )}
+              aria-label="Switch to subtract mode"
+              aria-pressed={isSubtractMode}
+            >
+              <Minus className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <motion.div
+            className="flex items-center justify-center w-8 h-8"
+            animate={
+              !reduceMotion && (isCombining || isAnimating)
+                ? { scale: 1.3, rotate: 180 }
+                : { scale: 1, rotate: 0 }
+            }
+            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+          >
+            <Plus
+              className={cn(
+                'w-6 h-6 sm:w-8 sm:h-8',
+                'text-gray-400 dark:text-gray-500',
+                (isCombining || isAnimating) && 'text-soup-primary',
+                highContrast && 'text-hc-text'
+              )}
+            />
+          </motion.div>
+        )}
 
         <SelectionSlot
           element={selectedB}
@@ -558,24 +560,25 @@ export function CombinationArea({
           Clear
         </button>
 
-        {/* Spacer matching plus icon width */}
-        <div className="w-8" aria-hidden="true" />
+        {/* Spacer matching operator toggle width */}
+        <div className={cn(freePlayMode ? 'w-[70px]' : 'w-8')} aria-hidden="true" />
 
         <motion.button
           onClick={() => canCombine && onCombine()}
           disabled={!canCombine && !isCombining && !isAnimating}
           className={cn(
             'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',
-            'bg-soup-primary text-black',
             'border-[3px] border-black',
             'rounded-xl font-bold',
             'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-            'transition-all duration-150',
-            'hover:bg-soup-hover',
+            'transition-all duration-200',
             'hover:translate-y-[-1px] hover:shadow-[4px_4px_0px_rgba(0,0,0,1)]',
             'active:translate-y-0 active:shadow-none',
-            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0px_rgba(0,0,0,1)] disabled:hover:bg-soup-primary',
+            'disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
             'overflow-hidden',
+            isSubtractMode
+              ? 'bg-red-400 dark:bg-red-500 text-white hover:bg-red-500 dark:hover:bg-red-600 disabled:hover:bg-red-400 dark:disabled:hover:bg-red-500'
+              : 'bg-soup-primary text-black hover:bg-soup-hover disabled:hover:bg-soup-primary',
             highContrast && 'border-[4px]'
           )}
           animate={{ scale: 1 }}
