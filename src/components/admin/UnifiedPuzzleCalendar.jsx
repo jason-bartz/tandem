@@ -12,25 +12,25 @@ const GAMES = {
   tandem: {
     id: 'tandem',
     name: 'Daily Tandem',
-    icon: '/icons/ui/tandem.png',
+    icon: '/ui/games/tandem.png',
     color: 'accent-yellow',
   },
   mini: {
     id: 'mini',
     name: 'Daily Mini',
-    icon: '/icons/ui/mini.png',
+    icon: '/ui/games/mini.png',
     color: 'accent-blue',
   },
   soup: {
     id: 'soup',
     name: 'Daily Alchemy',
-    icon: `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`,
+    icon: `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`,
     color: 'accent-green',
   },
   reel: {
     id: 'reel',
     name: 'Reel Connections',
-    icon: '/icons/ui/movie.png',
+    icon: '/ui/games/movie.png',
     color: 'accent-red',
   },
 };

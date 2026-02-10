@@ -23,7 +23,7 @@ export default function ReelStatsSection({ stats, animationKey }) {
   const animatedWinRate = useCounterAnimation(winRate, animationKey);
 
   return (
-    <StatsSection title="Reel Connections" icon="/icons/ui/movie.png" themeColor="red">
+    <StatsSection title="Reel Connections" icon="/ui/games/movie.png" themeColor="red">
       {/* All Stats in a Row */}
       <div className="grid grid-cols-4 gap-3">
         <StatCard value={animatedPlayed} label="Played" />

@@ -86,14 +86,14 @@ const PuzzleItem = memo(
             {actuallyLocked ? (
               <>
                 <Image
-                  src="/icons/ui/lock.png"
+                  src="/ui/shared/lock.png"
                   alt="Locked"
                   width={20}
                   height={20}
                   className="opacity-60 dark:hidden"
                 />
                 <Image
-                  src="/icons/ui/lock-dark.png"
+                  src="/ui/shared/lock-dark.png"
                   alt="Locked"
                   width={20}
                   height={20}

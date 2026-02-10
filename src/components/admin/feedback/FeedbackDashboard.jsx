@@ -4,7 +4,6 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import adminService from '@/services/admin.service';
 import { FEEDBACK_CATEGORIES, FEEDBACK_STATUS, FEEDBACK_STATUS_OPTIONS } from '@/lib/constants';
 import FeedbackDashboardSkeleton from '@/components/shared/FeedbackDashboardSkeleton';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import logger from '@/lib/logger';
 
 const categoryLookup = FEEDBACK_CATEGORIES.reduce((acc, category) => {
@@ -37,7 +36,6 @@ function formatTimestamp(value) {
 }
 
 export default function FeedbackDashboard({ onCountsChange }) {
-  const getIconPath = useUIIcon();
   const [feedback, setFeedback] = useState([]);
   const [counts, setCounts] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -333,11 +331,7 @@ export default function FeedbackDashboard({ onCountsChange }) {
                 <div className="flex items-center justify-between sm:justify-start gap-3 sm:gap-4">
                   <span className="px-2 py-1 rounded bg-ghost-white dark:bg-gray-700 border-[2px] border-black dark:border-white text-xs font-bold text-gray-800 dark:text-gray-200 flex items-center gap-2">
                     {category.icon && (
-                      <img
-                        src={getIconPath(category.icon)}
-                        alt=""
-                        className="w-4 h-4 flex-shrink-0"
-                      />
+                      <img src={category.icon} alt="" className="w-4 h-4 flex-shrink-0" />
                     )}
                     {category.label}
                   </span>

@@ -101,7 +101,13 @@ function CombineIconCycler({ isActive }) {
   if (!isActive) return null;
 
   if (reduceMotion) {
-    return <img src={`/icons/ui/create-button/${currentIcon}.webp`} alt="" className="w-5 h-5" />;
+    return (
+      <img
+        src={`/game/daily-alchemy/combine-icons/${currentIcon}.webp`}
+        alt=""
+        className="w-5 h-5"
+      />
+    );
   }
 
   return (
@@ -115,7 +121,11 @@ function CombineIconCycler({ isActive }) {
           transition={{ duration: 0.2, ease: [0.4, 0, 0.2, 1] }}
           className="absolute inset-0"
         >
-          <img src={`/icons/ui/create-button/${currentIcon}.webp`} alt="" className="w-5 h-5" />
+          <img
+            src={`/game/daily-alchemy/combine-icons/${currentIcon}.webp`}
+            alt=""
+            className="w-5 h-5"
+          />
         </motion.div>
       </AnimatePresence>
     </div>
@@ -399,7 +409,7 @@ export function CombinationArea({
               )}
             >
               <Image
-                src="/icons/ui/hint.png"
+                src="/ui/shared/hint.png"
                 alt=""
                 width={20}
                 height={20}

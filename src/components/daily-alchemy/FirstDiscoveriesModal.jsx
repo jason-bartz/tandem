@@ -285,7 +285,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
           )}
         >
           <div className="flex items-center gap-2">
-            <Image src="/icons/ui/daily-alchemy.png" alt="" width={20} height={20} />
+            <Image src="/ui/games/daily-alchemy.png" alt="" width={20} height={20} />
             <p
               className={cn(
                 'text-sm font-semibold',
@@ -303,7 +303,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
         {!session ? (
           <div className="text-center py-12">
             <Image
-              src="/icons/ui/discovery.png"
+              src="/ui/stats/discovery.png"
               alt=""
               width={48}
               height={48}
@@ -331,7 +331,7 @@ export default function FirstDiscoveriesModal({ isOpen, onClose }) {
         ) : discoveries.length === 0 ? (
           <div className="text-center py-12">
             <Image
-              src="/icons/ui/discovery.png"
+              src="/ui/stats/discovery.png"
               alt=""
               width={48}
               height={48}

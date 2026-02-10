@@ -537,7 +537,7 @@ export default function AccountPage() {
                                 src={
                                   userAvatar?.selected_avatar_id && userAvatar?.avatar_image_path
                                     ? userAvatar.avatar_image_path
-                                    : '/images/avatars/default-profile.png'
+                                    : '/avatars/default.png'
                                 }
                                 alt={userAvatar?.avatar_display_name || 'Profile'}
                                 fill
@@ -843,7 +843,7 @@ export default function AccountPage() {
                         <div className="bg-gradient-to-br from-teal-50 to-sky-50 dark:from-teal-900/20 dark:to-sky-900/20 rounded-2xl border-[3px] border-black dark:border-white p-6 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,1)]">
                           <div className="flex items-center justify-center gap-2 mb-4">
                             <Image
-                              src="/icons/ui/tandem-unlimited.png"
+                              src="/ui/games/tandem-unlimited.png"
                               alt="Tandem Puzzle Club"
                               width={28}
                               height={28}

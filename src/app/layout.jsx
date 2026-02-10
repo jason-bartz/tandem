@@ -118,13 +118,21 @@ export const metadata = {
   icons: {
     icon: [
       { url: '/favicon.ico?v=2', sizes: 'any' },
-      { url: '/icons/favicon-16x16.png?v=2', sizes: '16x16', type: 'image/png' },
-      { url: '/icons/favicon-32x32.png?v=2', sizes: '32x32', type: 'image/png' },
-      { url: '/icons/android-chrome-192x192.png?v=2', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/android-chrome-512x512.png?v=2', sizes: '512x512', type: 'image/png' },
+      { url: '/favicons/tandem/favicon-16x16.png?v=2', sizes: '16x16', type: 'image/png' },
+      { url: '/favicons/tandem/favicon-32x32.png?v=2', sizes: '32x32', type: 'image/png' },
+      {
+        url: '/favicons/tandem/android-chrome-192x192.png?v=2',
+        sizes: '192x192',
+        type: 'image/png',
+      },
+      {
+        url: '/favicons/tandem/android-chrome-512x512.png?v=2',
+        sizes: '512x512',
+        type: 'image/png',
+      },
     ],
     shortcut: '/favicon.ico?v=2',
-    apple: [{ url: '/icons/apple-touch-icon.png?v=2', sizes: '180x180' }],
+    apple: [{ url: '/favicons/tandem/apple-touch-icon.png?v=2', sizes: '180x180' }],
   },
 
   // Manifest
@@ -202,17 +210,17 @@ export default function RootLayout({ children }) {
         {/* Preload game icons for instant display on home page */}
         {!isStandaloneAlchemy && (
           <>
-            <link rel="preload" href="/icons/ui/tandem.png" as="image" type="image/png" />
-            <link rel="preload" href="/icons/ui/mini.png" as="image" type="image/png" />
-            <link rel="preload" href="/icons/ui/movie.png" as="image" type="image/png" />
+            <link rel="preload" href="/ui/games/tandem.png" as="image" type="image/png" />
+            <link rel="preload" href="/ui/games/mini.png" as="image" type="image/png" />
+            <link rel="preload" href="/ui/games/movie.png" as="image" type="image/png" />
           </>
         )}
         <link
           rel="preload"
           href={
             isStandaloneAlchemy
-              ? `/icons/daily-alchemy-logo.png?v=${ASSET_VERSION}`
-              : `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`
+              ? `/branding/daily-alchemy-logo.png?v=${ASSET_VERSION}`
+              : `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`
           }
           as="image"
           type="image/png"

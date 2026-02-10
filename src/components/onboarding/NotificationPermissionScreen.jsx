@@ -60,7 +60,7 @@ export default function NotificationPermissionScreen({ onContinue, onSkip }) {
                 : 'bg-sky-100 dark:bg-sky-900/30 border-[3px] border-black dark:border-gray-600 shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]'
             }`}
           >
-            <Image src="/icons/ui/bell.png" alt="Notifications" width={56} height={56} />
+            <Image src="/ui/shared/bell.png" alt="Notifications" width={56} height={56} />
           </div>
         </div>
 

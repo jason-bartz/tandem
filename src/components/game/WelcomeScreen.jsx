@@ -246,7 +246,7 @@ export default function WelcomeScreen({
           <div className="space-y-4">
             {/* Daily Tandem */}
             <GameCard
-              icon="/icons/ui/tandem.png"
+              icon="/ui/games/tandem.png"
               title="Daily Tandem"
               description="Decipher four emoji pairs that share a hidden theme."
               puzzleNumber={tandemPuzzleNumber}
@@ -259,7 +259,7 @@ export default function WelcomeScreen({
 
             {/* Daily Mini */}
             <GameCard
-              icon="/icons/ui/mini.png"
+              icon="/ui/games/mini.png"
               title="Daily Mini"
               description="Race the clock to solve this classic 5x5 crossword."
               puzzleNumber={miniPuzzle?.number || miniPuzzleInfo.number}
@@ -272,7 +272,7 @@ export default function WelcomeScreen({
 
             {/* Daily Alchemy */}
             <GameCard
-              icon="/icons/ui/daily-alchemy.png"
+              icon="/ui/games/daily-alchemy.png"
               title="Daily Alchemy"
               description="Combine elements to discover today's target."
               puzzleNumber={soupPuzzle?.number || 1}
@@ -286,7 +286,7 @@ export default function WelcomeScreen({
 
             {/* Reel Connections */}
             <GameCard
-              icon="/icons/ui/movie.png"
+              icon="/ui/games/movie.png"
               title="Reel Connections"
               description="Group movies that share a common theme."
               puzzleNumber={reelPuzzle?.number || reelPuzzleNumber}

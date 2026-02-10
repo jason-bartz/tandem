@@ -387,7 +387,7 @@ export default function PaywallModal({ isOpen, onClose, onPurchaseComplete }) {
         title={
           <div className="flex items-center gap-3">
             <Image
-              src={`/icons/ui/tandem-unlimited.png?v=${ASSET_VERSION}`}
+              src={`/ui/games/tandem-unlimited.png?v=${ASSET_VERSION}`}
               alt="Tandem Puzzle Club"
               width={32}
               height={32}

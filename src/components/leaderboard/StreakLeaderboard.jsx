@@ -75,7 +75,7 @@ export default function StreakLeaderboard({ gameType }) {
     return (
       <div className="p-12 text-center">
         <div className="w-24 h-24 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-          <Image src="/icons/ui/hardmode.png" alt="Streak" width={48} height={48} />
+          <Image src="/ui/shared/hardmode.png" alt="Streak" width={48} height={48} />
         </div>
         <p
           className={`text-lg font-semibold mb-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
@@ -130,7 +130,7 @@ export default function StreakLeaderboard({ gameType }) {
               <p
                 className={`text-xs flex items-center gap-1 ${highContrast ? 'text-hc-text/70' : 'text-gray-600 dark:text-gray-400'}`}
               >
-                <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
+                <Image src="/ui/shared/hardmode.png" alt="" width={12} height={12} />
                 {userEntry.score} days
               </p>
             </div>

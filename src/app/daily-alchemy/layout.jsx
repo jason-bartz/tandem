@@ -28,7 +28,7 @@ export const metadata = {
     siteName: isStandalone ? 'Daily Alchemy' : 'Tandem Daily',
     images: [
       {
-        url: '/images/dailyalchemy-og.png',
+        url: '/og/daily-alchemy.png',
         width: 1200,
         height: 630,
         alt: isStandalone ? 'Daily Alchemy - Infinite Element Crafting Game' : 'Daily Alchemy Game',
@@ -39,7 +39,7 @@ export const metadata = {
     card: 'summary_large_image',
     title: alchemyTitle,
     description: alchemyDescription,
-    images: ['/images/dailyalchemy-og.png'],
+    images: ['/og/daily-alchemy.png'],
   },
 };
 

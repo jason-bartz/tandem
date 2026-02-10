@@ -19,7 +19,6 @@ import SidebarMenu from '@/components/navigation/SidebarMenu';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import platformService from '@/services/platform';
 import { motion } from 'framer-motion';
 
@@ -68,7 +67,7 @@ export default function PlayingScreen({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const { lightTap, correctAnswer, incorrectAnswer, hintUsed } = useHaptics();
   const { highContrast, reduceMotion } = useTheme();
-  const getIconPath = useUIIcon();
+
   const contentRef = useRef(null);
   const puzzleContainerRef = useRef(null);
 
@@ -464,7 +463,7 @@ export default function PlayingScreen({
                   {isHardMode && (
                     <div className="flex items-center gap-2 mt-1">
                       <span className="text-xs font-bold text-red-600 dark:text-red-400 flex items-center gap-1">
-                        <img src={getIconPath('hardmode')} alt="Hard Mode" className="w-4 h-4" />
+                        <img src="/ui/shared/hardmode.png" alt="Hard Mode" className="w-4 h-4" />
                         HARD MODE
                       </span>
                     </div>

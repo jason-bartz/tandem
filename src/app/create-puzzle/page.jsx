@@ -92,7 +92,7 @@ export default function CreatePuzzlePage() {
       <div className="min-h-screen bg-bg-primary">
         <header className="flex items-center justify-between px-4 py-3 bg-bg-surface border-b-[3px] border-black dark:border-white">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/icons/ui/tandem.png" alt="Tandem" className="w-8 h-8" />
+            <img src="/ui/games/tandem.png" alt="Tandem" className="w-8 h-8" />
             <span className="font-bold text-lg text-text-primary">Tandem</span>
           </Link>
         </header>
@@ -102,8 +102,8 @@ export default function CreatePuzzlePage() {
             <div className="text-6xl mb-4">🎬</div>
             <h1 className="text-2xl font-bold text-text-primary mb-4">Membership Required</h1>
             <p className="text-text-secondary mb-6">
-              Creating and submitting puzzles is a Tandem Puzzle Club feature. Upgrade your membership
-              to create your own Reel Connections puzzles!
+              Creating and submitting puzzles is a Tandem Puzzle Club feature. Upgrade your
+              membership to create your own Reel Connections puzzles!
             </p>
             <Link
               href="/account"
@@ -123,7 +123,7 @@ export default function CreatePuzzlePage() {
       <div className="min-h-screen bg-bg-primary">
         <header className="flex items-center justify-between px-4 py-3 bg-bg-surface border-b-[3px] border-black dark:border-white">
           <Link href="/" className="flex items-center gap-2">
-            <img src="/icons/ui/tandem.png" alt="Tandem" className="w-8 h-8" />
+            <img src="/ui/games/tandem.png" alt="Tandem" className="w-8 h-8" />
             <span className="font-bold text-lg text-text-primary">Tandem</span>
           </Link>
         </header>

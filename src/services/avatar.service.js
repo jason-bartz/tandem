@@ -22,7 +22,7 @@ class AvatarService {
         throw new Error('Failed to load avatars. Please try again.');
       }
 
-      return data || [];
+      return (data || []).map(this._normalizeAvatarPath);
     } catch (error) {
       logger.error('[AvatarService] getAllAvatars error', error);
       throw error;
@@ -55,7 +55,7 @@ class AvatarService {
         throw new Error('Failed to load avatar details.');
       }
 
-      return data;
+      return data ? this._normalizeAvatarPath(data) : null;
     } catch (error) {
       logger.error('[AvatarService] getAvatarById error', error);
       throw error;
@@ -226,7 +226,7 @@ class AvatarService {
           .maybeSingle();
 
         if (!avatarError && avatar) {
-          avatarData = avatar;
+          avatarData = this._normalizeAvatarPath(avatar);
         }
       }
 
@@ -384,6 +384,23 @@ class AvatarService {
       logger.error('[AvatarService] hasCompletedFirstTimeSetup error', error);
       return false;
     }
+  }
+
+  /**
+   * Normalize avatar image_path from legacy DB format to current.
+   * Converts '/images/avatars/foo.png' → '/avatars/foo.png'
+   * and 'default-profile.png' → 'default.png'.
+   */
+  _normalizeAvatarPath(avatar) {
+    if (!avatar?.image_path) return avatar;
+    let p = avatar.image_path;
+    if (p.startsWith('/images/avatars/')) {
+      p = p.replace('/images/avatars/', '/avatars/');
+    }
+    if (p.endsWith('/default-profile.png')) {
+      p = p.replace('/default-profile.png', '/default.png');
+    }
+    return { ...avatar, image_path: p };
   }
 
   /**

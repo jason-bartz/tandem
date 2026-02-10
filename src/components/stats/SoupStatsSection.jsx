@@ -69,7 +69,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
     <>
       <StatsSection
         title={isStandaloneAlchemy ? null : 'Daily Alchemy'}
-        icon={isStandaloneAlchemy ? null : `/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+        icon={isStandaloneAlchemy ? null : `/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
         themeColor="green"
       >
         {/* All Stats in a Row */}
@@ -120,7 +120,7 @@ export default function SoupStatsSection({ stats, animationKey }) {
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Image
-                  src="/icons/ui/discovery.png"
+                  src="/ui/stats/discovery.png"
                   alt=""
                   width={20}
                   height={20}

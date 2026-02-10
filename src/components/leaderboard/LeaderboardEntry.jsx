@@ -63,7 +63,10 @@ export default function LeaderboardEntry({
       {/* Avatar */}
       <div className="relative w-12 h-12 rounded-full overflow-hidden border-[2px] border-gray-200 dark:border-gray-700 flex-shrink-0">
         <Image
-          src={entry.avatar_image_path || entry.avatar_url || '/images/avatars/default-profile.png'}
+          src={(entry.avatar_image_path || entry.avatar_url || '/avatars/default.png').replace(
+            '/images/avatars/',
+            '/avatars/'
+          )}
           alt={entry.display_name || 'Anonymous'}
           fill
           className="object-cover"
@@ -93,7 +96,7 @@ export default function LeaderboardEntry({
             className={`text-xs ${highContrast ? 'text-hc-text/60' : 'text-gray-500 dark:text-gray-400'}`}
           >
             <span className="flex items-center gap-1">
-              <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
+              <Image src="/ui/shared/hardmode.png" alt="" width={12} height={12} />
               {entry.score} day streak
             </span>
           </p>
@@ -122,7 +125,7 @@ export default function LeaderboardEntry({
       >
         {isStreak ? (
           <div className="text-lg flex items-center gap-1">
-            <Image src="/icons/ui/hardmode.png" alt="" width={16} height={16} />
+            <Image src="/ui/shared/hardmode.png" alt="" width={16} height={16} />
             {entry.score}
           </div>
         ) : (

@@ -160,7 +160,7 @@ export function DailyAlchemyGameOverScreen({
       >
         {!hasSubscription && (
           <Image
-            src="/icons/ui/lock.png"
+            src="/ui/shared/lock.png"
             alt="Locked"
             width={20}
             height={20}

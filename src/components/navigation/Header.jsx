@@ -31,8 +31,8 @@ export default function Header({
   const [showFeedback, setShowFeedback] = useState(false);
 
   const logoSrc = isDark
-    ? `/images/tandem-dark.png?v=${ASSET_VERSION}`
-    : `/images/tandem-light.png?v=${ASSET_VERSION}`;
+    ? `/branding/tandem-dark.png?v=${ASSET_VERSION}`
+    : `/branding/tandem-light.png?v=${ASSET_VERSION}`;
 
   return (
     <>

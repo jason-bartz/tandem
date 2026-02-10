@@ -173,7 +173,7 @@ const HintModal = ({
             className={`flex items-center gap-3 px-5 py-4 border-b-2 ${highContrast ? 'border-hc-border' : 'border-white/10'}`}
           >
             <Image
-              src="/icons/ui/hint.png"
+              src="/ui/shared/hint.png"
               alt="Hint"
               width={28}
               height={28}
@@ -555,7 +555,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`top-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -575,7 +575,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`bottom-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -729,7 +729,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`top-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -743,7 +743,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               <div className="mt-5 sm:mt-6 mb-3 sm:mb-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-0.5">
                   <Image
-                    src="/icons/ui/movie.png"
+                    src="/ui/games/movie.png"
                     alt="Movie icon"
                     width={20}
                     height={20}
@@ -767,7 +767,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`bottom-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -927,7 +927,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {[...Array(8)].map((_, i) => (
                 <Image
                   key={`top-${i}`}
-                  src="/icons/ui/marquee-light.webp"
+                  src="/game/reel-connections/marquee-light.webp"
                   alt=""
                   width={16}
                   height={16}
@@ -939,7 +939,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
 
             <div className="flex justify-center mb-6 mt-4">
               <Image
-                src="/images/reel-connections-end.png"
+                src="/game/reel-connections/complete.png"
                 alt={isWin ? 'Success' : 'Game Over'}
                 width={128}
                 height={128}
@@ -1068,7 +1068,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 <div className="flex items-center justify-center gap-2">
                   {!hasSubscription && (
                     <Image
-                      src="/icons/ui/lock.png"
+                      src="/ui/shared/lock.png"
                       alt="Locked"
                       width={20}
                       height={20}
@@ -1109,7 +1109,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                   <div className="flex items-center gap-2">
                     {!hasSubscription && (
                       <Image
-                        src="/icons/ui/lock.png"
+                        src="/ui/shared/lock.png"
                         alt="Locked"
                         width={20}
                         height={20}
@@ -1187,7 +1187,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               {[...Array(8)].map((_, i) => (
                 <Image
                   key={`bottom-${i}`}
-                  src="/icons/ui/marquee-light.webp"
+                  src="/game/reel-connections/marquee-light.webp"
                   alt=""
                   width={16}
                   height={16}
@@ -1259,7 +1259,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         >
           <div className="mb-6">
             <Image
-              src="/images/tandem_asleep.png"
+              src="/game/tandem/asleep.png"
               alt="Puzzlemaster asleep"
               width={120}
               height={120}
@@ -1388,7 +1388,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`top-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -1402,7 +1402,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
               <div className="mt-5 sm:mt-6 mb-3 sm:mb-4 text-center">
                 <div className="flex items-center justify-center gap-2 mb-0.5">
                   <Image
-                    src="/icons/ui/movie.png"
+                    src="/ui/games/movie.png"
                     alt="Movie icon"
                     width={20}
                     height={20}
@@ -1438,7 +1438,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                           >
                             {isMistake ? (
                               <Image
-                                src="/icons/ui/wrong.png"
+                                src="/game/reel-connections/wrong.png"
                                 alt="Mistake"
                                 width={20}
                                 height={20}
@@ -1446,7 +1446,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                               />
                             ) : (
                               <Image
-                                src="/icons/ui/popcorn.png"
+                                src="/game/reel-connections/popcorn.png"
                                 alt="Remaining"
                                 width={20}
                                 height={20}
@@ -1515,7 +1515,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 {[...Array(12)].map((_, i) => (
                   <Image
                     key={`bottom-${i}`}
-                    src="/icons/ui/marquee-light.webp"
+                    src="/game/reel-connections/marquee-light.webp"
                     alt=""
                     width={16}
                     height={16}
@@ -1724,7 +1724,9 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                       Action!
                       <Image
                         src={
-                          clapperClosed ? '/icons/ui/clapper-closed.png' : '/icons/ui/clapper.png'
+                          clapperClosed
+                            ? '/game/reel-connections/clapper-closed.png'
+                            : '/game/reel-connections/clapper.png'
                         }
                         alt=""
                         width={24}
@@ -1746,25 +1748,25 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           <div className={`${solvingGroup ? 'pointer-events-none' : ''}`}>
             <div className="flex gap-3 sm:gap-4 items-center">
               <TicketButton
-                icon="/icons/buttons/shuffle.svg"
+                icon="/game/reel-connections/buttons/shuffle.svg"
                 label="Shuffle"
                 onClick={handleShuffle}
                 disabled={!!solvingGroup}
               />
               <TicketButton
-                icon="/icons/buttons/clear.svg"
+                icon="/game/reel-connections/buttons/clear.svg"
                 label="Clear"
                 onClick={handleDeselect}
                 disabled={selectedMovies.length === 0 || !!solvingGroup}
               />
               <TicketButton
-                icon="/icons/buttons/hint.svg"
+                icon="/game/reel-connections/buttons/hint.svg"
                 label="Hint"
                 onClick={handleHintClick}
                 disabled={hintUsed || !!solvingGroup}
               />
               <TicketButton
-                icon="/icons/buttons/submit.svg"
+                icon="/game/reel-connections/buttons/submit.svg"
                 label="Submit"
                 onClick={handleSubmit}
                 disabled={selectedMovies.length !== REEL_CONFIG.GROUP_SIZE || !!solvingGroup}

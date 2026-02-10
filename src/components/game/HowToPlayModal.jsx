@@ -125,7 +125,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
-                src="/screenshots/tandem-howto.gif"
+                src="/game/tandem/howto.gif"
                 alt="Tandem gameplay demo"
                 className="w-full h-auto"
               />
@@ -354,7 +354,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
-                src="/screenshots/dailymini-howto.gif"
+                src="/game/daily-mini/howto.gif"
                 alt="Daily Mini gameplay demo"
                 className="w-full h-auto"
               />
@@ -464,7 +464,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
-                src="/screenshots/dailyalchemy-howto.gif"
+                src="/game/daily-alchemy/howto.gif"
                 alt="Daily Alchemy gameplay demo"
                 className="w-full h-auto"
               />
@@ -574,7 +574,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <Image
-                src="/icons/ui/hint.png"
+                src="/ui/shared/hint.png"
                 alt="Hint"
                 width={20}
                 height={20}
@@ -603,7 +603,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <Image
-                src="/icons/ui/stopwatch.png"
+                src="/ui/stats/stopwatch.png"
                 alt=""
                 width={20}
                 height={20}
@@ -632,7 +632,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             <h4
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-black' : 'text-gray-800 dark:text-gray-200'}`}
             >
-              <Image src="/icons/ui/par.png" alt="" width={20} height={20} className="w-5 h-5" />
+              <Image src="/ui/stats/par.png" alt="" width={20} height={20} className="w-5 h-5" />
               Par System
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-black' : ''}`}>
@@ -772,7 +772,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div className="max-w-xs">
             <div className="rounded-2xl overflow-hidden border-[3px] border-gray-300 dark:border-gray-600 shadow-[3px_3px_0px_rgba(0,0,0,0.2)]">
               <img
-                src="/screenshots/reel-connections-howto.gif"
+                src="/game/reel-connections/howto.gif"
                 alt="Reel Connections gameplay demo"
                 className="w-full h-auto"
               />
@@ -790,7 +790,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <Image
-                src="/icons/ui/hint.png"
+                src="/ui/shared/hint.png"
                 alt="Hint"
                 width={20}
                 height={20}

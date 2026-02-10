@@ -114,7 +114,7 @@ export function StatsAndTargetRow({
             title="Get a hint"
           >
             <Image
-              src="/icons/ui/hint.png"
+              src="/ui/shared/hint.png"
               alt="Hint"
               width={22}
               height={22}
@@ -127,7 +127,7 @@ export function StatsAndTargetRow({
         {/* Timer */}
         <div className="flex items-center gap-1">
           <Image
-            src="/icons/ui/stopwatch.png"
+            src="/ui/stats/stopwatch.png"
             alt="Time"
             width={18}
             height={18}
@@ -150,7 +150,7 @@ export function StatsAndTargetRow({
         {/* Moves */}
         <div className="flex items-center gap-1">
           <Image
-            src="/icons/ui/par.png"
+            src="/ui/stats/par.png"
             alt="Moves"
             width={18}
             height={18}

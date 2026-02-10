@@ -129,7 +129,7 @@ export function EmbeddedFavorites({
       <div className="flex items-center justify-between px-3 py-2 border-b-2 border-black dark:border-gray-600 flex-shrink-0">
         <div className="flex items-center gap-2">
           <Image
-            src="/icons/ui/favorites.png"
+            src="/ui/shared/favorites.png"
             alt=""
             width={18}
             height={18}
@@ -152,7 +152,7 @@ export function EmbeddedFavorites({
             title="Clear all favorites"
           >
             <Image
-              src="/icons/ui/broom.png"
+              src="/ui/shared/broom.png"
               alt="Clear all"
               width={18}
               height={18}
@@ -185,7 +185,7 @@ export function EmbeddedFavorites({
             )}
           >
             <Image
-              src="/icons/ui/favorites.png"
+              src="/ui/shared/favorites.png"
               alt=""
               width={32}
               height={32}

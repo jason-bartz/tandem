@@ -147,7 +147,11 @@ const FloatingStatsBar = ({
               return (
                 <div key={i} className="w-5 h-5 flex items-center justify-center">
                   <Image
-                    src={isMistake ? '/icons/ui/wrong.png' : '/icons/ui/popcorn.png'}
+                    src={
+                      isMistake
+                        ? '/game/reel-connections/wrong.png'
+                        : '/game/reel-connections/popcorn.png'
+                    }
                     alt={isMistake ? 'Mistake' : 'Remaining'}
                     width={16}
                     height={16}

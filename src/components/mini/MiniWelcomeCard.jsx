@@ -143,7 +143,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
         {/* Logo */}
         <div className="w-20 h-20 mx-auto mb-5">
           <Image
-            src={isDark ? '/icons/ui/mini-dark.png' : '/icons/ui/mini.png'}
+            src={isDark ? '/ui/games/mini-dark.png' : '/ui/games/mini.png'}
             alt="Daily Mini"
             width={80}
             height={80}
@@ -196,7 +196,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       <div className="flex flex-col items-center justify-center mb-6">
         <div className="w-20 h-20 relative mb-3">
           <Image
-            src={isDark ? '/icons/ui/mini-dark.png' : '/icons/ui/mini.png'}
+            src={isDark ? '/ui/games/mini-dark.png' : '/ui/games/mini.png'}
             alt="Daily Mini"
             width={80}
             height={80}
@@ -224,7 +224,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-6 mb-6 text-left">
         <div className="flex items-start">
           <div className="w-10 h-10 bg-ghost-white dark:bg-gray-700 rounded-xl flex items-center justify-center mr-3 flex-shrink-0 p-2">
-            <Image src="/icons/ui/mini.png" alt="" width={24} height={24} />
+            <Image src="/ui/games/mini.png" alt="" width={24} height={24} />
           </div>
           <span className="text-dark-text dark:text-gray-200 text-sm pt-2.5">
             Classic 5×5 mini crossword
@@ -235,7 +235,7 @@ export default function MiniWelcomeCard({ currentStreak = 0 }) {
       {/* Streak Display */}
       {currentStreak > 0 && (
         <div className="mb-4 text-center flex items-center justify-center gap-1.5">
-          <Image src="/icons/ui/hardmode.png" alt="" width={12} height={12} />
+          <Image src="/ui/shared/hardmode.png" alt="" width={12} height={12} />
           <p className="text-xs text-gray-500 dark:text-gray-500">
             {getStreakMessage(currentStreak, 'mini')}
           </p>

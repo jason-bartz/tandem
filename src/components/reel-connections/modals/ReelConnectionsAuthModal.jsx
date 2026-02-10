@@ -433,7 +433,7 @@ export default function ReelConnectionsAuthModal({
                   aria-label="Generate random username"
                   title="Generate random username"
                 >
-                  <Image src="/icons/ui/dice-dark.png" alt="Generate" width={24} height={24} />
+                  <Image src="/ui/shared/dice-dark.png" alt="Generate" width={24} height={24} />
                 </button>
               </div>
               <p className="mt-1 text-xs text-white/50">

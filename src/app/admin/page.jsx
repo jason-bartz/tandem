@@ -237,7 +237,7 @@ export default function AdminDashboard() {
           <div className="bg-bg-surface rounded-lg border-[3px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
             <div className="px-3 sm:px-6 py-3 sm:py-4 border-b-[3px] border-black dark:border-white">
               <div className="flex items-center gap-3">
-                <Image src="/icons/ui/tandem.png" alt="" width={24} height={24} />
+                <Image src="/ui/games/tandem.png" alt="" width={24} height={24} />
                 <h3 className="text-base sm:text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Tandem Puzzle
                 </h3>
@@ -263,7 +263,7 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Image src="/icons/ui/mini.png" alt="" width={24} height={24} />
+                <Image src="/ui/games/mini.png" alt="" width={24} height={24} />
                 <h3 className="text-base sm:text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Daily Mini Puzzle
                 </h3>
@@ -292,7 +292,7 @@ export default function AdminDashboard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Image src="/icons/ui/movie.png" alt="" width={24} height={24} />
+                <Image src="/ui/games/movie.png" alt="" width={24} height={24} />
                 <h3 className="text-base sm:text-lg font-bold text-text-primary">
                   {editingPuzzle ? 'Edit' : 'Create'} Reel Connections Puzzle
                 </h3>
@@ -323,7 +323,7 @@ export default function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Image
-                  src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+                  src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
                   alt=""
                   width={24}
                   height={24}
@@ -384,7 +384,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/archive.png" alt="" width={20} height={20} />
+            <Image src="/ui/shared/archive.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Calendar</span>
           </button>
           <button
@@ -399,7 +399,7 @@ export default function AdminDashboard() {
             `}
           >
             <Image
-              src={`/icons/ui/daily-alchemy.png?v=${ASSET_VERSION}`}
+              src={`/ui/games/daily-alchemy.png?v=${ASSET_VERSION}`}
               alt=""
               width={20}
               height={20}
@@ -417,7 +417,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/movie.png" alt="" width={20} height={20} />
+            <Image src="/ui/games/movie.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Submissions</span>
             {submissionCounts?.pending > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
@@ -436,7 +436,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/feedback.png" alt="" width={20} height={20} />
+            <Image src="/ui/shared/feedback.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Feedback</span>
             {feedbackCounts?.new > 0 && (
               <span className="absolute -top-1 -right-1 flex items-center justify-center min-w-[20px] h-5 px-1.5 bg-accent-red text-white text-xs font-bold rounded-full border-[2px] border-white">
@@ -455,7 +455,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/avatars.png" alt="" width={20} height={20} />
+            <Image src="/ui/shared/avatars.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Avatars</span>
           </button>
           <button
@@ -469,7 +469,7 @@ export default function AdminDashboard() {
               }
             `}
           >
-            <Image src="/icons/ui/leaderboard-admin.png" alt="" width={20} height={20} />
+            <Image src="/ui/shared/leaderboard-admin.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Leaderboards</span>
           </button>
         </nav>
@@ -494,7 +494,7 @@ export default function AdminDashboard() {
                         onClick={() => setCalendarSubTab('calendar')}
                         className="px-2 sm:px-3 py-1 text-xs sm:text-sm border-[2px] rounded-lg font-bold transition-all flex items-center gap-1 bg-bg-card border-black dark:border-white text-text-secondary hover:bg-accent-yellow/20"
                       >
-                        <Image src="/icons/ui/archive.png" alt="" width={16} height={16} />
+                        <Image src="/ui/shared/archive.png" alt="" width={16} height={16} />
                         <span className="hidden sm:inline">← Back to Calendar</span>
                       </button>
                     )}

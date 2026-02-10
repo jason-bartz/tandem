@@ -3,7 +3,6 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useUIIcon } from '@/hooks/useUIIcon';
 import { FEEDBACK_CATEGORIES } from '@/lib/constants';
 import { capacitorFetch, getApiUrl } from '@/lib/api-config';
 import logger from '@/lib/logger';
@@ -11,7 +10,7 @@ import logger from '@/lib/logger';
 export default function FeedbackPane({ isOpen, onClose }) {
   const { user } = useAuth();
   const { highContrast } = useTheme();
-  const getIconPath = useUIIcon();
+
   const [formData, setFormData] = useState({
     category: FEEDBACK_CATEGORIES[0].value,
     message: '',
@@ -243,11 +242,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
                       }`}
                     >
                       {category.icon && (
-                        <img
-                          src={getIconPath(category.icon)}
-                          alt=""
-                          className="w-6 h-6 flex-shrink-0"
-                        />
+                        <img src={category.icon} alt="" className="w-6 h-6 flex-shrink-0" />
                       )}
                       <span>{category.label}</span>
                     </button>
