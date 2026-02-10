@@ -72,6 +72,35 @@ function getDelimiter() {
 }
 
 /**
+ * Apply realistic character quirks that real users add to usernames
+ * ~12% chance to apply a quirk
+ * @param {string} username - The base username
+ * @returns {string} Username with optional quirk applied
+ */
+function applyCharacterQuirks(username) {
+  const roll = Math.random();
+
+  if (roll < 0.03) {
+    // 3%: xXx wrapping pattern (e.g., "xXxShadowxXx")
+    return 'xXx' + username + 'xXx';
+  } else if (roll < 0.06) {
+    // 3%: xx suffix (e.g., "Mikexx", "Sarahxx")
+    return username + 'xx';
+  } else if (roll < 0.08) {
+    // 2%: x prefix/suffix (e.g., "xMikex")
+    return 'x' + username + 'x';
+  } else if (roll < 0.1) {
+    // 2%: Repeat last character (e.g., "Mikee", "Sarahh")
+    return username + username[username.length - 1];
+  } else if (roll < 0.12) {
+    // 2%: oo or ii suffix pattern (e.g., "Mikeii", "Sarahoo")
+    return username + randomPick(['ii', 'oo', 'ee']);
+  }
+
+  return username;
+}
+
+/**
  * Generate a realistic username that looks like a real person would create
  *
  * Possible patterns:
@@ -90,7 +119,7 @@ function getDelimiter() {
 export function generateRealisticUsername() {
   // 25% chance to use simple two-part format for variety
   if (Math.random() < 0.25) {
-    return generateSimpleTwoPartUsername();
+    return applyCharacterQuirks(generateSimpleTwoPartUsername());
   }
 
   // Define pattern probabilities (weighted to create realistic distribution)
@@ -150,7 +179,7 @@ export function generateRealisticUsername() {
     username += (delimiters[i - 1] || '') + parts[i];
   }
 
-  return username;
+  return applyCharacterQuirks(username);
 }
 
 /**
