@@ -136,6 +136,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [isCombining, setIsCombining] = useState(false); // API loading state
   const [isAnimating, setIsAnimating] = useState(false); // Animation state (after API responds)
   const [lastResult, setLastResult] = useState(null);
+  const resultIdRef = useRef(0); // Unique ID counter for ResultAnimation key
   const [combinationPath, setCombinationPath] = useState([]);
   const [combinationError, setCombinationError] = useState(null); // Inline error for failed combinations
 
@@ -1245,6 +1246,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       }
 
       setLastResult({
+        _id: ++resultIdRef.current,
         element,
         emoji,
         isNew,
