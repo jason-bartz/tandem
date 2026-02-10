@@ -33,6 +33,13 @@ import {
   HINT_PHRASES,
 } from '@/lib/daily-alchemy.constants';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
+import {
+  serializeSaveData,
+  triggerFileDownload,
+  generateSaveFileName,
+  readFileAsText,
+  parseSaveFile,
+} from '@/lib/daily-alchemy-save-io';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -1111,6 +1118,129 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   );
 
   /**
+   * Export a save slot as a downloadable .da file
+   */
+  const exportSlot = useCallback(
+    async (slotNumber) => {
+      try {
+        const saveData = await loadCreativeSave(slotNumber);
+        if (!saveData) {
+          return { success: false, error: 'No save data found for this slot.' };
+        }
+
+        const slotSummary = slotSummaries.find((s) => s.slot === slotNumber);
+        const slotName = slotSummary?.name || `Save ${slotNumber}`;
+
+        const exportData = serializeSaveData({ ...saveData, slotName });
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const fileName = generateSaveFileName(slotName);
+        triggerFileDownload(jsonString, fileName);
+
+        logger.info('[DailyAlchemy] Save exported', {
+          slot: slotNumber,
+          elementCount: saveData.elementBank?.length,
+        });
+
+        return { success: true };
+      } catch (err) {
+        logger.error('[DailyAlchemy] Export failed', { error: err.message });
+        return { success: false, error: 'Failed to export save.' };
+      }
+    },
+    [loadCreativeSave, slotSummaries]
+  );
+
+  /**
+   * Import a .da file into a save slot
+   */
+  const importSlot = useCallback(
+    async (slotNumber, file) => {
+      if (!user) return { success: false, error: 'Not signed in.' };
+
+      try {
+        const text = await readFileAsText(file);
+        const { success, data, error } = parseSaveFile(text);
+        if (!success) {
+          return { success: false, error };
+        }
+
+        const { save } = data;
+
+        // Write to slot via existing save endpoint
+        const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+        const response = await capacitorFetch(
+          url,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slotNumber,
+              elementBank: save.elementBank,
+              totalMoves: save.totalMoves || 0,
+              totalDiscoveries: save.totalDiscoveries || 0,
+              firstDiscoveries: save.firstDiscoveries || 0,
+              firstDiscoveryElements: save.firstDiscoveryElements || [],
+            }),
+          },
+          true
+        );
+
+        if (!response.ok) {
+          return { success: false, error: 'Failed to save imported data.' };
+        }
+
+        // Apply slot name if present
+        if (save.slotName) {
+          await capacitorFetch(
+            url,
+            {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ slotNumber, name: save.slotName }),
+            },
+            true
+          );
+        }
+
+        // Refresh summaries
+        await loadSlotSummaries();
+
+        // Hot-reload if this is the active playing slot
+        if (slotNumber === activeSaveSlot && freePlayMode) {
+          const savedGame = await loadCreativeSave(slotNumber);
+          if (savedGame && savedGame.elementBank?.length > 0) {
+            const restoredBank = savedGame.elementBank.map((el) => ({
+              id: generateElementId(el.name),
+              name: el.name,
+              emoji: el.emoji || '✨',
+              isStarter: STARTER_ELEMENTS.some((s) => s.name === el.name),
+            }));
+            setElementBank(restoredBank);
+            discoveredElements.current = new Set(restoredBank.map((el) => el.name));
+            setMovesCount(savedGame.totalMoves || 0);
+            setNewDiscoveries(savedGame.totalDiscoveries || 0);
+            setFirstDiscoveries(savedGame.firstDiscoveries || 0);
+            setFirstDiscoveryElements(savedGame.firstDiscoveryElements || []);
+            lastAutoSaveDiscoveryCount.current = savedGame.totalDiscoveries || 0;
+            lastAutoSaveFirstDiscoveryCount.current = savedGame.firstDiscoveries || 0;
+          }
+        }
+
+        logger.info('[DailyAlchemy] Save imported', {
+          slot: slotNumber,
+          elementCount: save.elementBank.length,
+        });
+
+        return { success: true };
+      } catch (err) {
+        logger.error('[DailyAlchemy] Import failed', { error: err.message });
+        return { success: false, error: 'Failed to import save file.' };
+      }
+    },
+    [user, activeSaveSlot, freePlayMode, loadCreativeSave, loadSlotSummaries]
+  );
+
+  /**
    * Autosave for Creative Mode
    * Triggers on:
    * - Every 5 new discoveries
@@ -2070,6 +2200,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     switchSlot,
     renameSlot,
     clearSlot,
+    exportSlot,
+    importSlot,
     isSlotSwitching,
 
     // Hints

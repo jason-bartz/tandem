@@ -159,6 +159,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     switchSlot,
     renameSlot,
     clearSlot,
+    exportSlot,
+    importSlot,
     isSlotSwitching,
 
     // Hints
@@ -516,6 +518,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onSwitchSlot={handleSwitchSlot}
         onRenameSlot={renameSlot}
         onClearSlot={clearSlot}
+        onExportSlot={exportSlot}
+        onImportSlot={importSlot}
         isSlotSwitching={isSlotSwitching}
       />
     </>
