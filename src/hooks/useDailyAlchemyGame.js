@@ -104,15 +104,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Favorites and usage tracking state
-  const [favoriteElements, setFavoriteElements] = useState(() => {
-    // Load favorites from localStorage on init
-    try {
-      const saved = localStorage.getItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
-      return saved ? new Set(JSON.parse(saved)) : new Set();
-    } catch {
-      return new Set();
-    }
-  });
+  // Favorites are now per-slot in creative mode, empty in daily mode
+  const [favoriteElements, setFavoriteElements] = useState(new Set());
   const [elementUsageCount, setElementUsageCount] = useState(() => {
     // Load usage counts from localStorage on init
     try {
@@ -177,6 +170,19 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [autoSaveComplete, setAutoSaveComplete] = useState(false);
   const lastAutoSaveDiscoveryCount = useRef(0); // Track discoveries at last autosave
   const lastAutoSaveFirstDiscoveryCount = useRef(0); // Track first discoveries at last autosave
+
+  // Multi-slot Creative Mode state
+  const [activeSaveSlot, setActiveSaveSlot] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SOUP_STORAGE_KEYS.CREATIVE_ACTIVE_SLOT);
+      const parsed = saved ? parseInt(saved, 10) : 1;
+      return parsed >= 1 && parsed <= 3 ? parsed : 1;
+    } catch {
+      return 1;
+    }
+  });
+  const [slotSummaries, setSlotSummaries] = useState([]); // For SavesModal display
+  const [isSlotSwitching, setIsSlotSwitching] = useState(false); // Loading state for slot switches
 
   // Track user ID to detect account switches
   const previousUserIdRef = useRef(user?.id);
@@ -254,6 +260,16 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       lastAutoSaveFirstDiscoveryCount.current = 0;
       setIsAutoSaving(false);
       setAutoSaveComplete(false);
+
+      // Reset multi-slot state
+      setActiveSaveSlot(1);
+      setSlotSummaries([]);
+      setIsSlotSwitching(false);
+      try {
+        localStorage.removeItem(SOUP_STORAGE_KEYS.CREATIVE_ACTIVE_SLOT);
+      } catch {
+        // Ignore localStorage errors
+      }
 
       // Reset selections
       setSelectedA(null);
@@ -633,6 +649,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setFreePlayMode(false);
     setIsSubtractMode(false);
 
+    // Clear favorites for daily mode (favorites are per creative-mode slot only)
+    setFavoriteElements(new Set());
+
     // Reset element bank to starter elements for daily puzzle
     setElementBank([...STARTER_ELEMENTS]);
     discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
@@ -670,31 +689,56 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Load Creative Mode save from Supabase
    * Returns the save data if exists, null otherwise
    */
-  const loadCreativeSave = useCallback(async () => {
-    if (!user) return null;
+  const loadCreativeSave = useCallback(
+    async (slot) => {
+      if (!user) return null;
+      const slotToLoad = slot ?? activeSaveSlot;
 
-    setIsLoadingCreative(true);
-    try {
-      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
-      const response = await capacitorFetch(url, {}, true);
+      setIsLoadingCreative(true);
+      try {
+        const url = getApiUrl(`${SOUP_API.CREATIVE_SAVE}?slot=${slotToLoad}`);
+        const response = await capacitorFetch(url, {}, true);
 
-      if (!response.ok) {
-        logger.error('[DailyAlchemy] Failed to load creative save');
+        if (!response.ok) {
+          logger.error('[DailyAlchemy] Failed to load creative save');
+          setIsLoadingCreative(false);
+          return null;
+        }
+
+        const data = await response.json();
+        setIsLoadingCreative(false);
+
+        if (data.success && data.hasSave && data.save) {
+          return data.save;
+        }
+        return null;
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to load creative save', { error: err.message });
         setIsLoadingCreative(false);
         return null;
       }
+    },
+    [user, activeSaveSlot]
+  );
 
+  /**
+   * Load all slot summaries (lightweight, for SavesModal display)
+   */
+  const loadSlotSummaries = useCallback(async () => {
+    if (!user) return [];
+    try {
+      const url = getApiUrl(SOUP_API.CREATIVE_SAVES);
+      const response = await capacitorFetch(url, {}, true);
+      if (!response.ok) return [];
       const data = await response.json();
-      setIsLoadingCreative(false);
-
-      if (data.success && data.hasSave && data.save) {
-        return data.save;
+      if (data.success) {
+        setSlotSummaries(data.saves);
+        return data.saves;
       }
-      return null;
+      return [];
     } catch (err) {
-      logger.error('[DailyAlchemy] Failed to load creative save', { error: err.message });
-      setIsLoadingCreative(false);
-      return null;
+      logger.error('[DailyAlchemy] Failed to load slot summaries', { error: err.message });
+      return [];
     }
   }, [user]);
 
@@ -720,13 +764,14 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setStartTime(null);
     setElapsedTime(0);
 
-    // Try to load existing save
-    const savedGame = await loadCreativeSave();
+    // Try to load existing save for the active slot
+    const savedGame = await loadCreativeSave(activeSaveSlot);
 
     if (savedGame && savedGame.elementBank && savedGame.elementBank.length > 0) {
       // Restore from save
       logger.info('[DailyAlchemy] Restoring Creative Mode save', {
         elementCount: savedGame.elementBank.length,
+        slot: activeSaveSlot,
       });
 
       const restoredBank = savedGame.elementBank.map((el) => ({
@@ -760,124 +805,310 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCombinationPath([]);
     madeCombinations.current = new Set(); // Also reset for restored games
     setRecentElements([]);
+
+    // Load slot-specific favorites
+    try {
+      const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
+      const savedFavs = localStorage.getItem(favKey);
+      if (savedFavs) {
+        setFavoriteElements(new Set(JSON.parse(savedFavs)));
+      } else {
+        // Migrate from old global favorites key to slot 1 on first load
+        const globalFavs = localStorage.getItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
+        if (globalFavs && activeSaveSlot === 1) {
+          const parsed = JSON.parse(globalFavs);
+          setFavoriteElements(new Set(parsed));
+          localStorage.setItem(favKey, globalFavs);
+          localStorage.removeItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
+        } else {
+          setFavoriteElements(new Set());
+        }
+      }
+    } catch {
+      setFavoriteElements(new Set());
+    }
+
     setGameState(SOUP_GAME_STATES.PLAYING);
 
     // Mark load as complete - autosave is now safe to run
     setCreativeLoadComplete(true);
-  }, [loadCreativeSave]);
+  }, [loadCreativeSave, activeSaveSlot]);
 
   /**
    * Save Creative Mode progress to Supabase
    */
-  const saveCreativeMode = useCallback(async () => {
-    if (!user || !freePlayMode) {
-      return false;
-    }
+  const saveCreativeMode = useCallback(
+    async (slot) => {
+      if (!user || !freePlayMode) {
+        return false;
+      }
+      const slotToSave = slot ?? activeSaveSlot;
 
-    setIsSavingCreative(true);
-    setCreativeSaveSuccess(false);
+      setIsSavingCreative(true);
+      setCreativeSaveSuccess(false);
 
-    try {
-      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
-      const response = await capacitorFetch(
-        url,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            elementBank: elementBank.map((el) => ({
-              name: el.name,
-              emoji: el.emoji,
-              isStarter: el.isStarter || false,
-            })),
-            totalMoves: movesCount,
-            totalDiscoveries: newDiscoveries,
-            firstDiscoveries,
-            firstDiscoveryElements,
-          }),
-        },
-        true
-      );
+      try {
+        const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+        const response = await capacitorFetch(
+          url,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              slotNumber: slotToSave,
+              elementBank: elementBank.map((el) => ({
+                name: el.name,
+                emoji: el.emoji,
+                isStarter: el.isStarter || false,
+              })),
+              totalMoves: movesCount,
+              totalDiscoveries: newDiscoveries,
+              firstDiscoveries,
+              firstDiscoveryElements,
+            }),
+          },
+          true
+        );
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        logger.error('[DailyAlchemy] Failed to save creative mode', {
-          status: response.status,
-          error: errorData.error || 'Unknown error',
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          logger.error('[DailyAlchemy] Failed to save creative mode', {
+            status: response.status,
+            error: errorData.error || 'Unknown error',
+          });
+          setIsSavingCreative(false);
+          return false;
+        }
+
+        const data = await response.json();
+        logger.info('[DailyAlchemy] Creative Mode saved successfully', {
+          elementCount: elementBank.length,
+          slot: slotToSave,
+          savedAt: data.savedAt,
         });
+
+        setIsSavingCreative(false);
+        setCreativeSaveSuccess(true);
+
+        // Clear success indicator after 2 seconds
+        setTimeout(() => setCreativeSaveSuccess(false), 2000);
+
+        return true;
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to save creative mode', { error: err.message });
         setIsSavingCreative(false);
         return false;
       }
-
-      const data = await response.json();
-      logger.info('[DailyAlchemy] Creative Mode saved successfully', {
-        elementCount: elementBank.length,
-        savedAt: data.savedAt,
-      });
-
-      setIsSavingCreative(false);
-      setCreativeSaveSuccess(true);
-
-      // Clear success indicator after 2 seconds
-      setTimeout(() => setCreativeSaveSuccess(false), 2000);
-
-      return true;
-    } catch (err) {
-      logger.error('[DailyAlchemy] Failed to save creative mode', { error: err.message });
-      setIsSavingCreative(false);
-      return false;
-    }
-  }, [
-    user,
-    freePlayMode,
-    elementBank,
-    movesCount,
-    newDiscoveries,
-    firstDiscoveries,
-    firstDiscoveryElements,
-  ]);
+    },
+    [
+      user,
+      freePlayMode,
+      activeSaveSlot,
+      elementBank,
+      movesCount,
+      newDiscoveries,
+      firstDiscoveries,
+      firstDiscoveryElements,
+    ]
+  );
 
   /**
    * Clear Creative Mode save and reset to starter elements
    */
-  const clearCreativeMode = useCallback(async () => {
-    if (!user) return false;
+  const clearCreativeMode = useCallback(
+    async (slot) => {
+      if (!user) return false;
+      const slotToClear = slot ?? activeSaveSlot;
 
-    try {
-      const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
-      const response = await capacitorFetch(url, { method: 'DELETE' }, true);
+      try {
+        const url = getApiUrl(`${SOUP_API.CREATIVE_SAVE}?slot=${slotToClear}`);
+        const response = await capacitorFetch(url, { method: 'DELETE' }, true);
 
-      if (!response.ok) {
-        logger.error('[DailyAlchemy] Failed to clear creative save');
+        if (!response.ok) {
+          logger.error('[DailyAlchemy] Failed to clear creative save');
+          return false;
+        }
+
+        logger.info('[DailyAlchemy] Creative Mode save cleared', { slot: slotToClear });
+
+        // Clear slot-specific favorites from localStorage
+        try {
+          localStorage.removeItem(`${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${slotToClear}`);
+        } catch {
+          // Ignore localStorage errors
+        }
+
+        // Only reset in-memory state if clearing the active slot
+        if (slotToClear === activeSaveSlot) {
+          setElementBank([...STARTER_ELEMENTS]);
+          discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+          madeCombinations.current = new Set();
+          setCombinationPath([]);
+          setMovesCount(0);
+          setNewDiscoveries(0);
+          setFirstDiscoveries(0);
+          setFirstDiscoveryElements([]);
+          setRecentElements([]);
+          setSelectedA(null);
+          setSelectedB(null);
+          setLastResult(null);
+          setFavoriteElements(new Set());
+
+          // Reset autosave tracking refs to match cleared state
+          lastAutoSaveDiscoveryCount.current = 0;
+          lastAutoSaveFirstDiscoveryCount.current = 0;
+        }
+
+        return true;
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to clear creative save', { error: err.message });
         return false;
       }
+    },
+    [user, activeSaveSlot]
+  );
 
-      logger.info('[DailyAlchemy] Creative Mode save cleared');
+  /**
+   * Switch to a different save slot
+   * Auto-saves current slot, loads the new slot, updates active slot
+   */
+  const switchSlot = useCallback(
+    async (newSlotNumber) => {
+      if (!user || newSlotNumber === activeSaveSlot || isSlotSwitching) return;
 
-      // Reset to starter elements
-      setElementBank([...STARTER_ELEMENTS]);
-      discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
-      madeCombinations.current = new Set();
-      setCombinationPath([]);
-      setMovesCount(0);
-      setNewDiscoveries(0);
-      setFirstDiscoveries(0);
-      setFirstDiscoveryElements([]);
-      setRecentElements([]);
-      setSelectedA(null);
-      setSelectedB(null);
-      setLastResult(null);
+      setIsSlotSwitching(true);
+      setCreativeLoadComplete(false); // Prevent autosave during switch
 
-      // Reset autosave tracking refs to match cleared state
-      lastAutoSaveDiscoveryCount.current = 0;
-      lastAutoSaveFirstDiscoveryCount.current = 0;
+      try {
+        // 1. Auto-save current slot and persist current favorites
+        await saveCreativeMode(activeSaveSlot);
+        try {
+          const currentFavKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
+          localStorage.setItem(currentFavKey, JSON.stringify([...favoriteElements]));
+        } catch {
+          // Ignore localStorage errors
+        }
 
-      return true;
-    } catch (err) {
-      logger.error('[DailyAlchemy] Failed to clear creative save', { error: err.message });
-      return false;
-    }
-  }, [user]);
+        // 2. Reset autosave tracking
+        lastAutoSaveDiscoveryCount.current = 0;
+        lastAutoSaveFirstDiscoveryCount.current = 0;
+
+        // 3. Load new slot
+        const savedGame = await loadCreativeSave(newSlotNumber);
+
+        // 4. Restore or start fresh
+        if (savedGame && savedGame.elementBank && savedGame.elementBank.length > 0) {
+          const restoredBank = savedGame.elementBank.map((el) => ({
+            id: generateElementId(el.name),
+            name: el.name,
+            emoji: el.emoji || '✨',
+            isStarter: STARTER_ELEMENTS.some((s) => s.name === el.name),
+          }));
+          setElementBank(restoredBank);
+          discoveredElements.current = new Set(restoredBank.map((el) => el.name));
+          setMovesCount(savedGame.totalMoves || 0);
+          setNewDiscoveries(savedGame.totalDiscoveries || 0);
+          setFirstDiscoveries(savedGame.firstDiscoveries || 0);
+          setFirstDiscoveryElements(savedGame.firstDiscoveryElements || []);
+          lastAutoSaveDiscoveryCount.current = savedGame.totalDiscoveries || 0;
+          lastAutoSaveFirstDiscoveryCount.current = savedGame.firstDiscoveries || 0;
+        } else {
+          setElementBank([...STARTER_ELEMENTS]);
+          discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+          madeCombinations.current = new Set();
+          setMovesCount(0);
+          setNewDiscoveries(0);
+          setFirstDiscoveries(0);
+          setFirstDiscoveryElements([]);
+        }
+
+        // 5. Clear selections and results
+        setCombinationPath([]);
+        madeCombinations.current = new Set();
+        setRecentElements([]);
+        setSelectedA(null);
+        setSelectedB(null);
+        setLastResult(null);
+
+        // 6. Load slot-specific favorites
+        try {
+          const newFavKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${newSlotNumber}`;
+          const savedFavs = localStorage.getItem(newFavKey);
+          setFavoriteElements(savedFavs ? new Set(JSON.parse(savedFavs)) : new Set());
+        } catch {
+          setFavoriteElements(new Set());
+        }
+
+        // 7. Update active slot
+        setActiveSaveSlot(newSlotNumber);
+        try {
+          localStorage.setItem(SOUP_STORAGE_KEYS.CREATIVE_ACTIVE_SLOT, String(newSlotNumber));
+        } catch {
+          // Ignore localStorage errors
+        }
+
+        // 8. Mark load complete
+        setCreativeLoadComplete(true);
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to switch slot', { error: err.message });
+        setCreativeLoadComplete(true); // Re-enable autosave even on failure
+      } finally {
+        setIsSlotSwitching(false);
+      }
+    },
+    [user, activeSaveSlot, isSlotSwitching, saveCreativeMode, loadCreativeSave, favoriteElements]
+  );
+
+  /**
+   * Rename a save slot
+   */
+  const renameSlot = useCallback(
+    async (slotNumber, newName) => {
+      if (!user) return false;
+      try {
+        const url = getApiUrl(SOUP_API.CREATIVE_SAVE);
+        const response = await capacitorFetch(
+          url,
+          {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ slotNumber, name: newName }),
+          },
+          true
+        );
+
+        if (!response.ok) return false;
+
+        // Update slotSummaries locally to avoid refetch
+        setSlotSummaries((prev) =>
+          prev.map((s) => (s.slot === slotNumber ? { ...s, name: newName } : s))
+        );
+        return true;
+      } catch (err) {
+        logger.error('[DailyAlchemy] Failed to rename slot', { error: err.message });
+        return false;
+      }
+    },
+    [user]
+  );
+
+  /**
+   * Clear a specific save slot (wraps clearCreativeMode with summary updates)
+   */
+  const clearSlot = useCallback(
+    async (slotNumber) => {
+      const success = await clearCreativeMode(slotNumber);
+      if (success) {
+        setSlotSummaries((prev) =>
+          prev.map((s) =>
+            s.slot === slotNumber ? { slot: slotNumber, name: null, hasSave: false } : s
+          )
+        );
+      }
+      return success;
+    },
+    [clearCreativeMode]
+  );
 
   /**
    * Autosave for Creative Mode
@@ -915,6 +1146,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({
+                slotNumber: activeSaveSlot,
                 elementBank: elementBank.map((el) => ({
                   name: el.name,
                   emoji: el.emoji,
@@ -962,19 +1194,19 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     movesCount,
     isSavingCreative,
     isAutoSaving,
+    activeSaveSlot,
   ]);
 
-  // Persist favorites to localStorage
+  // Persist favorites to localStorage (per-slot in creative mode)
   useEffect(() => {
+    if (!freePlayMode) return; // Don't persist favorites in daily mode
     try {
-      localStorage.setItem(
-        SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS,
-        JSON.stringify([...favoriteElements])
-      );
+      const key = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
+      localStorage.setItem(key, JSON.stringify([...favoriteElements]));
     } catch (err) {
       logger.error('[DailyAlchemy] Failed to save favorites', { error: err.message });
     }
-  }, [favoriteElements]);
+  }, [favoriteElements, freePlayMode, activeSaveSlot]);
 
   // Persist usage counts to localStorage (debounced)
   useEffect(() => {
@@ -1830,6 +2062,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Creative Mode autosave
     isAutoSaving,
     autoSaveComplete,
+
+    // Multi-slot Creative Mode
+    activeSaveSlot,
+    slotSummaries,
+    loadSlotSummaries,
+    switchSlot,
+    renameSlot,
+    clearSlot,
+    isSlotSwitching,
 
     // Hints
     hintsUsed,

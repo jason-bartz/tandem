@@ -183,6 +183,7 @@ export const SOUP_STORAGE_KEYS = {
   COMBINATIONS_TRIED: 'soup_combinations_tried_',
   FAVORITE_ELEMENTS: 'soup_favorite_elements', // Favorite elements for quick access
   ELEMENT_USAGE: 'soup_element_usage', // Track element usage counts for sorting
+  CREATIVE_ACTIVE_SLOT: 'soup_creative_active_slot', // Active creative mode save slot (1-3)
 };
 
 // Maximum number of favorite elements allowed
@@ -196,6 +197,7 @@ export const SOUP_API = {
   STATS: '/api/daily-alchemy/stats',
   DISCOVERIES: '/api/daily-alchemy/discoveries',
   CREATIVE_SAVE: '/api/daily-alchemy/creative/save',
+  CREATIVE_SAVES: '/api/daily-alchemy/creative/saves',
   LEADERBOARD_DAILY: '/api/leaderboard/daily',
   ADMIN_PUZZLES: '/api/admin/daily-alchemy/puzzles',
   ADMIN_SANDBOX: '/api/admin/daily-alchemy/sandbox',
