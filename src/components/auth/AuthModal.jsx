@@ -72,12 +72,10 @@ export default function AuthModal({
           setError(error.message);
         } else {
           // Success - switch to login mode with confirmation message
-          setSuccessMessage(
-            'Account created! Please check your email for a confirmation link, then sign in.'
-          );
+          setSuccessMessage('Account created! Please check your email for a confirmation link.');
           setMode('login');
           setPassword('');
-          // Don't close the panel - keep it open for sign in
+          // Don't close the panel - keep it open in case they need to sign in manually
         }
       } else if (mode === 'reset') {
         // Password reset
