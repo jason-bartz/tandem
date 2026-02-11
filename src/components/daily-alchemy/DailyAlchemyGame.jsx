@@ -20,7 +20,7 @@ import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
-import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
+import AlchemyTutorialModal from './AlchemyTutorialModal';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
 import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner';
 import Settings from '@/components/Settings';
@@ -84,6 +84,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const [showFeedback, setShowFeedback] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSavesModal, setShowSavesModal] = useState(false);
+  const [showTutorial, setShowTutorial] = useState(true);
 
   const {
     // State
@@ -198,7 +199,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     showHowToPlay ||
     showSettings ||
     showFeedback ||
-    showSavesModal;
+    showSavesModal ||
+    showTutorial;
 
   useEffect(() => {
     if (isAnyModalOpen) {
@@ -467,9 +469,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
-      {/* Learn to Play Banner - outside scrollable container for proper click handling */}
+      {/* Tutorial Modal - shown on first visit when gameplay starts */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
-        <LearnToPlayBanner gameType="soup" onOpenHowToPlay={() => setShowHowToPlay(true)} />
+        <AlchemyTutorialModal onClose={() => setShowTutorial(false)} />
       )}
 
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}

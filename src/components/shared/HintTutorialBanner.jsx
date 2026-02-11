@@ -31,7 +31,7 @@ export default function HintTutorialBanner({ gameType = 'soup', hasUsedHint = fa
     setShouldRender(true);
     const timer = setTimeout(() => {
       setIsVisible(true);
-    }, 15000);
+    }, 60000);
     return timer;
   };
 
