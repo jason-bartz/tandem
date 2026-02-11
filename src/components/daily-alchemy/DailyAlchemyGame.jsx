@@ -1,19 +1,22 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useAuth } from '@/contexts/AuthContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { SOUP_GAME_STATES } from '@/lib/daily-alchemy.constants';
 import { useDailyAlchemyGame } from '@/hooks/useDailyAlchemyGame';
+import { useAlchemyCoop } from '@/hooks/useAlchemyCoop';
 import { DailyAlchemyWelcomeScreen } from './DailyAlchemyWelcomeScreen';
 import { DailyAlchemyGameScreen } from './DailyAlchemyGameScreen';
 import { DailyAlchemyCompleteScreen } from './DailyAlchemyCompleteScreen';
 import { DailyAlchemyGameOverScreen } from './DailyAlchemyGameOverScreen';
 import { DailyAlchemyLoadingSkeleton } from './DailyAlchemyLoadingSkeleton';
 import { DailyAlchemyBackground } from './DailyAlchemyBackground';
+import { CoopLobbyScreen } from './CoopLobbyScreen';
 import { SavesModal } from './SavesModal';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
@@ -74,6 +77,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const router = useRouter();
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
+  const { user, userProfile } = useAuth();
 
   // UI state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -175,6 +179,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
     // Mode
     freePlayMode,
+    coopMode,
+    startCoopMode,
+    addPartnerElement,
 
     // Favorites
     favoriteElements,
@@ -190,6 +197,105 @@ export function DailyAlchemyGame({ initialDate = null }) {
     targetEmoji,
     parMoves,
   } = useDailyAlchemyGame(initialDate);
+
+  // Co-op lobby state — declared before useAlchemyCoop so onPartnerJoined can reference it
+  const [isInCoopLobby, setIsInCoopLobby] = useState(false);
+  const coopElementBankRef = useRef(null); // Stores session element bank for host
+  const coopStartedRef = useRef(false); // Guard against duplicate startCoopMode calls
+
+  // Co-op hook
+  const coop = useAlchemyCoop({
+    enabled: coopMode,
+    user,
+    userProfile,
+    onPartnerElement: useCallback(
+      (element) => {
+        addPartnerElement(element);
+      },
+      [addPartnerElement]
+    ),
+    onSessionEnded: useCallback(() => {
+      // Partner left — stay in game but they'll see "disconnected" status
+    }, []),
+    onPartnerJoined: useCallback(
+      (_partnerPresence) => {
+        // Partner joined the lobby — start co-op gameplay for the host
+        // Guard with ref to prevent duplicate startCoopMode from rapid presence events
+        if (isInCoopLobby && !coopStartedRef.current) {
+          coopStartedRef.current = true;
+          setIsInCoopLobby(false);
+          startCoopMode(coopElementBankRef.current);
+        }
+      },
+      [isInCoopLobby, startCoopMode]
+    ),
+  });
+
+  // Co-op: Handle creating a session
+  const handleCoopCreate = useCallback(
+    async (saveSlot) => {
+      const result = await coop.createSession(saveSlot);
+      if (result) {
+        // Store element bank so host can access it when partner joins
+        coopElementBankRef.current = result.elementBank || null;
+      }
+      return result;
+    },
+    [coop]
+  );
+
+  // Co-op: Handle joining a session
+  const handleCoopJoin = useCallback(
+    async (inviteCode) => {
+      const result = await coop.joinSession(inviteCode);
+      if (result) {
+        // Start co-op gameplay with the element bank from the session
+        setIsInCoopLobby(false);
+        startCoopMode(result.elementBank);
+        return result;
+      }
+      return null;
+    },
+    [coop, startCoopMode]
+  );
+
+  // Co-op: Handle leaving
+  const handleCoopLeave = useCallback(async () => {
+    await coop.leaveSession();
+    coopElementBankRef.current = null;
+    // Return to welcome screen (reload page for clean state)
+    if (isStandaloneAlchemy) {
+      window.location.href = '/daily-alchemy';
+    } else {
+      window.location.reload();
+    }
+  }, [coop]);
+
+  const handleEnterCoopLobby = useCallback(() => {
+    coopStartedRef.current = false;
+    setIsInCoopLobby(true);
+  }, []);
+
+  const handleExitCoopLobby = useCallback(() => {
+    setIsInCoopLobby(false);
+    coopElementBankRef.current = null;
+    coopStartedRef.current = false;
+    coop.leaveSession();
+  }, [coop]);
+
+  // Co-op: Broadcast new element discoveries to partner
+  useEffect(() => {
+    if (coopMode && lastResult && lastResult.isNew) {
+      coop.broadcastNewElement(
+        {
+          name: lastResult.element,
+          emoji: lastResult.emoji,
+          isFirstDiscovery: lastResult.isFirstDiscovery,
+        },
+        lastResult.from
+      );
+    }
+  }, [coopMode, lastResult]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Pause timer when sidebar or modals are open, resume when closed
   const isAnyModalOpen =
@@ -211,7 +317,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
   }, [isAnyModalOpen, pauseTimer, resumeTimer]);
 
   // Saves modal handlers
+  const [savesModalSaveOnly, setSavesModalSaveOnly] = useState(false);
+
   const handleOpenSavesModal = useCallback(async () => {
+    setSavesModalSaveOnly(false);
     await loadSlotSummaries();
     setShowSavesModal(true);
   }, [loadSlotSummaries]);
@@ -222,6 +331,27 @@ export function DailyAlchemyGame({ initialDate = null }) {
       setShowSavesModal(false);
     },
     [switchSlot]
+  );
+
+  // Co-op save: open saves modal in save-only mode
+  const handleOpenCoopSave = useCallback(async () => {
+    setSavesModalSaveOnly(true);
+    await loadSlotSummaries();
+    setShowSavesModal(true);
+  }, [loadSlotSummaries]);
+
+  // Co-op save: save current game state to a slot
+  const handleCoopSlotSave = useCallback(
+    async (slotNumber) => {
+      return await coop.saveSession(slotNumber, {
+        elementBank,
+        totalMoves: movesCount,
+        totalDiscoveries: elementBank.length - 4, // minus 4 starters
+        firstDiscoveries,
+        firstDiscoveryElements,
+      });
+    },
+    [coop, elementBank, movesCount, firstDiscoveries, firstDiscoveryElements]
   );
 
   // Render based on game state
@@ -346,7 +476,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
             <div className="relative flex-1 min-h-0">
               <div className="absolute inset-0 p-4 sm:p-6 overflow-y-auto overflow-x-hidden scrollable">
                 {/* Welcome Screen */}
-                {gameState === SOUP_GAME_STATES.WELCOME && (
+                {gameState === SOUP_GAME_STATES.WELCOME && !isInCoopLobby && (
                   <DailyAlchemyWelcomeScreen
                     formattedDate={formattedDate}
                     targetElement={targetElement}
@@ -354,11 +484,28 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     parMoves={parMoves}
                     onStart={startGame}
                     onStartFreePlay={startFreePlay}
+                    onStartCoop={handleEnterCoopLobby}
                     onOpenHowToPlay={() => setShowHowToPlay(true)}
                     isArchive={isArchive}
                     puzzleNumber={puzzle?.number}
                     hasSavedProgress={hasSavedProgress}
                     onResume={resumeGame}
+                  />
+                )}
+
+                {/* Co-op Lobby Screen */}
+                {gameState === SOUP_GAME_STATES.WELCOME && isInCoopLobby && (
+                  <CoopLobbyScreen
+                    onCreateSession={handleCoopCreate}
+                    onJoinSession={handleCoopJoin}
+                    onCancel={handleExitCoopLobby}
+                    inviteCode={coop.inviteCode}
+                    isWaiting={coop.isWaiting}
+                    isConnected={coop.isConnected}
+                    error={coop.error}
+                    onClearError={coop.clearError}
+                    slotSummaries={slotSummaries}
+                    onLoadSlotSummaries={loadSlotSummaries}
                   />
                 )}
 
@@ -413,6 +560,15 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       showFavoritesPanel={showFavoritesPanel}
                       onToggleFavoritesPanel={() => setShowFavoritesPanel(!showFavoritesPanel)}
                       maxFavorites={maxFavorites}
+                      // Co-op props
+                      coopMode={coopMode}
+                      coopPartner={coop.partner}
+                      coopPartnerStatus={coop.partnerStatus}
+                      coopReceivedEmote={coop.receivedEmote}
+                      onCoopSendEmote={coop.sendEmote}
+                      coopEmoteCooldownActive={coop.emoteCooldownActive}
+                      onCoopSave={handleOpenCoopSave}
+                      onCoopLeave={handleCoopLeave}
                     />
                   </div>
                 )}
@@ -522,6 +678,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onExportSlot={exportSlot}
         onImportSlot={importSlot}
         isSlotSwitching={isSlotSwitching}
+        saveOnly={savesModalSaveOnly}
+        onSaveToSlot={handleCoopSlotSave}
       />
     </>
   );

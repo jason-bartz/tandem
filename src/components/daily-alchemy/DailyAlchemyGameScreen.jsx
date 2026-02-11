@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
-import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen } from 'lucide-react';
+import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save, LogOut } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -15,6 +15,7 @@ import { EmbeddedFavorites } from './EmbeddedFavorites';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 import { SunburstRays } from './SunburstRays';
+import { CoopPartnerBar } from './CoopPartnerBar';
 
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
@@ -561,6 +562,16 @@ export function DailyAlchemyGameScreen({
   showFavoritesPanel = false,
   onToggleFavoritesPanel,
   maxFavorites = 15,
+
+  // Co-op
+  coopMode = false,
+  coopPartner = null,
+  coopPartnerStatus = null,
+  coopReceivedEmote = null,
+  onCoopSendEmote,
+  coopEmoteCooldownActive = false,
+  onCoopSave,
+  onCoopLeave,
 }) {
   const { highContrast } = useTheme();
 
@@ -602,8 +613,8 @@ export function DailyAlchemyGameScreen({
         />
       )}
 
-      {/* Creative Mode Header with Saves button and auto-save indicator */}
-      {freePlayMode && (
+      {/* Creative Mode / Co-op Mode Header */}
+      {freePlayMode && !coopMode && (
         <div className="flex items-center gap-2 py-2">
           {/* Saves button */}
           <button
@@ -668,6 +679,81 @@ export function DailyAlchemyGameScreen({
               first
             </span>
           </div>
+        </div>
+      )}
+
+      {/* Co-op Mode Header */}
+      {coopMode && (
+        <div className="flex flex-col gap-2 py-2">
+          {/* Top row: Save/Leave buttons + stats */}
+          <div className="flex items-center gap-2">
+            {/* Save button */}
+            <button
+              onClick={onCoopSave}
+              className={cn(
+                'flex items-center gap-1.5 px-4 py-2',
+                'text-sm font-bold',
+                'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+                'border-[2px] border-black dark:border-gray-600',
+                'rounded-xl',
+                'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+                'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                'active:translate-y-0 active:shadow-none',
+                'transition-all duration-150',
+                highContrast && 'border-[3px] border-hc-border'
+              )}
+            >
+              <Save className="w-4 h-4" />
+              <span>Save</span>
+            </button>
+
+            {/* Leave button */}
+            <button
+              onClick={onCoopLeave}
+              className={cn(
+                'flex items-center gap-1.5 px-4 py-2',
+                'text-sm font-bold',
+                'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+                'border-[2px] border-red-300 dark:border-red-700',
+                'rounded-xl',
+                'shadow-[2px_2px_0px_rgba(0,0,0,0.3)]',
+                'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
+                'hover:bg-red-100 dark:hover:bg-red-900/50',
+                'active:translate-y-0 active:shadow-none',
+                'transition-all duration-150',
+                highContrast && 'border-[3px] border-hc-border'
+              )}
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Leave</span>
+            </button>
+
+            {/* Stats */}
+            <div className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+              <span>
+                <span className="font-semibold text-gray-700 dark:text-gray-200">
+                  {discoveredCount}
+                </span>{' '}
+                created
+              </span>
+              <span className="text-gray-300 dark:text-gray-600">|</span>
+              <span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">
+                  {firstDiscoveryElements.length}
+                </span>{' '}
+                first
+              </span>
+            </div>
+          </div>
+
+          {/* Partner bar */}
+          <CoopPartnerBar
+            partner={coopPartner}
+            partnerStatus={coopPartnerStatus}
+            receivedEmote={coopReceivedEmote}
+            onSendEmote={onCoopSendEmote}
+            emoteCooldownActive={coopEmoteCooldownActive}
+          />
         </div>
       )}
 

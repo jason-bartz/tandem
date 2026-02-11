@@ -3,10 +3,11 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { Info } from 'lucide-react';
+import { Info, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
+import { useAuth } from '@/contexts/AuthContext';
 import PaywallModal from '@/components/PaywallModal';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
@@ -21,6 +22,7 @@ export function DailyAlchemyWelcomeScreen({
   parMoves,
   onStart,
   onStartFreePlay,
+  onStartCoop,
   onOpenHowToPlay,
   isArchive = false,
   puzzleNumber,
@@ -29,11 +31,25 @@ export function DailyAlchemyWelcomeScreen({
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
+  const { user } = useAuth();
   const [showPaywall, setShowPaywall] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
       onStartFreePlay?.();
+    } else {
+      setShowPaywall(true);
+    }
+  };
+
+  const handleCoopClick = () => {
+    if (!user) {
+      // Could show a login prompt, but for now just show paywall which has login
+      setShowPaywall(true);
+      return;
+    }
+    if (hasSubscription) {
+      onStartCoop?.();
     } else {
       setShowPaywall(true);
     }
@@ -181,6 +197,50 @@ export function DailyAlchemyWelcomeScreen({
         <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
       </motion.div>
 
+      {/* Co-op Mode Button */}
+      <motion.button
+        onClick={handleCoopClick}
+        className={cn(
+          'w-full max-w-sm flex items-center justify-center gap-3 py-4 mb-3',
+          'bg-indigo-500 text-white',
+          'border-[3px] border-black',
+          'rounded-xl font-bold text-lg',
+          'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+          'hover:bg-indigo-600',
+          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
+          'active:translate-y-0 active:shadow-none',
+          'transition-all duration-150',
+          highContrast && 'border-[4px]'
+        )}
+        initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.53 }}
+        whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
+      >
+        {!hasSubscription ? (
+          <Image
+            src="/ui/shared/lock.png"
+            alt="Locked"
+            width={20}
+            height={20}
+            className="opacity-70 invert"
+          />
+        ) : (
+          <Users className="w-5 h-5" />
+        )}
+        <span>Co-op Mode</span>
+      </motion.button>
+
+      {/* Co-op Mode Description */}
+      <motion.p
+        className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mb-3 px-4"
+        initial={!reduceMotion ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.56 }}
+      >
+        Combine elements together with a friend in real time.
+      </motion.p>
+
       {/* Creative Mode Button */}
       <motion.button
         onClick={handleFreePlayClick}
@@ -261,7 +321,7 @@ export function DailyAlchemyWelcomeScreen({
             </span>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Share your favorite discoveries and combos, or report bugs
+            Find a co-op partner, share discoveries, and report bugs
           </p>
         </div>
       </motion.a>

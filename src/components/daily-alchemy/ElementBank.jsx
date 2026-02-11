@@ -400,6 +400,7 @@ export function ElementBank({
                   isNew={showNewBadge}
                   isTarget={isTarget}
                   isFavorite={isFavorite}
+                  fromPartner={element.fromPartner || false}
                   onClick={onSelect}
                   disabled={disabled}
                   draggable={!disabled}

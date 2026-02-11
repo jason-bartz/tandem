@@ -36,6 +36,8 @@ function ElementChipInner({
   isDragging = false,
   // Long press handler for favorites
   onLongPress,
+  // Whether this element was added by a co-op partner
+  fromPartner = false,
   // Touch drag handlers for mobile (deprecated but kept for backwards compatibility)
   onTouchDragStart,
   onTouchDragMove,
@@ -206,7 +208,9 @@ function ElementChipInner({
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
         !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
-        'border-[2px] border-black dark:border-gray-600',
+        fromPartner && !isSelected && !isTarget
+          ? 'border-[2px] border-indigo-400 dark:border-indigo-400'
+          : 'border-[2px] border-black dark:border-gray-600',
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
         'font-medium',
@@ -255,10 +259,18 @@ function ElementChipInner({
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
     >
-      {/* Golden inner glow for first discoveries (light mode only) */}
+      {/* Golden gradient background for first discoveries (light mode only) */}
       {element.isFirstDiscovery && !isSelected && !isTarget && (
         <span
-          className="absolute inset-0 rounded-lg pointer-events-none shadow-[inset_0_0_6px_rgba(234,179,8,0.3)] dark:shadow-none"
+          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-amber-100/60 to-yellow-50/80 shadow-[inset_0_0_6px_rgba(234,179,8,0.3)] dark:bg-none dark:shadow-none"
+          aria-hidden="true"
+        />
+      )}
+
+      {/* Faint purple gradient for partner elements (light mode only) */}
+      {fromPartner && !element.isFirstDiscovery && !isSelected && !isTarget && (
+        <span
+          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-indigo-50/70 to-purple-50/50 dark:bg-none"
           aria-hidden="true"
         />
       )}
@@ -342,7 +354,8 @@ function arePropsEqual(prevProps, nextProps) {
     prevProps.isDragging === nextProps.isDragging &&
     prevProps.touchDragThreshold === nextProps.touchDragThreshold &&
     prevProps.disableAnimations === nextProps.disableAnimations &&
-    prevProps.onLongPress === nextProps.onLongPress
+    prevProps.onLongPress === nextProps.onLongPress &&
+    prevProps.fromPartner === nextProps.fromPartner
   );
 }
 

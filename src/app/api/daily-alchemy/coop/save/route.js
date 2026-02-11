@@ -1,0 +1,134 @@
+import { NextResponse } from 'next/server';
+import { createServerComponentClient, createServerClient } from '@/lib/supabase/server';
+import { createClient } from '@supabase/supabase-js';
+import logger from '@/lib/logger';
+
+/**
+ * Get authenticated user from either cookies or Authorization header
+ */
+async function getAuthenticatedUser(request) {
+  const authHeader =
+    request?.headers?.get?.('authorization') || request?.headers?.get?.('Authorization');
+
+  if (authHeader?.startsWith('Bearer ')) {
+    const token = authHeader.substring(7);
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      { global: { headers: { Authorization: `Bearer ${token}` } } }
+    );
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
+    if (!error && user) {
+      return { user, supabase: createServerClient(), source: 'bearer' };
+    }
+  }
+
+  const supabase = await createServerComponentClient();
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+  if (!error && user) {
+    return { user, supabase: createServerClient(), source: 'cookie' };
+  }
+
+  return { user: null, supabase: null, source: null };
+}
+
+/**
+ * POST /api/daily-alchemy/coop/save
+ * Save the current co-op session state to a player's creative save slot
+ * Body:
+ * - sessionId: string
+ * - saveSlot: number (1-3)
+ */
+export async function POST(request) {
+  try {
+    const { user, supabase } = await getAuthenticatedUser(request);
+
+    if (!user || !supabase) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    const body = await request.json();
+    const {
+      sessionId,
+      saveSlot,
+      elementBank,
+      totalMoves,
+      totalDiscoveries,
+      firstDiscoveries,
+      firstDiscoveryElements,
+    } = body;
+
+    if (!sessionId) {
+      return NextResponse.json({ error: 'Session ID is required' }, { status: 400 });
+    }
+
+    if (!elementBank || !Array.isArray(elementBank)) {
+      return NextResponse.json({ error: 'Element bank is required' }, { status: 400 });
+    }
+
+    const slot = parseInt(saveSlot, 10);
+    if (isNaN(slot) || slot < 1 || slot > 3) {
+      return NextResponse.json({ error: 'Invalid save slot (must be 1-3)' }, { status: 400 });
+    }
+
+    // Fetch session and verify participation
+    const { data: session, error: fetchError } = await supabase
+      .from('alchemy_coop_sessions')
+      .select('id, host_user_id, partner_user_id')
+      .eq('id', sessionId)
+      .single();
+
+    if (fetchError || !session) {
+      return NextResponse.json({ error: 'Session not found' }, { status: 404 });
+    }
+
+    if (session.host_user_id !== user.id && session.partner_user_id !== user.id) {
+      return NextResponse.json({ error: 'Not a participant of this session' }, { status: 403 });
+    }
+
+    // Save the client's current element bank to their creative save slot
+    const { error: saveError } = await supabase.from('daily_alchemy_creative_saves').upsert(
+      {
+        user_id: user.id,
+        slot_number: slot,
+        element_bank: elementBank,
+        total_moves: totalMoves || 0,
+        total_discoveries: totalDiscoveries || 0,
+        first_discoveries: firstDiscoveries || 0,
+        first_discovery_elements: firstDiscoveryElements || [],
+        last_played_at: new Date().toISOString(),
+      },
+      {
+        onConflict: 'user_id, slot_number',
+      }
+    );
+
+    if (saveError) {
+      logger.error('[Coop] Failed to save session to creative slot', { error: saveError });
+      return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
+    }
+
+    logger.info('[Coop] Session saved to creative slot', {
+      sessionId,
+      userId: user.id,
+      slot,
+      elementCount: elementBank.length,
+    });
+
+    return NextResponse.json({
+      success: true,
+      savedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    logger.error('[Coop] Unexpected error in POST /api/daily-alchemy/coop/save', {
+      error: error.message,
+    });
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
