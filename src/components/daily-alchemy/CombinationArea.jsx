@@ -6,6 +6,7 @@ import { Plus, Minus, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { playSwitchClickSound } from '@/lib/sounds';
 
 const COMBINE_ICONS = [
   'biohazard',
@@ -479,6 +480,7 @@ export function CombinationArea({
               type="button"
               onClick={() => {
                 if (!isCombining && !isAnimating && isSubtractMode) {
+                  playSwitchClickSound();
                   onToggleOperator?.();
                 }
               }}
@@ -500,6 +502,7 @@ export function CombinationArea({
               type="button"
               onClick={() => {
                 if (!isCombining && !isAnimating && !isSubtractMode) {
+                  playSwitchClickSound();
                   onToggleOperator?.();
                 }
               }}
