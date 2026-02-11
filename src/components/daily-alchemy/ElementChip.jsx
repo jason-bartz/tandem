@@ -319,10 +319,14 @@ function ElementChipInner({
           NEW
         </span>
       )}
-      <span className={cn(emojiSizes[size], 'flex-shrink-0')} role="img" aria-hidden="true">
+      <span
+        className={cn(emojiSizes[size], 'relative z-10 flex-shrink-0')}
+        role="img"
+        aria-hidden="true"
+      >
         {element.emoji}
       </span>
-      <span className="text-gray-900 dark:text-white">{element.name}</span>
+      <span className="relative z-10 text-gray-900 dark:text-white">{element.name}</span>
     </motion.button>
   );
 }
