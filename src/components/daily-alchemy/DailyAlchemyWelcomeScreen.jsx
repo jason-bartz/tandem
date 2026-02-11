@@ -9,6 +9,7 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
 import PaywallModal from '@/components/PaywallModal';
+import AuthModal from '@/components/auth/AuthModal';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
@@ -33,6 +34,7 @@ export function DailyAlchemyWelcomeScreen({
   const { isActive: hasSubscription } = useSubscription();
   const { user } = useAuth();
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFreePlayClick = () => {
     if (hasSubscription) {
@@ -44,8 +46,12 @@ export function DailyAlchemyWelcomeScreen({
 
   const handleCoopClick = () => {
     if (!user) {
-      // Could show a login prompt, but for now just show paywall which has login
-      setShowPaywall(true);
+      if (isStandaloneAlchemy) {
+        // On standalone, show auth modal (co-op requires login, but no paywall)
+        setShowAuthModal(true);
+      } else {
+        setShowPaywall(true);
+      }
       return;
     }
     if (hasSubscription) {
@@ -328,6 +334,16 @@ export function DailyAlchemyWelcomeScreen({
 
       {/* Paywall Modal */}
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+
+      {/* Auth Modal for standalone co-op login */}
+      <AuthModal
+        isOpen={showAuthModal}
+        onClose={() => setShowAuthModal(false)}
+        onSuccess={() => {
+          setShowAuthModal(false);
+          onStartCoop?.();
+        }}
+      />
     </div>
   );
 }
