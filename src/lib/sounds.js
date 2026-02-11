@@ -1167,46 +1167,46 @@ export function playFavoriteClearSound() {
   thud.stop(currentTime + 0.4);
 }
 
-// Play a satisfying light-switch click sound for toggle switches
+// Play a satisfying deep thock sound for toggle switches
 export function playSwitchClickSound() {
   const context = initAudio();
   if (!context) return;
 
   const currentTime = context.currentTime;
 
-  // Layer 1: Sharp percussive tick - high-freq square wave burst
-  const tick = context.createOscillator();
-  const tickGain = context.createGain();
+  // Layer 1: Muted click transient - short, soft attack
+  const click = context.createOscillator();
+  const clickGain = context.createGain();
 
-  tick.type = 'square';
-  tick.frequency.setValueAtTime(3500, currentTime);
-  tick.frequency.exponentialRampToValueAtTime(1200, currentTime + 0.015);
+  click.type = 'triangle';
+  click.frequency.setValueAtTime(1200, currentTime);
+  click.frequency.exponentialRampToValueAtTime(400, currentTime + 0.01);
 
-  tickGain.gain.setValueAtTime(0.12, currentTime);
-  tickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.03);
+  clickGain.gain.setValueAtTime(0.08, currentTime);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.02);
 
-  tick.connect(tickGain);
-  tickGain.connect(context.destination);
+  click.connect(clickGain);
+  clickGain.connect(context.destination);
 
-  tick.start(currentTime);
-  tick.stop(currentTime + 0.04);
+  click.start(currentTime);
+  click.stop(currentTime + 0.03);
 
-  // Layer 2: Lower resonant thock for body
+  // Layer 2: Deep resonant thock - the satisfying body of the sound
   const thock = context.createOscillator();
   const thockGain = context.createGain();
 
-  thock.type = 'triangle';
-  thock.frequency.setValueAtTime(800, currentTime + 0.005);
-  thock.frequency.exponentialRampToValueAtTime(300, currentTime + 0.04);
+  thock.type = 'sine';
+  thock.frequency.setValueAtTime(250, currentTime);
+  thock.frequency.exponentialRampToValueAtTime(120, currentTime + 0.06);
 
-  thockGain.gain.setValueAtTime(0.1, currentTime + 0.005);
-  thockGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.06);
+  thockGain.gain.setValueAtTime(0.15, currentTime);
+  thockGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.08);
 
   thock.connect(thockGain);
   thockGain.connect(context.destination);
 
-  thock.start(currentTime + 0.005);
-  thock.stop(currentTime + 0.07);
+  thock.start(currentTime);
+  thock.stop(currentTime + 0.1);
 }
 
 // Play a gentle notification chime for received co-op emotes
