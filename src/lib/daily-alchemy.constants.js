@@ -42,6 +42,7 @@ export const SOUP_GAME_STATES = {
   GAME_OVER: 'game_over', // Time ran out
   ADMIRE: 'admire',
   ERROR: 'error',
+  COOP_LOBBY: 'coop_lobby', // Co-op mode: waiting for partner or entering invite code
 };
 
 // Sort options for element bank
@@ -184,6 +185,7 @@ export const SOUP_STORAGE_KEYS = {
   FAVORITE_ELEMENTS: 'soup_favorite_elements', // Favorite elements for quick access
   ELEMENT_USAGE: 'soup_element_usage', // Track element usage counts for sorting
   CREATIVE_ACTIVE_SLOT: 'soup_creative_active_slot', // Active creative mode save slot (1-3)
+  COOP_SESSION_ID: 'soup_coop_session_id', // Active co-op session ID
 };
 
 // Maximum number of favorite elements allowed
@@ -201,6 +203,11 @@ export const SOUP_API = {
   LEADERBOARD_DAILY: '/api/leaderboard/daily',
   ADMIN_PUZZLES: '/api/admin/daily-alchemy/puzzles',
   ADMIN_SANDBOX: '/api/admin/daily-alchemy/sandbox',
+  COOP_CREATE: '/api/daily-alchemy/coop/create',
+  COOP_JOIN: '/api/daily-alchemy/coop/join',
+  COOP_LEAVE: '/api/daily-alchemy/coop/leave',
+  COOP_SAVE: '/api/daily-alchemy/coop/save',
+  COOP_SESSION: '/api/daily-alchemy/coop/session',
 };
 
 // Game type identifier for leaderboard
@@ -317,6 +324,38 @@ export const COMBINATION_ANIMATION = {
     duration: 500,
     easing: 'easeInOutQuad',
   },
+};
+
+// Co-op mode constants
+export const COOP_CONFIG = {
+  EMOTE_PRESETS: [
+    '👋',
+    '🎉',
+    '🔥',
+    '😮',
+    '👍',
+    '❤️',
+    '😂',
+    '🤔',
+    '⭐',
+    '💪',
+    '🙌',
+    '✨',
+    '💩',
+    '👀',
+    '🤡',
+    '🥵',
+  ],
+  PRESENCE_IDLE_MS: 300000, // 5 minutes
+  PRESENCE_DISCONNECT_MS: 600000, // 10 minutes
+  HEARTBEAT_INTERVAL_MS: 30000, // 30 seconds
+  EMOTE_COOLDOWN_MS: 2000, // 2 seconds between emotes
+  EMOTE_DISPLAY_MS: 2500, // How long emote shows on screen
+  INVITE_CODE_LENGTH: 6,
+  // Unambiguous characters (no O/0/I/1/L)
+  INVITE_CODE_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
+  // Debounced sync: update DB every N discoveries
+  SYNC_DISCOVERY_INTERVAL: 5,
 };
 
 // Cache configuration (for reference, actual values in API)

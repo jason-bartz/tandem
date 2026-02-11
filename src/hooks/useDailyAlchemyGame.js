@@ -104,6 +104,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [error, setError] = useState(null);
   const [isArchive, setIsArchive] = useState(false);
   const [freePlayMode, setFreePlayMode] = useState(isFreePlay);
+  const [coopMode, setCoopMode] = useState(false);
 
   // Element bank state
   const [elementBank, setElementBank] = useState([...STARTER_ELEMENTS]);
@@ -840,6 +841,101 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Mark load as complete - autosave is now safe to run
     setCreativeLoadComplete(true);
   }, [loadCreativeSave, activeSaveSlot]);
+
+  /**
+   * Start co-op mode with a given element bank
+   * Called when joining or creating a co-op session
+   */
+  const startCoopMode = useCallback(
+    (initialElementBank = null) => {
+      playSoupStartSound();
+
+      // Disable creative mode autosave
+      setCreativeLoadComplete(false);
+
+      setFreePlayMode(true);
+      setCoopMode(true);
+      setIsComplete(false);
+      setHasStarted(true);
+      setSelectedA(null);
+      setSelectedB(null);
+      setLastResult(null);
+      setStartTime(null);
+      setElapsedTime(0);
+
+      if (initialElementBank && initialElementBank.length > 0) {
+        // Restore from provided element bank (from session or save)
+        const restoredBank = initialElementBank.map((el) => ({
+          id: generateElementId(el.name),
+          name: el.name,
+          emoji: el.emoji || '✨',
+          isStarter: STARTER_ELEMENTS.some((s) => s.name === el.name),
+          fromPartner: !!el.fromPartner,
+        }));
+
+        setElementBank(restoredBank);
+        discoveredElements.current = new Set(restoredBank.map((el) => el.name));
+        setMovesCount(0);
+        setNewDiscoveries(restoredBank.filter((el) => !el.isStarter).length);
+        setFirstDiscoveries(0);
+        setFirstDiscoveryElements([]);
+      } else {
+        // Fresh start with 4 starter elements
+        setElementBank([...STARTER_ELEMENTS]);
+        discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+        setMovesCount(0);
+        setNewDiscoveries(0);
+        setFirstDiscoveries(0);
+        setFirstDiscoveryElements([]);
+      }
+
+      setCombinationPath([]);
+      madeCombinations.current = new Set();
+      setRecentElements([]);
+
+      // Co-op uses its own favorites namespace
+      try {
+        const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_coop`;
+        const savedFavs = localStorage.getItem(favKey);
+        if (savedFavs) {
+          setFavoriteElements(new Set(JSON.parse(savedFavs)));
+        } else {
+          setFavoriteElements(new Set());
+        }
+      } catch {
+        setFavoriteElements(new Set());
+      }
+
+      setGameState(SOUP_GAME_STATES.PLAYING);
+    },
+    [] // eslint-disable-line react-hooks/exhaustive-deps
+  );
+
+  /**
+   * Add an element received from a co-op partner
+   * Does NOT count as the local player's discovery for first-discovery tracking
+   */
+  const addPartnerElement = useCallback((element) => {
+    const { name, emoji } = element;
+
+    // Skip if already discovered
+    if (discoveredElements.current.has(name)) return;
+
+    discoveredElements.current.add(name);
+
+    const newElement = {
+      id: generateElementId(name),
+      name,
+      emoji: emoji || '✨',
+      isStarter: false,
+      isNew: true,
+      fromPartner: true,
+    };
+
+    setElementBank((prev) => [newElement, ...prev]);
+    setNewDiscoveries((prev) => prev + 1);
+    setRecentElements((prev) => [name, ...prev].slice(0, 3));
+  }, []);
 
   /**
    * Save Creative Mode progress to Supabase
@@ -2215,6 +2311,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Mode
     freePlayMode,
+    coopMode,
+    startCoopMode,
+    addPartnerElement,
 
     // Favorites
     favoriteElements,
