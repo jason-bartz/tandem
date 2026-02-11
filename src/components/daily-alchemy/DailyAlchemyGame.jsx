@@ -200,7 +200,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     showSettings ||
     showFeedback ||
     showSavesModal ||
-    showTutorial;
+    (showTutorial && !freePlayMode);
 
   useEffect(() => {
     if (isAnyModalOpen) {
@@ -469,10 +469,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
         onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
-      {/* Tutorial Modal - shown on first visit when gameplay starts */}
-      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) && (
-        <AlchemyTutorialModal onClose={() => setShowTutorial(false)} />
-      )}
+      {/* Tutorial Modal - shown on first visit when gameplay starts (daily mode only) */}
+      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
+        !freePlayMode && <AlchemyTutorialModal onClose={() => setShowTutorial(false)} />}
 
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
