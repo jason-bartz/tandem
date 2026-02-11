@@ -1,10 +1,11 @@
 'use client';
 
-import { memo, useState } from 'react';
+import { memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smile } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { playEmoteNotificationSound } from '@/lib/sounds';
 import { EmotePicker } from './EmotePicker';
 
 const STATUS_CONFIG = {
@@ -36,6 +37,13 @@ function CoopPartnerBarInner({
   const { highContrast, reduceMotion } = useTheme();
   const [isEmotePickerOpen, setIsEmotePickerOpen] = useState(false);
   const statusConfig = STATUS_CONFIG[partnerStatus] || STATUS_CONFIG.disconnected;
+
+  // Play notification sound when partner sends an emote
+  useEffect(() => {
+    if (receivedEmote) {
+      playEmoteNotificationSound();
+    }
+  }, [receivedEmote]);
 
   const handleSelectEmote = (emoji) => {
     onSendEmote?.(emoji);

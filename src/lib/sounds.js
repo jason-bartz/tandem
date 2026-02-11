@@ -1166,3 +1166,77 @@ export function playFavoriteClearSound() {
   thud.start(currentTime + 0.2);
   thud.stop(currentTime + 0.4);
 }
+
+// Play a satisfying light-switch click sound for toggle switches
+export function playSwitchClickSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Sharp percussive tick - high-freq square wave burst
+  const tick = context.createOscillator();
+  const tickGain = context.createGain();
+
+  tick.type = 'square';
+  tick.frequency.setValueAtTime(3500, currentTime);
+  tick.frequency.exponentialRampToValueAtTime(1200, currentTime + 0.015);
+
+  tickGain.gain.setValueAtTime(0.12, currentTime);
+  tickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.03);
+
+  tick.connect(tickGain);
+  tickGain.connect(context.destination);
+
+  tick.start(currentTime);
+  tick.stop(currentTime + 0.04);
+
+  // Layer 2: Lower resonant thock for body
+  const thock = context.createOscillator();
+  const thockGain = context.createGain();
+
+  thock.type = 'triangle';
+  thock.frequency.setValueAtTime(800, currentTime + 0.005);
+  thock.frequency.exponentialRampToValueAtTime(300, currentTime + 0.04);
+
+  thockGain.gain.setValueAtTime(0.1, currentTime + 0.005);
+  thockGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.06);
+
+  thock.connect(thockGain);
+  thockGain.connect(context.destination);
+
+  thock.start(currentTime + 0.005);
+  thock.stop(currentTime + 0.07);
+}
+
+// Play a gentle notification chime for received co-op emotes
+export function playEmoteNotificationSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Two gentle ascending notes - soft and non-intrusive
+  const notes = [
+    { freq: 659.25, start: 0, duration: 0.12 }, // E5
+    { freq: 783.99, start: 0.08, duration: 0.15 }, // G5
+  ];
+
+  notes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration + 0.02);
+  });
+}
