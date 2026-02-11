@@ -208,9 +208,7 @@ function ElementChipInner({
         'relative inline-flex items-center justify-center flex-nowrap whitespace-nowrap',
         sizeClasses[size],
         !isSelected && !isTarget && 'bg-white dark:bg-gray-800',
-        fromPartner && !isSelected && !isTarget
-          ? 'border-[2px] border-indigo-400 dark:border-indigo-400'
-          : 'border-[2px] border-black dark:border-gray-600',
+        'border-[2px] border-black dark:border-gray-600',
         'rounded-lg',
         'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
         'font-medium',
@@ -270,7 +268,7 @@ function ElementChipInner({
       {/* Faint purple gradient for partner elements (light mode only) */}
       {fromPartner && !element.isFirstDiscovery && !isSelected && !isTarget && (
         <span
-          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-indigo-50/70 to-purple-50/50 dark:bg-none"
+          className="absolute inset-0 rounded-lg pointer-events-none bg-gradient-to-br from-indigo-100/80 to-purple-100/60 dark:from-indigo-900/30 dark:to-purple-900/20"
           aria-hidden="true"
         />
       )}
@@ -324,17 +322,7 @@ function ElementChipInner({
       <span className={cn(emojiSizes[size], 'flex-shrink-0')} role="img" aria-hidden="true">
         {element.emoji}
       </span>
-      <span
-        className={cn(
-          'text-gray-900 dark:text-white',
-          element.isFirstDiscovery &&
-            !isSelected &&
-            !isTarget &&
-            'text-yellow-700 dark:text-yellow-400'
-        )}
-      >
-        {element.name}
-      </span>
+      <span className="text-gray-900 dark:text-white">{element.name}</span>
     </motion.button>
   );
 }
