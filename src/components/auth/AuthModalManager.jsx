@@ -47,9 +47,10 @@ export default function AuthModalManager() {
     const actualErrorDescription = errorDescription || hashErrorDescription;
 
     if (emailConfirmed === 'true') {
-      // Email confirmed successfully - show welcome back modal instead of auth modal
-      setShowWelcomeBack(true);
-      // Clean up URL parameter
+      // Email confirmed successfully - clean up URL parameter
+      // The auth session is already established via /auth/callback code exchange.
+      // FirstTimeSetupManager will detect the new user (via SIGNED_IN event)
+      // and show the username/avatar selection modal automatically.
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else if (actualError || authError === 'true') {

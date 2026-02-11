@@ -301,9 +301,8 @@ export function AuthProvider({ children }) {
         password,
         options: {
           data: metadata,
-          // Redirect user back to home page after email confirmation
-          // They can then sign in from there
-          emailRedirectTo: `${window.location.origin}/`,
+          // Redirect to auth callback to exchange code for session
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
@@ -329,7 +328,7 @@ export function AuthProvider({ children }) {
             password,
             options: {
               data: metadata,
-              emailRedirectTo: `${window.location.origin}/`,
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
             },
           });
 
