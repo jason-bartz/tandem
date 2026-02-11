@@ -172,6 +172,26 @@ export function DailyAlchemyLoadingSkeleton() {
                   <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
                 </div>
 
+                {/* Co-op Mode Button Skeleton */}
+                <div
+                  className={cn(
+                    'w-full max-w-sm h-14 mb-3',
+                    'bg-indigo-500/50 dark:bg-indigo-500/30',
+                    'border-[3px] border-black dark:border-gray-600',
+                    'rounded-xl',
+                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                    shimmerClass
+                  )}
+                />
+
+                {/* Co-op Mode Description Skeleton */}
+                <div className="w-full max-w-sm mb-3 px-4 flex flex-col items-center">
+                  <div
+                    className={`h-3 w-3/5 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
+                    style={{ animationDelay: '50ms' }}
+                  />
+                </div>
+
                 {/* Creative Mode Button Skeleton */}
                 <div
                   className={cn(
