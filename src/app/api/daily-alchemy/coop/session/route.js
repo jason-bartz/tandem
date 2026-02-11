@@ -1,42 +1,6 @@
 import { NextResponse } from 'next/server';
-import { createServerComponentClient, createServerClient } from '@/lib/supabase/server';
-import { createClient } from '@supabase/supabase-js';
+import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
-
-/**
- * Get authenticated user from either cookies or Authorization header
- */
-async function getAuthenticatedUser(request) {
-  const authHeader =
-    request?.headers?.get?.('authorization') || request?.headers?.get?.('Authorization');
-
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-      { global: { headers: { Authorization: `Bearer ${token}` } } }
-    );
-    const {
-      data: { user },
-      error,
-    } = await supabase.auth.getUser();
-    if (!error && user) {
-      return { user, supabase: createServerClient(), source: 'bearer' };
-    }
-  }
-
-  const supabase = await createServerComponentClient();
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser();
-  if (!error && user) {
-    return { user, supabase: createServerClient(), source: 'cookie' };
-  }
-
-  return { user: null, supabase: null, source: null };
-}
 
 /**
  * Helper to fetch user profile (username + avatar path)
@@ -70,7 +34,7 @@ async function getUserProfile(supabase, userId) {
  */
 export async function GET(request) {
   try {
-    const { user, supabase } = await getAuthenticatedUser(request);
+    const { user, supabase } = await getAuthenticatedUser(request, 'coop/session');
 
     if (!user || !supabase) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
