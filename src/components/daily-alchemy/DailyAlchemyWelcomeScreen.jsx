@@ -172,9 +172,6 @@ export function DailyAlchemyWelcomeScreen({
         transition={{ delay: 0.45 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        {!isStandaloneAlchemy && (
-          <Image src="/ui/shared/cauldron.png?v=2" alt="" width={24} height={24} />
-        )}
         <span>{hasSavedProgress ? 'Continue Puzzle' : "Play Today's Puzzle"}</span>
       </motion.button>
 
@@ -327,7 +324,7 @@ export function DailyAlchemyWelcomeScreen({
             </span>
           </div>
           <p className="text-xs text-gray-500 dark:text-gray-400">
-            Find a co-op partner, share discoveries, and report bugs
+            Find a co-op partner, share discoveries, report bugs, and more
           </p>
         </div>
       </motion.a>
