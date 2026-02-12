@@ -67,6 +67,34 @@ export async function GET(request) {
       if (profileError) {
         logger.error('Failed to create user profile', profileError);
       }
+
+      // Migrate first discoveries from anonymous user to permanent account
+      // This happens when an anonymous user upgrades via OAuth (signInWithOAuth replaces the session)
+      const cookieStore2 = await cookies();
+      const anonMigration = cookieStore2.get('anon_user_migration');
+      if (anonMigration?.value && anonMigration.value !== user.id) {
+        const anonUserId = anonMigration.value;
+        try {
+          // Transfer first discoveries
+          await supabaseAdmin
+            .from('element_soup_first_discoveries')
+            .update({ user_id: user.id })
+            .eq('user_id', anonUserId);
+
+          // Transfer discovered_by on combinations
+          await supabaseAdmin
+            .from('element_combinations')
+            .update({ discovered_by: user.id })
+            .eq('discovered_by', anonUserId);
+
+          logger.info('[AuthCallback] Migrated anonymous discoveries', {
+            from: anonUserId,
+            to: user.id,
+          });
+        } catch (migrationError) {
+          logger.error('[AuthCallback] Discovery migration failed', migrationError);
+        }
+      }
     }
 
     // For email confirmations, redirect with success message
@@ -95,6 +123,7 @@ export async function GET(request) {
         `${requestUrl.origin}${confirmPath}?email_confirmed=true`
       );
       response.cookies.delete('auth_return_url');
+      response.cookies.delete('anon_user_migration');
       return response;
     }
   }
@@ -129,8 +158,9 @@ export async function GET(request) {
   // Create response with redirect to the return URL
   const response = NextResponse.redirect(`${requestUrl.origin}${returnPath}`);
 
-  // Clear the return URL cookie
+  // Clear cookies
   response.cookies.delete('auth_return_url');
+  response.cookies.delete('anon_user_migration');
 
   return response;
 }

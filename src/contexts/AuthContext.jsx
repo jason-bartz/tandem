@@ -814,7 +814,9 @@ export function AuthProvider({ children }) {
 
   /**
    * Upgrade an anonymous user to a permanent account via OAuth provider.
-   * Uses linkIdentity to attach the OAuth identity to the existing anonymous userId.
+   * Stores the anonymous userId for post-sign-in discovery migration,
+   * then performs a regular OAuth sign-in. The auth callback migrates
+   * discoveries from the anonymous userId to the new account.
    *
    * @param {string} provider - OAuth provider ('google', 'discord', 'apple')
    * @returns {Promise<{data, error}>}
@@ -835,38 +837,49 @@ export function AuthProvider({ children }) {
           document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
         }
 
+        // Store anonymous userId so the auth callback can migrate discoveries
+        if (user?.id) {
+          document.cookie = `anon_user_migration=${user.id}; path=/; max-age=300; SameSite=Lax; Secure`;
+        }
+
         const redirectTo = isNative
           ? 'com.tandemdaily.app://auth/callback'
           : `${window.location.origin}/auth/callback`;
 
-        const { data, error } = await supabase.auth.linkIdentity({
-          provider,
-          options: {
-            redirectTo,
-            skipBrowserRedirect: isNative,
-          },
-        });
+        // Use regular signInWithOAuth — the auth callback will migrate discoveries
+        if (isNative) {
+          const { data, error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: {
+              redirectTo,
+              skipBrowserRedirect: true,
+            },
+          });
 
-        if (error) throw error;
+          if (error) throw error;
 
-        // On iOS, open the OAuth URL in Safari
-        if (isNative && data?.url) {
           const { Browser } = await import('@capacitor/browser');
           await Browser.open({
             url: data.url,
             presentationStyle: 'popover',
           });
+
+          return { data, error: null };
+        } else {
+          const { error } = await supabase.auth.signInWithOAuth({
+            provider,
+            options: { redirectTo },
+          });
+
+          if (error) throw error;
+          return { data: null, error: null };
         }
-
-        logger.info('[AuthContext] Anonymous user linking OAuth identity', { provider });
-
-        return { data, error: null };
       } catch (error) {
         logger.error('[AuthContext] Anonymous upgrade with OAuth failed', { provider, error });
         return { data: null, error };
       }
     },
-    [isAnonymous, supabase.auth]
+    [isAnonymous, user?.id, supabase.auth]
   );
 
   const value = {
