@@ -27,6 +27,7 @@ import HowToPlayModal from '@/components/game/HowToPlayModal';
 import AlchemyTutorialModal from './AlchemyTutorialModal';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
 import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner';
+import ServiceOutage from '@/components/shared/ServiceOutage';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
@@ -78,7 +79,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const router = useRouter();
   const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
-  const { user, userProfile } = useAuth();
+  const { user, userProfile, serviceUnavailable } = useAuth();
 
   // UI state
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -363,6 +364,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
   );
 
   // Render based on game state
+  if (serviceUnavailable) {
+    return <ServiceOutage />;
+  }
+
   if (loading) {
     return <DailyAlchemyLoadingSkeleton />;
   }

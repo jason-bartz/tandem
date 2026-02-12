@@ -15,6 +15,8 @@ import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import AdmireScreen from './AdmireScreen';
 import WelcomeScreenSkeleton from '@/components/shared/WelcomeScreenSkeleton';
+import ServiceOutage from '@/components/shared/ServiceOutage';
+import { useAuth } from '@/contexts/AuthContext';
 import VersionChecker from '@/components/shared/VersionChecker';
 import AchievementToast from './AchievementToast';
 import OnboardingFlow from '@/components/onboarding/OnboardingFlow';
@@ -46,6 +48,7 @@ export default function GameContainerClient({ initialPuzzleData }) {
 
 function TandemGameContainer({ initialPuzzleData }) {
   const searchParams = useSearchParams();
+  const { serviceUnavailable } = useAuth();
   const game = useGameWithInitialData(initialPuzzleData);
   const timer = useTimer(game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp);
   const { theme, toggleTheme } = useTheme();
@@ -239,6 +242,10 @@ function TandemGameContainer({ initialPuzzleData }) {
       timer.reset();
     }
   };
+
+  if (serviceUnavailable) {
+    return <ServiceOutage />;
+  }
 
   if (!onboardingChecked || game.loading) {
     return (
