@@ -60,12 +60,15 @@ export async function getAuthHeaders() {
     const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
     const supabase = getSupabaseBrowserClient();
 
-    // Get current session
+    // Get current session with timeout to prevent hanging when Supabase is down
+    const sessionPromise = supabase.auth.getSession();
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('getSession timeout')), 5000)
+    );
+
     const {
       data: { session },
-    } = await supabase.auth.getSession();
-
-    // Debug logging for iOS troubleshooting
+    } = await Promise.race([sessionPromise, timeoutPromise]);
 
     if (session?.access_token) {
       return {

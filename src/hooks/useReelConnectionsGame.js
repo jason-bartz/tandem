@@ -154,7 +154,7 @@ export function useReelConnectionsGame() {
 
   // External hooks
   const { recordGame } = useReelConnectionsStats();
-  const { user } = useAuth();
+  const { user, markServiceUnavailable } = useAuth();
 
   // Timer effect
   useEffect(() => {
@@ -340,6 +340,9 @@ export function useReelConnectionsGame() {
       const data = await response.json();
 
       if (!response.ok || !data.puzzle) {
+        if (response.status >= 500) {
+          markServiceUnavailable();
+        }
         throw new Error('Failed to load puzzle');
       }
 

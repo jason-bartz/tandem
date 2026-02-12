@@ -94,7 +94,13 @@ function getRandomHintPhrase(elementName) {
  * @param {boolean} isFreePlay - If true, runs in free play mode (no target, no timer)
  */
 export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
-  const { user, loading: authLoading, ensureAlchemySession, isAnonymous } = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    ensureAlchemySession,
+    isAnonymous,
+    markServiceUnavailable,
+  } = useAuth();
   const { soupCombine, soupNewElement, soupFirstDiscovery } = useHaptics();
 
   // Core state
@@ -429,6 +435,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         const response = await capacitorFetch(url);
 
         if (!response.ok) {
+          if (response.status >= 500) {
+            markServiceUnavailable();
+          }
           setError(
             "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
           );

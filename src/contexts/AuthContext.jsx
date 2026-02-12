@@ -12,6 +12,7 @@ const AuthContext = createContext({
   loading: true,
   isAnonymous: false,
   serviceUnavailable: false,
+  markServiceUnavailable: () => {},
   userProfile: null,
   profileLoading: false,
   showFirstTimeSetup: false,
@@ -951,12 +952,17 @@ export function AuthProvider({ children }) {
     [isAnonymous, user?.id, supabase.auth]
   );
 
+  const markServiceUnavailable = useCallback(() => {
+    setServiceUnavailable(true);
+  }, []);
+
   const value = {
     user,
     session,
     loading,
     isAnonymous,
     serviceUnavailable,
+    markServiceUnavailable,
     userProfile,
     profileLoading,
     showFirstTimeSetup,
