@@ -11,6 +11,7 @@ const AuthContext = createContext({
   session: null,
   loading: true,
   isAnonymous: false,
+  serviceUnavailable: false,
   userProfile: null,
   profileLoading: false,
   showFirstTimeSetup: false,
@@ -92,6 +93,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [session, setSession] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [serviceUnavailable, setServiceUnavailable] = useState(false);
   const [userProfile, setUserProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [showFirstTimeSetup, setShowFirstTimeSetup] = useState(false);
@@ -160,6 +162,8 @@ export function AuthProvider({ children }) {
       })
       .catch((error) => {
         logger.error('[AuthProvider] Failed to get session', error);
+        // Flag service as unavailable so game pages can show outage message immediately
+        setServiceUnavailable(true);
         // Still set loading to false so the app renders in a logged-out state
         setLoading(false);
       });
@@ -952,6 +956,7 @@ export function AuthProvider({ children }) {
     session,
     loading,
     isAnonymous,
+    serviceUnavailable,
     userProfile,
     profileLoading,
     showFirstTimeSetup,

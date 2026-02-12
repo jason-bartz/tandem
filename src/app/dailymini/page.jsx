@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { MINI_GAME_STATES, MINI_CONFIG } from '@/lib/constants';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { useAuth } from '@/contexts/AuthContext';
+import ServiceOutage from '@/components/shared/ServiceOutage';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import useMiniGame from '@/hooks/useMiniGame';
 import MiniGameScreen from '@/components/mini/MiniGameScreen';
@@ -23,7 +24,7 @@ export default function DailyMiniPage() {
   const searchParams = useSearchParams();
   const dateParam = searchParams?.get('date');
 
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, serviceUnavailable } = useAuth();
   const { isActive: hasSubscription, loading: subscriptionLoading } = useSubscription();
 
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -72,6 +73,11 @@ export default function DailyMiniPage() {
     // Reload to fetch user-specific data
     window.location.reload();
   };
+
+  // Service outage - show immediately without waiting for API timeouts
+  if (serviceUnavailable) {
+    return <ServiceOutage />;
+  }
 
   // Loading state
   if (authLoading || game.loading) {

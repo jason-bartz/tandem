@@ -30,6 +30,7 @@ import FixedButtonBar from './FixedButtonBar';
 import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
+import ServiceOutage from '@/components/shared/ServiceOutage';
 import { useFloatingStatsBar } from '@/hooks/useFloatingStatsBar';
 
 // Long press duration in milliseconds
@@ -254,7 +255,7 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const { lightTap } = useHaptics();
   const { reduceMotion, highContrast } = useTheme();
   const { isActive: hasSubscription } = useSubscription();
-  const { user } = useAuth();
+  const { user, serviceUnavailable } = useAuth();
 
   // Sidebar and unified modal states
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -1241,6 +1242,11 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         />
       </div>
     );
+  }
+
+  // Service outage - show immediately without waiting for API timeouts
+  if (serviceUnavailable) {
+    return <ServiceOutage />;
   }
 
   // Loading state
