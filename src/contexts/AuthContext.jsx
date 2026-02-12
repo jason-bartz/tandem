@@ -186,9 +186,14 @@ export function AuthProvider({ children }) {
             setServiceUnavailable(true);
           }
         })
-        .catch(() => {
+        .catch((err) => {
           clearTimeout(healthTimeout);
-          // Don't flag on network errors — could be user's connection, not outage
+          // AbortError means our own 6s timeout fired — server couldn't respond
+          // in time, which strongly indicates a service outage (not a user network issue)
+          if (err.name === 'AbortError') {
+            setServiceUnavailable(true);
+          }
+          // Other errors (TypeError: Failed to fetch) could be user's connection — don't flag
         });
     }
 

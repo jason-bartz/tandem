@@ -530,13 +530,16 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setLoading(false);
       } catch (err) {
         logger.error('[ElementSoup] Failed to load puzzle', { error: err.message });
+        if (err.name === 'AbortError' || err.status >= 500) {
+          markServiceUnavailable();
+        }
         setError(
           "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
         );
         setLoading(false);
       }
     },
-    [user]
+    [user, markServiceUnavailable]
   );
 
   /**
