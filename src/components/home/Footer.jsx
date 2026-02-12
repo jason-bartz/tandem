@@ -54,6 +54,10 @@ export default function Footer() {
           }`}
         >
           © 2026 Good Vibes Games
+          <span className="mx-2">·</span>
+          <a href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
+            Privacy Policy
+          </a>
         </p>
 
         <p

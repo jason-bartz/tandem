@@ -332,6 +332,24 @@ export function DailyAlchemyWelcomeScreen({
         </div>
       </motion.a>
 
+      {/* Footer - standalone only (no social icons) */}
+      {isStandaloneAlchemy && (
+        <motion.footer
+          className="w-full max-w-sm mt-8 pt-4 text-center"
+          initial={!reduceMotion ? { opacity: 0 } : false}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+        >
+          <p className="text-xs text-gray-500 dark:text-gray-400">
+            © 2026 Good Vibes Games
+            <span className="mx-2">·</span>
+            <a href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
+              Privacy Policy
+            </a>
+          </p>
+        </motion.footer>
+      )}
+
       {/* Paywall Modal */}
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
 
