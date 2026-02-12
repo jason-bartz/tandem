@@ -117,6 +117,7 @@ export async function GET(request) {
         totalDiscoveries: save.total_discoveries || 0,
         firstDiscoveries: save.first_discoveries || 0,
         firstDiscoveryElements: save.first_discovery_elements || [],
+        favorites: save.favorites || [],
         slotNumber: save.slot_number,
         slotName: save.slot_name || null,
         lastPlayedAt: save.last_played_at,
@@ -158,6 +159,7 @@ export async function POST(request) {
       totalDiscoveries,
       firstDiscoveries,
       firstDiscoveryElements,
+      favorites,
     } = body;
 
     const slotNumber = rawSlot ? parseSlotNumber(rawSlot) : 1;
@@ -179,6 +181,7 @@ export async function POST(request) {
         total_discoveries: totalDiscoveries || 0,
         first_discoveries: firstDiscoveries || 0,
         first_discovery_elements: firstDiscoveryElements || [],
+        favorites: Array.isArray(favorites) ? favorites : [],
         last_played_at: new Date().toISOString(),
       },
       {

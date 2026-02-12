@@ -26,6 +26,7 @@ export async function POST(request) {
       totalDiscoveries,
       firstDiscoveries,
       firstDiscoveryElements,
+      favorites,
     } = body;
 
     if (!sessionId) {
@@ -66,6 +67,7 @@ export async function POST(request) {
         total_discoveries: totalDiscoveries || 0,
         first_discoveries: firstDiscoveries || 0,
         first_discovery_elements: firstDiscoveryElements || [],
+        favorites: Array.isArray(favorites) ? favorites : [],
         last_played_at: new Date().toISOString(),
       },
       {

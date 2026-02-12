@@ -814,26 +814,22 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     madeCombinations.current = new Set(); // Also reset for restored games
     setRecentElements([]);
 
-    // Load slot-specific favorites
-    try {
-      const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
-      const savedFavs = localStorage.getItem(favKey);
-      if (savedFavs) {
-        setFavoriteElements(new Set(JSON.parse(savedFavs)));
-      } else {
-        // Migrate from old global favorites key to slot 1 on first load
-        const globalFavs = localStorage.getItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
-        if (globalFavs && activeSaveSlot === 1) {
-          const parsed = JSON.parse(globalFavs);
-          setFavoriteElements(new Set(parsed));
-          localStorage.setItem(favKey, globalFavs);
-          localStorage.removeItem(SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS);
+    // Load favorites: prefer server data, fallback to localStorage
+    if (savedGame?.favorites?.length > 0) {
+      setFavoriteElements(new Set(savedGame.favorites));
+    } else {
+      // Fallback to localStorage (migration path / unauthenticated users)
+      try {
+        const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
+        const savedFavs = localStorage.getItem(favKey);
+        if (savedFavs) {
+          setFavoriteElements(new Set(JSON.parse(savedFavs)));
         } else {
           setFavoriteElements(new Set());
         }
+      } catch {
+        setFavoriteElements(new Set());
       }
-    } catch {
-      setFavoriteElements(new Set());
     }
 
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -847,7 +843,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Called when joining or creating a co-op session
    */
   const startCoopMode = useCallback(
-    (initialElementBank = null) => {
+    (initialElementBank = null, initialFavorites = null) => {
       playSoupStartSound();
 
       // Disable creative mode autosave
@@ -893,17 +889,21 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       madeCombinations.current = new Set();
       setRecentElements([]);
 
-      // Co-op uses its own favorites namespace
-      try {
-        const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_coop`;
-        const savedFavs = localStorage.getItem(favKey);
-        if (savedFavs) {
-          setFavoriteElements(new Set(JSON.parse(savedFavs)));
-        } else {
+      // Load favorites: prefer provided data (from save slot), fallback to localStorage
+      if (Array.isArray(initialFavorites) && initialFavorites.length > 0) {
+        setFavoriteElements(new Set(initialFavorites));
+      } else {
+        try {
+          const favKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_coop`;
+          const savedFavs = localStorage.getItem(favKey);
+          if (savedFavs) {
+            setFavoriteElements(new Set(JSON.parse(savedFavs)));
+          } else {
+            setFavoriteElements(new Set());
+          }
+        } catch {
           setFavoriteElements(new Set());
         }
-      } catch {
-        setFavoriteElements(new Set());
       }
 
       setGameState(SOUP_GAME_STATES.PLAYING);
@@ -968,6 +968,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
               totalDiscoveries: newDiscoveries,
               firstDiscoveries,
               firstDiscoveryElements,
+              favorites: [...favoriteElements],
             }),
           },
           true
@@ -1012,6 +1013,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       newDiscoveries,
       firstDiscoveries,
       firstDiscoveryElements,
+      favoriteElements,
     ]
   );
 
@@ -1083,14 +1085,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       setCreativeLoadComplete(false); // Prevent autosave during switch
 
       try {
-        // 1. Auto-save current slot and persist current favorites
+        // 1. Auto-save current slot (favorites included via saveCreativeMode)
         await saveCreativeMode(activeSaveSlot);
-        try {
-          const currentFavKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
-          localStorage.setItem(currentFavKey, JSON.stringify([...favoriteElements]));
-        } catch {
-          // Ignore localStorage errors
-        }
 
         // 2. Reset autosave tracking
         lastAutoSaveDiscoveryCount.current = 0;
@@ -1133,13 +1129,17 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setSelectedB(null);
         setLastResult(null);
 
-        // 6. Load slot-specific favorites
-        try {
-          const newFavKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${newSlotNumber}`;
-          const savedFavs = localStorage.getItem(newFavKey);
-          setFavoriteElements(savedFavs ? new Set(JSON.parse(savedFavs)) : new Set());
-        } catch {
-          setFavoriteElements(new Set());
+        // 6. Load favorites: prefer server data, fallback to localStorage
+        if (savedGame?.favorites?.length > 0) {
+          setFavoriteElements(new Set(savedGame.favorites));
+        } else {
+          try {
+            const newFavKey = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${newSlotNumber}`;
+            const savedFavs = localStorage.getItem(newFavKey);
+            setFavoriteElements(savedFavs ? new Set(JSON.parse(savedFavs)) : new Set());
+          } catch {
+            setFavoriteElements(new Set());
+          }
         }
 
         // 7. Update active slot
@@ -1159,7 +1159,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         setIsSlotSwitching(false);
       }
     },
-    [user, activeSaveSlot, isSlotSwitching, saveCreativeMode, loadCreativeSave, favoriteElements]
+    [user, activeSaveSlot, isSlotSwitching, saveCreativeMode, loadCreativeSave]
   );
 
   /**
@@ -1276,6 +1276,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
               totalDiscoveries: save.totalDiscoveries || 0,
               firstDiscoveries: save.firstDiscoveries || 0,
               firstDiscoveryElements: save.firstDiscoveryElements || [],
+              favorites: save.favorites || [],
             }),
           },
           true
@@ -1319,6 +1320,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
             setFirstDiscoveryElements(savedGame.firstDiscoveryElements || []);
             lastAutoSaveDiscoveryCount.current = savedGame.totalDiscoveries || 0;
             lastAutoSaveFirstDiscoveryCount.current = savedGame.firstDiscoveries || 0;
+            // Restore favorites from server
+            setFavoriteElements(
+              savedGame.favorites?.length > 0 ? new Set(savedGame.favorites) : new Set()
+            );
           }
         }
 
@@ -1382,6 +1387,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
                 totalDiscoveries: newDiscoveries,
                 firstDiscoveries,
                 firstDiscoveryElements,
+                favorites: [...favoriteElements],
               }),
             },
             true
@@ -1420,19 +1426,22 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     movesCount,
     isSavingCreative,
     isAutoSaving,
+    favoriteElements,
     activeSaveSlot,
   ]);
 
-  // Persist favorites to localStorage (per-slot in creative mode)
+  // Persist favorites to localStorage (local cache / fallback for unauthenticated users)
   useEffect(() => {
     if (!freePlayMode) return; // Don't persist favorites in daily mode
     try {
-      const key = `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
+      const key = coopMode
+        ? `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_coop`
+        : `${SOUP_STORAGE_KEYS.FAVORITE_ELEMENTS}_slot_${activeSaveSlot}`;
       localStorage.setItem(key, JSON.stringify([...favoriteElements]));
     } catch (err) {
       logger.error('[DailyAlchemy] Failed to save favorites', { error: err.message });
     }
-  }, [favoriteElements, freePlayMode, activeSaveSlot]);
+  }, [favoriteElements, freePlayMode, coopMode, activeSaveSlot]);
 
   // Persist usage counts to localStorage (debounced)
   useEffect(() => {
