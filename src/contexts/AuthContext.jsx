@@ -749,9 +749,14 @@ export function AuthProvider({ children }) {
     if (user) return user;
 
     try {
-      logger.debug('[AuthContext] Creating anonymous session for Alchemy');
       const { data, error } = await supabase.auth.signInAnonymously();
       if (error) throw error;
+
+      if (!data?.user?.id) {
+        logger.error('[AuthContext] signInAnonymously returned no user');
+        return null;
+      }
+
       return data.user;
     } catch (error) {
       logger.error('[AuthContext] Anonymous sign-in failed', error);
@@ -777,11 +782,20 @@ export function AuthProvider({ children }) {
       try {
         await autoCleanupIfNeeded();
 
-        const { data, error } = await supabase.auth.updateUser({
-          email,
-          password,
-          data: metadata,
-        });
+        // Store current path so auth callback redirects back to the game
+        const safePath = getSafeReturnPath(window.location.pathname);
+        document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
+
+        const { data, error } = await supabase.auth.updateUser(
+          {
+            email,
+            password,
+            data: metadata,
+          },
+          {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
+          }
+        );
 
         if (error) throw error;
 

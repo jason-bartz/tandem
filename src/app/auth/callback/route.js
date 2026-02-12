@@ -71,8 +71,31 @@ export async function GET(request) {
 
     // For email confirmations, redirect with success message
     if (type === 'signup') {
-      const confirmPath = isStandaloneAlchemy ? standaloneHome : '/';
-      return NextResponse.redirect(`${requestUrl.origin}${confirmPath}?email_confirmed=true`);
+      // Check for stored return URL (e.g., anonymous user upgrading from the game)
+      const cookieStore = await cookies();
+      const returnUrlCookie = cookieStore.get('auth_return_url');
+      let confirmPath = isStandaloneAlchemy ? standaloneHome : '/';
+
+      if (returnUrlCookie?.value) {
+        try {
+          const decoded = decodeURIComponent(returnUrlCookie.value);
+          const isSafePath =
+            decoded.startsWith('/') &&
+            !decoded.startsWith('//') &&
+            !decoded.includes('://') &&
+            !decoded.includes('\\') &&
+            !/^\/[^/]*@/.test(decoded);
+          if (isSafePath) confirmPath = decoded;
+        } catch {
+          // Use default
+        }
+      }
+
+      const response = NextResponse.redirect(
+        `${requestUrl.origin}${confirmPath}?email_confirmed=true`
+      );
+      response.cookies.delete('auth_return_url');
+      return response;
     }
   }
 

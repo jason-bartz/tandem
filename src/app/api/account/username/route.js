@@ -135,10 +135,13 @@ export async function POST(request) {
       return NextResponse.json({ error: validation.error }, { status: validation.statusCode });
     }
 
-    const { data, error } = await supabase
+    // Use service client to bypass RLS — the user is already authenticated above
+    const serviceClient = createServerClient();
+
+    // Upsert to handle upgraded anonymous users who may not have a row yet
+    const { data, error } = await serviceClient
       .from('users')
-      .update({ username })
-      .eq('id', user.id)
+      .upsert({ id: user.id, email: user.email, username }, { onConflict: 'id' })
       .select('username')
       .single();
 
