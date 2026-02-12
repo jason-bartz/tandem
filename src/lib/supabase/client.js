@@ -47,15 +47,15 @@ export function createBrowserClient() {
   }
 
   // On web, use @supabase/ssr with document.cookie for session persistence
+  // IMPORTANT: Do NOT override auth.storage with localStorage here.
+  // @supabase/ssr uses cookie-based storage so the server (API routes,
+  // middleware, auth callback) can access auth state including PKCE
+  // code verifiers needed for email verification code exchange.
   return createBrowserClientSSR(supabaseUrl, supabaseAnonKey, {
     auth: {
-      // Enable session persistence following web best practices
-      storage: typeof window !== 'undefined' ? window.localStorage : undefined,
       autoRefreshToken: true,
       persistSession: true,
       detectSessionInUrl: true,
-      // Use a long session expiry similar to popular web games
-      // Supabase will handle token refresh automatically
     },
     cookies: {
       get(name) {
