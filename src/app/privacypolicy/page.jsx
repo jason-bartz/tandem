@@ -10,6 +10,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function PrivacyPolicy() {
@@ -21,6 +22,7 @@ export default function PrivacyPolicy() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const sections = [
     {
@@ -231,7 +233,7 @@ export default function PrivacyPolicy() {
             <h4 className="font-semibold mb-2">11. AI-Processed Gameplay Data</h4>
             <p className="mb-2">
               In Daily Alchemy, element combinations are processed by a third-party artificial
-              intelligence system (Anthropic Claude). When you combine two elements:
+              intelligence system (Meta Llama). When you combine two elements:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Your selected element names are sent to the AI system to generate a result</li>
@@ -465,8 +467,8 @@ export default function PrivacyPolicy() {
               shared with Google according to their privacy policy
             </li>
             <li>
-              <strong>Anthropic (AI Provider)</strong>: Element names only are sent to Anthropic's
-              Claude AI system to generate Daily Alchemy combinations. No personal data is shared.
+              <strong>Meta (AI Provider)</strong>: Element names only are sent to Meta's Llama AI
+              system to generate Daily Alchemy combinations. No personal data is shared.
             </li>
             <li>
               <strong>Google AdSense (dailyalchemy.fun only)</strong>: Advertising data is shared
@@ -884,20 +886,6 @@ export default function PrivacyPolicy() {
                         </svg>
                         <span>No data sales to third parties</span>
                       </li>
-                      <li className="flex items-start gap-2 text-green-600 dark:text-green-400">
-                        <svg
-                          className="w-5 h-5 flex-shrink-0 mt-0.5"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <span>Family-friendly and safe for all ages</span>
-                      </li>
                       <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">
                         <svg
                           className="w-5 h-5 flex-shrink-0 mt-0.5"
@@ -1010,10 +998,12 @@ export default function PrivacyPolicy() {
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <LeaderboardModal isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
       <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
