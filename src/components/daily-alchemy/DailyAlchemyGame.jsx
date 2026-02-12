@@ -201,6 +201,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   // Co-op lobby state — declared before useAlchemyCoop so onPartnerJoined can reference it
   const [isInCoopLobby, setIsInCoopLobby] = useState(false);
   const coopElementBankRef = useRef(null); // Stores session element bank for host
+  const coopHostFavoritesRef = useRef(null); // Stores host favorites from save slot
   const coopStartedRef = useRef(false); // Guard against duplicate startCoopMode calls
 
   // Co-op hook
@@ -224,7 +225,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
         if (isInCoopLobby && !coopStartedRef.current) {
           coopStartedRef.current = true;
           setIsInCoopLobby(false);
-          startCoopMode(coopElementBankRef.current);
+          startCoopMode(coopElementBankRef.current, coopHostFavoritesRef.current);
         }
       },
       [isInCoopLobby, startCoopMode]
@@ -236,8 +237,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
     async (saveSlot) => {
       const result = await coop.createSession(saveSlot);
       if (result) {
-        // Store element bank so host can access it when partner joins
+        // Store element bank and favorites so host can access them when partner joins
         coopElementBankRef.current = result.elementBank || null;
+        coopHostFavoritesRef.current = result.hostFavorites || null;
       }
       return result;
     },
@@ -349,9 +351,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
         totalDiscoveries: elementBank.length - 4, // minus 4 starters
         firstDiscoveries,
         firstDiscoveryElements,
+        favorites: [...favoriteElements],
       });
     },
-    [coop, elementBank, movesCount, firstDiscoveries, firstDiscoveryElements]
+    [coop, elementBank, movesCount, firstDiscoveries, firstDiscoveryElements, favoriteElements]
   );
 
   // Render based on game state

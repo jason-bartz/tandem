@@ -48,17 +48,21 @@ export async function POST(request) {
       emoji: e.emoji,
       isStarter: true,
     }));
+    let hostFavorites = [];
 
     if (saveSlot && saveSlot >= 1 && saveSlot <= 3) {
       const { data: save } = await supabase
         .from('daily_alchemy_creative_saves')
-        .select('element_bank')
+        .select('element_bank, favorites')
         .eq('user_id', user.id)
         .eq('slot_number', saveSlot)
         .single();
 
       if (save?.element_bank?.length > 0) {
         elementBank = save.element_bank;
+      }
+      if (Array.isArray(save?.favorites)) {
+        hostFavorites = save.favorites;
       }
     }
 
@@ -119,6 +123,7 @@ export async function POST(request) {
         elementBank: session.element_bank,
         status: session.status,
       },
+      hostFavorites,
     });
   } catch (error) {
     logger.error('[Coop] Unexpected error in POST /api/daily-alchemy/coop/create', {

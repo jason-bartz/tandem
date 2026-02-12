@@ -4,7 +4,7 @@
  * No external dependencies — uses native browser APIs only.
  */
 
-export const DA_SAVE_VERSION = 1;
+export const DA_SAVE_VERSION = 2;
 export const DA_FILE_EXTENSION = '.da';
 
 /**
@@ -24,6 +24,7 @@ export function serializeSaveData(saveData) {
       totalDiscoveries: saveData.totalDiscoveries || 0,
       firstDiscoveries: saveData.firstDiscoveries || 0,
       firstDiscoveryElements: saveData.firstDiscoveryElements || [],
+      favorites: saveData.favorites || [],
     },
   };
 }
@@ -174,6 +175,19 @@ export function validateSaveData(data) {
   if (save.slotName !== undefined && save.slotName !== null) {
     if (typeof save.slotName !== 'string' || save.slotName.length > 30) {
       return { valid: false, error: 'Invalid slot name in save file.' };
+    }
+  }
+
+  // Favorites (optional, added in v2)
+  if (save.favorites !== undefined) {
+    if (!Array.isArray(save.favorites)) {
+      return { valid: false, error: 'Invalid favorites list.' };
+    }
+    if (save.favorites.length > 12) {
+      return { valid: false, error: 'Too many favorites (max 12).' };
+    }
+    if (!save.favorites.every((f) => typeof f === 'string')) {
+      return { valid: false, error: 'Invalid entries in favorites.' };
     }
   }
 

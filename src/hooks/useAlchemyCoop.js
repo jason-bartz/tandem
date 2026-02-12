@@ -345,6 +345,7 @@ export function useAlchemyCoop({
           sessionId: session.id,
           inviteCode: session.inviteCode,
           elementBank: session.elementBank,
+          hostFavorites: data.hostFavorites || [],
         };
       } catch (err) {
         logger.error('[Coop] Failed to create session', { error: err.message });
@@ -473,7 +474,14 @@ export function useAlchemyCoop({
   const saveSession = useCallback(
     async (
       saveSlot,
-      { elementBank, totalMoves, totalDiscoveries, firstDiscoveries, firstDiscoveryElements } = {}
+      {
+        elementBank,
+        totalMoves,
+        totalDiscoveries,
+        firstDiscoveries,
+        firstDiscoveryElements,
+        favorites,
+      } = {}
     ) => {
       try {
         if (!sessionId) return false;
@@ -490,6 +498,7 @@ export function useAlchemyCoop({
             totalDiscoveries,
             firstDiscoveries,
             firstDiscoveryElements,
+            favorites: favorites || [],
           }),
         });
 
