@@ -144,9 +144,9 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      // On web, anonymous users can use linkIdentity for Apple OAuth.
-      // On iOS (native), Apple Sign In uses signInWithIdToken which doesn't support
-      // linkIdentity, so we fall back to regular signInWithApple.
+      // On web, anonymous users use upgradeAnonymousWithOAuth which sets up discovery
+      // migration and uses regular OAuth. On iOS (native), Apple Sign In uses the native
+      // SDK (signInWithIdToken) so we fall back to regular signInWithApple.
       const useUpgrade = isAnonymous && !isIOS;
       const { error: appleError } = useUpgrade
         ? await upgradeAnonymousWithOAuth('apple')
@@ -191,7 +191,7 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      // Use linkIdentity for anonymous users to preserve userId and discoveries
+      // Use upgrade flow for anonymous users to migrate discoveries to the new account
       const { error: googleError } = isAnonymous
         ? await upgradeAnonymousWithOAuth('google')
         : await signInWithGoogle();
@@ -242,7 +242,7 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      // Use linkIdentity for anonymous users to preserve userId and discoveries
+      // Use upgrade flow for anonymous users to migrate discoveries to the new account
       const { error: discordError } = isAnonymous
         ? await upgradeAnonymousWithOAuth('discord')
         : await signInWithDiscord();
