@@ -93,8 +93,8 @@ export function SubscriptionProvider({ children }) {
     // Standalone mode: subscription is always active, no API calls needed
     if (isStandaloneAlchemy) return;
 
-    // If not authenticated, clear subscription state
-    if (!user) {
+    // If not authenticated or anonymous, clear subscription state (anonymous users can't have subscriptions)
+    if (!user || user.is_anonymous) {
       const clearedState = {
         isActive: false,
         tier: null,

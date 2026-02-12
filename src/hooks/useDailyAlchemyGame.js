@@ -94,7 +94,7 @@ function getRandomHintPhrase(elementName) {
  * @param {boolean} isFreePlay - If true, runs in free play mode (no target, no timer)
  */
 export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, ensureAlchemySession, isAnonymous } = useAuth();
   const { soupCombine, soupNewElement, soupFirstDiscovery } = useHaptics();
 
   // Core state
@@ -231,6 +231,14 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Detect user change (including logout -> login with different account)
     if (previousUserId !== currentUserId) {
+      // Skip reset when transitioning from no session to anonymous session
+      // (anonymous session created during gameplay via ensureAlchemySession)
+      const isAnonymousSignIn = !previousUserId && user?.is_anonymous === true;
+      if (isAnonymousSignIn) {
+        previousUserIdRef.current = currentUserId;
+        return;
+      }
+
       logger.info('[DailyAlchemy] User changed, resetting Creative Mode state', {
         previousUserId: previousUserId || 'none',
         currentUserId: currentUserId || 'none',
@@ -287,7 +295,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Update the ref to track new user
       previousUserIdRef.current = currentUserId;
     }
-  }, [user?.id, freePlayMode]);
+  }, [user?.id, user?.is_anonymous, freePlayMode]);
 
   // Timer effect (disabled in free play mode)
   // Tracks both elapsed time (for stats) and remaining time (countdown for daily mode)
@@ -1590,7 +1598,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     const ANIMATION_DURATION = 600; // ms - wiggle + bang animation
 
-    const currentUserId = user?.id || null;
+    // Ensure we have a userId for first discovery credit.
+    // Creates an anonymous Supabase session if the user is not logged in.
+    let currentUserId = user?.id || null;
+    if (!currentUserId && ensureAlchemySession) {
+      const anonUser = await ensureAlchemySession();
+      currentUserId = anonUser?.id || null;
+    }
     const currentMode = isSubtractMode ? 'subtract' : 'combine';
 
     try {
@@ -1754,6 +1768,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isSubtractMode,
     user,
     authLoading,
+    ensureAlchemySession,
     clearSelections,
     soupCombine,
     soupNewElement,
@@ -2336,6 +2351,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     // Usage tracking
     elementUsageCount,
+
+    // Auth
+    isAnonymous,
 
     // Helpers
     puzzleDate: puzzleDateRef.current,

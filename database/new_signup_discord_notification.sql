@@ -21,6 +21,11 @@ DECLARE
   webhook_secret TEXT;
   provider TEXT;
 BEGIN
+  -- Skip notification for anonymous users (created via signInAnonymously for Daily Alchemy)
+  IF NEW.is_anonymous = true THEN
+    RETURN NEW;
+  END IF;
+
   -- Get the webhook secret from Supabase vault (or use a default for testing)
   -- You can store this in Supabase Vault: SELECT vault.create_secret('supabase_webhook_secret', 'your-secret');
   -- webhook_secret := (SELECT decrypted_secret FROM vault.decrypted_secrets WHERE name = 'supabase_webhook_secret');

@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
 import storageService from '@/core/storage/storageService';
@@ -10,6 +10,7 @@ const AuthContext = createContext({
   user: null,
   session: null,
   loading: true,
+  isAnonymous: false,
   userProfile: null,
   profileLoading: false,
   showFirstTimeSetup: false,
@@ -22,6 +23,9 @@ const AuthContext = createContext({
   signInWithDiscord: async () => {},
   signInWithApple: async () => {},
   resetPassword: async () => {},
+  ensureAlchemySession: async () => {},
+  upgradeAnonymousWithEmail: async () => {},
+  upgradeAnonymousWithOAuth: async () => {},
 });
 
 /**
@@ -147,8 +151,8 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Load user profile if session exists
-      if (session?.user) {
+      // Load user profile if session exists (skip for anonymous users)
+      if (session?.user && !session.user.is_anonymous) {
         loadUserProfile(session.user.id);
       }
     });
@@ -161,14 +165,36 @@ export function AuthProvider({ children }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Load profile when user signs in
-      if (session?.user) {
+      const isAnonUser = session?.user?.is_anonymous === true;
+
+      // Load profile when user signs in (skip for anonymous users - no profile row exists)
+      if (session?.user && !isAnonUser) {
         loadUserProfile(session.user.id);
-      } else {
+      } else if (!session?.user) {
         setUserProfile(null);
       }
 
-      if (event === 'SIGNED_IN' && session?.user) {
+      // When an anonymous user upgrades to permanent (via updateUser or linkIdentity),
+      // backfill their username on first discovery records (non-blocking)
+      if (event === 'USER_UPDATED' && session?.user && !isAnonUser) {
+        (async () => {
+          try {
+            const { getApiUrl, capacitorFetch } = await import('@/lib/api-config');
+            await capacitorFetch(
+              getApiUrl('/api/daily-alchemy/discoveries/backfill'),
+              { method: 'POST', headers: { 'Content-Type': 'application/json' } },
+              true
+            );
+            logger.debug('[AuthProvider] Discovery username backfill triggered');
+          } catch (error) {
+            // Non-critical — username will be null until they set one
+            logger.warn('[AuthProvider] Discovery backfill failed', error);
+          }
+        })();
+      }
+
+      // Skip first-time setup and achievement sync for anonymous users
+      if (event === 'SIGNED_IN' && session?.user && !isAnonUser) {
         (async () => {
           try {
             const avatarService = (await import('@/services/avatar.service')).default;
@@ -709,10 +735,131 @@ export function AuthProvider({ children }) {
     setShowFirstTimeSetup(false);
   };
 
+  // Derived: whether the current user is an anonymous (non-upgraded) session
+  const isAnonymous = user?.is_anonymous === true;
+
+  /**
+   * Ensure an anonymous Supabase session exists for Daily Alchemy gameplay.
+   * Only creates a session if no user exists. Called from the Alchemy game hook
+   * before the first combine API call, NOT on app load.
+   *
+   * @returns {Promise<Object|null>} The anonymous user object, or null on failure
+   */
+  const ensureAlchemySession = useCallback(async () => {
+    if (user) return user;
+
+    try {
+      logger.debug('[AuthContext] Creating anonymous session for Alchemy');
+      const { data, error } = await supabase.auth.signInAnonymously();
+      if (error) throw error;
+      return data.user;
+    } catch (error) {
+      logger.error('[AuthContext] Anonymous sign-in failed', error);
+      return null;
+    }
+  }, [user, supabase.auth]);
+
+  /**
+   * Upgrade an anonymous user to a permanent account with email/password.
+   * Preserves the same userId so all first discoveries remain attributed.
+   *
+   * @param {string} email - User's email address
+   * @param {string} password - User's password (min 6 characters)
+   * @param {Object} metadata - Optional user metadata
+   * @returns {Promise<{user, error}>}
+   */
+  const upgradeAnonymousWithEmail = useCallback(
+    async (email, password, metadata = {}) => {
+      if (!isAnonymous) {
+        return { user: null, error: new Error('Not an anonymous user') };
+      }
+
+      try {
+        await autoCleanupIfNeeded();
+
+        const { data, error } = await supabase.auth.updateUser({
+          email,
+          password,
+          data: metadata,
+        });
+
+        if (error) throw error;
+
+        logger.info('[AuthContext] Anonymous user upgraded with email', {
+          userId: data.user?.id,
+        });
+
+        return { user: data.user, error: null };
+      } catch (error) {
+        logger.error('[AuthContext] Anonymous upgrade with email failed', error);
+        return { user: null, error };
+      }
+    },
+    [isAnonymous, supabase.auth]
+  );
+
+  /**
+   * Upgrade an anonymous user to a permanent account via OAuth provider.
+   * Uses linkIdentity to attach the OAuth identity to the existing anonymous userId.
+   *
+   * @param {string} provider - OAuth provider ('google', 'discord', 'apple')
+   * @returns {Promise<{data, error}>}
+   */
+  const upgradeAnonymousWithOAuth = useCallback(
+    async (provider) => {
+      if (!isAnonymous) {
+        return { data: null, error: new Error('Not an anonymous user') };
+      }
+
+      try {
+        const isNative =
+          typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
+
+        // Store current path for return after OAuth redirect
+        if (!isNative) {
+          const safePath = getSafeReturnPath(window.location.pathname);
+          document.cookie = `auth_return_url=${encodeURIComponent(safePath)}; path=/; max-age=300; SameSite=Lax; Secure`;
+        }
+
+        const redirectTo = isNative
+          ? 'com.tandemdaily.app://auth/callback'
+          : `${window.location.origin}/auth/callback`;
+
+        const { data, error } = await supabase.auth.linkIdentity({
+          provider,
+          options: {
+            redirectTo,
+            skipBrowserRedirect: isNative,
+          },
+        });
+
+        if (error) throw error;
+
+        // On iOS, open the OAuth URL in Safari
+        if (isNative && data?.url) {
+          const { Browser } = await import('@capacitor/browser');
+          await Browser.open({
+            url: data.url,
+            presentationStyle: 'popover',
+          });
+        }
+
+        logger.info('[AuthContext] Anonymous user linking OAuth identity', { provider });
+
+        return { data, error: null };
+      } catch (error) {
+        logger.error('[AuthContext] Anonymous upgrade with OAuth failed', { provider, error });
+        return { data: null, error };
+      }
+    },
+    [isAnonymous, supabase.auth]
+  );
+
   const value = {
     user,
     session,
     loading,
+    isAnonymous,
     userProfile,
     profileLoading,
     showFirstTimeSetup,
@@ -725,6 +872,9 @@ export function AuthProvider({ children }) {
     signInWithDiscord,
     signInWithApple,
     resetPassword,
+    ensureAlchemySession,
+    upgradeAnonymousWithEmail,
+    upgradeAnonymousWithOAuth,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

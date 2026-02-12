@@ -37,8 +37,17 @@ export default function AuthModal({
     initialMessageType === 'success' ? initialMessage : null
   );
 
-  const { signUp, signIn, signInWithApple, signInWithGoogle, signInWithDiscord, resetPassword } =
-    useAuth();
+  const {
+    signUp,
+    signIn,
+    signInWithApple,
+    signInWithGoogle,
+    signInWithDiscord,
+    resetPassword,
+    isAnonymous,
+    upgradeAnonymousWithEmail,
+    upgradeAnonymousWithOAuth,
+  } = useAuth();
   const isIOS = Capacitor.getPlatform() === 'ios';
   const isNative = Capacitor.isNativePlatform();
 
@@ -65,17 +74,32 @@ export default function AuthModal({
 
     try {
       if (mode === 'signup') {
-        // Sign up (username will be created after email confirmation)
-        const { error } = await signUp(email, password, {});
+        if (isAnonymous) {
+          // Upgrade anonymous user — preserves userId and all first discoveries
+          const { error } = await upgradeAnonymousWithEmail(email, password);
 
-        if (error) {
-          setError(error.message);
+          if (error) {
+            setError(error.message);
+          } else {
+            setSuccessMessage(
+              'Account created! Please check your email to confirm, then your discoveries are yours forever.'
+            );
+            setMode('login');
+            setPassword('');
+          }
         } else {
-          // Success - switch to login mode with confirmation message
-          setSuccessMessage('Account created! Please check your email for a confirmation link.');
-          setMode('login');
-          setPassword('');
-          // Don't close the panel - keep it open in case they need to sign in manually
+          // Standard sign up (username will be created after email confirmation)
+          const { error } = await signUp(email, password, {});
+
+          if (error) {
+            setError(error.message);
+          } else {
+            // Success - switch to login mode with confirmation message
+            setSuccessMessage('Account created! Please check your email for a confirmation link.');
+            setMode('login');
+            setPassword('');
+            // Don't close the panel - keep it open in case they need to sign in manually
+          }
         }
       } else if (mode === 'reset') {
         // Password reset
@@ -120,11 +144,21 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      const { error: appleError } = await signInWithApple();
+      // On web, anonymous users can use linkIdentity for Apple OAuth.
+      // On iOS (native), Apple Sign In uses signInWithIdToken which doesn't support
+      // linkIdentity, so we fall back to regular signInWithApple.
+      const useUpgrade = isAnonymous && !isIOS;
+      const { error: appleError } = useUpgrade
+        ? await upgradeAnonymousWithOAuth('apple')
+        : await signInWithApple();
 
       if (appleError) {
         // User-friendly error messages
-        if (appleError.message?.includes('popup')) {
+        if (appleError.message?.includes('identity_already_exists')) {
+          setError(
+            'This Apple account is already linked to an existing account. Try signing in instead.'
+          );
+        } else if (appleError.message?.includes('popup')) {
           setError('Please allow popups to sign in with Apple.');
         } else if (
           appleError.message?.includes('network') ||
@@ -157,11 +191,18 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      const { error: googleError } = await signInWithGoogle();
+      // Use linkIdentity for anonymous users to preserve userId and discoveries
+      const { error: googleError } = isAnonymous
+        ? await upgradeAnonymousWithOAuth('google')
+        : await signInWithGoogle();
 
       if (googleError) {
         // User-friendly error messages
-        if (googleError.message?.includes('popup')) {
+        if (googleError.message?.includes('identity_already_exists')) {
+          setError(
+            'This Google account is already linked to an existing account. Try signing in instead.'
+          );
+        } else if (googleError.message?.includes('popup')) {
           setError('Please allow popups to sign in with Google.');
         } else if (
           googleError.message?.includes('network') ||
@@ -201,10 +242,17 @@ export default function AuthModal({
     setLoading(true);
 
     try {
-      const { error: discordError } = await signInWithDiscord();
+      // Use linkIdentity for anonymous users to preserve userId and discoveries
+      const { error: discordError } = isAnonymous
+        ? await upgradeAnonymousWithOAuth('discord')
+        : await signInWithDiscord();
 
       if (discordError) {
-        if (discordError.message?.includes('popup')) {
+        if (discordError.message?.includes('identity_already_exists')) {
+          setError(
+            'This Discord account is already linked to an existing account. Try signing in instead.'
+          );
+        } else if (discordError.message?.includes('popup')) {
           setError('Please allow popups to sign in with Discord.');
         } else if (
           discordError.message?.includes('network') ||
@@ -240,7 +288,9 @@ export default function AuthModal({
 
   const panelTitle =
     mode === 'signup'
-      ? 'Create Your Account'
+      ? isAnonymous
+        ? 'Claim Your Discoveries'
+        : 'Create Your Account'
       : mode === 'reset'
         ? 'Reset Password'
         : 'Welcome Back';
