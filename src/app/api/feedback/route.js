@@ -137,31 +137,33 @@ export async function POST(request) {
 
     const createdEntry = await createFeedbackEntry(entry);
 
-    // Send email notification asynchronously (don't block response)
-    // We intentionally don't await this to avoid delaying the user's response
-    sendFeedbackNotificationEmail(createdEntry).catch((emailError) => {
-      // Log email errors but don't fail the request
+    // Send email and Discord notifications before returning response
+    // Must await these in serverless environments (Vercel) or they get killed
+    // when the function exits. Using allSettled so one failure doesn't block the other.
+    const [emailResult, discordResult] = await Promise.allSettled([
+      sendFeedbackNotificationEmail(createdEntry),
+      notifyUserFeedback({
+        category: createdEntry.category,
+        message: createdEntry.message,
+        email: createdEntry.email,
+        username: user.user_metadata?.username || user.user_metadata?.display_name,
+        allowContact: createdEntry.allowContact,
+        platform: createdEntry.platform,
+      }),
+    ]);
+
+    if (emailResult.status === 'rejected') {
       logger.error('Failed to send feedback notification email', {
         feedbackId: createdEntry.id,
-        error: emailError.message,
+        error: emailResult.reason?.message,
       });
-    });
-
-    // Send Discord notification asynchronously
-    notifyUserFeedback({
-      category: createdEntry.category,
-      message: createdEntry.message,
-      email: createdEntry.email,
-      username: user.user_metadata?.username || user.user_metadata?.display_name,
-      allowContact: createdEntry.allowContact,
-      platform: createdEntry.platform,
-    }).catch((discordError) => {
-      // Log Discord errors but don't fail the request
+    }
+    if (discordResult.status === 'rejected') {
       logger.error('Failed to send feedback Discord notification', {
         feedbackId: createdEntry.id,
-        error: discordError.message,
+        error: discordResult.reason?.message,
       });
-    });
+    }
 
     return NextResponse.json({ success: true, feedback: createdEntry });
   } catch (error) {
