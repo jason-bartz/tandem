@@ -31,11 +31,13 @@ import logger from '@/lib/logger';
 import { playCorrectSound } from '@/lib/sounds';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
+import { useAuth } from '@/contexts/AuthContext';
 
 /**
  * Custom hook for managing The Daily Mini crossword game state
  */
 export function useMiniGame(providedDate = null) {
+  const { markServiceUnavailable } = useAuth();
   // Game state
   const [gameState, setGameState] = useState(MINI_GAME_STATES.WELCOME);
   const [puzzle, setPuzzle] = useState(null);
@@ -198,118 +200,124 @@ export function useMiniGame(providedDate = null) {
   /**
    * Load puzzle
    */
-  const loadPuzzle = useCallback(async (date = null) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadPuzzle = useCallback(
+    async (date = null) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      // Get puzzle date
-      const puzzleInfo = getCurrentMiniPuzzleInfo();
-      const targetDate = date || puzzleInfo.isoDate;
-      setCurrentPuzzleDate(targetDate);
+        // Get puzzle date
+        const puzzleInfo = getCurrentMiniPuzzleInfo();
+        const targetDate = date || puzzleInfo.isoDate;
+        setCurrentPuzzleDate(targetDate);
 
-      // Determine if archive
-      const isArchivePuzzle = date !== null && date !== puzzleInfo.isoDate;
-      setIsArchive(isArchivePuzzle);
+        // Determine if archive
+        const isArchivePuzzle = date !== null && date !== puzzleInfo.isoDate;
+        setIsArchive(isArchivePuzzle);
 
-      logger.info('[useMiniGame] Loading puzzle', {
-        date: targetDate,
-        isArchive: isArchivePuzzle,
-      });
+        logger.info('[useMiniGame] Loading puzzle', {
+          date: targetDate,
+          isArchive: isArchivePuzzle,
+        });
 
-      // Load saved progress
-      const savedProgress = await loadMiniPuzzleProgress(targetDate);
-      const savedState = await loadMiniGameState();
+        // Load saved progress
+        const savedProgress = await loadMiniPuzzleProgress(targetDate);
+        const savedState = await loadMiniGameState();
 
-      // Fetch puzzle from API
-      const response = await miniService.getPuzzle(targetDate);
+        // Fetch puzzle from API
+        const response = await miniService.getPuzzle(targetDate);
 
-      if (!response.success) {
+        if (!response.success) {
+          if (response.status >= 500) {
+            markServiceUnavailable();
+          }
+          setError(
+            "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+          );
+          setLoading(false);
+          return false;
+        }
+
+        const puzzleData = response.puzzle;
+        setPuzzle(puzzleData);
+
+        // Set solution grid and generate clue numbers
+        setSolutionGrid(puzzleData.grid);
+        const numbers = generateClueNumbers(puzzleData.grid);
+        setClueNumbers(numbers);
+
+        // Initialize grid and selection
+        const emptyGrid = createEmptyGrid();
+        setUserGrid(emptyGrid);
+
+        const firstCell = getFirstEditableCell(puzzleData.grid);
+        setSelectedCell(firstCell);
+
+        // Restore saved state if applicable
+        if (savedState && savedState.currentPuzzleDate === targetDate) {
+          if (savedProgress && savedProgress.completed) {
+            // Puzzle completed - enter admire mode
+            logger.info('[useMiniGame] Entering ADMIRE mode for completed puzzle');
+            setAdmireData(savedProgress);
+            setUserGrid(savedProgress.grid || emptyGrid);
+            setGameState(MINI_GAME_STATES.ADMIRE);
+          } else {
+            // Restore in-progress state
+            setUserGrid(savedState.userGrid || emptyGrid);
+            setSelectedCell(savedState.selectedCell || firstCell);
+            setDirection(savedState.direction || DIRECTION.ACROSS);
+            setStartTime(savedState.startTime || null);
+            setElapsedTime(savedState.elapsedTime || 0);
+            setIsPaused(savedState.isPaused || false);
+            setPausedAt(savedState.pausedAt || null);
+            setChecksUsed(savedState.checksUsed || 0);
+            setRevealsUsed(savedState.revealsUsed || 0);
+            setMistakes(savedState.mistakes || 0);
+            setAutoCheck(savedState.autoCheck || false);
+            setCorrectCells(new Set(savedState.correctCells || []));
+            setHasStarted(!!savedState.startTime);
+
+            // If started but not paused, resume timer
+            if (savedState.startTime && !savedState.isPaused) {
+              setGameState(MINI_GAME_STATES.PLAYING);
+            } else if (savedState.startTime && savedState.isPaused) {
+              setGameState(MINI_GAME_STATES.PLAYING);
+            } else {
+              setGameState(MINI_GAME_STATES.START);
+            }
+          }
+        } else {
+          // Reset all state for fresh puzzle (archive or new daily)
+          setUserGrid(emptyGrid);
+          setSelectedCell(firstCell);
+          setDirection(DIRECTION.ACROSS);
+          setStartTime(null);
+          setElapsedTime(0);
+          setHasStarted(false);
+          setIsPaused(false);
+          setPausedAt(null);
+          setChecksUsed(0);
+          setRevealsUsed(0);
+          setMistakes(0);
+          setAutoCheck(false);
+          setCorrectCells(new Set());
+          setIsComplete(false);
+          setGameState(MINI_GAME_STATES.START);
+        }
+
+        setLoading(false);
+        return true;
+      } catch (err) {
+        logger.error('[useMiniGame] Failed to load puzzle', { error: err.message });
         setError(
           "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
         );
         setLoading(false);
         return false;
       }
-
-      const puzzleData = response.puzzle;
-      setPuzzle(puzzleData);
-
-      // Set solution grid and generate clue numbers
-      setSolutionGrid(puzzleData.grid);
-      const numbers = generateClueNumbers(puzzleData.grid);
-      setClueNumbers(numbers);
-
-      // Initialize grid and selection
-      const emptyGrid = createEmptyGrid();
-      setUserGrid(emptyGrid);
-
-      const firstCell = getFirstEditableCell(puzzleData.grid);
-      setSelectedCell(firstCell);
-
-      // Restore saved state if applicable
-      if (savedState && savedState.currentPuzzleDate === targetDate) {
-        if (savedProgress && savedProgress.completed) {
-          // Puzzle completed - enter admire mode
-          logger.info('[useMiniGame] Entering ADMIRE mode for completed puzzle');
-          setAdmireData(savedProgress);
-          setUserGrid(savedProgress.grid || emptyGrid);
-          setGameState(MINI_GAME_STATES.ADMIRE);
-        } else {
-          // Restore in-progress state
-          setUserGrid(savedState.userGrid || emptyGrid);
-          setSelectedCell(savedState.selectedCell || firstCell);
-          setDirection(savedState.direction || DIRECTION.ACROSS);
-          setStartTime(savedState.startTime || null);
-          setElapsedTime(savedState.elapsedTime || 0);
-          setIsPaused(savedState.isPaused || false);
-          setPausedAt(savedState.pausedAt || null);
-          setChecksUsed(savedState.checksUsed || 0);
-          setRevealsUsed(savedState.revealsUsed || 0);
-          setMistakes(savedState.mistakes || 0);
-          setAutoCheck(savedState.autoCheck || false);
-          setCorrectCells(new Set(savedState.correctCells || []));
-          setHasStarted(!!savedState.startTime);
-
-          // If started but not paused, resume timer
-          if (savedState.startTime && !savedState.isPaused) {
-            setGameState(MINI_GAME_STATES.PLAYING);
-          } else if (savedState.startTime && savedState.isPaused) {
-            setGameState(MINI_GAME_STATES.PLAYING);
-          } else {
-            setGameState(MINI_GAME_STATES.START);
-          }
-        }
-      } else {
-        // Reset all state for fresh puzzle (archive or new daily)
-        setUserGrid(emptyGrid);
-        setSelectedCell(firstCell);
-        setDirection(DIRECTION.ACROSS);
-        setStartTime(null);
-        setElapsedTime(0);
-        setHasStarted(false);
-        setIsPaused(false);
-        setPausedAt(null);
-        setChecksUsed(0);
-        setRevealsUsed(0);
-        setMistakes(0);
-        setAutoCheck(false);
-        setCorrectCells(new Set());
-        setIsComplete(false);
-        setGameState(MINI_GAME_STATES.START);
-      }
-
-      setLoading(false);
-      return true;
-    } catch (err) {
-      logger.error('[useMiniGame] Failed to load puzzle', { error: err.message });
-      setError(
-        "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
-      );
-      setLoading(false);
-      return false;
-    }
-  }, []);
+    },
+    [markServiceUnavailable]
+  );
 
   /**
    * Start the game and timer

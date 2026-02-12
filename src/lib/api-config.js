@@ -142,8 +142,22 @@ export async function capacitorFetch(url, options = {}, includeAuth = true) {
     }
   }
 
-  // On web, use standard fetch with updated headers
-  return fetch(url, { ...options, headers });
+  // On web, use standard fetch with timeout to avoid long waits during outages
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+      signal: options.signal || controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    throw error;
+  }
 }
 
 export default {
