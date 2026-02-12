@@ -239,6 +239,44 @@ export function AuthProvider({ children }) {
             logger.error('[AuthProvider] Achievement sync failed', error);
           }
         })();
+
+        // Check for pending anonymous discovery migration (native iOS flows).
+        // Native Apple Sign In (signInWithIdToken) and iOS deep-link OAuth both
+        // bypass the server-side auth callback, so the cookie-based migration
+        // doesn't run. We use localStorage as a fallback.
+        if (typeof window !== 'undefined') {
+          try {
+            const pendingAnonId = localStorage.getItem('anon_migration_user_id');
+            if (pendingAnonId && pendingAnonId !== session.user.id) {
+              localStorage.removeItem('anon_migration_user_id');
+              (async () => {
+                try {
+                  const { getApiUrl, capacitorFetch } = await import('@/lib/api-config');
+                  await capacitorFetch(
+                    getApiUrl('/api/daily-alchemy/discoveries/migrate'),
+                    {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ anonymousUserId: pendingAnonId }),
+                    },
+                    true
+                  );
+                  logger.info('[AuthProvider] Migrated anonymous discoveries via localStorage', {
+                    from: pendingAnonId,
+                    to: session.user.id,
+                  });
+                } catch (migError) {
+                  logger.warn('[AuthProvider] Native discovery migration failed', migError);
+                }
+              })();
+            } else if (pendingAnonId) {
+              // Same user ID — no migration needed, just clean up
+              localStorage.removeItem('anon_migration_user_id');
+            }
+          } catch {
+            // localStorage may be unavailable
+          }
+        }
       }
     });
 
@@ -571,6 +609,17 @@ export function AuthProvider({ children }) {
 
       // On iOS, use native Apple Sign In
 
+      // If current user is anonymous, store their ID for post-sign-in discovery migration.
+      // Native Apple Sign In uses signInWithIdToken which bypasses the server auth callback,
+      // so cookie-based migration won't work. We use localStorage instead.
+      if (user?.is_anonymous && user?.id) {
+        try {
+          localStorage.setItem('anon_migration_user_id', user.id);
+        } catch {
+          // localStorage may be unavailable
+        }
+      }
+
       // Dynamic import to avoid bundling on web builds
       const { SignInWithApple } = await import('@capacitor-community/apple-sign-in');
 
@@ -840,6 +889,15 @@ export function AuthProvider({ children }) {
         // Store anonymous userId so the auth callback can migrate discoveries
         if (user?.id) {
           document.cookie = `anon_user_migration=${user.id}; path=/; max-age=300; SameSite=Lax; Secure`;
+          // Also store in localStorage for native iOS flows where the deep link handler
+          // exchanges the code client-side, bypassing the server auth callback
+          if (isNative) {
+            try {
+              localStorage.setItem('anon_migration_user_id', user.id);
+            } catch {
+              // localStorage may be unavailable
+            }
+          }
         }
 
         const redirectTo = isNative
