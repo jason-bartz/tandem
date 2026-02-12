@@ -261,7 +261,7 @@ function SelectionSlot({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={cn(
-        'w-24 h-24 sm:w-28 sm:h-28',
+        'w-24 h-24 sm:w-28 sm:h-28 shrink-0',
         'flex flex-col items-center justify-center',
         'bg-white dark:bg-gray-800',
         'border-[3px] border-black dark:border-gray-600',
@@ -467,7 +467,7 @@ export function CombinationArea({
         {freePlayMode ? (
           <div
             className={cn(
-              'flex items-center',
+              'flex items-center shrink-0',
               'border-[3px] border-black dark:border-gray-600 rounded-lg',
               'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
               'overflow-hidden',
@@ -522,7 +522,7 @@ export function CombinationArea({
           </div>
         ) : (
           <motion.div
-            className="flex items-center justify-center w-8 h-8"
+            className="flex items-center justify-center w-8 h-8 shrink-0"
             animate={
               !reduceMotion && (isCombining || isAnimating)
                 ? { scale: 1.3, rotate: 180 }
@@ -576,7 +576,7 @@ export function CombinationArea({
         </button>
 
         {/* Spacer matching operator toggle width */}
-        <div className={cn(freePlayMode ? 'w-[70px]' : 'w-8')} aria-hidden="true" />
+        <div className={cn('shrink-0', freePlayMode ? 'w-[70px]' : 'w-8')} aria-hidden="true" />
 
         <motion.button
           onClick={() => canCombine && onCombine()}
