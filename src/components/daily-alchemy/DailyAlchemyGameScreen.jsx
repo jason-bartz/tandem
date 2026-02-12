@@ -830,7 +830,7 @@ export function DailyAlchemyGameScreen({
       <AnimatePresence>
         {lastResult && !isComplete && (
           <ResultAnimation
-            key={`${lastResult.element}-${lastResult.from.join('-')}`}
+            key={lastResult.id}
             result={lastResult}
             onComplete={clearLastResult}
             onSelectElement={selectResultElement}

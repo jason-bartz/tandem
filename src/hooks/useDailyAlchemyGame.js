@@ -1703,6 +1703,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       }
 
       setLastResult({
+        id: Date.now(),
         element,
         emoji,
         isNew,
