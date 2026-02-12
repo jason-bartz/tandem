@@ -328,69 +328,75 @@ export function useReelConnectionsGame() {
   );
 
   // Load puzzle
-  const loadPuzzle = useCallback(async (isRefresh = false, specificDate = null) => {
-    try {
-      if (isRefresh || specificDate) {
-        setLoading(true);
-      }
+  const loadPuzzle = useCallback(
+    async (isRefresh = false, specificDate = null) => {
+      try {
+        if (isRefresh || specificDate) {
+          setLoading(true);
+        }
 
-      const dateToLoad = specificDate || getLocalDateString();
-      const apiUrl = getApiUrl(`${REEL_API.PUZZLE}?date=${dateToLoad}`);
-      const response = await capacitorFetch(apiUrl, {}, false); // No auth needed for puzzle fetch
-      const data = await response.json();
+        const dateToLoad = specificDate || getLocalDateString();
+        const apiUrl = getApiUrl(`${REEL_API.PUZZLE}?date=${dateToLoad}`);
+        const response = await capacitorFetch(apiUrl, {}, false); // No auth needed for puzzle fetch
+        const data = await response.json();
 
-      if (!response.ok || !data.puzzle) {
-        if (response.status >= 500) {
+        if (!response.ok || !data.puzzle) {
+          if (response.status >= 500) {
+            markServiceUnavailable();
+          }
+          throw new Error('Failed to load puzzle');
+        }
+
+        setError(null);
+        const puzzleToUse = data.puzzle;
+        setPuzzle(puzzleToUse);
+
+        const allMovies = flattenPuzzleMovies(puzzleToUse);
+        const shuffled = shuffleArray(allMovies);
+        setMovies(shuffled);
+
+        // Reset game state
+        if (isRefresh || specificDate) {
+          setSelectedMovies([]);
+          setSolvedGroups([]);
+          setMistakes(0);
+          setGameWon(false);
+          setGameOver(false);
+          setIsRevealing(false);
+          setRevealedGroups([]);
+          setEndTime(null);
+          setStatsRecorded(false);
+          setLeaderboardSubmitted(false);
+          setArchiveDate(specificDate);
+          setGuessHistory([]);
+          setPreviousGuesses([]);
+          setShowDuplicateWarning(false);
+          setViewingCompletedPuzzle(false);
+        }
+
+        setGameStarted(false);
+        setStartTime(null);
+        setCurrentTime(0);
+      } catch (error) {
+        logger.error('Error loading puzzle', error);
+        if (error.name === 'AbortError' || error.status >= 500) {
           markServiceUnavailable();
         }
-        throw new Error('Failed to load puzzle');
+        setError(
+          "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+        );
+        // Show error state - no fallback puzzle
+        setPuzzle(null);
+        setMovies([]);
+        setGameStarted(false);
+        setStartTime(null);
+        setCurrentTime(0);
+      } finally {
+        setLoading(false);
       }
-
-      setError(null);
-      const puzzleToUse = data.puzzle;
-      setPuzzle(puzzleToUse);
-
-      const allMovies = flattenPuzzleMovies(puzzleToUse);
-      const shuffled = shuffleArray(allMovies);
-      setMovies(shuffled);
-
-      // Reset game state
-      if (isRefresh || specificDate) {
-        setSelectedMovies([]);
-        setSolvedGroups([]);
-        setMistakes(0);
-        setGameWon(false);
-        setGameOver(false);
-        setIsRevealing(false);
-        setRevealedGroups([]);
-        setEndTime(null);
-        setStatsRecorded(false);
-        setLeaderboardSubmitted(false);
-        setArchiveDate(specificDate);
-        setGuessHistory([]);
-        setPreviousGuesses([]);
-        setShowDuplicateWarning(false);
-        setViewingCompletedPuzzle(false);
-      }
-
-      setGameStarted(false);
-      setStartTime(null);
-      setCurrentTime(0);
-    } catch (error) {
-      logger.error('Error loading puzzle', error);
-      setError(
-        "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
-      );
-      // Show error state - no fallback puzzle
-      setPuzzle(null);
-      setMovies([]);
-      setGameStarted(false);
-      setStartTime(null);
-      setCurrentTime(0);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [markServiceUnavailable]
+  );
 
   // Initialize puzzle on mount
   useEffect(() => {

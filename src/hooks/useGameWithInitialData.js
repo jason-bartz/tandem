@@ -76,7 +76,11 @@ export function useGameWithInitialData(initialPuzzleData) {
             );
           }
         } catch (err) {
-          if (err.status >= 500 || err.message?.includes('API Error: 5')) {
+          if (
+            err.name === 'AbortError' ||
+            err.status >= 500 ||
+            err.message?.includes('API Error: 5')
+          ) {
             markServiceUnavailable();
           }
           setError('Failed to load puzzle');
@@ -157,7 +161,11 @@ export function useGameWithInitialData(initialPuzzleData) {
         }
       } catch (err) {
         logger.error('[useGameWithInitialData] Error loading puzzle', err);
-        if (err.status >= 500 || err.message?.includes('API Error: 5')) {
+        if (
+          err.name === 'AbortError' ||
+          err.status >= 500 ||
+          err.message?.includes('API Error: 5')
+        ) {
           markServiceUnavailable();
         }
         setError(`Failed to load puzzle: ${err.message}`);

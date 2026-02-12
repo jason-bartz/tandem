@@ -309,6 +309,9 @@ export function useMiniGame(providedDate = null) {
         return true;
       } catch (err) {
         logger.error('[useMiniGame] Failed to load puzzle', { error: err.message });
+        if (err.name === 'AbortError' || err.status >= 500) {
+          markServiceUnavailable();
+        }
         setError(
           "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
         );
