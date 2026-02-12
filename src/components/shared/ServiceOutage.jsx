@@ -21,7 +21,9 @@ export default function ServiceOutage() {
         </h2>
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           Our database provider is experiencing a temporary outage, which is preventing our puzzles
-          from loading. This is usually brief — check back in a few minutes!
+          from loading. I apologize for the inconvenience. Check back shortly!
+          <br />
+          <br />- Jason, Puzzlemaster
         </p>
         <button
           onClick={() => window.location.reload()}
