@@ -234,6 +234,22 @@ export function CoopLobbyScreen({
               Join with Code
             </button>
 
+            {/* Terms notice */}
+            <p className="mt-6 text-[11px] text-gray-400 dark:text-gray-500 text-center px-4 leading-relaxed">
+              By using Co-op Mode, you agree to our{' '}
+              <a href="/terms" className="underline hover:text-gray-600 dark:hover:text-gray-300">
+                Terms
+              </a>{' '}
+              and{' '}
+              <a
+                href="/privacypolicy"
+                className="underline hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                Privacy Policy
+              </a>
+              .
+            </p>
+
             {/* Back */}
             <button
               onClick={onCancel}
