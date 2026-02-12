@@ -363,10 +363,11 @@ export async function POST(request) {
         });
 
         // Send Discord notification (fire and forget)
+        // Anonymous users won't have a username yet — show "Anonymous Explorer"
         notifyFirstDiscovery({
           element: aiResult.element,
           emoji: finalEmoji,
-          username,
+          username: username || 'Anonymous Explorer',
           discoveredAt: new Date().toISOString(),
         }).catch((err) =>
           logger.error('[ElementSoup] Discord notification failed', { error: err })

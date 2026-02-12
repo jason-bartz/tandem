@@ -20,6 +20,7 @@ import { CoopLobbyScreen } from './CoopLobbyScreen';
 import { SavesModal } from './SavesModal';
 import HamburgerMenu from '@/components/navigation/HamburgerMenu';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
+import AuthModal from '@/components/auth/AuthModal';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
@@ -89,6 +90,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showSavesModal, setShowSavesModal] = useState(false);
   const [showTutorial, setShowTutorial] = useState(true);
+  const [showAnonymousUpgrade, setShowAnonymousUpgrade] = useState(false);
 
   const {
     // State
@@ -190,6 +192,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
     showFavoritesPanel,
     setShowFavoritesPanel,
     maxFavorites,
+
+    // Auth
+    isAnonymous,
 
     // Helpers
     formattedDate,
@@ -572,6 +577,9 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       coopEmoteCooldownActive={coop.emoteCooldownActive}
                       onCoopSave={handleOpenCoopSave}
                       onCoopLeave={handleCoopLeave}
+                      // Anonymous auth
+                      isAnonymous={isAnonymous}
+                      onSignUpCTA={() => setShowAnonymousUpgrade(true)}
                     />
                   </div>
                 )}
@@ -683,6 +691,16 @@ export function DailyAlchemyGame({ initialDate = null }) {
         isSlotSwitching={isSlotSwitching}
         saveOnly={savesModalSaveOnly}
         onSaveToSlot={handleCoopSlotSave}
+      />
+
+      {/* Anonymous user upgrade modal - shown when anonymous user clicks "Sign Up to Claim" on first discovery */}
+      <AuthModal
+        isOpen={showAnonymousUpgrade}
+        onClose={() => setShowAnonymousUpgrade(false)}
+        initialMode="signup"
+        onSuccess={() => setShowAnonymousUpgrade(false)}
+        initialMessage="Create an account to save your discoveries"
+        initialMessageType="success"
       />
     </>
   );

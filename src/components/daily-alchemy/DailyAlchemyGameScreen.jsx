@@ -24,7 +24,7 @@ const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/dai
  * Swipe up to select element into first combination slot
  * Swipe down to dismiss
  */
-function ResultAnimation({ result, onComplete, onSelectElement }) {
+function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onSignUpCTA }) {
   const { reduceMotion, highContrast } = useTheme();
   const { mediumTap, lightTap } = useHaptics();
   const [copied, setCopied] = useState(false);
@@ -373,12 +373,47 @@ function ResultAnimation({ result, onComplete, onSelectElement }) {
           </motion.button>
         )}
 
+        {/* Sign up CTA for anonymous users with first discoveries */}
+        {result.isFirstDiscovery && isAnonymous && (
+          <motion.div
+            className="text-center mt-2"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <motion.button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSignUpCTA?.();
+              }}
+              className={cn(
+                'px-5 py-2 text-sm font-bold',
+                'bg-soup-primary text-white',
+                'border-[2px] border-black',
+                'rounded-xl',
+                highContrast && 'border-[3px]'
+              )}
+              initial={{ boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
+              whileHover={{
+                y: -1,
+                boxShadow: '3px 3px 0px rgba(0,0,0,1)',
+              }}
+              whileTap={{ y: 0, boxShadow: 'none' }}
+            >
+              Sign Up to Claim
+            </motion.button>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+              Create an account to lock in your discovery
+            </p>
+          </motion.div>
+        )}
+
         {/* Swipe hints at bottom - also clickable */}
         <motion.div
           className="flex items-center justify-center gap-6 mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 w-full"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.6 }}
+          transition={{ delay: 0.7 }}
         >
           <button
             onClick={(e) => {
@@ -572,6 +607,10 @@ export function DailyAlchemyGameScreen({
   coopEmoteCooldownActive = false,
   onCoopSave,
   onCoopLeave,
+
+  // Anonymous auth
+  isAnonymous = false,
+  onSignUpCTA,
 }) {
   const { highContrast } = useTheme();
 
@@ -834,6 +873,8 @@ export function DailyAlchemyGameScreen({
             result={lastResult}
             onComplete={clearLastResult}
             onSelectElement={selectResultElement}
+            isAnonymous={isAnonymous}
+            onSignUpCTA={onSignUpCTA}
           />
         )}
       </AnimatePresence>
