@@ -1604,6 +1604,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     if (!currentUserId && ensureAlchemySession) {
       const anonUser = await ensureAlchemySession();
       currentUserId = anonUser?.id || null;
+      if (!currentUserId) {
+        logger.error('[DailyAlchemy] ensureAlchemySession returned no userId');
+      }
     }
     const currentMode = isSubtractMode ? 'subtract' : 'combine';
 
