@@ -146,16 +146,23 @@ export function AuthProvider({ children }) {
     });
 
     // Get initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
+    supabase.auth
+      .getSession()
+      .then(({ data: { session } }) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
 
-      // Load user profile if session exists (skip for anonymous users)
-      if (session?.user && !session.user.is_anonymous) {
-        loadUserProfile(session.user.id);
-      }
-    });
+        // Load user profile if session exists (skip for anonymous users)
+        if (session?.user && !session.user.is_anonymous) {
+          loadUserProfile(session.user.id);
+        }
+      })
+      .catch((error) => {
+        logger.error('[AuthProvider] Failed to get session', error);
+        // Still set loading to false so the app renders in a logged-out state
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const {
