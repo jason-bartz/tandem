@@ -51,6 +51,7 @@ class MiniService {
         });
         return {
           success: false,
+          status: response.status,
           error: error.message || 'Failed to load puzzle',
         };
       }
@@ -133,9 +134,7 @@ class MiniService {
    */
   async getStats(date = null) {
     try {
-      const endpoint = date
-        ? `${MINI_API_ENDPOINTS.STATS}?date=${date}`
-        : MINI_API_ENDPOINTS.STATS;
+      const endpoint = date ? `${MINI_API_ENDPOINTS.STATS}?date=${date}` : MINI_API_ENDPOINTS.STATS;
       const url = getApiUrl(endpoint);
 
       const response = await capacitorFetch(

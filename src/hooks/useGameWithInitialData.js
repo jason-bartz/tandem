@@ -14,8 +14,10 @@ import statsService from '@/services/stats.service';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import logger from '@/lib/logger';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
+import { useAuth } from '@/contexts/AuthContext';
 
 export function useGameWithInitialData(initialPuzzleData) {
+  const { markServiceUnavailable } = useAuth();
   const [gameState, setGameState] = useState(GAME_STATES.WELCOME);
   // Make sure the puzzle includes the date from initialPuzzleData
   const [puzzle, setPuzzle] = useState(
@@ -74,6 +76,9 @@ export function useGameWithInitialData(initialPuzzleData) {
             );
           }
         } catch (err) {
+          if (err.status >= 500 || err.message?.includes('API Error: 5')) {
+            markServiceUnavailable();
+          }
           setError('Failed to load puzzle');
         } finally {
           setLoading(false);
@@ -82,81 +87,87 @@ export function useGameWithInitialData(initialPuzzleData) {
 
       loadPuzzle();
     }
-  }, [initialPuzzleData]);
+  }, [initialPuzzleData, markServiceUnavailable]);
 
   // Load specific puzzle for archive
-  const loadPuzzle = useCallback(async (identifier = null, forceReplay = false) => {
-    try {
-      setLoading(true);
-      setError(null);
+  const loadPuzzle = useCallback(
+    async (identifier = null, forceReplay = false) => {
+      try {
+        setLoading(true);
+        setError(null);
 
-      const isArchive = identifier !== null;
-      setIsArchiveGame(isArchive);
+        const isArchive = identifier !== null;
+        setIsArchiveGame(isArchive);
 
-      if (!forceReplay && identifier) {
-        const existingResult = await getPuzzleResult(identifier);
+        if (!forceReplay && identifier) {
+          const existingResult = await getPuzzleResult(identifier);
 
-        if (existingResult && existingResult.won) {
-          // Enter admire mode to view the completed puzzle
-          const response = await puzzleService.getPuzzle(identifier);
+          if (existingResult && existingResult.won) {
+            // Enter admire mode to view the completed puzzle
+            const response = await puzzleService.getPuzzle(identifier);
 
-          if (response && response.puzzle) {
-            setPuzzle({ ...response.puzzle, date: response.date || identifier });
-            setCurrentPuzzleDate(response.date || identifier);
-            setAdmireData(existingResult);
-            setGameState(GAME_STATES.ADMIRE);
-            setLoading(false);
-            return true;
+            if (response && response.puzzle) {
+              setPuzzle({ ...response.puzzle, date: response.date || identifier });
+              setCurrentPuzzleDate(response.date || identifier);
+              setAdmireData(existingResult);
+              setGameState(GAME_STATES.ADMIRE);
+              setLoading(false);
+              return true;
+            }
+            // If no puzzle found, fall through to show error
           }
-          // If no puzzle found, fall through to show error
         }
-      }
 
-      // identifier can be a puzzle number, date string, or null for today
+        // identifier can be a puzzle number, date string, or null for today
 
-      const response = await puzzleService.getPuzzle(identifier);
+        const response = await puzzleService.getPuzzle(identifier);
 
-      if (response && response.puzzle) {
-        // Add puzzleNumber and date to the puzzle object if it's not there
-        const puzzleWithData = {
-          ...response.puzzle,
-          puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
-          date: response.date || response.puzzle.date,
-        };
+        if (response && response.puzzle) {
+          // Add puzzleNumber and date to the puzzle object if it's not there
+          const puzzleWithData = {
+            ...response.puzzle,
+            puzzleNumber: response.puzzle.puzzleNumber || response.puzzleNumber,
+            date: response.date || response.puzzle.date,
+          };
 
-        setCurrentPuzzleDate(response.date);
-        setPuzzle(puzzleWithData);
-        // Archive puzzles should start immediately in PLAYING mode
-        // Today's puzzle shows WELCOME screen
-        setGameState(isArchive ? GAME_STATES.PLAYING : GAME_STATES.WELCOME);
-        setAnswers(['', '', '', '']);
-        setCorrectAnswers([false, false, false, false]);
-        setCheckedWrongAnswers([false, false, false, false]);
-        setMistakes(0);
-        setSolved(0);
-        setHintsUsed(0);
-        setHintedAnswers([]);
-        setUnlockedHints(1);
-        setActiveHintIndex(null);
-        setLockedLetters([null, null, null, null]);
+          setCurrentPuzzleDate(response.date);
+          setPuzzle(puzzleWithData);
+          // Archive puzzles should start immediately in PLAYING mode
+          // Today's puzzle shows WELCOME screen
+          setGameState(isArchive ? GAME_STATES.PLAYING : GAME_STATES.WELCOME);
+          setAnswers(['', '', '', '']);
+          setCorrectAnswers([false, false, false, false]);
+          setCheckedWrongAnswers([false, false, false, false]);
+          setMistakes(0);
+          setSolved(0);
+          setHintsUsed(0);
+          setHintedAnswers([]);
+          setUnlockedHints(1);
+          setActiveHintIndex(null);
+          setLockedLetters([null, null, null, null]);
 
-        return true;
-      } else {
-        // No puzzle available in response
-        logger.error('[useGameWithInitialData] No puzzle in response', null, { response });
-        setError(
-          "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
-        );
+          return true;
+        } else {
+          // No puzzle available in response
+          logger.error('[useGameWithInitialData] No puzzle in response', null, { response });
+          setError(
+            "It looks like our Puzzlemaster is still sleeping. Come back shortly for today's puzzle!"
+          );
+          return false;
+        }
+      } catch (err) {
+        logger.error('[useGameWithInitialData] Error loading puzzle', err);
+        if (err.status >= 500 || err.message?.includes('API Error: 5')) {
+          markServiceUnavailable();
+        }
+        setError(`Failed to load puzzle: ${err.message}`);
         return false;
+      } finally {
+        setLoading(false);
       }
-    } catch (err) {
-      logger.error('[useGameWithInitialData] Error loading puzzle', err);
-      setError(`Failed to load puzzle: ${err.message}`);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+    },
+    [markServiceUnavailable]
+  );
 
   const startGame = useCallback(() => {
     if (!puzzle) {

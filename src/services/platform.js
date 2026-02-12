@@ -126,17 +126,23 @@ class PlatformService {
           throw new Error('Invalid response format from server');
         }
       } else {
-        // Use regular fetch for web
+        // Use regular fetch for web with timeout to avoid waiting for server-side timeouts
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         const res = await fetch(url, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
+          signal: controller.signal,
         });
+        clearTimeout(timeoutId);
 
         if (!res.ok) {
-          throw new Error(`API Error: ${res.status}`);
+          const err = new Error(`API Error: ${res.status}`);
+          err.status = res.status;
+          throw err;
         }
 
         data = await res.json();
