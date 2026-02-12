@@ -169,6 +169,29 @@ export function AuthProvider({ children }) {
         setLoading(false);
       });
 
+    // Parallel health check — fast outage detection independent of auth state.
+    // Only runs on web (native has no local API server). Uses a short timeout
+    // so the outage screen shows within seconds, not after waiting for
+    // individual game fetches to time out.
+    const isNative =
+      typeof window !== 'undefined' && window.Capacitor && window.Capacitor.isNativePlatform();
+    if (!isNative) {
+      const healthController = new AbortController();
+      const healthTimeout = setTimeout(() => healthController.abort(), 6000);
+      fetch('/api/health', { signal: healthController.signal })
+        .then((res) => {
+          clearTimeout(healthTimeout);
+          // Only flag on explicit server errors (503/500), not network issues
+          if (res.status >= 500) {
+            setServiceUnavailable(true);
+          }
+        })
+        .catch(() => {
+          clearTimeout(healthTimeout);
+          // Don't flag on network errors — could be user's connection, not outage
+        });
+    }
+
     // Listen for auth changes
     const {
       data: { subscription },
