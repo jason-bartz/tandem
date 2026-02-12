@@ -10,6 +10,7 @@ import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import Settings from '@/components/Settings';
 import FeedbackPane from '@/components/FeedbackPane';
+import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function TermsOfUse() {
@@ -21,6 +22,7 @@ export default function TermsOfUse() {
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const sections = [
     {
@@ -328,7 +330,7 @@ export default function TermsOfUse() {
           <div>
             <h4 className="font-semibold mb-2">Use of Artificial Intelligence</h4>
             <p>
-              Daily Alchemy uses a third-party artificial intelligence system (Anthropic Claude) to
+              Daily Alchemy uses a third-party artificial intelligence system (Meta Llama) to
               generate element combinations, names, emojis, and related game content. When you
               combine two elements, the AI system autonomously determines the resulting element.
               Good Vibes Games does not control, curate, select, or pre-approve individual AI
@@ -888,10 +890,6 @@ export default function TermsOfUse() {
                       </li>
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
-                        Suitable for all ages
-                      </li>
-                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                        <span className="text-[#ff66c4]">•</span>
                         Personal, non-commercial use only
                       </li>
                     </ul>
@@ -962,10 +960,12 @@ export default function TermsOfUse() {
         onOpenHowToPlay={() => setShowHowToPlay(true)}
         onOpenSettings={() => setShowSettings(true)}
         onOpenFeedback={() => setShowFeedback(true)}
+        onOpenLeaderboard={() => setShowLeaderboard(true)}
       />
 
       {/* Modals */}
       <UnifiedStatsModal isOpen={showStats} onClose={() => setShowStats(false)} />
+      <LeaderboardModal isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
       <UnifiedArchiveCalendar isOpen={showArchive} onClose={() => setShowArchive(false)} />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
