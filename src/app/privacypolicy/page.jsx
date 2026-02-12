@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: February 6, 2026
+            <strong>Last Updated</strong>: February 12, 2026
           </p>
         </div>
       ),
@@ -273,7 +273,33 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">13. Payment Information (Web Only)</h4>
+            <h4 className="font-semibold mb-2">13. Co-op Multiplayer Data</h4>
+            <p className="mb-2">
+              When you use Co-op Mode in Daily Alchemy, we collect and process additional data to
+              enable real-time multiplayer gameplay:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Co-op session identifiers and invite codes</li>
+              <li>
+                Your username and avatar, which are shared with your co-op partner in real time
+              </li>
+              <li>Your online presence status (active, idle, or disconnected)</li>
+              <li>
+                Gameplay actions during the session (element combinations, discoveries, move counts)
+              </li>
+              <li>Emote reactions sent during the session (from a preset list of emoji)</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Note: Co-op mode requires a signed-in account. Your username, avatar, and gameplay
+              activity are visible to your co-op partner during the session. Session data (element
+              bank, move counts) is stored on our servers for the duration of the session and may be
+              saved to your account if you choose. No email addresses or other personal information
+              are shared with your co-op partner.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">14. Payment Information (Web Only)</h4>
             <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Stripe customer ID (for managing subscriptions)</li>
@@ -300,6 +326,10 @@ export default function PrivacyPolicy() {
             <li>Save your game progress and statistics</li>
             <li>Maintain your preferences across sessions</li>
             <li>Provide gameplay features like streak tracking and achievements</li>
+            <li>
+              Enable real-time co-op multiplayer sessions (sharing your username, avatar, and
+              gameplay actions with your partner)
+            </li>
             <li>Sync your progress across devices (iOS with iCloud only)</li>
             <li>Enable Game Center features like leaderboards (iOS only)</li>
             <li>Manage user accounts and authentication (web only)</li>
@@ -414,6 +444,11 @@ export default function PrivacyPolicy() {
               game results)
             </li>
             <li>
+              <strong>Co-op Partners</strong>: When you join a Co-op Mode session, your username,
+              avatar, presence status, and gameplay actions are shared in real time with the other
+              player in your session. No email addresses or other personal information are shared.
+            </li>
+            <li>
               <strong>Apple Services</strong>: If you use iOS features like Game Center or iCloud
               sync, data is shared with Apple according to their privacy policy
             </li>
@@ -485,7 +520,10 @@ export default function PrivacyPolicy() {
               Do not collect personal information beyond what's necessary for account management
               (web accounts only)
             </li>
-            <li>Do not include chat or communication features</li>
+            <li>
+              Do not include open chat — Co-op Mode allows only preset emoji reactions (not
+              free-text messaging) between paired players
+            </li>
             <li>Contain no inappropriate content</li>
           </ul>
           <p className="mt-2">

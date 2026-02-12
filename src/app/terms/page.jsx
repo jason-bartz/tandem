@@ -41,7 +41,7 @@ export default function TermsOfUse() {
           <p className="text-xs text-gray-500 dark:text-gray-400">
             <strong>Effective Date</strong>: August 15, 2025
             <br />
-            <strong>Last Updated</strong>: February 6, 2026
+            <strong>Last Updated</strong>: February 12, 2026
           </p>
         </div>
       ),
@@ -80,6 +80,7 @@ export default function TermsOfUse() {
             </li>
             <li>Statistics tracking and streak counting</li>
             <li>Global leaderboards for competition (requires free account)</li>
+            <li>Co-op Mode for real-time multiplayer in Daily Alchemy (requires free account)</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
             <li>iCloud sync across devices (iOS only)</li>
             <li>Optional in-app purchases for premium features (tandemdaily.com and iOS)</li>
@@ -251,6 +252,69 @@ export default function TermsOfUse() {
               We do not guarantee the accuracy or availability of first discovery data. Discovery
               credits are provided "as is" and may be affected by technical issues or data
               corrections. This feature is available on both web and iOS.
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      id: 'coop-mode',
+      title: 'Co-op Mode',
+      content: (
+        <div className="space-y-4 text-sm">
+          <div>
+            <h4 className="font-semibold mb-2">Overview</h4>
+            <p>
+              Co-op Mode in Daily Alchemy allows two signed-in players to combine elements together
+              in real time. By using Co-op Mode, you agree to share certain account information with
+              your co-op partner and to conduct yourself respectfully during sessions.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Information Visible to Your Partner</h4>
+            <p className="mb-2">
+              When you join or create a co-op session, the following is visible to the other player:
+            </p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Your username and avatar</li>
+              <li>Your online status (active, idle, or disconnected)</li>
+              <li>Element combinations you discover during the session</li>
+              <li>Emote reactions you send</li>
+            </ul>
+            <p className="mt-2 text-xs italic">
+              Your email address and other personal account information are never shared with your
+              co-op partner.
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Invite Codes</h4>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Co-op sessions use a 6-character invite code to connect players</li>
+              <li>You are responsible for sharing invite codes only with intended partners</li>
+              <li>Invite codes expire when the session starts or ends</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Conduct</h4>
+            <p className="mb-2">By using Co-op Mode, you agree to:</p>
+            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
+              <li>Treat your co-op partner with respect</li>
+              <li>Not use emotes or usernames to harass, bully, or intimidate others</li>
+              <li>Not exploit co-op features to manipulate game data or leaderboards</li>
+              <li>Use an appropriate username free of offensive content</li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-2">Session Data</h4>
+            <p>
+              Co-op session data (element bank, move counts, discoveries) is stored on our servers
+              for the duration of the session. Either player may save the session's element bank to
+              their own account. Sessions that are ended or abandoned are cleaned up automatically.
+              We reserve the right to terminate co-op sessions that violate these Terms.
             </p>
           </div>
         </div>
@@ -813,6 +877,10 @@ export default function TermsOfUse() {
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
                         Daily Alchemy also available free at dailyalchemy.fun (ad-supported)
+                      </li>
+                      <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                        <span className="text-[#ff66c4]">•</span>
+                        Co-op mode shares your username and avatar with your partner
                       </li>
                       <li className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
                         <span className="text-[#ff66c4]">•</span>
