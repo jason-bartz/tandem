@@ -272,7 +272,10 @@ function TandemGameContainer({ initialPuzzleData }) {
     );
   }
 
-  if (game.error) {
+  // Only show full-page error if an error occurred AFTER a puzzle was already loaded
+  // (e.g., archive loading failed). If puzzle is null (no puzzle for today), fall through
+  // to WelcomeScreen so the other three games remain accessible.
+  if (game.error && game.puzzle) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
         <div className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4">
@@ -318,6 +321,7 @@ function TandemGameContainer({ initialPuzzleData }) {
                 toggleTheme={toggleTheme}
                 onSelectPuzzle={handleSelectPuzzle}
                 puzzle={game.puzzle}
+                tandemError={game.error}
               />
             </div>
           )}

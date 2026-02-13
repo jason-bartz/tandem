@@ -30,6 +30,7 @@ export default function GameCard({
   completedMessage = 'Completed!',
   animationDelay = 0,
   showNewBadge = false,
+  unavailable = false,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const { lightTap } = useHaptics();
@@ -160,6 +161,8 @@ export default function GameCard({
           >
             {loading ? (
               <span className="inline-block w-20 h-4 bg-gray-200 dark:bg-gray-700 rounded" />
+            ) : unavailable ? (
+              <span className="text-amber-600 dark:text-amber-400">Will be ready shortly!</span>
             ) : completed ? (
               <span className="text-green-600 dark:text-green-400">{completedMessage}</span>
             ) : (

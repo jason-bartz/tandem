@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
 import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
 import { getCurrentReelPuzzleNumber, getLocalDateString } from '@/lib/reelConnectionsUtils';
@@ -34,6 +35,7 @@ export default function WelcomeScreen({
   _currentState,
   onSelectPuzzle,
   puzzle,
+  tandemError = null,
 }) {
   const router = useRouter();
   const tandemPuzzleNumber = getCurrentPuzzleNumber();
@@ -46,6 +48,7 @@ export default function WelcomeScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
+  const [showTandemUnavailable, setShowTandemUnavailable] = useState(false);
   const { welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
 
@@ -181,6 +184,10 @@ export default function WelcomeScreen({
   }, [onStart, tandemCompleted, puzzle]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleTandemClick = () => {
+    if (tandemError) {
+      setShowTandemUnavailable(true);
+      return;
+    }
     trackGameCardClick(GAME_TYPES.TANDEM, tandemPuzzleNumber, puzzle?.date);
     if (tandemCompleted && puzzle?.date) {
       onSelectPuzzle(puzzle.date);
@@ -239,7 +246,7 @@ export default function WelcomeScreen({
             miniPlayed={miniPlayed}
             soupPlayed={soupPlayed}
             reelPlayed={reelPlayed}
-            isLoading={!puzzle || miniLoading || soupLoading || reelLoading}
+            isLoading={(!puzzle && !tandemError) || miniLoading || soupLoading || reelLoading}
           />
 
           {/* Game Cards */}
@@ -251,7 +258,8 @@ export default function WelcomeScreen({
               description="Decipher four emoji pairs that share a hidden theme."
               puzzleNumber={tandemPuzzleNumber}
               onClick={handleTandemClick}
-              loading={!puzzle}
+              loading={!puzzle && !tandemError}
+              unavailable={!!tandemError && !puzzle}
               completed={tandemCompleted}
               completedMessage="You discovered today's theme"
               animationDelay={0}
@@ -331,6 +339,36 @@ export default function WelcomeScreen({
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
       <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
+
+      {/* Tandem Unavailable Modal */}
+      {showTandemUnavailable && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+          onClick={() => setShowTandemUnavailable(false)}
+        >
+          <div
+            className="bg-ghost-white dark:bg-gray-800 rounded-3xl p-8 max-w-md text-center mx-4"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mb-6">
+              <Image
+                src="/game/tandem/asleep.png"
+                alt="Puzzlemaster asleep"
+                width={120}
+                height={120}
+                className="mx-auto"
+              />
+            </div>
+            <p className="text-gray-600 dark:text-gray-400 mb-6">{tandemError}</p>
+            <button
+              onClick={() => setShowTandemUnavailable(false)}
+              className="px-6 py-3 bg-sky-600 text-white rounded-xl hover:bg-sky-700 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
     </>
   );
 }
