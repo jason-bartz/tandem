@@ -78,7 +78,6 @@ function ErrorDisplay({ error, onGoBack }) {
  */
 export function DailyAlchemyGame({ initialDate = null }) {
   const router = useRouter();
-  const { highContrast } = useTheme();
   const { lightTap } = useHaptics();
   const { user, userProfile, serviceUnavailable } = useAuth();
 
@@ -388,47 +387,16 @@ export function DailyAlchemyGame({ initialDate = null }) {
   return (
     <>
       <div
-        className={cn(
-          'fixed inset-0 flex flex-col overflow-hidden',
-          isStandaloneAlchemy && 'bg-white dark:bg-gray-900'
-        )}
-        style={isStandaloneAlchemy ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
+        className="fixed inset-0 flex flex-col overflow-hidden bg-white dark:bg-gray-900"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
       >
-        {/* Background - green on main site, white on standalone */}
         <DailyAlchemyBackground />
         {/* Main game card - pt-4 for web, pt-safe-ios for iOS notch */}
         {/* Desktop: wider container for side-by-side layout */}
-        <div
-          className={cn(
-            'flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto',
-            !isStandaloneAlchemy && 'pt-4 pt-safe-ios'
-          )}
-        >
-          <div
-            className={cn(
-              'flex-1 flex flex-col mx-4 mb-4 min-h-0',
-              isStandaloneAlchemy
-                ? 'rounded-none border-0'
-                : cn(
-                    'rounded-[32px] border-[3px]',
-                    highContrast
-                      ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                      : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                  )
-            )}
-          >
+        <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto">
+          <div className="flex-1 flex flex-col mx-4 mb-4 min-h-0">
             {/* Header - back button, title/date, and hamburger menu */}
-            <header
-              className={cn(
-                'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0',
-                isStandaloneAlchemy
-                  ? 'pt-3'
-                  : cn(
-                      'rounded-t-[29px]',
-                      highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
-                    )
-              )}
-            >
+            <header className="pt-3 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0">
               {/* Back button - hidden on standalone welcome (no page to go back to) */}
               {isStandaloneAlchemy && gameState === SOUP_GAME_STATES.WELCOME ? (
                 <div className="w-8 h-8 flex-shrink-0" />
