@@ -233,7 +233,7 @@ function ElementChipInner({
         WebkitTouchCallout: 'none',
       }}
       whileTap={!disabled && !reduceMotion && !disableAnimations ? { scale: 0.95 } : undefined}
-      initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0, opacity: 0 } : false}
+      initial={isNew && !reduceMotion && !disableAnimations ? { scale: 0.3, opacity: 0 } : false}
       animate={
         // Long press "pop" animation for favorites feedback (bigger pop)
         isLongPressPop && !reduceMotion && !disableAnimations
@@ -242,7 +242,7 @@ function ElementChipInner({
             isHoldReady && !reduceMotion && !disableAnimations
             ? { scale: 1.08, y: -2 }
             : isNew && !reduceMotion && !disableAnimations
-              ? { scale: 1, opacity: 1 }
+              ? { scale: [0.3, 1.07, 0.97, 1], opacity: 1 }
               : { scale: 1, y: 0 }
       }
       transition={
@@ -250,9 +250,14 @@ function ElementChipInner({
           ? { type: 'spring', stiffness: 500, damping: 12 }
           : isHoldReady
             ? { type: 'spring', stiffness: 400, damping: 15 }
-            : !disableAnimations
-              ? { type: 'spring', stiffness: 500, damping: 25 }
-              : undefined
+            : isNew && !disableAnimations
+              ? {
+                  scale: { duration: 0.2, times: [0, 0.5, 0.8, 1], ease: 'easeOut' },
+                  opacity: { duration: 0.1 },
+                }
+              : !disableAnimations
+                ? { type: 'spring', stiffness: 500, damping: 25 }
+                : undefined
       }
       aria-label={`${element.name}${isSelected ? ' (selected)' : ''}${isNew ? ' (new)' : ''}`}
       aria-pressed={isSelected}
