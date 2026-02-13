@@ -6,7 +6,7 @@ import { Plus, Minus, X } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { playSwitchClickSound } from '@/lib/sounds';
+import { playSwitchClickSound, playClearSound } from '@/lib/sounds';
 
 const COMBINE_ICONS = [
   'biohazard',
@@ -555,7 +555,10 @@ export function CombinationArea({
       {/* Action Buttons - aligned to match element slots above */}
       <div className="flex items-center justify-center gap-3 sm:gap-4">
         <button
-          onClick={onClear}
+          onClick={() => {
+            playClearSound();
+            onClear();
+          }}
           disabled={(!selectedA && !selectedB) || isCombining || isAnimating || disabled}
           className={cn(
             'w-[96px] sm:w-[112px] shrink-0 grow-0 py-1.5 sm:py-3',

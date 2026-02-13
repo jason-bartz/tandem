@@ -678,14 +678,14 @@ export function playFirstDiscoverySound() {
 
   const currentTime = context.currentTime;
 
-  // Triumphant ascending arpeggio
+  // Triumphant ascending arpeggio (compressed timing)
   const notes = [
-    { freq: 523.25, start: 0, duration: 0.15 }, // C5
-    { freq: 659.25, start: 0.1, duration: 0.15 }, // E5
-    { freq: 783.99, start: 0.2, duration: 0.15 }, // G5
-    { freq: 1046.5, start: 0.3, duration: 0.4 }, // C6
-    { freq: 1318.51, start: 0.35, duration: 0.35 }, // E6
-    { freq: 1567.98, start: 0.4, duration: 0.5 }, // G6
+    { freq: 523.25, start: 0, duration: 0.12 }, // C5
+    { freq: 659.25, start: 0.07, duration: 0.12 }, // E5
+    { freq: 783.99, start: 0.14, duration: 0.12 }, // G5
+    { freq: 1046.5, start: 0.21, duration: 0.28 }, // C6
+    { freq: 1318.51, start: 0.25, duration: 0.25 }, // E6
+    { freq: 1567.98, start: 0.29, duration: 0.32 }, // G6
   ];
 
   notes.forEach(({ freq, start, duration }) => {
@@ -708,8 +708,8 @@ export function playFirstDiscoverySound() {
 
   // Add sparkle harmonics
   const sparkles = [
-    { freq: 2093, start: 0.5, duration: 0.3 }, // C7
-    { freq: 2637, start: 0.55, duration: 0.25 }, // E7
+    { freq: 2093, start: 0.35, duration: 0.2 }, // C7
+    { freq: 2637, start: 0.39, duration: 0.18 }, // E7
   ];
 
   sparkles.forEach(({ freq, start, duration }) => {
@@ -858,8 +858,8 @@ export function playSoupStartSound() {
     osc.frequency.setValueAtTime(freq, currentTime + start);
 
     gain.gain.setValueAtTime(0, currentTime + start);
-    gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.03);
-    gain.gain.setValueAtTime(0.06, currentTime + start + duration * 0.6);
+    gain.gain.linearRampToValueAtTime(0.06, currentTime + start + 0.03);
+    gain.gain.setValueAtTime(0.045, currentTime + start + duration * 0.6);
     gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
 
     osc.connect(gain);
@@ -885,8 +885,8 @@ export function playSoupStartSound() {
     osc.frequency.setValueAtTime(freq, currentTime + start);
 
     gain.gain.setValueAtTime(0, currentTime + start);
-    gain.gain.linearRampToValueAtTime(0.12, currentTime + start + 0.015);
-    gain.gain.setValueAtTime(0.1, currentTime + start + duration * 0.5);
+    gain.gain.linearRampToValueAtTime(0.09, currentTime + start + 0.015);
+    gain.gain.setValueAtTime(0.075, currentTime + start + duration * 0.5);
     gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
 
     // Add subtle vibrato for magical feel
@@ -922,7 +922,7 @@ export function playSoupStartSound() {
     osc.frequency.setValueAtTime(freq, currentTime + start);
 
     gain.gain.setValueAtTime(0, currentTime + start);
-    gain.gain.linearRampToValueAtTime(0.05, currentTime + start + 0.01);
+    gain.gain.linearRampToValueAtTime(0.0375, currentTime + start + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
 
     osc.connect(gain);
@@ -940,8 +940,8 @@ export function playSoupStartSound() {
   hum.frequency.setValueAtTime(130.81, currentTime); // C3
 
   humGain.gain.setValueAtTime(0, currentTime);
-  humGain.gain.linearRampToValueAtTime(0.04, currentTime + 0.1);
-  humGain.gain.setValueAtTime(0.03, currentTime + 0.4);
+  humGain.gain.linearRampToValueAtTime(0.03, currentTime + 0.1);
+  humGain.gain.setValueAtTime(0.0225, currentTime + 0.4);
   humGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.7);
 
   hum.connect(humGain);
@@ -958,42 +958,23 @@ export function playPlunkSound() {
 
   const currentTime = context.currentTime;
 
-  // Water drop / plunk sound - quick and satisfying
-  // Layer 1: Low frequency "plop" body
+  // Warm low-frequency plop — satisfying single-layer click
   const plop = context.createOscillator();
   const plopGain = context.createGain();
 
   plop.type = 'sine';
-  plop.frequency.setValueAtTime(300, currentTime);
-  plop.frequency.exponentialRampToValueAtTime(150, currentTime + 0.08); // Descending pitch
+  plop.frequency.setValueAtTime(350, currentTime);
+  plop.frequency.exponentialRampToValueAtTime(130, currentTime + 0.09);
 
   plopGain.gain.setValueAtTime(0, currentTime);
-  plopGain.gain.linearRampToValueAtTime(0.12, currentTime + 0.005); // Fast attack
-  plopGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.08); // Quick decay
+  plopGain.gain.linearRampToValueAtTime(0.14, currentTime + 0.005);
+  plopGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
 
   plop.connect(plopGain);
   plopGain.connect(context.destination);
 
   plop.start(currentTime);
-  plop.stop(currentTime + 0.1);
-
-  // Layer 2: Higher frequency "tap" for clarity
-  const tap = context.createOscillator();
-  const tapGain = context.createGain();
-
-  tap.type = 'triangle';
-  tap.frequency.setValueAtTime(800, currentTime);
-  tap.frequency.exponentialRampToValueAtTime(400, currentTime + 0.04);
-
-  tapGain.gain.setValueAtTime(0, currentTime);
-  tapGain.gain.linearRampToValueAtTime(0.06, currentTime + 0.003);
-  tapGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.04);
-
-  tap.connect(tapGain);
-  tapGain.connect(context.destination);
-
-  tap.start(currentTime);
-  tap.stop(currentTime + 0.05);
+  plop.stop(currentTime + 0.12);
 }
 
 // Play a new element discovery sound (softer than first discovery)
@@ -1231,6 +1212,159 @@ export function playEmoteNotificationSound() {
 
     gain.gain.setValueAtTime(0, currentTime + start);
     gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.015);
+    gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
+
+    osc.connect(gain);
+    gain.connect(context.destination);
+
+    osc.start(currentTime + start);
+    osc.stop(currentTime + start + duration + 0.02);
+  });
+}
+
+// Play a soft pop when a co-op partner's element appears in your bank
+export function playPartnerElementSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Soft bubble pop - quick pitch drop
+  const pop = context.createOscillator();
+  const popGain = context.createGain();
+
+  pop.type = 'sine';
+  pop.frequency.setValueAtTime(500, currentTime);
+  pop.frequency.exponentialRampToValueAtTime(180, currentTime + 0.06);
+
+  popGain.gain.setValueAtTime(0, currentTime);
+  popGain.gain.linearRampToValueAtTime(0.07, currentTime + 0.004);
+  popGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.08);
+
+  pop.connect(popGain);
+  popGain.connect(context.destination);
+
+  pop.start(currentTime);
+  pop.stop(currentTime + 0.1);
+
+  // Layer 2: Subtle bright sparkle
+  const sparkle = context.createOscillator();
+  const sparkleGain = context.createGain();
+
+  sparkle.type = 'sine';
+  sparkle.frequency.setValueAtTime(1400, currentTime + 0.01);
+
+  sparkleGain.gain.setValueAtTime(0, currentTime + 0.01);
+  sparkleGain.gain.linearRampToValueAtTime(0.025, currentTime + 0.015);
+  sparkleGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.08);
+
+  sparkle.connect(sparkleGain);
+  sparkleGain.connect(context.destination);
+
+  sparkle.start(currentTime + 0.01);
+  sparkle.stop(currentTime + 0.1);
+}
+
+// Play a descending whoosh when clearing element selections
+export function playClearSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Filtered noise burst sweeping down — feels like wiping away
+  const bufferSize = context.sampleRate * 0.12;
+  const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) {
+    data[i] = Math.random() * 2 - 1;
+  }
+
+  const noise = context.createBufferSource();
+  noise.buffer = buffer;
+
+  const filter = context.createBiquadFilter();
+  filter.type = 'bandpass';
+  filter.Q.setValueAtTime(1.5, currentTime);
+  filter.frequency.setValueAtTime(800, currentTime);
+  filter.frequency.exponentialRampToValueAtTime(200, currentTime + 0.1);
+
+  const gain = context.createGain();
+  gain.gain.setValueAtTime(0, currentTime);
+  gain.gain.linearRampToValueAtTime(0.18, currentTime + 0.004);
+  gain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.1);
+
+  noise.connect(filter);
+  filter.connect(gain);
+  gain.connect(context.destination);
+
+  noise.start(currentTime);
+  noise.stop(currentTime + 0.12);
+}
+
+// Play a crisp click/thock when pressing the Combine or Subtract button
+export function playCombineButtonSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  // Layer 1: Sharp click transient — the snap you hear first
+  const click = context.createOscillator();
+  const clickGain = context.createGain();
+
+  click.type = 'triangle';
+  click.frequency.setValueAtTime(1100, currentTime);
+  click.frequency.exponentialRampToValueAtTime(350, currentTime + 0.012);
+
+  clickGain.gain.setValueAtTime(0.12, currentTime);
+  clickGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.025);
+
+  click.connect(clickGain);
+  clickGain.connect(context.destination);
+
+  click.start(currentTime);
+  click.stop(currentTime + 0.03);
+
+  // Layer 2: Resonant thock body — the satisfying low-end follow-through
+  const thock = context.createOscillator();
+  const thockGain = context.createGain();
+
+  thock.type = 'sine';
+  thock.frequency.setValueAtTime(280, currentTime);
+  thock.frequency.exponentialRampToValueAtTime(140, currentTime + 0.05);
+
+  thockGain.gain.setValueAtTime(0.14, currentTime);
+  thockGain.gain.exponentialRampToValueAtTime(0.001, currentTime + 0.06);
+
+  thock.connect(thockGain);
+  thockGain.connect(context.destination);
+
+  thock.start(currentTime);
+  thock.stop(currentTime + 0.08);
+}
+
+// Play a gentle ascending two-note chime when saving to a slot
+export function playSaveSound() {
+  const context = initAudio();
+  if (!context) return;
+
+  const currentTime = context.currentTime;
+
+  const notes = [
+    { freq: 523.25, start: 0, duration: 0.1 }, // C5
+    { freq: 659.25, start: 0.06, duration: 0.12 }, // E5
+  ];
+
+  notes.forEach(({ freq, start, duration }) => {
+    const osc = context.createOscillator();
+    const gain = context.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(freq, currentTime + start);
+
+    gain.gain.setValueAtTime(0, currentTime + start);
+    gain.gain.linearRampToValueAtTime(0.08, currentTime + start + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.001, currentTime + start + duration);
 
     osc.connect(gain);
