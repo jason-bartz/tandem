@@ -37,7 +37,7 @@ export default function SidebarMenu({
   onOpenLeaderboard,
 }) {
   const { highContrast, reduceMotion, isDark, toggleTheme } = useTheme();
-  const { user, userProfile, profileLoading } = useAuth();
+  const { user, userProfile, profileLoading, isAnonymous } = useAuth();
   const { isActive: hasSubscription } = useSubscription();
   const { lightTap } = useHaptics();
   const router = useRouter();
@@ -129,7 +129,7 @@ export default function SidebarMenu({
 
   const username = getUsername();
   const userAvatar = getUserAvatar();
-  const isGuest = !user;
+  const isGuest = !user || isAnonymous;
 
   // Get zodiac sign and horoscope for logged-in users
   const getZodiacSign = (dateString) => {

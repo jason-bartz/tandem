@@ -25,7 +25,14 @@ import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
 
 export default function AccountPage() {
   const router = useRouter();
-  const { user, loading: authLoading, signOut, refreshProfile, userProfile } = useAuth();
+  const {
+    user,
+    loading: authLoading,
+    signOut,
+    refreshProfile,
+    userProfile,
+    isAnonymous,
+  } = useAuth();
   const { correctAnswer: successHaptic, lightTap } = useHaptics();
   const [subscription, setSubscription] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -51,13 +58,14 @@ export default function AccountPage() {
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
-  // Redirect to home if not authenticated (web only)
+  // Redirect to home if not authenticated or anonymous (web only)
+  // Anonymous users (from Daily Alchemy gameplay) should sign in to access account
   // iOS users access this page from within the app after signing in via Settings
   useEffect(() => {
-    if (!authLoading && !user && isWeb) {
+    if (!authLoading && (!user || isAnonymous) && isWeb) {
       router.push(isStandaloneAlchemy ? '/daily-alchemy?auth=required' : '/?auth=required');
     }
-  }, [user, authLoading, router, isWeb]);
+  }, [user, isAnonymous, authLoading, router, isWeb]);
 
   // Load subscription status
   useEffect(() => {
@@ -461,12 +469,12 @@ export default function AccountPage() {
     );
   }
 
-  if (!user && isWeb) {
+  if ((!user || isAnonymous) && isWeb) {
     return null; // Will redirect
   }
 
-  // iOS: Show sign-in UI for unauthenticated users
-  if (!user && !isWeb) {
+  // iOS: Show sign-in UI for unauthenticated or anonymous users
+  if ((!user || isAnonymous) && !isWeb) {
     return <IOSSignInPage />;
   }
 
