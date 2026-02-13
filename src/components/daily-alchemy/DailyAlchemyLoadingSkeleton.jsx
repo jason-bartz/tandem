@@ -3,70 +3,33 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { cn } from '@/lib/utils';
 import { DailyAlchemyBackground } from './DailyAlchemyBackground';
-import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
  * DailyAlchemyLoadingSkeleton - Loading skeleton for Daily Alchemy game
  * Matches the exact structure of DailyAlchemyGame + DailyAlchemyWelcomeScreen
- * On standalone, uses white background instead of green
  */
 export function DailyAlchemyLoadingSkeleton() {
-  const { highContrast, reduceMotion } = useTheme();
+  const { reduceMotion } = useTheme();
 
   const shimmerClass = !reduceMotion ? 'skeleton-shimmer' : '';
 
   return (
     <div
-      className={cn(
-        'fixed inset-0 flex flex-col overflow-hidden',
-        isStandaloneAlchemy && 'bg-white dark:bg-gray-900'
-      )}
-      style={isStandaloneAlchemy ? { paddingTop: 'env(safe-area-inset-top, 0px)' } : undefined}
+      className="fixed inset-0 flex flex-col overflow-hidden bg-white dark:bg-gray-900"
+      style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
     >
-      {/* Background - green on main site, white on standalone */}
       <DailyAlchemyBackground />
 
       {/* Main container - matches DailyAlchemyGame layout */}
-      <div
-        className={cn(
-          'flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto',
-          !isStandaloneAlchemy && 'pt-4 pt-safe-ios'
-        )}
-      >
+      <div className="flex-1 flex flex-col max-w-md lg:max-w-4xl xl:max-w-5xl w-full mx-auto">
         {/* Card wrapper - matches DailyAlchemyGame */}
-        <div
-          className={cn(
-            'flex-1 flex flex-col mx-4 mb-4 min-h-0',
-            isStandaloneAlchemy
-              ? 'rounded-none border-0'
-              : cn(
-                  'rounded-[32px] border-[3px]',
-                  highContrast
-                    ? 'bg-hc-surface border-hc-border shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                    : 'bg-ghost-white dark:bg-bg-card border-border-main shadow-[6px_6px_0px_rgba(0,0,0,1)]'
-                )
-          )}
-        >
+        <div className="flex-1 flex flex-col mx-4 mb-4 min-h-0">
           {/* Header skeleton - matches DailyAlchemyGame header */}
-          <header
-            className={cn(
-              'pt-2 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0',
-              isStandaloneAlchemy
-                ? 'pt-3'
-                : cn(
-                    'rounded-t-[29px]',
-                    highContrast ? 'bg-hc-surface' : 'bg-ghost-white dark:bg-bg-card'
-                  )
-            )}
-          >
+          <header className="pt-3 pb-1 px-3 sm:px-5 flex items-center justify-between flex-shrink-0">
             {/* Back button placeholder */}
-            {isStandaloneAlchemy ? (
-              <div className="w-8 h-8 flex-shrink-0" />
-            ) : (
-              <div
-                className={`w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex-shrink-0 ${shimmerClass}`}
-              />
-            )}
+            <div
+              className={`w-8 h-8 rounded-lg bg-gray-200 dark:bg-gray-700 flex-shrink-0 ${shimmerClass}`}
+            />
 
             {/* Title placeholder */}
             <div className="flex-1 flex flex-col items-center">
