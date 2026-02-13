@@ -375,37 +375,23 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
 
         {/* Sign up CTA for anonymous users with first discoveries */}
         {result.isFirstDiscovery && isAnonymous && (
-          <motion.div
-            className="text-center mt-2"
+          <motion.p
+            className="text-xs text-gray-500 dark:text-gray-400 mt-2 text-center"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <motion.button
+            <button
               onClick={(e) => {
                 e.stopPropagation();
                 onSignUpCTA?.();
               }}
-              className={cn(
-                'px-5 py-2 text-sm font-bold',
-                'bg-soup-primary text-white',
-                'border-[2px] border-black',
-                'rounded-xl',
-                highContrast && 'border-[3px]'
-              )}
-              initial={{ boxShadow: '2px 2px 0px rgba(0,0,0,1)' }}
-              whileHover={{
-                y: -1,
-                boxShadow: '3px 3px 0px rgba(0,0,0,1)',
-              }}
-              whileTap={{ y: 0, boxShadow: 'none' }}
+              className="underline text-soup-primary font-semibold"
             >
-              Sign Up to Claim
-            </motion.button>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-              Create an account to lock in your discovery
-            </p>
-          </motion.div>
+              Create an account
+            </button>{' '}
+            to lock in your discovery
+          </motion.p>
         )}
 
         {/* Swipe hints at bottom - also clickable */}
