@@ -10,6 +10,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { SOUP_GAME_STATES } from '@/lib/daily-alchemy.constants';
 import { useDailyAlchemyGame } from '@/hooks/useDailyAlchemyGame';
 import { useAlchemyCoop } from '@/hooks/useAlchemyCoop';
+import { playPartnerElementSound } from '@/lib/sounds';
 import { DailyAlchemyWelcomeScreen } from './DailyAlchemyWelcomeScreen';
 import { DailyAlchemyGameScreen } from './DailyAlchemyGameScreen';
 import { DailyAlchemyCompleteScreen } from './DailyAlchemyCompleteScreen';
@@ -218,6 +219,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     onPartnerElement: useCallback(
       (element) => {
         addPartnerElement(element);
+        playPartnerElementSound();
       },
       [addPartnerElement]
     ),

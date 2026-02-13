@@ -7,6 +7,7 @@ import logger from '@/lib/logger';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import {
   playCombineSound,
+  playCombineButtonSound,
   playFailureSound,
   playFirstDiscoverySound,
   playHintSound,
@@ -1605,6 +1606,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const combineElements = useCallback(async () => {
     if (!selectedA || !selectedB || isCombining || isAnimating) return;
 
+    playCombineButtonSound();
     setIsCombining(true);
     // Don't clear lastResult here - let AnimatePresence handle transitions smoothly
 

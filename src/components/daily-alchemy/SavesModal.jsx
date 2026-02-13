@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { X, Pencil, Loader2, Download, Upload, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { playSaveSound } from '@/lib/sounds';
 
 /**
  * SavesModal - Modal for managing 3 creative mode save slots
@@ -124,6 +125,7 @@ export function SavesModal({
     try {
       const success = await onSaveToSlot?.(slotNum);
       if (success !== false) {
+        playSaveSound();
         setSaveSuccess(slotNum);
         setTimeout(() => {
           onClose();
