@@ -188,12 +188,54 @@ export function DailyAlchemyWelcomeScreen({
         </motion.button>
       )}
 
+      {/* Creative Mode Button */}
+      <motion.button
+        onClick={handleFreePlayClick}
+        className={cn(
+          'w-full max-w-sm flex items-center justify-center gap-3 py-4 mt-3',
+          'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+          'border-[3px] border-black dark:border-gray-600',
+          'rounded-xl font-bold text-lg',
+          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
+          'hover:bg-gray-50 dark:hover:bg-gray-700',
+          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
+          'active:translate-y-0 active:shadow-none',
+          'transition-all duration-150',
+          highContrast && 'border-[4px] border-hc-border'
+        )}
+        initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5 }}
+        whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
+      >
+        {!hasSubscription && (
+          <Image
+            src="/ui/shared/lock.png"
+            alt="Locked"
+            width={20}
+            height={20}
+            className="opacity-70"
+          />
+        )}
+        <span>Creative Mode</span>
+      </motion.button>
+
+      {/* Creative Mode Description */}
+      <motion.p
+        className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
+        initial={!reduceMotion ? { opacity: 0 } : false}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.53 }}
+      >
+        Combine elements endlessly with no goal or timer. Just pure discovery.
+      </motion.p>
+
       {/* Divider */}
       <motion.div
         className="w-full max-w-sm flex items-center gap-3 my-5"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
+        transition={{ delay: 0.55 }}
       >
         <div className="flex-1 h-[2px] bg-gray-300 dark:bg-gray-600" />
         <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">or</span>
@@ -217,7 +259,7 @@ export function DailyAlchemyWelcomeScreen({
         )}
         initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.53 }}
+        transition={{ delay: 0.58 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
         {!hasSubscription ? (
@@ -239,51 +281,9 @@ export function DailyAlchemyWelcomeScreen({
         className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mb-3 px-4"
         initial={!reduceMotion ? { opacity: 0 } : false}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.56 }}
-      >
-        Combine elements together with a friend in real time.
-      </motion.p>
-
-      {/* Creative Mode Button */}
-      <motion.button
-        onClick={handleFreePlayClick}
-        className={cn(
-          'w-full max-w-sm flex items-center justify-center gap-3 py-4',
-          'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-          'border-[3px] border-black dark:border-gray-600',
-          'rounded-xl font-bold text-lg',
-          'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
-          'hover:bg-gray-50 dark:hover:bg-gray-700',
-          'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
-          'active:translate-y-0 active:shadow-none',
-          'transition-all duration-150',
-          highContrast && 'border-[4px] border-hc-border'
-        )}
-        initial={!reduceMotion ? { opacity: 0, scale: 0.95 } : false}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.55 }}
-        whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
-      >
-        {!hasSubscription && (
-          <Image
-            src="/ui/shared/lock.png"
-            alt="Locked"
-            width={20}
-            height={20}
-            className="opacity-70"
-          />
-        )}
-        <span>Creative Mode</span>
-      </motion.button>
-
-      {/* Creative Mode Description */}
-      <motion.p
-        className="w-full max-w-sm text-center text-sm text-gray-500 dark:text-gray-400 mt-3 px-4"
-        initial={!reduceMotion ? { opacity: 0 } : false}
-        animate={{ opacity: 1 }}
         transition={{ delay: 0.6 }}
       >
-        Combine elements endlessly with no goal or timer. Just pure discovery.
+        Solve today&apos;s puzzle or explore creative mode together with a friend in real time.
       </motion.p>
 
       {/* Discord Link */}

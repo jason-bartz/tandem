@@ -404,7 +404,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       puzzle &&
       user &&
       !isComplete &&
-      !freePlayMode // Don't auto-save to localStorage in Creative Mode
+      !freePlayMode && // Don't auto-save to localStorage in Creative Mode
+      !coopMode // Don't auto-save in co-op mode
     ) {
       const saveTimeout = setTimeout(() => {
         saveProgress();
@@ -660,10 +661,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Save progress immediately when timer is paused (ensures elapsedTime is saved before user exits)
   useEffect(() => {
-    if (isPaused && hasStarted && puzzle && user && !isComplete && !freePlayMode) {
+    if (isPaused && hasStarted && puzzle && user && !isComplete && !freePlayMode && !coopMode) {
       saveProgress();
     }
-  }, [isPaused, hasStarted, puzzle, user, isComplete, freePlayMode, saveProgress]);
+  }, [isPaused, hasStarted, puzzle, user, isComplete, freePlayMode, coopMode, saveProgress]);
 
   /**
    * Start the game
@@ -931,6 +932,61 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     },
     [] // eslint-disable-line react-hooks/exhaustive-deps
   );
+
+  /**
+   * Start co-op daily puzzle mode
+   * Combines daily puzzle (timer, target, win condition) with co-op (partner sharing)
+   * Does NOT save to localStorage or record stats to server
+   */
+  const startCoopDailyMode = useCallback(() => {
+    playSoupStartSound();
+
+    // Disable creative mode autosave
+    setCreativeLoadComplete(false);
+
+    // freePlayMode=false enables timer + win condition + game over
+    // coopMode=true enables partner bar, emotes, element sharing
+    setFreePlayMode(false);
+    setCoopMode(true);
+    setIsSubtractMode(false);
+    setIsComplete(false);
+    setIsGameOver(false);
+    setHasStarted(true);
+    setSelectedA(null);
+    setSelectedB(null);
+    setLastResult(null);
+    // Pre-set to true to prevent server stats recording in handlePuzzleComplete
+    setStatsRecorded(true);
+
+    // Clear favorites for daily mode
+    setFavoriteElements(new Set());
+
+    // Fresh start with starter elements only
+    setElementBank([...STARTER_ELEMENTS]);
+    discoveredElements.current = new Set(['Earth', 'Water', 'Fire', 'Wind']);
+    madeCombinations.current = new Set();
+
+    // Reset all game state
+    setCombinationPath([]);
+    setMovesCount(0);
+    setNewDiscoveries(0);
+    setFirstDiscoveries(0);
+    setFirstDiscoveryElements([]);
+    setRecentElements([]);
+    setHintsUsed(0);
+    setCurrentHintMessage(null);
+    setCurrentHintElement(null);
+    setCompletionStats(null);
+
+    // Start timer (same as startGame)
+    setStartTime(Date.now());
+    setElapsedTime(0);
+    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS);
+    setIsPaused(false);
+    pausedAtRef.current = null;
+
+    setGameState(SOUP_GAME_STATES.PLAYING);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   /**
    * Add an element received from a co-op partner
@@ -1818,34 +1874,36 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setIsComplete(true);
     setGameState(SOUP_GAME_STATES.COMPLETE);
 
-    // Save completion to localStorage
-    const key = `${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${puzzleDateRef.current}`;
-    const elementEmojis = {};
-    elementBank.forEach((el) => {
-      elementEmojis[el.name] = el.emoji;
-    });
+    // Save completion to localStorage (skip in co-op to avoid interfering with solo progress)
+    if (!coopMode) {
+      const key = `${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${puzzleDateRef.current}`;
+      const elementEmojis = {};
+      elementBank.forEach((el) => {
+        elementEmojis[el.name] = el.emoji;
+      });
 
-    const completionState = {
-      elementBank: elementBank.map((el) => el.name),
-      elementEmojis,
-      combinationPath,
-      movesCount,
-      elapsedTime,
-      newDiscoveries,
-      firstDiscoveries,
-      completed: true,
-      completedAt: Date.now(),
-    };
+      const completionState = {
+        elementBank: elementBank.map((el) => el.name),
+        elementEmojis,
+        combinationPath,
+        movesCount,
+        elapsedTime,
+        newDiscoveries,
+        firstDiscoveries,
+        completed: true,
+        completedAt: Date.now(),
+      };
 
-    try {
-      localStorage.setItem(key, JSON.stringify(completionState));
-      // Also mark as attempted (for leaderboard first-attempt tracking)
-      if (!freePlayMode) {
-        const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${puzzleDateRef.current}`;
-        localStorage.setItem(attemptedKey, 'true');
+      try {
+        localStorage.setItem(key, JSON.stringify(completionState));
+        // Also mark as attempted (for leaderboard first-attempt tracking)
+        if (!freePlayMode) {
+          const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${puzzleDateRef.current}`;
+          localStorage.setItem(attemptedKey, 'true');
+        }
+      } catch (err) {
+        logger.error('[ElementSoup] Failed to save completion', { error: err.message });
       }
-    } catch (err) {
-      logger.error('[ElementSoup] Failed to save completion', { error: err.message });
     }
 
     // Generate local completion stats
@@ -1986,6 +2044,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     firstDiscoveries,
     isFirstAttempt,
     hintsUsed,
+    coopMode,
   ]);
 
   /**
@@ -2000,7 +2059,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setGameState(SOUP_GAME_STATES.GAME_OVER);
 
     // Mark this puzzle as attempted (so retries don't count for leaderboard)
-    if (puzzleDateRef.current && !freePlayMode) {
+    // Skip in co-op mode to avoid interfering with solo progress
+    if (puzzleDateRef.current && !freePlayMode && !coopMode) {
       try {
         const attemptedKey = `${SOUP_STORAGE_KEYS.PUZZLE_ATTEMPTED}${puzzleDateRef.current}`;
         localStorage.setItem(attemptedKey, 'true');
@@ -2017,7 +2077,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCompletionStats({
       gameOverMessage: getRandomMessage(GAME_OVER_MESSAGES),
     });
-  }, [isGameOver, isComplete, freePlayMode]);
+  }, [isGameOver, isComplete, freePlayMode, coopMode]);
 
   // Game over effect - triggers when time runs out in daily mode
   useEffect(() => {
@@ -2355,6 +2415,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     freePlayMode,
     coopMode,
     startCoopMode,
+    startCoopDailyMode,
+    handleGameOver,
     addPartnerElement,
 
     // Favorites

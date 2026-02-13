@@ -20,6 +20,7 @@ function generateInviteCode() {
  * Create a new co-op session with an invite code
  * Body:
  * - saveSlot?: number (1-3, optional - loads element bank from creative save)
+ * - mode?: string ('daily' | 'creative', default 'creative')
  */
 export async function POST(request) {
   try {
@@ -33,7 +34,8 @@ export async function POST(request) {
     }
 
     const body = await request.json().catch(() => ({}));
-    const { saveSlot } = body;
+    const { saveSlot, mode } = body;
+    const sessionMode = mode === 'daily' ? 'daily' : 'creative';
 
     // End any existing waiting sessions by this host
     await supabase
@@ -42,7 +44,7 @@ export async function POST(request) {
       .eq('host_user_id', user.id)
       .eq('status', 'waiting');
 
-    // Load element bank from save slot if specified
+    // Load element bank - daily mode always uses starters, creative can load from save
     let elementBank = STARTER_ELEMENTS.map((e) => ({
       name: e.name,
       emoji: e.emoji,
@@ -50,7 +52,7 @@ export async function POST(request) {
     }));
     let hostFavorites = [];
 
-    if (saveSlot && saveSlot >= 1 && saveSlot <= 3) {
+    if (sessionMode === 'creative' && saveSlot && saveSlot >= 1 && saveSlot <= 3) {
       const { data: save } = await supabase
         .from('daily_alchemy_creative_saves')
         .select('element_bank, favorites')
@@ -98,8 +100,9 @@ export async function POST(request) {
         status: 'waiting',
         element_bank: elementBank,
         total_discoveries: elementBank.filter((e) => !e.isStarter).length,
+        mode: sessionMode,
       })
-      .select('id, invite_code, status, element_bank')
+      .select('id, invite_code, status, element_bank, mode')
       .single();
 
     if (insertError) {
@@ -113,6 +116,7 @@ export async function POST(request) {
       hostUserId: user.id,
       elementCount: elementBank.length,
       fromSave: !!saveSlot,
+      mode: sessionMode,
     });
 
     return NextResponse.json({
@@ -122,6 +126,7 @@ export async function POST(request) {
         inviteCode: session.invite_code,
         elementBank: session.element_bank,
         status: session.status,
+        mode: session.mode,
       },
       hostFavorites,
     });
