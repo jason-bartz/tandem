@@ -33,7 +33,7 @@ CREATE TABLE element_combinations (
 
   -- AI generation metadata
   ai_generated BOOLEAN DEFAULT TRUE,
-  ai_model VARCHAR(50),
+  ai_model VARCHAR(100),
   ai_prompt_tokens INTEGER,
   ai_response_tokens INTEGER,
 

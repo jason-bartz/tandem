@@ -277,7 +277,7 @@ export async function POST(request) {
           result_emoji: finalEmoji,
           discovered_by: userId || null,
           ai_generated: true,
-          ai_model: aiResult.modelUsed || 'unknown',
+          ai_model: (aiResult.modelUsed || 'unknown').slice(0, 100),
           ai_prompt_tokens: aiResult.usage?.promptTokens || null,
           ai_response_tokens: aiResult.usage?.completionTokens || null,
         })
