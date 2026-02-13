@@ -27,33 +27,52 @@ export default function AdminLayout({ children }) {
   }, [pathname, isPublicPage]);
 
   useEffect(() => {
+    const originalValues = new Map();
+
+    // Swap favicons to admin variants
     const faviconLinks = document.querySelectorAll('link[rel*="icon"]');
-    const originalFavicons = new Map();
-
     faviconLinks.forEach((link) => {
-      // Save original href
-      originalFavicons.set(link, link.href);
+      originalValues.set(link, link.href);
 
-      if (link.rel === 'icon' || link.rel === 'shortcut icon') {
+      if (link.rel === 'apple-touch-icon') {
+        link.href = '/favicons/admin/apple-touch-icon.png';
+      } else if (link.rel === 'icon' || link.rel === 'shortcut icon') {
         if (link.sizes === '16x16' || link.getAttribute('sizes') === '16x16') {
           link.href = '/favicons/admin/favicon-16x16.png';
         } else if (link.sizes === '32x32' || link.getAttribute('sizes') === '32x32') {
           link.href = '/favicons/admin/favicon-32x32.png';
         } else {
-          // Default icon (no size specified)
           link.href = '/favicons/admin/favicon-32x32.png';
         }
       }
     });
 
-    // Cleanup: restore original favicons when leaving admin
+    // Swap manifest to admin-specific manifest
+    const manifestLink = document.querySelector('link[rel="manifest"]');
+    if (manifestLink) {
+      originalValues.set(manifestLink, manifestLink.href);
+      manifestLink.href = '/admin.webmanifest';
+    }
+
+    // Swap apple-mobile-web-app-title
+    const appTitleMeta = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+    if (appTitleMeta) {
+      originalValues.set(appTitleMeta, appTitleMeta.content);
+      appTitleMeta.content = 'Tandem Admin';
+    }
+
+    // Cleanup: restore originals when leaving admin
     return () => {
       faviconLinks.forEach((link) => {
-        const originalHref = originalFavicons.get(link);
-        if (originalHref) {
-          link.href = originalHref;
-        }
+        const original = originalValues.get(link);
+        if (original) link.href = original;
       });
+      if (manifestLink && originalValues.has(manifestLink)) {
+        manifestLink.href = originalValues.get(manifestLink);
+      }
+      if (appTitleMeta && originalValues.has(appTitleMeta)) {
+        appTitleMeta.content = originalValues.get(appTitleMeta);
+      }
     };
   }, []);
 
