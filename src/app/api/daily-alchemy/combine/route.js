@@ -277,7 +277,9 @@ export async function POST(request) {
           result_emoji: finalEmoji,
           discovered_by: userId || null,
           ai_generated: true,
-          ai_model: process.env.AI_MODEL || 'claude-sonnet-4-20250514',
+          ai_model: aiResult.modelUsed || 'unknown',
+          ai_prompt_tokens: aiResult.usage?.promptTokens || null,
+          ai_response_tokens: aiResult.usage?.completionTokens || null,
         })
         .select('id')
         .single();

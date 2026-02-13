@@ -4159,7 +4159,12 @@ Respond in JSON format:
         });
       }
 
-      return { element: safeResult.element, emoji: safeResult.emoji };
+      return {
+        element: safeResult.element,
+        emoji: safeResult.emoji,
+        modelUsed: result.modelUsed,
+        usage: result.usage,
+      };
     } catch (error) {
       const duration = Date.now() - startTime;
 
@@ -4339,7 +4344,12 @@ Respond with ONLY a JSON object in this exact format (no markdown, no explanatio
         });
       }
 
-      return { element: safeResult.element, emoji: safeResult.emoji };
+      return {
+        element: safeResult.element,
+        emoji: safeResult.emoji,
+        modelUsed: result.modelUsed,
+        usage: result.usage,
+      };
     } catch (error) {
       const duration = Date.now() - startTime;
 
