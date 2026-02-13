@@ -102,6 +102,7 @@ export async function POST(request) {
         hostAvatarPath,
         elementBank: session.element_bank || [],
         status: 'active',
+        mode: session.mode || 'creative',
         totalMoves: session.total_moves || 0,
         totalDiscoveries: session.total_discoveries || 0,
         firstDiscoveries: session.first_discoveries || 0,

@@ -184,6 +184,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     freePlayMode,
     coopMode,
     startCoopMode,
+    startCoopDailyMode,
+    handleGameOver,
     addPartnerElement,
 
     // Favorites
@@ -209,6 +211,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const coopElementBankRef = useRef(null); // Stores session element bank for host
   const coopHostFavoritesRef = useRef(null); // Stores host favorites from save slot
   const coopStartedRef = useRef(false); // Guard against duplicate startCoopMode calls
+  const coopModeTypeRef = useRef('creative'); // 'daily' | 'creative' — tracks host's mode choice
 
   // Co-op hook
   const coop = useAlchemyCoop({
@@ -232,17 +235,26 @@ export function DailyAlchemyGame({ initialDate = null }) {
         if (isInCoopLobby && !coopStartedRef.current) {
           coopStartedRef.current = true;
           setIsInCoopLobby(false);
-          startCoopMode(coopElementBankRef.current, coopHostFavoritesRef.current);
+          if (coopModeTypeRef.current === 'daily') {
+            startCoopDailyMode();
+          } else {
+            startCoopMode(coopElementBankRef.current, coopHostFavoritesRef.current);
+          }
         }
       },
-      [isInCoopLobby, startCoopMode]
+      [isInCoopLobby, startCoopMode, startCoopDailyMode]
     ),
+    onPartnerGameOver: useCallback(() => {
+      // Partner's timer ran out in daily co-op — trigger local game over
+      handleGameOver();
+    }, [handleGameOver]),
   });
 
   // Co-op: Handle creating a session
   const handleCoopCreate = useCallback(
-    async (saveSlot) => {
-      const result = await coop.createSession(saveSlot);
+    async (saveSlot, sessionMode = 'creative') => {
+      coopModeTypeRef.current = sessionMode;
+      const result = await coop.createSession(saveSlot, sessionMode);
       if (result) {
         // Store element bank and favorites so host can access them when partner joins
         coopElementBankRef.current = result.elementBank || null;
@@ -258,14 +270,18 @@ export function DailyAlchemyGame({ initialDate = null }) {
     async (inviteCode) => {
       const result = await coop.joinSession(inviteCode);
       if (result) {
-        // Start co-op gameplay with the element bank from the session
+        // Start co-op gameplay — mode determined by host's session
         setIsInCoopLobby(false);
-        startCoopMode(result.elementBank);
+        if (result.mode === 'daily') {
+          startCoopDailyMode();
+        } else {
+          startCoopMode(result.elementBank);
+        }
         return result;
       }
       return null;
     },
-    [coop, startCoopMode]
+    [coop, startCoopMode, startCoopDailyMode]
   );
 
   // Co-op: Handle leaving
@@ -305,6 +321,13 @@ export function DailyAlchemyGame({ initialDate = null }) {
       );
     }
   }, [coopMode, lastResult]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Co-op daily: Broadcast game over to partner when local timer expires
+  useEffect(() => {
+    if (coopMode && !freePlayMode && gameState === SOUP_GAME_STATES.GAME_OVER) {
+      coop.broadcastGameOver();
+    }
+  }, [coopMode, freePlayMode, gameState]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Pause timer when sidebar or modals are open, resume when closed
   const isAnyModalOpen =
@@ -489,6 +512,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     onClearError={coop.clearError}
                     slotSummaries={slotSummaries}
                     onLoadSlotSummaries={loadSlotSummaries}
+                    targetElement={targetElement}
+                    targetEmoji={targetEmoji}
+                    parMoves={parMoves}
+                    isArchive={isArchive}
                   />
                 )}
 

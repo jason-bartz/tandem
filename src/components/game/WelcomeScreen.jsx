@@ -282,7 +282,7 @@ export default function WelcomeScreen({
             <GameCard
               icon="/ui/games/daily-alchemy.png"
               title="Daily Alchemy"
-              description="Combine elements to discover today's target."
+              description="Combine elements to discover today's target, or play creative mode."
               puzzleNumber={soupPuzzle?.number || 1}
               onClick={handleSoupClick}
               loading={soupLoading}

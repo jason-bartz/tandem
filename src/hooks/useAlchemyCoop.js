@@ -20,6 +20,7 @@ import logger from '@/lib/logger';
  * @param {Function} options.onPartnerElement - Callback when partner discovers new element
  * @param {Function} options.onSessionEnded - Callback when session ends
  * @param {Function} options.onPartnerJoined - Callback when partner joins the session
+ * @param {Function} options.onPartnerGameOver - Callback when partner's timer expires (daily co-op)
  */
 export function useAlchemyCoop({
   enabled = false,
@@ -29,6 +30,7 @@ export function useAlchemyCoop({
   onPartnerElement,
   onSessionEnded,
   onPartnerJoined,
+  onPartnerGameOver,
 }) {
   // Session state
   const [sessionId, setSessionId] = useState(externalSessionId);
@@ -68,6 +70,10 @@ export function useAlchemyCoop({
   useEffect(() => {
     onPartnerJoinedRef.current = onPartnerJoined;
   }, [onPartnerJoined]);
+  const onPartnerGameOverRef = useRef(onPartnerGameOver);
+  useEffect(() => {
+    onPartnerGameOverRef.current = onPartnerGameOver;
+  }, [onPartnerGameOver]);
 
   // Sync external sessionId changes
   useEffect(() => {
@@ -157,6 +163,12 @@ export function useAlchemyCoop({
       channel.on('broadcast', { event: 'session_ended' }, ({ payload }) => {
         if (payload.endedBy !== user.id) {
           onSessionEndedRef.current?.('partner_left');
+        }
+      });
+
+      channel.on('broadcast', { event: 'game_over' }, ({ payload }) => {
+        if (payload.endedBy !== user.id) {
+          onPartnerGameOverRef.current?.();
         }
       });
 
@@ -310,14 +322,14 @@ export function useAlchemyCoop({
    * Create a new co-op session
    */
   const createSession = useCallback(
-    async (saveSlot = null) => {
+    async (saveSlot = null, mode = 'creative') => {
       try {
         setError(null);
         const url = getApiUrl(SOUP_API.COOP_CREATE);
         const response = await capacitorFetch(url, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ saveSlot }),
+          body: JSON.stringify({ saveSlot, mode }),
         });
 
         const data = await response.json();
@@ -400,6 +412,7 @@ export function useAlchemyCoop({
         return {
           sessionId: session.id,
           elementBank: session.elementBank,
+          mode: session.mode || 'creative',
           totalMoves: session.totalMoves,
           totalDiscoveries: session.totalDiscoveries,
           firstDiscoveries: session.firstDiscoveries,
@@ -557,6 +570,21 @@ export function useAlchemyCoop({
   );
 
   /**
+   * Broadcast game over (timer expired) to the partner in daily co-op
+   */
+  const broadcastGameOver = useCallback(() => {
+    if (!channelRef.current || !user) return;
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'game_over',
+      payload: {
+        endedBy: user.id,
+      },
+    });
+  }, [user]);
+
+  /**
    * Send an emote to the partner
    */
   const sendEmote = useCallback(
@@ -652,6 +680,7 @@ export function useAlchemyCoop({
 
     // Broadcast helpers
     broadcastNewElement,
+    broadcastGameOver,
     updatePresence,
     syncElementBank,
 

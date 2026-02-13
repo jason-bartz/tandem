@@ -26,9 +26,14 @@ export function CoopLobbyScreen({
   onClearError,
   slotSummaries,
   onLoadSlotSummaries,
+  targetElement,
+  targetEmoji,
+  parMoves,
+  isArchive,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const [mode, setMode] = useState(null); // null | 'create' | 'join'
+  const [createStep, setCreateStep] = useState(null); // null | 'mode_select' | 'creative_options'
   const [joinCode, setJoinCode] = useState('');
   const [isJoining, setIsJoining] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -50,10 +55,10 @@ export function CoopLobbyScreen({
     }
   }, [showSaveSlots, onLoadSlotSummaries]);
 
-  const handleCreate = async (saveSlot = null) => {
+  const handleCreate = async (saveSlot = null, sessionMode = 'creative') => {
     setIsCreating(true);
     onClearError?.();
-    await onCreateSession(saveSlot);
+    await onCreateSession(saveSlot, sessionMode);
     setIsCreating(false);
   };
 
@@ -193,7 +198,8 @@ export function CoopLobbyScreen({
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Co-op Mode</h2>
             </div>
             <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
-              Combine elements together with a friend in real time.
+              Solve today&apos;s puzzle or explore creative mode together with a friend in real
+              time.
             </p>
 
             {/* Create Game */}
@@ -271,87 +277,152 @@ export function CoopLobbyScreen({
               Create Co-op Game
             </h2>
 
-            {/* Start Fresh */}
-            <button
-              onClick={() => handleCreate(null)}
-              disabled={isCreating}
-              className={cn(
-                'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                'bg-indigo-500 text-white',
-                'border-[3px] border-black',
-                'rounded-xl font-bold',
-                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
-                'hover:bg-indigo-600',
-                'hover:translate-y-[-1px]',
-                'active:translate-y-0 active:shadow-none',
-                'transition-all duration-150',
-                isCreating && 'opacity-70 cursor-not-allowed'
-              )}
-            >
-              {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Start Fresh'}
-            </button>
+            {createStep !== 'creative_options' ? (
+              // Mode selection: Today's Puzzle vs Creative Mode
+              <>
+                {/* Today's Puzzle */}
+                {!isArchive && (
+                  <button
+                    onClick={() => handleCreate(null, 'daily')}
+                    disabled={isCreating}
+                    className={cn(
+                      'w-full flex flex-col items-center py-4 mb-3',
+                      'bg-indigo-500 text-white',
+                      'border-[3px] border-black',
+                      'rounded-xl font-bold',
+                      'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                      'hover:bg-indigo-600',
+                      'hover:translate-y-[-1px]',
+                      'active:translate-y-0 active:shadow-none',
+                      'transition-all duration-150',
+                      isCreating && 'opacity-70 cursor-not-allowed'
+                    )}
+                  >
+                    {isCreating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <>
+                        <span>Today&apos;s Puzzle</span>
+                        {targetElement && (
+                          <span className="text-sm font-normal opacity-90 mt-1">
+                            {targetEmoji} {targetElement} · Par: {parMoves} moves · 10:00 limit
+                          </span>
+                        )}
+                      </>
+                    )}
+                  </button>
+                )}
 
-            {/* Load from Save */}
-            <button
-              onClick={() => setShowSaveSlots(!showSaveSlots)}
-              disabled={isCreating}
-              className={cn(
-                'w-full flex items-center justify-center gap-3 py-4 mb-3',
-                'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
-                'border-[3px] border-black dark:border-gray-600',
-                'rounded-xl font-bold',
-                'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-                'hover:bg-gray-50 dark:hover:bg-gray-700',
-                'hover:translate-y-[-1px]',
-                'active:translate-y-0 active:shadow-none',
-                'transition-all duration-150'
-              )}
-            >
-              Load from Save
-            </button>
-
-            {/* Save Slots */}
-            <AnimatePresence>
-              {showSaveSlots && slotSummaries && (
-                <motion.div
-                  className="w-full space-y-2 mb-4"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
+                {/* Creative Mode */}
+                <button
+                  onClick={() => setCreateStep('creative_options')}
+                  disabled={isCreating}
+                  className={cn(
+                    'w-full flex flex-col items-center py-4 mb-3',
+                    'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'border-[3px] border-black dark:border-gray-600',
+                    'rounded-xl font-bold',
+                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    'hover:translate-y-[-1px]',
+                    'active:translate-y-0 active:shadow-none',
+                    'transition-all duration-150'
+                  )}
                 >
-                  {slotSummaries.map((slot, i) => (
-                    <button
-                      key={i}
-                      onClick={() => slot.hasSave && handleCreate(slot.slot)}
-                      disabled={!slot.hasSave || isCreating}
-                      className={cn(
-                        'w-full p-3 text-left',
-                        'bg-gray-50 dark:bg-gray-800',
-                        'border-[2px] border-gray-300 dark:border-gray-600',
-                        'rounded-lg',
-                        'transition-colors',
-                        slot.hasSave
-                          ? 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
-                          : 'opacity-50 cursor-not-allowed'
-                      )}
+                  <span>Creative Mode</span>
+                  <span className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">
+                    Create endlessly with no goal or timer
+                  </span>
+                </button>
+              </>
+            ) : (
+              // Creative options: Start Fresh or Load from Save
+              <>
+                {/* Start Fresh */}
+                <button
+                  onClick={() => handleCreate(null, 'creative')}
+                  disabled={isCreating}
+                  className={cn(
+                    'w-full flex items-center justify-center gap-3 py-4 mb-3',
+                    'bg-indigo-500 text-white',
+                    'border-[3px] border-black',
+                    'rounded-xl font-bold',
+                    'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                    'hover:bg-indigo-600',
+                    'hover:translate-y-[-1px]',
+                    'active:translate-y-0 active:shadow-none',
+                    'transition-all duration-150',
+                    isCreating && 'opacity-70 cursor-not-allowed'
+                  )}
+                >
+                  {isCreating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Start Fresh'}
+                </button>
+
+                {/* Load from Save */}
+                <button
+                  onClick={() => setShowSaveSlots(!showSaveSlots)}
+                  disabled={isCreating}
+                  className={cn(
+                    'w-full flex items-center justify-center gap-3 py-4 mb-3',
+                    'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                    'border-[3px] border-black dark:border-gray-600',
+                    'rounded-xl font-bold',
+                    'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                    'hover:bg-gray-50 dark:hover:bg-gray-700',
+                    'hover:translate-y-[-1px]',
+                    'active:translate-y-0 active:shadow-none',
+                    'transition-all duration-150'
+                  )}
+                >
+                  Load from Save
+                </button>
+
+                {/* Save Slots */}
+                <AnimatePresence>
+                  {showSaveSlots && slotSummaries && (
+                    <motion.div
+                      className="w-full space-y-2 mb-4"
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
                     >
-                      <div className="font-medium text-sm text-gray-800 dark:text-gray-200">
-                        {slot.name || `Save ${slot.slot}`}
-                      </div>
-                      {slot.hasSave ? (
-                        <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                          {slot.elementCount} elements
-                          {slot.firstDiscoveries > 0 &&
-                            ` · ${slot.firstDiscoveries} first discoveries`}
-                        </div>
-                      ) : (
-                        <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Empty</div>
-                      )}
-                    </button>
-                  ))}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                      {slotSummaries.map((slot, i) => (
+                        <button
+                          key={i}
+                          onClick={() => slot.hasSave && handleCreate(slot.slot, 'creative')}
+                          disabled={!slot.hasSave || isCreating}
+                          className={cn(
+                            'w-full p-3 text-left',
+                            'bg-gray-50 dark:bg-gray-800',
+                            'border-[2px] border-gray-300 dark:border-gray-600',
+                            'rounded-lg',
+                            'transition-colors',
+                            slot.hasSave
+                              ? 'hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer'
+                              : 'opacity-50 cursor-not-allowed'
+                          )}
+                        >
+                          <div className="font-medium text-sm text-gray-800 dark:text-gray-200">
+                            {slot.name || `Save ${slot.slot}`}
+                          </div>
+                          {slot.hasSave ? (
+                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                              {slot.elementCount} elements
+                              {slot.firstDiscoveries > 0 &&
+                                ` · ${slot.firstDiscoveries} first discoveries`}
+                            </div>
+                          ) : (
+                            <div className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                              Empty
+                            </div>
+                          )}
+                        </button>
+                      ))}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
 
             {error && (
               <div className="w-full p-3 mb-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400 text-center">
@@ -362,8 +433,13 @@ export function CoopLobbyScreen({
             {/* Back */}
             <button
               onClick={() => {
-                setMode(null);
-                setShowSaveSlots(false);
+                if (createStep === 'creative_options') {
+                  setCreateStep(null);
+                  setShowSaveSlots(false);
+                } else {
+                  setMode(null);
+                  setCreateStep(null);
+                }
                 onClearError?.();
               }}
               className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"

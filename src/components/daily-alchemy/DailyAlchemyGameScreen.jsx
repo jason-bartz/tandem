@@ -710,27 +710,29 @@ export function DailyAlchemyGameScreen({
       {/* Co-op Mode Header */}
       {coopMode && (
         <div className="flex flex-col gap-2 py-2">
-          {/* Top row: Save/Leave buttons + stats */}
+          {/* Top row: buttons + stats */}
           <div className="flex items-center gap-2">
-            {/* Save button */}
-            <button
-              onClick={onCoopSave}
-              className={cn(
-                'flex items-center gap-1.5 px-4 py-2',
-                'text-sm font-bold',
-                'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200',
-                'border-[2px] border-black dark:border-gray-600',
-                'rounded-xl',
-                'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-                'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-                'active:translate-y-0 active:shadow-none',
-                'transition-all duration-150',
-                highContrast && 'border-[3px] border-hc-border'
-              )}
-            >
-              <Save className="w-4 h-4" />
-              <span>Save</span>
-            </button>
+            {/* Save button - only in creative co-op (no save for daily co-op) */}
+            {freePlayMode && (
+              <button
+                onClick={onCoopSave}
+                className={cn(
+                  'flex items-center gap-1.5 px-4 py-2',
+                  'text-sm font-bold',
+                  'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200',
+                  'border-[2px] border-black dark:border-gray-600',
+                  'rounded-xl',
+                  'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+                  'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                  'active:translate-y-0 active:shadow-none',
+                  'transition-all duration-150',
+                  highContrast && 'border-[3px] border-hc-border'
+                )}
+              >
+                <Save className="w-4 h-4" />
+                <span>Save</span>
+              </button>
+            )}
 
             {/* Leave button */}
             <button
@@ -753,22 +755,24 @@ export function DailyAlchemyGameScreen({
               <span>Leave</span>
             </button>
 
-            {/* Stats */}
-            <div className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-              <span>
-                <span className="font-semibold text-gray-700 dark:text-gray-200">
-                  {discoveredCount}
-                </span>{' '}
-                created
-              </span>
-              <span className="text-gray-300 dark:text-gray-600">|</span>
-              <span>
-                <span className="font-semibold text-amber-600 dark:text-amber-400">
-                  {firstDiscoveryElements.length}
-                </span>{' '}
-                first
-              </span>
-            </div>
+            {/* Stats - only in creative co-op (daily co-op shows stats in StatsAndTargetRow) */}
+            {freePlayMode && (
+              <div className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                <span>
+                  <span className="font-semibold text-gray-700 dark:text-gray-200">
+                    {discoveredCount}
+                  </span>{' '}
+                  created
+                </span>
+                <span className="text-gray-300 dark:text-gray-600">|</span>
+                <span>
+                  <span className="font-semibold text-amber-600 dark:text-amber-400">
+                    {firstDiscoveryElements.length}
+                  </span>{' '}
+                  first
+                </span>
+              </div>
+            )}
           </div>
 
           {/* Partner bar */}
