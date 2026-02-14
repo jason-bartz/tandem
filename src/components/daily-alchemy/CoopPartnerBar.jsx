@@ -79,6 +79,7 @@ function CoopPartnerBarInner({
         <div className="flex items-center gap-1.5 min-w-0">
           <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[140px]">
             {partner?.username || 'Partner'}
+            {partner?.countryFlag && <span className="ml-1 text-xs">{partner.countryFlag}</span>}
           </span>
           <div
             className={cn('w-2 h-2 rounded-full flex-shrink-0', statusConfig.color)}

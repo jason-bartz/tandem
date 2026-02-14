@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Copy, Share2, ArrowLeft, Loader2, Check } from 'lucide-react';
+import { Users, Copy, Share2, ArrowLeft, Loader2, Check, Shuffle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { isStandaloneAlchemy } from '@/lib/standalone';
@@ -10,10 +10,20 @@ import { isStandaloneAlchemy } from '@/lib/standalone';
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
 /**
+ * Format seconds into m:ss display
+ */
+function formatWaitTime(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+/**
  * CoopLobbyScreen - Shown when in co-op lobby state
- * Two sub-flows:
+ * Three sub-flows:
  * 1. Create Game: Choose fresh or load from save, then show invite code
  * 2. Join Game: Enter invite code
+ * 3. Quick Match: Enter matchmaking queue to be paired with a random partner
  */
 export function CoopLobbyScreen({
   onCreateSession,
@@ -30,6 +40,18 @@ export function CoopLobbyScreen({
   targetEmoji,
   parMoves,
   isArchive,
+  // Quick Match props
+  matchmakingStatus,
+  matchmakingQueuePosition,
+  matchmakingWaitTime,
+  matchmakingError,
+  onStartMatchmaking,
+  onSelectMatchmakingMode,
+  onCancelMatchmaking,
+  onExtendSearch,
+  onClearMatchmakingError,
+  onFallbackToCreate,
+  matchedPartner,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const [mode, setMode] = useState(null); // null | 'create' | 'join'
@@ -95,6 +117,275 @@ export function CoopLobbyScreen({
       }
     }
   };
+
+  // ─── Quick Match: Searching State ─────────────────────────────
+  if (matchmakingStatus === 'searching') {
+    return (
+      <div className="flex flex-col items-center w-full px-4 pb-8">
+        <motion.div
+          className="w-full max-w-sm flex flex-col items-center"
+          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          {/* Radar animation */}
+          <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
+            <Shuffle className="w-8 h-8 text-amber-500 dark:text-amber-400 z-10" />
+            {!reduceMotion && (
+              <>
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-amber-400/40"
+                  animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut' }}
+                />
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-amber-400/40"
+                  animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut', delay: 0.7 }}
+                />
+                <motion.div
+                  className="absolute inset-0 rounded-full border-2 border-amber-400/40"
+                  animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: 'easeOut', delay: 1.4 }}
+                />
+              </>
+            )}
+          </div>
+
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">
+            Looking for a partner...
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">
+            {formatWaitTime(matchmakingWaitTime || 0)}
+          </p>
+
+          {matchmakingQueuePosition && matchmakingQueuePosition > 1 && (
+            <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
+              #{matchmakingQueuePosition} in queue
+            </p>
+          )}
+
+          <button
+            onClick={onCancelMatchmaking}
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
+          >
+            Cancel
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ─── Quick Match: Match Found State ───────────────────────────
+  if (matchmakingStatus === 'matched' && matchedPartner) {
+    return (
+      <div className="flex flex-col items-center w-full px-4 pb-8">
+        <motion.div
+          className="w-full max-w-sm flex flex-col items-center"
+          initial={!reduceMotion ? { opacity: 0, scale: 0.9 } : false}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+        >
+          <motion.div
+            className="text-4xl mb-4"
+            initial={!reduceMotion ? { scale: 0 } : false}
+            animate={{ scale: 1 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 10, delay: 0.1 }}
+          >
+            🎉
+          </motion.div>
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-1">Match Found!</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
+            Matched with <span className="font-semibold">{matchedPartner.username}</span>
+            {matchedPartner.countryFlag && (
+              <span className="ml-1">{matchedPartner.countryFlag}</span>
+            )}
+          </p>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">Starting game...</p>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ─── Quick Match: Timeout State ───────────────────────────────
+  if (matchmakingStatus === 'timeout') {
+    return (
+      <div className="flex flex-col items-center w-full px-4 pb-8">
+        <motion.div
+          className="w-full max-w-sm flex flex-col items-center"
+          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+            No players found
+          </h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400 text-center mb-6">
+            No one else is searching right now. Try again later or invite a friend!
+          </p>
+
+          {/* Keep Waiting */}
+          <button
+            onClick={onExtendSearch}
+            className={cn(
+              'w-full flex items-center justify-center gap-2 py-3 mb-3',
+              'bg-amber-500 text-white',
+              'border-[3px] border-black',
+              'rounded-xl font-bold',
+              'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'hover:bg-amber-600',
+              'hover:translate-y-[-1px]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150'
+            )}
+          >
+            Keep Waiting
+          </button>
+
+          {/* Share Invite Code (falls back to create flow) */}
+          <button
+            onClick={onFallbackToCreate}
+            className={cn(
+              'w-full flex items-center justify-center gap-2 py-3 mb-3',
+              'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+              'border-[3px] border-black dark:border-gray-600',
+              'rounded-xl font-bold',
+              'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+              'hover:bg-gray-50 dark:hover:bg-gray-700',
+              'hover:translate-y-[-1px]',
+              'active:translate-y-0 active:shadow-none',
+              'transition-all duration-150'
+            )}
+          >
+            <Share2 className="w-4 h-4" />
+            Share Invite Code Instead
+          </button>
+
+          {/* Cancel */}
+          <button
+            onClick={onCancelMatchmaking}
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
+          >
+            Cancel
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  // ─── Quick Match: Mode Selection ──────────────────────────────
+  if (matchmakingStatus === 'selecting_mode') {
+    return (
+      <div className="flex flex-col items-center w-full px-4 pb-8">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key="matchmaking-mode"
+            className="w-full max-w-sm flex flex-col items-center"
+            initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+            animate={{ opacity: 1, y: 0 }}
+            exit={!reduceMotion ? { opacity: 0, y: -10 } : undefined}
+          >
+            <div className="flex items-center gap-2 mb-4">
+              <Shuffle className="w-5 h-5 text-amber-500" />
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Quick Match</h2>
+            </div>
+
+            {/* Today's Puzzle */}
+            {!isArchive && (
+              <button
+                onClick={() => onSelectMatchmakingMode('daily')}
+                className={cn(
+                  'w-full flex flex-col items-center py-4 mb-3',
+                  'bg-amber-500 text-white',
+                  'border-[3px] border-black',
+                  'rounded-xl font-bold',
+                  'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                  'hover:bg-amber-600',
+                  'hover:translate-y-[-1px]',
+                  'active:translate-y-0 active:shadow-none',
+                  'transition-all duration-150'
+                )}
+              >
+                <span>Today&apos;s Puzzle</span>
+                {targetElement && (
+                  <span className="text-sm font-normal opacity-90 mt-1">
+                    {targetEmoji} {targetElement} · Par: {parMoves} moves · 10:00 limit
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* Creative Mode */}
+            <button
+              onClick={() => onSelectMatchmakingMode('creative')}
+              className={cn(
+                'w-full flex flex-col items-center py-4 mb-3',
+                'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+                'border-[3px] border-black dark:border-gray-600',
+                'rounded-xl font-bold',
+                'shadow-[3px_3px_0px_rgba(0,0,0,1)]',
+                'hover:bg-gray-50 dark:hover:bg-gray-700',
+                'hover:translate-y-[-1px]',
+                'active:translate-y-0 active:shadow-none',
+                'transition-all duration-150'
+              )}
+            >
+              <span>Creative Mode</span>
+              <span className="text-sm font-normal text-gray-500 dark:text-gray-400 mt-1">
+                Create endlessly with no goal or timer
+              </span>
+            </button>
+
+            {matchmakingError && (
+              <div className="w-full p-3 mb-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400 text-center">
+                {matchmakingError}
+              </div>
+            )}
+
+            {/* Back */}
+            <button
+              onClick={() => {
+                onCancelMatchmaking?.();
+                onClearMatchmakingError?.();
+              }}
+              className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            >
+              <ArrowLeft className="w-3 h-3" />
+              Back
+            </button>
+          </motion.div>
+        </AnimatePresence>
+      </div>
+    );
+  }
+
+  // ─── Quick Match: Error State ─────────────────────────────────
+  if (matchmakingStatus === 'error') {
+    return (
+      <div className="flex flex-col items-center w-full px-4 pb-8">
+        <motion.div
+          className="w-full max-w-sm flex flex-col items-center"
+          initial={!reduceMotion ? { opacity: 0, y: 20 } : false}
+          animate={{ opacity: 1, y: 0 }}
+        >
+          <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200 mb-2">
+            Something went wrong
+          </h2>
+          {matchmakingError && (
+            <div className="w-full p-3 mb-4 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400 text-center">
+              {matchmakingError}
+            </div>
+          )}
+          <button
+            onClick={() => {
+              onClearMatchmakingError?.();
+            }}
+            className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 underline"
+          >
+            Back
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
 
   // Waiting for partner screen (after creating session)
   if (inviteCode && isWaiting) {
@@ -225,7 +516,7 @@ export function CoopLobbyScreen({
             <button
               onClick={() => setMode('join')}
               className={cn(
-                'w-full flex items-center justify-center gap-3 py-4',
+                'w-full flex items-center justify-center gap-3 py-4 mb-3',
                 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                 'border-[3px] border-black dark:border-gray-600',
                 'rounded-xl font-bold text-lg',
@@ -238,6 +529,26 @@ export function CoopLobbyScreen({
               )}
             >
               Join with Code
+            </button>
+
+            {/* Quick Match */}
+            <button
+              onClick={onStartMatchmaking}
+              className={cn(
+                'w-full flex items-center justify-center gap-3 py-4',
+                'bg-gradient-to-r from-amber-500 to-orange-500 text-white',
+                'border-[3px] border-black',
+                'rounded-xl font-bold text-lg',
+                'shadow-[4px_4px_0px_rgba(0,0,0,1)]',
+                'hover:from-amber-600 hover:to-orange-600',
+                'hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_rgba(0,0,0,1)]',
+                'active:translate-y-0 active:shadow-none',
+                'transition-all duration-150',
+                highContrast && 'border-[4px]'
+              )}
+            >
+              <Shuffle className="w-5 h-5" />
+              Quick Match
             </button>
 
             {/* Terms notice */}

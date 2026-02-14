@@ -10,6 +10,7 @@ import { useHaptics } from '@/hooks/useHaptics';
 import { SOUP_GAME_STATES } from '@/lib/daily-alchemy.constants';
 import { useDailyAlchemyGame } from '@/hooks/useDailyAlchemyGame';
 import { useAlchemyCoop } from '@/hooks/useAlchemyCoop';
+import { useMatchmaking } from '@/hooks/useMatchmaking';
 import { playPartnerElementSound } from '@/lib/sounds';
 import { DailyAlchemyWelcomeScreen } from './DailyAlchemyWelcomeScreen';
 import { DailyAlchemyGameScreen } from './DailyAlchemyGameScreen';
@@ -387,6 +388,46 @@ export function DailyAlchemyGame({ initialDate = null }) {
     }
   }, [localWantsContinue, partnerWantsContinue, startCoopMode]);
 
+  // ─── Quick Match Matchmaking ──────────────────────────────────
+  const matchmakingTransitionRef = useRef(null);
+
+  const handleMatchFound = useCallback(
+    (matchData) => {
+      const result = coop.connectToMatchedSession(matchData);
+      if (result) {
+        // Brief delay for "Match Found!" celebration screen
+        matchmakingTransitionRef.current = setTimeout(() => {
+          setIsInCoopLobby(false);
+          if (result.mode === 'daily') {
+            startCoopDailyMode();
+          } else {
+            startCoopMode(result.elementBank);
+          }
+        }, 1500);
+      }
+    },
+    [coop, startCoopMode, startCoopDailyMode]
+  );
+
+  // Clean up match transition timeout
+  useEffect(() => {
+    return () => {
+      if (matchmakingTransitionRef.current) {
+        clearTimeout(matchmakingTransitionRef.current);
+      }
+    };
+  }, []);
+
+  const matchmaking = useMatchmaking({
+    onMatchFound: handleMatchFound,
+  });
+
+  const handleFallbackToCreate = useCallback(() => {
+    matchmaking.cancelMatchmaking();
+    // Transition to the create flow
+    handleCoopCreate(null, 'creative');
+  }, [matchmaking, handleCoopCreate]);
+
   // Pause timer when sidebar or modals are open, resume when closed
   const isAnyModalOpen =
     isSidebarOpen ||
@@ -574,6 +615,18 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     targetEmoji={targetEmoji}
                     parMoves={parMoves}
                     isArchive={isArchive}
+                    // Quick Match props
+                    matchmakingStatus={matchmaking.status}
+                    matchmakingQueuePosition={matchmaking.queuePosition}
+                    matchmakingWaitTime={matchmaking.waitTime}
+                    matchmakingError={matchmaking.error}
+                    onStartMatchmaking={matchmaking.startMatchmaking}
+                    onSelectMatchmakingMode={matchmaking.selectMode}
+                    onCancelMatchmaking={matchmaking.cancelMatchmaking}
+                    onExtendSearch={matchmaking.extendSearch}
+                    onClearMatchmakingError={matchmaking.clearError}
+                    onFallbackToCreate={handleFallbackToCreate}
+                    matchedPartner={matchmaking.matchedData?.partner}
                   />
                 )}
 
