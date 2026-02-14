@@ -110,7 +110,7 @@ export function FavoritesPanel({
               height={20}
               className="w-5 h-5"
             />
-            <h3 className="font-bold text-sm">
+            <h3 className="font-bold text-sm dark:text-white">
               Favorites ({favoriteElements.size}/{maxFavorites})
             </h3>
           </div>

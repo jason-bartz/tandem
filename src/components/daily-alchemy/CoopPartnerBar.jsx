@@ -2,7 +2,7 @@
 
 import { memo, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Smile } from 'lucide-react';
+import { Smile, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playEmoteNotificationSound } from '@/lib/sounds';
@@ -33,6 +33,7 @@ function CoopPartnerBarInner({
   receivedEmote,
   onSendEmote,
   emoteCooldownActive = false,
+  onLeave,
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const [isEmotePickerOpen, setIsEmotePickerOpen] = useState(false);
@@ -74,18 +75,32 @@ function CoopPartnerBarInner({
           </div>
         )}
 
-        {/* Username + status */}
+        {/* Username + status + leave */}
         <div className="flex items-center gap-1.5 min-w-0">
-          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate">
+          <span className="text-sm font-medium text-gray-800 dark:text-gray-200 truncate max-w-[140px]">
             {partner?.username || 'Partner'}
           </span>
           <div
             className={cn('w-2 h-2 rounded-full flex-shrink-0', statusConfig.color)}
             title={statusConfig.label}
           />
-          {partnerStatus === 'disconnected' && (
+          {partnerStatus === 'disconnected' ? (
             <span className="text-xs text-red-500 dark:text-red-400 flex-shrink-0">has left</span>
-          )}
+          ) : onLeave ? (
+            <button
+              onClick={onLeave}
+              className={cn(
+                'flex-shrink-0 p-1 rounded-lg',
+                'text-red-400 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300',
+                'hover:bg-red-50 dark:hover:bg-red-900/30',
+                'transition-colors'
+              )}
+              title="Leave session"
+              aria-label="Leave session"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          ) : null}
         </div>
 
         {/* Received emote */}
