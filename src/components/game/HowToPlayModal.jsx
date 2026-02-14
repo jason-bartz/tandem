@@ -542,6 +542,55 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <span className="text-lg">➕➖</span> Combine & Subtract
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              Use the <strong>toggle between the element slots</strong> to switch between Combine
+              (+) and Subtract (-) mode.
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
+              <li>
+                • <strong>Combine (+):</strong> Merge two elements to create something new
+              </li>
+              <li>
+                • <strong>Subtract (-):</strong> Remove one element from another to break it down
+              </li>
+            </ul>
+            <div
+              className={`rounded-xl p-3 mt-3 space-y-2 ${
+                highContrast
+                  ? 'bg-hc-surface border-2 border-hc-border'
+                  : 'bg-white/60 dark:bg-gray-700/60'
+              }`}
+            >
+              <p
+                className={`text-sm font-semibold ${highContrast ? '' : 'text-gray-700 dark:text-gray-300'}`}
+              >
+                Example:
+              </p>
+              <div className="flex items-center gap-3 text-sm">
+                <span className="text-xl">♨️</span>
+                <span className="text-red-400 font-bold">-</span>
+                <span className="text-xl">🔥</span>
+                <span className="text-gray-400">=</span>
+                <span className="text-xl">💧</span>
+                <span className="font-mono font-semibold text-gray-700 dark:text-gray-300">
+                  Water
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
                 ? 'bg-hc-success text-white border-hc-border'
                 : 'bg-green-50 dark:bg-green-900/20 border-green-500'
             }`}
@@ -705,15 +754,17 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <span className="text-lg">🎨</span> Creative Mode
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  highContrast
-                    ? 'bg-black text-yellow-300 border border-yellow-300'
-                    : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
-                }`}
-              >
-                Club Members
-              </span>
+              {!isStandaloneAlchemy && (
+                <span
+                  className={`text-xs px-2 py-0.5 rounded-full ${
+                    highContrast
+                      ? 'bg-black text-yellow-300 border border-yellow-300'
+                      : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
+                  }`}
+                >
+                  Club Members
+                </span>
+              )}
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
               Want to explore without limits? <strong>Creative Mode</strong> lets you combine
@@ -723,8 +774,57 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               <li>• No time pressure — take as long as you want</li>
               <li>• No target goal — just pure discovery</li>
               <li>• Perfect for finding first discoveries</li>
-              <li>• Build your element collection freely</li>
+              <li>
+                • <strong>3 save slots</strong> — manage multiple collections independently
+              </li>
+              <li>• Progress auto-saves as you play</li>
             </ul>
+          </div>
+
+          <div
+            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
+              highContrast
+                ? 'bg-hc-surface text-hc-text border-hc-border'
+                : 'bg-indigo-50 dark:bg-indigo-900/20 border-indigo-400 dark:border-indigo-600'
+            }`}
+          >
+            <h4
+              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-hc-text' : 'text-gray-800 dark:text-gray-200'}`}
+            >
+              <span className="text-lg">👥</span> Co-op Mode
+            </h4>
+            <p className={`text-sm mb-2 ${highContrast ? '' : ''}`}>
+              Team up with a friend and discover elements together in real time! Create a session
+              and share your invite code, or join one with a code from a friend.
+            </p>
+            <p
+              className={`text-sm font-semibold mb-1 ${highContrast ? '' : 'text-gray-700 dark:text-gray-300'}`}
+            >
+              Two ways to play:
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 mb-2 ${highContrast ? '' : ''}`}>
+              <li>
+                • <strong>Co-op Daily:</strong> Race the 10-minute timer together to find the daily
+                target
+              </li>
+              <li>
+                • <strong>Co-op Creative:</strong> Free play with no limits — explore and discover
+                together
+              </li>
+            </ul>
+            <p
+              className={`text-sm font-semibold mb-1 ${highContrast ? '' : 'text-gray-700 dark:text-gray-300'}`}
+            >
+              How it works:
+            </p>
+            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? '' : ''}`}>
+              <li>• New elements are instantly shared with your partner</li>
+              <li>• Moves are tracked together as a team</li>
+              <li>• Send emotes to react and communicate</li>
+            </ul>
+            <p className={`text-xs mt-3 ${highContrast ? '' : 'text-gray-500 dark:text-gray-400'}`}>
+              You must be signed in to create or join a co-op session.
+            </p>
           </div>
 
           <div className="text-center py-2">
