@@ -529,6 +529,7 @@ export function DailyAlchemyGameScreen({
   setSortOrder,
   sortDirection,
   setSortDirection,
+  reshuffleRandom,
   searchQuery,
   setSearchQuery,
 
@@ -814,6 +815,7 @@ export function DailyAlchemyGameScreen({
             onSortChange={setSortOrder}
             sortDirection={sortDirection}
             onSortDirectionChange={setSortDirection}
+            onReshuffle={reshuffleRandom}
             searchQuery={searchQuery}
             onSearchChange={setSearchQuery}
             targetElement={freePlayMode ? null : targetElement}

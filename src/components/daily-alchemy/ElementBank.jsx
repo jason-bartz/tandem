@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, X, ChevronDown, ArrowUp, ArrowDown, Shuffle } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SORT_LABELS, SORT_DIRECTIONS } from '@/lib/daily-alchemy.constants';
+import { SORT_OPTIONS, SORT_LABELS, SORT_DIRECTIONS } from '@/lib/daily-alchemy.constants';
 import ElementChip from './ElementChip';
 import FavoritesPanel from './FavoritesPanel';
 
@@ -30,6 +30,7 @@ export function ElementBank({
   onSortChange,
   sortDirection,
   onSortDirectionChange,
+  onReshuffle,
   searchQuery,
   onSearchChange,
   targetElement,
@@ -221,12 +222,16 @@ export function ElementBank({
         </h3>
 
         <div className="flex items-center gap-1">
-          {/* Direction toggle button */}
+          {/* Direction toggle / reshuffle button */}
           <button
             onClick={() => {
-              onSortDirectionChange(
-                sortDirection === SORT_DIRECTIONS.ASC ? SORT_DIRECTIONS.DESC : SORT_DIRECTIONS.ASC
-              );
+              if (sortOrder === SORT_OPTIONS.RANDOM) {
+                onReshuffle?.();
+              } else {
+                onSortDirectionChange(
+                  sortDirection === SORT_DIRECTIONS.ASC ? SORT_DIRECTIONS.DESC : SORT_DIRECTIONS.ASC
+                );
+              }
             }}
             className={cn(
               'p-1.5',
@@ -236,10 +241,22 @@ export function ElementBank({
               'rounded-lg',
               'transition-colors'
             )}
-            aria-label={`Sort direction: ${sortDirection === SORT_DIRECTIONS.ASC ? 'ascending' : 'descending'}`}
-            title={sortDirection === SORT_DIRECTIONS.ASC ? 'Ascending' : 'Descending'}
+            aria-label={
+              sortOrder === SORT_OPTIONS.RANDOM
+                ? 'Reshuffle'
+                : `Sort direction: ${sortDirection === SORT_DIRECTIONS.ASC ? 'ascending' : 'descending'}`
+            }
+            title={
+              sortOrder === SORT_OPTIONS.RANDOM
+                ? 'Reshuffle'
+                : sortDirection === SORT_DIRECTIONS.ASC
+                  ? 'Ascending'
+                  : 'Descending'
+            }
           >
-            {sortDirection === SORT_DIRECTIONS.ASC ? (
+            {sortOrder === SORT_OPTIONS.RANDOM ? (
+              <Shuffle className="w-3.5 h-3.5" />
+            ) : sortDirection === SORT_DIRECTIONS.ASC ? (
               <ArrowUp className="w-3.5 h-3.5" />
             ) : (
               <ArrowDown className="w-3.5 h-3.5" />

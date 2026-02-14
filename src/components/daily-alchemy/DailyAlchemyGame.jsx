@@ -109,6 +109,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
     setSortOrder,
     sortDirection,
     setSortDirection,
+    reshuffleRandom,
     searchQuery,
     setSearchQuery,
 
@@ -649,6 +650,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       setSortOrder={setSortOrder}
                       sortDirection={sortDirection}
                       setSortDirection={setSortDirection}
+                      reshuffleRandom={reshuffleRandom}
                       searchQuery={searchQuery}
                       setSearchQuery={setSearchQuery}
                       selectedA={selectedA}

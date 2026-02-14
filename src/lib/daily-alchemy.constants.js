@@ -51,6 +51,7 @@ export const SORT_OPTIONS = {
   ALPHABETICAL: 'alpha',
   FIRST_DISCOVERIES: 'first_discoveries',
   MOST_USED: 'most_used',
+  RANDOM: 'random',
 };
 
 // Sort directions
@@ -65,6 +66,7 @@ export const SORT_DEFAULT_DIRECTIONS = {
   [SORT_OPTIONS.ALPHABETICAL]: SORT_DIRECTIONS.ASC,
   [SORT_OPTIONS.MOST_USED]: SORT_DIRECTIONS.DESC,
   [SORT_OPTIONS.FIRST_DISCOVERIES]: SORT_DIRECTIONS.DESC,
+  [SORT_OPTIONS.RANDOM]: SORT_DIRECTIONS.DESC,
 };
 
 // Display labels for sort options
@@ -73,6 +75,7 @@ export const SORT_LABELS = {
   [SORT_OPTIONS.ALPHABETICAL]: 'Alphabetical',
   [SORT_OPTIONS.MOST_USED]: 'Most Used',
   [SORT_OPTIONS.FIRST_DISCOVERIES]: '1st Disc.',
+  [SORT_OPTIONS.RANDOM]: 'Random',
 };
 
 /**

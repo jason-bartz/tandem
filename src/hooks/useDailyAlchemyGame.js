@@ -120,12 +120,20 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [elementBank, setElementBank] = useState([...STARTER_ELEMENTS]);
   const [sortOrder, setSortOrderRaw] = useState(SORT_OPTIONS.NEWEST);
   const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.DESC);
+  const [randomSeed, setRandomSeed] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
 
   // When sort mode changes, reset direction to that mode's default
   const setSortOrder = useCallback((newOrder) => {
     setSortOrderRaw(newOrder);
     setSortDirection(SORT_DEFAULT_DIRECTIONS[newOrder]);
+    if (newOrder === SORT_OPTIONS.RANDOM) {
+      setRandomSeed((s) => s + 1);
+    }
+  }, []);
+
+  const reshuffleRandom = useCallback(() => {
+    setRandomSeed((s) => s + 1);
   }, []);
 
   // Favorites and usage tracking state
@@ -2323,17 +2331,25 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         if (usageA !== usageB) return isAsc ? usageA - usageB : usageB - usageA;
         return a.name.localeCompare(b.name);
       });
+    } else if (sortOrder === SORT_OPTIONS.RANDOM) {
+      // Fisher-Yates shuffle
+      for (let i = sorted.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
+      }
     } else {
       // NEWEST: default array order is newest first (desc)
       if (isAsc) sorted.reverse();
     }
 
     return sorted;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- randomSeed intentionally triggers reshuffle
   }, [
     elementBank,
     searchQuery,
     sortOrder,
     sortDirection,
+    randomSeed,
     firstDiscoveryElements,
     elementUsageCount,
   ]);
@@ -2353,6 +2369,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setSortOrder,
     sortDirection,
     setSortDirection,
+    reshuffleRandom,
     searchQuery,
     setSearchQuery,
 
