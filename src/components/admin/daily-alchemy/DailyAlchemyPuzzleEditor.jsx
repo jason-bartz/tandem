@@ -38,6 +38,11 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
   const [isGeneratingPath, setIsGeneratingPath] = useState(false);
   const [pathError, setPathError] = useState(null);
 
+  // Suggest targets state
+  const [targetSuggestions, setTargetSuggestions] = useState([]);
+  const [isSuggestingTargets, setIsSuggestingTargets] = useState(false);
+  const [suggestError, setSuggestError] = useState(null);
+
   // UI state
   const [errors, setErrors] = useState({});
 
@@ -196,8 +201,45 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     setSearchResults([]);
     setPathError(null);
     setSearchError(null);
+    setTargetSuggestions([]);
+    setSuggestError(null);
     // Focus back on input after clearing
     setTimeout(() => inputRef.current?.focus(), 0);
+  };
+
+  // Suggest target elements using AI
+  const handleSuggestTargets = async () => {
+    setIsSuggestingTargets(true);
+    setTargetSuggestions([]);
+    setSuggestError(null);
+
+    try {
+      const response = await fetch('/api/admin/daily-alchemy/suggest-targets', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ difficulty: formData.difficulty }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || 'Failed to get suggestions');
+      }
+
+      setTargetSuggestions(data.suggestions || []);
+    } catch (error) {
+      setSuggestError(error.message || 'Failed to get target suggestions');
+      logger.error('Target suggestion error', error);
+    } finally {
+      setIsSuggestingTargets(false);
+    }
+  };
+
+  // Select a suggested target element
+  const handleSelectTargetSuggestion = (suggestion) => {
+    selectTargetElement({ name: suggestion.name, emoji: suggestion.emoji });
+    setTargetSuggestions([]);
+    setSuggestError(null);
   };
 
   // Open add element modal
@@ -367,7 +409,26 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
 
         {/* Target Element - Searchable */}
         <div ref={dropdownRef} className="relative z-20">
-          <label className="block text-xs font-bold text-text-primary mb-1">Target Element *</label>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-xs font-bold text-text-primary">Target Element *</label>
+            <button
+              type="button"
+              onClick={handleSuggestTargets}
+              disabled={isSuggestingTargets || loading}
+              className="px-2.5 py-1 text-xs bg-accent-yellow text-[#2c2c2c] border-[2px] border-black dark:border-white rounded-md font-bold hover:translate-y-[-1px] transition-transform disabled:opacity-50 disabled:cursor-not-allowed"
+              style={{ boxShadow: '2px 2px 0px rgba(0, 0, 0, 1)' }}
+              title="Get AI-suggested targets"
+            >
+              {isSuggestingTargets ? (
+                <span className="flex items-center gap-1.5 justify-center">
+                  <Loader2 className="w-3 h-3 animate-spin" />
+                  <span>...</span>
+                </span>
+              ) : (
+                <span>Suggest</span>
+              )}
+            </button>
+          </div>
           <div className="relative">
             <input
               ref={inputRef}
@@ -441,6 +502,44 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
           {searchError && (
             <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded text-sm text-red-600 dark:text-red-400">
               {searchError}
+            </div>
+          )}
+
+          {/* Target Suggestions */}
+          {targetSuggestions.length > 0 && !formData.targetElement && (
+            <div className="mt-3 space-y-2">
+              <label className="block text-xs font-bold text-text-secondary">
+                Click to use a suggestion:
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {targetSuggestions.map((suggestion, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    onClick={() => handleSelectTargetSuggestion(suggestion)}
+                    disabled={loading}
+                    className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{ boxShadow: 'var(--shadow-small)' }}
+                  >
+                    <div className="font-bold text-xs sm:text-sm text-text-primary">
+                      {suggestion.emoji} {suggestion.name}
+                    </div>
+                    <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
+                      {suggestion.description}
+                    </div>
+                    <div className="text-[10px] text-green-600 dark:text-green-400 mt-1 font-medium">
+                      {suggestion.pathLength} steps
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Suggest Error */}
+          {suggestError && (
+            <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-300 dark:border-red-700 rounded text-sm text-red-600 dark:text-red-400">
+              {suggestError}
             </div>
           )}
 
@@ -645,6 +744,8 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
               setSearchResults([]);
               setPathError(null);
               setErrors({});
+              setTargetSuggestions([]);
+              setSuggestError(null);
             }}
             disabled={loading}
             className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold bg-accent-orange text-white rounded-md sm:rounded-lg border-[2px] border-black hover:translate-y-[-1px] transition-all disabled:opacity-50"

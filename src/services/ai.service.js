@@ -4938,6 +4938,212 @@ Your response:`;
 
     return { theme, seedWords };
   }
+
+  /**
+   * Suggest target elements for Daily Alchemy puzzles
+   * @param {Object} options - Suggestion options
+   * @param {Array<{name: string, emoji: string, pathLength: number}>} options.availableElements - Reachable elements
+   * @param {string[]} options.recentTargets - Recent targets to avoid
+   * @param {string} options.difficulty - Puzzle difficulty (easy/medium/hard)
+   * @returns {Promise<{suggestions: Array<{name: string, emoji: string, description: string, pathLength: number}>}>}
+   */
+  async suggestAlchemyTargets({ availableElements, recentTargets = [], difficulty = 'medium' }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const startTime = Date.now();
+    let lastError = null;
+
+    for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
+      try {
+        const prompt = this.buildAlchemyTargetSuggestionPrompt({
+          availableElements,
+          recentTargets,
+          difficulty,
+        });
+        const genInfo = {
+          availableElementCount: availableElements.length,
+          recentTargetCount: recentTargets.length,
+          difficulty,
+          model: this.model,
+          attempt: attempt + 1,
+          maxAttempts: this.maxRetries + 1,
+        };
+
+        logger.info('Suggesting Alchemy targets with AI', genInfo);
+
+        const message = await client.messages.create({
+          model: this.model,
+          max_tokens: 2048,
+          temperature: 1.0,
+          messages: [
+            {
+              role: 'user',
+              content: prompt,
+            },
+          ],
+        });
+
+        const responseText = message.content[0].text;
+        const duration = Date.now() - startTime;
+
+        logger.info('AI Alchemy target suggestions received', {
+          length: responseText.length,
+          duration,
+          attempt: attempt + 1,
+        });
+
+        const result = this.parseAlchemyTargetSuggestions(responseText, availableElements);
+
+        this.generationCount++;
+        logger.info('Alchemy target suggestions generated successfully', {
+          suggestionCount: result.suggestions.length,
+          duration,
+        });
+
+        return result;
+      } catch (error) {
+        lastError = error;
+
+        logger.error('AI Alchemy target suggestion attempt failed', {
+          attempt: attempt + 1,
+          errorMessage: error.message,
+          errorType: error.constructor.name,
+          willRetry: attempt < this.maxRetries,
+        });
+
+        if (error.status === 429) {
+          const retryAfter = error.error?.retry_after || Math.pow(2, attempt + 1);
+          if (attempt < this.maxRetries) {
+            await new Promise((resolve) => setTimeout(resolve, retryAfter * 1000));
+            continue;
+          } else {
+            error.message = `rate_limit: ${error.message}`;
+            throw error;
+          }
+        }
+
+        if (
+          error.status === 401 ||
+          error.message.includes('authentication') ||
+          error.message.includes('API key')
+        ) {
+          throw error;
+        }
+
+        if (attempt === this.maxRetries) {
+          break;
+        }
+
+        const backoffMs = Math.pow(2, attempt) * 1000;
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+      }
+    }
+
+    throw new Error(
+      `AI Alchemy target suggestion failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
+    );
+  }
+
+  /**
+   * Build prompt for Alchemy target suggestion generation
+   */
+  buildAlchemyTargetSuggestionPrompt({ availableElements, recentTargets, difficulty }) {
+    const difficultyRanges = {
+      easy: { min: 2, max: 4, label: 'Easy (2-4 combination steps)' },
+      medium: { min: 4, max: 6, label: 'Medium (4-6 combination steps)' },
+      hard: { min: 6, max: 999, label: 'Hard (6+ combination steps)' },
+    };
+    const range = difficultyRanges[difficulty] || difficultyRanges.medium;
+
+    // Filter elements to the relevant difficulty range (with some buffer)
+    const candidateElements = availableElements
+      .filter((el) => el.pathLength >= range.min && el.pathLength <= range.max + 2)
+      .map((el) => `- ${el.emoji} ${el.name} (${el.pathLength} steps)`)
+      .join('\n');
+
+    const recentList =
+      recentTargets.length > 0
+        ? `\n\nRECENT TARGETS TO AVOID (used in the last 60 days):\n${recentTargets.map((t) => `- ${t}`).join('\n')}`
+        : '';
+
+    return `You are suggesting target elements for a Daily Alchemy puzzle game.
+
+In this game:
+- Players start with 4 basic elements: Earth, Water, Fire, Wind
+- They combine elements to create new ones (e.g., Earth + Water = Mud)
+- The puzzle goal is to reach a TARGET element in as few combinations as possible
+- The difficulty is "${range.label}"
+
+AVAILABLE ELEMENTS for this difficulty level:
+${candidateElements}
+${recentList}
+
+REQUIREMENTS:
+1. Choose 8 elements from the AVAILABLE ELEMENTS list above
+2. Pick elements that would be FUN and INTERESTING puzzle targets
+3. Prefer elements with evocative names and emojis - they should feel rewarding to discover
+4. DO NOT suggest any element from the RECENT TARGETS list
+5. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
+6. For each suggestion, write a brief fun description explaining why it's a good target
+
+RESPONSE FORMAT (JSON only):
+{
+  "suggestions": [
+    { "name": "ElementName", "emoji": "🔥", "description": "Brief reason this is fun", "pathLength": 5 },
+    { "name": "AnotherElement", "emoji": "⚡", "description": "Brief reason this is fun", "pathLength": 4 }
+  ]
+}
+
+Return ONLY the JSON. Element names and emojis MUST exactly match the available elements list.`;
+  }
+
+  /**
+   * Parse Alchemy target suggestion response
+   */
+  parseAlchemyTargetSuggestions(responseText, availableElements) {
+    try {
+      const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+      if (!jsonMatch) {
+        throw new Error('No JSON found in response');
+      }
+
+      const result = JSON.parse(jsonMatch[0]);
+
+      if (!Array.isArray(result.suggestions) || result.suggestions.length < 3) {
+        throw new Error('Must have at least 3 suggestions');
+      }
+
+      // Build lookup for validation
+      const elementLookup = new Map(availableElements.map((el) => [el.name.toLowerCase(), el]));
+
+      const validated = result.suggestions
+        .filter((s) => s.name && s.description)
+        .filter((s) => elementLookup.has(s.name.toLowerCase()))
+        .map((s) => {
+          const real = elementLookup.get(s.name.toLowerCase());
+          return {
+            name: real.name,
+            emoji: real.emoji,
+            description: s.description.trim(),
+            pathLength: real.pathLength,
+          };
+        });
+
+      if (validated.length < 1) {
+        throw new Error('No valid suggestions after cross-referencing with available elements');
+      }
+
+      return {
+        suggestions: validated.slice(0, 8),
+      };
+    } catch (error) {
+      logger.error('Failed to parse Alchemy target suggestions', { error, responseText });
+      throw new Error('Failed to parse AI suggestions. Please try again.');
+    }
+  }
 }
 
 export default new AIService();
