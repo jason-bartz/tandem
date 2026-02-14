@@ -2,19 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS, COOP_CONFIG, MATCHMAKING_CONFIG } from '@/lib/daily-alchemy.constants';
-
-/**
- * Convert a 2-letter country code to a flag emoji
- */
-function countryCodeToFlag(code) {
-  if (!code || code.length !== 2) return null;
-  return String.fromCodePoint(
-    ...code
-      .toUpperCase()
-      .split('')
-      .map((c) => 0x1f1e6 + c.charCodeAt(0) - 65)
-  );
-}
+import { countryCodeToFlag, captureUserCountry } from '@/lib/country-flag';
 
 /**
  * Generate a random invite code using unambiguous characters
@@ -99,9 +87,10 @@ export async function POST(request) {
     if (action === 'join') {
       const mode = body.mode === 'daily' ? 'daily' : 'creative';
 
-      // Read country from Vercel geo header
+      // Read country from Vercel geo header and persist to users table
       const countryCode = request.headers.get('x-vercel-ip-country') || null;
       const countryFlag = countryCodeToFlag(countryCode);
+      captureUserCountry(supabase, user.id, request).catch(() => {});
 
       // Cancel any existing waiting entry for this user
       await supabase
@@ -223,6 +212,7 @@ export async function POST(request) {
             countryFlag: matchedEntry.country_flag || null,
           },
           isHost: false, // Current player is partner
+          yourCountryFlag: countryFlag,
         });
       }
 
@@ -322,6 +312,7 @@ export async function POST(request) {
             countryFlag: partnerEntry?.country_flag || null,
           },
           isHost: true, // Waiting player is host
+          yourCountryFlag: entry.country_flag || null,
         });
       }
 

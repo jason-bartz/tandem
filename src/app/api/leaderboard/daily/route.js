@@ -2,6 +2,7 @@ import { createServerComponentClient, createServerClient } from '@/lib/supabase/
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 import logger from '@/lib/logger';
+import { captureUserCountry } from '@/lib/country-flag';
 
 /**
  * Get authenticated user from either cookies or Authorization header
@@ -156,6 +157,9 @@ export async function POST(request) {
     }
 
     logger.info(`[POST /api/leaderboard/daily] Auth source: ${source}, user: ${user.id}`);
+
+    // Capture country from Vercel geo header
+    captureUserCountry(supabase, user.id, request).catch(() => {});
 
     const body = await request.json();
     const { gameType, puzzleDate, score, metadata = {} } = body;

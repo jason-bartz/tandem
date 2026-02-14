@@ -88,6 +88,7 @@ export default function LeaderboardEntry({
           }`}
         >
           {entry.display_name || 'Anonymous'}
+          {entry.country_flag && <span className="ml-1 text-xs">{entry.country_flag}</span>}
           {isCurrentUser && <span className="text-xs ml-2">(You)</span>}
         </p>
         {/* Show streak info, hints (except for mini which doesn't use hints), or nothing */}

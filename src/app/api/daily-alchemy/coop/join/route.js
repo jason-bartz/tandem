@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
+import { captureUserCountry } from '@/lib/country-flag';
 
 /**
  * POST /api/daily-alchemy/coop/join
@@ -25,6 +26,9 @@ export async function POST(request) {
     if (!inviteCode || typeof inviteCode !== 'string') {
       return NextResponse.json({ error: 'Invite code is required' }, { status: 400 });
     }
+
+    // Capture joiner's country from Vercel geo header
+    const { countryFlag: yourCountryFlag } = await captureUserCountry(supabase, user.id, request);
 
     const normalizedCode = inviteCode.toUpperCase().trim();
 
@@ -71,10 +75,10 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Failed to join session' }, { status: 500 });
     }
 
-    // Fetch host's profile info
+    // Fetch host's profile info (including country flag)
     const { data: hostProfile } = await supabase
       .from('users')
-      .select('username, selected_avatar_id')
+      .select('username, selected_avatar_id, country_flag')
       .eq('id', session.host_user_id)
       .single();
 
@@ -100,6 +104,7 @@ export async function POST(request) {
         id: session.id,
         hostUsername: hostProfile?.username || 'Anonymous',
         hostAvatarPath,
+        hostCountryFlag: hostProfile?.country_flag || null,
         elementBank: session.element_bank || [],
         status: 'active',
         mode: session.mode || 'creative',
@@ -108,6 +113,7 @@ export async function POST(request) {
         firstDiscoveries: session.first_discoveries || 0,
         firstDiscoveryElements: session.first_discovery_elements || [],
       },
+      yourCountryFlag,
     });
   } catch (error) {
     logger.error('[Coop] Unexpected error in POST /api/daily-alchemy/coop/join', {

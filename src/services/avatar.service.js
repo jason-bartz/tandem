@@ -201,7 +201,7 @@ class AvatarService {
       const { data: userData, error: userError } = await supabase
         .from('users')
         .select(
-          'id, email, username, avatar_url, selected_avatar_id, avatar_selected_at, created_at'
+          'id, email, username, avatar_url, selected_avatar_id, avatar_selected_at, created_at, country_flag'
         )
         .eq('id', userId)
         .maybeSingle();
