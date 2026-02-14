@@ -955,8 +955,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setSelectedA(null);
     setSelectedB(null);
     setLastResult(null);
-    // Pre-set to true to prevent server stats recording in handlePuzzleComplete
-    setStatsRecorded(true);
+    setStatsRecorded(false);
 
     // Clear favorites for daily mode
     setFavoriteElements(new Set());
@@ -1853,7 +1852,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * Handle puzzle completion
    */
   const handlePuzzleComplete = useCallback(async () => {
-    if (isComplete || statsRecorded) return;
+    if (isComplete) return;
 
     logger.info('[ElementSoup] Puzzle completed!');
 
@@ -1921,8 +1920,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       congratsMessage,
     });
 
-    // Record stats to server if authenticated
-    if (user && !statsRecorded && !isArchive) {
+    // Record stats to server if authenticated (skip in co-op — no solo stats for shared play)
+    if (user && !statsRecorded && !isArchive && !coopMode) {
       setStatsRecorded(true);
 
       try {
