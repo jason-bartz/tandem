@@ -107,6 +107,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     sortedElementBank,
     sortOrder,
     setSortOrder,
+    sortDirection,
+    setSortDirection,
     searchQuery,
     setSearchQuery,
 
@@ -645,6 +647,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       sortedElementBank={sortedElementBank}
                       sortOrder={sortOrder}
                       setSortOrder={setSortOrder}
+                      sortDirection={sortDirection}
+                      setSortDirection={setSortDirection}
                       searchQuery={searchQuery}
                       setSearchQuery={setSearchQuery}
                       selectedA={selectedA}

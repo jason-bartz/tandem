@@ -53,6 +53,28 @@ export const SORT_OPTIONS = {
   MOST_USED: 'most_used',
 };
 
+// Sort directions
+export const SORT_DIRECTIONS = {
+  ASC: 'asc',
+  DESC: 'desc',
+};
+
+// Default direction for each sort option
+export const SORT_DEFAULT_DIRECTIONS = {
+  [SORT_OPTIONS.NEWEST]: SORT_DIRECTIONS.DESC,
+  [SORT_OPTIONS.ALPHABETICAL]: SORT_DIRECTIONS.ASC,
+  [SORT_OPTIONS.MOST_USED]: SORT_DIRECTIONS.DESC,
+  [SORT_OPTIONS.FIRST_DISCOVERIES]: SORT_DIRECTIONS.DESC,
+};
+
+// Display labels for sort options
+export const SORT_LABELS = {
+  [SORT_OPTIONS.NEWEST]: 'Newest',
+  [SORT_OPTIONS.ALPHABETICAL]: 'Alphabetical',
+  [SORT_OPTIONS.MOST_USED]: 'Most Used',
+  [SORT_OPTIONS.FIRST_DISCOVERIES]: '1st Disc.',
+};
+
 /**
  * Emoji category order based on iOS emoji keyboard
  * Categories are numbered to define sort order
