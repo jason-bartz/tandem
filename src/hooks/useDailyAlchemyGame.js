@@ -30,6 +30,7 @@ import {
   generateShareText,
   getRandomMessage,
   CONGRATS_MESSAGES,
+  COOP_CONGRATS_MESSAGES,
   GAME_OVER_MESSAGES,
   HINT_PHRASES,
 } from '@/lib/daily-alchemy.constants';
@@ -158,6 +159,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Stats tracking
   const [movesCount, setMovesCount] = useState(0);
+  const [lastMoveIncrement, setLastMoveIncrement] = useState(null); // Signal for co-op move broadcast
   const [newDiscoveries, setNewDiscoveries] = useState(0);
   const [firstDiscoveries, setFirstDiscoveries] = useState(0);
   const [firstDiscoveryElements, setFirstDiscoveryElements] = useState([]);
@@ -1014,6 +1016,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, []);
 
   /**
+   * Increment the move counter (called when partner makes a first-time combo in co-op)
+   */
+  const incrementMovesCount = useCallback(() => {
+    setMovesCount((prev) => prev + 1);
+  }, []);
+
+  /**
    * Save Creative Mode progress to Supabase
    */
   const saveCreativeMode = useCallback(
@@ -1750,6 +1759,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       if (isFirstTimeCombination) {
         madeCombinations.current.add(comboKey);
         setMovesCount((prev) => prev + 1);
+        setLastMoveIncrement(Date.now()); // Signal for co-op broadcast
       }
 
       // Track element usage for "Most Used" sorting
@@ -1912,7 +1922,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         : movesCount > puzzle?.parMoves
           ? `+${movesCount - puzzle?.parMoves}`
           : `${movesCount - puzzle?.parMoves}`;
-    const congratsMessage = getRandomMessage(CONGRATS_MESSAGES);
+    const congratsMessage = getRandomMessage(coopMode ? COOP_CONGRATS_MESSAGES : CONGRATS_MESSAGES);
 
     // Set initial local stats (will be updated with server stats if authenticated)
     setCompletionStats({
@@ -2417,6 +2427,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     startCoopDailyMode,
     handleGameOver,
     addPartnerElement,
+    incrementMovesCount,
+    lastMoveIncrement,
 
     // Favorites
     favoriteElements,

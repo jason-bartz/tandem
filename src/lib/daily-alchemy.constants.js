@@ -238,6 +238,20 @@ export const CONGRATS_MESSAGES = [
   'Cauldron King!',
 ];
 
+// Co-op congratulatory messages (two-player themed)
+export const COOP_CONGRATS_MESSAGES = [
+  'Dynamic Duo!',
+  'Two Minds, One Brew!',
+  'Team Alchemy!',
+  'Legendary Partners!',
+  'Perfect Synergy!',
+  'Double Trouble!',
+  'Cauldron Companions!',
+  'Co-op Champions!',
+  'Better Together!',
+  'Alchemi-TEAM!',
+];
+
 // Messages for first discoveries
 export const FIRST_DISCOVERY_MESSAGES = [
   'First Discovery!',
