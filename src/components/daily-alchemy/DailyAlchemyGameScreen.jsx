@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { AnimatePresence, motion, useMotionValue, useAnimation } from 'framer-motion';
-import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save, LogOut } from 'lucide-react';
+import { Check, Loader2, ChevronUp, ChevronDown, FolderOpen, Save } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -710,10 +710,9 @@ export function DailyAlchemyGameScreen({
       {/* Co-op Mode Header */}
       {coopMode && (
         <div className="flex flex-col gap-2 py-2">
-          {/* Top row: buttons + stats */}
-          <div className="flex items-center gap-2">
-            {/* Save button - only in creative co-op (no save for daily co-op) */}
-            {freePlayMode && (
+          {/* Creative co-op: Save button + stats */}
+          {freePlayMode && (
+            <div className="flex items-center gap-2">
               <button
                 onClick={onCoopSave}
                 className={cn(
@@ -732,31 +731,7 @@ export function DailyAlchemyGameScreen({
                 <Save className="w-4 h-4" />
                 <span>Save</span>
               </button>
-            )}
 
-            {/* Leave button */}
-            <button
-              onClick={onCoopLeave}
-              className={cn(
-                'flex items-center gap-1.5 px-4 py-2',
-                'text-sm font-bold',
-                'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400',
-                'border-[2px] border-red-300 dark:border-red-700',
-                'rounded-xl',
-                'shadow-[2px_2px_0px_rgba(0,0,0,0.3)]',
-                'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,0.3)]',
-                'hover:bg-red-100 dark:hover:bg-red-900/50',
-                'active:translate-y-0 active:shadow-none',
-                'transition-all duration-150',
-                highContrast && 'border-[3px] border-hc-border'
-              )}
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Leave</span>
-            </button>
-
-            {/* Stats - only in creative co-op (daily co-op shows stats in StatsAndTargetRow) */}
-            {freePlayMode && (
               <div className="flex items-center gap-3 ml-auto text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                 <span>
                   <span className="font-semibold text-gray-700 dark:text-gray-200">
@@ -772,16 +747,17 @@ export function DailyAlchemyGameScreen({
                   first
                 </span>
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
-          {/* Partner bar */}
+          {/* Partner bar (includes leave icon) */}
           <CoopPartnerBar
             partner={coopPartner}
             partnerStatus={coopPartnerStatus}
             receivedEmote={coopReceivedEmote}
             onSendEmote={onCoopSendEmote}
             emoteCooldownActive={coopEmoteCooldownActive}
+            onLeave={onCoopLeave}
           />
         </div>
       )}
@@ -805,7 +781,6 @@ export function DailyAlchemyGameScreen({
             onDismissHint={onClearHintMessage}
             isSubtractMode={isSubtractMode}
             onToggleOperator={toggleOperatorMode}
-            freePlayMode={freePlayMode}
             activeSlot={activeSlot}
           />
 

@@ -349,7 +349,6 @@ export function CombinationArea({
   // Subtraction mode
   isSubtractMode = false,
   onToggleOperator, // Callback to toggle between + and -
-  freePlayMode = false,
   // Active slot
   activeSlot = null, // 'first' | 'second' | null
 }) {
@@ -463,83 +462,62 @@ export function CombinationArea({
           isActive={activeSlot === 'first'}
         />
 
-        {/* Operator - Segmented pill toggle in Creative Mode, static icon otherwise */}
-        {freePlayMode ? (
-          <div
+        {/* Operator - Segmented pill toggle */}
+        <div
+          className={cn(
+            'flex items-center shrink-0',
+            'border-[3px] border-black dark:border-gray-600 rounded-lg',
+            'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
+            'overflow-hidden',
+            // Force GPU compositing so Safari maintains overflow clip during color transitions
+            '[backface-visibility:hidden]',
+            highContrast && 'border-[4px]'
+          )}
+        >
+          <button
+            type="button"
+            onClick={() => {
+              if (!isCombining && !isAnimating && isSubtractMode) {
+                playSwitchClickSound();
+                onToggleOperator?.();
+              }
+            }}
+            disabled={isCombining || isAnimating}
             className={cn(
-              'flex items-center shrink-0',
-              'border-[3px] border-black dark:border-gray-600 rounded-lg',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-              'overflow-hidden',
-              // Force GPU compositing so Safari maintains overflow clip during color transitions
-              '[backface-visibility:hidden]',
-              highContrast && 'border-[4px]'
+              'w-8 h-8 flex items-center justify-center transition-colors duration-200',
+              !isSubtractMode
+                ? 'bg-soup-primary text-black'
+                : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+              'disabled:cursor-not-allowed'
             )}
+            aria-label="Switch to combine mode"
+            aria-pressed={!isSubtractMode}
           >
-            <button
-              type="button"
-              onClick={() => {
-                if (!isCombining && !isAnimating && isSubtractMode) {
-                  playSwitchClickSound();
-                  onToggleOperator?.();
-                }
-              }}
-              disabled={isCombining || isAnimating}
-              className={cn(
-                'w-8 h-8 flex items-center justify-center transition-colors duration-200',
-                !isSubtractMode
-                  ? 'bg-soup-primary text-black'
-                  : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
-                'disabled:cursor-not-allowed'
-              )}
-              aria-label="Switch to combine mode"
-              aria-pressed={!isSubtractMode}
-            >
-              <Plus className="w-5 h-5" />
-            </button>
-            <div className="w-[2px] bg-black dark:bg-gray-600 self-stretch" />
-            <button
-              type="button"
-              onClick={() => {
-                if (!isCombining && !isAnimating && !isSubtractMode) {
-                  playSwitchClickSound();
-                  onToggleOperator?.();
-                }
-              }}
-              disabled={isCombining || isAnimating}
-              className={cn(
-                'w-8 h-8 flex items-center justify-center transition-colors duration-200',
-                isSubtractMode
-                  ? 'bg-red-400 dark:bg-red-500 text-white'
-                  : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
-                'disabled:cursor-not-allowed'
-              )}
-              aria-label="Switch to subtract mode"
-              aria-pressed={isSubtractMode}
-            >
-              <Minus className="w-5 h-5" />
-            </button>
-          </div>
-        ) : (
-          <motion.div
-            className="flex items-center justify-center w-8 h-8 shrink-0"
-            animate={
-              !reduceMotion && (isCombining || isAnimating)
-                ? { scale: 1.3, rotate: 180 }
-                : { scale: 1, rotate: 0 }
-            }
-            transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+            <Plus className="w-5 h-5" />
+          </button>
+          <div className="w-[2px] bg-black dark:bg-gray-600 self-stretch" />
+          <button
+            type="button"
+            onClick={() => {
+              if (!isCombining && !isAnimating && !isSubtractMode) {
+                playSwitchClickSound();
+                onToggleOperator?.();
+              }
+            }}
+            disabled={isCombining || isAnimating}
+            className={cn(
+              'w-8 h-8 flex items-center justify-center transition-colors duration-200',
+              isSubtractMode
+                ? 'bg-red-400 dark:bg-red-500 text-white'
+                : 'bg-white dark:bg-gray-700 text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-600',
+              'disabled:cursor-not-allowed'
+            )}
+            aria-label="Switch to subtract mode"
+            aria-pressed={isSubtractMode}
           >
-            <Plus
-              className={cn(
-                'w-6 h-6 sm:w-8 sm:h-8',
-                'text-gray-400 dark:text-gray-500',
-                (isCombining || isAnimating) && 'text-soup-primary',
-                highContrast && 'text-hc-text'
-              )}
-            />
-          </motion.div>
-        )}
+            <Minus className="w-5 h-5" />
+          </button>
+        </div>
 
         <SelectionSlot
           element={selectedB}
@@ -579,7 +557,7 @@ export function CombinationArea({
         </button>
 
         {/* Spacer matching operator toggle width */}
-        <div className={cn('shrink-0', freePlayMode ? 'w-[70px]' : 'w-8')} aria-hidden="true" />
+        <div className="shrink-0 w-[70px]" aria-hidden="true" />
 
         <motion.button
           onClick={() => canCombine && onCombine()}

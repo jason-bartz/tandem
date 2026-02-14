@@ -135,7 +135,7 @@ export function EmbeddedFavorites({
             height={18}
             className="w-[18px] h-[18px]"
           />
-          <h3 className="font-bold text-sm">
+          <h3 className="font-bold text-sm dark:text-white">
             Favorites ({favoriteElements.size}/{maxFavorites})
           </h3>
         </div>
