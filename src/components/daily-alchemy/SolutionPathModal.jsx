@@ -211,11 +211,11 @@ export default function SolutionPathModal({
             {/* Description */}
             <div className="text-center mb-6">
               <p className="text-sm text-gray-600 dark:text-gray-400">
-                Here&apos;s one way to reach{' '}
+                Here&apos;s just one path to reach{' '}
                 <span className="font-semibold text-gray-900 dark:text-white">
                   {targetEmoji} {targetElement}
-                </span>{' '}
-                in {solutionPath.length} {solutionPath.length === 1 ? 'move' : 'moves'}
+                </span>
+                . Try again tomorrow, the number of combinations are infinite!
               </p>
             </div>
 
