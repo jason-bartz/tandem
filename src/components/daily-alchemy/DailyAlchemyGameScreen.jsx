@@ -299,7 +299,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
           {result.emoji}
         </motion.span>
         <motion.span
-          className="text-2xl font-jua text-gray-900 dark:text-white"
+          className="text-2xl font-jua text-gray-900 dark:text-white text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
@@ -307,7 +307,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
           {result.element}
         </motion.span>
         <motion.span
-          className="text-sm text-gray-500 dark:text-gray-400"
+          className="text-sm text-gray-500 dark:text-gray-400 text-center"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
@@ -316,7 +316,7 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
         </motion.span>
         {result.isNew && !result.isFirstDiscovery && (
           <motion.span
-            className="text-soup-primary font-semibold text-sm"
+            className="text-soup-primary font-semibold text-sm text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
