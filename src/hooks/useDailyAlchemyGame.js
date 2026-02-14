@@ -61,14 +61,13 @@ function getCurrentPuzzleDate() {
  * Generate a unique element ID from a name.
  * Uses underscores for spaces to differentiate from hyphens in the original name.
  * This prevents ID collisions like "God Emperor" vs "God-Emperor".
+ * Preserves unicode characters (e.g., superscripts ², ⁴) to avoid collisions
+ * between elements like "Minecraft", "Minecraft²", and "Minecraft⁴".
  * @param {string} name - Element name
  * @returns {string} Unique ID
  */
 function generateElementId(name) {
-  return name
-    .toLowerCase()
-    .replace(/\s+/g, '_')
-    .replace(/[^a-z0-9_-]/g, '');
+  return name.toLowerCase().replace(/\s+/g, '_');
 }
 
 /**
@@ -1027,7 +1026,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       fromPartner: true,
     };
 
-    setElementBank((prev) => [newElement, ...prev]);
+    setElementBank((prev) => {
+      const filtered = prev.filter((el) => el.id !== newElement.id);
+      return [newElement, ...filtered];
+    });
     setNewDiscoveries((prev) => prev + 1);
     setRecentElements((prev) => [name, ...prev].slice(0, 3));
   }, []);
@@ -1812,7 +1814,11 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
           isNew: true,
         };
 
-        setElementBank((prev) => [newElement, ...prev]);
+        setElementBank((prev) => {
+          // Dedup safety: remove any existing entry with the same ID before prepending
+          const filtered = prev.filter((el) => el.id !== newElement.id);
+          return [newElement, ...filtered];
+        });
 
         // Track recent elements (last 3)
         setRecentElements((prev) => [element, ...prev].slice(0, 3));
