@@ -37,7 +37,7 @@ export function useMatchmaking({ onMatchFound }) {
   /**
    * Clean up all intervals and timeouts
    */
-  const clearTimers = useCallback(() => {
+  const clearAllTimers = useCallback(() => {
     if (heartbeatIntervalRef.current) {
       clearInterval(heartbeatIntervalRef.current);
       heartbeatIntervalRef.current = null;
@@ -53,6 +53,20 @@ export function useMatchmaking({ onMatchFound }) {
     if (hardTimeoutRef.current) {
       clearTimeout(hardTimeoutRef.current);
       hardTimeoutRef.current = null;
+    }
+  }, []);
+
+  /**
+   * Clear only UI timers (wait counter + soft timeout), keep heartbeat alive
+   */
+  const clearUiTimers = useCallback(() => {
+    if (waitTimeIntervalRef.current) {
+      clearInterval(waitTimeIntervalRef.current);
+      waitTimeIntervalRef.current = null;
+    }
+    if (softTimeoutRef.current) {
+      clearTimeout(softTimeoutRef.current);
+      softTimeoutRef.current = null;
     }
   }, []);
 
@@ -77,21 +91,27 @@ export function useMatchmaking({ onMatchFound }) {
    */
   const handleMatch = useCallback(
     (data) => {
-      clearTimers();
+      clearAllTimers();
       setStatus('matched');
       setMatchedData(data);
       onMatchFoundRef.current?.(data);
     },
-    [clearTimers]
+    [clearAllTimers]
   );
 
   /**
    * Start the heartbeat polling loop
    */
   const startPolling = useCallback(() => {
-    // Heartbeat every 3 seconds
+    // Prevent duplicate heartbeat intervals
+    if (heartbeatIntervalRef.current) {
+      clearInterval(heartbeatIntervalRef.current);
+    }
+
+    // Heartbeat every 3 seconds — runs during both 'searching' AND 'timeout'
     heartbeatIntervalRef.current = setInterval(async () => {
-      if (statusRef.current !== 'searching') return;
+      const currentStatus = statusRef.current;
+      if (currentStatus !== 'searching' && currentStatus !== 'timeout') return;
 
       try {
         const url = getApiUrl(SOUP_API.COOP_MATCHMAKE);
@@ -111,7 +131,7 @@ export function useMatchmaking({ onMatchFound }) {
           setQueuePosition(data.queuePosition || null);
         } else if (data.status === 'expired') {
           // Queue entry was cleaned up
-          clearTimers();
+          clearAllTimers();
           setStatus('timeout');
         }
       } catch (err) {
@@ -120,27 +140,37 @@ export function useMatchmaking({ onMatchFound }) {
     }, MATCHMAKING_CONFIG.HEARTBEAT_INTERVAL_MS);
 
     // Wait time counter (1 second increment)
+    if (waitTimeIntervalRef.current) {
+      clearInterval(waitTimeIntervalRef.current);
+    }
     waitTimeIntervalRef.current = setInterval(() => {
       setWaitTime((t) => t + 1);
     }, 1000);
 
-    // Soft timeout
+    // Soft timeout — show "no players found" UI but keep heartbeat alive
+    if (softTimeoutRef.current) {
+      clearTimeout(softTimeoutRef.current);
+    }
     softTimeoutRef.current = setTimeout(() => {
       if (statusRef.current === 'searching') {
         setStatus('timeout');
-        clearTimers();
+        // Only stop the wait counter + soft timeout, heartbeat keeps running
+        clearUiTimers();
       }
     }, MATCHMAKING_CONFIG.SOFT_TIMEOUT_MS);
 
-    // Hard timeout (auto-cancel)
+    // Hard timeout — cancel queue entry and stop everything
+    if (hardTimeoutRef.current) {
+      clearTimeout(hardTimeoutRef.current);
+    }
     hardTimeoutRef.current = setTimeout(() => {
       if (statusRef.current === 'searching' || statusRef.current === 'timeout') {
         cancelQueueEntry();
-        clearTimers();
+        clearAllTimers();
         setStatus('timeout');
       }
     }, MATCHMAKING_CONFIG.HARD_TIMEOUT_MS);
-  }, [clearTimers, handleMatch, cancelQueueEntry]);
+  }, [clearAllTimers, clearUiTimers, handleMatch, cancelQueueEntry]);
 
   /**
    * Open mode selection for Quick Match
@@ -198,8 +228,9 @@ export function useMatchmaking({ onMatchFound }) {
    * Cancel matchmaking and leave the queue
    */
   const cancelMatchmaking = useCallback(() => {
-    clearTimers();
-    if (statusRef.current === 'searching') {
+    const wasActive = statusRef.current === 'searching' || statusRef.current === 'timeout';
+    clearAllTimers();
+    if (wasActive) {
       cancelQueueEntry();
     }
     setStatus('idle');
@@ -207,15 +238,46 @@ export function useMatchmaking({ onMatchFound }) {
     setQueuePosition(null);
     setWaitTime(0);
     setError(null);
-  }, [clearTimers, cancelQueueEntry]);
+  }, [clearAllTimers, cancelQueueEntry]);
 
   /**
-   * Extend search after soft timeout
+   * Extend search after soft timeout.
+   * Heartbeat is already running — just restart the UI timers.
    */
   const extendSearch = useCallback(() => {
     setStatus('searching');
-    startPolling();
-  }, [startPolling]);
+
+    // Restart wait time counter
+    if (waitTimeIntervalRef.current) {
+      clearInterval(waitTimeIntervalRef.current);
+    }
+    waitTimeIntervalRef.current = setInterval(() => {
+      setWaitTime((t) => t + 1);
+    }, 1000);
+
+    // Reset soft timeout
+    if (softTimeoutRef.current) {
+      clearTimeout(softTimeoutRef.current);
+    }
+    softTimeoutRef.current = setTimeout(() => {
+      if (statusRef.current === 'searching') {
+        setStatus('timeout');
+        clearUiTimers();
+      }
+    }, MATCHMAKING_CONFIG.SOFT_TIMEOUT_MS);
+
+    // Reset hard timeout
+    if (hardTimeoutRef.current) {
+      clearTimeout(hardTimeoutRef.current);
+    }
+    hardTimeoutRef.current = setTimeout(() => {
+      if (statusRef.current === 'searching' || statusRef.current === 'timeout') {
+        cancelQueueEntry();
+        clearAllTimers();
+        setStatus('timeout');
+      }
+    }, MATCHMAKING_CONFIG.HARD_TIMEOUT_MS);
+  }, [clearAllTimers, clearUiTimers, cancelQueueEntry]);
 
   /**
    * Clear error and return to idle
@@ -228,7 +290,7 @@ export function useMatchmaking({ onMatchFound }) {
   // Cancel queue on tab close
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (statusRef.current === 'searching') {
+      if (statusRef.current === 'searching' || statusRef.current === 'timeout') {
         // Use sendBeacon for reliable delivery during page unload
         const url = getApiUrl(SOUP_API.COOP_MATCHMAKE);
         const body = JSON.stringify({ action: 'cancel' });
@@ -243,12 +305,12 @@ export function useMatchmaking({ onMatchFound }) {
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      clearTimers();
-      if (statusRef.current === 'searching') {
+      clearAllTimers();
+      if (statusRef.current === 'searching' || statusRef.current === 'timeout') {
         cancelQueueEntry();
       }
     };
-  }, [clearTimers, cancelQueueEntry]);
+  }, [clearAllTimers, cancelQueueEntry]);
 
   return {
     status,
