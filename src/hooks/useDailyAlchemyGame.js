@@ -25,6 +25,8 @@ import {
   SOUP_CONFIG,
   STARTER_ELEMENTS,
   SORT_OPTIONS,
+  SORT_DIRECTIONS,
+  SORT_DEFAULT_DIRECTIONS,
   MAX_FAVORITES,
   formatTime,
   generateShareText,
@@ -116,8 +118,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
   // Element bank state
   const [elementBank, setElementBank] = useState([...STARTER_ELEMENTS]);
-  const [sortOrder, setSortOrder] = useState(SORT_OPTIONS.NEWEST);
+  const [sortOrder, setSortOrderRaw] = useState(SORT_OPTIONS.NEWEST);
+  const [sortDirection, setSortDirection] = useState(SORT_DIRECTIONS.DESC);
   const [searchQuery, setSearchQuery] = useState('');
+
+  // When sort mode changes, reset direction to that mode's default
+  const setSortOrder = useCallback((newOrder) => {
+    setSortOrderRaw(newOrder);
+    setSortDirection(SORT_DEFAULT_DIRECTIONS[newOrder]);
+  }, []);
 
   // Favorites and usage tracking state
   // Favorites are now per-slot in creative mode, empty in daily mode
@@ -2293,31 +2302,41 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       );
     }
 
+    const isAsc = sortDirection === SORT_DIRECTIONS.ASC;
+
     // Apply sort
     if (sortOrder === SORT_OPTIONS.ALPHABETICAL) {
-      sorted.sort((a, b) => a.name.localeCompare(b.name));
+      sorted.sort((a, b) => (isAsc ? 1 : -1) * a.name.localeCompare(b.name));
     } else if (sortOrder === SORT_OPTIONS.FIRST_DISCOVERIES) {
-      // Sort first discoveries to the top, then newest
-      sorted.sort((a, b) => {
-        const aIsFirst = firstDiscoveryElements.includes(a.name);
-        const bIsFirst = firstDiscoveryElements.includes(b.name);
-        if (aIsFirst && !bIsFirst) return -1;
-        if (!aIsFirst && bIsFirst) return 1;
-        return 0; // Keep original order (newest) within each group
-      });
+      // First discoveries pinned to top, direction affects within-group ordering
+      const firsts = sorted.filter((el) => firstDiscoveryElements.includes(el.name));
+      const others = sorted.filter((el) => !firstDiscoveryElements.includes(el.name));
+      if (isAsc) {
+        firsts.reverse();
+        others.reverse();
+      }
+      sorted = [...firsts, ...others];
     } else if (sortOrder === SORT_OPTIONS.MOST_USED) {
-      // Sort by usage count (most used first), then alphabetically as tiebreaker
       sorted.sort((a, b) => {
         const usageA = elementUsageCount[a.name] || 0;
         const usageB = elementUsageCount[b.name] || 0;
-        if (usageA !== usageB) return usageB - usageA; // Higher usage first
+        if (usageA !== usageB) return isAsc ? usageA - usageB : usageB - usageA;
         return a.name.localeCompare(b.name);
       });
+    } else {
+      // NEWEST: default array order is newest first (desc)
+      if (isAsc) sorted.reverse();
     }
-    // NEWEST is default order (newest first, which is how we add them)
 
     return sorted;
-  }, [elementBank, searchQuery, sortOrder, firstDiscoveryElements, elementUsageCount]);
+  }, [
+    elementBank,
+    searchQuery,
+    sortOrder,
+    sortDirection,
+    firstDiscoveryElements,
+    elementUsageCount,
+  ]);
 
   return {
     // State
@@ -2332,6 +2351,8 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     sortedElementBank,
     sortOrder,
     setSortOrder,
+    sortDirection,
+    setSortDirection,
     searchQuery,
     setSearchQuery,
 

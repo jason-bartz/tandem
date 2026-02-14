@@ -2,11 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X } from 'lucide-react';
+import { Search, X, ChevronDown, ArrowUp, ArrowDown } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SORT_OPTIONS } from '@/lib/daily-alchemy.constants';
+import { SORT_LABELS, SORT_DIRECTIONS } from '@/lib/daily-alchemy.constants';
 import ElementChip from './ElementChip';
 import FavoritesPanel from './FavoritesPanel';
 
@@ -28,6 +28,8 @@ export function ElementBank({
   onSelect,
   sortOrder,
   onSortChange,
+  sortDirection,
+  onSortDirectionChange,
   searchQuery,
   onSearchChange,
   targetElement,
@@ -48,9 +50,11 @@ export function ElementBank({
   const { highContrast } = useTheme();
   const gridContainerRef = useRef(null);
   const favoritesButtonRef = useRef(null);
+  const dropdownRef = useRef(null);
   const [isDraggingToFavorites, setIsDraggingToFavorites] = useState(false);
   const [draggedElementName, setDraggedElementName] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
 
   // Touch drag state for mobile
   const [touchDragElement, setTouchDragElement] = useState(null);
@@ -71,6 +75,38 @@ export function ElementBank({
     mediaQuery.addEventListener('change', handleChange);
     return () => mediaQuery.removeEventListener('change', handleChange);
   }, [isDesktopSidePanel]);
+
+  // Close sort dropdown on click outside
+  useEffect(() => {
+    if (!isSortDropdownOpen) return;
+
+    const handleClickOutside = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsSortDropdownOpen(false);
+      }
+    };
+
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('touchstart', handleClickOutside);
+    }, 100);
+
+    return () => {
+      clearTimeout(timeoutId);
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, [isSortDropdownOpen]);
+
+  // Close sort dropdown on Escape
+  useEffect(() => {
+    if (!isSortDropdownOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') setIsSortDropdownOpen(false);
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isSortDropdownOpen]);
 
   // Drag handlers for adding to favorites
   const handleDragStart = (e, element) => {
@@ -172,7 +208,7 @@ export function ElementBank({
 
   return (
     <div className="flex flex-col gap-2 flex-1 min-h-0">
-      {/* Header row with title and sort */}
+      {/* Header row with title, direction toggle, and sort dropdown */}
       <div className="flex items-center justify-between">
         <h3
           className={cn(
@@ -183,36 +219,110 @@ export function ElementBank({
         >
           Element Bank
         </h3>
-        <button
-          onClick={() => {
-            const order = [
-              SORT_OPTIONS.NEWEST,
-              SORT_OPTIONS.ALPHABETICAL,
-              SORT_OPTIONS.MOST_USED,
-              SORT_OPTIONS.FIRST_DISCOVERIES,
-            ];
-            const currentIndex = order.indexOf(sortOrder);
-            const nextIndex = (currentIndex + 1) % order.length;
-            onSortChange(order[nextIndex]);
-          }}
-          className={cn(
-            'px-2 py-1',
-            'text-sm font-medium',
-            'text-gray-600 dark:text-gray-400',
-            'hover:text-gray-900 dark:hover:text-gray-200',
-            'transition-colors'
-          )}
-          aria-label="Toggle sort order"
-        >
-          Sort:{' '}
-          {sortOrder === SORT_OPTIONS.NEWEST
-            ? 'Newest'
-            : sortOrder === SORT_OPTIONS.ALPHABETICAL
-              ? 'A-Z'
-              : sortOrder === SORT_OPTIONS.MOST_USED
-                ? 'Most Used'
-                : '1st Disc.'}
-        </button>
+
+        <div className="flex items-center gap-1">
+          {/* Direction toggle button */}
+          <button
+            onClick={() => {
+              onSortDirectionChange(
+                sortDirection === SORT_DIRECTIONS.ASC ? SORT_DIRECTIONS.DESC : SORT_DIRECTIONS.ASC
+              );
+            }}
+            className={cn(
+              'p-1.5',
+              'text-gray-500 dark:text-gray-400',
+              'hover:text-gray-900 dark:hover:text-gray-200',
+              'hover:bg-gray-100 dark:hover:bg-gray-700',
+              'rounded-lg',
+              'transition-colors'
+            )}
+            aria-label={`Sort direction: ${sortDirection === SORT_DIRECTIONS.ASC ? 'ascending' : 'descending'}`}
+            title={sortDirection === SORT_DIRECTIONS.ASC ? 'Ascending' : 'Descending'}
+          >
+            {sortDirection === SORT_DIRECTIONS.ASC ? (
+              <ArrowUp className="w-3.5 h-3.5" />
+            ) : (
+              <ArrowDown className="w-3.5 h-3.5" />
+            )}
+          </button>
+
+          {/* Sort dropdown */}
+          <div className="relative" ref={dropdownRef}>
+            <button
+              onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+              className={cn(
+                'flex items-center gap-1',
+                'px-2 py-1',
+                'text-sm font-medium',
+                'text-gray-600 dark:text-gray-400',
+                'hover:text-gray-900 dark:hover:text-gray-200',
+                'hover:bg-gray-100 dark:hover:bg-gray-700',
+                'rounded-lg',
+                'transition-colors',
+                isSortDropdownOpen &&
+                  'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-gray-200'
+              )}
+              aria-haspopup="listbox"
+              aria-expanded={isSortDropdownOpen}
+              aria-label={`Sort by: ${SORT_LABELS[sortOrder]}`}
+            >
+              {SORT_LABELS[sortOrder]}
+              <ChevronDown
+                className={cn(
+                  'w-3.5 h-3.5 transition-transform',
+                  isSortDropdownOpen && 'rotate-180'
+                )}
+              />
+            </button>
+
+            {/* Dropdown menu */}
+            <AnimatePresence>
+              {isSortDropdownOpen && (
+                <motion.div
+                  className={cn(
+                    'absolute right-0 top-full mt-1 z-50',
+                    'min-w-[140px]',
+                    'py-1',
+                    'bg-white dark:bg-gray-800',
+                    'border-[2px] border-black dark:border-gray-600',
+                    'rounded-xl',
+                    'shadow-[3px_3px_0px_rgba(0,0,0,1)] dark:shadow-[3px_3px_0px_rgba(75,85,99,1)]',
+                    highContrast && 'border-[3px] border-hc-border'
+                  )}
+                  initial={{ opacity: 0, scale: 0.95, y: -4 }}
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95, y: -4 }}
+                  transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                  role="listbox"
+                  aria-label="Sort options"
+                >
+                  {Object.entries(SORT_LABELS).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => {
+                        onSortChange(key);
+                        setIsSortDropdownOpen(false);
+                      }}
+                      className={cn(
+                        'w-full px-3 py-2 text-left text-sm',
+                        'hover:bg-gray-100 dark:hover:bg-gray-700',
+                        'transition-colors',
+                        sortOrder === key
+                          ? 'font-semibold text-soup-primary'
+                          : 'text-gray-700 dark:text-gray-300',
+                        highContrast && sortOrder === key && 'text-hc-text font-bold'
+                      )}
+                      role="option"
+                      aria-selected={sortOrder === key}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
       </div>
 
       {/* Search field and Favorites button */}
