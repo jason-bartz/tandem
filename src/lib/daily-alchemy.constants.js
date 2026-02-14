@@ -376,6 +376,7 @@ export const COOP_CONFIG = {
 // Quick Match matchmaking configuration
 export const MATCHMAKING_CONFIG = {
   HEARTBEAT_INTERVAL_MS: 3000, // Poll every 3 seconds
+  MINIMUM_SEARCH_MS: 10000, // Show searching UI for at least 10 seconds
   SOFT_TIMEOUT_MS: 120000, // 2 minutes — prompt to keep waiting
   HARD_TIMEOUT_MS: 300000, // 5 minutes — auto-cancel
   STALE_THRESHOLD_SECONDS: 30, // Entries without heartbeat for 30s are skipped

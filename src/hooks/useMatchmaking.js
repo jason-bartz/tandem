@@ -29,6 +29,7 @@ export function useMatchmaking({ onMatchFound }) {
   const hardTimeoutRef = useRef(null);
   const statusRef = useRef(status);
   const onMatchFoundRef = useRef(onMatchFound);
+  const searchStartedAtRef = useRef(null);
 
   // Keep refs in sync
   statusRef.current = status;
@@ -103,6 +104,9 @@ export function useMatchmaking({ onMatchFound }) {
    * Start the heartbeat polling loop
    */
   const startPolling = useCallback(() => {
+    // Track when this search started (for minimum search duration)
+    searchStartedAtRef.current = Date.now();
+
     // Prevent duplicate heartbeat intervals
     if (heartbeatIntervalRef.current) {
       clearInterval(heartbeatIntervalRef.current);
@@ -130,6 +134,9 @@ export function useMatchmaking({ onMatchFound }) {
         } else if (data.status === 'waiting') {
           setQueuePosition(data.queuePosition || null);
         } else if (data.status === 'expired') {
+          // Ignore expired during minimum search period to avoid premature timeout
+          const elapsed = Date.now() - (searchStartedAtRef.current || 0);
+          if (elapsed < MATCHMAKING_CONFIG.MINIMUM_SEARCH_MS) return;
           // Queue entry was cleaned up
           clearAllTimers();
           setStatus('timeout');
@@ -246,6 +253,7 @@ export function useMatchmaking({ onMatchFound }) {
    */
   const extendSearch = useCallback(() => {
     setStatus('searching');
+    searchStartedAtRef.current = Date.now();
 
     // Restart wait time counter
     if (waitTimeIntervalRef.current) {
