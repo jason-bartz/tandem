@@ -187,6 +187,8 @@ export function DailyAlchemyGame({ initialDate = null }) {
     startCoopDailyMode,
     handleGameOver,
     addPartnerElement,
+    incrementMovesCount,
+    lastMoveIncrement,
 
     // Favorites
     favoriteElements,
@@ -212,6 +214,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
   const coopHostFavoritesRef = useRef(null); // Stores host favorites from save slot
   const coopStartedRef = useRef(false); // Guard against duplicate startCoopMode calls
   const coopModeTypeRef = useRef('creative'); // 'daily' | 'creative' — tracks host's mode choice
+
+  // Co-op creative continue handshake state
+  const [localWantsContinue, setLocalWantsContinue] = useState(false);
+  const [partnerWantsContinue, setPartnerWantsContinue] = useState(false);
 
   // Co-op hook
   const coop = useAlchemyCoop({
@@ -248,6 +254,22 @@ export function DailyAlchemyGame({ initialDate = null }) {
       // Partner's timer ran out in daily co-op — trigger local game over
       handleGameOver();
     }, [handleGameOver]),
+    onPartnerMove: useCallback(() => {
+      // Partner made a first-time combo — increment shared move counter
+      incrementMovesCount();
+    }, [incrementMovesCount]),
+    onPartnerContinueCreative: useCallback(() => {
+      // Partner wants to continue in creative mode after daily co-op
+      setPartnerWantsContinue(true);
+    }, []),
+    onPartnerDeclineCreative: useCallback(() => {
+      // Partner declined to continue — navigate back to welcome (clean state)
+      if (isStandaloneAlchemy) {
+        window.location.href = '/daily-alchemy';
+      } else {
+        window.location.reload();
+      }
+    }, []),
   });
 
   // Co-op: Handle creating a session
@@ -296,6 +318,18 @@ export function DailyAlchemyGame({ initialDate = null }) {
     }
   }, [coop]);
 
+  // Co-op: Handle continuing creative mode together after daily puzzle
+  const handleCoopContinueCreative = useCallback(() => {
+    setLocalWantsContinue(true);
+    coop.broadcastContinueCreative();
+  }, [coop]);
+
+  // Co-op: Handle declining to continue creative mode
+  const handleCoopDecline = useCallback(() => {
+    coop.broadcastDeclineCreative();
+    handleCoopLeave();
+  }, [coop, handleCoopLeave]);
+
   const handleEnterCoopLobby = useCallback(() => {
     coopStartedRef.current = false;
     setIsInCoopLobby(true);
@@ -328,6 +362,30 @@ export function DailyAlchemyGame({ initialDate = null }) {
       coop.broadcastGameOver();
     }
   }, [coopMode, freePlayMode, gameState]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Co-op: Broadcast move increment to partner when local player makes a first-time combo
+  useEffect(() => {
+    if (coopMode && lastMoveIncrement) {
+      coop.broadcastMoveIncrement();
+    }
+  }, [coopMode, lastMoveIncrement]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Co-op: Reset creative continue handshake when entering complete state
+  useEffect(() => {
+    if (gameState === SOUP_GAME_STATES.COMPLETE) {
+      setLocalWantsContinue(false);
+      setPartnerWantsContinue(false);
+    }
+  }, [gameState]);
+
+  // Co-op: Both players opted in to continue creative mode — start creative co-op
+  useEffect(() => {
+    if (localWantsContinue && partnerWantsContinue) {
+      setLocalWantsContinue(false);
+      setPartnerWantsContinue(false);
+      startCoopMode(null, null); // Fresh creative start with starter elements
+    }
+  }, [localWantsContinue, partnerWantsContinue, startCoopMode]);
 
   // Pause timer when sidebar or modals are open, resume when closed
   const isAnyModalOpen =
@@ -606,6 +664,11 @@ export function DailyAlchemyGame({ initialDate = null }) {
                     onViewArchive={() => setShowArchive(true)}
                     isArchive={isArchive}
                     hintsUsed={hintsUsed}
+                    coopMode={coopMode}
+                    coopPartner={coop.partner}
+                    coopPartnerStatus={coop.partnerStatus}
+                    onCoopContinueCreative={handleCoopContinueCreative}
+                    onCoopDecline={handleCoopDecline}
                   />
                 )}
 

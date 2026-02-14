@@ -21,6 +21,9 @@ import logger from '@/lib/logger';
  * @param {Function} options.onSessionEnded - Callback when session ends
  * @param {Function} options.onPartnerJoined - Callback when partner joins the session
  * @param {Function} options.onPartnerGameOver - Callback when partner's timer expires (daily co-op)
+ * @param {Function} options.onPartnerMove - Callback when partner makes a first-time combination (shared move counter)
+ * @param {Function} options.onPartnerContinueCreative - Callback when partner opts in to continue creative mode
+ * @param {Function} options.onPartnerDeclineCreative - Callback when partner declines to continue creative mode
  */
 export function useAlchemyCoop({
   enabled = false,
@@ -31,6 +34,9 @@ export function useAlchemyCoop({
   onSessionEnded,
   onPartnerJoined,
   onPartnerGameOver,
+  onPartnerMove,
+  onPartnerContinueCreative,
+  onPartnerDeclineCreative,
 }) {
   // Session state
   const [sessionId, setSessionId] = useState(externalSessionId);
@@ -74,6 +80,18 @@ export function useAlchemyCoop({
   useEffect(() => {
     onPartnerGameOverRef.current = onPartnerGameOver;
   }, [onPartnerGameOver]);
+  const onPartnerMoveRef = useRef(onPartnerMove);
+  useEffect(() => {
+    onPartnerMoveRef.current = onPartnerMove;
+  }, [onPartnerMove]);
+  const onPartnerContinueCreativeRef = useRef(onPartnerContinueCreative);
+  useEffect(() => {
+    onPartnerContinueCreativeRef.current = onPartnerContinueCreative;
+  }, [onPartnerContinueCreative]);
+  const onPartnerDeclineCreativeRef = useRef(onPartnerDeclineCreative);
+  useEffect(() => {
+    onPartnerDeclineCreativeRef.current = onPartnerDeclineCreative;
+  }, [onPartnerDeclineCreative]);
 
   // Sync external sessionId changes
   useEffect(() => {
@@ -178,6 +196,24 @@ export function useAlchemyCoop({
           logger.info('[Coop] Partner saved the session', {
             savedBy: payload.savedByUsername,
           });
+        }
+      });
+
+      channel.on('broadcast', { event: 'move_increment' }, ({ payload }) => {
+        if (payload.userId !== user.id) {
+          onPartnerMoveRef.current?.();
+        }
+      });
+
+      channel.on('broadcast', { event: 'creative_continue' }, ({ payload }) => {
+        if (payload.userId !== user.id) {
+          onPartnerContinueCreativeRef.current?.();
+        }
+      });
+
+      channel.on('broadcast', { event: 'creative_decline' }, ({ payload }) => {
+        if (payload.userId !== user.id) {
+          onPartnerDeclineCreativeRef.current?.();
         }
       });
 
@@ -585,6 +621,45 @@ export function useAlchemyCoop({
   }, [user]);
 
   /**
+   * Broadcast a move increment to the partner (shared move counter)
+   */
+  const broadcastMoveIncrement = useCallback(() => {
+    if (!channelRef.current || !user) return;
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'move_increment',
+      payload: { userId: user.id },
+    });
+  }, [user]);
+
+  /**
+   * Broadcast that this player wants to continue in creative mode after daily co-op
+   */
+  const broadcastContinueCreative = useCallback(() => {
+    if (!channelRef.current || !user) return;
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'creative_continue',
+      payload: { userId: user.id },
+    });
+  }, [user]);
+
+  /**
+   * Broadcast that this player declines to continue in creative mode
+   */
+  const broadcastDeclineCreative = useCallback(() => {
+    if (!channelRef.current || !user) return;
+
+    channelRef.current.send({
+      type: 'broadcast',
+      event: 'creative_decline',
+      payload: { userId: user.id },
+    });
+  }, [user]);
+
+  /**
    * Send an emote to the partner
    */
   const sendEmote = useCallback(
@@ -681,6 +756,9 @@ export function useAlchemyCoop({
     // Broadcast helpers
     broadcastNewElement,
     broadcastGameOver,
+    broadcastMoveIncrement,
+    broadcastContinueCreative,
+    broadcastDeclineCreative,
     updatePresence,
     syncElementBank,
 
