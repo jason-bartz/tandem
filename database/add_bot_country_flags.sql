@@ -53,7 +53,7 @@ BEGIN
       le.metadata,
       le.is_bot,
       COALESCE(bot_av.image_path, user_av.image_path) as avatar_image_path,
-      COALESCE(le.bot_country_flag, u.country_flag) as country_flag
+      COALESCE(le.bot_country_flag, u.country_flag)::TEXT as country_flag
     FROM leaderboard_entries le
     LEFT JOIN users u ON le.user_id = u.id
     LEFT JOIN avatars user_av ON u.selected_avatar_id = user_av.id
@@ -101,7 +101,7 @@ BEGIN
       le.metadata,
       le.is_bot,
       COALESCE(bot_av.image_path, user_av.image_path) as avatar_image_path,
-      COALESCE(le.bot_country_flag, u.country_flag) as country_flag
+      COALESCE(le.bot_country_flag, u.country_flag)::TEXT as country_flag
     FROM leaderboard_entries le
     LEFT JOIN users u ON le.user_id = u.id
     LEFT JOIN avatars user_av ON u.selected_avatar_id = user_av.id
