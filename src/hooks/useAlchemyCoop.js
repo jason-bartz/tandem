@@ -62,6 +62,7 @@ export function useAlchemyCoop({
   const emoteTimeoutRef = useRef(null);
   const partnerPresenceRef = useRef(null);
   const statusCheckIntervalRef = useRef(null);
+  const myCountryFlagRef = useRef(userProfile?.country_flag || null);
 
   // Callback refs — prevent stale closures in Supabase channel listeners
   const onPartnerElementRef = useRef(onPartnerElement);
@@ -229,6 +230,7 @@ export function useAlchemyCoop({
               userId: partnerPresence.user_id,
               username: partnerPresence.username,
               avatarPath: partnerPresence.avatarPath,
+              countryFlag: partnerPresence.countryFlag || null,
             });
             computePartnerStatus();
           }
@@ -243,6 +245,7 @@ export function useAlchemyCoop({
             userId: partnerPresence.user_id,
             username: partnerPresence.username,
             avatarPath: partnerPresence.avatarPath,
+            countryFlag: partnerPresence.countryFlag || null,
           });
           setPartnerStatus('active');
           setIsWaiting(false);
@@ -267,6 +270,7 @@ export function useAlchemyCoop({
             user_id: user.id,
             username: userProfile?.username || 'Anonymous',
             avatarPath: userProfile?.avatar_image_path || null,
+            countryFlag: myCountryFlagRef.current || userProfile?.country_flag || null,
             status: 'active',
             lastInteractionAt: Date.now(),
             joinedAt: Date.now(),
@@ -291,6 +295,7 @@ export function useAlchemyCoop({
             user_id: user.id,
             username: userProfile?.username || 'Anonymous',
             avatarPath: userProfile?.avatar_image_path || null,
+            countryFlag: myCountryFlagRef.current || userProfile?.country_flag || null,
             status: 'active',
             lastInteractionAt: Date.now(),
             joinedAt: Date.now(),
@@ -321,6 +326,7 @@ export function useAlchemyCoop({
         user_id: user.id,
         username: userProfile?.username || 'Anonymous',
         avatarPath: userProfile?.avatar_image_path || null,
+        countryFlag: myCountryFlagRef.current || userProfile?.country_flag || null,
         status,
         lastInteractionAt: status === 'active' ? Date.now() : undefined,
         joinedAt: Date.now(),
@@ -381,6 +387,11 @@ export function useAlchemyCoop({
         setIsHost(true);
         setIsWaiting(true);
 
+        // Store country flag for presence tracking
+        if (data.yourCountryFlag) {
+          myCountryFlagRef.current = data.yourCountryFlag;
+        }
+
         // Persist session ID for reconnection
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
@@ -434,8 +445,14 @@ export function useAlchemyCoop({
           userId: null, // Will be set by presence
           username: session.hostUsername,
           avatarPath: session.hostAvatarPath,
+          countryFlag: session.hostCountryFlag || null,
         });
         setPartnerStatus('active');
+
+        // Store country flag for presence tracking
+        if (data.yourCountryFlag) {
+          myCountryFlagRef.current = data.yourCountryFlag;
+        }
 
         // Persist session ID for reconnection
         if (typeof localStorage !== 'undefined') {
@@ -695,6 +712,7 @@ export function useAlchemyCoop({
       user_id: user.id,
       username: userProfile?.username || 'Anonymous',
       avatarPath: userProfile?.avatar_image_path || null,
+      countryFlag: myCountryFlagRef.current || userProfile?.country_flag || null,
       status: 'active',
       lastInteractionAt: Date.now(),
       joinedAt: Date.now(),
@@ -748,6 +766,11 @@ export function useAlchemyCoop({
         countryFlag: partnerInfo.countryFlag || null,
       });
       setPartnerStatus('active');
+
+      // Store country flag for presence tracking
+      if (matchData.yourCountryFlag) {
+        myCountryFlagRef.current = matchData.yourCountryFlag;
+      }
 
       // Persist session ID for reconnection
       if (typeof localStorage !== 'undefined') {

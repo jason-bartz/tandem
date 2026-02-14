@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS, COOP_CONFIG } from '@/lib/daily-alchemy.constants';
+import { captureUserCountry } from '@/lib/country-flag';
 
 /**
  * Generate a random invite code using unambiguous characters
@@ -36,6 +37,9 @@ export async function POST(request) {
     const body = await request.json().catch(() => ({}));
     const { saveSlot, mode } = body;
     const sessionMode = mode === 'daily' ? 'daily' : 'creative';
+
+    // Capture country from Vercel geo header
+    const { countryFlag: yourCountryFlag } = await captureUserCountry(supabase, user.id, request);
 
     // End any existing waiting sessions by this host
     await supabase
@@ -129,6 +133,7 @@ export async function POST(request) {
         mode: session.mode,
       },
       hostFavorites,
+      yourCountryFlag,
     });
   } catch (error) {
     logger.error('[Coop] Unexpected error in POST /api/daily-alchemy/coop/create', {
