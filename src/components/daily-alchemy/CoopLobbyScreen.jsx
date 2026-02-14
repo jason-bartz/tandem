@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Copy, Share2, ArrowLeft, Loader2, Check, Shuffle } from 'lucide-react';
+import { Users, Copy, Share2, ArrowLeft, Loader2, Check } from 'lucide-react';
+import { CoopIcon } from './icons/CoopIcon';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { isStandaloneAlchemy } from '@/lib/standalone';
@@ -129,7 +130,7 @@ export function CoopLobbyScreen({
         >
           {/* Radar animation */}
           <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
-            <Shuffle className="w-8 h-8 text-amber-500 dark:text-amber-400 z-10" />
+            <CoopIcon className="w-8 h-8 text-amber-500 dark:text-amber-400 z-10" />
             {!reduceMotion && (
               <>
                 <motion.div
@@ -284,7 +285,7 @@ export function CoopLobbyScreen({
             exit={!reduceMotion ? { opacity: 0, y: -10 } : undefined}
           >
             <div className="flex items-center gap-2 mb-4">
-              <Shuffle className="w-5 h-5 text-amber-500" />
+              <CoopIcon className="w-5 h-5 text-amber-500" />
               <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Quick Match</h2>
             </div>
 
@@ -547,7 +548,7 @@ export function CoopLobbyScreen({
                 highContrast && 'border-[4px]'
               )}
             >
-              <Shuffle className="w-5 h-5" />
+              <CoopIcon className="w-5 h-5" />
               Quick Match
             </button>
 
