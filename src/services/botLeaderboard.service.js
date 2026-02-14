@@ -6,6 +6,7 @@
  */
 
 import { generateRealisticUsername } from '@/utils/realisticUsernameGenerator';
+import { countryCodeToFlag } from '@/lib/country-flag';
 import { createClient } from '@supabase/supabase-js';
 import logger from '@/lib/logger';
 
@@ -38,6 +39,41 @@ function getAvatarForUsername(username, avatars) {
   const hash = simpleHash(username);
   const index = hash % avatars.length;
   return avatars[index].id;
+}
+
+/**
+ * Weighted country distribution for bot leaderboard entries.
+ * ~72% US, rest English-speaking countries + some outliers.
+ * Cumulative weights — entries are [cumulativeWeight, countryCode].
+ */
+const BOT_COUNTRY_DISTRIBUTION = [
+  [72, 'US'],
+  [80, 'GB'],
+  [86, 'CA'],
+  [91, 'AU'],
+  [93, 'IE'],
+  [94, 'NZ'],
+  [95, 'DE'],
+  [96, 'FR'],
+  [97, 'JP'],
+  [98, 'BR'],
+  [99, 'IN'],
+  [100, 'MX'],
+];
+
+/**
+ * Get a deterministic country flag for a bot username.
+ * Same username always gets the same country.
+ */
+function getCountryFlagForBot(username) {
+  const hash = simpleHash(username + '_country');
+  const roll = hash % 100;
+  for (const [threshold, code] of BOT_COUNTRY_DISTRIBUTION) {
+    if (roll < threshold) {
+      return countryCodeToFlag(code);
+    }
+  }
+  return countryCodeToFlag('US');
 }
 
 // Daily Alchemy has a 10-minute timer - scores cannot exceed this
@@ -264,6 +300,8 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
     // Carryover bots increment their streak, new bots start at 1
     const newStreak = currentStreak + 1;
 
+    const countryFlag = getCountryFlagForBot(username);
+
     entries.push({
       gameType,
       dateStr,
@@ -274,6 +312,7 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
       hintsUsed,
       newStreak,
       isCarryover,
+      countryFlag,
     });
   }
 
@@ -303,6 +342,7 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
           submitted_at: entry.submittedAt.toISOString(),
           hintsUsed: entry.hintsUsed,
         },
+        p_bot_country_flag: entry.countryFlag,
       });
 
       if (error) {
@@ -331,6 +371,7 @@ export async function generateBotEntries({ gameType, date, count, config, carryo
               last_played: entry.dateStr,
               is_carryover: entry.isCarryover,
             },
+            p_bot_country_flag: entry.countryFlag,
           }
         );
 
