@@ -208,6 +208,7 @@ export const SOUP_API = {
   COOP_LEAVE: '/api/daily-alchemy/coop/leave',
   COOP_SAVE: '/api/daily-alchemy/coop/save',
   COOP_SESSION: '/api/daily-alchemy/coop/session',
+  COOP_MATCHMAKE: '/api/daily-alchemy/coop/matchmake',
 };
 
 // Game type identifier for leaderboard
@@ -370,6 +371,15 @@ export const COOP_CONFIG = {
   INVITE_CODE_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
   // Debounced sync: update DB every N discoveries
   SYNC_DISCOVERY_INTERVAL: 5,
+};
+
+// Quick Match matchmaking configuration
+export const MATCHMAKING_CONFIG = {
+  HEARTBEAT_INTERVAL_MS: 3000, // Poll every 3 seconds
+  SOFT_TIMEOUT_MS: 120000, // 2 minutes — prompt to keep waiting
+  HARD_TIMEOUT_MS: 300000, // 5 minutes — auto-cancel
+  STALE_THRESHOLD_SECONDS: 30, // Entries without heartbeat for 30s are skipped
+  CLEANUP_AGE_MINUTES: 10, // Delete entries older than 10 minutes
 };
 
 // Cache configuration (for reference, actual values in API)

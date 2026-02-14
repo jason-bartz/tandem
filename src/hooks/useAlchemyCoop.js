@@ -728,6 +728,44 @@ export function useAlchemyCoop({
     [sessionId]
   );
 
+  /**
+   * Connect to a session created by Quick Match matchmaking.
+   * Sets up local state and Realtime channel without making API calls
+   * (the matchmaking API already created the session server-side).
+   */
+  const connectToMatchedSession = useCallback(
+    (matchData) => {
+      const { session, partner: partnerInfo, isHost: matchIsHost } = matchData;
+
+      setSessionId(session.id);
+      setInviteCode(null);
+      setIsHost(matchIsHost);
+      setIsWaiting(false);
+      setPartner({
+        userId: partnerInfo.userId,
+        username: partnerInfo.username,
+        avatarPath: partnerInfo.avatarPath,
+        countryFlag: partnerInfo.countryFlag || null,
+      });
+      setPartnerStatus('active');
+
+      // Persist session ID for reconnection
+      if (typeof localStorage !== 'undefined') {
+        localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+      }
+
+      // Set up Realtime channel
+      setupChannel(session.id);
+
+      return {
+        sessionId: session.id,
+        elementBank: session.elementBank,
+        mode: session.mode,
+      };
+    },
+    [setupChannel]
+  );
+
   const clearError = useCallback(() => setError(null), []);
 
   return {
@@ -736,6 +774,7 @@ export function useAlchemyCoop({
     joinSession,
     leaveSession,
     saveSession,
+    connectToMatchedSession,
 
     // Session state
     sessionId,
