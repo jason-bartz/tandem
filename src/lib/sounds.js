@@ -1,22 +1,63 @@
 // Audio effects for the game
 let audioContext = null;
+let _visibilityListenerAdded = false;
+
+// Check user's sound preference from localStorage
+function isSoundEnabled() {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem('tandemSound') !== 'false';
+}
+
+// Initialize or resume the shared AudioContext.
+// Returns null if sound is disabled or unavailable — callers bail early.
+export function initAudio() {
+  if (typeof window === 'undefined') return null;
+  if (!isSoundEnabled()) return null;
+
+  if (!audioContext) {
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    } catch {
+      return null;
+    }
+  }
+
+  // Browsers (especially Safari/iOS) suspend the AudioContext when the tab
+  // or app goes to the background. Calling resume() inside a user-gesture
+  // handler restores it; outside a gesture it queues for the next gesture.
+  if (audioContext.state === 'suspended') {
+    audioContext.resume();
+  }
+
+  // One-time listener: resume audio when the page returns to foreground.
+  // This covers the case where the user switches back to the tab without
+  // immediately triggering a sound-producing interaction.
+  if (!_visibilityListenerAdded) {
+    _visibilityListenerAdded = true;
+    document.addEventListener('visibilitychange', () => {
+      if (
+        document.visibilityState === 'visible' &&
+        audioContext &&
+        audioContext.state === 'suspended'
+      ) {
+        audioContext.resume();
+      }
+    });
+  }
+
+  return audioContext;
+}
 
 // Play crowd disappointment sound for game failure
 export function playCrowdDisappointmentSound() {
   if (typeof window === 'undefined') return;
+  if (!isSoundEnabled()) return;
 
   const audio = new Audio('/sounds/crowd-disappointment.mp3');
   audio.volume = 0.35;
   audio.play().catch(() => {
     // Ignore autoplay errors
   });
-}
-
-export function initAudio() {
-  if (!audioContext && typeof window !== 'undefined') {
-    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  return audioContext;
 }
 
 // Create a happy success sound using Web Audio API
@@ -269,9 +310,10 @@ export function playFailureSound() {
 // Play clapper sound for Reel Connections game start
 export function playClapperSound() {
   if (typeof window === 'undefined') return;
+  if (!isSoundEnabled()) return;
 
   const audio = new Audio('/sounds/clapper.wav');
-  audio.volume = 0.35; // 30% volume reduction
+  audio.volume = 0.35;
   audio.play().catch(() => {
     // Ignore autoplay errors
   });

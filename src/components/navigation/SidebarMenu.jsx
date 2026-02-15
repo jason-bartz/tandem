@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useHoroscope } from '@/hooks/useHoroscope';
+import { useSound } from '@/hooks/useSound';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import Image from 'next/image';
@@ -40,6 +41,7 @@ export default function SidebarMenu({
   const { user, userProfile, profileLoading, isAnonymous } = useAuth();
   const { isActive: hasSubscription } = useSubscription();
   const { lightTap } = useHaptics();
+  const { soundEnabled, toggleSound } = useSound();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -211,25 +213,46 @@ export default function SidebarMenu({
             role="dialog"
             aria-label="Navigation menu"
           >
-            {/* Header with Close button and Theme toggle */}
+            {/* Header with Close button and Theme/Sound toggles */}
             <div className="sticky top-0 z-10 flex justify-between items-center p-4 pt-safe bg-inherit">
-              {/* Theme toggle button */}
-              <motion.button
-                onClick={() => {
-                  toggleTheme();
-                  lightTap();
-                }}
-                className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
-                aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-                whileHover={{ scale: reduceMotion ? 1 : 1.1 }}
-                transition={{ duration: 0.2 }}
-              >
-                <img
-                  src={isDark ? '/ui/shared/light-mode.png' : '/ui/shared/dark-mode.png'}
-                  alt=""
-                  className="w-6 h-6"
-                />
-              </motion.button>
+              {/* Left side toggles */}
+              <div className="flex items-center gap-1">
+                {/* Theme toggle button */}
+                <motion.button
+                  onClick={() => {
+                    toggleTheme();
+                    lightTap();
+                  }}
+                  className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                  aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+                  whileHover={{ scale: reduceMotion ? 1 : 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <img
+                    src={isDark ? '/ui/shared/light-mode.png' : '/ui/shared/dark-mode.png'}
+                    alt=""
+                    className="w-6 h-6"
+                  />
+                </motion.button>
+
+                {/* Sound toggle button */}
+                <motion.button
+                  onClick={() => {
+                    toggleSound();
+                    lightTap();
+                  }}
+                  className="w-10 h-10 flex items-center justify-center transition-opacity hover:opacity-70 active:opacity-50"
+                  aria-label={soundEnabled ? 'Mute sounds' : 'Unmute sounds'}
+                  whileHover={{ scale: reduceMotion ? 1 : 1.1 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <img
+                    src={soundEnabled ? '/ui/shared/volume-on.png' : '/ui/shared/volume-mute.png'}
+                    alt=""
+                    className="w-6 h-6"
+                  />
+                </motion.button>
+              </div>
 
               {/* Close button */}
               <motion.button
