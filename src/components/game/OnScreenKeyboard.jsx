@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { STORAGE_KEYS } from '@/lib/constants';
 import { playKeyPressSound } from '@/lib/sounds';
 
 const KEYBOARD_LAYOUTS = {
@@ -42,10 +43,8 @@ export default function OnScreenKeyboard({
   // Load sound preference from localStorage
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('soundEnabled');
-      if (saved !== null) {
-        setSoundEnabled(saved === 'true');
-      }
+      const saved = localStorage.getItem(STORAGE_KEYS.SOUND);
+      setSoundEnabled(saved !== 'false');
     }
   }, []);
 
