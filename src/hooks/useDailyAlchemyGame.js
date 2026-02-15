@@ -264,6 +264,14 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return;
       }
 
+      // Skip reset during co-op — auth hiccups (token refresh, brief session
+      // expiry) must not wipe shared game state or boot the player to welcome.
+      // The co-op session itself manages state via the realtime channel.
+      if (coopMode) {
+        previousUserIdRef.current = currentUserId;
+        return;
+      }
+
       logger.info('[DailyAlchemy] User changed, resetting Creative Mode state', {
         previousUserId: previousUserId || 'none',
         currentUserId: currentUserId || 'none',
@@ -320,7 +328,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
       // Update the ref to track new user
       previousUserIdRef.current = currentUserId;
     }
-  }, [user?.id, user?.is_anonymous, freePlayMode]);
+  }, [user?.id, user?.is_anonymous, freePlayMode, coopMode]);
 
   // Timer effect (disabled in free play mode)
   // Tracks both elapsed time (for stats) and remaining time (countdown for daily mode)

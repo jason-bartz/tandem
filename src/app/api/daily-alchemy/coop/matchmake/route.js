@@ -1,20 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
-import { STARTER_ELEMENTS, COOP_CONFIG, MATCHMAKING_CONFIG } from '@/lib/daily-alchemy.constants';
+import { STARTER_ELEMENTS, MATCHMAKING_CONFIG } from '@/lib/daily-alchemy.constants';
 import { countryCodeToFlag, captureUserCountry } from '@/lib/country-flag';
-
-/**
- * Generate a random invite code using unambiguous characters
- */
-function generateInviteCode() {
-  const chars = COOP_CONFIG.INVITE_CODE_CHARS;
-  let code = '';
-  for (let i = 0; i < COOP_CONFIG.INVITE_CODE_LENGTH; i++) {
-    code += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return code;
-}
 
 /**
  * Fetch a user's profile (username + avatar)
@@ -102,97 +90,45 @@ export async function POST(request) {
       // Opportunistic cleanup
       cleanupStaleEntries(supabase).catch(() => {});
 
-      // Attempt atomic match: claim the oldest waiting player in same mode
+      // Attempt atomic match: claim partner + create session in one transaction.
+      // This prevents the race where the claim succeeds but session creation
+      // or queue updates fail, stranding the waiting player in 'matched' limbo.
       const staleThreshold = new Date(
         Date.now() - MATCHMAKING_CONFIG.STALE_THRESHOLD_SECONDS * 1000
       ).toISOString();
 
-      const { data: matched, error: matchError } = await supabase.rpc('matchmaking_claim_partner', {
-        p_claimer_id: user.id,
-        p_mode: mode,
-        p_stale_threshold: staleThreshold,
-      });
+      const elementBank = STARTER_ELEMENTS.map((e) => ({
+        name: e.name,
+        emoji: e.emoji,
+        isStarter: true,
+      }));
+
+      const { data: matchResult, error: matchError } = await supabase.rpc(
+        'matchmaking_claim_and_create_session',
+        {
+          p_claimer_id: user.id,
+          p_mode: mode,
+          p_stale_threshold: staleThreshold,
+          p_element_bank: elementBank,
+          p_claimer_country_code: countryCode,
+          p_claimer_country_flag: countryFlag,
+        }
+      );
 
       if (matchError) {
         logger.error('[Matchmaking] RPC error', { error: matchError });
         // Fall through to insert into queue
       }
 
-      const matchedEntry = matched?.[0] || null;
+      const matchedRow = matchResult?.[0] || null;
 
-      if (matchedEntry) {
-        // Match found — create co-op session
-        const elementBank = STARTER_ELEMENTS.map((e) => ({
-          name: e.name,
-          emoji: e.emoji,
-          isStarter: true,
-        }));
-
-        // Generate unique invite code
-        let inviteCode;
-        let attempts = 0;
-        while (attempts < 5) {
-          inviteCode = generateInviteCode();
-          const { data: existing } = await supabase
-            .from('alchemy_coop_sessions')
-            .select('id')
-            .eq('invite_code', inviteCode)
-            .eq('status', 'waiting')
-            .single();
-          if (!existing) break;
-          attempts++;
-        }
-
-        // Create co-op session with both players
-        const { data: session, error: sessionError } = await supabase
-          .from('alchemy_coop_sessions')
-          .insert({
-            invite_code: inviteCode,
-            host_user_id: matchedEntry.user_id, // Waiting player is "host"
-            partner_user_id: user.id, // Current player is "partner"
-            status: 'active',
-            element_bank: elementBank,
-            total_discoveries: 0,
-            mode,
-            started_at: new Date().toISOString(),
-            last_activity_at: new Date().toISOString(),
-          })
-          .select('id, invite_code, element_bank, mode')
-          .single();
-
-        if (sessionError) {
-          logger.error('[Matchmaking] Failed to create session', { error: sessionError });
-          return NextResponse.json({ error: 'Failed to create match session' }, { status: 500 });
-        }
-
-        // Update the matched player's queue entry with session info
-        await supabase
-          .from('matchmaking_queue')
-          .update({
-            session_id: session.id,
-            matched_with: user.id,
-            matched_at: new Date().toISOString(),
-          })
-          .eq('id', matchedEntry.id);
-
-        // Insert and immediately mark current player's entry as matched
-        await supabase.from('matchmaking_queue').insert({
-          user_id: user.id,
-          mode,
-          status: 'matched',
-          country_code: countryCode,
-          country_flag: countryFlag,
-          matched_with: matchedEntry.user_id,
-          session_id: session.id,
-          matched_at: new Date().toISOString(),
-        });
-
+      if (matchedRow) {
         // Fetch partner's profile (the waiting player)
-        const partnerProfile = await getUserProfile(supabase, matchedEntry.user_id);
+        const partnerProfile = await getUserProfile(supabase, matchedRow.matched_user_id);
 
         logger.info('[Matchmaking] Match found', {
-          sessionId: session.id,
-          player1: matchedEntry.user_id,
+          sessionId: matchedRow.new_session_id,
+          player1: matchedRow.matched_user_id,
           player2: user.id,
           mode,
         });
@@ -201,15 +137,15 @@ export async function POST(request) {
           success: true,
           status: 'matched',
           session: {
-            id: session.id,
-            elementBank: session.element_bank,
-            mode: session.mode,
+            id: matchedRow.new_session_id,
+            elementBank: matchedRow.new_element_bank,
+            mode: matchedRow.new_mode,
           },
           partner: {
-            userId: matchedEntry.user_id,
+            userId: matchedRow.matched_user_id,
             username: partnerProfile.username,
             avatarPath: partnerProfile.avatarPath,
-            countryFlag: matchedEntry.country_flag || null,
+            countryFlag: matchedRow.matched_country_flag || null,
           },
           isHost: false, // Current player is partner
           yourCountryFlag: countryFlag,
@@ -316,7 +252,70 @@ export async function POST(request) {
         });
       }
 
-      // Still waiting — return position
+      // Still waiting — re-attempt match before returning position.
+      // This handles the case where the initial join missed a partner due to
+      // FOR UPDATE SKIP LOCKED (row was locked by a concurrent heartbeat).
+      const staleThreshold = new Date(
+        Date.now() - MATCHMAKING_CONFIG.STALE_THRESHOLD_SECONDS * 1000
+      ).toISOString();
+
+      const elementBank = STARTER_ELEMENTS.map((e) => ({
+        name: e.name,
+        emoji: e.emoji,
+        isStarter: true,
+      }));
+
+      const { data: retryResult, error: retryError } = await supabase.rpc(
+        'matchmaking_claim_and_create_session',
+        {
+          p_claimer_id: user.id,
+          p_mode: entry.mode,
+          p_stale_threshold: staleThreshold,
+          p_element_bank: elementBank,
+          p_claimer_country_code: entry.country_code,
+          p_claimer_country_flag: entry.country_flag,
+        }
+      );
+
+      if (!retryError) {
+        const retryMatch = retryResult?.[0] || null;
+
+        if (retryMatch) {
+          // Cancel our waiting entry (the RPC already inserted a new matched one)
+          await supabase
+            .from('matchmaking_queue')
+            .update({ status: 'cancelled' })
+            .eq('id', entry.id);
+
+          const partnerProfile = await getUserProfile(supabase, retryMatch.matched_user_id);
+
+          logger.info('[Matchmaking] Match found via heartbeat retry', {
+            sessionId: retryMatch.new_session_id,
+            player1: retryMatch.matched_user_id,
+            player2: user.id,
+          });
+
+          return NextResponse.json({
+            success: true,
+            status: 'matched',
+            session: {
+              id: retryMatch.new_session_id,
+              elementBank: retryMatch.new_element_bank,
+              mode: retryMatch.new_mode,
+            },
+            partner: {
+              userId: retryMatch.matched_user_id,
+              username: partnerProfile.username,
+              avatarPath: partnerProfile.avatarPath,
+              countryFlag: retryMatch.matched_country_flag || null,
+            },
+            isHost: false,
+            yourCountryFlag: entry.country_flag || null,
+          });
+        }
+      }
+
+      // No match yet — return position
       const { count } = await supabase
         .from('matchmaking_queue')
         .select('id', { count: 'exact', head: true })

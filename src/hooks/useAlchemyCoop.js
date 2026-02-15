@@ -765,7 +765,9 @@ export function useAlchemyCoop({
         avatarPath: partnerInfo.avatarPath,
         countryFlag: partnerInfo.countryFlag || null,
       });
-      setPartnerStatus('active');
+      // Don't claim 'active' until partner actually joins the realtime channel.
+      // The presence 'join' event will upgrade this to 'active'.
+      setPartnerStatus('connecting');
 
       // Store country flag for presence tracking
       if (matchData.yourCountryFlag) {
