@@ -452,11 +452,11 @@ export function CoopLobbyScreen({
             <span className="text-sm">Waiting for partner to join...</span>
           </div>
 
-          {/* Connection status */}
+          {/* Connection status — indicates the realtime channel is active, not partner presence */}
           {isConnected && (
             <div className="flex items-center gap-2 mb-4 text-xs text-green-600 dark:text-green-400">
               <div className="w-2 h-2 rounded-full bg-green-500" />
-              <span>Connected</span>
+              <span>Session active</span>
             </div>
           )}
 

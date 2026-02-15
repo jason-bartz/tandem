@@ -13,6 +13,10 @@ const STATUS_CONFIG = {
     color: 'bg-green-500',
     label: 'Active',
   },
+  connecting: {
+    color: 'bg-blue-500',
+    label: 'Connecting...',
+  },
   idle: {
     color: 'bg-yellow-500',
     label: 'Idle',
