@@ -120,7 +120,21 @@ export async function POST(request) {
         // Fall through to insert into queue
       }
 
-      const matchedRow = matchResult?.[0] || null;
+      // Handle both array ([{...}]) and single-object ({...}) response formats
+      // from Supabase RPC — the shape can vary by client version / function type.
+      const matchedRow = Array.isArray(matchResult)
+        ? matchResult[0] || null
+        : matchResult && typeof matchResult === 'object' && matchResult.new_session_id
+          ? matchResult
+          : null;
+
+      logger.info('[Matchmaking] RPC result', {
+        hasError: !!matchError,
+        resultType:
+          matchResult === null ? 'null' : Array.isArray(matchResult) ? 'array' : typeof matchResult,
+        resultLength: Array.isArray(matchResult) ? matchResult.length : undefined,
+        matchedRow: matchedRow ? { sessionId: matchedRow.new_session_id } : null,
+      });
 
       if (matchedRow) {
         // Fetch partner's profile (the waiting player)
@@ -150,6 +164,48 @@ export async function POST(request) {
           isHost: false, // Current player is partner
           yourCountryFlag: countryFlag,
         });
+      }
+
+      // Safety check: if the RPC didn't error, it may have matched us even though
+      // we didn't parse the result. Query our queue entry before inserting a
+      // duplicate 'waiting' row that would shadow the 'matched' one.
+      if (!matchError) {
+        const { data: existingMatch } = await supabase
+          .from('matchmaking_queue')
+          .select('*, alchemy_coop_sessions!session_id(id, element_bank, mode)')
+          .eq('user_id', user.id)
+          .eq('status', 'matched')
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (existingMatch?.session_id && existingMatch.alchemy_coop_sessions) {
+          const session = existingMatch.alchemy_coop_sessions;
+          const partnerProfile = await getUserProfile(supabase, existingMatch.matched_with);
+
+          logger.info('[Matchmaking] Match recovered from DB fallback', {
+            sessionId: session.id,
+            matchedWith: existingMatch.matched_with,
+          });
+
+          return NextResponse.json({
+            success: true,
+            status: 'matched',
+            session: {
+              id: session.id,
+              elementBank: session.element_bank,
+              mode: session.mode,
+            },
+            partner: {
+              userId: existingMatch.matched_with,
+              username: partnerProfile.username,
+              avatarPath: partnerProfile.avatarPath,
+              countryFlag: existingMatch.country_flag || null,
+            },
+            isHost: false,
+            yourCountryFlag: countryFlag,
+          });
+        }
       }
 
       // No match found — insert into queue
@@ -278,7 +334,11 @@ export async function POST(request) {
       );
 
       if (!retryError) {
-        const retryMatch = retryResult?.[0] || null;
+        const retryMatch = Array.isArray(retryResult)
+          ? retryResult[0] || null
+          : retryResult && typeof retryResult === 'object' && retryResult.new_session_id
+            ? retryResult
+            : null;
 
         if (retryMatch) {
           // Cancel our waiting entry (the RPC already inserted a new matched one)
