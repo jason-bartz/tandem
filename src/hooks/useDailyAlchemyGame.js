@@ -2346,9 +2346,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return a.name.localeCompare(b.name);
       });
     } else if (sortOrder === SORT_OPTIONS.RANDOM) {
-      // Fisher-Yates shuffle
+      // Seeded Fisher-Yates shuffle so the order stays stable
+      // until the user explicitly presses reshuffle
+      let seed = randomSeed * 2654435761 + 1;
+      const seededRandom = () => {
+        seed = (seed * 1664525 + 1013904223) & 0x7fffffff;
+        return seed / 0x7fffffff;
+      };
       for (let i = sorted.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = Math.floor(seededRandom() * (i + 1));
         [sorted[i], sorted[j]] = [sorted[j], sorted[i]];
       }
     } else {
