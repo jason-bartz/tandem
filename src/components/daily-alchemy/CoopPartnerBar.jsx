@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Smile, LogOut } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -50,9 +50,24 @@ function CoopPartnerBarInner({
     }
   }, [receivedEmote]);
 
-  const handleSelectEmote = (emoji) => {
-    onSendEmote?.(emoji);
-  };
+  const [sentEmote, setSentEmote] = useState(null);
+  const sentTimerRef = useRef(null);
+
+  const handleSelectEmote = useCallback(
+    (emoji) => {
+      onSendEmote?.(emoji);
+      setSentEmote(emoji);
+      if (sentTimerRef.current) clearTimeout(sentTimerRef.current);
+      sentTimerRef.current = setTimeout(() => setSentEmote(null), 2000);
+    },
+    [onSendEmote]
+  );
+
+  useEffect(() => {
+    return () => {
+      if (sentTimerRef.current) clearTimeout(sentTimerRef.current);
+    };
+  }, []);
 
   return (
     <div
@@ -125,20 +140,36 @@ function CoopPartnerBarInner({
         </AnimatePresence>
       </div>
 
-      {/* Emote button (hidden when partner disconnected) */}
+      {/* Emote button + sent feedback (hidden when partner disconnected) */}
       {partnerStatus !== 'disconnected' && (
-        <button
-          onClick={() => setIsEmotePickerOpen(!isEmotePickerOpen)}
-          className={cn(
-            'w-8 h-8 flex items-center justify-center',
-            'hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
-            'rounded-lg transition-colors flex-shrink-0',
-            isEmotePickerOpen && 'bg-indigo-100 dark:bg-indigo-900/30'
-          )}
-          title="Send emote"
-        >
-          <Smile className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
-        </button>
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          <AnimatePresence>
+            {sentEmote && (
+              <motion.span
+                key={sentEmote}
+                className="text-xs text-indigo-500 dark:text-indigo-400 whitespace-nowrap"
+                initial={!reduceMotion ? { opacity: 0, x: 4 } : false}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                sent {sentEmote}
+              </motion.span>
+            )}
+          </AnimatePresence>
+          <button
+            onClick={() => setIsEmotePickerOpen(!isEmotePickerOpen)}
+            className={cn(
+              'w-8 h-8 flex items-center justify-center',
+              'hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
+              'rounded-lg transition-colors flex-shrink-0',
+              isEmotePickerOpen && 'bg-indigo-100 dark:bg-indigo-900/30'
+            )}
+            title="Send emote"
+          >
+            <Smile className="w-5 h-5 text-indigo-500 dark:text-indigo-400" />
+          </button>
+        </div>
       )}
 
       {/* Emote Picker Popover */}
