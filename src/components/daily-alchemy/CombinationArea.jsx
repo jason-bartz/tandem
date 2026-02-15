@@ -139,19 +139,30 @@ function CombineIconCycler({ isActive }) {
 function ScrollingText({ text, className }) {
   const containerRef = useRef(null);
   const textRef = useRef(null);
-  const [shouldScroll, setShouldScroll] = useState(false);
+  const [overflow, setOverflow] = useState(0);
   const { reduceMotion } = useTheme();
 
   useEffect(() => {
-    if (containerRef.current && textRef.current) {
-      const containerWidth = containerRef.current.offsetWidth;
-      const textWidth = textRef.current.scrollWidth;
-      setShouldScroll(textWidth > containerWidth);
-    }
+    const measure = () => {
+      if (containerRef.current && textRef.current) {
+        const diff = textRef.current.scrollWidth - containerRef.current.clientWidth;
+        setOverflow(diff > 2 ? diff + 4 : 0);
+      }
+    };
+    measure();
+    const timer = setTimeout(measure, 150);
+    return () => clearTimeout(timer);
   }, [text]);
 
+  // 1s pause at start, scroll at 40px/s, 0.8s pause at end, 0.3s snap back
+  const pauseStart = 1;
+  const scrollTime = overflow > 0 ? overflow / 40 : 0;
+  const pauseEnd = 0.8;
+  const returnTime = 0.3;
+  const totalDuration = pauseStart + scrollTime + pauseEnd + returnTime;
+
   // If reduce motion or no scroll needed, just show truncated text
-  if (reduceMotion || !shouldScroll) {
+  if (reduceMotion || overflow === 0) {
     return (
       <div ref={containerRef} className={cn('overflow-hidden w-full', className)}>
         <span ref={textRef} className="block truncate">
@@ -166,20 +177,20 @@ function ScrollingText({ text, className }) {
       <motion.span
         ref={textRef}
         className="inline-block whitespace-nowrap"
-        animate={{
-          x: ['0%', '-50%'],
-        }}
+        animate={{ x: [0, 0, -overflow, -overflow, 0] }}
         transition={{
-          x: {
-            repeat: Infinity,
-            repeatType: 'loop',
-            duration: Math.max(text.length * 0.3, 6),
-            ease: 'linear',
-          },
+          duration: totalDuration,
+          times: [
+            0,
+            pauseStart / totalDuration,
+            (pauseStart + scrollTime) / totalDuration,
+            (pauseStart + scrollTime + pauseEnd) / totalDuration,
+            1,
+          ],
+          repeat: Infinity,
+          ease: 'linear',
         }}
       >
-        {text}
-        <span className="px-4">•</span>
         {text}
       </motion.span>
     </div>

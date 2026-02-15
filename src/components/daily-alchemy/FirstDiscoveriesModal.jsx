@@ -11,6 +11,74 @@ import { cn } from '@/lib/utils';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
 /**
+ * IngredientChip - Displays an ingredient with emoji and auto-scrolling name for overflow
+ */
+function IngredientChip({ emoji, name }) {
+  const containerRef = useRef(null);
+  const textRef = useRef(null);
+  const [overflow, setOverflow] = useState(0);
+
+  useEffect(() => {
+    const measure = () => {
+      if (containerRef.current && textRef.current) {
+        const diff = textRef.current.scrollWidth - containerRef.current.clientWidth;
+        setOverflow(diff > 2 ? diff + 4 : 0);
+      }
+    };
+    measure();
+    const timer = setTimeout(measure, 150);
+    return () => clearTimeout(timer);
+  }, [name]);
+
+  // 1s pause at start, scroll at 40px/s, 0.8s pause at end, 0.3s snap back
+  const pauseStart = 1;
+  const scrollTime = overflow > 0 ? overflow / 40 : 0;
+  const pauseEnd = 0.8;
+  const returnTime = 0.3;
+  const totalDuration = pauseStart + scrollTime + pauseEnd + returnTime;
+
+  return (
+    <div
+      className={cn(
+        'flex items-center gap-1.5 px-3 py-1.5',
+        'bg-white dark:bg-gray-800',
+        'border-[2px] border-black dark:border-gray-600',
+        'rounded-lg',
+        'shadow-[2px_2px_0px_rgba(0,0,0,1)]',
+        'flex-1 min-w-0'
+      )}
+    >
+      <span className="text-lg flex-shrink-0">{emoji}</span>
+      <div ref={containerRef} className="overflow-hidden flex-1 min-w-0">
+        <motion.span
+          ref={textRef}
+          className="inline-block whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white"
+          animate={overflow > 0 ? { x: [0, 0, -overflow, -overflow, 0] } : {}}
+          transition={
+            overflow > 0
+              ? {
+                  duration: totalDuration,
+                  times: [
+                    0,
+                    pauseStart / totalDuration,
+                    (pauseStart + scrollTime) / totalDuration,
+                    (pauseStart + scrollTime + pauseEnd) / totalDuration,
+                    1,
+                  ],
+                  repeat: Infinity,
+                  ease: 'linear',
+                }
+              : undefined
+          }
+        >
+          {name}
+        </motion.span>
+      </div>
+    </div>
+  );
+}
+
+/**
  * FirstDiscoveryDetail - Popup showing details of a selected discovery
  */
 function FirstDiscoveryDetail({ discovery, onClose }) {
@@ -85,35 +153,9 @@ function FirstDiscoveryDetail({ discovery, onClose }) {
             Created from
           </p>
           <div className="flex items-center justify-center gap-2">
-            <div
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5',
-                'bg-white dark:bg-gray-800',
-                'border-[2px] border-black dark:border-gray-600',
-                'rounded-lg',
-                'shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              )}
-            >
-              <span className="text-lg">{discovery.elementAEmoji}</span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {discovery.elementA}
-              </span>
-            </div>
-            <span className="text-gray-400 font-bold">+</span>
-            <div
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-1.5',
-                'bg-white dark:bg-gray-800',
-                'border-[2px] border-black dark:border-gray-600',
-                'rounded-lg',
-                'shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-              )}
-            >
-              <span className="text-lg">{discovery.elementBEmoji}</span>
-              <span className="text-sm font-medium text-gray-900 dark:text-white">
-                {discovery.elementB}
-              </span>
-            </div>
+            <IngredientChip emoji={discovery.elementAEmoji} name={discovery.elementA} />
+            <span className="text-gray-400 font-bold flex-shrink-0">+</span>
+            <IngredientChip emoji={discovery.elementBEmoji} name={discovery.elementB} />
           </div>
         </div>
 
