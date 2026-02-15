@@ -80,12 +80,12 @@ export async function POST(request) {
       const countryFlag = countryCodeToFlag(countryCode);
       captureUserCountry(supabase, user.id, request).catch(() => {});
 
-      // Cancel any existing waiting entry for this user
+      // Cancel any existing waiting/matched entries for this user from prior sessions
       await supabase
         .from('matchmaking_queue')
         .update({ status: 'cancelled' })
         .eq('user_id', user.id)
-        .eq('status', 'waiting');
+        .in('status', ['waiting', 'matched']);
 
       // Opportunistic cleanup
       cleanupStaleEntries(supabase).catch(() => {});
@@ -169,12 +169,16 @@ export async function POST(request) {
       // Safety check: if the RPC didn't error, it may have matched us even though
       // we didn't parse the result. Query our queue entry before inserting a
       // duplicate 'waiting' row that would shadow the 'matched' one.
+      // Only look for entries created in the last 10 seconds to avoid picking up
+      // stale matched entries from previous sessions.
       if (!matchError) {
+        const recentCutoff = new Date(Date.now() - 10_000).toISOString();
         const { data: existingMatch } = await supabase
           .from('matchmaking_queue')
           .select('*, alchemy_coop_sessions!session_id(id, element_bank, mode)')
           .eq('user_id', user.id)
           .eq('status', 'matched')
+          .gt('created_at', recentCutoff)
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
