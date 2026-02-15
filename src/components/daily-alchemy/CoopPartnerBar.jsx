@@ -128,13 +128,14 @@ function CoopPartnerBarInner({
           {receivedEmote && (
             <motion.span
               key={receivedEmote.timestamp}
-              className="text-xl flex-shrink-0"
+              className="flex items-center gap-1 flex-shrink-0"
               initial={!reduceMotion ? { scale: 0, opacity: 0 } : false}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ type: 'spring', stiffness: 400, damping: 10 }}
             >
-              {receivedEmote.emoji}
+              <span className="text-xs text-indigo-500 dark:text-indigo-400">sent</span>
+              <span className="text-xl">{receivedEmote.emoji}</span>
             </motion.span>
           )}
         </AnimatePresence>
