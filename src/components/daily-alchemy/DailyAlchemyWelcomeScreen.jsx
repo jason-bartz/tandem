@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Info, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -340,9 +341,9 @@ export function DailyAlchemyWelcomeScreen({
           <p className="text-xs text-gray-500 dark:text-gray-400">
             © 2026 Good Vibes Games
             <span className="mx-2">·</span>
-            <a href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
+            <Link href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
               Privacy Policy
-            </a>
+            </Link>
           </p>
         </motion.footer>
       )}

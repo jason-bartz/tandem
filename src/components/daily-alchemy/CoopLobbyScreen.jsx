@@ -3,10 +3,12 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Copy, Share2, ArrowLeft, Loader2, Check } from 'lucide-react';
+import Link from 'next/link';
 import { CoopIcon } from './icons/CoopIcon';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import platformService from '@/services/platform';
 
 const shareUrl = isStandaloneAlchemy ? 'dailyalchemy.fun' : 'tandemdaily.com/daily-alchemy';
 
@@ -100,22 +102,16 @@ export function CoopLobbyScreen({
     const shareText = `Join my Daily Alchemy co-op game! Code: ${inviteCode}\n${shareUrl}`;
 
     try {
-      if (navigator.share) {
-        await navigator.share({ text: shareText });
-      } else {
-        await navigator.clipboard.writeText(shareText);
+      const result = await platformService.share({ text: shareText });
+      if (platformService.isPlatformNative()) {
+        await platformService.haptic('medium');
+      }
+      if (result.activityType === 'clipboard') {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
     } catch {
-      // Fallback to clipboard
-      try {
-        await navigator.clipboard.writeText(shareText);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      } catch {
-        // Silent fail
-      }
+      // platformService.share already tries clipboard fallback internally
     }
   };
 
@@ -550,21 +546,27 @@ export function CoopLobbyScreen({
             >
               <CoopIcon className="w-5 h-5" />
               Quick Match
+              <span className="text-[10px] font-bold bg-white/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
+                Beta
+              </span>
             </button>
 
             {/* Terms notice */}
             <p className="mt-6 text-[11px] text-gray-400 dark:text-gray-500 text-center px-4 leading-relaxed">
               By using Co-op Mode, you agree to our{' '}
-              <a href="/terms" className="underline hover:text-gray-600 dark:hover:text-gray-300">
+              <Link
+                href="/terms"
+                className="underline hover:text-gray-600 dark:hover:text-gray-300"
+              >
                 Terms
-              </a>{' '}
+              </Link>{' '}
               and{' '}
-              <a
+              <Link
                 href="/privacypolicy"
                 className="underline hover:text-gray-600 dark:hover:text-gray-300"
               >
                 Privacy Policy
-              </a>
+              </Link>
               .
             </p>
 

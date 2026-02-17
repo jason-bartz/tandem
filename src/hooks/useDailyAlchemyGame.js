@@ -44,6 +44,7 @@ import {
   readFileAsText,
   parseSaveFile,
 } from '@/lib/daily-alchemy-save-io';
+import platformService from '@/services/platform';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -1326,7 +1327,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   );
 
   /**
-   * Export a save slot as a downloadable .da file
+   * Export a save slot as a downloadable .da file (web) or via share sheet (iOS)
    */
   const exportSlot = useCallback(
     async (slotNumber) => {
@@ -1342,7 +1343,18 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         const exportData = serializeSaveData({ ...saveData, slotName });
         const jsonString = JSON.stringify(exportData, null, 2);
         const fileName = generateSaveFileName(slotName);
-        triggerFileDownload(jsonString, fileName);
+
+        if (platformService.isPlatformNative()) {
+          // On iOS: Blob download doesn't work in WKWebView — use native share sheet
+          await platformService.share({
+            title: `Daily Alchemy — ${slotName}`,
+            text: jsonString,
+            dialogTitle: `Export: ${slotName}`,
+          });
+        } else {
+          // On web: trigger browser file download
+          triggerFileDownload(jsonString, fileName);
+        }
 
         logger.info('[DailyAlchemy] Save exported', {
           slot: slotNumber,
@@ -1351,6 +1363,10 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
         return { success: true };
       } catch (err) {
+        // User may have cancelled the share sheet — don't log as error for AbortError
+        if (err?.name === 'AbortError') {
+          return { success: false, error: 'Export cancelled.' };
+        }
         logger.error('[DailyAlchemy] Export failed', { error: err.message });
         return { success: false, error: 'Failed to export save.' };
       }

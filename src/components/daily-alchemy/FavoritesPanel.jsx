@@ -97,6 +97,7 @@ export function FavoritesPanel({
           'rounded-xl',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
           'overflow-hidden flex flex-col',
+          'max-h-[50vh]',
           highContrast && 'border-[3px] border-hc-border'
         )}
       >
@@ -151,7 +152,7 @@ export function FavoritesPanel({
         </div>
 
         {/* Favorites Grid */}
-        <div className="p-3">
+        <div className="p-3 overflow-y-auto scrollable">
           {favoritesList.length === 0 ? (
             <div className="text-center py-4">
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">No favorites yet</p>

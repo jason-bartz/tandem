@@ -66,7 +66,7 @@ export default function UnifiedArchiveCalendar({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleData, setPuzzleData] = useState({});
-  const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
+  const [, setPuzzleAccessMap] = useState({});
   const [completedMiniPuzzles, setCompletedMiniPuzzles] = useState(new Set());
   const [completedReelPuzzles, setCompletedReelPuzzles] = useState(new Set());
   const [completedSoupPuzzles, setCompletedSoupPuzzles] = useState(new Set());
@@ -498,8 +498,9 @@ export default function UnifiedArchiveCalendar({
     const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
 
     if (activeTab === 'tandem') {
-      const isLocked = puzzleAccessMap[day] === true;
-      if (isLocked) {
+      // Archive puzzles require subscription (consistent with mini/reel/soup tabs)
+      const isArchivePuzzle = !isToday;
+      if (isArchivePuzzle && !hasSubscription) {
         setShowPaywall(true);
         return;
       }
@@ -593,7 +594,8 @@ export default function UnifiedArchiveCalendar({
         } else if (!isPastFirstPuzzle || isFutureDate) {
           status = 'no_puzzle';
         }
-        shouldBeLocked = puzzleAccessMap[day] === true;
+        const isArchivePuzzle = puzzle && !isToday;
+        shouldBeLocked = !hasSubscription && isArchivePuzzle;
       } else if (activeTab === 'mini') {
         // Mini
         const dateStr = puzzle?.date;

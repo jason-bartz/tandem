@@ -58,7 +58,7 @@ export default function ElementDetailModal({
     setLoading(true);
     try {
       const response = await fetch(
-        `/api/admin/import/elements/${encodeURIComponent(element.name)}`,
+        `/api/admin/import/elements/detail?name=${encodeURIComponent(element.name)}`,
         {
           headers: await authService.getAuthHeaders(),
         }

@@ -31,8 +31,49 @@ export function createBrowserClient() {
   const isNative = Capacitor.isNativePlatform();
 
   if (isNative) {
-    logger.debug('[Supabase] Creating native client with localStorage');
-    // Use standard Supabase JS client for native - works better in WKWebView
+    logger.debug('[Supabase] Creating native client with localStorage + CapacitorHttp');
+
+    // Custom fetch using CapacitorHttp to bypass CORS in WKWebView.
+    // Without this, Supabase auth calls (signInWithPassword, token refresh, etc.)
+    // fail with "Load failed" / AuthRetryableFetchError because WKWebView
+    // enforces CORS on capacitor://localhost requests to supabase.co.
+    const { CapacitorHttp } = require('@capacitor/core');
+
+    const nativeFetch = async (url, options = {}) => {
+      const method = (options.method || 'GET').toUpperCase();
+      const headers =
+        options.headers instanceof Headers
+          ? Object.fromEntries(options.headers.entries())
+          : { ...options.headers };
+
+      // Parse request body — Supabase sends JSON strings
+      let data;
+      if (options.body) {
+        try {
+          data = typeof options.body === 'string' ? JSON.parse(options.body) : options.body;
+        } catch {
+          // Not JSON — pass as-is (shouldn't happen for Supabase)
+          data = options.body;
+        }
+      }
+
+      const response = await CapacitorHttp.request({
+        url: typeof url === 'string' ? url : url.toString(),
+        method,
+        headers,
+        data,
+      });
+
+      // Convert CapacitorHttp response to a fetch-compatible Response
+      const responseBody =
+        typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+
+      return new Response(responseBody, {
+        status: response.status,
+        headers: new Headers(response.headers),
+      });
+    };
+
     return createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: typeof window !== 'undefined' ? window.localStorage : undefined,
@@ -42,6 +83,9 @@ export function createBrowserClient() {
         detectSessionInUrl: true,
         // Use PKCE flow for secure OAuth with deep links
         flowType: 'pkce',
+      },
+      global: {
+        fetch: nativeFetch,
       },
     });
   }

@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
@@ -55,9 +56,9 @@ export default function Footer() {
         >
           © 2026 Good Vibes Games
           <span className="mx-2">·</span>
-          <a href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
+          <Link href="/privacypolicy" className="underline hover:opacity-70 transition-opacity">
             Privacy Policy
-          </a>
+          </Link>
         </p>
 
         <p

@@ -2103,7 +2103,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
     try {
       const token = await authService.getToken();
       const response = await fetch(
-        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        `/api/admin/daily-alchemy/elements/detail?name=${encodeURIComponent(element.name)}`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
@@ -2153,7 +2153,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
       }
 
       const response = await fetch(
-        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        `/api/admin/daily-alchemy/elements/detail?name=${encodeURIComponent(element.name)}`,
         {
           method: 'PUT',
           headers: {
@@ -2197,7 +2197,7 @@ function ElementDetailModal({ element, onClose, onElementUpdated, onElementDelet
     try {
       const token = await authService.getToken();
       const response = await fetch(
-        `/api/admin/daily-alchemy/elements/${encodeURIComponent(element.name)}`,
+        `/api/admin/daily-alchemy/elements/detail?name=${encodeURIComponent(element.name)}`,
         {
           method: 'DELETE',
           headers: { Authorization: `Bearer ${token}` },

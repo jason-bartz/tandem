@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AuthModal from './AuthModal';
 import WelcomeBackModal from './WelcomeBackModal';
-import { Capacitor } from '@capacitor/core';
 
 /**
  * AuthModalManager - Global authentication modal controller
@@ -14,7 +13,7 @@ import { Capacitor } from '@capacitor/core';
  * - Custom events (authModalOpen)
  *
  * This component should be included once at the root level.
- * Only active on web - iOS uses native Apple Sign In.
+ * Active on both web and iOS — AuthModal handles platform differences internally.
  */
 export default function AuthModalManager() {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,10 +23,7 @@ export default function AuthModalManager() {
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const isWeb = Capacitor.getPlatform() === 'web';
-
   useEffect(() => {
-    if (!isWeb) return;
     const authParam = searchParams?.get('auth');
     const emailConfirmed = searchParams?.get('email_confirmed');
     const authError = searchParams?.get('auth_error');
@@ -81,11 +77,9 @@ export default function AuthModalManager() {
         setIsOpen(true);
       }
     }
-  }, [searchParams, isWeb]);
+  }, [searchParams]);
 
   useEffect(() => {
-    if (!isWeb) return;
-
     const handleAuthModalOpen = (event) => {
       const { mode: requestedMode = 'login' } = event.detail || {};
       setMode(requestedMode);
@@ -96,11 +90,7 @@ export default function AuthModalManager() {
     return () => {
       window.removeEventListener('authModalOpen', handleAuthModalOpen);
     };
-  }, [isWeb]);
-
-  if (!isWeb) {
-    return null;
-  }
+  }, []);
 
   const handleClose = () => {
     setIsOpen(false);
