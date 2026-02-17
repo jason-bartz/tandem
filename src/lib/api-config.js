@@ -66,9 +66,28 @@ export async function getAuthHeaders() {
       setTimeout(() => reject(new Error('getSession timeout')), 5000)
     );
 
-    const {
+    let {
       data: { session },
     } = await Promise.race([sessionPromise, timeoutPromise]);
+
+    // getSession() returns the cached session WITHOUT checking expiry.
+    // On iOS, if the app was backgrounded the token may be stale.
+    // Check expiry and force a refresh if the token expires within 60s.
+    if (session?.expires_at) {
+      const expiresAt = session.expires_at * 1000; // convert to ms
+      const now = Date.now();
+      if (expiresAt - now < 60_000) {
+        logger.debug('[Auth] Token expired or expiring soon, refreshing');
+        try {
+          const { data } = await supabase.auth.refreshSession();
+          if (data?.session) {
+            session = data.session;
+          }
+        } catch {
+          // Refresh failed — use existing token as last resort
+        }
+      }
+    }
 
     if (session?.access_token) {
       return {

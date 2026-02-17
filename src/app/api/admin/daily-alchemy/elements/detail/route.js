@@ -20,12 +20,13 @@ const STARTER_EMOJIS = {
 };
 
 /**
- * GET /api/admin/daily-alchemy/elements/[name]
+ * GET /api/admin/daily-alchemy/elements/detail?name=...
  * Get detailed info about an element including all combinations that produce it
  */
-export async function GET(request, { params }) {
+export async function GET(request) {
   try {
-    const elementName = decodeURIComponent(params.name).trim();
+    const { searchParams } = new URL(request.url);
+    const elementName = (searchParams.get('name') || '').trim();
 
     if (!elementName) {
       return NextResponse.json({ error: 'Missing element name' }, { status: 400 });
@@ -149,12 +150,13 @@ export async function GET(request, { params }) {
 }
 
 /**
- * PUT /api/admin/daily-alchemy/elements/[name]
+ * PUT /api/admin/daily-alchemy/elements/detail?name=...
  * Update an element's name and/or emoji across all combinations
  */
-export async function PUT(request, { params }) {
+export async function PUT(request) {
   try {
-    const elementName = decodeURIComponent(params.name).trim();
+    const { searchParams } = new URL(request.url);
+    const elementName = (searchParams.get('name') || '').trim();
     const body = await request.json();
     const { newName, newEmoji } = body;
 
@@ -297,12 +299,13 @@ export async function PUT(request, { params }) {
 }
 
 /**
- * DELETE /api/admin/daily-alchemy/elements/[name]
+ * DELETE /api/admin/daily-alchemy/elements/detail?name=...
  * Delete an element and all combinations where it appears
  */
-export async function DELETE(request, { params }) {
+export async function DELETE(request) {
   try {
-    const elementName = decodeURIComponent(params.name).trim();
+    const { searchParams } = new URL(request.url);
+    const elementName = (searchParams.get('name') || '').trim();
 
     if (!elementName) {
       return NextResponse.json({ error: 'Missing element name' }, { status: 400 });

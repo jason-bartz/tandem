@@ -56,11 +56,47 @@ export function ElementBank({
   const [draggedElementName, setDraggedElementName] = useState(null);
   const [isDesktop, setIsDesktop] = useState(false);
   const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  const [gridMaxHeight, setGridMaxHeight] = useState(undefined);
 
   // Touch drag state for mobile
   const [touchDragElement, setTouchDragElement] = useState(null);
   const [isTouchDragging, setIsTouchDragging] = useState(false);
   const [touchOverFavorites, setTouchOverFavorites] = useState(false);
+
+  // iOS WKWebView doesn't resolve CSS flex height chains properly, so
+  // overflow-y-auto on a flex-1 container never constrains the content.
+  // Fix: measure the grid's actual viewport position and set an explicit maxHeight.
+  useEffect(() => {
+    const el = gridContainerRef.current;
+    if (!el) return;
+
+    const update = () => {
+      const rect = el.getBoundingClientRect();
+      // Available height = viewport bottom minus grid top, minus bottom padding/margins
+      // The 24px accounts for the scroll container's bottom padding + content area mb-4
+      const available = window.innerHeight - rect.top - 24;
+      if (available > 100) {
+        setGridMaxHeight(available);
+      }
+    };
+
+    // Measure after layout settles
+    requestAnimationFrame(update);
+
+    // Recalculate on viewport resize (orientation changes, keyboard)
+    window.addEventListener('resize', update);
+
+    // Observe parent for layout shifts (e.g., content above changing size)
+    const ro = new ResizeObserver(update);
+    if (el.parentElement) {
+      ro.observe(el.parentElement);
+    }
+
+    return () => {
+      window.removeEventListener('resize', update);
+      ro.disconnect();
+    };
+  }, []);
 
   // Detect desktop viewport
   useEffect(() => {
@@ -479,75 +515,70 @@ export function ElementBank({
         )}
       </div>
 
-      {/* Element grid wrapper - relative container for absolute positioning */}
-      <div className="flex-1 min-h-0 relative" ref={gridContainerRef}>
-        <div
-          className={cn(
-            // Absolute positioning to constrain scrollable area to parent bounds
-            'absolute inset-0',
-            // Flexbox flow layout (like Infinite Craft) - elements sized to content, fill beside each other
-            'flex flex-row flex-wrap gap-2 content-start items-start',
-            'overflow-y-auto overflow-x-hidden',
-            'scrollable',
-            'pt-2 p-0 md:p-2',
-            'md:bg-gray-50 md:dark:bg-gray-900/50',
-            'border-0 md:border-[2px] md:border-gray-200 md:dark:border-gray-700',
-            'md:rounded-xl',
-            highContrast && 'md:border-hc-border'
-          )}
-          role="region"
-          aria-label="Element bank"
-        >
-          {elements.length === 0 ? (
-            <div
-              className="text-center py-8 text-gray-500 dark:text-gray-400"
-              style={{ gridColumn: '1 / -1', gridRow: '1 / -1' }}
-            >
-              {searchQuery ? 'No elements match your search' : 'No elements yet'}
-            </div>
-          ) : (
-            elements.map((element) => {
-              const isSelected =
-                (selectedA && selectedA.id === element.id) ||
-                (selectedB && selectedB.id === element.id);
-              const isTarget =
-                targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
-              // Only show NEW badge for elements in the recent list (last 5 discovered)
-              const showNewBadge = recentElements.includes(element.name);
-              // Check if this element was a first discovery
-              const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
-              const isDragging = draggedElementName === element.name;
-              const isFavorite = favoriteElements.has(element.name);
+      {/* Element grid - scrollable flex-wrap container */}
+      {/* maxHeight set via JS to bypass iOS WKWebView flex height chain issues */}
+      <div
+        className={cn(
+          'flex-1 min-h-0',
+          // Flexbox flow layout (like Infinite Craft) - elements sized to content, fill beside each other
+          'flex flex-row flex-wrap gap-2 content-start items-start',
+          'overflow-y-auto overflow-x-hidden',
+          'scrollable',
+          'pt-2 p-0 md:p-2',
+          'md:bg-gray-50 md:dark:bg-gray-900/50',
+          'border-0 md:border-[2px] md:border-gray-200 md:dark:border-gray-700',
+          'md:rounded-xl',
+          highContrast && 'md:border-hc-border'
+        )}
+        ref={gridContainerRef}
+        style={gridMaxHeight ? { maxHeight: gridMaxHeight } : undefined}
+        role="region"
+        aria-label="Element bank"
+      >
+        {elements.length === 0 ? (
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400 w-full">
+            {searchQuery ? 'No elements match your search' : 'No elements yet'}
+          </div>
+        ) : (
+          elements.map((element) => {
+            const isSelected =
+              (selectedA && selectedA.id === element.id) ||
+              (selectedB && selectedB.id === element.id);
+            const isTarget =
+              targetElement && element.name.toLowerCase() === targetElement.toLowerCase();
+            // Only show NEW badge for elements in the recent list (last 5 discovered)
+            const showNewBadge = recentElements.includes(element.name);
+            // Check if this element was a first discovery
+            const isFirstDiscovery = firstDiscoveryElements.includes(element.name);
+            const isDragging = draggedElementName === element.name;
+            const isFavorite = favoriteElements.has(element.name);
 
-              return (
-                <ElementChip
-                  key={element.id}
-                  element={{ ...element, isFirstDiscovery }}
-                  isSelected={isSelected}
-                  isNew={showNewBadge}
-                  isTarget={isTarget}
-                  isFavorite={isFavorite}
-                  fromPartner={element.fromPartner || false}
-                  onClick={onSelect}
-                  disabled={disabled}
-                  draggable={!disabled}
-                  onDragStart={(e) => handleDragStart(e, element)}
-                  onDragEnd={handleDragEnd}
-                  isDragging={
-                    isDragging || (isTouchDragging && touchDragElement?.id === element.id)
-                  }
-                  // Long press to toggle favorites
-                  onLongPress={!disabled ? handleLongPress : undefined}
-                  // Touch drag handlers for mobile
-                  onTouchDragStart={() => handleTouchDragStart(element)}
-                  onTouchDragMove={handleTouchDragMove}
-                  onTouchDragEnd={handleTouchDragEnd}
-                  touchDragThreshold={TOUCH_DRAG_THRESHOLD}
-                />
-              );
-            })
-          )}
-        </div>
+            return (
+              <ElementChip
+                key={element.id}
+                element={{ ...element, isFirstDiscovery }}
+                isSelected={isSelected}
+                isNew={showNewBadge}
+                isTarget={isTarget}
+                isFavorite={isFavorite}
+                fromPartner={element.fromPartner || false}
+                onClick={onSelect}
+                disabled={disabled}
+                draggable={!disabled}
+                onDragStart={(e) => handleDragStart(e, element)}
+                onDragEnd={handleDragEnd}
+                isDragging={isDragging || (isTouchDragging && touchDragElement?.id === element.id)}
+                // Long press to toggle favorites
+                onLongPress={!disabled ? handleLongPress : undefined}
+                // Touch drag handlers for mobile
+                onTouchDragStart={() => handleTouchDragStart(element)}
+                onTouchDragMove={handleTouchDragMove}
+                onTouchDragEnd={handleTouchDragEnd}
+                touchDragThreshold={TOUCH_DRAG_THRESHOLD}
+              />
+            );
+          })
+        )}
       </div>
     </div>
   );

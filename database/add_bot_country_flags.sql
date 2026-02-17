@@ -19,7 +19,7 @@ ALTER TABLE leaderboard_entries ADD COLUMN IF NOT EXISTS bot_country_flag VARCHA
 DROP FUNCTION IF EXISTS get_daily_leaderboard(TEXT, DATE, INTEGER);
 DROP FUNCTION IF EXISTS get_streak_leaderboard(TEXT, INTEGER);
 
-CREATE FUNCTION get_daily_leaderboard(
+CREATE OR REPLACE FUNCTION get_daily_leaderboard(
   p_game_type TEXT,
   p_puzzle_date DATE,
   p_limit INTEGER DEFAULT 10
@@ -68,7 +68,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE FUNCTION get_streak_leaderboard(
+CREATE OR REPLACE FUNCTION get_streak_leaderboard(
   p_game_type TEXT,
   p_limit INTEGER DEFAULT 10
 )
@@ -120,8 +120,9 @@ $$ LANGUAGE plpgsql;
 -- =====================================================
 
 DROP FUNCTION IF EXISTS public.insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, TEXT, JSONB);
+DROP FUNCTION IF EXISTS public.insert_bot_leaderboard_score(TEXT, DATE, INTEGER, TEXT, TEXT, JSONB, TEXT);
 
-CREATE FUNCTION public.insert_bot_leaderboard_score(
+CREATE OR REPLACE FUNCTION public.insert_bot_leaderboard_score(
   p_game_type TEXT,
   p_puzzle_date DATE,
   p_score INTEGER,
@@ -156,8 +157,9 @@ END;
 $$;
 
 DROP FUNCTION IF EXISTS public.upsert_bot_streak_entry(TEXT, INTEGER, TEXT, TEXT, JSONB);
+DROP FUNCTION IF EXISTS public.upsert_bot_streak_entry(TEXT, INTEGER, TEXT, TEXT, JSONB, TEXT);
 
-CREATE FUNCTION public.upsert_bot_streak_entry(
+CREATE OR REPLACE FUNCTION public.upsert_bot_streak_entry(
   p_game_type TEXT,
   p_streak_days INTEGER,
   p_bot_username TEXT,

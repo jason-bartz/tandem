@@ -3,13 +3,17 @@ import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
 /**
- * GET /api/admin/import/elements/[name]
+ * GET /api/admin/import/elements/detail?name=...
  * Get a single element with all combinations where it appears
  */
-export async function GET(request, { params }) {
+export async function GET(request) {
   try {
-    const { name } = await params;
-    const decodedName = decodeURIComponent(name);
+    const { searchParams } = new URL(request.url);
+    const decodedName = (searchParams.get('name') || '').trim();
+
+    if (!decodedName) {
+      return NextResponse.json({ error: 'Missing element name' }, { status: 400 });
+    }
 
     const supabase = createServerClient();
 

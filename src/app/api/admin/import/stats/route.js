@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 
-export const dynamic = 'force-dynamic';
+export const dynamic = process.env.BUILD_TARGET === 'capacitor' ? 'auto' : 'force-dynamic';
 
 /**
  * GET /api/admin/import/stats

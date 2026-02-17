@@ -14,6 +14,7 @@ import { ElementBank } from './ElementBank';
 import { EmbeddedFavorites } from './EmbeddedFavorites';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 import { isStandaloneAlchemy } from '@/lib/standalone';
+import platformService from '@/services/platform';
 import { SunburstRays } from './SunburstRays';
 import { CoopPartnerBar } from './CoopPartnerBar';
 
@@ -101,19 +102,21 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
           }
           // For other errors, fall through to fallback only on non-iOS platforms
           // On iOS (Capacitor), avoid download fallback as it causes navigation issues
-          const isIOS =
-            typeof window !== 'undefined' &&
-            (/iPad|iPhone|iPod/.test(navigator.userAgent) ||
-              (navigator.userAgent.includes('Mac') && 'ontouchend' in document));
-          if (isIOS) {
-            // On iOS, fall back to text share instead of download
+          if (
+            platformService.isPlatformNative() ||
+            /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+            (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+          ) {
+            // On iOS, fall back to text share via platform service
             const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} ${result.operator || '+'} ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
             try {
-              await navigator.clipboard.writeText(shareText);
-              setCopied(true);
-              setTimeout(() => setCopied(false), 2000);
+              const shareResult = await platformService.share({ text: shareText });
+              if (shareResult.activityType === 'clipboard') {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              }
             } catch {
-              // Clipboard failed, just continue without feedback
+              // Share failed, just continue without feedback
             }
             setIsSharing(false);
             return;
@@ -138,14 +141,16 @@ function ResultAnimation({ result, onComplete, onSelectElement, isAnonymous, onS
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      // Fall back to text share
+      // Fall back to text share via platform service
       const shareText = `I'm the first to discover:\n${result.emoji} ${result.element}\n(${result.from[0]} ${result.operator || '+'} ${result.from[1]})\nIn Daily Alchemy!\n\n${shareUrl}`;
       try {
-        await navigator.clipboard.writeText(shareText);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        const shareResult = await platformService.share({ text: shareText });
+        if (shareResult.activityType === 'clipboard') {
+          setCopied(true);
+          setTimeout(() => setCopied(false), 2000);
+        }
       } catch {
-        // Clipboard failed, just continue without feedback
+        // Share failed, just continue without feedback
       }
     } finally {
       setIsSharing(false);

@@ -148,7 +148,9 @@ export default function IOSContainer({ children }) {
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
         scroll-behavior: smooth;
-        position: relative;
+        /* Do NOT set position here — it overrides Tailwind's .absolute
+           (higher specificity: .ios-app .scrollable > .absolute) which breaks
+           scroll containers that use the absolute inset-0 pattern for sizing */
       }
 
       /* Ensure content is visible when keyboard is shown */

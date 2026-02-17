@@ -16,6 +16,7 @@ import {
   COOP_CONGRATS_MESSAGES,
 } from '@/lib/daily-alchemy.constants';
 import confetti from 'canvas-confetti';
+import platformService from '@/services/platform';
 import PaywallModal from '@/components/PaywallModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
@@ -192,19 +193,18 @@ export function DailyAlchemyCompleteScreen({
     if (onShare) {
       const shareText = await onShare();
       if (shareText) {
-        if (navigator.share) {
-          try {
-            await navigator.share({ text: shareText });
-          } catch (err) {
-            // User cancelled or share failed, try clipboard
-            await navigator.clipboard.writeText(shareText);
+        try {
+          const result = await platformService.share({ text: shareText });
+          if (platformService.isPlatformNative()) {
+            await platformService.haptic('medium');
+          }
+          if (result.activityType === 'clipboard') {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);
           }
-        } else {
-          await navigator.clipboard.writeText(shareText);
-          setCopied(true);
-          setTimeout(() => setCopied(false), 2000);
+        } catch {
+          // platformService.share already tries clipboard fallback internally;
+          // if it still throws, there's nothing more we can do
         }
       }
     }
