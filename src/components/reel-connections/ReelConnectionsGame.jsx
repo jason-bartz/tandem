@@ -27,7 +27,7 @@ import AuthModal from '@/components/auth/AuthModal';
 import { useAuth } from '@/contexts/AuthContext';
 import FloatingStatsBar from './FloatingStatsBar';
 import FixedButtonBar from './FixedButtonBar';
-import LearnToPlayBanner from '@/components/shared/LearnToPlayBanner';
+import ReelTutorialModal from './ReelTutorialModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import ServiceOutage from '@/components/shared/ServiceOutage';
@@ -1365,10 +1365,8 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         />
       )}
 
-      {/* Learn How to Play Banner */}
-      {gameStarted && !gameWon && !gameOver && (
-        <LearnToPlayBanner gameType="reel" onOpenHowToPlay={() => setShowHowToPlay(true)} />
-      )}
+      {/* First-visit tutorial carousel */}
+      {!gameStarted && <ReelTutorialModal />}
 
       <div
         className="flex items-start justify-center p-2 sm:p-4"
