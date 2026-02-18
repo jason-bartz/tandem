@@ -10,27 +10,25 @@ import { useHaptics } from '@/hooks/useHaptics';
 const TUTORIAL_STEPS = [
   {
     image: '/game/daily-alchemy/howto/1.webp',
-    caption: 'Select two elements to combine — you can even use the same one twice!',
+    caption: 'Select two elements to combine — be creative! Tap Combine when ready.',
   },
   {
     image: '/game/daily-alchemy/howto/2.webp',
-    caption: 'Tap Combine to discover a new element.',
+    caption: 'Swipe up to use your new element immediately, or swipe down to select new elements.',
   },
   {
     image: '/game/daily-alchemy/howto/3.webp',
-    caption: 'Swipe up to use your discovery, or down to dismiss it.',
+    caption:
+      'Stuck? Use a hint to nudge you toward the next required element. You can use these as many times as you need.',
   },
   {
     image: '/game/daily-alchemy/howto/4.webp',
-    caption: 'Keep experimenting — every combo unlocks new elements.',
+    caption: 'Flip the switch to subtract one element from another.',
   },
   {
     image: '/game/daily-alchemy/howto/5.webp',
-    caption: 'Stuck? Tap Hint for a nudge toward your next discovery.',
-  },
-  {
-    image: '/game/daily-alchemy/howto/6.webp',
-    caption: 'You did it! Share your results, play the archive, or explore Creative Mode.',
+    caption:
+      "You've won! Share your results, play the archive, explore Creative Mode, or tackle any of them with a friend in Co-op.",
   },
 ];
 
