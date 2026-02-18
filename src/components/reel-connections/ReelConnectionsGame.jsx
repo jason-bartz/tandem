@@ -854,6 +854,12 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
           defaultTab="reel"
         />
         <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
+        <LeaderboardModal
+          isOpen={showLeaderboard}
+          onClose={() => setShowLeaderboard(false)}
+          gameType="reel"
+          initialTab="daily"
+        />
       </div>
     );
   }
@@ -1826,6 +1832,14 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
         hintCategory={getLowestUnsolvedCategory()}
         reduceMotion={reduceMotion}
         highContrast={highContrast}
+      />
+
+      {/* Leaderboard Modal */}
+      <LeaderboardModal
+        isOpen={showLeaderboard}
+        onClose={() => setShowLeaderboard(false)}
+        gameType="reel"
+        initialTab="daily"
       />
     </div>
   );
