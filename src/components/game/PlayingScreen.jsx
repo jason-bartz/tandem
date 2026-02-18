@@ -50,6 +50,7 @@ export default function PlayingScreen({
   isSmallPhone = false,
   isHardMode = false,
   hardModeTimeLimit = 120,
+  onTutorialClose,
 }) {
   // const hasAnyInput = answers.some((answer) => answer.trim() !== '');
   const [showRules, setShowRules] = useState(false);
@@ -405,7 +406,7 @@ export default function PlayingScreen({
         <HintEarnedToast isSmallPhone={isSmallPhone} isMobilePhone={isMobilePhone} />
 
         {/* First-visit tutorial carousel */}
-        <TandemTutorialModal />
+        <TandemTutorialModal onClose={onTutorialClose} />
 
         {/* Main game card - centered vertically in space above keyboard */}
         <div

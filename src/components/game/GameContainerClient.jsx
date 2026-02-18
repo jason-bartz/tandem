@@ -50,7 +50,10 @@ function TandemGameContainer({ initialPuzzleData }) {
   const searchParams = useSearchParams();
   const { serviceUnavailable } = useAuth();
   const game = useGameWithInitialData(initialPuzzleData);
-  const timer = useTimer(game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp);
+  const [showTutorial, setShowTutorial] = useState(true);
+  const timer = useTimer(
+    game.gameState === GAME_STATES.PLAYING && !game.hardModeTimeUp && !showTutorial
+  );
   const { theme, toggleTheme } = useTheme();
   const { playSound } = useSound();
   const { correctAnswer, incorrectAnswer } = useHaptics();
@@ -356,6 +359,11 @@ function TandemGameContainer({ initialPuzzleData }) {
                 isSmallPhone={isSmallPhone}
                 isHardMode={game.isHardMode}
                 hardModeTimeLimit={GAME_CONFIG.HARD_MODE_TIME_LIMIT}
+                onTutorialClose={() => {
+                  setShowTutorial(false);
+                  game.resetStartTime();
+                  timer.reset();
+                }}
               />
             </div>
           )}
