@@ -282,7 +282,7 @@ export function CoopLobbyScreen({
           >
             <div className="flex items-center gap-2 mb-4">
               <CoopIcon className="w-5 h-5 text-amber-500" />
-              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Quick Match</h2>
+              <h2 className="text-lg font-bold text-gray-800 dark:text-gray-200">Matchmaking</h2>
             </div>
 
             {/* Today's Puzzle */}
@@ -528,7 +528,7 @@ export function CoopLobbyScreen({
               Join with Code
             </button>
 
-            {/* Quick Match */}
+            {/* Matchmaking */}
             <button
               onClick={onStartMatchmaking}
               className={cn(
@@ -545,7 +545,7 @@ export function CoopLobbyScreen({
               )}
             >
               <CoopIcon className="w-5 h-5" />
-              Quick Match
+              Matchmaking
               <span className="text-[10px] font-bold bg-white/25 px-1.5 py-0.5 rounded-full uppercase tracking-wide">
                 Beta
               </span>

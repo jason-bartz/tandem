@@ -26,6 +26,7 @@ import {
 } from '@/lib/reel-connections.constants';
 import logger from '@/lib/logger';
 import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
+import { useHaptics } from '@/hooks/useHaptics';
 
 /**
  * Sort groups by difficulty order (easiest to hardest)
@@ -155,6 +156,8 @@ export function useReelConnectionsGame() {
   // External hooks
   const { recordGame } = useReelConnectionsStats();
   const { user, markServiceUnavailable } = useAuth();
+  const { lightTap, mediumTap, heavyTap, correctAnswer, incorrectAnswer, celebration } =
+    useHaptics();
 
   // Timer effect
   useEffect(() => {
@@ -274,6 +277,7 @@ export function useReelConnectionsGame() {
       const clappingAudio = new Audio('/sounds/human_clapping_8_people.mp3');
       clappingAudio.volume = 0.26;
       clappingAudio.play().catch(() => {});
+      celebration();
 
       const duration = REEL_CONFIG.CONFETTI_DURATION_MS;
       const animationEnd = Date.now() + duration;
@@ -306,7 +310,7 @@ export function useReelConnectionsGame() {
 
       return () => clearInterval(interval);
     }
-  }, [gameWon, isRevealing]);
+  }, [gameWon, isRevealing, celebration]);
 
   // Start reveal sequence
   const startReveal = useCallback(
@@ -420,12 +424,19 @@ export function useReelConnectionsGame() {
       const isCurrentlySelected = selectedMovies.some((m) => m.imdbId === movie.imdbId);
 
       if (isCurrentlySelected) {
+        lightTap();
         setSelectedMovies(selectedMovies.filter((m) => m.imdbId !== movie.imdbId));
       } else if (selectedMovies.length < REEL_CONFIG.GROUP_SIZE) {
+        // Medium tap when selecting the 4th movie (group complete)
+        if (selectedMovies.length === REEL_CONFIG.GROUP_SIZE - 1) {
+          mediumTap();
+        } else {
+          lightTap();
+        }
         setSelectedMovies([...selectedMovies, movie]);
       }
     },
-    [gameStarted, solvedGroups, gameWon, gameOver, selectedMovies]
+    [gameStarted, solvedGroups, gameWon, gameOver, selectedMovies, lightTap, mediumTap]
   );
 
   // Handle submit
@@ -440,6 +451,7 @@ export function useReelConnectionsGame() {
       .join(',');
 
     if (previousGuesses.includes(currentGuessKey)) {
+      lightTap();
       setShowDuplicateWarning(true);
       setTimeout(() => setShowDuplicateWarning(false), REEL_CONFIG.ONE_AWAY_DISPLAY_MS);
       return; // Don't count as mistake
@@ -460,6 +472,7 @@ export function useReelConnectionsGame() {
 
     if (isCorrect) {
       playCorrectSound();
+      correctAnswer();
 
       const group = puzzle.groups.find((g) => g.id === groupId);
 
@@ -492,11 +505,13 @@ export function useReelConnectionsGame() {
 
         setTimeout(() => {
           playErrorSound();
+          incorrectAnswer();
           setShakeGrid(true);
           setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
         }, REEL_CONFIG.ONE_AWAY_SHAKE_DELAY_MS);
       } else {
         playErrorSound();
+        incorrectAnswer();
         setShakeGrid(true);
         setTimeout(() => setShakeGrid(false), REEL_CONFIG.SHAKE_DURATION_MS);
       }
@@ -508,20 +523,35 @@ export function useReelConnectionsGame() {
       if (newMistakes >= REEL_CONFIG.MAX_MISTAKES) {
         setGameOver(true);
         playCrowdDisappointmentSound();
+        heavyTap();
         startReveal(false);
       }
     }
-  }, [selectedMovies, puzzle, solvedGroups, mistakes, startReveal, solvingGroup, previousGuesses]);
+  }, [
+    selectedMovies,
+    puzzle,
+    solvedGroups,
+    mistakes,
+    startReveal,
+    solvingGroup,
+    previousGuesses,
+    lightTap,
+    correctAnswer,
+    incorrectAnswer,
+    heavyTap,
+  ]);
 
   // Handle shuffle
   const handleShuffle = useCallback(() => {
+    lightTap();
     setMovies((prev) => shuffleArray(prev));
-  }, []);
+  }, [lightTap]);
 
   // Handle deselect
   const handleDeselect = useCallback(() => {
+    lightTap();
     setSelectedMovies([]);
-  }, []);
+  }, [lightTap]);
 
   // Reset game
   const resetGame = useCallback(() => {
@@ -563,9 +593,10 @@ export function useReelConnectionsGame() {
   const handleStartGame = useCallback(() => {
     // Track game start
     trackGameStart(GAME_TYPES.REEL, puzzle?.number, archiveDate || puzzle?.date);
+    mediumTap();
     setGameStarted(true);
     setStartTime(Date.now());
-  }, [puzzle?.number, puzzle?.date, archiveDate]);
+  }, [puzzle?.number, puzzle?.date, archiveDate, mediumTap]);
 
   // View completed puzzle
   const handleViewPuzzle = useCallback(() => {
