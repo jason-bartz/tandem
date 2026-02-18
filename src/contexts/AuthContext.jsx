@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useCallback, useEffect, useState } from 'react';
+import { createContext, useContext, useCallback, useEffect, useRef, useState } from 'react';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import { autoCleanupIfNeeded } from '@/lib/storageCleanup';
 import storageService from '@/core/storage/storageService';
@@ -98,6 +98,7 @@ export function AuthProvider({ children }) {
   const [userProfile, setUserProfile] = useState(null);
   const [profileLoading, setProfileLoading] = useState(false);
   const [showFirstTimeSetup, setShowFirstTimeSetup] = useState(false);
+  const hasInitializedRef = useRef(false);
   const supabase = getSupabaseBrowserClient();
 
   /**
@@ -160,6 +161,14 @@ export function AuthProvider({ children }) {
         if (session?.user && !session.user.is_anonymous) {
           loadUserProfile(session.user.id);
         }
+
+        // Mark initialization complete so the onAuthStateChange handler can
+        // distinguish session restoration from actual new sign-ins.
+        // Use a short delay to ensure the initial SIGNED_IN event (from session
+        // restoration) has already fired before we start treating them as new.
+        setTimeout(() => {
+          hasInitializedRef.current = true;
+        }, 2000);
       })
       .catch((error) => {
         logger.error('[AuthProvider] Failed to get session', error);
@@ -167,6 +176,7 @@ export function AuthProvider({ children }) {
         setServiceUnavailable(true);
         // Still set loading to false so the app renders in a logged-out state
         setLoading(false);
+        hasInitializedRef.current = true;
       });
 
     // Parallel health check — fast outage detection independent of auth state.
@@ -233,8 +243,11 @@ export function AuthProvider({ children }) {
         })();
       }
 
-      // Skip first-time setup and achievement sync for anonymous users
-      if (event === 'SIGNED_IN' && session?.user && !isAnonUser) {
+      // Check first-time setup only on actual new sign-ins, not session restoration.
+      // On iOS, the SIGNED_IN event fires on app launch when restoring a session from
+      // localStorage. The hasCompletedFirstTimeSetup query can fail with an expired token,
+      // returning false and incorrectly showing the setup modal to existing users.
+      if (event === 'SIGNED_IN' && session?.user && !isAnonUser && hasInitializedRef.current) {
         (async () => {
           try {
             const avatarService = (await import('@/services/avatar.service')).default;
@@ -244,7 +257,6 @@ export function AuthProvider({ children }) {
 
             if (!hasCompletedSetup) {
               setShowFirstTimeSetup(true);
-            } else {
             }
           } catch (error) {
             logger.error('[AuthProvider] Failed to check first-time setup status', error);
