@@ -829,6 +829,10 @@ export function useGameWithInitialData(initialPuzzleData) {
     [answers, lockedLetters, updateAnswer]
   );
 
+  const resetStartTime = useCallback(() => {
+    setStartTime(Date.now());
+  }, []);
+
   return {
     gameState,
     puzzle,
@@ -865,5 +869,6 @@ export function useGameWithInitialData(initialPuzzleData) {
     endGame,
     handleBackspace,
     handleLetterInput,
+    resetStartTime,
   };
 }
