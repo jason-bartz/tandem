@@ -6,6 +6,7 @@ import { Search, X, ChevronDown, ArrowUp, ArrowDown, Shuffle } from 'lucide-reac
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { useHaptics } from '@/hooks/useHaptics';
 import { SORT_OPTIONS, SORT_LABELS, SORT_DIRECTIONS } from '@/lib/daily-alchemy.constants';
 import ElementChip from './ElementChip';
 import FavoritesPanel from './FavoritesPanel';
@@ -49,6 +50,7 @@ export function ElementBank({
   hideDesktopFavorites = false, // When true, hides favorites button on desktop (used when embedded favorites is shown)
 }) {
   const { highContrast } = useTheme();
+  const { mediumTap } = useHaptics();
   const gridContainerRef = useRef(null);
   const favoritesButtonRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -236,11 +238,13 @@ export function ElementBank({
       // Toggle favorite - if already a favorite, remove it; otherwise add if not at max
       if (favoriteElements.has(element.name)) {
         onToggleFavorite?.(element.name);
+        mediumTap();
       } else if (favoriteElements.size < maxFavorites) {
         onToggleFavorite?.(element.name);
+        mediumTap();
       }
     },
-    [favoriteElements, maxFavorites, onToggleFavorite]
+    [favoriteElements, maxFavorites, onToggleFavorite, mediumTap]
   );
 
   return (
