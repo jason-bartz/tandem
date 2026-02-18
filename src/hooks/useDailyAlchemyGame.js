@@ -105,7 +105,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isAnonymous,
     markServiceUnavailable,
   } = useAuth();
-  const { soupCombine, soupNewElement, soupFirstDiscovery } = useHaptics();
+  const { lightTap, soupCombine, soupNewElement, soupFirstDiscovery, celebration } = useHaptics();
 
   // Core state
   const [gameState, setGameState] = useState(SOUP_GAME_STATES.WELCOME);
@@ -1637,43 +1637,47 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
    * that works with memoized ElementChip components.
    * Respects activeSlot to fill the targeted slot.
    */
-  const selectElement = useCallback((element) => {
-    // Play plunk sound when selecting an element
-    playPlunkSound();
+  const selectElement = useCallback(
+    (element) => {
+      // Play plunk sound and haptic when selecting an element
+      playPlunkSound();
+      lightTap();
 
-    // Read current values from refs (not stale closure values)
-    const currentA = selectedARef.current;
-    const currentB = selectedBRef.current;
-    const active = activeSlotRef.current;
+      // Read current values from refs (not stale closure values)
+      const currentA = selectedARef.current;
+      const currentB = selectedBRef.current;
+      const active = activeSlotRef.current;
 
-    if (active === 'first') {
-      setSelectedA(element);
-      // If B is empty, auto-move focus to B; otherwise stay on first for continued replacement
-      if (!currentB) {
-        setActiveSlot('second');
-      }
-    } else if (active === 'second') {
-      setSelectedB(element);
-      // If A is empty, auto-move focus to A; otherwise stay on second for continued replacement
-      if (!currentA) {
-        setActiveSlot('first');
-      }
-    } else {
-      // No active slot - fill first empty
-      if (!currentA) {
+      if (active === 'first') {
         setSelectedA(element);
-        setActiveSlot('second'); // next click fills B
-      } else if (!currentB) {
+        // If B is empty, auto-move focus to B; otherwise stay on first for continued replacement
+        if (!currentB) {
+          setActiveSlot('second');
+        }
+      } else if (active === 'second') {
         setSelectedB(element);
-        // Both full now, keep activeSlot as 'second' for continued replacement
-        setActiveSlot('second');
+        // If A is empty, auto-move focus to A; otherwise stay on second for continued replacement
+        if (!currentA) {
+          setActiveSlot('first');
+        }
       } else {
-        // Both full, no active slot set - replace B (legacy behavior)
-        setSelectedB(element);
-        setActiveSlot('second');
+        // No active slot - fill first empty
+        if (!currentA) {
+          setSelectedA(element);
+          setActiveSlot('second'); // next click fills B
+        } else if (!currentB) {
+          setSelectedB(element);
+          // Both full now, keep activeSlot as 'second' for continued replacement
+          setActiveSlot('second');
+        } else {
+          // Both full, no active slot set - replace B (legacy behavior)
+          setSelectedB(element);
+          setActiveSlot('second');
+        }
       }
-    }
-  }, []);
+    },
+    [lightTap]
+  );
 
   /**
    * Clear selections
@@ -1913,8 +1917,9 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     logger.info('[ElementSoup] Puzzle completed!');
 
-    // Play victory sound
+    // Play victory sound and celebration haptic
     playSoupWinSound();
+    celebration();
 
     // Track game completion for analytics
     trackGameComplete({
@@ -2101,6 +2106,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     isFirstAttempt,
     hintsUsed,
     coopMode,
+    celebration,
   ]);
 
   /**
