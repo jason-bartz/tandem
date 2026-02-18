@@ -12,6 +12,11 @@
 import { Capacitor } from '@capacitor/core';
 import logger from '@/lib/logger';
 
+// Shared refresh promise to prevent concurrent token refreshes.
+// Supabase uses refresh token rotation — concurrent refreshes race and all
+// but the first will fail because the old refresh token gets invalidated.
+let _refreshPromise = null;
+
 /**
  * Get the base API URL based on the platform
  * @returns {string} The base API URL (empty string for web, full URL for native)
@@ -79,7 +84,16 @@ export async function getAuthHeaders() {
       if (expiresAt - now < 60_000) {
         logger.debug('[Auth] Token expired or expiring soon, refreshing');
         try {
-          const { data } = await supabase.auth.refreshSession();
+          // Deduplicate concurrent refreshes — only one refresh in flight at a time.
+          // Without this, simultaneous API calls (stats + leaderboard + achievements)
+          // each trigger refreshSession(), but Supabase rotates the refresh token on
+          // the first call, causing all others to fail.
+          if (!_refreshPromise) {
+            _refreshPromise = supabase.auth.refreshSession().finally(() => {
+              _refreshPromise = null;
+            });
+          }
+          const { data } = await _refreshPromise;
           if (data?.session) {
             session = data.session;
           }

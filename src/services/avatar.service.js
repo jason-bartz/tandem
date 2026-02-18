@@ -369,7 +369,10 @@ class AvatarService {
         if (error.code === '42703') {
           return await this.hasSelectedAvatar(userId);
         }
-        return false;
+        // On auth/network errors, assume setup is complete to avoid showing the
+        // modal to existing users with expired tokens (especially on iOS).
+        // New users always have fresh tokens, so their queries will succeed.
+        return true;
       }
 
       // Check the flag first, but fall back to checking if they have an avatar
@@ -382,7 +385,7 @@ class AvatarService {
       return result;
     } catch (error) {
       logger.error('[AvatarService] hasCompletedFirstTimeSetup error', error);
-      return false;
+      return true;
     }
   }
 
