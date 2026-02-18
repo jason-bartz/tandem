@@ -392,9 +392,13 @@ export function useAlchemyCoop({
           myCountryFlagRef.current = data.yourCountryFlag;
         }
 
-        // Persist session ID for reconnection
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+        // Persist session ID for reconnection (best-effort, not required for session to work)
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+          }
+        } catch (storageErr) {
+          logger.warn('[Coop] Failed to persist session ID', { error: storageErr.message });
         }
 
         // Set up realtime channel
@@ -454,9 +458,13 @@ export function useAlchemyCoop({
           myCountryFlagRef.current = data.yourCountryFlag;
         }
 
-        // Persist session ID for reconnection
-        if (typeof localStorage !== 'undefined') {
-          localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+        // Persist session ID for reconnection (best-effort, not required for session to work)
+        try {
+          if (typeof localStorage !== 'undefined') {
+            localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+          }
+        } catch (storageErr) {
+          logger.warn('[Coop] Failed to persist session ID', { error: storageErr.message });
         }
 
         // Set up realtime channel
@@ -774,9 +782,13 @@ export function useAlchemyCoop({
         myCountryFlagRef.current = matchData.yourCountryFlag;
       }
 
-      // Persist session ID for reconnection
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+      // Persist session ID for reconnection (best-effort, not required for session to work)
+      try {
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem(SOUP_STORAGE_KEYS.COOP_SESSION_ID, session.id);
+        }
+      } catch (storageErr) {
+        logger.warn('[Coop] Failed to persist session ID', { error: storageErr.message });
       }
 
       // Set up Realtime channel
