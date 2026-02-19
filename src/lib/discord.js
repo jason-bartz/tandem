@@ -199,6 +199,71 @@ export async function notifyFirstDiscovery({ element, emoji, username, discovere
 }
 
 /**
+ * Send a co-op game started notification (via invite code)
+ */
+export async function notifyCoopGameStarted({ hostUsername, partnerUsername, mode }) {
+  const DISCORD_COOP_WEBHOOK_URL = process.env.DISCORD_COOP_WEBHOOK_URL;
+  if (!DISCORD_COOP_WEBHOOK_URL) return;
+
+  const modeLabel = mode === 'daily' ? 'Daily Puzzle' : 'Creative Mode';
+
+  await sendDiscordNotification({
+    title: '🤝 Co-op Game Started',
+    description: `A new co-op game was started via invite code`,
+    type: 'success',
+    fields: [
+      { name: 'Host', value: hostUsername || 'Anonymous' },
+      { name: 'Partner', value: partnerUsername || 'Anonymous' },
+      { name: 'Mode', value: modeLabel },
+    ],
+    webhookUrl: DISCORD_COOP_WEBHOOK_URL,
+  });
+}
+
+/**
+ * Send a matchmaking queue join notification
+ */
+export async function notifyMatchmakingJoined({ username, mode }) {
+  const DISCORD_COOP_WEBHOOK_URL = process.env.DISCORD_COOP_WEBHOOK_URL;
+  if (!DISCORD_COOP_WEBHOOK_URL) return;
+
+  const modeLabel = mode === 'daily' ? 'Daily Puzzle' : 'Creative Mode';
+
+  await sendDiscordNotification({
+    title: '🔍 Player Searching for Match',
+    description: `A player entered the matchmaking queue`,
+    type: 'info',
+    fields: [
+      { name: 'Player', value: username || 'Anonymous' },
+      { name: 'Mode', value: modeLabel },
+    ],
+    webhookUrl: DISCORD_COOP_WEBHOOK_URL,
+  });
+}
+
+/**
+ * Send a matchmaking match found notification
+ */
+export async function notifyMatchmakingMatched({ player1Username, player2Username, mode }) {
+  const DISCORD_COOP_WEBHOOK_URL = process.env.DISCORD_COOP_WEBHOOK_URL;
+  if (!DISCORD_COOP_WEBHOOK_URL) return;
+
+  const modeLabel = mode === 'daily' ? 'Daily Puzzle' : 'Creative Mode';
+
+  await sendDiscordNotification({
+    title: '🎮 Matchmaking Game Started',
+    description: `Two players were matched via Quick Match`,
+    type: 'success',
+    fields: [
+      { name: 'Player 1', value: player1Username || 'Anonymous' },
+      { name: 'Player 2', value: player2Username || 'Anonymous' },
+      { name: 'Mode', value: modeLabel },
+    ],
+    webhookUrl: DISCORD_COOP_WEBHOOK_URL,
+  });
+}
+
+/**
  * Send a user feedback/bug report notification
  */
 export async function notifyUserFeedback({

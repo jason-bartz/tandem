@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
 import { captureUserCountry } from '@/lib/country-flag';
+import { notifyCoopGameStarted } from '@/lib/discord';
 
 /**
  * POST /api/daily-alchemy/coop/join
@@ -92,11 +93,25 @@ export async function POST(request) {
       hostAvatarPath = avatar?.image_path || null;
     }
 
+    // Fetch joiner's username for notification
+    const { data: joinerProfile } = await supabase
+      .from('users')
+      .select('username')
+      .eq('id', user.id)
+      .single();
+
     logger.info('[Coop] Partner joined session', {
       sessionId: session.id,
       partnerId: user.id,
       hostId: session.host_user_id,
     });
+
+    // Discord notification (fire-and-forget)
+    notifyCoopGameStarted({
+      hostUsername: hostProfile?.username,
+      partnerUsername: joinerProfile?.username,
+      mode: session.mode || 'creative',
+    }).catch(() => {});
 
     return NextResponse.json({
       success: true,
