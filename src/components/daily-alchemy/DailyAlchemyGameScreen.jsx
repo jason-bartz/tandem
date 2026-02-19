@@ -599,8 +599,11 @@ export function DailyAlchemyGameScreen({
   coopReceivedEmote = null,
   onCoopSendEmote,
   coopEmoteCooldownActive = false,
+  coopActivityFeed = [],
+  coopPartnerIsInteracting = false,
   onCoopSave,
   onCoopLeave,
+  onElementInteraction,
 
   // Anonymous auth
   isAnonymous = false,
@@ -620,9 +623,19 @@ export function DailyAlchemyGameScreen({
       const element = elementBank.find((el) => el.name === elementName);
       if (element && selectElement) {
         selectElement(element);
+        onElementInteraction?.();
       }
     },
-    [elementBank, selectElement]
+    [elementBank, selectElement, onElementInteraction]
+  );
+
+  // Wrap selectElement to also trigger co-op interaction indicator
+  const handleSelectElement = useCallback(
+    (element) => {
+      selectElement?.(element);
+      onElementInteraction?.();
+    },
+    [selectElement, onElementInteraction]
   );
 
   return (
@@ -754,6 +767,8 @@ export function DailyAlchemyGameScreen({
             onSendEmote={onCoopSendEmote}
             emoteCooldownActive={coopEmoteCooldownActive}
             onLeave={onCoopLeave}
+            activityFeed={coopActivityFeed}
+            partnerIsInteracting={coopPartnerIsInteracting}
           />
         </div>
       )}
@@ -787,7 +802,7 @@ export function DailyAlchemyGameScreen({
               favoriteElements={favoriteElements}
               onToggleFavorite={onToggleFavorite}
               onClearAllFavorites={onClearAllFavorites}
-              onSelectElement={selectElement}
+              onSelectElement={handleSelectElement}
               selectedA={selectedA}
               selectedB={selectedB}
               maxFavorites={maxFavorites}
@@ -803,7 +818,7 @@ export function DailyAlchemyGameScreen({
             elements={sortedElementBank}
             selectedA={selectedA}
             selectedB={selectedB}
-            onSelect={selectElement}
+            onSelect={handleSelectElement}
             sortOrder={sortOrder}
             onSortChange={setSortOrder}
             sortDirection={sortDirection}
