@@ -265,6 +265,30 @@ export const submissionAdminUpdateSchema = z
     path: ['status'],
   });
 
+// Admin user search/filter params
+export const userSearchParamsSchema = z.object({
+  search: z.string().max(200).optional().default(''),
+  type: z.enum(['all', 'anonymous', 'registered']).optional().default('all'),
+  sort: z
+    .enum([
+      'created_desc',
+      'created_asc',
+      'last_sign_in_desc',
+      'last_sign_in_asc',
+      'username_asc',
+      'username_desc',
+    ])
+    .optional()
+    .default('created_desc'),
+  page: z.coerce.number().int().min(1).optional().default(1),
+  perPage: z.coerce.number().int().min(1).max(100).optional().default(25),
+});
+
+// Admin user action schema
+export const userAdminActionSchema = z.object({
+  action: z.enum(['send_password_reset']),
+});
+
 // Request size validation
 export function validateRequestSize(request) {
   const contentLength = request.headers.get('content-length');
