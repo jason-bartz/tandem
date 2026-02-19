@@ -178,11 +178,6 @@ export function ThemeProvider({ children }) {
     mounted,
   };
 
-  // Prevent flash of unstyled content
-  if (!mounted) {
-    return null;
-  }
-
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

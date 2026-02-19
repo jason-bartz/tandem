@@ -21,8 +21,8 @@ const config: CapacitorConfig = {
       enabled: true, // This bypasses CORS on iOS by using native HTTP
     },
     SplashScreen: {
-      launchShowDuration: 2000,
-      launchAutoHide: true,
+      launchShowDuration: 0,
+      launchAutoHide: false,
       backgroundColor: '#F4F5F9',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',

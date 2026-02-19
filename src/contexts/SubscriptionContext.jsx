@@ -44,7 +44,8 @@ const SubscriptionContext = createContext({
 export function SubscriptionProvider({ children }) {
   const { user, loading: authLoading } = useAuth();
 
-  // Eager hydration from localStorage (skipped on standalone)
+  // Initialize with consistent default state to avoid hydration mismatch.
+  // localStorage cache is read in useEffect below after hydration completes.
   const [subscription, setSubscription] = useState(() => {
     if (isStandaloneAlchemy) {
       return {
@@ -56,26 +57,6 @@ export function SubscriptionProvider({ children }) {
       };
     }
 
-    if (typeof window !== 'undefined') {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          // Return cached state with loading: false to show immediately
-          return {
-            isActive: parsed.isActive || false,
-            tier: parsed.tier || null,
-            expiryDate: parsed.expiryDate ? new Date(parsed.expiryDate) : null,
-            cancelAtPeriodEnd: parsed.cancelAtPeriodEnd || false,
-            loading: false, // Show cached state immediately
-          };
-        } catch (error) {
-          logger.error('[SubscriptionContext] Failed to parse cached subscription', error);
-        }
-      }
-    }
-
-    // No cache available - show loading state
     return {
       isActive: false,
       tier: null,
@@ -84,6 +65,26 @@ export function SubscriptionProvider({ children }) {
       loading: true,
     };
   });
+
+  // Hydrate from localStorage cache after mount (avoids SSR/client mismatch)
+  useEffect(() => {
+    if (isStandaloneAlchemy) return;
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        setSubscription({
+          isActive: parsed.isActive || false,
+          tier: parsed.tier || null,
+          expiryDate: parsed.expiryDate ? new Date(parsed.expiryDate) : null,
+          cancelAtPeriodEnd: parsed.cancelAtPeriodEnd || false,
+          loading: false,
+        });
+      }
+    } catch (error) {
+      logger.error('[SubscriptionContext] Failed to parse cached subscription', error);
+    }
+  }, []);
 
   /**
    * Refresh subscription status from API
