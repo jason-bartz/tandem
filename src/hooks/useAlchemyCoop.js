@@ -256,6 +256,19 @@ export function useAlchemyCoop({
       });
 
       // Presence listeners
+      // Merge presence data with existing partner state to avoid overwriting
+      // good API-sourced data (e.g. from connectToMatchedSession) with
+      // 'Anonymous' when the partner's userProfile hasn't loaded yet.
+      const mergePartnerPresence = (prev, partnerPresence) => ({
+        userId: partnerPresence.user_id || prev?.userId,
+        username:
+          partnerPresence.username && partnerPresence.username !== 'Anonymous'
+            ? partnerPresence.username
+            : prev?.username || partnerPresence.username,
+        avatarPath: partnerPresence.avatarPath || prev?.avatarPath || null,
+        countryFlag: partnerPresence.countryFlag || prev?.countryFlag || null,
+      });
+
       channel.on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
         // Find the partner's presence (the one that isn't us)
@@ -263,12 +276,7 @@ export function useAlchemyCoop({
           if (key !== user.id && presences.length > 0) {
             const partnerPresence = presences[0];
             partnerPresenceRef.current = partnerPresence;
-            setPartner({
-              userId: partnerPresence.user_id,
-              username: partnerPresence.username,
-              avatarPath: partnerPresence.avatarPath,
-              countryFlag: partnerPresence.countryFlag || null,
-            });
+            setPartner((prev) => mergePartnerPresence(prev, partnerPresence));
             computePartnerStatus();
 
             // Track partner interaction (typing indicator)
@@ -291,12 +299,7 @@ export function useAlchemyCoop({
         if (key !== user.id && newPresences.length > 0) {
           const partnerPresence = newPresences[0];
           partnerPresenceRef.current = partnerPresence;
-          setPartner({
-            userId: partnerPresence.user_id,
-            username: partnerPresence.username,
-            avatarPath: partnerPresence.avatarPath,
-            countryFlag: partnerPresence.countryFlag || null,
-          });
+          setPartner((prev) => mergePartnerPresence(prev, partnerPresence));
           setPartnerStatus('active');
           setIsWaiting(false);
           onPartnerJoinedRef.current?.(partnerPresence);
