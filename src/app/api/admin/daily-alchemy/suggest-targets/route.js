@@ -88,15 +88,16 @@ export async function POST(request) {
       pairToResult.set(pair, combo);
     }
 
-    // BFS from starters to find all reachable elements with path lengths
+    // BFS from starters to find all reachable elements with paths
     const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
-    const elementPathLengths = new Map();
+    const elementPaths = new Map();
 
     for (const starter of STARTER_ELEMENTS) {
-      elementPathLengths.set(starter.name.toLowerCase(), {
+      elementPaths.set(starter.name.toLowerCase(), {
         name: starter.name,
         emoji: starter.emoji,
         pathLength: 0,
+        path: [],
       });
     }
 
@@ -111,18 +112,45 @@ export async function POST(request) {
 
       for (let i = 0; i < elementsArray.length; i++) {
         for (let j = i; j < elementsArray.length; j++) {
-          const pair = [elementsArray[i], elementsArray[j]].sort().join('|');
+          const a = elementsArray[i];
+          const b = elementsArray[j];
+          const pair = [a, b].sort().join('|');
           const combo = pairToResult.get(pair);
           if (!combo) continue;
 
           const resultKey = combo.result_element.toLowerCase();
-          if (!elementPathLengths.has(resultKey)) {
-            const depthA = elementPathLengths.get(elementsArray[i])?.pathLength || 0;
-            const depthB = elementPathLengths.get(elementsArray[j])?.pathLength || 0;
-            elementPathLengths.set(resultKey, {
+          if (!elementPaths.has(resultKey)) {
+            const dataA = elementPaths.get(a);
+            const dataB = elementPaths.get(b);
+            const pathA = dataA?.path || [];
+            const pathB = dataB?.path || [];
+
+            // Merge paths: start with pathA, add unique steps from pathB
+            const newPath = [...pathA];
+            for (const step of pathB) {
+              const stepKey =
+                `${step.element_a}|${step.element_b}|${step.result_element}`.toLowerCase();
+              const existsInPath = newPath.some(
+                (s) => `${s.element_a}|${s.element_b}|${s.result_element}`.toLowerCase() === stepKey
+              );
+              if (!existsInPath) {
+                newPath.push(step);
+              }
+            }
+
+            // Add the current combination as the final step
+            newPath.push({
+              element_a: combo.element_a,
+              element_b: combo.element_b,
+              result_element: combo.result_element,
+              result_emoji: combo.result_emoji,
+            });
+
+            elementPaths.set(resultKey, {
               name: combo.result_element,
               emoji: combo.result_emoji,
-              pathLength: Math.max(depthA, depthB) + 1,
+              pathLength: newPath.length,
+              path: newPath,
             });
             currentElements.add(resultKey);
             changed = true;
@@ -133,7 +161,7 @@ export async function POST(request) {
 
     // Build available elements list (exclude starters)
     const availableElements = [];
-    for (const [key, value] of elementPathLengths.entries()) {
+    for (const [key, value] of elementPaths.entries()) {
       if (!starterNames.has(key)) {
         availableElements.push(value);
       }
@@ -165,9 +193,19 @@ export async function POST(request) {
       difficulty,
     });
 
+    // Enrich suggestions with solution paths from BFS
+    const suggestionsWithPaths = (result.suggestions || []).map((suggestion) => {
+      const elementData = elementPaths.get(suggestion.name.toLowerCase());
+      return {
+        ...suggestion,
+        path: elementData?.path || [],
+        pathLength: elementData?.pathLength || suggestion.pathLength,
+      };
+    });
+
     return NextResponse.json({
       success: true,
-      suggestions: result.suggestions,
+      suggestions: suggestionsWithPaths,
       availableElementCount: availableElements.length,
     });
   } catch (error) {

@@ -235,9 +235,36 @@ export default function DailyAlchemyPuzzleEditor({ puzzle, date, onSave, onCance
     }
   };
 
-  // Select a suggested target element
+  // Select a suggested target element (with pre-loaded solution path)
   const handleSelectTargetSuggestion = (suggestion) => {
-    selectTargetElement({ name: suggestion.name, emoji: suggestion.emoji });
+    const hasPath = suggestion.path && suggestion.path.length > 0;
+
+    if (hasPath) {
+      // Convert path format to solution path format and populate directly
+      const solutionPath = suggestion.path.map((step, index) => ({
+        step: index + 1,
+        elementA: step.element_a,
+        elementB: step.element_b,
+        result: step.result_element,
+        emoji: step.result_emoji,
+      }));
+
+      setFormData((prev) => ({
+        ...prev,
+        targetElement: suggestion.name,
+        targetEmoji: suggestion.emoji,
+        solutionPath,
+        parMoves: solutionPath.length,
+      }));
+      setTargetSearch(`${suggestion.emoji} ${suggestion.name}`);
+      setShowDropdown(false);
+      setSearchResults([]);
+      setPathError(null);
+      setSearchError(null);
+    } else {
+      selectTargetElement({ name: suggestion.name, emoji: suggestion.emoji });
+    }
+
     setTargetSuggestions([]);
     setSuggestError(null);
   };
