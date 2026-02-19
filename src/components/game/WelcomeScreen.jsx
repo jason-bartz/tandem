@@ -27,6 +27,7 @@ import miniService from '@/services/mini.service';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
 import { trackGameCardClick, GAME_TYPES } from '@/lib/gameAnalytics';
+import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 export default function WelcomeScreen({
   onStart,
@@ -94,11 +95,17 @@ export default function WelcomeScreen({
           loadMiniPuzzleProgress(miniPuzzleInfo.isoDate),
           miniService.getPuzzle(miniPuzzleInfo.isoDate),
           storageService.get(`${SOUP_STORAGE_KEYS.PUZZLE_PROGRESS}${getLocalDateString()}`),
-          fetch(`/api/daily-alchemy/puzzle?date=${getLocalDateString()}`).then((res) => res.json()),
+          capacitorFetch(
+            getApiUrl(`/api/daily-alchemy/puzzle?date=${getLocalDateString()}`),
+            {},
+            false
+          ).then((res) => res.json()),
           storageService.get('reel-connections-stats'),
-          fetch(`/api/reel-connections/puzzle?date=${getLocalDateString()}`).then((res) =>
-            res.json()
-          ),
+          capacitorFetch(
+            getApiUrl(`/api/reel-connections/puzzle?date=${getLocalDateString()}`),
+            {},
+            false
+          ).then((res) => res.json()),
         ]);
 
         // Process Mini completion and puzzle data
