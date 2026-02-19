@@ -101,7 +101,7 @@ export default function UserDetailPanel({ user, onClose }) {
 
   return (
     <tr>
-      <td colSpan="7" className="p-0">
+      <td colSpan="8" className="p-0">
         <div className="border-t-[3px] border-black dark:border-white bg-bg-card">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 divide-y-[3px] lg:divide-y-0 lg:divide-x-[3px] divide-black dark:divide-white">
             {/* Profile Section */}
