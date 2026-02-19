@@ -146,6 +146,8 @@ export function AuthProvider({ children }) {
   };
 
   useEffect(() => {
+    if (!supabase) return; // SSR guard
+
     // Initialize unified storage service (loads IndexedDB key tracking, runs health check)
     storageService.initialize().catch((error) => {
       logger.error('[AuthProvider] Storage service initialization failed', error);
@@ -339,7 +341,7 @@ export function AuthProvider({ children }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [supabase.auth]);
+  }, [supabase?.auth]);
 
   // Handle OAuth deep link callbacks on iOS (for Google Sign In)
   useEffect(() => {
@@ -403,7 +405,7 @@ export function AuthProvider({ children }) {
     return () => {
       cleanup.then((cleanupFn) => cleanupFn?.());
     };
-  }, [supabase.auth]);
+  }, [supabase?.auth]);
 
   /**
    * Sign up with email and password
@@ -869,7 +871,7 @@ export function AuthProvider({ children }) {
       logger.error('[AuthContext] Anonymous sign-in failed', error);
       return null;
     }
-  }, [user, supabase.auth]);
+  }, [user, supabase?.auth]);
 
   /**
    * Upgrade an anonymous user to a permanent account with email/password.
@@ -916,7 +918,7 @@ export function AuthProvider({ children }) {
         return { user: null, error };
       }
     },
-    [isAnonymous, supabase.auth]
+    [isAnonymous, supabase?.auth]
   );
 
   /**
@@ -995,7 +997,7 @@ export function AuthProvider({ children }) {
         return { data: null, error };
       }
     },
-    [isAnonymous, user?.id, supabase.auth]
+    [isAnonymous, user?.id, supabase?.auth]
   );
 
   const markServiceUnavailable = useCallback(() => {
