@@ -99,7 +99,13 @@ export function AuthProvider({ children }) {
   const [profileLoading, setProfileLoading] = useState(false);
   const [showFirstTimeSetup, setShowFirstTimeSetup] = useState(false);
   const hasInitializedRef = useRef(false);
-  const supabase = getSupabaseBrowserClient();
+  // Lazy-init: avoid calling getSupabaseBrowserClient during SSR prerender
+  // (window is undefined on the server, but useRef persists across client renders)
+  const supabaseRef = useRef(null);
+  if (typeof window !== 'undefined' && !supabaseRef.current) {
+    supabaseRef.current = getSupabaseBrowserClient();
+  }
+  const supabase = supabaseRef.current;
 
   /**
    * Load user profile with avatar from database
