@@ -813,7 +813,7 @@ export function DailyAlchemyGameScreen({
         </div>
 
         {/* Element Bank - fills remaining space */}
-        <div className="flex-1 min-h-0 flex flex-col relative">
+        <div className="flex-1 min-h-0 min-w-0 flex flex-col relative">
           <ElementBank
             elements={sortedElementBank}
             selectedA={selectedA}
