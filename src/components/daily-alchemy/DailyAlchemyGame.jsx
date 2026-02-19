@@ -27,6 +27,7 @@ import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
 import UnifiedArchiveCalendar from '@/components/game/UnifiedArchiveCalendar';
 import HowToPlayModal from '@/components/game/HowToPlayModal';
 import AlchemyTutorialModal from './AlchemyTutorialModal';
+import AlchemyCreativeTutorialModal from './AlchemyCreativeTutorialModal';
 import HintTutorialBanner from '@/components/shared/HintTutorialBanner';
 import FavoritesTutorialBanner from '@/components/shared/FavoritesTutorialBanner';
 import ServiceOutage from '@/components/shared/ServiceOutage';
@@ -763,6 +764,10 @@ export function DailyAlchemyGame({ initialDate = null }) {
       {/* Tutorial Modal - shown on first visit when gameplay starts (daily mode only) */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
         !freePlayMode && <AlchemyTutorialModal onClose={() => setShowTutorial(false)} />}
+
+      {/* Creative Mode Tutorial - shown on first visit to Creative Mode */}
+      {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
+        freePlayMode && <AlchemyCreativeTutorialModal />}
 
       {/* Hint Tutorial Banner - shows after Learn to Play is dismissed, before first hint use */}
       {(gameState === SOUP_GAME_STATES.PLAYING || gameState === SOUP_GAME_STATES.ADMIRE) &&
