@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useHaptics } from '@/hooks/useHaptics';
-import { SOUP_GAME_STATES } from '@/lib/daily-alchemy.constants';
+import { SOUP_GAME_STATES, COOP_CONFIG } from '@/lib/daily-alchemy.constants';
 import { useDailyAlchemyGame } from '@/hooks/useDailyAlchemyGame';
 import { useAlchemyCoop } from '@/hooks/useAlchemyCoop';
 import { useMatchmaking } from '@/hooks/useMatchmaking';
@@ -346,6 +346,29 @@ export function DailyAlchemyGame({ initialDate = null }) {
     coopStartedRef.current = false;
     coop.leaveSession();
   }, [coop]);
+
+  // Co-op: Debounced interaction broadcasting for typing indicator
+  const interactionDebounceRef = useRef(null);
+
+  const handleElementInteraction = useCallback(() => {
+    if (!coopMode) return;
+
+    // Debounce: only send one presence update per interval
+    if (interactionDebounceRef.current) return;
+
+    coop.broadcastInteracting();
+    interactionDebounceRef.current = setTimeout(() => {
+      interactionDebounceRef.current = null;
+    }, COOP_CONFIG.INTERACTION_DEBOUNCE_MS);
+  }, [coopMode, coop]);
+
+  useEffect(() => {
+    return () => {
+      if (interactionDebounceRef.current) {
+        clearTimeout(interactionDebounceRef.current);
+      }
+    };
+  }, []);
 
   // Co-op: Broadcast new element discoveries to partner
   useEffect(() => {
@@ -695,8 +718,11 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       coopReceivedEmote={coop.receivedEmote}
                       onCoopSendEmote={coop.sendEmote}
                       coopEmoteCooldownActive={coop.emoteCooldownActive}
+                      coopActivityFeed={coop.activityFeed}
+                      coopPartnerIsInteracting={coop.partnerIsInteracting}
                       onCoopSave={handleOpenCoopSave}
                       onCoopLeave={handleCoopLeave}
+                      onElementInteraction={handleElementInteraction}
                       // Anonymous auth
                       isAnonymous={isAnonymous}
                       onSignUpCTA={() => setShowAnonymousUpgrade(true)}

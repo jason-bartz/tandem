@@ -53,6 +53,12 @@ export function useAlchemyCoop({
   const [receivedEmote, setReceivedEmote] = useState(null);
   const [lastEmoteSentAt, setLastEmoteSentAt] = useState(0);
 
+  // Activity feed state
+  const [activityFeed, setActivityFeed] = useState([]);
+
+  // Partner interaction (typing) indicator
+  const [partnerIsInteracting, setPartnerIsInteracting] = useState(false);
+
   // Error state
   const [error, setError] = useState(null);
 
@@ -62,6 +68,7 @@ export function useAlchemyCoop({
   const emoteTimeoutRef = useRef(null);
   const partnerPresenceRef = useRef(null);
   const statusCheckIntervalRef = useRef(null);
+  const partnerInteractingTimeoutRef = useRef(null);
   const myCountryFlagRef = useRef(userProfile?.country_flag || null);
 
   // Callback refs — prevent stale closures in Supabase channel listeners
@@ -155,7 +162,24 @@ export function useAlchemyCoop({
             emoji: payload.element.emoji,
             isFirstDiscovery: payload.element.isFirstDiscovery,
             addedByUsername: payload.addedByUsername,
+            combinedFrom: payload.combinedFrom,
           });
+
+          // Add to activity feed
+          setActivityFeed((prev) =>
+            [
+              {
+                id: `${Date.now()}-${Math.random()}`,
+                type: 'combination',
+                elementName: payload.element.name,
+                elementEmoji: payload.element.emoji,
+                isFirstDiscovery: payload.element.isFirstDiscovery,
+                combinedFrom: payload.combinedFrom,
+                timestamp: Date.now(),
+              },
+              ...prev,
+            ].slice(0, COOP_CONFIG.ACTIVITY_FEED_MAX_ITEMS)
+          );
         }
       });
 
@@ -171,6 +195,19 @@ export function useAlchemyCoop({
             username: payload.username,
             timestamp: Date.now(),
           });
+
+          // Add to activity feed
+          setActivityFeed((prev) =>
+            [
+              {
+                id: `${Date.now()}-${Math.random()}`,
+                type: 'emote',
+                emoji: payload.emoji,
+                timestamp: Date.now(),
+              },
+              ...prev,
+            ].slice(0, COOP_CONFIG.ACTIVITY_FEED_MAX_ITEMS)
+          );
 
           // Auto-clear after display duration
           emoteTimeoutRef.current = setTimeout(() => {
@@ -233,6 +270,19 @@ export function useAlchemyCoop({
               countryFlag: partnerPresence.countryFlag || null,
             });
             computePartnerStatus();
+
+            // Track partner interaction (typing indicator)
+            if (partnerPresence.isInteracting) {
+              setPartnerIsInteracting(true);
+              if (partnerInteractingTimeoutRef.current) {
+                clearTimeout(partnerInteractingTimeoutRef.current);
+              }
+              partnerInteractingTimeoutRef.current = setTimeout(() => {
+                setPartnerIsInteracting(false);
+              }, COOP_CONFIG.INTERACTION_TIMEOUT_MS);
+            } else {
+              setPartnerIsInteracting(false);
+            }
           }
         }
       });
@@ -356,6 +406,9 @@ export function useAlchemyCoop({
       }
       if (emoteTimeoutRef.current) {
         clearTimeout(emoteTimeoutRef.current);
+      }
+      if (partnerInteractingTimeoutRef.current) {
+        clearTimeout(partnerInteractingTimeoutRef.current);
       }
     };
   }, []);
@@ -532,6 +585,8 @@ export function useAlchemyCoop({
       setPartner(null);
       setPartnerStatus(null);
       setReceivedEmote(null);
+      setActivityFeed([]);
+      setPartnerIsInteracting(false);
 
       // Clear persisted session ID
       if (typeof localStorage !== 'undefined') {
@@ -728,6 +783,24 @@ export function useAlchemyCoop({
   }, [user, userProfile]);
 
   /**
+   * Broadcast that this player is actively interacting (typing indicator)
+   */
+  const broadcastInteracting = useCallback(() => {
+    if (!channelRef.current || !user) return;
+
+    channelRef.current.track({
+      user_id: user.id,
+      username: userProfile?.username || 'Anonymous',
+      avatarPath: userProfile?.avatar_image_path || null,
+      countryFlag: myCountryFlagRef.current || userProfile?.country_flag || null,
+      status: 'active',
+      lastInteractionAt: Date.now(),
+      isInteracting: true,
+      joinedAt: Date.now(),
+    });
+  }, [user, userProfile]);
+
+  /**
    * Sync element bank to the database (debounced, called by game hook)
    */
   const syncElementBank = useCallback(
@@ -829,12 +902,17 @@ export function useAlchemyCoop({
     receivedEmote,
     emoteCooldownActive: Date.now() - lastEmoteSentAt < COOP_CONFIG.EMOTE_COOLDOWN_MS,
 
+    // Activity feed
+    activityFeed,
+    partnerIsInteracting,
+
     // Broadcast helpers
     broadcastNewElement,
     broadcastGameOver,
     broadcastMoveIncrement,
     broadcastContinueCreative,
     broadcastDeclineCreative,
+    broadcastInteracting,
     updatePresence,
     syncElementBank,
 

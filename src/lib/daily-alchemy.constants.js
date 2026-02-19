@@ -396,6 +396,11 @@ export const COOP_CONFIG = {
   INVITE_CODE_CHARS: 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789',
   // Debounced sync: update DB every N discoveries
   SYNC_DISCOVERY_INTERVAL: 5,
+  // Activity feed
+  ACTIVITY_FEED_MAX_ITEMS: 20,
+  // Typing/interaction indicator
+  INTERACTION_DEBOUNCE_MS: 2000,
+  INTERACTION_TIMEOUT_MS: 3000,
 };
 
 // Quick Match matchmaking configuration
