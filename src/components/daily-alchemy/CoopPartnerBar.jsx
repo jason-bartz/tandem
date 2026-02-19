@@ -2,7 +2,7 @@
 
 import { memo, useState, useEffect, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Smile, LogOut } from 'lucide-react';
+import { Smile, LogOut, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playEmoteNotificationSound } from '@/lib/sounds';
@@ -125,6 +125,7 @@ function CoopPartnerBarInner({
 }) {
   const { highContrast, reduceMotion } = useTheme();
   const [isEmotePickerOpen, setIsEmotePickerOpen] = useState(false);
+  const [isFeedCollapsed, setIsFeedCollapsed] = useState(false);
   const feedRef = useRef(null);
   const statusConfig = STATUS_CONFIG[partnerStatus] || STATUS_CONFIG.disconnected;
 
@@ -172,8 +173,21 @@ function CoopPartnerBarInner({
         highContrast && 'border-hc-border'
       )}
     >
-      {/* Header row: partner info + emote controls */}
-      <div className="flex items-center justify-between px-3 py-2">
+      {/* Header row: partner info + emote controls — tappable to collapse/expand feed */}
+      <div
+        className="flex items-center justify-between px-3 py-2 cursor-pointer select-none"
+        onClick={() => setIsFeedCollapsed((prev) => !prev)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={!isFeedCollapsed}
+        aria-label={isFeedCollapsed ? 'Expand activity feed' : 'Collapse activity feed'}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsFeedCollapsed((prev) => !prev);
+          }
+        }}
+      >
         {/* Partner info */}
         <div className="flex items-center gap-2 min-w-0">
           {/* Avatar or initial */}
@@ -203,7 +217,10 @@ function CoopPartnerBarInner({
               <span className="text-xs text-red-500 dark:text-red-400 flex-shrink-0">has left</span>
             ) : onLeave ? (
               <button
-                onClick={onLeave}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onLeave();
+                }}
                 className={cn(
                   'flex-shrink-0 p-1 rounded-lg',
                   'text-red-400 hover:text-red-600 dark:text-red-400 dark:hover:text-red-300',
@@ -226,7 +243,17 @@ function CoopPartnerBarInner({
           </div>
         </div>
 
-        {/* Emote button + sent feedback (hidden when partner disconnected) */}
+        {/* Collapse indicator + Emote button + sent feedback */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {activityFeed.length > 0 && (
+            <ChevronDown
+              className={cn(
+                'w-4 h-4 text-indigo-400 dark:text-indigo-500 transition-transform duration-200',
+                isFeedCollapsed && '-rotate-90'
+              )}
+            />
+          )}
+        </div>
         {partnerStatus !== 'disconnected' && (
           <div className="flex items-center gap-1.5 flex-shrink-0">
             <AnimatePresence>
@@ -244,7 +271,10 @@ function CoopPartnerBarInner({
               )}
             </AnimatePresence>
             <button
-              onClick={() => setIsEmotePickerOpen(!isEmotePickerOpen)}
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEmotePickerOpen(!isEmotePickerOpen);
+              }}
               className={cn(
                 'w-8 h-8 flex items-center justify-center',
                 'hover:bg-indigo-100 dark:hover:bg-indigo-900/30',
@@ -267,32 +297,41 @@ function CoopPartnerBarInner({
         />
       </div>
 
-      {/* Activity Feed */}
-      {activityFeed.length > 0 && (
-        <div className="border-t border-indigo-100 dark:border-indigo-900/30">
-          <div
-            ref={feedRef}
-            className={cn(
-              'max-h-[40px] lg:max-h-[120px] overflow-y-auto overflow-x-hidden',
-              'px-3 py-1.5'
-            )}
+      {/* Activity Feed — collapsible */}
+      <AnimatePresence initial={false}>
+        {activityFeed.length > 0 && !isFeedCollapsed && (
+          <motion.div
+            key="activity-feed"
+            className="border-t border-indigo-100 dark:border-indigo-900/30 overflow-hidden"
+            initial={reduceMotion ? { height: 0, opacity: 0 } : { height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.2, ease: 'easeInOut' }}
           >
-            <div className="space-y-0.5">
-              {activityFeed
-                .slice()
-                .reverse()
-                .map((item) => (
-                  <ActivityFeedItem
-                    key={item.id}
-                    item={item}
-                    reduceMotion={reduceMotion}
-                    highContrast={highContrast}
-                  />
-                ))}
+            <div
+              ref={feedRef}
+              className={cn(
+                'max-h-[40px] lg:max-h-[120px] overflow-y-auto overflow-x-hidden',
+                'px-3 py-1.5'
+              )}
+            >
+              <div className="space-y-0.5">
+                {activityFeed
+                  .slice()
+                  .reverse()
+                  .map((item) => (
+                    <ActivityFeedItem
+                      key={item.id}
+                      item={item}
+                      reduceMotion={reduceMotion}
+                      highContrast={highContrast}
+                    />
+                  ))}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
