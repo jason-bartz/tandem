@@ -3,6 +3,7 @@ import { getAuthenticatedUser } from '@/lib/auth/getAuthenticatedUser';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS, MATCHMAKING_CONFIG } from '@/lib/daily-alchemy.constants';
 import { countryCodeToFlag, captureUserCountry } from '@/lib/country-flag';
+import { notifyMatchmakingJoined, notifyMatchmakingMatched } from '@/lib/discord';
 
 /**
  * Fetch a user's profile (username + avatar)
@@ -137,8 +138,11 @@ export async function POST(request) {
       });
 
       if (matchedRow) {
-        // Fetch partner's profile (the waiting player)
-        const partnerProfile = await getUserProfile(supabase, matchedRow.matched_user_id);
+        // Fetch partner's profile (the waiting player) and claimer's username
+        const [partnerProfile, claimerProfile] = await Promise.all([
+          getUserProfile(supabase, matchedRow.matched_user_id),
+          getUserProfile(supabase, user.id),
+        ]);
 
         logger.info('[Matchmaking] Match found', {
           sessionId: matchedRow.new_session_id,
@@ -146,6 +150,13 @@ export async function POST(request) {
           player2: user.id,
           mode,
         });
+
+        // Discord notification (fire-and-forget)
+        notifyMatchmakingMatched({
+          player1Username: partnerProfile.username,
+          player2Username: claimerProfile.username,
+          mode,
+        }).catch(() => {});
 
         return NextResponse.json({
           success: true,
@@ -239,6 +250,11 @@ export async function POST(request) {
         mode,
         queueId: queueEntry.id,
       });
+
+      // Discord notification (fire-and-forget)
+      getUserProfile(supabase, user.id)
+        .then((profile) => notifyMatchmakingJoined({ username: profile.username, mode }))
+        .catch(() => {});
 
       return NextResponse.json({
         success: true,
