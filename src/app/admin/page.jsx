@@ -15,6 +15,7 @@ import FeedbackDashboard from '@/components/admin/feedback/FeedbackDashboard';
 import SubmissionsDashboard from '@/components/admin/submissions/SubmissionsDashboard';
 import BotLeaderboardManager from '@/components/admin/BotLeaderboardManager';
 import AvatarManager from '@/components/admin/AvatarManager';
+import UserManagement from '@/components/admin/users/UserManagement';
 import authService from '@/services/auth.service';
 import logger from '@/lib/logger';
 import { ASSET_VERSION } from '@/lib/constants';
@@ -472,6 +473,20 @@ export default function AdminDashboard() {
             <Image src="/ui/shared/leaderboard-admin.png" alt="" width={20} height={20} />
             <span className="hidden sm:inline">Leaderboards</span>
           </button>
+          <button
+            onClick={() => setActiveTab('users')}
+            className={`
+              py-3 px-2 sm:px-4 border-b-[3px] font-bold text-sm sm:text-base whitespace-nowrap transition-all flex items-center gap-1 sm:gap-2
+              ${
+                activeTab === 'users'
+                  ? 'border-orange-500 text-text-primary bg-orange-500/20'
+                  : 'border-transparent text-text-secondary hover:text-text-primary hover:border-text-muted'
+              }
+            `}
+          >
+            <Image src="/ui/shared/users.png" alt="" width={20} height={20} />
+            <span className="hidden sm:inline">Users</span>
+          </button>
         </nav>
       </div>
 
@@ -560,6 +575,7 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'leaderboards' && <BotLeaderboardManager />}
         {activeTab === 'avatars' && <AvatarManager />}
+        {activeTab === 'users' && <UserManagement />}
       </div>
 
       {/* Game selector modal */}

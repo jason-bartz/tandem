@@ -336,6 +336,94 @@ class AdminService {
       throw error;
     }
   }
+  // ==========================================
+  // User Management
+  // ==========================================
+
+  async getUsers({ search, type, sort, page, perPage } = {}) {
+    try {
+      const params = new URLSearchParams();
+      if (search) params.append('search', search);
+      if (type) params.append('type', type);
+      if (sort) params.append('sort', sort);
+      if (page) params.append('page', String(page));
+      if (perPage) params.append('perPage', String(perPage));
+
+      const url = `/api/admin/users${params.toString() ? `?${params.toString()}` : ''}`;
+      const response = await fetch(getApiUrl(url), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getUsers error', error);
+      throw error;
+    }
+  }
+
+  async getUserDetail(userId) {
+    try {
+      const response = await fetch(getApiUrl(`/api/admin/users/${userId}`), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.getUserDetail error', error);
+      throw error;
+    }
+  }
+
+  async sendPasswordReset(userId) {
+    try {
+      const response = await fetch(getApiUrl(`/api/admin/users/${userId}/actions`), {
+        method: 'POST',
+        headers: await this.getAuthHeaders(true),
+        body: JSON.stringify({ action: 'send_password_reset' }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return data;
+    } catch (error) {
+      logger.error('AdminService.sendPasswordReset error', error);
+      throw error;
+    }
+  }
+
+  async exportUsersCsv() {
+    try {
+      const response = await fetch(getApiUrl('/api/admin/users/export'), {
+        headers: await this.getAuthHeaders(),
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.error || `Server error: ${response.status}`);
+      }
+
+      return response;
+    } catch (error) {
+      logger.error('AdminService.exportUsersCsv error', error);
+      throw error;
+    }
+  }
 }
 
 export default new AdminService();
