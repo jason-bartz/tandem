@@ -349,6 +349,9 @@ export default function UserManagement() {
                 <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden md:table-cell">
                   Sub
                 </th>
+                <th className="text-center px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
+                  Country
+                </th>
                 <th className="text-left px-3 py-2.5 font-bold text-text-secondary text-xs uppercase tracking-wide hidden lg:table-cell">
                   Created
                 </th>
@@ -363,7 +366,7 @@ export default function UserManagement() {
             <tbody className="divide-y divide-border-main">
               {users.length === 0 && !loading ? (
                 <tr>
-                  <td colSpan="7" className="text-center py-12 text-text-muted font-medium">
+                  <td colSpan="8" className="text-center py-12 text-text-muted font-medium">
                     {debouncedSearch
                       ? `No users found matching "${debouncedSearch}"`
                       : 'No users found'}
@@ -379,19 +382,14 @@ export default function UserManagement() {
                       }`}
                     >
                       <td className="px-3 py-3">
-                        <div className="flex items-center gap-2">
-                          {user.countryFlag && (
-                            <span className="text-base">{user.countryFlag}</span>
-                          )}
-                          <div>
-                            <div className="font-bold text-text-primary">
-                              {user.username || (
-                                <span className="text-text-muted italic">No username</span>
-                              )}
-                            </div>
-                            <div className="text-xs text-text-muted sm:hidden">
-                              {user.email || '--'}
-                            </div>
+                        <div>
+                          <div className="font-bold text-text-primary">
+                            {user.username || (
+                              <span className="text-text-muted italic">No username</span>
+                            )}
+                          </div>
+                          <div className="text-xs text-text-muted sm:hidden">
+                            {user.email || '--'}
                           </div>
                         </div>
                       </td>
@@ -416,6 +414,15 @@ export default function UserManagement() {
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full border-[2px] bg-accent-purple/20 border-accent-purple text-accent-purple">
                             Member
                           </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-3 text-center hidden lg:table-cell">
+                        {user.countryFlag ? (
+                          <span title={user.countryCode || ''} className="text-base">
+                            {user.countryFlag}
+                          </span>
+                        ) : (
+                          <span className="text-text-muted text-xs">--</span>
                         )}
                       </td>
                       <td className="px-3 py-3 text-text-secondary text-xs hidden lg:table-cell">
@@ -445,7 +452,7 @@ export default function UserManagement() {
                     {expandedUserId === user.id &&
                       (detailLoading ? (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="7" className="p-0">
+                          <td colSpan="8" className="p-0">
                             <div className="border-t-[3px] border-black dark:border-white bg-bg-card p-8 text-center">
                               <div className="inline-block w-6 h-6 border-[3px] border-orange-500 border-t-transparent rounded-full animate-spin" />
                               <p className="text-sm text-text-secondary mt-2 font-medium">
@@ -465,7 +472,7 @@ export default function UserManagement() {
                         />
                       ) : (
                         <tr key={`${user.id}-detail`}>
-                          <td colSpan="7" className="p-0">
+                          <td colSpan="8" className="p-0">
                             <div className="border-t-[3px] border-black dark:border-white bg-bg-card p-6 text-center">
                               <p className="text-sm text-accent-red font-bold">
                                 Failed to load user details
