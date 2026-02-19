@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import logger from '@/lib/logger';
@@ -20,7 +20,11 @@ export default function ResetPasswordPage() {
   const [success, setSuccess] = useState(false);
   const [sessionReady, setSessionReady] = useState(false);
   const router = useRouter();
-  const supabase = getSupabaseBrowserClient();
+  const supabaseRef = useRef(null);
+  if (typeof window !== 'undefined' && !supabaseRef.current) {
+    supabaseRef.current = getSupabaseBrowserClient();
+  }
+  const supabase = supabaseRef.current;
 
   useEffect(() => {
     // Exchange the URL hash for a session
