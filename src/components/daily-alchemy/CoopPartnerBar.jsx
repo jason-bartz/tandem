@@ -35,14 +35,7 @@ function ActivityFeedItem({ item, reduceMotion, highContrast }) {
     const isFirst = item.isFirstDiscovery;
     return (
       <motion.div
-        className={cn(
-          'text-xs py-0.5',
-          isFirst
-            ? highContrast
-              ? 'font-bold text-yellow-700 dark:text-yellow-300'
-              : 'font-medium text-amber-500 dark:text-amber-300 [text-shadow:0_0_8px_rgba(245,158,11,0.4)] dark:[text-shadow:0_0_8px_rgba(252,211,77,0.35)]'
-            : 'text-gray-500 dark:text-gray-400'
-        )}
+        className={cn('text-xs py-0.5', 'text-gray-500 dark:text-gray-400')}
         initial={!reduceMotion ? { opacity: 0, x: -8 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
@@ -53,37 +46,17 @@ function ActivityFeedItem({ item, reduceMotion, highContrast }) {
             'font-medium',
             isFirst
               ? highContrast
-                ? 'text-yellow-700 dark:text-yellow-300'
-                : 'text-amber-500 dark:text-amber-300'
+                ? 'font-bold text-yellow-700 dark:text-yellow-300'
+                : 'text-amber-500 dark:text-amber-300 [text-shadow:0_0_8px_rgba(245,158,11,0.4)] dark:[text-shadow:0_0_8px_rgba(252,211,77,0.35)]'
               : 'text-gray-700 dark:text-gray-300'
           )}
         >
           {item.elementName}
         </span>
         {item.combinedFrom?.length === 2 && (
-          <span
-            className={cn(
-              isFirst
-                ? highContrast
-                  ? 'text-yellow-600 dark:text-yellow-400'
-                  : 'text-amber-400/80 dark:text-amber-400/60'
-                : 'text-gray-400 dark:text-gray-500'
-            )}
-          >
+          <span className="text-gray-400 dark:text-gray-500">
             {' '}
             ({item.combinedFrom[0]} + {item.combinedFrom[1]})
-          </span>
-        )}
-        {isFirst && (
-          <span
-            className={cn(
-              'ml-1',
-              highContrast
-                ? 'text-yellow-700 dark:text-yellow-300'
-                : 'text-amber-400 dark:text-amber-300'
-            )}
-          >
-            — 1st!
           </span>
         )}
       </motion.div>
