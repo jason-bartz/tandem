@@ -654,17 +654,12 @@ export function DailyAlchemyGameScreen({
             onClick={onOpenSavesModal}
             disabled={isSlotSwitching}
             className={cn(
-              'flex items-center gap-1.5 px-4 py-2',
-              'text-sm font-bold',
-              'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200',
-              'border-[2px] border-black dark:border-gray-600',
-              'rounded-xl',
-              'shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(75,85,99,1)]',
-              'hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_rgba(0,0,0,1)]',
-              'active:translate-y-0 active:shadow-none',
-              'transition-all duration-150',
-              'disabled:opacity-50 disabled:cursor-not-allowed',
-              highContrast && 'border-[3px] border-hc-border'
+              'flex items-center gap-1.5 px-2 py-1',
+              'text-sm font-medium',
+              'text-gray-600 dark:text-gray-400',
+              'hover:text-gray-900 dark:hover:text-gray-200',
+              'transition-colors duration-150',
+              'disabled:opacity-50 disabled:cursor-not-allowed'
             )}
           >
             <FolderOpen className="w-4 h-4" />
