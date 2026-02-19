@@ -30,27 +30,60 @@ const STATUS_CONFIG = {
 /**
  * ActivityFeedItem - Single item in the partner activity feed
  */
-function ActivityFeedItem({ item, reduceMotion }) {
+function ActivityFeedItem({ item, reduceMotion, highContrast }) {
   if (item.type === 'combination') {
+    const isFirst = item.isFirstDiscovery;
     return (
       <motion.div
         className={cn(
           'text-xs py-0.5',
-          item.isFirstDiscovery
-            ? 'text-amber-600 dark:text-amber-400 font-medium'
+          isFirst
+            ? highContrast
+              ? 'font-bold text-yellow-700 dark:text-yellow-300'
+              : 'font-medium text-amber-500 dark:text-amber-300 [text-shadow:0_0_8px_rgba(245,158,11,0.4)] dark:[text-shadow:0_0_8px_rgba(252,211,77,0.35)]'
             : 'text-gray-500 dark:text-gray-400'
         )}
         initial={!reduceMotion ? { opacity: 0, x: -8 } : false}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
       >
-        {item.isFirstDiscovery && <span className="mr-1">✨</span>}
         <span>{item.elementEmoji}</span>{' '}
-        <span className="font-medium text-gray-700 dark:text-gray-300">{item.elementName}</span>
+        <span
+          className={cn(
+            'font-medium',
+            isFirst
+              ? highContrast
+                ? 'text-yellow-700 dark:text-yellow-300'
+                : 'text-amber-500 dark:text-amber-300'
+              : 'text-gray-700 dark:text-gray-300'
+          )}
+        >
+          {item.elementName}
+        </span>
         {item.combinedFrom?.length === 2 && (
-          <span className="text-gray-400 dark:text-gray-500">
+          <span
+            className={cn(
+              isFirst
+                ? highContrast
+                  ? 'text-yellow-600 dark:text-yellow-400'
+                  : 'text-amber-400/80 dark:text-amber-400/60'
+                : 'text-gray-400 dark:text-gray-500'
+            )}
+          >
             {' '}
             ({item.combinedFrom[0]} + {item.combinedFrom[1]})
+          </span>
+        )}
+        {isFirst && (
+          <span
+            className={cn(
+              'ml-1',
+              highContrast
+                ? 'text-yellow-700 dark:text-yellow-300'
+                : 'text-amber-400 dark:text-amber-300'
+            )}
+          >
+            — 1st!
           </span>
         )}
       </motion.div>
@@ -65,6 +98,7 @@ function ActivityFeedItem({ item, reduceMotion }) {
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.15 }}
       >
+        <span className="text-indigo-400 dark:text-indigo-500">sent</span>{' '}
         <span className="text-base">{item.emoji}</span>
       </motion.div>
     );
@@ -265,14 +299,22 @@ function CoopPartnerBarInner({
         <div className="border-t border-indigo-100 dark:border-indigo-900/30">
           <div
             ref={feedRef}
-            className={cn('max-h-[120px] overflow-y-auto overflow-x-hidden', 'px-3 py-1.5')}
+            className={cn(
+              'max-h-[40px] lg:max-h-[120px] overflow-y-auto overflow-x-hidden',
+              'px-3 py-1.5'
+            )}
           >
             <div className="space-y-0.5">
               {activityFeed
                 .slice()
                 .reverse()
                 .map((item) => (
-                  <ActivityFeedItem key={item.id} item={item} reduceMotion={reduceMotion} />
+                  <ActivityFeedItem
+                    key={item.id}
+                    item={item}
+                    reduceMotion={reduceMotion}
+                    highContrast={highContrast}
+                  />
                 ))}
             </div>
           </div>
