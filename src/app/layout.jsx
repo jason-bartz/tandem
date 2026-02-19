@@ -165,6 +165,10 @@ export const metadata = {
   classification: siteConfig.classification,
 };
 
+// Force dynamic rendering for all pages — the app uses browser-only auth
+// (Supabase client, useSearchParams) that cannot be statically prerendered.
+export const dynamic = 'force-dynamic';
+
 export const viewport = {
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: siteConfig.themeColors.light },
