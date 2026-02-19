@@ -27,6 +27,7 @@ export default function ResetPasswordPage() {
   const supabase = supabaseRef.current;
 
   useEffect(() => {
+    if (!supabase) return; // SSR guard
     // Exchange the URL hash for a session
     const handlePasswordReset = async () => {
       try {
@@ -87,7 +88,7 @@ export default function ResetPasswordPage() {
     };
 
     handlePasswordReset();
-  }, [supabase.auth]);
+  }, [supabase?.auth]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
