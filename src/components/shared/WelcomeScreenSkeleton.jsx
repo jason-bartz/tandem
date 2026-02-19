@@ -99,6 +99,11 @@ export default function WelcomeScreenSkeleton() {
   const { reduceMotion, highContrast, isDark } = useTheme();
   const [loadingText, setLoadingText] = useState(loadingMessages[0]);
   const [isVisible, setIsVisible] = useState(true);
+  const [isNative, setIsNative] = useState(false);
+
+  useEffect(() => {
+    setIsNative(Capacitor.isNativePlatform());
+  }, []);
 
   const logoSrc = isDark
     ? `/branding/tandem-dark.png?v=${ASSET_VERSION}`
@@ -251,7 +256,7 @@ export default function WelcomeScreenSkeleton() {
             />
 
             {/* App Store section (web only - hidden on native iOS) */}
-            {!Capacitor.isNativePlatform() && (
+            {!isNative && (
               <div className="mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 {/* Title: text-sm font-bold mb-3 */}
                 <div
