@@ -369,7 +369,7 @@ class AdminService {
 
   async getUserDetail(userId) {
     try {
-      const response = await fetch(getApiUrl(`/api/admin/users/${userId}`), {
+      const response = await fetch(getApiUrl(`/api/admin/users/detail?userId=${userId}`), {
         headers: await this.getAuthHeaders(),
       });
 
@@ -388,7 +388,7 @@ class AdminService {
 
   async sendPasswordReset(userId) {
     try {
-      const response = await fetch(getApiUrl(`/api/admin/users/${userId}/actions`), {
+      const response = await fetch(getApiUrl(`/api/admin/users/detail?userId=${userId}`), {
         method: 'POST',
         headers: await this.getAuthHeaders(true),
         body: JSON.stringify({ action: 'send_password_reset' }),
