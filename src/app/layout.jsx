@@ -167,7 +167,9 @@ export const metadata = {
 
 // Force dynamic rendering for all pages — the app uses browser-only auth
 // (Supabase client, useSearchParams) that cannot be statically prerendered.
-export const dynamic = 'force-dynamic';
+// For iOS (Capacitor) builds, allow static export.
+const isCapacitorBuild = process.env.BUILD_TARGET === 'capacitor';
+export const dynamic = isCapacitorBuild ? undefined : 'force-dynamic';
 
 export const viewport = {
   themeColor: [

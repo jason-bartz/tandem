@@ -7,6 +7,9 @@ const nextConfig = {
   reactStrictMode: true,
   experimental: {
     instrumentationHook: true,
+    // Allow useSearchParams without Suspense boundary during static export (iOS)
+    // — the app is fully client-rendered on iOS so this is safe
+    ...(isCapacitorBuild && { missingSuspenseWithCSRBailout: false }),
   },
 
   // Redirects for renamed routes
