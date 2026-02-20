@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
@@ -28,6 +28,9 @@ import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
 import { trackGameCardClick, GAME_TYPES } from '@/lib/gameAnalytics';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
+
+// Module-level flag so it survives component unmount/remount during navigation
+let _welcomeSoundPlayedThisSession = false;
 
 export default function WelcomeScreen({
   onStart,
@@ -68,9 +71,6 @@ export default function WelcomeScreen({
   const [miniPuzzle, setMiniPuzzle] = useState(null);
   const [soupPuzzle, setSoupPuzzle] = useState(null);
   const [reelPuzzle, setReelPuzzle] = useState(null);
-
-  // Track if welcome sound has been played this session (persists across navigations)
-  const hasPlayedWelcomeSound = useRef(false);
 
   // Load completion status for all games
   useEffect(() => {
@@ -162,8 +162,8 @@ export default function WelcomeScreen({
 
   // Play welcome sound on native app (only on initial app open, not on navigation back)
   useEffect(() => {
-    if (Capacitor.isNativePlatform() && !hasPlayedWelcomeSound.current) {
-      hasPlayedWelcomeSound.current = true;
+    if (Capacitor.isNativePlatform() && !_welcomeSoundPlayedThisSession) {
+      _welcomeSoundPlayedThisSession = true;
       const timer = setTimeout(() => {
         try {
           playStartSound();
