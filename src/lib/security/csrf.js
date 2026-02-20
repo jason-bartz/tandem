@@ -5,7 +5,7 @@ const CSRF_TOKEN_LENGTH = 32;
 // Use __Host- prefix only in production (requires HTTPS)
 const CSRF_COOKIE_NAME = process.env.NODE_ENV === 'production' ? '__Host-csrf' : 'csrf';
 const CSRF_HEADER_NAME = 'x-csrf-token';
-const MAX_AGE = 60 * 60 * 24; // 24 hours
+const MAX_AGE = 60 * 60 * 24 * 7; // 7 days (matches admin JWT expiry)
 
 /**
  * Generate a cryptographically secure random token
