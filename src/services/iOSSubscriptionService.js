@@ -497,6 +497,81 @@ class SubscriptionService {
         await this.clearSubscriptionData();
       }
     } else {
+      // Final fallback: check server-side subscription status
+      // This handles web-purchased subscriptions (Stripe/promo codes) that
+      // StoreKit and local storage don't know about
+      await this._checkServerSubscription(storage);
+    }
+  }
+
+  /**
+   * Check server-side subscription status as a fallback
+   * This catches subscriptions purchased on web (Stripe, promo codes)
+   * that iOS StoreKit doesn't know about
+   */
+  async _checkServerSubscription(storage) {
+    try {
+      const { getSupabaseBrowserClient } = await import('@/lib/supabase/client');
+      const supabase = getSupabaseBrowserClient();
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      // Only check server if user is authenticated
+      if (!session?.access_token) {
+        this.subscriptionStatus = { isActive: false };
+        return;
+      }
+
+      const apiUrl = getApiUrl('/api/subscription/status');
+      const response = await fetch(apiUrl, {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        this.subscriptionStatus = { isActive: false };
+        return;
+      }
+
+      const data = await response.json();
+
+      if (data.isActive) {
+        // Map server tier names to iOS product IDs for consistency
+        const tierToProductId = {
+          buddypass: PRODUCTS.BUDDY_MONTHLY,
+          bestfriends: PRODUCTS.BEST_FRIENDS_YEARLY,
+          soulmates: PRODUCTS.SOULMATES_LIFETIME,
+        };
+
+        const productId = tierToProductId[data.tier] || data.tier;
+        const expiryDate = data.expiryDate || null;
+
+        this.subscriptionStatus = {
+          isActive: true,
+          productId,
+          expiryDate,
+          cancelAtPeriodEnd: data.cancelAtPeriodEnd || false,
+        };
+
+        // Persist to local storage so it works offline too
+        await storage.set({ key: STORAGE_KEYS.SUBSCRIPTION_STATUS, value: 'active' });
+        await storage.set({ key: STORAGE_KEYS.PRODUCT_ID, value: productId });
+        if (expiryDate) {
+          await storage.set({ key: STORAGE_KEYS.EXPIRY_DATE, value: expiryDate });
+        }
+
+        logger.debug('[iOSSubscription] Found server-side subscription', { tier: data.tier });
+      } else {
+        this.subscriptionStatus = { isActive: false };
+      }
+    } catch (error) {
+      logger.error('[iOSSubscription] Failed to check server subscription', error);
+      // On error, default to inactive - don't block the app
       this.subscriptionStatus = { isActive: false };
     }
   }
