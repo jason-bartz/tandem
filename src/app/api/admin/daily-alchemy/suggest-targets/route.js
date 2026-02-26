@@ -3,8 +3,13 @@ import { requireAdmin } from '@/lib/auth';
 import { createServerClient } from '@/lib/supabase/server';
 import aiService from '@/services/ai.service';
 import { withRateLimit } from '@/lib/security/rateLimiter';
-import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
 import logger from '@/lib/logger';
+import {
+  loadCombinations,
+  findAllReachable,
+  reconstructPath,
+  fetchAllPastTargets,
+} from '@/lib/server/alchemyPathfinder';
 
 /**
  * AI Target Element Suggestion API for Daily Alchemy
@@ -45,146 +50,36 @@ export async function POST(request) {
 
     const supabase = createServerClient();
 
-    // Fetch all combinations from database (paginated)
-    let allCombinations = [];
-    let page = 0;
-    const pageSize = 1000;
-    let hasMore = true;
+    // Load all combinations and build indexes
+    const { combosByInput } = await loadCombinations(supabase);
 
-    while (hasMore) {
-      const { data: combinations, error: pageError } = await supabase
-        .from('element_combinations')
-        .select('element_a, element_b, result_element, result_emoji')
-        .not('element_a', 'eq', '_ADMIN')
-        .range(page * pageSize, (page + 1) * pageSize - 1);
-
-      if (pageError) {
-        logger.error('[SuggestTargets] Database error', { error: pageError.message });
-        return NextResponse.json({ success: false, error: 'Database error' }, { status: 500 });
-      }
-
-      if (combinations && combinations.length > 0) {
-        allCombinations = allCombinations.concat(combinations);
-        hasMore = combinations.length === pageSize;
-        page++;
-      } else {
-        hasMore = false;
-      }
-    }
-
-    if (allCombinations.length === 0) {
+    if (combosByInput.size === 0) {
       return NextResponse.json(
         { success: false, error: 'No combinations found in database' },
         { status: 404 }
       );
     }
 
-    logger.info('[SuggestTargets] Loaded combinations', { count: allCombinations.length });
-
-    // Build pair-to-result map for BFS
-    const pairToResult = new Map();
-    for (const combo of allCombinations) {
-      const pair = [combo.element_a.toLowerCase(), combo.element_b.toLowerCase()].sort().join('|');
-      pairToResult.set(pair, combo);
-    }
-
-    // BFS from starters to find all reachable elements with paths
-    const starterNames = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()));
-    const elementPaths = new Map();
-
-    for (const starter of STARTER_ELEMENTS) {
-      elementPaths.set(starter.name.toLowerCase(), {
-        name: starter.name,
-        emoji: starter.emoji,
-        pathLength: 0,
-        path: [],
-      });
-    }
-
-    const currentElements = new Set(starterNames);
-    let changed = true;
-    let iterations = 0;
-
-    while (changed && iterations < 100) {
-      changed = false;
-      iterations++;
-      const elementsArray = Array.from(currentElements);
-
-      for (let i = 0; i < elementsArray.length; i++) {
-        for (let j = i; j < elementsArray.length; j++) {
-          const a = elementsArray[i];
-          const b = elementsArray[j];
-          const pair = [a, b].sort().join('|');
-          const combo = pairToResult.get(pair);
-          if (!combo) continue;
-
-          const resultKey = combo.result_element.toLowerCase();
-          if (!elementPaths.has(resultKey)) {
-            const dataA = elementPaths.get(a);
-            const dataB = elementPaths.get(b);
-            const pathA = dataA?.path || [];
-            const pathB = dataB?.path || [];
-
-            // Merge paths: start with pathA, add unique steps from pathB
-            const newPath = [...pathA];
-            for (const step of pathB) {
-              const stepKey =
-                `${step.element_a}|${step.element_b}|${step.result_element}`.toLowerCase();
-              const existsInPath = newPath.some(
-                (s) => `${s.element_a}|${s.element_b}|${s.result_element}`.toLowerCase() === stepKey
-              );
-              if (!existsInPath) {
-                newPath.push(step);
-              }
-            }
-
-            // Add the current combination as the final step
-            newPath.push({
-              element_a: combo.element_a,
-              element_b: combo.element_b,
-              result_element: combo.result_element,
-              result_emoji: combo.result_emoji,
-            });
-
-            elementPaths.set(resultKey, {
-              name: combo.result_element,
-              emoji: combo.result_emoji,
-              pathLength: newPath.length,
-              path: newPath,
-            });
-            currentElements.add(resultKey);
-            changed = true;
-          }
-        }
-      }
-    }
+    // Forward BFS to find all reachable elements from starters
+    const elementInfo = findAllReachable(combosByInput);
 
     // Build available elements list (exclude starters)
     const availableElements = [];
-    for (const [key, value] of elementPaths.entries()) {
-      if (!starterNames.has(key)) {
-        availableElements.push(value);
+    for (const [, value] of elementInfo.entries()) {
+      if (value.depth > 0) {
+        availableElements.push({
+          name: value.name,
+          emoji: value.emoji,
+          pathLength: value.depth,
+        });
       }
     }
 
-    logger.info('[SuggestTargets] BFS complete', {
-      reachableElements: availableElements.length,
-      iterations,
-    });
+    // Fetch ALL past puzzle targets (no date limit)
+    const pastTargets = await fetchAllPastTargets(supabase);
+    const recentTargets = [...pastTargets];
 
-    // Fetch recent puzzle targets (last 60 days)
-    const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - 60);
-    const { data: recentPuzzles } = await supabase
-      .from('element_soup_puzzles')
-      .select('target_element')
-      .gte('date', pastDate.toISOString().split('T')[0]);
-
-    const recentTargets = [
-      ...new Set((recentPuzzles || []).map((p) => p.target_element).filter(Boolean)),
-    ];
-
-    logger.info('[SuggestTargets] Fetched recent targets', { count: recentTargets.length });
+    logger.info('[SuggestTargets] Fetched past targets', { count: recentTargets.length });
 
     // Generate suggestions using AI
     const result = await aiService.suggestAlchemyTargets({
@@ -193,13 +88,18 @@ export async function POST(request) {
       difficulty,
     });
 
-    // Enrich suggestions with solution paths from BFS
+    // Enrich suggestions with solution paths
     const suggestionsWithPaths = (result.suggestions || []).map((suggestion) => {
-      const elementData = elementPaths.get(suggestion.name.toLowerCase());
+      const elLower = suggestion.name.toLowerCase();
+      if (!elementInfo.has(elLower)) {
+        return { ...suggestion, path: [], pathLength: suggestion.pathLength };
+      }
+
+      const path = reconstructPath(elLower, elementInfo);
       return {
         ...suggestion,
-        path: elementData?.path || [],
-        pathLength: elementData?.pathLength || suggestion.pathLength,
+        path,
+        pathLength: path.length,
       };
     });
 
