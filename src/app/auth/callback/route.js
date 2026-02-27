@@ -50,22 +50,44 @@ export async function GET(request) {
 
     if (user) {
       // Create user profile if it doesn't exist (using service role to bypass RLS)
+      // IMPORTANT: Do NOT set username from OAuth metadata (full_name/name).
+      // OAuth names often contain spaces and are not validated. Username should
+      // only be set through the first-time setup flow where it's properly validated.
+      // Using upsert with ignoreDuplicates to avoid overwriting existing profiles.
       const supabaseAdmin = createServerClient();
 
-      const { error: profileError } = await supabaseAdmin.from('users').upsert(
-        {
+      // First check if user profile already exists to avoid overwriting data
+      const { data: existingProfile } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('id', user.id)
+        .maybeSingle();
+
+      if (!existingProfile) {
+        // New user - create profile without username (first-time setup will handle it)
+        const { error: profileError } = await supabaseAdmin.from('users').insert({
           id: user.id,
           email: user.email,
-          username: user.user_metadata?.full_name || user.user_metadata?.name || null,
           avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
-        },
-        {
-          onConflict: 'id',
-        }
-      );
+        });
 
-      if (profileError) {
-        logger.error('Failed to create user profile', profileError);
+        if (profileError && profileError.code !== '23505') {
+          // Ignore duplicate key errors (trigger may have created it)
+          logger.error('Failed to create user profile', profileError);
+        }
+      } else {
+        // Existing user - only update email and OAuth avatar URL, never overwrite username
+        const { error: profileError } = await supabaseAdmin
+          .from('users')
+          .update({
+            email: user.email,
+            avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          })
+          .eq('id', user.id);
+
+        if (profileError) {
+          logger.error('Failed to update user profile', profileError);
+        }
       }
 
       // Migrate first discoveries from anonymous user to permanent account
