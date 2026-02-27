@@ -160,6 +160,25 @@ export async function POST(request) {
 
     logger.info(`[POST /api/leaderboard/streak] Auth source: ${source}, user: ${user.id}`);
 
+    // Verify user has completed setup (has username) before allowing leaderboard entry.
+    // This prevents "anonymous" entries from users who bypassed or haven't completed
+    // the first-time setup flow (username + avatar selection).
+    const { data: userProfile } = await supabase
+      .from('users')
+      .select('username, has_completed_first_time_setup')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (!userProfile?.username) {
+      logger.warn('[POST /api/leaderboard/streak] Rejected: user has no username', {
+        userId: user.id,
+      });
+      return NextResponse.json(
+        { error: 'Please complete account setup (username) before appearing on leaderboards' },
+        { status: 403 }
+      );
+    }
+
     // Capture country from Vercel geo header
     captureUserCountry(supabase, user.id, request).catch(() => {});
 

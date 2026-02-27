@@ -50,14 +50,20 @@ export default function AuthModalManager() {
       const newUrl = window.location.pathname;
       window.history.replaceState({}, '', newUrl);
     } else if (actualError || authError === 'true') {
-      let errorMessage = 'Authentication failed. Please try again.';
+      let errorMessage =
+        'Email confirmation failed. Your account was created — please sign in with your email and password below.';
 
       if (actualErrorCode === 'otp_expired' || actualError === 'access_denied') {
         errorMessage =
-          'Your password reset link has expired or is invalid. Please request a new one.';
-        setMode('reset'); // Open in reset mode so user can request a new link
-      } else if (actualErrorDescription) {
-        errorMessage = decodeURIComponent(actualErrorDescription.replace(/\+/g, ' '));
+          'Your confirmation or reset link has expired. Please sign in with your email and password, or request a new link below.';
+        setMode('reset');
+      } else {
+        if (actualErrorDescription) {
+          const decoded = decodeURIComponent(actualErrorDescription.replace(/\+/g, ' '));
+          // Provide helpful context alongside the technical error
+          errorMessage = `${decoded}. Your account may still have been created — try signing in below.`;
+        }
+        setMode('login');
       }
 
       setConfirmationMessage(errorMessage);

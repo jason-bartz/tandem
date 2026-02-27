@@ -195,7 +195,14 @@ export async function POST(request) {
     });
 
     // Submit streak to leaderboard if this is a new best or continuing streak
-    if (userStats?.current_streak > 0) {
+    // Only submit if user has completed setup (has username) to prevent anonymous entries
+    const { data: userProfileForLb } = await supabase
+      .from('users')
+      .select('username')
+      .eq('id', user.id)
+      .maybeSingle();
+
+    if (userStats?.current_streak > 0 && userProfileForLb?.username) {
       try {
         const { error: streakError } = await supabase.rpc('submit_leaderboard_score', {
           p_user_id: user.id,

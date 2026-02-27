@@ -168,6 +168,28 @@ export function AuthProvider({ children }) {
         // Load user profile if session exists (skip for anonymous users)
         if (session?.user && !session.user.is_anonymous) {
           loadUserProfile(session.user.id);
+
+          // Check first-time setup on initial session load.
+          // This catches users arriving via OAuth redirect or email confirmation,
+          // where the SIGNED_IN event fires before hasInitializedRef is true
+          // and would otherwise be skipped.
+          // The hasCompletedFirstTimeSetup function already returns true on
+          // auth/network errors, so this won't incorrectly show the modal to
+          // existing users with expired tokens on iOS.
+          (async () => {
+            try {
+              const avatarService = (await import('@/services/avatar.service')).default;
+              const hasCompletedSetup = await avatarService.hasCompletedFirstTimeSetup(
+                session.user.id
+              );
+
+              if (!hasCompletedSetup) {
+                setShowFirstTimeSetup(true);
+              }
+            } catch (error) {
+              logger.error('[AuthProvider] Failed to check first-time setup on init', error);
+            }
+          })();
         }
 
         // Mark initialization complete so the onAuthStateChange handler can
