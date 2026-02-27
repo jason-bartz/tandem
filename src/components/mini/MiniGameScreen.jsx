@@ -16,7 +16,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useHaptics } from '@/hooks/useHaptics';
-import { formatMiniTime } from '@/lib/miniUtils';
+import { formatMiniTime, isEditableCell, GRID_SIZE } from '@/lib/miniUtils';
 import { formatDateShort } from '@/lib/utils';
 import { playButtonTone } from '@/lib/sounds';
 import logger from '@/lib/logger';
@@ -85,6 +85,47 @@ export default function MiniGameScreen({
     onStart?.();
   };
 
+  const handleArrowKey = useCallback(
+    (key) => {
+      if (!solutionGrid) return;
+
+      const { row, col } = selectedCell;
+      const deltas = {
+        ArrowUp: [-1, 0],
+        ArrowDown: [1, 0],
+        ArrowLeft: [0, -1],
+        ArrowRight: [0, 1],
+      };
+
+      const [dr, dc] = deltas[key] || [0, 0];
+      let newRow = row + dr;
+      let newCol = col + dc;
+
+      // Skip black squares, stop at grid boundary
+      while (
+        newRow >= 0 &&
+        newRow < GRID_SIZE &&
+        newCol >= 0 &&
+        newCol < GRID_SIZE &&
+        !isEditableCell(solutionGrid, newRow, newCol)
+      ) {
+        newRow += dr;
+        newCol += dc;
+      }
+
+      if (
+        newRow >= 0 &&
+        newRow < GRID_SIZE &&
+        newCol >= 0 &&
+        newCol < GRID_SIZE &&
+        isEditableCell(solutionGrid, newRow, newCol)
+      ) {
+        selectCell(newRow, newCol);
+      }
+    },
+    [selectedCell, selectCell, solutionGrid]
+  );
+
   // Physical keyboard support
   useEffect(() => {
     const handlePhysicalKeyboard = (e) => {
@@ -136,37 +177,10 @@ export default function MiniGameScreen({
     selectedCell,
     handleLetterInput,
     handleBackspace,
+    handleArrowKey,
     navigateToNextClueInSection,
     selectCell,
   ]);
-
-  const handleArrowKey = useCallback(
-    (key) => {
-      const { row, col } = selectedCell;
-      let newRow = row;
-      let newCol = col;
-
-      switch (key) {
-        case 'ArrowUp':
-          newRow = Math.max(0, row - 1);
-          break;
-        case 'ArrowDown':
-          newRow = Math.min(4, row + 1);
-          break;
-        case 'ArrowLeft':
-          newCol = Math.max(0, col - 1);
-          break;
-        case 'ArrowRight':
-          newCol = Math.min(4, col + 1);
-          break;
-      }
-
-      if (newRow !== row || newCol !== col) {
-        selectCell(newRow, newCol);
-      }
-    },
-    [selectedCell, selectCell]
-  );
 
   const handleCheckClick = () => {
     setShowCheckModal(true);

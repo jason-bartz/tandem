@@ -100,6 +100,29 @@ export default function GameCard({
       whileTap="tap"
       aria-label={`Play ${title}${completed ? ' - Completed' : ''}${showNewBadge ? ' - New' : ''}`}
     >
+      {/* Completed Badge */}
+      {completed && !showNewBadge && (
+        <motion.span
+          className={`absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full z-10 ${
+            highContrast
+              ? 'bg-hc-text text-hc-background'
+              : 'bg-green-500 text-white shadow-[2px_2px_0px_rgba(0,0,0,0.3)]'
+          }`}
+          initial={reduceMotion ? false : { scale: 0, rotate: -90 }}
+          animate={{ scale: 1, rotate: 0 }}
+          transition={{ type: 'spring', stiffness: 300, damping: 20, delay: animationDelay + 0.2 }}
+        >
+          <svg
+            className="w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+          </svg>
+        </motion.span>
+      )}
       {/* New Badge */}
       {showNewBadge && (
         <motion.span

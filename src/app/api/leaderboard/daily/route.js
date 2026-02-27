@@ -1,8 +1,37 @@
 import { createServerComponentClient, createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { kv } from '@vercel/kv';
 import logger from '@/lib/logger';
 import { captureUserCountry } from '@/lib/country-flag';
+
+// Check if KV is available
+const isKvAvailable = !!(
+  process.env.KV_REST_API_URL &&
+  process.env.KV_REST_API_TOKEN &&
+  !process.env.KV_REST_API_URL.includes('localhost')
+);
+
+const DAILY_LEADERBOARD_CACHE_TTL = 300; // 5 minutes
+
+async function getCachedLeaderboard(cacheKey) {
+  if (!isKvAvailable) return null;
+  try {
+    return await kv.get(cacheKey);
+  } catch (error) {
+    logger.error('[Leaderboard] Cache read error', { error: error.message, cacheKey });
+    return null;
+  }
+}
+
+async function setCachedLeaderboard(cacheKey, data) {
+  if (!isKvAvailable) return;
+  try {
+    await kv.setex(cacheKey, DAILY_LEADERBOARD_CACHE_TTL, JSON.stringify(data));
+  } catch (error) {
+    logger.error('[Leaderboard] Cache write error', { error: error.message, cacheKey });
+  }
+}
 
 /**
  * Get authenticated user from either cookies or Authorization header
@@ -80,22 +109,31 @@ export async function GET(request) {
       return NextResponse.json({ error: 'Invalid date format (use YYYY-MM-DD)' }, { status: 400 });
     }
 
-    // Use service client for public leaderboard data
-    const supabase = createServerClient();
+    // Check cache for public leaderboard data
+    const cacheKey = `lb:daily:${gameType}:${date}:${limit}`;
+    const cached = await getCachedLeaderboard(cacheKey);
+    let leaderboard;
 
-    // Call the database function to get leaderboard (includes avatar_image_path)
-    const { data: leaderboard, error: leaderboardError } = await supabase.rpc(
-      'get_daily_leaderboard',
-      {
+    if (cached) {
+      leaderboard = typeof cached === 'string' ? JSON.parse(cached) : cached;
+    } else {
+      // Use service client for public leaderboard data
+      const supabase = createServerClient();
+
+      // Call the database function to get leaderboard (includes avatar_image_path)
+      const { data, error: leaderboardError } = await supabase.rpc('get_daily_leaderboard', {
         p_game_type: gameType,
         p_puzzle_date: date,
         p_limit: limit,
-      }
-    );
+      });
 
-    if (leaderboardError) {
-      logger.error('[GET /api/leaderboard/daily] Error fetching leaderboard:', leaderboardError);
-      return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
+      if (leaderboardError) {
+        logger.error('[GET /api/leaderboard/daily] Error fetching leaderboard:', leaderboardError);
+        return NextResponse.json({ error: 'Failed to fetch leaderboard' }, { status: 500 });
+      }
+
+      leaderboard = data || [];
+      setCachedLeaderboard(cacheKey, leaderboard);
     }
 
     // Also fetch current user's rank if authenticated (supports both cookie and Bearer token for iOS)
@@ -103,6 +141,7 @@ export async function GET(request) {
     let userRank = null;
 
     if (user) {
+      const supabase = createServerClient();
       const { data: rankData, error: rankError } = await supabase.rpc('get_user_daily_rank', {
         p_user_id: user.id,
         p_game_type: gameType,
@@ -116,7 +155,7 @@ export async function GET(request) {
 
     return NextResponse.json({
       success: true,
-      leaderboard: leaderboard || [],
+      leaderboard,
       userRank,
       gameType,
       date,
@@ -217,6 +256,18 @@ export async function POST(request) {
       p_score: score,
       p_metadata: metadata,
     });
+
+    // Invalidate cached leaderboard for this game/date
+    if (isKvAvailable) {
+      try {
+        const keys = await kv.keys(`lb:daily:${gameType}:${puzzleDate}:*`);
+        if (keys.length > 0) {
+          await kv.del(...keys);
+        }
+      } catch (err) {
+        logger.error('[POST /api/leaderboard/daily] Cache invalidation error:', err.message);
+      }
+    }
 
     if (submitError) {
       // Check for specific error messages
