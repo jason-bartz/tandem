@@ -14,7 +14,9 @@ export function initAudio() {
   if (typeof window === 'undefined') return null;
   if (!isSoundEnabled()) return null;
 
-  if (!audioContext) {
+  // Create a new AudioContext if we don't have one, or if the existing one
+  // is closed (can happen on iOS due to system audio interruptions or memory pressure).
+  if (!audioContext || audioContext.state === 'closed') {
     try {
       audioContext = new (window.AudioContext || window.webkitAudioContext)();
     } catch {

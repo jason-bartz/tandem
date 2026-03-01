@@ -1640,7 +1640,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const selectElement = useCallback(
     (element) => {
       // Play plunk sound and haptic when selecting an element
-      playPlunkSound();
+      // Wrapped in try-catch so audio failures (e.g. iOS AudioContext interruption)
+      // never prevent the selection state update from executing
+      try {
+        playPlunkSound();
+      } catch {
+        // Audio failure should not block element selection
+      }
       lightTap();
 
       // Read current values from refs (not stale closure values)
@@ -1717,25 +1723,28 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const combineElements = useCallback(async () => {
     if (!selectedA || !selectedB || isCombining || isAnimating) return;
 
-    playCombineButtonSound();
+    try {
+      playCombineButtonSound();
+    } catch {
+      // Audio failure should not block combining
+    }
     setIsCombining(true);
     // Don't clear lastResult here - let AnimatePresence handle transitions smoothly
 
     const ANIMATION_DURATION = 600; // ms - wiggle + bang animation
 
-    // Ensure we have a userId for first discovery credit.
-    // Creates an anonymous Supabase session if the user is not logged in.
-    let currentUserId = user?.id || null;
-    if (!currentUserId && ensureAlchemySession) {
-      const anonUser = await ensureAlchemySession();
-      currentUserId = anonUser?.id || null;
-      if (!currentUserId) {
-        logger.error('[DailyAlchemy] ensureAlchemySession returned no userId');
-      }
-    }
-    const currentMode = isSubtractMode ? 'subtract' : 'combine';
-
     try {
+      // Ensure we have a userId for first discovery credit.
+      // Creates an anonymous Supabase session if the user is not logged in.
+      let currentUserId = user?.id || null;
+      if (!currentUserId && ensureAlchemySession) {
+        const anonUser = await ensureAlchemySession();
+        currentUserId = anonUser?.id || null;
+        if (!currentUserId) {
+          logger.error('[DailyAlchemy] ensureAlchemySession returned no userId');
+        }
+      }
+      const currentMode = isSubtractMode ? 'subtract' : 'combine';
       const url = getApiUrl(SOUP_API.COMBINE);
       const response = await capacitorFetch(url, {
         method: 'POST',
