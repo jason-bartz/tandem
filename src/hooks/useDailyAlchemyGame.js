@@ -273,6 +273,15 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
         return;
       }
 
+      // Skip reset when user becomes null/undefined — this indicates a transient
+      // auth state (token refresh failure, brief network loss), not an actual
+      // account switch. Resetting here would boot Creative Mode players to the
+      // welcome screen mid-session. A genuine account switch will arrive as a
+      // transition from one real user ID to a different real user ID.
+      if (!currentUserId) {
+        return;
+      }
+
       logger.info('[DailyAlchemy] User changed, resetting Creative Mode state', {
         previousUserId: previousUserId || 'none',
         currentUserId: currentUserId || 'none',
