@@ -26,7 +26,6 @@ import { loadMiniPuzzleProgress } from '@/lib/miniStorage';
 import miniService from '@/services/mini.service';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
-import { trackGameCardClick, GAME_TYPES } from '@/lib/gameAnalytics';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 
 // Module-level flag so it survives component unmount/remount during navigation
@@ -195,7 +194,6 @@ export default function WelcomeScreen({
       setShowTandemUnavailable(true);
       return;
     }
-    trackGameCardClick(GAME_TYPES.TANDEM, tandemPuzzleNumber, puzzle?.date);
     if (tandemCompleted && puzzle?.date) {
       onSelectPuzzle(puzzle.date);
     } else {
@@ -204,25 +202,14 @@ export default function WelcomeScreen({
   };
 
   const handleMiniClick = () => {
-    trackGameCardClick(
-      GAME_TYPES.MINI,
-      miniPuzzle?.number || miniPuzzleInfo.number,
-      miniPuzzleInfo.isoDate
-    );
     router.push('/dailymini');
   };
 
   const handleSoupClick = () => {
-    trackGameCardClick(GAME_TYPES.ALCHEMY, soupPuzzle?.number || 1, getLocalDateString());
     router.push('/daily-alchemy');
   };
 
   const handleReelClick = () => {
-    trackGameCardClick(
-      GAME_TYPES.REEL,
-      reelPuzzle?.number || reelPuzzleNumber,
-      getLocalDateString()
-    );
     router.push('/reel-connections');
   };
 

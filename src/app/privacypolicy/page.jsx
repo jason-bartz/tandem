@@ -116,26 +116,7 @@ export default function PrivacyPolicy() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">5. Analytics Data (Web Only)</h4>
-            <p className="mb-2">
-              We use PostHog analytics to understand how players interact with our games. This
-              includes:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Pages visited and navigation patterns</li>
-              <li>Game interactions (starting games, completing puzzles, using hints)</li>
-              <li>Feature usage (sharing results, viewing leaderboards)</li>
-              <li>Anonymous session data</li>
-            </ul>
-            <p className="mt-2 text-xs italic">
-              Note: Analytics are collected anonymously. If you have an account and are logged in,
-              this data may be associated with your user ID. Analytics are not collected in our iOS
-              app.
-            </p>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">6. Apple Game Center (iOS Only)</h4>
+            <h4 className="font-semibold mb-2">5. Apple Game Center (iOS Only)</h4>
             <p className="mb-2">
               If you use our iOS app and sign in to Game Center, Apple may collect:
             </p>
@@ -341,7 +322,7 @@ export default function PrivacyPolicy() {
             <li>Send important account and subscription notifications (web only)</li>
             <li>Provide customer support and respond to inquiries</li>
             <li>Generate anonymous aggregated statistics</li>
-            <li>Analyze gameplay patterns to improve user experience (via PostHog, web only)</li>
+            <li>Analyze gameplay patterns to improve user experience</li>
             <li>Improve game difficulty and puzzle quality</li>
             <li>Ensure the Service operates correctly</li>
             <li>Prevent fraud and abuse</li>
@@ -409,25 +390,6 @@ export default function PrivacyPolicy() {
               activity
             </li>
           </ul>
-
-          <div>
-            <h4 className="font-semibold mb-2">Analytics (Web Only)</h4>
-            <p className="mb-2">
-              We use PostHog, a privacy-focused analytics service, to understand how players use our
-              games and to improve the experience. PostHog collects:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Page views and navigation patterns</li>
-              <li>Game events (game starts, completions, shares)</li>
-              <li>Anonymous device and browser information</li>
-              <li>General geographic location (country/region level)</li>
-            </ul>
-            <p className="mt-2 text-xs italic">
-              Note: Analytics data is collected anonymously by default. If you create an account and
-              log in, your analytics data may be linked to your user ID to provide a better
-              experience. PostHog analytics are not used in our iOS app.
-            </p>
-          </div>
         </div>
       ),
     },
@@ -474,10 +436,6 @@ export default function PrivacyPolicy() {
               <strong>Google AdSense (dailyalchemy.fun only)</strong>: Advertising data is shared
               with Google for ad serving on the standalone Daily Alchemy site. Google's privacy
               policy governs this data.
-            </li>
-            <li>
-              <strong>PostHog (Analytics)</strong>: Anonymous usage data is shared with PostHog for
-              analytics purposes (web only). PostHog's privacy policy governs this data.
             </li>
             <li>
               <strong>Anonymous Statistics</strong>: Aggregated, anonymous data for game

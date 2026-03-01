@@ -36,7 +36,6 @@ import {
   GAME_OVER_MESSAGES,
   HINT_PHRASES,
 } from '@/lib/daily-alchemy.constants';
-import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 import {
   serializeSaveData,
   triggerFileDownload,
@@ -708,9 +707,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const startGame = useCallback(() => {
     playSoupStartSound();
 
-    // Track game start
-    trackGameStart(GAME_TYPES.ALCHEMY, puzzle?.number, puzzleDateRef.current);
-
     // Reset to daily puzzle mode (not Creative Mode)
     setFreePlayMode(false);
     setIsSubtractMode(false);
@@ -749,7 +745,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
 
     setGameState(SOUP_GAME_STATES.PLAYING);
     setHasStarted(true);
-  }, [puzzle?.number]);
+  }, []);
 
   /**
    * Load Creative Mode save from Supabase
@@ -1938,17 +1934,6 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Play victory sound and celebration haptic
     playSoupWinSound();
     celebration();
-
-    // Track game completion for analytics
-    trackGameComplete({
-      gameType: GAME_TYPES.ALCHEMY,
-      puzzleNumber: puzzle?.number,
-      puzzleDate: puzzleDateRef.current,
-      won: true,
-      timeSeconds: elapsedTime,
-      mistakes: 0,
-      score: movesCount,
-    });
 
     setIsComplete(true);
     setGameState(SOUP_GAME_STATES.COMPLETE);
