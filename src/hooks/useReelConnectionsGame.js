@@ -25,7 +25,6 @@ import {
   REEL_GAME_TYPE,
 } from '@/lib/reel-connections.constants';
 import logger from '@/lib/logger';
-import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 import { useHaptics } from '@/hooks/useHaptics';
 
 /**
@@ -198,20 +197,8 @@ export function useReelConnectionsGame() {
   useEffect(() => {
     if ((gameWon || gameOver) && endTime && startTime && !statsRecorded) {
       const timeMs = endTime - startTime;
-      const timeSeconds = Math.floor(timeMs / 1000);
-      const puzzleDate = archiveDate || puzzle?.date;
-      recordGame(gameWon, timeMs, mistakes, puzzleDate);
+      recordGame(gameWon, timeMs, mistakes, archiveDate || puzzle?.date);
       setStatsRecorded(true);
-
-      // Track game completion for analytics
-      trackGameComplete({
-        gameType: GAME_TYPES.REEL,
-        puzzleNumber: puzzle?.number,
-        puzzleDate,
-        won: gameWon,
-        timeSeconds,
-        mistakes,
-      });
     }
   }, [
     gameWon,
@@ -591,12 +578,10 @@ export function useReelConnectionsGame() {
 
   // Start game
   const handleStartGame = useCallback(() => {
-    // Track game start
-    trackGameStart(GAME_TYPES.REEL, puzzle?.number, archiveDate || puzzle?.date);
     mediumTap();
     setGameStarted(true);
     setStartTime(Date.now());
-  }, [puzzle?.number, puzzle?.date, archiveDate, mediumTap]);
+  }, [mediumTap]);
 
   // View completed puzzle
   const handleViewPuzzle = useCallback(() => {

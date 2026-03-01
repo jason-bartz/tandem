@@ -30,7 +30,6 @@ import {
 import logger from '@/lib/logger';
 import { playCorrectSound } from '@/lib/sounds';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
-import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 import { useAuth } from '@/contexts/AuthContext';
 
 /**
@@ -332,11 +331,9 @@ export function useMiniGame(providedDate = null) {
       setHasStarted(true);
       setIsPaused(false);
       setPausedAt(null);
-      // Track game start
-      trackGameStart(GAME_TYPES.MINI, puzzle?.number, currentPuzzleDate);
     }
     setGameState(MINI_GAME_STATES.PLAYING);
-  }, [hasStarted, puzzle?.number, currentPuzzleDate]);
+  }, [hasStarted]);
 
   /**
    * Pause the timer
@@ -760,17 +757,6 @@ export function useMiniGame(providedDate = null) {
       mistakes,
       isArchive
     );
-
-    // Track game completion for analytics
-    trackGameComplete({
-      gameType: GAME_TYPES.MINI,
-      puzzleNumber: puzzle?.number,
-      puzzleDate: currentPuzzleDate,
-      won: true, // Mini is always a win when completed
-      timeSeconds: finalTime,
-      mistakes,
-      hintsUsed: checksUsed + revealsUsed,
-    });
 
     // Now transition to complete screen - stats are saved
     setGameState(MINI_GAME_STATES.COMPLETE);

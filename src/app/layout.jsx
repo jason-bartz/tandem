@@ -15,7 +15,6 @@ import { SubscriptionProvider } from '@/contexts/SubscriptionContext';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { ASSET_VERSION } from '@/lib/constants';
-import PostHogProvider from '@/components/providers/PostHogProvider';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
 // Plus Jakarta Sans - Variable font for optimal performance
@@ -264,20 +263,18 @@ export default function RootLayout({ children }) {
       </head>
       <body className={`${plusJakartaSans.className} antialiased`}>
         {/* Cordova scripts are automatically injected by Capacitor WebView - do NOT load manually */}
-        <PostHogProvider>
-          <ErrorBoundary name="RootLayout">
-            <ThemeProvider>
-              <AuthProvider>
-                <SubscriptionProvider>
-                  <IOSContainerWrapper>{children}</IOSContainerWrapper>
-                  <AuthModalManager />
-                  {!isStandaloneAlchemy && <PaywallModalManager />}
-                  <FirstTimeSetupManager />
-                </SubscriptionProvider>
-              </AuthProvider>
-            </ThemeProvider>
-          </ErrorBoundary>
-        </PostHogProvider>
+        <ErrorBoundary name="RootLayout">
+          <ThemeProvider>
+            <AuthProvider>
+              <SubscriptionProvider>
+                <IOSContainerWrapper>{children}</IOSContainerWrapper>
+                <AuthModalManager />
+                {!isStandaloneAlchemy && <PaywallModalManager />}
+                <FirstTimeSetupManager />
+              </SubscriptionProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
         {/* Vercel Analytics - only for web builds */}
         {process.env.BUILD_TARGET !== 'capacitor' && (
           <>

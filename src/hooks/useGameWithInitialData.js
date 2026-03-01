@@ -13,7 +13,6 @@ import { playFailureSound, playSuccessSound } from '@/lib/sounds';
 import statsService from '@/services/stats.service';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
 import logger from '@/lib/logger';
-import { trackGameStart, trackGameComplete, GAME_TYPES } from '@/lib/gameAnalytics';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function useGameWithInitialData(initialPuzzleData) {
@@ -182,9 +181,6 @@ export function useGameWithInitialData(initialPuzzleData) {
       return;
     }
 
-    // Track game start
-    trackGameStart(GAME_TYPES.TANDEM, puzzle.puzzleNumber, currentPuzzleDate);
-
     setGameState(GAME_STATES.PLAYING);
     setMistakes(0);
     setSolved(0);
@@ -256,17 +252,6 @@ export function useGameWithInitialData(initialPuzzleData) {
       } else {
         playFailureSound();
       }
-
-      // Track game completion for analytics
-      trackGameComplete({
-        gameType: GAME_TYPES.TANDEM,
-        puzzleNumber: puzzle?.puzzleNumber,
-        puzzleDate: currentPuzzleDate,
-        won,
-        timeSeconds: timeTaken,
-        mistakes,
-        hintsUsed,
-      });
 
       // Transition to complete screen quickly - stats save in background
       // Short delay for success sound to register before screen change
