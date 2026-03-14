@@ -5059,8 +5059,20 @@ Your response:`;
     const range = difficultyRanges[difficulty] || difficultyRanges.medium;
 
     // Filter elements to the relevant difficulty range (with some buffer)
-    const candidateElements = availableElements
-      .filter((el) => el.pathLength >= range.min && el.pathLength <= range.max + 2)
+    const filtered = availableElements.filter(
+      (el) => el.pathLength >= range.min && el.pathLength <= range.max + 2
+    );
+
+    // Shuffle the candidate list using Fisher-Yates to ensure variety across requests
+    const shuffled = [...filtered];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    // Take a random subset (up to 50) so the AI sees different elements each time
+    const subset = shuffled.slice(0, 50);
+    const candidateElements = subset
       .map((el) => `- ${el.emoji} ${el.name} (${el.pathLength} steps)`)
       .join('\n');
 
@@ -5068,6 +5080,9 @@ Your response:`;
       recentTargets.length > 0
         ? `\n\nRECENT TARGETS TO AVOID (used in the last 60 days):\n${recentTargets.map((t) => `- ${t}`).join('\n')}`
         : '';
+
+    // Add a random seed to further encourage variety
+    const randomSeed = Math.floor(Math.random() * 10000);
 
     return `You are suggesting target elements for a Daily Alchemy puzzle game.
 
@@ -5077,17 +5092,18 @@ In this game:
 - The puzzle goal is to reach a TARGET element in as few combinations as possible
 - The difficulty is "${range.label}"
 
-AVAILABLE ELEMENTS for this difficulty level:
+Here is a RANDOM SAMPLE of available elements for this difficulty level (seed: ${randomSeed}):
 ${candidateElements}
 ${recentList}
 
 REQUIREMENTS:
-1. Choose 8 elements from the AVAILABLE ELEMENTS list above
+1. Choose 8 elements from the list above
 2. Pick elements that would be FUN and INTERESTING puzzle targets
 3. Prefer elements with evocative names and emojis - they should feel rewarding to discover
 4. DO NOT suggest any element from the RECENT TARGETS list
 5. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
-6. For each suggestion, write a brief fun description explaining why it's a good target
+6. Surprise me! Pick DIFFERENT elements than you normally would - be creative and unexpected
+7. For each suggestion, write a brief fun description explaining why it's a good target
 
 RESPONSE FORMAT (JSON only):
 {
