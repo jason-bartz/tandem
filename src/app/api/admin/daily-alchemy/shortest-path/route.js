@@ -2,12 +2,16 @@ import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
 import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
-import { loadCombinations, findShortestPathToTarget } from '@/lib/server/alchemyPathfinder';
+import {
+  loadCombinations,
+  findAllReachable,
+  reconstructPath,
+} from '@/lib/server/alchemyPathfinder';
 
 /**
  * GET /api/admin/daily-alchemy/shortest-path
  * Find the shortest combination path from starter elements to a target element
- * Uses backward recursive search with memoization for efficiency
+ * Uses forward BFS from starters for reliable path discovery
  * Query params:
  * - target: target element name (required)
  */
@@ -39,38 +43,43 @@ export async function GET(request) {
     const supabase = createServerClient();
 
     // Load all combinations and build indexes
-    const { combosByResult } = await loadCombinations(supabase);
+    const { combosByInput } = await loadCombinations(supabase);
 
-    // Check if target element exists as a result
-    if (!combosByResult.has(targetLower)) {
+    // Use forward BFS from starters to find all reachable elements with shortest paths
+    const elementInfo = findAllReachable(combosByInput);
+
+    // Check if target is reachable
+    if (!elementInfo.has(targetLower)) {
       return NextResponse.json({
         target,
         found: false,
-        message: `Element "${target}" not found as a result of any combination`,
+        message: `Element "${target}" is not reachable from starter elements`,
       });
     }
 
-    // Find shortest path using backward recursive search
-    const result = findShortestPathToTarget(targetLower, combosByResult);
-
-    if (!result.found) {
+    const info = elementInfo.get(targetLower);
+    if (info.depth === 0) {
       return NextResponse.json({
         target,
-        found: false,
-        message: result.message,
+        isStarter: true,
+        path: [],
+        message: `${info.name} is a starter element`,
       });
     }
+
+    // Reconstruct the path from starters to target
+    const path = reconstructPath(targetLower, elementInfo);
 
     logger.info('[ShortestPath] Path found', {
       target,
-      steps: result.steps,
+      steps: path.length,
     });
 
     return NextResponse.json({
       target,
       found: true,
-      steps: result.steps,
-      path: result.path,
+      steps: path.length,
+      path,
     });
   } catch (error) {
     logger.error('[ShortestPath] Unexpected error', {
