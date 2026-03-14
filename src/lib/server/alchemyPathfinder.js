@@ -11,7 +11,10 @@ const STARTER_NAMES = new Set(STARTER_ELEMENTS.map((s) => s.name.toLowerCase()))
 export async function loadCombinations(supabase) {
   let allCombinations = [];
   let page = 0;
-  const pageSize = 5000;
+  // Use 1000 to stay within Supabase's default PGRST_MAX_ROWS limit.
+  // A larger pageSize (e.g. 5000) silently truncates results to ~1000,
+  // causing the loop to exit early and miss most combinations.
+  const pageSize = 1000;
   let hasMore = true;
 
   while (hasMore) {
@@ -19,6 +22,7 @@ export async function loadCombinations(supabase) {
       .from('element_combinations')
       .select('element_a, element_b, result_element, result_emoji')
       .not('element_a', 'eq', '_ADMIN')
+      .order('id', { ascending: true })
       .range(page * pageSize, (page + 1) * pageSize - 1);
 
     if (error) {

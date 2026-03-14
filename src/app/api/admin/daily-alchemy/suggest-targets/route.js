@@ -63,10 +63,16 @@ export async function POST(request) {
     // Forward BFS to find all reachable elements from starters
     const elementInfo = findAllReachable(combosByInput);
 
-    // Build available elements list (exclude starters)
+    // Fetch ALL past puzzle targets (no date limit)
+    const pastTargets = await fetchAllPastTargets(supabase);
+    const pastTargetSet = new Set([...pastTargets].map((t) => t.toLowerCase()));
+
+    logger.info('[SuggestTargets] Fetched past targets', { count: pastTargetSet.size });
+
+    // Build available elements list (exclude starters AND past targets)
     const availableElements = [];
-    for (const [, value] of elementInfo.entries()) {
-      if (value.depth > 0) {
+    for (const [key, value] of elementInfo.entries()) {
+      if (value.depth > 0 && !pastTargetSet.has(key)) {
         availableElements.push({
           name: value.name,
           emoji: value.emoji,
@@ -75,16 +81,16 @@ export async function POST(request) {
       }
     }
 
-    // Fetch ALL past puzzle targets (no date limit)
-    const pastTargets = await fetchAllPastTargets(supabase);
-    const recentTargets = [...pastTargets];
-
-    logger.info('[SuggestTargets] Fetched past targets', { count: recentTargets.length });
+    logger.info('[SuggestTargets] Available candidates after filtering', {
+      total: elementInfo.size,
+      afterFilter: availableElements.length,
+      pastTargetsExcluded: pastTargetSet.size,
+    });
 
     // Generate suggestions using AI
     const result = await aiService.suggestAlchemyTargets({
       availableElements,
-      recentTargets,
+      recentTargets: [...pastTargets],
       difficulty,
     });
 
