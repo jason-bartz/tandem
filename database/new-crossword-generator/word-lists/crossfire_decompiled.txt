@@ -1,0 +1,4461 @@
+=== Decompiling GridSearchNode ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.Starlog
+ *  com.beekeeper.util.closedhash.ObjectSet
+ *  com.beekeeper.xwd.BadStateError
+ *  com.beekeeper.xwd.FrontierPrint
+ *  com.beekeeper.xwd.GridSearchNode$4
+ *  com.beekeeper.xwd.GridSearchNode$CandidateGenerator
+ *  com.beekeeper.xwd.GridSearchNode$GSNProxy
+ *  com.beekeeper.xwd.GridSearchNode$SharedOptions
+ *  com.beekeeper.xwd.GridSearchNode$WordStringIntMap$Iter
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.SearchNode$Fingerprint
+ *  com.beekeeper.xwd.SearchNodeProxy
+ *  com.beekeeper.xwd.WordGrid
+ *  com.beekeeper.xwd.WordGrid$Word
+ *  com.beekeeper.xwd.WordList$MatchInfo
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.Starlog;
+import com.beekeeper.util.closedhash.ObjectSet;
+import com.beekeeper.xwd.BadStateError;
+import com.beekeeper.xwd.FrontierPrint;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.SearchNodeProxy;
+import com.beekeeper.xwd.WordGrid;
+import com.beekeeper.xwd.WordList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+
+public abstract class GridSearchNode
+extends SearchNode
+implements Cloneable {
+    private static final Starlog DEBUG = Starlog.get((int)5);
+    protected GridState state;
+    protected float priority;
+    protected SharedOptions options;
+    private BitSet nodesExplored;
+    private BitSet blockingDuplicates;
+    protected int childBranchCount = 1;
+    int latestWord = -1;
+    int[] nextWords = new int[0];
+    protected static Random rand = new Random();
+    private float cachedQuality = -1.0f;
+    private FrontierPrint fingerPrint;
+    private BitSet acceptableWords;
+    private static int BAD_WORD_THRESH = 7;
+    private static int BAD_WORD_COUNT_THRESH = 20;
+    private static int[] EMPTY_NEXT_WORDS = new int[0];
+    private static float[] LETTER_SCORES = new float[128];
+    protected static final int[] DEPTH_DIVISORS;
+    private boolean DONT_FAIL_ENTIRELY = false;
+
+    public final float getPriority() {
+        return this.priority;
+    }
+
+    public final void setOptions(SharedOptions sharedOptions) {
+        this.options = sharedOptions;
+    }
+
+    public final GridSearchNode clone() {
+        try {
+            return (GridSearchNode)super.clone();
+        }
+        catch (CloneNotSupportedException cloneNotSupportedException) {
+            throw new RuntimeException(cloneNotSupportedException);
+        }
+    }
+
+    public final float getQuality() {
+        if (this.cachedQuality < 0.0f) {
+            this.cachedQuality = this.state.getQuality(this.options.wordList);
+        }
+        return this.cachedQuality;
+    }
+
+    public final void cloneOptions() {
+        this.options = this.options.clone();
+    }
+
+    public boolean isGoalNode() {
+        BitSet bitSet = this.options.neighborhood;
+        if (bitSet != null) {
+            int n = bitSet.nextSetBit(0);
+            while (n != -1) {
+                if (!this.state.isComplete(n)) {
+                    return false;
+                }
+                n = bitSet.nextSetBit(n + 1);
+            }
+        } else {
+            for (int i = 0; i < this.state.getWordCount(); ++i) {
+                if (this.state.isComplete(i)) continue;
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public final int compareTo(SearchNode searchNode) {
+        int n = super.compareTo(searchNode);
+        if (n != 0 || !(searchNode instanceof GridSearchNode)) {
+            return n;
+        }
+        searchNode = (GridSearchNode)searchNode;
+        n = this.state.getString(this.latestWord).compareTo(searchNode.state.getString(searchNode.latestWord));
+        if (n != 0) {
+            return n;
+        }
+        return Math.abs(Arrays.hashCode(this.state.getChars())) - Math.abs(Arrays.hashCode(searchNode.state.getChars()));
+    }
+
+    public String toString() {
+        return String.format("%s -- Depth = %d; Score = %3.2f", "<<GridSearchNode>>", this.depth, Float.valueOf(this.priority));
+    }
+
+    public GSNProxy conditionalSuccessor(int n, String string, float f) {
+        GridSearchNode gridSearchNode;
+        GridSearchNode gridSearchNode2 = this.makeSuccessor();
+        gridSearchNode2.setString(n, string);
+        GridSearchNode gridSearchNode3 = gridSearchNode2;
+        if (gridSearchNode.priority > f) {
+            gridSearchNode3 = gridSearchNode2;
+            return new GSNProxy(gridSearchNode3.priority, this, n, string);
+        }
+        return null;
+    }
+
+    public final SearchNodeProxy[] generateSuccessors(float f) {
+        int n = this.chooseWordToFill();
+        if (n == -1) {
+            return new SearchNodeProxy[0];
+        }
+        int n2 = this.options.beam;
+        if (this.depth == 0 && this.options.rootBeam != -1) {
+            n2 = this.options.rootBeam;
+        }
+        SearchNodeProxy[] searchNodeProxyArray = this.generateSuccessors(n, n2, Float.NEGATIVE_INFINITY, null);
+        return searchNodeProxyArray;
+    }
+
+    public final SearchNodeProxy[] generateSuccessors(int n) {
+        int n2 = this.options.beam;
+        if (this.depth == 0 && this.options.rootBeam != -1) {
+            n2 = this.options.rootBeam;
+        }
+        return this.generateSuccessors(n, n2, Float.NEGATIVE_INFINITY, null);
+    }
+
+    private SearchNodeProxy[] generateSuccessors(int n, int n2, float f, Pattern pattern) {
+        return this.generateSuccessors(n, n2, f, pattern, this.options.beamMultiplier);
+    }
+
+    final ArrayList<String> generateCandidateWords(int n, Pattern pattern, BitSet bitSet) {
+        WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, n);
+        if (DEBUG != null && matchInfo.getMatchCount() > 1000) {
+            DEBUG.logf("Evaluating %d successors for %s:", new Object[]{matchInfo.getMatchCount(), this});
+        }
+        int n2 = this.state.getWordCount();
+        ArrayList<String> arrayList = new ArrayList<String>(matchInfo.getMatchCount());
+        int n3 = matchInfo.getMatchCount();
+        block0: for (int i = 0; i < n3; ++i) {
+            int n4;
+            String string = matchInfo.getMatch(i);
+            if (matchInfo.getScore(i) < (float)this.options.minCandidateScore) continue;
+            for (n4 = 0; n4 < n2; ++n4) {
+                String string2 = this.state.getCompleteWord(n4);
+                if (string2 == null || !string.equals(string2)) continue;
+                bitSet.set(n4);
+                continue block0;
+            }
+            n4 = this.options.longestSubstring;
+            int n5 = string.length() - n4;
+            for (int j = 0; j < n5; ++j) {
+                for (int k = 0; k < n2; ++k) {
+                    String string3 = this.state.getCompleteWord(k);
+                    if (string3 == null || string3.length() <= n4) continue;
+                    int n6 = string3.length() - n4;
+                    block4: for (int i2 = 0; i2 < n6; ++i2) {
+                        for (int i3 = 0; i3 <= n4; ++i3) {
+                            if (string.charAt(j + i3) != string3.charAt(i2 + i3)) continue block4;
+                        }
+                        bitSet.set(k);
+                        continue block0;
+                    }
+                }
+            }
+            if (pattern != null && !pattern.matcher(string).find() || matchInfo.getScore(i) < 1.0f) continue;
+            arrayList.add(string);
+        }
+        return arrayList;
+    }
+
+    public SearchNodeProxy[] generateSuccessors(int n, int n2, float f, Pattern pattern, int n3) {
+        SharedOptions sharedOptions;
+        this.nodesExplored.set(n);
+        int n4 = -1;
+        int n5 = 0;
+        BitSet bitSet = new BitSet(this.state.getWordCount());
+        pattern = new CandidateGenerator(this, n, pattern, bitSet);
+        TreeSet<Object> treeSet = new TreeSet<Object>();
+        int n6 = 0;
+        while (pattern.advance()) {
+            sharedOptions = pattern;
+            sharedOptions = sharedOptions.value;
+            if (n5 >= n2) {
+                if (n4 == -1) {
+                    n4 = n6 * n3;
+                } else if (n6 > n4) break;
+                var12_14 = (GSNProxy)treeSet.last();
+                sharedOptions = this.conditionalSuccessor(n, (String)sharedOptions, var12_14.getPriority());
+                if (sharedOptions != null) {
+                    treeSet.remove(var12_14);
+                    treeSet.add(sharedOptions);
+                }
+            } else {
+                var12_14 = this.conditionalSuccessor(n, (String)sharedOptions, f);
+                if (var12_14 != null) {
+                    treeSet.add(var12_14);
+                    ++n5;
+                }
+            }
+            ++n6;
+        }
+        if (DEBUG != null) {
+            sharedOptions = treeSet.iterator();
+            for (n6 = 0; n6 < 15 && sharedOptions.hasNext(); ++n6) {
+                DEBUG.log("  " + ((GSNProxy)sharedOptions.next()).word);
+            }
+        }
+        TreeSet<Object> treeSet2 = treeSet;
+        SearchNodeProxy[] searchNodeProxyArray = treeSet2.toArray(new SearchNodeProxy[treeSet2.size()]);
+        this.childBranchCount = searchNodeProxyArray.length;
+        sharedOptions = this.options;
+        synchronized (sharedOptions) {
+            if (this.options.failureCounts == null) {
+                this.options.failureCounts = new int[this.state.getWordCount()];
+                this.options.successCounts = new int[this.state.getWordCount()];
+                this.options.persistentFailureCounts = new int[this.state.getWordCount()];
+                this.options.persistentSuccessCounts = new int[this.state.getWordCount()];
+                Arrays.fill(this.options.successCounts, 1);
+                Arrays.fill(this.options.persistentSuccessCounts, 1);
+            }
+            if (searchNodeProxyArray.length == 0) {
+                int n7 = n;
+                this.options.failureCounts[n7] = this.options.failureCounts[n7] + 1;
+                int n8 = n;
+                this.options.persistentFailureCounts[n8] = this.options.persistentFailureCounts[n8] + 1;
+            } else {
+                int n9 = n;
+                this.options.successCounts[n9] = this.options.successCounts[n9] + 1;
+                int n10 = n;
+                this.options.persistentSuccessCounts[n10] = this.options.persistentSuccessCounts[n10] + 1;
+            }
+            int n11 = this.options.failureCounts[n] / this.options.successCounts[n];
+            if (this.options.useForceWords && n11 >= 5) {
+                this.options.forcedNext = n;
+                Arrays.fill(this.options.successCounts, 1);
+                Arrays.fill(this.options.failureCounts, 0);
+            }
+            if (this.options.trackBlockingWords && searchNodeProxyArray.length < Math.max(n2, 500) && bitSet.cardinality() > 0) {
+                this.blockingDuplicates = bitSet;
+            }
+        }
+        return searchNodeProxyArray;
+    }
+
+    private FrontierPrint getFingerprint() {
+        if (this.fingerPrint == null) {
+            this.fingerPrint = new FrontierPrint(this.state, this.options.neighborhood);
+        }
+        return this.fingerPrint;
+    }
+
+    protected final GridSearchNode makeSuccessor() {
+        GridState gridState = new GridState(this.state);
+        return this.makeSuccessor(gridState);
+    }
+
+    protected GridSearchNode makeSuccessor(GridState gridState) {
+        GridSearchNode gridSearchNode = this.clone();
+        this.clone().state = gridState;
+        this.assignID();
+        gridSearchNode.parent = this;
+        ++gridSearchNode.depth;
+        gridSearchNode.acceptableWords = null;
+        gridSearchNode.cachedQuality = -1.0f;
+        gridSearchNode.fingerPrint = null;
+        gridSearchNode.nextWords = EMPTY_NEXT_WORDS;
+        gridSearchNode.nodesExplored = new BitSet(this.state.getWordCount());
+        gridSearchNode.blockingDuplicates = new BitSet(this.state.getWordCount());
+        return gridSearchNode;
+    }
+
+    public final void initForSearch() {
+        super.initForSearch();
+        this.nodesExplored = new BitSet(this.state.getWordCount());
+        this.blockingDuplicates = new BitSet(this.state.getWordCount());
+        this.options.failureCounts = null;
+        this.options.successCounts = null;
+        this.options.persistentFailureCounts = null;
+        this.options.persistentSuccessCounts = null;
+        this.options.forcedNext = -1;
+    }
+
+    public final void markFinished() {
+        super.markFinished();
+    }
+
+    public final void markDead(boolean bl) throws BadStateError {
+        SharedOptions sharedOptions = this.options;
+        synchronized (sharedOptions) {
+            Object object;
+            if (this.parent != null) {
+                object = (GridSearchNode)this.parent;
+                ((GridSearchNode)object).nodesExplored.or(this.nodesExplored);
+                ((GridSearchNode)object).blockingDuplicates.or(this.blockingDuplicates);
+            }
+            if (this.latestWord == -1) {
+                return;
+            }
+            object = this.state.getString(this.latestWord);
+            if (((String)object).length() > BAD_WORD_THRESH) {
+                int n;
+                WordGrid.Word word = this.state.getWord(this.latestWord);
+                int n2 = n = this.options.badWords == null ? 0 : this.options.badWords.get(word, (String)object, 0);
+                if (bl && n >= BAD_WORD_COUNT_THRESH) {
+                    WordStringIntMap.Iter iter = this.options.badWords.getIterator();
+                    while (iter.advance()) {
+                        this.options.badWords.remove(iter.getWord(), iter.getString());
+                    }
+                    throw new /* Unavailable Anonymous Inner Class!! */;
+                }
+                if (this.options.badWords != null) {
+                    this.options.badWords.put(word, (String)object, n + 1);
+                }
+            }
+            if (bl) {
+                int n = 0;
+                FrontierPrint frontierPrint = this.getFingerprint();
+                SearchNode searchNode = this.parent;
+                while (searchNode != null) {
+                    ++n;
+                    if (!frontierPrint.matches(searchNode)) break;
+                    searchNode = searchNode.parent;
+                }
+                if (n > 1) {
+                    int n3;
+                    int n4;
+                    WordGrid.Word word;
+                    int n5 = 0;
+                    if (this.options.aggressiveBacktracking) {
+                        while (rand.nextFloat() > 0.8f) {
+                            ++n5;
+                        }
+                    }
+                    int n6 = n5;
+                    GridSearchNode gridSearchNode = this;
+                    n6 = gridSearchNode.options.aggressiveBacktracking ? n6 : 0;
+                    n = gridSearchNode.chooseWordToFill();
+                    frontierPrint = gridSearchNode.state.getGrid();
+                    BitSet bitSet = gridSearchNode.state.findIsland(n);
+                    BitSet bitSet2 = gridSearchNode.nodesExplored;
+                    BitSet bitSet3 = new BitSet(gridSearchNode.state.getWordCount());
+                    int n7 = bitSet2.nextSetBit(0);
+                    while (n7 != -1) {
+                        WordGrid.Word word2 = frontierPrint.getWord(n7);
+                        int n8 = 0;
+                        while (true) {
+                            word = word2;
+                            if (n8 >= word.letterIndices.length) break;
+                            n4 = n8;
+                            word = word2;
+                            n3 = word.letterIndices[n4];
+                            for (int i = 0; i < frontierPrint.getCrossWordCount(n3); ++i) {
+                                n4 = frontierPrint.getCrossWord(n3, i);
+                                if (gridSearchNode.state.isComplete(n4)) continue;
+                                bitSet3.set(n4);
+                            }
+                            ++n8;
+                        }
+                        n7 = bitSet2.nextSetBit(n7 + 1);
+                    }
+                    BitSet bitSet4 = new BitSet(gridSearchNode.state.getWordCount());
+                    int n9 = bitSet3.nextSetBit(0);
+                    while (n9 != -1) {
+                        WordGrid.Word word3 = frontierPrint.getWord(n9);
+                        n3 = 0;
+                        while (true) {
+                            word = word3;
+                            if (n3 >= word.letterIndices.length) break;
+                            n4 = n3;
+                            word = word3;
+                            int n10 = word.letterIndices[n4];
+                            for (n4 = 0; n4 < frontierPrint.getCrossWordCount(n10); ++n4) {
+                                int n11 = frontierPrint.getCrossWord(n10, n4);
+                                if (gridSearchNode.state.isComplete(n11)) continue;
+                                bitSet4.set(n11);
+                            }
+                            ++n3;
+                        }
+                        n9 = bitSet3.nextSetBit(n9 + 1);
+                    }
+                    bitSet3.or(bitSet4);
+                    bitSet.and(bitSet3);
+                    BitSet bitSet5 = gridSearchNode.state.findIslandNeighbors(bitSet);
+                    int n12 = gridSearchNode.blockingDuplicates.nextSetBit(0);
+                    while (n12 != -1) {
+                        if (gridSearchNode.state.isComplete(n12)) {
+                            bitSet5.set(n12);
+                        }
+                        n12 = gridSearchNode.blockingDuplicates.nextSetBit(n12 + 1);
+                    }
+                    throw new /* Unavailable Anonymous Inner Class!! */;
+                }
+            }
+            return;
+        }
+    }
+
+    public final boolean reconcileWithDeadStates(ObjectSet<SearchNode.Fingerprint> objectSet) {
+        return true;
+    }
+
+    public GridSearchNode(GridSearchNode gridSearchNode, GridState gridState, SharedOptions sharedOptions) {
+        super((SearchNode)gridSearchNode);
+        this.state = gridState;
+        this.options = sharedOptions;
+        this.nodesExplored = new BitSet(gridState.getWordCount());
+        this.blockingDuplicates = new BitSet(gridState.getWordCount());
+    }
+
+    public void setString(int n, String string) {
+        this.state.setString(n, string);
+        this.latestWord = n;
+        this.fingerPrint = null;
+        this.cachedQuality = -1.0f;
+    }
+
+    public final int chooseWordToFill() {
+        int n = this.auxChooseWordToFill();
+        if (n == -1) {
+            return n;
+        }
+        return n;
+    }
+
+    private int auxChooseWordToFill() {
+        switch (4.$SwitchMap$com$beekeeper$xwd$GridSearchNode$FillOrder[this.options.orderStrategy.ordinal()]) {
+            case 1: {
+                return this.chooseWordToFillStd();
+            }
+            case 2: {
+                return this.chooseWordToFillQuality();
+            }
+            case 3: {
+                return this.chooseWordToFillFrontier();
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    protected int chooseWordToFillFrontier() {
+        return this.chooseWordToFillQuality();
+    }
+
+    protected int chooseWordToFillQuality() {
+        int n;
+        WordGrid.Word word;
+        int n2;
+        int n3;
+        WordGrid wordGrid;
+        int n4 = -1;
+        char[] cArray = this.state.getChars();
+        float[] fArray = new float[cArray.length];
+        Arrays.fill(fArray, 1.0f);
+        int n5 = this.state.getWordCount();
+        block3: for (int i = 0; i < n5; ++i) {
+            if (this.state.isComplete(i)) continue;
+            wordGrid = this.state.getWord(i);
+            WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, i);
+            float f = matchInfo.getMatchCount();
+            n3 = 0;
+            while (true) {
+                WordGrid wordGrid2 = wordGrid;
+                if (n3 >= wordGrid2.letterIndices.length) continue block3;
+                n2 = n3++;
+                wordGrid2 = wordGrid;
+                int n6 = wordGrid2.letterIndices[n2];
+                fArray[n6] = fArray[n6] * f;
+            }
+        }
+        float[] fArray2 = new float[n5];
+        wordGrid = this.state.getGrid();
+        for (int i = 0; i < fArray2.length; ++i) {
+            float f;
+            WordGrid.Word word2;
+            if (this.state.isComplete(i)) {
+                fArray2[i] = Float.NEGATIVE_INFINITY;
+                continue;
+            }
+            word = word2 = this.state.getWord(i);
+            n3 = word2.letterIndices.length;
+            float f2 = 0.0f;
+            int n7 = 0;
+            while (true) {
+                word = word2;
+                if (n7 >= word.letterIndices.length) break;
+                n2 = n7++;
+                word = word2;
+                f2 += fArray[word.letterIndices[n2]];
+            }
+            float f3 = (float)(-Math.sqrt(f2 / (float)n3 / (float)n3 / (float)n3));
+            float f4 = 1.0f;
+            n = 1;
+            SearchNode searchNode = this.parent;
+            while (searchNode != null) {
+                GridSearchNode gridSearchNode = (GridSearchNode)searchNode;
+                int[] nArray = gridSearchNode.nextWords;
+                for (int j = 0; j < nArray.length; ++j) {
+                    if (nArray[j] != word2.getWordIndex()) continue;
+                    if (this.options.crossOlderWords) {
+                        f4 += n >= DEPTH_DIVISORS.length ? 5.0f : (float)DEPTH_DIVISORS[n];
+                        break;
+                    }
+                    f4 += 1.0f;
+                    break;
+                }
+                searchNode = searchNode.parent;
+                ++n;
+            }
+            if (this.options.fillEdgesFirst) {
+                f4 += (float)wordGrid.edgeCount(i);
+            }
+            fArray2[i] = f = f3 / f4;
+        }
+        if (this.latestWord != -1) {
+            int n8;
+            int n9;
+            BitSet bitSet = this.state.allCrosses(this.latestWord);
+            Object object = this.options;
+            synchronized (object) {
+                n9 = this.options.forcedNext;
+            }
+            if (n9 != -1 && !this.state.isComplete(n9)) {
+                object = this.state.allCrosses(n9);
+                n5 = ((BitSet)object).nextSetBit(0);
+                while (n5 != -1) {
+                    if (!this.state.isComplete(n5)) {
+                        int n10 = n5;
+                        fArray2[n10] = fArray2[n10] / 16.0f;
+                        bitSet.set(n5);
+                    }
+                    n5 = ((BitSet)object).nextSetBit(n5 + 1);
+                }
+            }
+            object = this.state.getWord(this.latestWord);
+            n5 = wordGrid.getWidth();
+            int n11 = wordGrid.getHeight();
+            int[] nArray = new int[wordGrid.getWordCount()];
+            n = object.getDirection();
+            word = object;
+            int n12 = word.letterIndices.length;
+            for (n8 = 0; n8 < n12; ++n8) {
+                int n13;
+                n2 = n8;
+                Object object2 = object;
+                int n14 = ((WordGrid.Word)object2).letterIndices[n2];
+                int n15 = n14 % n5;
+                n9 = n14 / n5;
+                if (n == 0) {
+                    n14 = 1;
+                    n2 = n11;
+                    if (n9 + 2 < n11) {
+                        n2 = n9 + 2;
+                    }
+                    for (n13 = n9 + 1; n13 < n2; ++n13) {
+                        if (cArray[n15 + n13 * n5] == '\u007f') {
+                            n14 = -1000;
+                            continue;
+                        }
+                        GridSearchNode.incrAdj(wordGrid, nArray, n15, n13, n, cArray, true, n14);
+                    }
+                    n14 = 1;
+                    n13 = 0;
+                    if (n9 - 1 > 0) {
+                        n13 = n9 - 1;
+                    }
+                    for (n2 = n9 - 1; n2 >= n13; --n2) {
+                        if (cArray[n15 + n2 * n5] == '\u007f') {
+                            n14 = -1000;
+                            continue;
+                        }
+                        GridSearchNode.incrAdj(wordGrid, nArray, n15, n2, n, cArray, true, n14);
+                    }
+                    continue;
+                }
+                n14 = 1;
+                n2 = n5;
+                if (n15 + 2 < n5) {
+                    n2 = n15 + 2;
+                }
+                for (n13 = n15 + 1; n13 < n2; ++n13) {
+                    if (cArray[n13 + n9 * n5] == '\u007f') {
+                        n14 = -1000;
+                        continue;
+                    }
+                    GridSearchNode.incrAdj(wordGrid, nArray, n13, n9, n, cArray, true, n14);
+                }
+                n14 = 1;
+                n13 = 0;
+                if (n15 - 1 > 0) {
+                    n13 = n15 - 1;
+                }
+                for (n2 = n15 - 1; n2 >= n13; --n2) {
+                    if (cArray[n2 + n9 * n5] == '\u007f') {
+                        n14 = -1000;
+                        continue;
+                    }
+                    GridSearchNode.incrAdj(wordGrid, nArray, n2, n9, n, cArray, true, n14);
+                }
+            }
+            for (n8 = 0; n8 < nArray.length; ++n8) {
+                if (nArray[n8] <= 1) continue;
+                bitSet.set(n8);
+            }
+            n8 = 0;
+            n12 = bitSet.nextSetBit(0);
+            while (n12 != -1) {
+                if (!this.state.isComplete(n12)) {
+                    ++n8;
+                }
+                n12 = bitSet.nextSetBit(n12 + 1);
+            }
+            if (n8 > 0) {
+                WordGrid.Word[] wordArray = new WordGrid.Word[n8];
+                n8 = 0;
+                int n16 = bitSet.nextSetBit(0);
+                while (n16 != -1) {
+                    if (!this.state.isComplete(n16)) {
+                        wordArray[n8++] = wordGrid.getWord(n16);
+                    }
+                    n16 = bitSet.nextSetBit(n16 + 1);
+                }
+                Arrays.sort(wordArray, new /* Unavailable Anonymous Inner Class!! */);
+                this.nextWords = new int[n8];
+                for (n16 = 0; n16 < n8; ++n16) {
+                    this.nextWords[n16] = wordArray[n16].getWordIndex();
+                }
+                for (n16 = 0; n16 < this.nextWords.length; ++n16) {
+                    if (fArray2[this.nextWords[n16]] == Float.NEGATIVE_INFINITY) continue;
+                    n4 = this.nextWords[n16];
+                    break;
+                }
+            }
+        }
+        if (n4 == -1) {
+            float f = Float.NEGATIVE_INFINITY;
+            for (int i = 0; i < fArray2.length; ++i) {
+                if (!(fArray2[i] > f)) continue;
+                f = fArray2[i];
+                n4 = i;
+            }
+        }
+        return n4;
+    }
+
+    /*
+     * WARNING - void declaration
+     */
+    protected static void incrAdj(WordGrid wordGrid, int[] nArray, int n, int n2, int n3, char[] cArray, boolean bl, int n4) {
+        if (n < 0 || n >= wordGrid.getWidth()) {
+            return;
+        }
+        if (n2 < 0 || n2 >= wordGrid.getHeight()) {
+            return;
+        }
+        if (cArray[n += wordGrid.getWidth() * n2] != '\u0000') {
+            return;
+        }
+        int n5 = wordGrid.getCrossWordCount(n);
+        for (n2 = 0; n2 < n5; ++n2) {
+            void var7_9;
+            int n6 = wordGrid.getCrossWord(n, n2);
+            if (wordGrid.getWord(n6).getDirection() != n3) continue;
+            int n7 = n6;
+            nArray[n7] = nArray[n7] + var7_9;
+        }
+    }
+
+    protected int chooseWordToFillStd() {
+        int n;
+        int n2;
+        Object object;
+        int n3 = -1;
+        BitSet bitSet = new BitSet(this.state.getWordCount());
+        SearchNode searchNode = this.parent;
+        while (searchNode != null) {
+            GridSearchNode gridSearchNode = (GridSearchNode)searchNode;
+            object = gridSearchNode.nextWords;
+            for (n2 = 0; n2 < ((int[])object).length; ++n2) {
+                if (this.state.isComplete(object[n2])) continue;
+                bitSet.set(object[n2]);
+            }
+            searchNode = searchNode.parent;
+        }
+        searchNode = this.state.getGrid();
+        if (this.latestWord != -1) {
+            int n4;
+            Object object2;
+            int n5 = 0;
+            object = searchNode.getWord(this.latestWord);
+            n2 = 0;
+            while (true) {
+                object2 = object;
+                if (n2 >= object.letterIndices.length) break;
+                n4 = n2;
+                object2 = object;
+                int n6 = object.letterIndices[n4];
+                int n7 = searchNode.getCrossWordCount(n6);
+                for (n = 0; n < n7; ++n) {
+                    n4 = searchNode.getCrossWord(n6, n);
+                    if (n4 == this.latestWord || this.state.isComplete(n4) || this.acceptableWords != null && !this.acceptableWords.get(n4)) continue;
+                    ++n5;
+                }
+                ++n2;
+            }
+            if (n5 > 0) {
+                int[] nArray = new int[n5];
+                int[] nArray2 = new int[n5];
+                n = 0;
+                while (true) {
+                    object2 = object;
+                    if (n >= object.letterIndices.length) break;
+                    n4 = n;
+                    object2 = object;
+                    int n8 = object.letterIndices[n4];
+                    n3 = searchNode.getCrossWordCount(n8);
+                    for (n4 = 0; n4 < n3; ++n4) {
+                        int n9 = searchNode.getCrossWord(n8, n4);
+                        if (n9 == this.latestWord || this.state.isComplete(n9) || this.acceptableWords != null && !this.acceptableWords.get(n9)) continue;
+                        nArray[--n5] = n9;
+                        nArray2[n5] = this.options.wordList.search(this.state, n9).getMatchCount();
+                        int n10 = n5;
+                        nArray2[n10] = nArray2[n10] / (1 + searchNode.edgeCount(n9));
+                    }
+                    ++n;
+                }
+                GridSearchNode.sortCandidates(nArray, nArray2);
+                this.nextWords = nArray;
+                n3 = nArray[0];
+            }
+        }
+        if (n3 == -1) {
+            int n11 = 0;
+            int n12 = searchNode.getWordCount();
+            for (int i = 0; i < n12; ++i) {
+                int n13 = searchNode.getWord(i).getWordIndex();
+                if (this.state.isComplete(n13) || this.acceptableWords != null && !this.acceptableWords.get(n13)) continue;
+                ++n11;
+            }
+            if (n11 > 0) {
+                int n14;
+                int[] nArray = new int[n11];
+                int[] nArray3 = new int[n11];
+                n = searchNode.getWordCount();
+                for (n14 = 0; n14 < n; ++n14) {
+                    int n15 = searchNode.getWord(n14).getWordIndex();
+                    if (this.state.isComplete(n15) || this.acceptableWords != null && !this.acceptableWords.get(n15)) continue;
+                    nArray[--n11] = n15;
+                    nArray3[n11] = this.options.wordList.search(this.state, n15).getMatchCount();
+                    int n16 = n11;
+                    nArray3[n16] = nArray3[n16] / (1 + searchNode.edgeCount(n15));
+                }
+                GridSearchNode.sortCandidates(nArray, nArray3);
+                if (!bitSet.isEmpty()) {
+                    for (n14 = 0; n14 < nArray.length; ++n14) {
+                        if (!bitSet.get(nArray[n14])) continue;
+                        n3 = nArray[n14];
+                        break;
+                    }
+                }
+                if (n3 == -1) {
+                    n3 = nArray[0];
+                }
+            }
+        }
+        return n3;
+    }
+
+    private static void sortCandidates(int[] nArray, int[] nArray2) {
+        int n = nArray.length - 1;
+        for (int i = 0; i < n; ++i) {
+            int n2;
+            int n3 = i;
+            int n4 = nArray2[i];
+            int n5 = nArray.length;
+            for (n2 = i + 1; n2 < n5; ++n2) {
+                if (nArray2[n2] >= n4) continue;
+                n3 = n2;
+                n4 = nArray2[n2];
+            }
+            n2 = nArray[n3];
+            nArray[n3] = nArray[i];
+            nArray2[n3] = nArray2[i];
+            nArray[i] = n2;
+            nArray2[i] = n4;
+        }
+    }
+
+    /*
+     * Enabled aggressive block sorting
+     * Converted monitor instructions to comments
+     * Lifted jumps to return sites
+     */
+    private boolean checkNeighborsAccessible(int n, BitSet bitSet, SearchNode searchNode, SearchNode searchNode2) {
+        GridSearchNode gridSearchNode = (GridSearchNode)searchNode;
+        gridSearchNode = gridSearchNode.state;
+        GridState gridState = ((GridSearchNode)searchNode2).state;
+        int n2 = 0;
+        int n3 = 0;
+        int n4 = bitSet.nextSetBit(0);
+        while (n4 >= 0) {
+            if (!gridState.isComplete(n4)) {
+                ++n3;
+            }
+            n4 = bitSet.nextSetBit(n4 + 1);
+        }
+        if (n > 0 && n >= n3) {
+            if (searchNode.parent != searchNode2) return false;
+            return true;
+        }
+        n4 = bitSet.nextSetBit(0);
+        while (n4 >= 0) {
+            if (!gridSearchNode.isComplete(n4)) {
+                ++n2;
+            }
+            n4 = bitSet.nextSetBit(n4 + 1);
+        }
+        if (n2 > n) {
+            return true;
+        }
+        SharedOptions sharedOptions = this.options;
+        // MONITORENTER : sharedOptions
+        // MONITOREXIT : sharedOptions
+        return false;
+    }
+
+    static {
+        Arrays.fill(LETTER_SCORES, -5.0f);
+        for (int i = 0; i < 26; ++i) {
+            GridSearchNode.LETTER_SCORES["etaoinshrdlucmfgypwbvkxjqz".charAt((int)i)] = -100.0f / (float)(i + 1);
+        }
+        DEPTH_DIVISORS = new int[]{1, 2, 2, 2, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4};
+    }
+}
+
+=== Decompiling DepthFirstSearch ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.closedhash.ObjectSet
+ *  com.beekeeper.xwd.BadStateError
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.SearchNode$Fingerprint
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.closedhash.ObjectSet;
+import com.beekeeper.xwd.BadStateError;
+import com.beekeeper.xwd.SearchNode;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+
+public class DepthFirstSearch {
+    private int maxDeadStates = 4096;
+    public int searchCount = 0;
+    private final SearchNode startNode;
+    private int mxNodes;
+    private final LinkedList<SearchNode.Fingerprint> deadStateList = new LinkedList();
+    private final ObjectSet<SearchNode.Fingerprint> deadStates = new ObjectSet(this.maxDeadStates, 0.7);
+    private int maxDepth;
+    private boolean isExhaustive;
+    public int maxWidth = Integer.MAX_VALUE;
+    private int randomizeCount = -1;
+
+    public DepthFirstSearch(SearchNode searchNode) {
+        this.startNode = searchNode;
+    }
+
+    public final SearchNode search(int n) {
+        this.startNode.initForSearch();
+        this.searchCount = 0;
+        this.mxNodes = n;
+        this.deadStateList.clear();
+        this.deadStates.clear();
+        try {
+            DepthFirstSearch depthFirstSearch = this;
+            SearchNode searchNode = depthFirstSearch.search(depthFirstSearch.startNode);
+            return searchNode;
+        }
+        catch (BadStateError badStateError) {
+            SearchNode searchNode = null;
+            return searchNode;
+        }
+        finally {
+            this.startNode.markFinished();
+        }
+    }
+
+    public final SearchNode search2(int n) {
+        SearchNode searchNode = this.search(n);
+        if (searchNode == null || !searchNode.isGoalNode()) {
+            return null;
+        }
+        return searchNode;
+    }
+
+    private SearchNode search(SearchNode searchNode) throws BadStateError {
+        int n = searchNode.depth;
+        if (n > this.maxDepth) {
+            this.maxDepth = n;
+        }
+        ++this.searchCount;
+        if (searchNode.isGoalNode()) {
+            return searchNode;
+        }
+        Object[] objectArray = searchNode.generateSuccessors(Float.NEGATIVE_INFINITY);
+        Arrays.sort(objectArray);
+        int n2 = Math.min(this.getRandomizeCount$7f9542f1(searchNode), objectArray.length);
+        if (n2 > 0) {
+            Collections.shuffle(Arrays.asList(objectArray).subList(0, n2));
+        }
+        n2 = Math.min(objectArray.length, this.maxWidth);
+        float f = Float.NEGATIVE_INFINITY;
+        SearchNode searchNode2 = null;
+        for (int i = 0; i < n2; ++i) {
+            if (Thread.currentThread().isInterrupted()) {
+                return null;
+            }
+            SearchNode searchNode3 = objectArray[i].getNode();
+            objectArray[i] = null;
+            SearchNode searchNode4 = this.deadStates;
+            SearchNode.Fingerprint fingerprint = searchNode3.getFingerprint();
+            if (searchNode4.hasKey((Object)fingerprint) || this.maxDeadStates > 0 && !searchNode3.reconcileWithDeadStates(this.deadStates)) continue;
+            try {
+                searchNode4 = this.search(searchNode3);
+                if (searchNode4 != null) {
+                    float f2;
+                    if (!this.isExhaustive) {
+                        return searchNode4;
+                    }
+                    float f3 = searchNode4.getQuality();
+                    if (f2 > f) {
+                        f = f3;
+                        searchNode2 = searchNode4;
+                    }
+                }
+                if (this.searchCount < this.mxNodes) continue;
+                if (searchNode2 != null) {
+                    return searchNode2;
+                }
+                return searchNode;
+            }
+            catch (BadStateError badStateError) {
+                if (searchNode3 != badStateError.getSource()) {
+                    if (this.maxDeadStates > 0) {
+                        if (this.deadStateList.size() == this.maxDeadStates) {
+                            this.deadStates.remove((Object)this.deadStateList.removeFirst());
+                        }
+                        fingerprint = searchNode3.getFingerprint();
+                        this.deadStateList.addLast(fingerprint);
+                        this.deadStates.add((Object)fingerprint);
+                    }
+                    searchNode3.markDead(false);
+                }
+                if (badStateError.acceptableState(searchNode, this.startNode)) continue;
+                throw badStateError;
+            }
+        }
+        if (searchNode2 != null) {
+            return searchNode2;
+        }
+        if (this.maxDeadStates > 0) {
+            if (this.deadStateList.size() == this.maxDeadStates) {
+                this.deadStates.remove((Object)this.deadStateList.removeFirst());
+            }
+            SearchNode.Fingerprint fingerprint = searchNode.getFingerprint();
+            this.deadStateList.addLast(fingerprint);
+            this.deadStates.add((Object)fingerprint);
+        }
+        searchNode.markDead(true);
+        return null;
+    }
+
+    public final void setRandomizeCount(int n) {
+        this.randomizeCount = 50;
+    }
+
+    public int getRandomizeCount$7f9542f1(SearchNode searchNode) {
+        return this.randomizeCount;
+    }
+
+    public final void setExhaustive(boolean bl) {
+        this.isExhaustive = true;
+    }
+
+    public final void setMaxDeadStates(int n) {
+        this.maxDeadStates = 0;
+    }
+}
+
+=== Decompiling DepthPlusSearch ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.xwd.BadStateError
+ *  com.beekeeper.xwd.DepthPlusSearch$ExpandResult
+ *  com.beekeeper.xwd.DepthPlusSearch$SuccessorsResult
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.SearchNode$Fingerprint
+ *  com.beekeeper.xwd.SearchNodeProxy
+ *  com.beekeeper.xwd.Threads
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.xwd.BadStateError;
+import com.beekeeper.xwd.DepthPlusSearch;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.SearchNodeProxy;
+import com.beekeeper.xwd.Threads;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+public class DepthPlusSearch {
+    private final int optWidth;
+    private final SearchNode startNode;
+    private final LinkedList<SearchNode.Fingerprint> deadStateList = new LinkedList();
+    private int maxDeadStates;
+    private HashSet<SearchNode.Fingerprint> deadStates;
+    private boolean isExhaustive;
+    public int maxWidth = Integer.MAX_VALUE;
+    private int randomizeCount = -1;
+    private volatile int searchCount = 0;
+    private volatile int maxDepth;
+    private final Random rand = new Random();
+    private TreeSet<SearchNodeProxy> queue = new TreeSet((searchNodeProxy, searchNodeProxy2) -> {
+        int n = searchNodeProxy2.getDepth() - searchNodeProxy.getDepth();
+        if (n != 0) {
+            return n;
+        }
+        float f = searchNodeProxy2.getPriority() - searchNodeProxy.getPriority();
+        if (f != 0.0f) {
+            if (f < 0.0f) {
+                return -1;
+            }
+            return 1;
+        }
+        return searchNodeProxy.hashCode() - searchNodeProxy2.hashCode();
+    });
+
+    public DepthPlusSearch(SearchNode searchNode) {
+        this(searchNode, 5);
+    }
+
+    public DepthPlusSearch(SearchNode searchNode, int n) {
+        this.startNode = searchNode;
+        this.optWidth = n;
+        this.setMaxDeadStates(4096);
+    }
+
+    public final SearchNode search2(int n) {
+        SearchNode searchNode = this.search(Integer.MAX_VALUE);
+        if (searchNode == null || !searchNode.isGoalNode()) {
+            return null;
+        }
+        return searchNode;
+    }
+
+    public final synchronized SearchNode search(int n) {
+        this.startNode.initForSearch();
+        this.searchCount = 0;
+        this.deadStateList.clear();
+        this.deadStates.clear();
+        this.queue.clear();
+        this.queue.add((SearchNodeProxy)this.startNode);
+        float f = Float.NEGATIVE_INFINITY;
+        SearchNode searchNode = null;
+        SearchNode searchNode2 = null;
+        while (!this.queue.isEmpty()) {
+            if (Thread.currentThread().isInterrupted()) {
+                return null;
+            }
+            SearchNode searchNode3 = this.advance();
+            if (searchNode3 != null) {
+                if (searchNode3.isGoalNode()) {
+                    float f2;
+                    if (!this.isExhaustive) {
+                        searchNode = searchNode3;
+                        break;
+                    }
+                    float f3 = searchNode3.getQuality();
+                    if (f2 > f) {
+                        searchNode = searchNode3;
+                        f = f3;
+                    }
+                } else if (searchNode2 == null || searchNode3.depth > searchNode2.depth) {
+                    searchNode2 = searchNode3;
+                }
+            }
+            if (this.searchCount <= n) continue;
+            if (searchNode != null) break;
+            searchNode = searchNode2;
+            break;
+        }
+        this.startNode.markFinished();
+        return searchNode;
+    }
+
+    private SearchNode advance() {
+        try {
+            Object object;
+            SearchNode searchNode;
+            SearchNode searchNode2;
+            Object[] objectArray = new ArrayList();
+            for (int i = 0; i < this.optWidth && !this.queue.isEmpty(); ++i) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return null;
+                }
+                SearchNodeProxy searchNodeProxy = this.queue.first();
+                searchNode2 = searchNodeProxy.getParent();
+                int n = this.randomizeCount;
+                if (searchNode2 != null) {
+                    SearchNode searchNode3 = searchNode2;
+                    searchNode3.getLiveChildCount();
+                    n = this.getRandomizeCount$7f9542f1(searchNode3);
+                }
+                int n2 = Math.max(1, Math.min(n, this.queue.size()));
+                int n3 = this.rand.nextInt(n2);
+                searchNode = this.queue.iterator();
+                for (int j = 0; j < n3; ++j) {
+                    searchNode.next();
+                }
+                object = (SearchNodeProxy)searchNode.next();
+                searchNode.remove();
+                objectArray.add(() -> this.lambda$advance$1((SearchNodeProxy)object));
+            }
+            List list = Threads.getInstance().invokeAll(objectArray);
+            ++this.searchCount;
+            SearchNode searchNode4 = new ArrayList();
+            searchNode2 = null;
+            SearchNode searchNode5 = null;
+            for (Future future : list) {
+                if (Thread.currentThread().isInterrupted()) {
+                    return null;
+                }
+                ExpandResult expandResult = (ExpandResult)future.get();
+                if (expandResult == null) continue;
+                searchNode = expandResult.node;
+                if (searchNode2 == null) {
+                    searchNode2 = searchNode;
+                }
+                if (searchNode5 != null) {
+                    this.queue.add(expandResult.proxy);
+                    continue;
+                }
+                if (searchNode.isGoalNode()) {
+                    searchNode5 = searchNode;
+                    continue;
+                }
+                searchNode4.add(() -> {
+                    SearchNode searchNode2 = searchNode;
+                    return new SuccessorsResult(searchNode2, searchNode2.generateSuccessors(Float.NEGATIVE_INFINITY));
+                });
+            }
+            if (searchNode5 != null) {
+                return searchNode5;
+            }
+            object = Threads.getInstance().invokeAll(searchNode4);
+            Iterator iterator = object.iterator();
+            while (iterator.hasNext()) {
+                Future future = iterator.next();
+                if (Thread.currentThread().isInterrupted()) {
+                    return null;
+                }
+                searchNode = (SuccessorsResult)future.get();
+                searchNode4 = searchNode.node;
+                objectArray = searchNode.successors;
+                if (searchNode.successors == null || objectArray.length == 0) {
+                    if (this.maxDeadStates > 0) {
+                        if (this.deadStateList.size() == this.maxDeadStates) {
+                            this.deadStates.remove(this.deadStateList.removeFirst());
+                        }
+                        SearchNode.Fingerprint fingerprint = searchNode4.getFingerprint();
+                        this.deadStateList.addLast(fingerprint);
+                        this.deadStates.add(fingerprint);
+                    }
+                    try {
+                        searchNode4.markDead(true);
+                    }
+                    catch (BadStateError badStateError) {
+                        this.doBacktrack(badStateError, searchNode4);
+                    }
+                    SearchNode searchNode6 = searchNode4.parent;
+                    while (searchNode6 != null && --searchNode6.liveChildCount == 0) {
+                        try {
+                            searchNode6.markDead(true);
+                        }
+                        catch (BadStateError badStateError) {
+                            this.doBacktrack(badStateError, searchNode6);
+                        }
+                        if (this.maxDeadStates <= 0) continue;
+                        if (this.deadStateList.size() == this.maxDeadStates) {
+                            this.deadStates.remove(this.deadStateList.removeFirst());
+                        }
+                        SearchNode.Fingerprint fingerprint = searchNode6.getFingerprint();
+                        this.deadStateList.addLast(fingerprint);
+                        this.deadStates.add(fingerprint);
+                    }
+                    continue;
+                }
+                Arrays.sort(objectArray);
+                int n = Math.min(objectArray.length, this.maxWidth);
+                for (int i = 0; i < n; ++i) {
+                    this.queue.add((SearchNodeProxy)objectArray[i]);
+                }
+                searchNode4.setLiveChildCount(n);
+            }
+            return searchNode2;
+        }
+        catch (InterruptedException | ExecutionException exception) {
+            return null;
+        }
+    }
+
+    private synchronized void doBacktrack(BadStateError badStateError, SearchNode searchNode) {
+        SearchNode searchNode2 = searchNode;
+        do {
+            searchNode2.markFinished();
+            if (searchNode2 != searchNode) {
+                if (this.maxDeadStates > 0) {
+                    if (this.deadStateList.size() == this.maxDeadStates) {
+                        this.deadStates.remove(this.deadStateList.removeFirst());
+                    }
+                    SearchNode.Fingerprint fingerprint = searchNode2.getFingerprint();
+                    this.deadStateList.addLast(fingerprint);
+                    this.deadStates.add(fingerprint);
+                }
+                try {
+                    searchNode2.markDead(false);
+                }
+                catch (BadStateError badStateError2) {}
+            }
+            searchNode2 = searchNode2.parent;
+        } while (searchNode2.parent != null && !badStateError.acceptableState(searchNode2, this.startNode));
+    }
+
+    public final void setRandomizeCount(int n) {
+        this.randomizeCount = 50;
+    }
+
+    public int getRandomizeCount$7f9542f1(SearchNode searchNode) {
+        return this.randomizeCount;
+    }
+
+    public final void setExhaustive(boolean bl) {
+        this.isExhaustive = true;
+    }
+
+    public final void setMaxDeadStates(int n) {
+        this.maxDeadStates = n;
+        this.deadStates = new HashSet(this.maxDeadStates, 0.7f);
+    }
+
+    private /* synthetic */ ExpandResult lambda$advance$1(SearchNodeProxy searchNodeProxy) throws Exception {
+        int n = searchNodeProxy.getDepth();
+        if (n > this.maxDepth) {
+            this.maxDepth = n;
+        }
+        SearchNode searchNode = searchNodeProxy.getParent();
+        while (searchNode != null) {
+            SearchNode searchNode2 = searchNode;
+            if (searchNode2.isFinished) {
+                return null;
+            }
+            searchNode = searchNode.parent;
+        }
+        SearchNodeProxy searchNodeProxy2 = searchNodeProxy;
+        return new ExpandResult(searchNodeProxy2, searchNodeProxy2.getNode());
+    }
+}
+
+=== Decompiling GreedyGridSearchNode ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.closedhash.IntIntHash
+ *  com.beekeeper.xwd.CharacterRangeCount
+ *  com.beekeeper.xwd.CharacterScore
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode$GSNProxy
+ *  com.beekeeper.xwd.GridSearchNode$SharedOptions
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.GridStrategies
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.SingleCharacterScore
+ *  com.beekeeper.xwd.WordGrid
+ *  com.beekeeper.xwd.WordGrid$Word
+ *  com.beekeeper.xwd.WordList$MatchInfo
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.closedhash.IntIntHash;
+import com.beekeeper.xwd.CharacterRangeCount;
+import com.beekeeper.xwd.CharacterScore;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.GridStrategies;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.SingleCharacterScore;
+import com.beekeeper.xwd.WordGrid;
+import com.beekeeper.xwd.WordList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Map;
+import java.util.Objects;
+import java.util.WeakHashMap;
+
+public class GreedyGridSearchNode
+extends GridSearchNode {
+    private float varietyFactor = 0.1f;
+    private int depthFirstFactor = 65536;
+    private float[] charScores;
+    private CharacterScore[][] wordScores;
+    private int qualityFactor = 10;
+    private final Map<WordList.MatchInfo, CharacterScore[]> rangeCache = Collections.synchronizedMap(new WeakHashMap());
+    private float[] chooseNextCharScores;
+    private float[] chooseNextScores;
+    private static boolean useEffectivelyComplete = false;
+
+    public final void setQualityFactor(int n) {
+        this.qualityFactor = 25;
+    }
+
+    public final void setString(int n, String object) {
+        WordGrid.Word word;
+        super.setString(n, (String)object);
+        this.latestWord = n;
+        char[] cArray = this.state.getChars();
+        WordGrid wordGrid = this.state.getGrid();
+        Object object2 = word = wordGrid.getWord(n);
+        int n2 = word.letterIndices.length;
+        object2 = this;
+        long l = object2.depthFirstFactor;
+        float f = ((float)l + this.options.wordList.getWordScore((String)object) * (float)this.qualityFactor) * this.varietyMult();
+        this.wordScores[n] = new CharacterScore[n2];
+        Arrays.setAll(this.wordScores[n], arg_0 -> GreedyGridSearchNode.lambda$setString$0((String)object, f, arg_0));
+        float f2 = this.options.minCandidateScore;
+        object = new BitSet(cArray.length);
+        n2 = 0;
+        while (true) {
+            object2 = word;
+            if (n2 >= object2.letterIndices.length) break;
+            int n3 = n2;
+            object2 = word;
+            int n4 = object2.letterIndices[n3];
+            ((BitSet)object).set(n4);
+            CharacterScore[] characterScoreArray = wordGrid.getWordAt(n4, word.getDirection(), false);
+            if (characterScoreArray != null && !this.state.isComplete(n4 = characterScoreArray.getWordIndex())) {
+                object2 = characterScoreArray;
+                int n5 = characterScoreArray.letterIndices.length;
+                int n6 = 0;
+                while (n6 < n5) {
+                    n3 = n6++;
+                    object2 = characterScoreArray;
+                    ((BitSet)object).set(characterScoreArray.letterIndices[n3]);
+                }
+                WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, n4, f2);
+                if (matchInfo.getMatchCount() == 0) {
+                    this.priority = Float.NEGATIVE_INFINITY;
+                    return;
+                }
+                characterScoreArray = this.rangeCache.get(matchInfo);
+                if (characterScoreArray == null) {
+                    characterScoreArray = new CharacterScore[n5];
+                    for (int i = 0; i < n5; ++i) {
+                        CharacterRangeCount characterRangeCount = new CharacterRangeCount(matchInfo, i, this.options.fastCount);
+                        characterScoreArray[i] = characterRangeCount;
+                        if (characterRangeCount.getMaxScore() != 0.0f) continue;
+                        this.priority = Float.NEGATIVE_INFINITY;
+                        return;
+                    }
+                    this.rangeCache.put(matchInfo, characterScoreArray);
+                }
+                this.wordScores[n4] = characterScoreArray;
+            }
+            ++n2;
+        }
+        n2 = 0;
+        int n7 = cArray.length;
+        for (int i = 0; i < n7; ++i) {
+            n2 = Math.max(n2, wordGrid.getCrossWordCount(i));
+        }
+        CharacterScore[] characterScoreArray = new CharacterScore[n2];
+        n7 = ((BitSet)object).nextSetBit(0);
+        while (n7 >= 0) {
+            this.charScores[n7] = this.computeCharScore(n7, this.wordScores, null, false, characterScoreArray);
+            n7 = ((BitSet)object).nextSetBit(n7 + 1);
+        }
+        this.priority = GreedyGridSearchNode.recomputeScore(this.charScores);
+    }
+
+    public GridSearchNode.GSNProxy conditionalSuccessor(int n2, String string, float f) {
+        float f2;
+        int n3;
+        int n4;
+        int n5;
+        char[] cArray = this.state.getChars();
+        cArray = (char[])cArray.clone();
+        WordGrid.Word word = this.state.getWord(n2);
+        for (int i = 0; i < string.length(); ++i) {
+            cArray[word.letterIndices[i]] = string.charAt(i);
+        }
+        WordGrid wordGrid = this.state.getGrid();
+        Object object = word;
+        int n6 = object.letterIndices.length;
+        object = this;
+        long l = object.depthFirstFactor;
+        float f3 = ((float)l + this.options.wordList.getWordScore(string) * (float)this.qualityFactor) * this.varietyMult();
+        BitSet bitSet = new BitSet(cArray.length);
+        CharacterScore[][] characterScoreArray = (CharacterScore[][])this.wordScores.clone();
+        CharacterScore[][] characterScoreArray2 = characterScoreArray;
+        characterScoreArray[n2] = new CharacterScore[n6];
+        Arrays.setAll(characterScoreArray2[n2], n -> new SingleCharacterScore(string.charAt(n), f3));
+        f3 = this.options.minCandidateScore;
+        for (int i = 0; i < n6; ++i) {
+            int n7 = i;
+            object = word;
+            n5 = object.letterIndices[n7];
+            bitSet.set(n5);
+            for (n4 = 0; n4 < wordGrid.getCrossWordCount(n5); ++n4) {
+                n3 = wordGrid.getCrossWord(n5, n4);
+                if (n3 == n2 || this.state.isComplete(n3)) continue;
+                CharacterScore[] characterScoreArray3 = wordGrid.getWord(n3);
+                object = characterScoreArray3;
+                int n8 = characterScoreArray3.letterIndices.length;
+                int n9 = 0;
+                while (n9 < n8) {
+                    n7 = n9++;
+                    object = characterScoreArray3;
+                    bitSet.set(characterScoreArray3.letterIndices[n7]);
+                }
+                WordList.MatchInfo matchInfo = this.options.wordList.search(cArray, (WordGrid.Word)characterScoreArray3, f3);
+                int n10 = matchInfo.getMatchCount();
+                if (n10 == 0) {
+                    return null;
+                }
+                characterScoreArray3 = this.rangeCache.get(matchInfo);
+                if (characterScoreArray3 == null) {
+                    characterScoreArray3 = new CharacterScore[n8];
+                    for (int j = 0; j < n8; ++j) {
+                        CharacterRangeCount characterRangeCount = new CharacterRangeCount(matchInfo, j, this.options.fastCount);
+                        characterScoreArray3[j] = characterRangeCount;
+                        if (characterRangeCount.getMaxScore() != 0.0f) continue;
+                        return null;
+                    }
+                    this.rangeCache.put(matchInfo, characterScoreArray3);
+                }
+                characterScoreArray2[n3] = characterScoreArray3;
+            }
+        }
+        float[] fArray = (float[])this.charScores.clone();
+        n5 = 0;
+        n3 = cArray.length;
+        for (n4 = 0; n4 < n3; ++n4) {
+            n5 = Math.max(n5, wordGrid.getCrossWordCount(n4));
+        }
+        CharacterScore[] characterScoreArray4 = new CharacterScore[n5];
+        n3 = bitSet.nextSetBit(0);
+        while (n3 >= 0) {
+            float f4;
+            fArray[n3] = f4 = this.computeCharScore(n3, characterScoreArray2, null, false, characterScoreArray4);
+            n3 = bitSet.nextSetBit(n3 + 1);
+        }
+        float f5 = GreedyGridSearchNode.recomputeScore(fArray);
+        if (f2 > f) {
+            return new GridSearchNode.GSNProxy(f5, (GridSearchNode)this, n2, string);
+        }
+        return null;
+    }
+
+    public final int chooseWordToFillQuality() {
+        return this.chooseWordToFillGreedy();
+    }
+
+    public final int chooseWordToFillStd() {
+        return this.chooseWordToFillGreedy();
+    }
+
+    protected final int chooseWordToFillFrontier() {
+        int n;
+        int n2;
+        int n3;
+        if (this.latestWord == -1) {
+            return this.chooseWordToFillGreedy();
+        }
+        WordGrid wordGrid = this.state.getGrid();
+        char[] cArray = this.state.getChars();
+        WordGrid.Word word = this.state.getWord(this.latestWord);
+        int n4 = wordGrid.getWidth();
+        int n5 = wordGrid.getHeight();
+        BitSet bitSet = this.options.neighborhood;
+        int[] nArray = new int[wordGrid.getWordCount()];
+        int n6 = wordGrid.getWordCount();
+        for (int i = 0; i < n6; ++i) {
+            WordGrid.Word word2;
+            if (this.state.isComplete(i) || bitSet != null && !bitSet.get(i)) {
+                nArray[i] = Integer.MAX_VALUE;
+                continue;
+            }
+            WordGrid.Word word3 = word2 = wordGrid.getWord(i);
+            n3 = word2.letterIndices.length;
+            n2 = 0;
+            int n7 = word2.getDirection();
+            n = 0;
+            word3 = word2;
+            int n8 = word3.letterIndices[n];
+            int n9 = n8 % n4;
+            n = n8 / n4;
+            boolean bl = false;
+            int n10 = 0;
+            for (int j = 0; j < n3; ++j) {
+                boolean bl2 = cArray[n8] == '\u0000';
+                if (bl2) {
+                    if (!bl) {
+                        n2 -= 2;
+                    }
+                    ++n10;
+                    switch (n7) {
+                        case 0: {
+                            n2 = n == 0 || cArray[n8 - n4] != '\u0000' ? --n2 : ++n2;
+                            if (n == n5 - 1 || cArray[n8 + n4] != '\u0000') {
+                                --n2;
+                                break;
+                            }
+                            ++n2;
+                            break;
+                        }
+                        case 1: {
+                            n2 = n9 == 0 || cArray[n8 - 1] != '\u0000' ? --n2 : ++n2;
+                            if (n9 == n4 - 1 || cArray[n8 + 1] != '\u0000') {
+                                --n2;
+                                break;
+                            }
+                            ++n2;
+                        }
+                    }
+                }
+                switch (n7) {
+                    case 0: {
+                        n2 = n == 0 || cArray[n8 - n4] != '\u0000' ? --n2 : ++n2;
+                        n2 = n == n5 - 1 || cArray[n8 + n4] != '\u0000' ? --n2 : ++n2;
+                        ++n8;
+                        ++n9;
+                        break;
+                    }
+                    case 1: {
+                        n2 = n9 == 0 || cArray[n8 - 1] != '\u0000' ? --n2 : ++n2;
+                        n2 = n9 == n4 - 1 || cArray[n8 + 1] != '\u0000' ? --n2 : ++n2;
+                        n8 += n4;
+                        ++n;
+                    }
+                }
+                bl = bl2;
+            }
+            nArray[i] = n2;
+            if (n10 != 0) continue;
+            nArray[i] = Integer.MIN_VALUE;
+        }
+        BitSet bitSet2 = this.state.allCrosses(this.latestWord);
+        n6 = this.options.forcedNext;
+        if (n6 != -1 && !this.state.isComplete(n6)) {
+            BitSet bitSet3 = this.state.allCrosses(n6);
+            n3 = bitSet3.nextSetBit(0);
+            while (n3 != -1) {
+                if (!this.state.isComplete(n3)) {
+                    bitSet2.set(n3);
+                }
+                n3 = bitSet3.nextSetBit(n3 + 1);
+            }
+        }
+        int[] nArray2 = this.cwFindAdjacentParallels(wordGrid, cArray, word, n4, n5);
+        for (n3 = 0; n3 < nArray2.length; ++n3) {
+            if (nArray2[n3] <= 1) continue;
+            bitSet2.set(n3);
+        }
+        n3 = -1;
+        n2 = this.cwCountCrossesOrEquivalent(bitSet2);
+        if (n2 > 0) {
+            WordGrid.Word[] wordArray = new WordGrid.Word[n2];
+            n2 = 0;
+            int n11 = bitSet2.nextSetBit(0);
+            while (n11 != -1) {
+                if (!this.state.isComplete(n11)) {
+                    n = n11;
+                    GreedyGridSearchNode greedyGridSearchNode = this;
+                    wordArray[n2++] = wordGrid.getWord(n11);
+                }
+                n11 = bitSet2.nextSetBit(n11 + 1);
+            }
+            Arrays.sort(wordArray, new /* Unavailable Anonymous Inner Class!! */);
+            this.cwSetNextWords(n2, wordArray);
+            for (n11 = 0; n11 < this.nextWords.length; ++n11) {
+                if (nArray[this.nextWords[n11]] == Integer.MAX_VALUE) continue;
+                n3 = this.nextWords[n11];
+                break;
+            }
+        }
+        if (n3 == -1) {
+            return this.chooseWordToFillGreedy();
+        }
+        return n3;
+    }
+
+    private int chooseWordToFillGreedy() {
+        int n = -1;
+        WordGrid.Word[] wordArray = this.state.getGrid();
+        Object[] objectArray = this.state.getChars();
+        float[] fArray = this.chooseNextCharScores;
+        synchronized (this.chooseNextCharScores) {
+            int n2;
+            Object object;
+            int n3;
+            Object object2 = objectArray;
+            WordGrid.Word[] wordArray2 = wordArray;
+            GreedyGridSearchNode greedyGridSearchNode = this;
+            int n4 = 0;
+            int n5 = ((char[])object2).length;
+            for (int i = 0; i < n5; ++i) {
+                n4 = Math.max(n4, wordArray2.getCrossWordCount(i));
+            }
+            CharacterScore[] characterScoreArray = new CharacterScore[n4];
+            for (n5 = 0; n5 < ((char[])object2).length; ++n5) {
+                greedyGridSearchNode.chooseNextCharScores[n5] = greedyGridSearchNode.computeCharScore(n5, greedyGridSearchNode.wordScores, null, true, characterScoreArray);
+            }
+            greedyGridSearchNode = this;
+            for (n3 = 0; n3 < greedyGridSearchNode.chooseNextScores.length; ++n3) {
+                if (greedyGridSearchNode.state.isComplete(n3)) {
+                    greedyGridSearchNode.chooseNextScores[n3] = Float.NEGATIVE_INFINITY;
+                    continue;
+                }
+                object2 = greedyGridSearchNode.state.getWord(n3);
+                n4 = object.letterIndices.length;
+                float f = 0.0f;
+                n5 = 0;
+                while (n5 < n4) {
+                    int n6 = n5++;
+                    object = object2;
+                    float f2 = greedyGridSearchNode.chooseNextCharScores[object2.letterIndices[n6]];
+                    f += f2;
+                }
+                if (f < 0.0f) {
+                    f = 0.0f;
+                }
+                greedyGridSearchNode.chooseNextScores[n3] = f;
+            }
+            greedyGridSearchNode = this;
+            for (n3 = 0; n3 < greedyGridSearchNode.chooseNextScores.length; ++n3) {
+                float f;
+                WordGrid.Word word2;
+                float f3 = greedyGridSearchNode.chooseNextScores[n3];
+                if (f3 < 0.0f) continue;
+                object = word2 = greedyGridSearchNode.state.getWord(n3);
+                int n7 = word2.letterIndices.length;
+                double d = GridStrategies.USE_1_1_STRATEGIES ? Math.pow(n7, -1.8) : Math.pow(n7, -2.8);
+                greedyGridSearchNode.chooseNextScores[n3] = f = (float)(-Math.sqrt((double)f3 * d));
+            }
+            Object object3 = wordArray;
+            greedyGridSearchNode = this;
+            for (n2 = 0; n2 < greedyGridSearchNode.chooseNextScores.length; ++n2) {
+                if (Float.isInfinite(greedyGridSearchNode.chooseNextScores[n2])) continue;
+                float f = 1.0f;
+                int n8 = 1;
+                SearchNode searchNode = greedyGridSearchNode.parent;
+                while (searchNode != null) {
+                    GridSearchNode gridSearchNode = (GridSearchNode)searchNode;
+                    int[] nArray = gridSearchNode.nextWords;
+                    for (int i = 0; i < nArray.length; ++i) {
+                        if (nArray[i] != n2) continue;
+                        if (greedyGridSearchNode.options.crossOlderWords) {
+                            f += n8 >= DEPTH_DIVISORS.length ? 5.0f : (float)DEPTH_DIVISORS[n8];
+                            break;
+                        }
+                        f += 1.0f;
+                        break;
+                    }
+                    searchNode = searchNode.parent;
+                    ++n8;
+                }
+                if (greedyGridSearchNode.options.fillEdgesFirst) {
+                    f += (float)object3.edgeCount(n2);
+                }
+                int n9 = n2;
+                greedyGridSearchNode.chooseNextScores[n9] = greedyGridSearchNode.chooseNextScores[n9] / f;
+            }
+            BitSet bitSet = this.options.neighborhood;
+            object3 = bitSet;
+            greedyGridSearchNode = this;
+            if (object3 != null) {
+                n2 = ((BitSet)object3).nextSetBit(0);
+                while (n2 != -1) {
+                    int n10 = n2;
+                    greedyGridSearchNode.chooseNextScores[n10] = greedyGridSearchNode.chooseNextScores[n10] / 1000000.0f;
+                    n2 = ((BitSet)object3).nextSetBit(n2 + 1);
+                }
+            }
+            if (this.latestWord != -1) {
+                bitSet = this.state.allCrosses(this.latestWord);
+                object3 = bitSet;
+                greedyGridSearchNode = this;
+                n2 = greedyGridSearchNode.options.forcedNext;
+                if (n2 != -1 && !greedyGridSearchNode.state.isComplete(n2)) {
+                    BitSet bitSet2 = greedyGridSearchNode.state.allCrosses(n2);
+                    int n11 = bitSet2.nextSetBit(0);
+                    while (n11 != -1) {
+                        if (!greedyGridSearchNode.state.isComplete(n11)) {
+                            int n12 = n11;
+                            greedyGridSearchNode.chooseNextScores[n12] = greedyGridSearchNode.chooseNextScores[n12] / 16.0f;
+                            ((BitSet)object3).set(n11);
+                        }
+                        n11 = bitSet2.nextSetBit(n11 + 1);
+                    }
+                }
+                greedyGridSearchNode = this.state.getWord(this.latestWord);
+                int n13 = wordArray.getWidth();
+                n2 = wordArray.getHeight();
+                objectArray = this.cwFindAdjacentParallels((WordGrid)wordArray, (char[])objectArray, (WordGrid.Word)greedyGridSearchNode, n13, n2);
+                GreedyGridSearchNode greedyGridSearchNode2 = greedyGridSearchNode;
+                n4 = ((WordGrid.Word)greedyGridSearchNode2).letterIndices.length >= 7 ? 1 : 0;
+                Object object4 = objectArray;
+                BitSet bitSet3 = bitSet;
+                greedyGridSearchNode = this;
+                for (int i = 0; i < ((char[])object4).length; ++i) {
+                    if (object4[i] <= '\u0001') continue;
+                    bitSet3.set(i);
+                    if (n4 == 0 || !greedyGridSearchNode.options.preferParallels) continue;
+                    greedyGridSearchNode2 = greedyGridSearchNode.state.getGrid().getWord(i);
+                    if (((WordGrid.Word)greedyGridSearchNode2).letterIndices.length <= 6) continue;
+                    int n14 = i;
+                    greedyGridSearchNode.chooseNextScores[n14] = greedyGridSearchNode.chooseNextScores[n14] / 5.0f;
+                }
+                int n15 = this.cwCountCrossesOrEquivalent(bitSet);
+                if (n15 > 0) {
+                    n4 = n15;
+                    object4 = bitSet;
+                    bitSet3 = wordArray;
+                    greedyGridSearchNode = this;
+                    WordGrid.Word[] wordArray3 = new WordGrid.Word[n4];
+                    n5 = 0;
+                    int n16 = ((BitSet)object4).nextSetBit(0);
+                    while (n16 != -1) {
+                        if (!greedyGridSearchNode.state.isComplete(n16)) {
+                            int n17 = n16;
+                            greedyGridSearchNode2 = greedyGridSearchNode;
+                            wordArray3[n5++] = bitSet3.getWord(n16);
+                            if (greedyGridSearchNode.depth > greedyGridSearchNode.options.softAdjacencyDepth) {
+                                int n18 = n16;
+                                greedyGridSearchNode.chooseNextScores[n18] = greedyGridSearchNode.chooseNextScores[n18] / 8.0f;
+                            }
+                        }
+                        n16 = ((BitSet)object4).nextSetBit(n16 + 1);
+                    }
+                    wordArray = wordArray3;
+                    Arrays.sort(wordArray3, Comparator.comparingDouble(word -> this.chooseNextScores[word.getWordIndex()]).reversed());
+                    this.cwSetNextWords(n15, wordArray);
+                    if (this.depth <= this.options.softAdjacencyDepth) {
+                        int n19 = -1;
+                        greedyGridSearchNode = this;
+                        for (int i = 0; i < greedyGridSearchNode.nextWords.length; ++i) {
+                            if (greedyGridSearchNode.chooseNextScores[greedyGridSearchNode.nextWords[i]] == Float.NEGATIVE_INFINITY) continue;
+                            n19 = greedyGridSearchNode.nextWords[i];
+                            break;
+                        }
+                        n = n19;
+                    }
+                }
+            }
+            if (n == -1) {
+                int n20;
+                greedyGridSearchNode = this;
+                int n21 = -1;
+                float f = Float.NEGATIVE_INFINITY;
+                for (int i = 0; i < greedyGridSearchNode.chooseNextScores.length; ++i) {
+                    if (!(greedyGridSearchNode.chooseNextScores[i] > f)) continue;
+                    f = greedyGridSearchNode.chooseNextScores[i];
+                    n21 = i;
+                }
+                n = n20 = n21;
+            }
+            // ** MonitorExit[var4_6] (shouldn't be in output)
+            return n;
+        }
+    }
+
+    private void cwSetNextWords(int n2, WordGrid.Word[] wordArray) {
+        this.nextWords = new int[n2];
+        Arrays.setAll(this.nextWords, n -> wordArray[n].getWordIndex());
+    }
+
+    private int cwCountCrossesOrEquivalent(BitSet bitSet) {
+        int n = 0;
+        int n2 = bitSet.nextSetBit(0);
+        while (n2 != -1) {
+            if (!this.state.isComplete(n2)) {
+                int n3 = n2;
+                GreedyGridSearchNode greedyGridSearchNode = this;
+                ++n;
+            }
+            n2 = bitSet.nextSetBit(n2 + 1);
+        }
+        return n;
+    }
+
+    private int[] cwFindAdjacentParallels(WordGrid wordGrid, char[] cArray, WordGrid.Word word, int n, int n2) {
+        int[] nArray = new int[wordGrid.getWordCount()];
+        int n3 = word.getDirection();
+        WordGrid.Word word2 = word;
+        int n4 = word2.letterIndices.length;
+        for (int i = 0; i < n4; ++i) {
+            int n5;
+            int n6;
+            int n7;
+            int n8 = i;
+            word2 = word;
+            int n9 = word2.letterIndices[n8];
+            n8 = n9 % n;
+            n9 /= n;
+            if (n3 == 0) {
+                n7 = 1;
+                n6 = n2;
+                if (n9 + 2 < n2) {
+                    n6 = n9 + 2;
+                }
+                for (n5 = n9 + 1; n5 < n6; ++n5) {
+                    if (cArray[n8 + n5 * n] == '\u007f') {
+                        n7 = -1000;
+                        continue;
+                    }
+                    GreedyGridSearchNode.incrAdj((WordGrid)wordGrid, (int[])nArray, (int)n8, (int)n5, (int)n3, (char[])cArray, (boolean)true, (int)n7);
+                }
+                n7 = 1;
+                n5 = 0;
+                if (n9 - 1 > 0) {
+                    n5 = n9 - 1;
+                }
+                for (n6 = n9 - 1; n6 >= n5; --n6) {
+                    if (cArray[n8 + n6 * n] == '\u007f') {
+                        n7 = -1000;
+                        continue;
+                    }
+                    GreedyGridSearchNode.incrAdj((WordGrid)wordGrid, (int[])nArray, (int)n8, (int)n6, (int)n3, (char[])cArray, (boolean)true, (int)n7);
+                }
+                continue;
+            }
+            n7 = 1;
+            n6 = n;
+            if (n8 + 2 < n) {
+                n6 = n8 + 2;
+            }
+            for (n5 = n8 + 1; n5 < n6; ++n5) {
+                if (cArray[n5 + n9 * n] == '\u007f') {
+                    n7 = -1000;
+                    continue;
+                }
+                GreedyGridSearchNode.incrAdj((WordGrid)wordGrid, (int[])nArray, (int)n5, (int)n9, (int)n3, (char[])cArray, (boolean)true, (int)n7);
+            }
+            n7 = 1;
+            n5 = 0;
+            if (n8 - 1 > 0) {
+                n5 = n8 - 1;
+            }
+            for (n6 = n8 - 1; n6 >= n5; --n6) {
+                if (cArray[n6 + n9 * n] == '\u007f') {
+                    n7 = -1000;
+                    continue;
+                }
+                GreedyGridSearchNode.incrAdj((WordGrid)wordGrid, (int[])nArray, (int)n6, (int)n9, (int)n3, (char[])cArray, (boolean)true, (int)n7);
+            }
+        }
+        return nArray;
+    }
+
+    public final void setVarietyFactor(float f) {
+        this.varietyFactor = f;
+    }
+
+    private float varietyMult() {
+        float f;
+        float f2 = 1.0f;
+        for (f = this.varietyFactor; f > 1.0f; f -= 1.0f) {
+            f2 *= rand.nextFloat();
+        }
+        float f3 = 1.0f;
+        if (this.varietyFactor != 0.0f) {
+            f3 = 1.0f - f * rand.nextFloat();
+        }
+        return f3 * f2;
+    }
+
+    protected final GridSearchNode makeSuccessor(GridState object) {
+        object = (GreedyGridSearchNode)super.makeSuccessor(object);
+        v0.charScores = (float[])this.charScores.clone();
+        object.wordScores = (CharacterScore[][])this.wordScores.clone();
+        return object;
+    }
+
+    private static float recomputeScore(float[] fArray) {
+        float f = 0.0f;
+        for (int i = 0; i < fArray.length; ++i) {
+            f += fArray[i];
+        }
+        return f;
+    }
+
+    private void initWordScores() {
+        int n2;
+        char[] cArray = this.state.getChars();
+        CharacterScore[] characterScoreArray = this;
+        long l = this.depthFirstFactor;
+        WordGrid wordGrid = this.state.getGrid();
+        this.wordScores = new CharacterScore[wordGrid.getWordCount()][];
+        this.charScores = new float[cArray.length];
+        this.chooseNextCharScores = new float[cArray.length];
+        this.chooseNextScores = new float[this.state.getWordCount()];
+        float f = this.options.minCandidateScore;
+        for (n2 = 0; n2 < wordGrid.getWordCount(); ++n2) {
+            WordGrid.Word word = wordGrid.getWord(n2);
+            characterScoreArray = word;
+            int n3 = word.letterIndices.length;
+            this.wordScores[n2] = new CharacterScore[n3];
+            characterScoreArray = this.wordScores[n2];
+            if (this.state.isComplete(n2)) {
+                float f2 = this.options.wordList.getWordScore(word.getString(cArray));
+                f2 = ((float)l + f2 * (float)this.qualityFactor) * this.varietyMult();
+                Arrays.setAll(characterScoreArray, n -> new SingleCharacterScore(word.getLetter(n, cArray), f2));
+                continue;
+            }
+            WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, n2, f);
+            Arrays.setAll(this.wordScores[n2], n -> new CharacterRangeCount(matchInfo, n, Integer.MAX_VALUE, 0));
+        }
+        n2 = 0;
+        int n4 = cArray.length;
+        for (int i = 0; i < n4; ++i) {
+            n2 = Math.max(n2, wordGrid.getCrossWordCount(i));
+        }
+        CharacterScore[] characterScoreArray2 = new CharacterScore[n2];
+        for (n4 = 0; n4 < cArray.length; ++n4) {
+            this.charScores[n4] = this.computeCharScore(n4, this.wordScores, null, false, characterScoreArray2);
+        }
+        this.priority = GreedyGridSearchNode.recomputeScore(this.charScores);
+    }
+
+    private float computeCharScore(int n, CharacterScore[][] characterScoreArray, IntIntHash intIntHash, boolean bl, CharacterScore[] characterScoreArray2) {
+        char c;
+        char c2;
+        int n2;
+        WordGrid wordGrid = this.state.getGrid();
+        int n3 = wordGrid.getCrossWordCount(n);
+        if (n3 == 0) {
+            return 0.0f;
+        }
+        int c22 = 0;
+        int c3 = 65535;
+        int n4 = 0;
+        int n5 = 1;
+        block0: for (int i = 0; i < n3; ++i) {
+            WordGrid.Word word;
+            int c4 = wordGrid.getCrossWord(n, i);
+            WordGrid.Word word2 = word = wordGrid.getWord(c4);
+            n5 *= word2.letterIndices.length;
+            n2 = 0;
+            word2 = word;
+            int n6 = word2.letterIndices.length;
+            while (n2 < n6) {
+                int n7 = n2++;
+                word2 = word;
+                if (word2.letterIndices[n7] != n) continue;
+                CharacterScore characterScore = characterScoreArray[c4][n2];
+                characterScoreArray2[n4++] = characterScore;
+                c22 = (char)Math.max(c22, characterScore.rangeStart());
+                c3 = (char)Math.min(c3, characterScore.rangeEnd());
+                continue block0;
+            }
+        }
+        float f = 0.0f;
+        int n8 = c22;
+        while (c2 < c3) {
+            float f2 = 1.0f;
+            if (bl) {
+                for (n2 = 0; n2 < n4; ++n2) {
+                    f2 *= characterScoreArray2[n2].getChooseNextScore(c2);
+                }
+            } else {
+                for (n2 = 0; n2 < n4; ++n2) {
+                    f2 *= characterScoreArray2[n2].getScore(c2);
+                }
+            }
+            f += f2;
+            c2 = (char)(c2 + true);
+        }
+        if (f == 0.0f) {
+            return Float.NEGATIVE_INFINITY;
+        }
+        if (c3 == c22 + 1 && intIntHash != null && (c = this.state.getChars()[n]) == '\u0000') {
+            intIntHash.put(n, c22);
+        }
+        if (GridStrategies.USE_1_1_STRATEGIES) {
+            return f / (float)n5;
+        }
+        return f;
+    }
+
+    public GreedyGridSearchNode(GridSearchNode gridSearchNode, GridState gridState, GridSearchNode.SharedOptions sharedOptions, int n, float f) {
+        super(gridSearchNode, gridState, sharedOptions);
+        this.depthFirstFactor = n;
+        this.varietyFactor = f;
+        this.initWordScores();
+    }
+
+    public String toString() {
+        return String.format("%4.2f:%s", Float.valueOf(this.getPriority()), this.dumpSequence());
+    }
+
+    public boolean equals(Object object) {
+        if (object == null || object.getClass() != ((Object)((Object)this)).getClass()) {
+            return false;
+        }
+        object = (GreedyGridSearchNode)((Object)object);
+        return this.latestWord == ((GreedyGridSearchNode)((Object)object)).latestWord && this.priority == ((GreedyGridSearchNode)((Object)object)).priority && this.chooseWordToFill() == object.chooseWordToFill() && Arrays.equals(this.state.getChars(), ((GreedyGridSearchNode)((Object)object)).state.getChars());
+    }
+
+    public int hashCode() {
+        return Objects.hash(this.latestWord, Float.valueOf(this.priority), this.chooseWordToFill()) & Arrays.hashCode(this.state.getChars());
+    }
+
+    private String dumpSequence() {
+        if (this.parent == null) {
+            return "<ROOT>";
+        }
+        return ((GreedyGridSearchNode)this.parent).dumpSequence() + ":" + (this.latestWord == -1 ? "???" : this.state.getGrid().getWord(this.latestWord).getDebugString(this.state.getChars()));
+    }
+}
+
+=== Decompiling QualityGridSearchNode ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.xwd.CharacterRangeScore
+ *  com.beekeeper.xwd.CharacterScore
+ *  com.beekeeper.xwd.ConstantCharacterScore
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode$FillOrder
+ *  com.beekeeper.xwd.GridSearchNode$GSNProxy
+ *  com.beekeeper.xwd.GridSearchNode$SharedOptions
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.SingleCharacterScore
+ *  com.beekeeper.xwd.WordGrid
+ *  com.beekeeper.xwd.WordGrid$Word
+ *  com.beekeeper.xwd.WordList$MatchInfo
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.xwd.CharacterRangeScore;
+import com.beekeeper.xwd.CharacterScore;
+import com.beekeeper.xwd.ConstantCharacterScore;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.SingleCharacterScore;
+import com.beekeeper.xwd.WordGrid;
+import com.beekeeper.xwd.WordList;
+import java.lang.ref.WeakReference;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Objects;
+
+public final class QualityGridSearchNode
+extends GridSearchNode {
+    private float varietyFactor = 0.0f;
+    private int depthFirstFactor = 1;
+    private float[] charScores;
+    private CharacterScore[][] wordScores;
+    private WeakReference<float[]> extraCharScores;
+    private WeakReference<CharacterScore[][]> extraWordScores;
+    public HashMap<Integer, Character> forcedChars;
+
+    public final synchronized GridSearchNode.GSNProxy conditionalSuccessor(int n, String string, float f) {
+        float f2;
+        int n2;
+        int n3;
+        int n4;
+        WordGrid.Word word;
+        GridState gridState = new GridState(this.state);
+        gridState.setString(n, string);
+        Object object = gridState.getChars();
+        WordGrid wordGrid = gridState.getGrid();
+        Object object2 = word = wordGrid.getWord(n);
+        int n5 = word.letterIndices.length;
+        object2 = this;
+        long l = object2.depthFirstFactor;
+        object = new BitSet(((char[])object).length);
+        float f3 = this.options.wordList.getWordScore(string) * (float)l;
+        f3 *= this.varietyMult();
+        CharacterScore[][] characterScoreArray = this.extraWordScores == null ? null : (CharacterScore[][])this.extraWordScores.get();
+        if (characterScoreArray == null) {
+            characterScoreArray = new CharacterScore[wordGrid.getWordCount()][];
+            this.extraWordScores = new WeakReference<CharacterScore[][]>(characterScoreArray);
+        }
+        for (n4 = 0; n4 < characterScoreArray.length; ++n4) {
+            characterScoreArray[n4] = this.wordScores[n4];
+        }
+        characterScoreArray[n] = new CharacterScore[n5];
+        for (n4 = 0; n4 < n5; ++n4) {
+            characterScoreArray[n][n4] = new SingleCharacterScore(string.charAt(n4), f3);
+        }
+        float f4 = this.options.minCandidateScore;
+        for (int i = 0; i < n5; ++i) {
+            int n6 = i;
+            object2 = word;
+            int n7 = object2.letterIndices[n6];
+            ((BitSet)object).set(n7);
+            for (n3 = 0; n3 < wordGrid.getCrossWordCount(n7); ++n3) {
+                WordGrid.Word word2;
+                n2 = wordGrid.getCrossWord(n7, n3);
+                if (n2 == n || gridState.isComplete(n2)) continue;
+                object2 = word2 = wordGrid.getWord(n2);
+                int n8 = word2.letterIndices.length;
+                int n9 = 0;
+                while (n9 < n8) {
+                    n6 = n9++;
+                    object2 = word2;
+                    ((BitSet)object).set(object2.letterIndices[n6]);
+                }
+                characterScoreArray[n2] = new CharacterScore[n8];
+                WordList.MatchInfo matchInfo = this.options.wordList.search(gridState, n2, f4);
+                int n10 = matchInfo.getMatchCount();
+                if (n10 == 0) {
+                    return null;
+                }
+                for (n10 = 0; n10 < n8; ++n10) {
+                    object2 = new CharacterRangeScore(matchInfo, n10, false);
+                    characterScoreArray[n2][n10] = object2;
+                    if (object2.getMaxScore() != 0.0f) continue;
+                    return null;
+                }
+            }
+        }
+        HashMap<Integer, Character> hashMap = new HashMap<Integer, Character>();
+        float[] fArray = this.extraCharScores == null ? null : (float[])this.extraCharScores.get();
+        if (fArray == null) {
+            fArray = new float[this.charScores.length];
+            this.extraCharScores = new WeakReference<float[]>(fArray);
+        }
+        for (n3 = 0; n3 < fArray.length; ++n3) {
+            fArray[n3] = this.charScores[n3];
+        }
+        CharacterScore[] characterScoreArray2 = new CharacterScore[2];
+        n2 = ((BitSet)object).nextSetBit(0);
+        while (n2 >= 0) {
+            float f5;
+            fArray[n2] = f5 = this.computeCharScore(n2, characterScoreArray, hashMap, characterScoreArray2);
+            n2 = ((BitSet)object).nextSetBit(n2 + 1);
+        }
+        float f6 = QualityGridSearchNode.recomputeScore(fArray);
+        if (f2 > f) {
+            return new GridSearchNode.GSNProxy(f6, (GridSearchNode)this, n, string);
+        }
+        return null;
+    }
+
+    private float varietyMult() {
+        float f = 1.0f;
+        if (this.varietyFactor != 0.0f) {
+            f = 1.0f - this.varietyFactor * rand.nextFloat();
+        }
+        return f;
+    }
+
+    protected final GridSearchNode makeSuccessor(GridState object) {
+        object = (QualityGridSearchNode)super.makeSuccessor(object);
+        v0.charScores = (float[])this.charScores.clone();
+        object.wordScores = (CharacterScore[][])this.wordScores.clone();
+        return object;
+    }
+
+    private static float recomputeScore(float[] fArray) {
+        float f = 0.0f;
+        for (int i = 0; i < fArray.length; ++i) {
+            float f2 = fArray[i];
+            f += f2;
+        }
+        return f;
+    }
+
+    private synchronized void initWordScores() {
+        int n;
+        HashMap<Integer, Character> hashMap = new HashMap<Integer, Character>();
+        this.forcedChars = hashMap;
+        char[] cArray = this.state.getChars();
+        QualityGridSearchNode qualityGridSearchNode = this;
+        long l = qualityGridSearchNode.depthFirstFactor;
+        WordGrid wordGrid = this.state.getGrid();
+        this.wordScores = new CharacterScore[wordGrid.getWordCount()][];
+        this.charScores = new float[cArray.length];
+        float f = this.options.minCandidateScore;
+        for (n = 0; n < wordGrid.getWordCount(); ++n) {
+            int n2;
+            WordGrid.Word word = wordGrid.getWord(n);
+            qualityGridSearchNode = word;
+            int n3 = word.letterIndices.length;
+            this.wordScores[n] = new CharacterScore[n3];
+            if (this.state.isComplete(n)) {
+                float f2;
+                float f3 = this.options.wordList.getWordScore(word.getString(cArray)) * (float)l;
+                f3 *= this.varietyMult();
+                if (f2 < 1.0f) {
+                    f3 = 1.0f;
+                }
+                for (n2 = 0; n2 < n3; ++n2) {
+                    this.wordScores[n][n2] = new SingleCharacterScore(word.getLetter(n2, cArray), f3);
+                }
+                continue;
+            }
+            WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, n, f);
+            n2 = matchInfo.getMatchCount();
+            if (n2 > 300) {
+                float f4 = matchInfo.highestMatchScore();
+                float f5 = f4;
+                f5 = f4;
+                f5 = f4 * this.varietyMult();
+                ConstantCharacterScore constantCharacterScore = new ConstantCharacterScore(f5, this.options.wordList);
+                for (int i = 0; i < n3; ++i) {
+                    this.wordScores[n][i] = constantCharacterScore;
+                }
+                continue;
+            }
+            for (int i = 0; i < n3; ++i) {
+                this.wordScores[n][i] = new CharacterRangeScore(matchInfo, i, false);
+            }
+        }
+        for (n = 0; n < cArray.length; ++n) {
+            this.charScores[n] = this.computeCharScore(n, this.wordScores, hashMap, null);
+        }
+        this.priority = QualityGridSearchNode.recomputeScore(this.charScores);
+    }
+
+    private float computeCharScore(int n, CharacterScore[][] characterScoreArray, HashMap<Integer, Character> hashMap, CharacterScore[] characterScoreArray2) {
+        char c;
+        char c2;
+        int n2;
+        WordGrid wordGrid = this.state.getGrid();
+        int n3 = wordGrid.getCrossWordCount(n);
+        if (n3 == 0) {
+            return 0.0f;
+        }
+        char c22 = '\u0000';
+        int c3 = 256;
+        int n4 = 0;
+        characterScoreArray2 = characterScoreArray2 == null || characterScoreArray2.length < n3 ? new CharacterScore[n3] : characterScoreArray2;
+        block0: for (int i = 0; i < n3; ++i) {
+            int c4 = wordGrid.getCrossWord(n, i);
+            WordGrid.Word word = wordGrid.getWord(c4);
+            n2 = 0;
+            WordGrid.Word word2 = word;
+            int n5 = word2.letterIndices.length;
+            while (n2 < n5) {
+                int n6 = n2++;
+                word2 = word;
+                if (word2.letterIndices[n6] != n) continue;
+                CharacterScore characterScore = characterScoreArray[c4][n2];
+                characterScoreArray2[n4++] = characterScore;
+                c22 = (char)Math.max(c22, characterScore.rangeStart());
+                c3 = (char)Math.min(c3, characterScore.rangeEnd());
+                continue block0;
+            }
+        }
+        float f = 0.0f;
+        char c5 = c22;
+        while (c2 < c3) {
+            float f2 = 1.0f;
+            for (n2 = 0; n2 < n4; ++n2) {
+                f2 *= characterScoreArray2[n2].getScore(c2);
+            }
+            if (f2 > f) {
+                f = f2;
+            }
+            c2 = (char)(c2 + true);
+        }
+        if (f == 0.0f) {
+            char c6 = this.state.getChars()[n];
+            if (c6 == '\u0000') {
+                hashMap.put(n, Character.valueOf(' '));
+            }
+            return Float.NEGATIVE_INFINITY;
+        }
+        if (c3 == c22 + 1 && (c = this.state.getChars()[n]) == '\u0000') {
+            hashMap.put(n, Character.valueOf(c22));
+        }
+        return (float)Math.sqrt(f);
+    }
+
+    public final synchronized void setString(int n, String object) {
+        WordGrid.Word word;
+        super.setString(n, (String)object);
+        this.latestWord = n;
+        object = this.state.getChars();
+        WordGrid wordGrid = this.state.getGrid();
+        Object object2 = word = wordGrid.getWord(n);
+        int n2 = word.letterIndices.length;
+        object2 = this;
+        long l = object2.depthFirstFactor;
+        BitSet bitSet = new BitSet(((Object)object).length);
+        float f = this.options.wordList.getWordScore(word.getString((char[])object)) * (float)l;
+        f *= this.varietyMult();
+        if (this.priority < 1.0f) {
+            this.priority = 1.0f;
+        }
+        this.wordScores[n] = new CharacterScore[n2];
+        for (int i = 0; i < n2; ++i) {
+            this.wordScores[n][i] = new SingleCharacterScore(word.getLetter(i, (char[])object), f);
+        }
+        float f2 = this.options.minCandidateScore;
+        int n3 = 0;
+        while (true) {
+            object2 = word;
+            if (n3 >= object2.letterIndices.length) break;
+            int n4 = n3;
+            object2 = word;
+            n2 = object2.letterIndices[n4];
+            bitSet.set(n2);
+            for (int i = 0; i < wordGrid.getCrossWordCount(n2); ++i) {
+                WordGrid.Word word2;
+                int n5 = wordGrid.getCrossWord(n2, i);
+                object2 = word2 = wordGrid.getWord(n5);
+                int n6 = word2.letterIndices.length;
+                if (n5 == n || this.state.isComplete(n5)) continue;
+                int n7 = 0;
+                while (n7 < n6) {
+                    n4 = n7++;
+                    object2 = word2;
+                    bitSet.set(object2.letterIndices[n4]);
+                }
+                this.wordScores[n5] = new CharacterScore[n6];
+                WordList.MatchInfo matchInfo = this.options.wordList.search(this.state, n5, f2);
+                int n8 = matchInfo.getMatchCount();
+                if (n8 == 0) {
+                    this.priority = Float.NEGATIVE_INFINITY;
+                    return;
+                }
+                if (n8 > 300) {
+                    float f3 = matchInfo.highestMatchScore();
+                    ConstantCharacterScore constantCharacterScore = new ConstantCharacterScore(f3 *= this.varietyMult(), this.options.wordList);
+                    for (int j = 0; j < n6; ++j) {
+                        this.wordScores[n5][j] = constantCharacterScore;
+                    }
+                    continue;
+                }
+                for (n8 = 0; n8 < n6; ++n8) {
+                    this.wordScores[n5][n8] = new CharacterRangeScore(matchInfo, n8, false);
+                }
+            }
+            ++n3;
+        }
+        HashMap<Integer, Character> hashMap = new HashMap<Integer, Character>();
+        n2 = bitSet.nextSetBit(0);
+        while (n2 >= 0) {
+            float f4;
+            this.charScores[n2] = f4 = this.computeCharScore(n2, this.wordScores, hashMap, null);
+            n2 = bitSet.nextSetBit(n2 + 1);
+        }
+        this.priority = QualityGridSearchNode.recomputeScore(this.charScores);
+    }
+
+    public QualityGridSearchNode(GridSearchNode gridSearchNode, GridState gridState, GridSearchNode.SharedOptions sharedOptions, int n, float f) {
+        super(gridSearchNode, gridState, sharedOptions);
+        if (sharedOptions.orderStrategy == GridSearchNode.FillOrder.UNSPECIFIED) {
+            sharedOptions.orderStrategy = GridSearchNode.FillOrder.QUALITY;
+        }
+        this.initWordScores();
+    }
+
+    public final String toString() {
+        return String.format("%4.2f:%s", Float.valueOf(this.getPriority()), this.dumpSequence());
+    }
+
+    public final boolean equals(Object object) {
+        if (object == null || object.getClass() != ((Object)((Object)this)).getClass()) {
+            return false;
+        }
+        object = (QualityGridSearchNode)((Object)object);
+        return this.latestWord == ((QualityGridSearchNode)((Object)object)).latestWord && this.priority == ((QualityGridSearchNode)((Object)object)).priority && this.chooseWordToFill() == object.chooseWordToFill();
+    }
+
+    public final int hashCode() {
+        return Objects.hash(this.latestWord, Float.valueOf(this.priority), this.chooseWordToFill());
+    }
+
+    private String dumpSequence() {
+        if (this.parent == null) {
+            return "<ROOT>";
+        }
+        return ((QualityGridSearchNode)this.parent).dumpSequence() + ":" + (this.latestWord == -1 ? "???" : this.state.getGrid().getWord(this.latestWord).getDebugString(this.state.getChars()));
+    }
+}
+
+=== Decompiling CCFillPanel_FillUpdateThread ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.GUIUtil
+ *  com.beekeeper.util.RecordTableModel
+ *  com.beekeeper.xwd.BuffWordList
+ *  com.beekeeper.xwd.CCConfig
+ *  com.beekeeper.xwd.CCFillPanel
+ *  com.beekeeper.xwd.CCFillPanel$DepthTrackerSearchNode
+ *  com.beekeeper.xwd.CCFillPanel$FillUpdateThread$SafeSearchNode
+ *  com.beekeeper.xwd.CCFillPanel$FindSolutionNode
+ *  com.beekeeper.xwd.CCFillPanel$StateInfo
+ *  com.beekeeper.xwd.CCFillPanel$TableData
+ *  com.beekeeper.xwd.CCFillPanel$UpdateTarget
+ *  com.beekeeper.xwd.CCFillPanel$WordTarget
+ *  com.beekeeper.xwd.DepthFirstSearch
+ *  com.beekeeper.xwd.DepthPlusSearch
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode$GSNProxy
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.WordGrid
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.GUIUtil;
+import com.beekeeper.util.RecordTableModel;
+import com.beekeeper.xwd.BuffWordList;
+import com.beekeeper.xwd.CCConfig;
+import com.beekeeper.xwd.CCFillPanel;
+import com.beekeeper.xwd.DepthFirstSearch;
+import com.beekeeper.xwd.DepthPlusSearch;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.WordGrid;
+import java.awt.Component;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
+import java.util.regex.Pattern;
+import javax.swing.SwingUtilities;
+
+/*
+ * Exception performing whole class analysis ignored.
+ */
+final class CCFillPanel.FillUpdateThread
+extends Thread {
+    private List<CCFillPanel.DepthTrackerSearchNode> depthNodes;
+    private boolean isInterrupting;
+
+    final synchronized void setInterrupting() {
+        this.isInterrupting = true;
+        this.interrupt();
+    }
+
+    private synchronized void checkInterrupting() throws InterruptedException {
+        if (this.isInterrupting) {
+            throw new InterruptedException();
+        }
+    }
+
+    public CCFillPanel.FillUpdateThread() {
+        super("Update fill info");
+        this.depthNodes = new ArrayList<CCFillPanel.DepthTrackerSearchNode>();
+        this.isInterrupting = false;
+        this.setPriority(3);
+        this.setDaemon(true);
+    }
+
+    @Override
+    public final void run() {
+        while (true) {
+            try {
+                while (true) {
+                    CCFillPanel.WordTarget wordTarget = Collections.emptyList();
+                    CCFillPanel.this.candidateThread.setCandidateInfo(null, 0, wordTarget, null, null, new TreeSet());
+                    CCFillPanel.this.setWorkingText("Ready");
+                    wordTarget = null;
+                    CCFillPanel.UpdateTarget updateTarget = null;
+                    CCFillPanel.FillUpdateThread fillUpdateThread = CCFillPanel.this.updateThread;
+                    synchronized (fillUpdateThread) {
+                        while (CCFillPanel.this.currentWords.isEmpty() && CCFillPanel.this.pendingUpdate == null) {
+                            try {
+                                CCFillPanel.this.updateThread.wait();
+                            }
+                            catch (InterruptedException interruptedException) {}
+                        }
+                        CCFillPanel.FillUpdateThread.interrupted();
+                        this.isInterrupting = false;
+                        if (!CCFillPanel.this.currentWords.isEmpty()) {
+                            wordTarget = (CCFillPanel.WordTarget)CCFillPanel.this.currentWords.removeFirst();
+                        } else {
+                            updateTarget = CCFillPanel.this.currentUpdate = CCFillPanel.this.pendingUpdate;
+                            CCFillPanel.this.pendingUpdate = null;
+                        }
+                    }
+                    if (wordTarget != null) {
+                        this.doUpdateWord(wordTarget);
+                        continue;
+                    }
+                    this.doUpdateOp(updateTarget);
+                }
+            }
+            catch (InterruptedException interruptedException) {
+                continue;
+            }
+            catch (Throwable throwable) {
+                GUIUtil.showStackTraceDialog((Component)CCFillPanel.this, (Throwable)throwable);
+                continue;
+            }
+            break;
+        }
+    }
+
+    /*
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     * Enabled aggressive exception aggregation
+     * Converted monitor instructions to comments
+     * Lifted jumps to return sites
+     */
+    private void doUpdateWord(CCFillPanel.WordTarget wordTarget) {
+        if (wordTarget.wasAdded) {
+            Iterator iterator = CCFillPanel.this.savedStates.iterator();
+            while (iterator.hasNext()) {
+                CCFillPanel.StateInfo stateInfo;
+                CCFillPanel.StateInfo stateInfo2 = stateInfo = (CCFillPanel.StateInfo)iterator.next();
+                // MONITORENTER : stateInfo
+                if (stateInfo.isBad) {
+                    stateInfo.isBad = false;
+                }
+                // MONITOREXIT : stateInfo2
+            }
+            return;
+        }
+        Iterator iterator = CCFillPanel.this.savedStates.iterator();
+        while (iterator.hasNext()) {
+            GridState gridState;
+            int n;
+            int n2;
+            CCFillPanel.StateInfo stateInfo = (CCFillPanel.StateInfo)iterator.next();
+            String string = wordTarget.word;
+            GridState gridState2 = CCFillPanel.this.cc.getDisplay().getState();
+            int n3 = CCFillPanel.findCompleteWord((String)string, (GridState)gridState2);
+            CCFillPanel.StateInfo stateInfo3 = stateInfo;
+            // MONITORENTER : stateInfo3
+            GridState gridState3 = stateInfo.completeState;
+            if (gridState3 != null && (n2 = CCFillPanel.findCompleteWord((String)string, (GridState)gridState3)) != -1) {
+                n = 1;
+                if (n3 != -1 && CCFillPanel.isAncestor((GridState)gridState2, (GridState)gridState3)) {
+                    n = 0;
+                }
+                if (n != 0) {
+                    stateInfo.isExhaustive = false;
+                    stateInfo.completeState = null;
+                    stateInfo.completeScore = -1.0f;
+                    stateInfo.completeBranch = -1;
+                }
+            }
+            if ((gridState = stateInfo.depthState) != null && (n = CCFillPanel.findCompleteWord((String)string, (GridState)gridState)) != -1) {
+                boolean bl = true;
+                if (n3 != -1 && CCFillPanel.isAncestor((GridState)gridState2, (GridState)gridState)) {
+                    bl = false;
+                }
+                if (bl) {
+                    stateInfo.depthState = null;
+                    stateInfo.depthScore = -1.0f;
+                }
+            }
+            // MONITOREXIT : stateInfo3
+        }
+    }
+
+    /*
+     * Enabled aggressive block sorting
+     * Enabled unnecessary exception pruning
+     * Enabled aggressive exception aggregation
+     * Converted monitor instructions to comments
+     * Lifted jumps to return sites
+     */
+    private void doUpdateOp(CCFillPanel.UpdateTarget object) throws InterruptedException {
+        CCFillPanel.StateInfo stateInfo;
+        Object object2;
+        int n;
+        CCFillPanel.StateInfo stateInfo2;
+        BuffWordList buffWordList;
+        BitSet bitSet;
+        CCFillPanel.DepthTrackerSearchNode depthTrackerSearchNode;
+        BitSet bitSet2;
+        Pattern[] patternArray;
+        BitSet bitSet3;
+        int n2;
+        GridState gridState;
+        block74: {
+            RecordTableModel recordTableModel;
+            CCFillPanel.StateInfo stateInfo3;
+            int n3;
+            gridState = ((CCFillPanel.UpdateTarget)object).state;
+            n2 = ((CCFillPanel.UpdateTarget)object).selectedWord;
+            object = ((CCFillPanel.UpdateTarget)object).area;
+            bitSet3 = null;
+            if (object != null && ((BitSet)object).cardinality() > 1) {
+                bitSet3 = new BitSet();
+                WordGrid wordGrid = gridState.getGrid();
+                n3 = ((BitSet)object).nextSetBit(0);
+                while (n3 != -1) {
+                    if (gridState.getChars()[n3] != '\u007f') {
+                        int n4 = wordGrid.getCrossWordCount(n3);
+                        for (int i = 0; i < n4; ++i) {
+                            bitSet3.set(wordGrid.getCrossWord(n3, i));
+                        }
+                    }
+                    n3 = ((BitSet)object).nextSetBit(n3 + 1);
+                }
+            }
+            object = this;
+            ((CCFillPanel.FillUpdateThread)object).CCFillPanel.this.setWorkingText("*Preparing*");
+            ((CCFillPanel.FillUpdateThread)object).CCFillPanel.this.setCantFill(false);
+            try {
+                SwingUtilities.invokeAndWait((Runnable)new /* Unavailable Anonymous Inner Class!! */);
+            }
+            catch (InvocationTargetException invocationTargetException) {
+            }
+            catch (InterruptedException interruptedException) {}
+            this.checkInterrupting();
+            if (n2 == -1) return;
+            if (gridState.isComplete(n2)) {
+                return;
+            }
+            patternArray = CCFillPanel.this.getStateInfo(gridState, bitSet3);
+            Object object3 = patternArray;
+            // MONITORENTER : patternArray
+            float f = patternArray.completeScore;
+            n3 = patternArray.isBad ? 1 : 0;
+            // MONITOREXIT : object3
+            object3 = new Pattern[1];
+            try {
+                SwingUtilities.invokeAndWait((Runnable)new /* Unavailable Anonymous Inner Class!! */);
+            }
+            catch (InvocationTargetException invocationTargetException) {
+                throw new RuntimeException(invocationTargetException);
+            }
+            object = object3[0];
+            object3 = gridState.findIsland(n2);
+            bitSet2 = new BitSet();
+            int n5 = gridState.getWordCount();
+            for (int i = 0; i < n5; ++i) {
+                if (gridState.isComplete(i) || ((BitSet)object3).get(i) || bitSet2.get(i)) continue;
+                bitSet2.or(gridState.findIsland(i));
+            }
+            if (bitSet3 != null) {
+                ((BitSet)object3).and(bitSet3);
+                bitSet2.and(bitSet3);
+            }
+            depthTrackerSearchNode = new CCFillPanel.DepthTrackerSearchNode(CCFillPanel.this, gridState, null);
+            new CCFillPanel.DepthTrackerSearchNode(CCFillPanel.this, gridState, null).options.neighborhood = bitSet3;
+            bitSet = new BitSet(gridState.getWordCount());
+            object3 = depthTrackerSearchNode.generateCandidateWords(n2, (Pattern)object, bitSet);
+            buffWordList = CCFillPanel.this.cc.getWordList();
+            Collections.sort(object3, new /* Unavailable Anonymous Inner Class!! */);
+            stateInfo2 = new TreeSet();
+            CCFillPanel.this.setCantFill(n3 != 0);
+            if (f != -1.0f) {
+                Object object4 = patternArray;
+                // MONITORENTER : patternArray
+                GridState gridState2 = patternArray.completeState;
+                n = patternArray.completeBranch;
+                // MONITOREXIT : object4
+                object4 = patternArray.completeState.getCompleteWord(n2);
+                if (object4 != null) {
+                    object2 = new GridState(gridState);
+                    object2.setString(n2, (String)object4);
+                    stateInfo3 = CCFillPanel.this.getStateInfo((GridState)object2, bitSet3);
+                    if (stateInfo3.completeScore == -1.0f) {
+                        stateInfo3.completeScore = f;
+                        stateInfo3.completeState = gridState2;
+                        stateInfo3.completeBranch = n;
+                        stateInfo3.isBad = false;
+                    }
+                    if (stateInfo3.depthScore == -1.0f) {
+                        CCFillPanel.DepthTrackerSearchNode depthTrackerSearchNode2 = new CCFillPanel.DepthTrackerSearchNode(CCFillPanel.this, (GridState)object2, this.depthNodes);
+                        new CCFillPanel.DepthTrackerSearchNode(CCFillPanel.this, (GridState)object2, this.depthNodes).options.neighborhood = bitSet3;
+                        depthTrackerSearchNode2.maxDepth = CCConfig.getCandidateQuality();
+                        this.depthNodes.clear();
+                        CCFillPanel.doSearch((GridSearchNode)depthTrackerSearchNode2, (int)Integer.MAX_VALUE, (int)CCFillPanel.this.cc.getOptWidth());
+                        this.checkInterrupting();
+                        depthTrackerSearchNode2.maxDepth = Integer.MAX_VALUE;
+                        recordTableModel = this.depthNodes.get(this.depthNodes.size() - 1);
+                        stateInfo3.depthState = recordTableModel.state;
+                        stateInfo3.depthScore = recordTableModel.getQuality();
+                    }
+                    if ((object == null || ((Pattern)object).matcher((CharSequence)object4).matches()) && stateInfo3.depthScore != -1.0f) {
+                        CCFillPanel.this.addTableEntry(n2, stateInfo3, (CCFillPanel.StateInfo)patternArray);
+                    }
+                }
+            }
+            this.checkInterrupting();
+            CCFillPanel.this.setWorkingText("*Generating candidates*");
+            this.checkInterrupting();
+            stateInfo = new TreeSet();
+            CCFillPanel.this.candidateThread.setCandidateInfo((GridSearchNode)depthTrackerSearchNode, n2, (List)object3, stateInfo2, (CCFillPanel.StateInfo)patternArray, stateInfo);
+            n = 0;
+            boolean bl = false;
+            while (true) {
+                this.checkInterrupting();
+                stateInfo3 = stateInfo2;
+                // MONITORENTER : stateInfo3
+                while (!((ArrayList)object3).isEmpty() && stateInfo2.isEmpty()) {
+                    stateInfo2.wait();
+                }
+                this.checkInterrupting();
+                if (!bl && ((ArrayList)object3).isEmpty()) {
+                    bl = true;
+                    CCFillPanel.this.setWorkingText("*Evaluating candidates*");
+                }
+                if (stateInfo2.isEmpty()) {
+                    recordTableModel = CCFillPanel.this.fpModel;
+                    // MONITORENTER : recordTableModel
+                    boolean bl2 = CCFillPanel.this.fpModel.getRowCount() == 0;
+                    // MONITOREXIT : recordTableModel
+                    if (bl2 && object == null) {
+                        n = 1;
+                    }
+                    // MONITOREXIT : stateInfo3
+                    if (CCFillPanel.this.fpModel.getRowCount() < 100) {
+                        break;
+                    }
+                    break block74;
+                }
+                object2 = (CCFillPanel.StateInfo)stateInfo2.first();
+                stateInfo2.remove(object2);
+                // MONITOREXIT : stateInfo3
+                this.doSafeSearch(n2, (CCFillPanel.StateInfo)object2, (CCFillPanel.StateInfo)patternArray, bitSet2, bitSet3);
+                this.checkInterrupting();
+                if (((CCFillPanel.StateInfo)object2).completeScore != -1.0f || ((CCFillPanel.StateInfo)object2).isBad) continue;
+                stateInfo3 = object2;
+                // MONITORENTER : stateInfo3
+                ++((CCFillPanel.StateInfo)object2).searchLevel;
+                if (((CCFillPanel.StateInfo)object2).searchLevel >= 5) {
+                    ((CCFillPanel.StateInfo)object2).shouldTrackBlocking = true;
+                }
+                ++((CCFillPanel.StateInfo)object2).reorderCount;
+                // MONITOREXIT : stateInfo3
+                stateInfo3 = stateInfo2;
+                // MONITORENTER : stateInfo3
+                stateInfo2.add(object2);
+                // MONITOREXIT : stateInfo3
+            }
+            if (!stateInfo.isEmpty()) {
+                CCFillPanel.this.setWorkingText("*Checking additional candidates*");
+                while (!stateInfo.isEmpty() && CCFillPanel.this.fpModel.getRowCount() < 100) {
+                    object2 = (GridSearchNode.GSNProxy)stateInfo.first();
+                    stateInfo.remove(object2);
+                    stateInfo3 = (CCFillPanel.DepthTrackerSearchNode)object2.getNode();
+                    GridState gridState3 = stateInfo3.state;
+                    recordTableModel = CCFillPanel.this.getStateInfo(gridState3, bitSet3);
+                    boolean bl3 = false;
+                    stateInfo2 = recordTableModel;
+                    // MONITORENTER : stateInfo2
+                    if (recordTableModel.isBad) {
+                        // MONITOREXIT : stateInfo2
+                        continue;
+                    }
+                    if (recordTableModel.completeState != null) {
+                        bl3 = true;
+                    } else {
+                        if (recordTableModel.searchLevel > 4) {
+                            // MONITOREXIT : stateInfo2
+                            continue;
+                        }
+                        recordTableModel.searchLevel = 4;
+                    }
+                    // MONITOREXIT : stateInfo2
+                    this.checkInterrupting();
+                    if (!bl3) {
+                        this.doSafeSearch(n2, (CCFillPanel.StateInfo)recordTableModel, (CCFillPanel.StateInfo)patternArray, bitSet2, bitSet3);
+                        this.checkInterrupting();
+                        stateInfo2 = recordTableModel;
+                        // MONITORENTER : stateInfo2
+                        if (recordTableModel.completeState != null) {
+                            n = 0;
+                        } else {
+                            ++recordTableModel.searchLevel;
+                        }
+                        // MONITOREXIT : stateInfo2
+                        continue;
+                    }
+                    n = 0;
+                    CCFillPanel.this.addTableEntry(n2, (CCFillPanel.StateInfo)recordTableModel, (CCFillPanel.StateInfo)patternArray);
+                }
+            }
+        }
+        if (CCFillPanel.this.fpModel.getRowCount() < 100 && CCFillPanel.this.showEliminated) {
+            CCFillPanel.this.setWorkingText("*Checking additional candidates*");
+            object2 = depthTrackerSearchNode.generateCandidateWords(n2, (Pattern)object, bitSet);
+            Collections.sort(object2, new /* Unavailable Anonymous Inner Class!! */);
+            for (int i = 0; i < ((ArrayList)object2).size() && CCFillPanel.this.fpModel.getRowCount() < 100; ++i) {
+                GridState gridState4 = new GridState(gridState);
+                gridState4.setString(n2, (String)((ArrayList)object2).get(i));
+                int n6 = CCFillPanel.this.findModelIndex(gridState4);
+                if (n6 != -1) continue;
+                CCFillPanel.StateInfo stateInfo4 = CCFillPanel.this.getStateInfo(gridState4, bitSet3);
+                CCFillPanel.this.getStateInfo(gridState4, bitSet3).isBad = true;
+                stateInfo4.depthScore = -1.0f;
+                stateInfo4.completeScore = -1.0f;
+                CCFillPanel.this.addTableEntry(n2, stateInfo4, (CCFillPanel.StateInfo)patternArray);
+            }
+        }
+        int n7 = 0;
+        int n8 = gridState.getWordCount();
+        for (int i = 0; i < n8; ++i) {
+            if (bitSet2.get(i) || bitSet3 != null && !bitSet3.get(i) || gridState.isComplete(i)) continue;
+            ++n7;
+        }
+        if (n == 0 && n7 <= 10) {
+            CCFillPanel.this.setWorkingText("*Finding best fills*");
+            ArrayList<GridState> arrayList = new ArrayList<GridState>();
+            GridState gridState5 = null;
+            int n9 = CCFillPanel.this.fpModel.getRowCount();
+            for (int i = 0; i < n9; ++i) {
+                this.checkInterrupting();
+                arrayList.add(((CCFillPanel.TableData)CCFillPanel.this.fpModel.getValueAt(i)).getState());
+                if (gridState5 != null) continue;
+                gridState5 = ((CCFillPanel.TableData)CCFillPanel.this.fpModel.getValueAt(i)).getCompleteState();
+            }
+            for (GridState gridState6 : arrayList) {
+                float f;
+                this.checkInterrupting();
+                stateInfo2 = CCFillPanel.this.getStateInfo(gridState6, bitSet3);
+                object = stateInfo2;
+                // MONITORENTER : stateInfo2
+                if (stateInfo2.isExhaustive) {
+                    // MONITOREXIT : object
+                    continue;
+                }
+                // MONITOREXIT : object
+                object = gridState6;
+                if (bitSet2.cardinality() > 0 && gridState5 != null) {
+                    object = new GridState((GridState)object);
+                    int n10 = bitSet2.nextSetBit(0);
+                    while (n10 != -1) {
+                        object.setString(n10, gridState5.getCompleteWord(n10));
+                        n10 = bitSet2.nextSetBit(n10 + 1);
+                    }
+                }
+                CCFillPanel.FindSolutionNode findSolutionNode = new CCFillPanel.FindSolutionNode(CCFillPanel.this, (GridState)object);
+                new CCFillPanel.FindSolutionNode(CCFillPanel.this, (GridState)object).options.beam = Integer.MAX_VALUE;
+                findSolutionNode.options.beamMultiplier = 1;
+                findSolutionNode.options.neighborhood = bitSet3;
+                if (CCFillPanel.this.cc.getOptWidth() > 1) {
+                    findSolutionNode = new DepthPlusSearch((SearchNode)findSolutionNode);
+                    v2.maxWidth = Integer.MAX_VALUE;
+                    findSolutionNode.setExhaustive(true);
+                    this.checkInterrupting();
+                    object = findSolutionNode;
+                    object = (GridSearchNode)object.search2(Integer.MAX_VALUE);
+                } else {
+                    findSolutionNode = new DepthFirstSearch((SearchNode)findSolutionNode);
+                    v3.maxWidth = Integer.MAX_VALUE;
+                    findSolutionNode.setExhaustive(true);
+                    this.checkInterrupting();
+                    object = findSolutionNode;
+                    object = (GridSearchNode)object.search2(Integer.MAX_VALUE);
+                }
+                if (object == null) continue;
+                this.checkInterrupting();
+                int n11 = CCFillPanel.computeBranchCount((GridSearchNode)object);
+                stateInfo = stateInfo2;
+                // MONITORENTER : stateInfo
+                float f2 = object.getQuality();
+                if (f < stateInfo2.completeScore && CCFillPanel.WARNINGS != null) {
+                    CCFillPanel.WARNINGS.log("Exhaustive search produced worse result.");
+                }
+                stateInfo2.completeScore = f2;
+                stateInfo2.completeState = ((GridSearchNode)object).state;
+                stateInfo2.completeBranch = n11;
+                stateInfo2.isExhaustive = true;
+                // MONITOREXIT : stateInfo
+                CCFillPanel.this.addTableEntry(n2, stateInfo2, (CCFillPanel.StateInfo)patternArray);
+            }
+        }
+        if (n != 0) {
+            CCFillPanel.this.setCantFill(true);
+            Pattern[] patternArray2 = patternArray;
+            // MONITORENTER : patternArray
+            if (patternArray.completeState == null) {
+                patternArray.isBad = true;
+            } else if (CCFillPanel.DEBUG != null) {
+                CCFillPanel.DEBUG.log("Good node gone bad");
+            }
+            // MONITOREXIT : patternArray2
+        }
+        try {
+            SwingUtilities.invokeAndWait((Runnable)new /* Unavailable Anonymous Inner Class!! */);
+            return;
+        }
+        catch (InvocationTargetException invocationTargetException) {
+            throw new RuntimeException(invocationTargetException);
+        }
+    }
+
+    private boolean doSafeSearch(int n, CCFillPanel.StateInfo stateInfo, CCFillPanel.StateInfo stateInfo2, BitSet bitSet, BitSet bitSet2) throws InterruptedException {
+        boolean bl;
+        int n2;
+        int n3;
+        int n4;
+        CCFillPanel.StateInfo stateInfo3 = stateInfo;
+        synchronized (stateInfo3) {
+            n4 = CCFillPanel.this.cc.getOptWidth();
+            n3 = (int)(600.0 * Math.pow(3.0, stateInfo.searchLevel));
+            n2 = stateInfo.reorderCount;
+            bl = stateInfo.shouldTrackBlocking;
+        }
+        CCFillPanel.StateInfo stateInfo4 = stateInfo2;
+        synchronized (stateInfo4) {
+            stateInfo3 = stateInfo2.completeState;
+        }
+        if (CCFillPanel.VERBOSE != null) {
+            CCFillPanel.VERBOSE.log("Searching " + stateInfo.state.getString(n) + " for " + n3 + " repeats");
+        }
+        stateInfo4 = stateInfo.state;
+        if (bitSet.cardinality() > 0 && stateInfo3 != null) {
+            stateInfo4 = new GridState(stateInfo.state);
+            int n5 = bitSet.nextSetBit(0);
+            while (n5 != -1) {
+                stateInfo4.setString(n5, stateInfo3.getCompleteWord(n5));
+                n5 = bitSet.nextSetBit(n5 + 1);
+            }
+        }
+        SafeSearchNode safeSearchNode = new SafeSearchNode(this, (GridState)stateInfo4, this.depthNodes, n2);
+        new SafeSearchNode(this, (GridState)stateInfo4, this.depthNodes, n2).options.neighborhood = bitSet2;
+        safeSearchNode.options.trackBlockingWords = bl;
+        this.depthNodes.clear();
+        safeSearchNode.latestWord = n;
+        bitSet = CCFillPanel.doSearch((GridSearchNode)safeSearchNode, (int)n3, (int)n4);
+        this.checkInterrupting();
+        boolean bl2 = bitSet == null;
+        int n6 = n3 = bitSet != null && !bitSet.isGoalNode() ? 1 : 0;
+        if (bl2) {
+            n3 = 0;
+            CCFillPanel.StateInfo stateInfo5 = stateInfo;
+            synchronized (stateInfo5) {
+                if (bl) {
+                    stateInfo.isBad = true;
+                    n3 = 1;
+                } else {
+                    stateInfo.shouldTrackBlocking = true;
+                }
+            }
+            if (n3 != 0) {
+                try {
+                    SwingUtilities.invokeAndWait((Runnable)new /* Unavailable Anonymous Inner Class!! */);
+                }
+                catch (Exception exception) {}
+            }
+        } else if (n3 == 0 && bitSet != null) {
+            n3 = CCFillPanel.computeBranchCount((GridSearchNode)bitSet);
+            CCFillPanel.StateInfo stateInfo6 = stateInfo;
+            synchronized (stateInfo6) {
+                stateInfo.completeScore = bitSet.getQuality();
+                stateInfo.completeState = ((GridSearchNode)bitSet).state;
+                stateInfo.completeBranch = n3;
+                if (stateInfo.depthState == null) {
+                    bitSet = (GridSearchNode)safeSearchNode.depthResults.get(Math.min(CCConfig.getCandidateQuality(), safeSearchNode.depthResults.size() - 1));
+                    stateInfo.depthState = ((GridSearchNode)bitSet).state;
+                    stateInfo.depthScore = bitSet.getQuality();
+                }
+                stateInfo.isBad = false;
+            }
+            CCFillPanel.this.addTableEntry(n, stateInfo, stateInfo2);
+        }
+        return !bl2;
+    }
+}
+
+=== Decompiling CCFillPanel_CandidateThread ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.RecordTableModel
+ *  com.beekeeper.xwd.CCConfig
+ *  com.beekeeper.xwd.CCFillPanel
+ *  com.beekeeper.xwd.CCFillPanel$DepthTrackerSearchNode
+ *  com.beekeeper.xwd.CCFillPanel$StateInfo
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode$GSNProxy
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.GridStrategies
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.RecordTableModel;
+import com.beekeeper.xwd.CCConfig;
+import com.beekeeper.xwd.CCFillPanel;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.GridStrategies;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.SortedSet;
+
+/*
+ * Exception performing whole class analysis ignored.
+ */
+final class CCFillPanel.CandidateThread
+extends Thread {
+    private List<String> input;
+    private SortedSet<CCFillPanel.StateInfo> output;
+    private List<CCFillPanel.DepthTrackerSearchNode> depthNodes;
+    private CCFillPanel.StateInfo parentInfo;
+    private GridSearchNode parentNode;
+    private int wordIndex;
+    private SortedSet<GridSearchNode.GSNProxy> extraOut;
+    private /* synthetic */ CCFillPanel this$0;
+
+    public CCFillPanel.CandidateThread(CCFillPanel cCFillPanel) {
+        this.this$0 = cCFillPanel;
+        super("Generate candidates");
+        this.depthNodes = new ArrayList<CCFillPanel.DepthTrackerSearchNode>();
+        this.setPriority(3);
+        this.setDaemon(true);
+    }
+
+    public final synchronized void setCandidateInfo(GridSearchNode gridSearchNode, int n, List<String> list, SortedSet<CCFillPanel.StateInfo> sortedSet, CCFillPanel.StateInfo stateInfo, SortedSet<GridSearchNode.GSNProxy> sortedSet2) {
+        this.input = list;
+        this.output = sortedSet;
+        this.parentInfo = stateInfo;
+        this.parentNode = gridSearchNode;
+        this.wordIndex = n;
+        this.extraOut = sortedSet2;
+        this.notifyAll();
+    }
+
+    @Override
+    public final void run() {
+        while (true) {
+            Object object;
+            try {
+                while (true) {
+                    SortedSet<GridSearchNode.GSNProxy> sortedSet;
+                    int n;
+                    GridSearchNode gridSearchNode;
+                    CCFillPanel.StateInfo stateInfo;
+                    SortedSet<CCFillPanel.StateInfo> sortedSet2;
+                    CCFillPanel.CandidateThread candidateThread = this;
+                    synchronized (candidateThread) {
+                        while (this.input == null) {
+                            try {
+                                this.wait();
+                            }
+                            catch (InterruptedException interruptedException) {}
+                        }
+                        object = this.input;
+                        sortedSet2 = this.output;
+                        stateInfo = this.parentInfo;
+                        gridSearchNode = this.parentNode;
+                        n = this.wordIndex;
+                        sortedSet = this.extraOut;
+                        this.input = null;
+                    }
+                    this.generateCandidates(gridSearchNode, n, (List<String>)object, sortedSet2, stateInfo, sortedSet);
+                }
+            }
+            catch (Throwable throwable) {
+                object = throwable;
+                throwable.printStackTrace();
+                continue;
+            }
+            break;
+        }
+    }
+
+    private synchronized CCFillPanel.DepthTrackerSearchNode generateDepthNode(CCFillPanel.DepthTrackerSearchNode depthTrackerSearchNode, CCFillPanel.StateInfo stateInfo) {
+        block6: {
+            int n = CCConfig.getCandidateQuality();
+            boolean bl = n == 0;
+            if (bl) break block6;
+            depthTrackerSearchNode = (CCFillPanel.DepthTrackerSearchNode)depthTrackerSearchNode.clone();
+            v0.maxDepth = n;
+            depthTrackerSearchNode.cloneOptions();
+            depthTrackerSearchNode.options.aggressiveBacktracking = false;
+            this.depthNodes.clear();
+            depthTrackerSearchNode.depthResults = this.depthNodes;
+            depthTrackerSearchNode = CCFillPanel.doSearch((GridSearchNode)depthTrackerSearchNode, (int)Integer.MAX_VALUE, (int)this.this$0.cc.getOptWidth());
+            if (this.input != null) {
+                return null;
+            }
+            if (depthTrackerSearchNode == null) {
+                CCFillPanel.StateInfo stateInfo2 = stateInfo;
+                synchronized (stateInfo2) {
+                    stateInfo.isBad = true;
+                }
+            }
+            if ((n = depthTrackerSearchNode == null || !depthTrackerSearchNode.isGoalNode() ? 1 : 0) != 0) {
+                return null;
+            }
+            depthTrackerSearchNode = this.depthNodes.get(this.depthNodes.size() - 1);
+        }
+        return depthTrackerSearchNode;
+    }
+
+    private void generateCandidates(GridSearchNode gridSearchNode, int n, List<String> list, SortedSet<CCFillPanel.StateInfo> sortedSet, CCFillPanel.StateInfo stateInfo, SortedSet<GridSearchNode.GSNProxy> sortedSet2) {
+        GridState gridState;
+        GridSearchNode.GSNProxy gSNProxy;
+        int n2 = this.this$0.cc.getMinAutofillScore();
+        int n3 = 0;
+        Iterator<String> iterator = list.iterator();
+        int n4 = (list.size() + 100 - 1) / 100;
+        n4 = Math.max(10, n4);
+        if (gridSearchNode != null) {
+            this.this$0.cc.getOptWidth();
+        }
+        while ((iterator.hasNext() || !sortedSet2.isEmpty()) && n3 < 100) {
+            int n5;
+            if (this.input != null) {
+                return;
+            }
+            for (int i = 0; i < n4 && iterator.hasNext(); ++i) {
+                gSNProxy = gridSearchNode.conditionalSuccessor(n, iterator.next(), (float)n2);
+                if (gSNProxy == null) continue;
+                sortedSet2.add(gSNProxy);
+            }
+            if (sortedSet2.isEmpty()) continue;
+            Object object = sortedSet2.first();
+            sortedSet2.remove(object);
+            gSNProxy = (CCFillPanel.DepthTrackerSearchNode)object.getNode();
+            int n6 = gSNProxy.latestWord;
+            GridState gridState2 = gSNProxy.state;
+            gridState = this.this$0.getStateInfo(gridState2, gSNProxy.options.neighborhood);
+            RecordTableModel recordTableModel = this.this$0.fpModel;
+            synchronized (recordTableModel) {
+                n5 = this.this$0.fpModel.getRowCount();
+            }
+            int n7 = 1;
+            if (n5 > 50) {
+                n7 = 5;
+            } else if (n5 > 15) {
+                n7 = 3;
+            }
+            if (gridState.isBad) {
+                if (gridState.depthScore != -1.0f) {
+                    ++n3;
+                }
+                if (!this.this$0.showEliminated) continue;
+                this.this$0.addTableEntry(n6, (CCFillPanel.StateInfo)gridState, stateInfo);
+                continue;
+            }
+            if (gridState.depthScore == -1.0f) {
+                object = this.generateDepthNode((CCFillPanel.DepthTrackerSearchNode)gSNProxy, (CCFillPanel.StateInfo)gridState);
+                if (this.input != null) {
+                    return;
+                }
+                if (object == null) continue;
+                gSNProxy = gridState;
+                synchronized (gSNProxy) {
+                    gridState.depthState = object.state;
+                    gridState.depthScore = object.getQuality();
+                    gridState.searchLevel = n7 - 1;
+                }
+            }
+            ++n3;
+            object = this;
+            synchronized (object) {
+                if (this.input != null) {
+                    return;
+                }
+                this.this$0.addTableEntry(n6, (CCFillPanel.StateInfo)gridState, stateInfo);
+            }
+            if (gridState.completeScore != -1.0f) continue;
+            object = sortedSet;
+            synchronized (object) {
+                sortedSet.add((CCFillPanel.StateInfo)gridState);
+                sortedSet.notifyAll();
+            }
+        }
+        if (GridStrategies.USE_1_1_STRATEGIES) {
+            Iterator iterator2 = sortedSet2.iterator();
+            while (iterator2.hasNext()) {
+                if (this.input != null) {
+                    return;
+                }
+                gSNProxy = (GridSearchNode.GSNProxy)iterator2.next();
+                CCFillPanel.DepthTrackerSearchNode depthTrackerSearchNode = (CCFillPanel.DepthTrackerSearchNode)gSNProxy.getNode();
+                int n8 = depthTrackerSearchNode.latestWord;
+                gridState = depthTrackerSearchNode.state;
+                CCFillPanel.StateInfo stateInfo2 = this.this$0.getStateInfo(gridState, depthTrackerSearchNode.options.neighborhood);
+                if (stateInfo2.completeScore == -1.0f) continue;
+                if (stateInfo2.depthState == null) {
+                    CCFillPanel.DepthTrackerSearchNode depthTrackerSearchNode2 = this.generateDepthNode(depthTrackerSearchNode, stateInfo2);
+                    if (this.input != null) {
+                        return;
+                    }
+                    if (depthTrackerSearchNode2 == null) continue;
+                    stateInfo2.depthState = depthTrackerSearchNode2.state;
+                    stateInfo2.depthScore = depthTrackerSearchNode2.getQuality();
+                }
+                if (this.input != null) {
+                    return;
+                }
+                this.this$0.addTableEntry(n8, stateInfo2, stateInfo);
+                iterator2.remove();
+            }
+        }
+        list.clear();
+        if (sortedSet != null) {
+            SortedSet<CCFillPanel.StateInfo> sortedSet3 = sortedSet;
+            synchronized (sortedSet3) {
+                sortedSet.notifyAll();
+                return;
+            }
+        }
+    }
+}
+
+=== Decompiling GridSearchNode_CandidateGenerator ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.WordList$MatchInfo
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.WordList;
+import java.util.BitSet;
+import java.util.regex.Pattern;
+
+public final class GridSearchNode.CandidateGenerator {
+    String value;
+    private WordList.MatchInfo match;
+    private BitSet blocking;
+    private int thisIndex = -1;
+    private Pattern filter;
+    private /* synthetic */ GridSearchNode this$0;
+
+    public GridSearchNode.CandidateGenerator(GridSearchNode gridSearchNode, int n, Pattern pattern, BitSet bitSet) {
+        this.this$0 = gridSearchNode;
+        this.filter = pattern;
+        this.blocking = bitSet;
+        this.match = gridSearchNode.options.wordList.search(gridSearchNode.state, n);
+    }
+
+    public final boolean advance() {
+        String string;
+        boolean bl;
+        do {
+            boolean bl2;
+            GridSearchNode.CandidateGenerator candidateGenerator;
+            String string2;
+            block8: {
+                int n;
+                ++this.thisIndex;
+                if (this.thisIndex == this.match.getMatchCount()) {
+                    return false;
+                }
+                string2 = string = this.match.getMatch(this.thisIndex);
+                candidateGenerator = this;
+                float f = candidateGenerator.match.getScore(candidateGenerator.thisIndex);
+                if (f < 1.0f || f < (float)candidateGenerator.this$0.options.minCandidateScore) {
+                    bl = false;
+                    continue;
+                }
+                String string3 = string2;
+                GridSearchNode.CandidateGenerator candidateGenerator2 = candidateGenerator;
+                int n2 = candidateGenerator2.this$0.state.getWordCount();
+                for (n = 0; n < n2; ++n) {
+                    String string4 = candidateGenerator2.this$0.state.getCompleteWord(n);
+                    if (string4 == null || !string3.equals(string4)) continue;
+                    candidateGenerator2.blocking.set(n);
+                    bl2 = true;
+                    break block8;
+                }
+                n = candidateGenerator2.this$0.options.longestSubstring;
+                int n3 = string3.length() - n;
+                for (int i = 0; i < n3; ++i) {
+                    for (int j = 0; j < n2; ++j) {
+                        String string5 = candidateGenerator2.this$0.state.getCompleteWord(j);
+                        if (string5 == null || string5.length() <= n) continue;
+                        int n4 = string5.length() - n;
+                        block4: for (int k = 0; k < n4; ++k) {
+                            if (string3.charAt(i) != string5.charAt(k)) continue;
+                            for (int i2 = 1; i2 <= n; ++i2) {
+                                if (string3.charAt(i + i2) != string5.charAt(k + i2)) continue block4;
+                            }
+                            candidateGenerator2.blocking.set(j);
+                            bl2 = true;
+                            break block8;
+                        }
+                    }
+                }
+                bl2 = false;
+            }
+            bl = bl2 ? false : candidateGenerator.filter == null || candidateGenerator.filter.matcher(string2).find();
+        } while (!bl);
+        this.value = string;
+        return true;
+    }
+}
+
+=== Decompiling GridSearchNode_FillOrder ===
+/*
+ * Decompiled with CFR 0.152.
+ */
+package com.beekeeper.xwd;
+
+static final class GridSearchNode.FillOrder
+extends Enum<GridSearchNode.FillOrder> {
+    public static final /* enum */ GridSearchNode.FillOrder STANDARD = new GridSearchNode.FillOrder();
+    public static final /* enum */ GridSearchNode.FillOrder QUALITY = new GridSearchNode.FillOrder();
+    public static final /* enum */ GridSearchNode.FillOrder FRONTIER = new GridSearchNode.FillOrder();
+    public static final /* enum */ GridSearchNode.FillOrder UNSPECIFIED = new GridSearchNode.FillOrder();
+    private static final /* synthetic */ GridSearchNode.FillOrder[] $VALUES;
+
+    public static GridSearchNode.FillOrder[] values() {
+        return (GridSearchNode.FillOrder[])$VALUES.clone();
+    }
+
+    static {
+        $VALUES = new GridSearchNode.FillOrder[]{STANDARD, QUALITY, FRONTIER, UNSPECIFIED};
+    }
+}
+
+=== Decompiling GridSearchNode_SharedOptions ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.xwd.GridSearchNode$FillOrder
+ *  com.beekeeper.xwd.GridSearchNode$WordStringIntMap
+ *  com.beekeeper.xwd.GridStrategies
+ *  com.beekeeper.xwd.WordList
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridStrategies;
+import com.beekeeper.xwd.WordList;
+import java.util.ArrayList;
+import java.util.BitSet;
+
+public static final class GridSearchNode.SharedOptions
+extends GridStrategies
+implements Cloneable {
+    public int beam = 20;
+    public int beamMultiplier = 5;
+    public int minCandidateScore = 1;
+    public boolean aggressiveBacktracking = false;
+    public boolean generousParallels = false;
+    public int longestSubstring = Integer.MAX_VALUE;
+    public GridSearchNode.FillOrder orderStrategy = GridSearchNode.FillOrder.QUALITY;
+    protected GridSearchNode.WordStringIntMap badWords;
+    public WordList wordList;
+    public BitSet neighborhood;
+    public int[] failureCounts;
+    public int[] successCounts;
+    public int[] persistentFailureCounts;
+    public int[] persistentSuccessCounts;
+    public int forcedNext;
+    public int rootBeam;
+    public boolean fastCount;
+    public boolean trackBlockingWords;
+
+    public final GridSearchNode.SharedOptions clone() {
+        try {
+            return (GridSearchNode.SharedOptions)super.clone();
+        }
+        catch (CloneNotSupportedException cloneNotSupportedException) {
+            throw new RuntimeException(cloneNotSupportedException);
+        }
+    }
+
+    public GridSearchNode.SharedOptions(int n, WordList wordList) {
+        new ArrayList();
+        this.forcedNext = -1;
+        this.rootBeam = -1;
+        this.fastCount = true;
+        this.trackBlockingWords = true;
+        this.wordList = wordList;
+        this.beam = n;
+    }
+
+    public final void setBadWordsHeuristic(boolean bl) {
+        this.badWords = null;
+    }
+}
+
+=== Decompiling FrontierPrint ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.closedhash.IntIntHash
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.SearchNode
+ *  com.beekeeper.xwd.SearchNode$Fingerprint
+ *  com.beekeeper.xwd.WordGrid$Word
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.closedhash.IntIntHash;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.WordGrid;
+import java.util.Arrays;
+import java.util.BitSet;
+
+public final class FrontierPrint
+extends SearchNode.Fingerprint {
+    private final char[] chars;
+
+    public FrontierPrint(GridState gridState, BitSet bitSet) {
+        this(FrontierPrint.getStateChars(gridState, bitSet));
+    }
+
+    private static char[] getStateChars(GridState gridState, BitSet bitSet) {
+        int n;
+        char[] cArray = gridState.getChars();
+        IntIntHash intIntHash = new IntIntHash(cArray.length, 0.7);
+        int n2 = gridState.getWordCount();
+        for (int i = 0; i < n2; ++i) {
+            int n3;
+            WordGrid.Word word;
+            if (bitSet != null && !bitSet.get(i)) continue;
+            WordGrid.Word word2 = word = gridState.getWord(i);
+            n = word.letterIndices.length;
+            int n4 = 0;
+            for (n3 = 0; n3 < n; ++n3) {
+                if (!FrontierPrint.isFrontierSquare(cArray, word, n3)) continue;
+                ++n4;
+            }
+            if (n4 == 0 || gridState.isComplete(i)) continue;
+            for (n3 = 0; n3 < n; ++n3) {
+                if (!FrontierPrint.isFrontierSquare(cArray, word, n3)) continue;
+                int n5 = n3;
+                WordGrid.Word word3 = word;
+                intIntHash.put(word3.letterIndices[n5], (int)word.getLetter(n3, cArray));
+            }
+        }
+        char[] cArray2 = new char[intIntHash.size() << 1];
+        n2 = 0;
+        for (int n6 = 0; n6 < cArray.length; n6 = (int)((char)(n6 + 1))) {
+            n = intIntHash.get(n6, -1);
+            if (n == -1) continue;
+            cArray2[n2++] = n6;
+            cArray2[n2++] = (char)n;
+        }
+        if (n2 != cArray2.length) {
+            throw new IllegalStateException();
+        }
+        return cArray2;
+    }
+
+    private static boolean isFrontierSquare(char[] cArray, WordGrid.Word word, int n) {
+        return word.getLetter(n, cArray) != '\u0000';
+    }
+
+    private FrontierPrint(char[] cArray) {
+        this.chars = cArray;
+    }
+
+    public final int hashCode() {
+        int n = 31 + Arrays.hashCode(this.chars);
+        return n;
+    }
+
+    public final boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null) {
+            return false;
+        }
+        if (((Object)((Object)this)).getClass() != object.getClass()) {
+            return false;
+        }
+        object = (FrontierPrint)((Object)object);
+        return Arrays.equals(this.chars, ((FrontierPrint)((Object)object)).chars);
+    }
+
+    public final boolean matches(SearchNode object) {
+        object = ((GridSearchNode)object).state.getChars();
+        for (int i = 0; i < this.chars.length; i += 2) {
+            if (object[this.chars[i]] == this.chars[i + 1]) continue;
+            return false;
+        }
+        return true;
+    }
+}
+
+=== Decompiling SearchNode ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.closedhash.ObjectSet
+ *  com.beekeeper.xwd.BadStateError
+ *  com.beekeeper.xwd.SearchNode$Fingerprint
+ *  com.beekeeper.xwd.SearchNodeProxy
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.closedhash.ObjectSet;
+import com.beekeeper.xwd.BadStateError;
+import com.beekeeper.xwd.SearchNode;
+import com.beekeeper.xwd.SearchNodeProxy;
+
+public abstract class SearchNode
+implements SearchNodeProxy,
+Comparable<SearchNode> {
+    private static int nextNumber = 0;
+    public SearchNode parent;
+    public int depth;
+    protected int liveChildCount;
+    boolean isFinished;
+
+    public SearchNode() {
+        this.assignID();
+    }
+
+    protected final void assignID() {
+        Class<SearchNode> clazz = SearchNode.class;
+        synchronized (SearchNode.class) {
+            ++nextNumber;
+            // ** MonitorExit[var1_1] (shouldn't be in output)
+            return;
+        }
+    }
+
+    public final int getDepth() {
+        return this.depth;
+    }
+
+    public final SearchNode getParent() {
+        return this.parent;
+    }
+
+    public final void setLiveChildCount(int n) {
+        this.liveChildCount = n;
+    }
+
+    public final int getLiveChildCount() {
+        return this.liveChildCount;
+    }
+
+    public SearchNode(SearchNode searchNode) {
+        this.parent = searchNode;
+        this.depth = searchNode == null ? 0 : searchNode.depth + 1;
+        this.liveChildCount = Integer.MAX_VALUE;
+    }
+
+    public abstract float getPriority();
+
+    public float getQuality() {
+        return this.getPriority();
+    }
+
+    public abstract boolean isGoalNode();
+
+    public abstract SearchNodeProxy[] generateSuccessors(float var1);
+
+    @Override
+    public int compareTo(SearchNode searchNode) {
+        float f;
+        float f2 = this.getPriority() - searchNode.getPriority();
+        if (f < 0.0f) {
+            return 1;
+        }
+        if (f2 == 0.0f) {
+            return 0;
+        }
+        return -1;
+    }
+
+    public boolean equals(Object object) {
+        if (object == this) {
+            return true;
+        }
+        if (!(object instanceof SearchNode)) {
+            return false;
+        }
+        return ((SearchNode)object).getPriority() == this.getPriority();
+    }
+
+    public abstract Fingerprint getFingerprint();
+
+    public void markDead(boolean bl) throws BadStateError {
+    }
+
+    public boolean reconcileWithDeadStates(ObjectSet<Fingerprint> iter) {
+        iter = iter.getIterator();
+        while (iter.advance()) {
+            if (!((Fingerprint)iter.getKey()).matches(this)) continue;
+            return false;
+        }
+        return true;
+    }
+
+    public void markFinished() {
+        this.isFinished = true;
+    }
+
+    public final SearchNode getNode() {
+        return this;
+    }
+
+    public void initForSearch() {
+        this.isFinished = false;
+    }
+}
+
+=== Decompiling GridState ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.util.Starlog
+ *  com.beekeeper.util.StringUtil
+ *  com.beekeeper.xwd.AcrossLiteGrid
+ *  com.beekeeper.xwd.CFPGrid
+ *  com.beekeeper.xwd.CFPGrid$Clue
+ *  com.beekeeper.xwd.IPuzGrid
+ *  com.beekeeper.xwd.JPZGrid
+ *  com.beekeeper.xwd.JPZGrid$WordInfo
+ *  com.beekeeper.xwd.WordGrid
+ *  com.beekeeper.xwd.WordGrid$Word
+ *  com.beekeeper.xwd.WordList
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.util.Starlog;
+import com.beekeeper.util.StringUtil;
+import com.beekeeper.xwd.AcrossLiteGrid;
+import com.beekeeper.xwd.CFPGrid;
+import com.beekeeper.xwd.IPuzGrid;
+import com.beekeeper.xwd.JPZGrid;
+import com.beekeeper.xwd.WordGrid;
+import com.beekeeper.xwd.WordList;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+public class GridState {
+    private static final Starlog WARNINGS = Starlog.get((int)1);
+    private final WordGrid grid;
+    private final char[] gridChars;
+    private final String[] completeWords;
+    private final String[] clues;
+    private String title;
+    private String author;
+    private String copyright;
+    private String notepad;
+    private BitSet themes;
+    public BitSet circles;
+    private final boolean[] completeSet;
+    private boolean storeCompleteWords;
+    private StringUtil rebuses$6d32e3b8;
+    private static final StringUtil EMPTY_REBUSES$6d32e3b8 = new StringUtil();
+
+    public final WordGrid getGrid() {
+        return this.grid;
+    }
+
+    public final char[] getChars() {
+        return this.gridChars;
+    }
+
+    public final int getWordCount() {
+        return this.grid.getWordCount();
+    }
+
+    public final WordGrid.Word getWord(int n) {
+        return this.grid.getWord(n);
+    }
+
+    public final ArrayList<WordGrid.Word> getSortedWords(int n) {
+        ArrayList<WordGrid.Word> arrayList = new ArrayList<WordGrid.Word>();
+        GridState gridState = this;
+        int n2 = gridState.grid.getWordCount();
+        for (int i = 0; i < n2; ++i) {
+            WordGrid.Word word = this.getWord(i);
+            int n3 = word.getDirection();
+            if (n3 != n) continue;
+            arrayList.add(word);
+        }
+        Collections.sort(arrayList);
+        return arrayList;
+    }
+
+    public final boolean isComplete(int n) {
+        return this.completeSet[n];
+    }
+
+    public final boolean isTheme(int n) {
+        return this.themes.get(n);
+    }
+
+    public final void setTheme(int n, boolean bl) {
+        this.themes.set(n, bl);
+    }
+
+    public final boolean isCircle(int n) {
+        return this.circles.get(n);
+    }
+
+    public final String getString(int n) {
+        String string = this.completeWords[n];
+        if (string != null) {
+            return string;
+        }
+        string = this.getWord(n).getString(this.gridChars);
+        if (this.storeCompleteWords) {
+            int n2 = n;
+            GridState gridState = this;
+            if (gridState.completeSet[n2]) {
+                this.completeWords[n] = string;
+            }
+        }
+        return string;
+    }
+
+    public final String getDebugString(int n) {
+        return this.getWord(n).getDebugString(this.gridChars);
+    }
+
+    public final void setString(int n, String object) {
+        WordGrid.Word word = this.getWord(n);
+        Object object2 = word;
+        String string = object;
+        object2 = this.gridChars;
+        object = word;
+        for (int i = 0; i < string.length(); ++i) {
+            object2[((WordGrid.Word)object).letterIndices[i]] = (WordGrid.Word)string.charAt(i);
+        }
+        boolean bl = true;
+        int n2 = n;
+        object = this;
+        ((GridState)object).completeSet[n2] = true;
+        if (((GridState)object).storeCompleteWords) {
+            ((GridState)object).completeWords[n2] = ((GridState)object).getWord(n2).getString(((GridState)object).gridChars);
+            return;
+        }
+        ((GridState)object).completeWords[n2] = null;
+    }
+
+    public final String getClue(int n) {
+        if (this.clues[n] == null) {
+            return "";
+        }
+        return this.clues[n];
+    }
+
+    public final void setClue(int n, String string) {
+        this.clues[n] = string;
+    }
+
+    public boolean equals(Object object) {
+        if (!(object instanceof GridState)) {
+            return false;
+        }
+        object = (GridState)object;
+        if (this.gridChars.length != ((GridState)object).gridChars.length) {
+            return false;
+        }
+        if (this.grid != ((GridState)object).grid) {
+            return false;
+        }
+        for (int i = 0; i < this.gridChars.length; ++i) {
+            if (this.gridChars[i] == ((GridState)object).gridChars[i]) continue;
+            return false;
+        }
+        return Arrays.equals(this.completeSet, ((GridState)object).completeSet);
+    }
+
+    public int hashCode() {
+        int n;
+        int n2 = 0;
+        for (n = 0; n < this.gridChars.length; ++n) {
+            n2 = n2 * 17 + this.gridChars[n];
+        }
+        GridState gridState = this;
+        int n3 = gridState.grid.getWordCount();
+        for (n = 0; n < n3; ++n) {
+            n2 = n2 * 19 + (this.completeSet[n] ? 3 : 0);
+        }
+        return n2;
+    }
+
+    public GridState(WordGrid wordGrid) {
+        WordGrid wordGrid2 = wordGrid;
+        this(wordGrid2, (char[])wordGrid2.getInitChars().clone());
+    }
+
+    private GridState(WordGrid wordGrid, char[] cArray) {
+        this.title = "";
+        this.author = "";
+        this.copyright = "";
+        this.storeCompleteWords = true;
+        this.grid = wordGrid;
+        this.gridChars = cArray;
+        this.completeWords = new String[wordGrid.getWordCount()];
+        this.completeSet = new boolean[wordGrid.getWordCount()];
+        this.clues = new String[wordGrid.getWordCount()];
+        this.themes = new BitSet(wordGrid.getWordCount());
+        this.circles = new BitSet(cArray.length);
+        this.computeComplete();
+    }
+
+    public GridState(GridState gridState, char[] cArray) {
+        this.title = "";
+        this.author = "";
+        this.copyright = "";
+        this.storeCompleteWords = true;
+        this.grid = gridState.grid;
+        this.gridChars = cArray;
+        this.clues = (String[])gridState.clues.clone();
+        this.themes = new BitSet(this.grid.getWordCount());
+        this.circles = new BitSet(cArray.length);
+        this.rebuses$6d32e3b8 = new StringUtil(gridState.getRebuses$e04f0f9());
+        this.completeWords = new String[this.grid.getWordCount()];
+        this.completeSet = new boolean[this.grid.getWordCount()];
+        this.computeComplete();
+        this.updateClues(gridState);
+    }
+
+    /*
+     * Unable to fully structure code
+     */
+    public final void updateClues(GridState var1_1) {
+        this.title = var1_1.title;
+        this.author = var1_1.author;
+        this.copyright = var1_1.copyright;
+        this.notepad = var1_1.notepad;
+        this.rebuses$6d32e3b8 = new StringUtil(var1_1.getRebuses$e04f0f9());
+        this.themes = new BitSet(this.grid.getWordCount());
+        if (this.grid == var1_1.grid) {
+            for (var2_2 = 0; var2_2 < this.completeWords.length; ++var2_2) {
+                this.clues[var2_2] = var1_1.clues[var2_2];
+                var11_6 = var2_2;
+                var10_4 = this;
+                if (!var10_4.completeSet[var11_6]) {
+                    var11_6 = var2_2;
+                    var10_4 = var1_1;
+                    if (!var10_4.completeSet[var11_6]) continue;
+                    this.clues[var2_2] = "";
+                    continue;
+                }
+                if (this.getCompleteWord(var2_2).equals(var1_1.getCompleteWord(var2_2))) continue;
+                this.clues[var2_2] = "";
+            }
+            this.themes.or(var1_1.themes);
+            this.circles.or(var1_1.circles);
+            return;
+        }
+        var3_8 = this.completeWords.length;
+        for (var2_3 = 0; var2_3 < var3_8; ++var2_3) {
+            var4_9 = this.getWord(var2_3);
+            v0 = var1_1;
+            var10_5 = v0;
+            var11_7 = 0;
+            var10_5 = var4_9;
+            var5_10 = v0.grid.getWordAt(var10_5.letterIndices[var11_7], var4_9.getDirection(), true);
+            if (var5_10 == null) ** GOTO lbl-1000
+            v1 = var4_9;
+            var10_5 = v1;
+            var10_5 = var5_10;
+            if (v1.letterIndices.length == var10_5.letterIndices.length) {
+                v2 = true;
+            } else lbl-1000:
+            // 2 sources
+
+            {
+                v2 = var6_11 = false;
+            }
+            if (v2) {
+                var7_12 = 0;
+                var10_5 = var4_9;
+                var8_13 = var10_5.letterIndices.length;
+                while (var7_12 < var8_13) {
+                    var11_7 = var7_12;
+                    var10_5 = var4_9;
+                    var9_14 = var10_5.letterIndices[var11_7];
+                    var11_7 = var7_12++;
+                    var10_5 = var5_10;
+                    if (var9_14 == var10_5.letterIndices[var11_7] && this.gridChars[var9_14] == var1_1.gridChars[var9_14]) continue;
+                    var6_11 = false;
+                    break;
+                }
+            }
+            this.clues[var2_3] = var6_11 != false ? var1_1.clues[var5_10.getWordIndex()] : "";
+            this.themes.set(var2_3, var6_11 != false ? var1_1.themes.get(var5_10.getWordIndex()) : false);
+        }
+        var2_3 = var1_1.circles.nextSetBit(0);
+        while (var2_3 != -1) {
+            if (this.gridChars[var2_3] != '\u007f') {
+                this.circles.set(var2_3);
+            }
+            var2_3 = var1_1.circles.nextSetBit(var2_3 + 1);
+        }
+    }
+
+    private void computeComplete() {
+        int n = 0;
+        while (true) {
+            block3: {
+                GridState gridState = this;
+                if (n >= gridState.grid.getWordCount()) break;
+                int n2 = 0;
+                while (true) {
+                    gridState = this.getWord(n);
+                    if (n2 >= ((WordGrid.Word)gridState).letterIndices.length) break;
+                    int n3 = n2++;
+                    gridState = this;
+                    int n4 = n;
+                    if (gridState.getWord(n4).getLetter(n3, gridState.gridChars) != '\u0000') {
+                        continue;
+                    }
+                    break block3;
+                    break;
+                }
+                this.completeSet[n] = true;
+            }
+            ++n;
+        }
+    }
+
+    public GridState(GridState gridState) {
+        this.title = "";
+        this.author = "";
+        this.copyright = "";
+        this.storeCompleteWords = true;
+        this.grid = gridState.grid;
+        this.gridChars = new char[gridState.gridChars.length];
+        System.arraycopy(gridState.gridChars, 0, this.gridChars, 0, this.gridChars.length);
+        this.completeWords = new String[gridState.completeWords.length];
+        System.arraycopy(gridState.completeWords, 0, this.completeWords, 0, this.completeWords.length);
+        this.completeSet = new boolean[this.completeWords.length];
+        System.arraycopy(gridState.completeSet, 0, this.completeSet, 0, this.completeSet.length);
+        this.clues = new String[gridState.clues.length];
+        System.arraycopy(gridState.clues, 0, this.clues, 0, this.clues.length);
+        this.title = gridState.title;
+        this.author = gridState.author;
+        this.copyright = gridState.copyright;
+        this.notepad = gridState.notepad;
+        this.themes = (BitSet)gridState.themes.clone();
+        this.rebuses$6d32e3b8 = new StringUtil(gridState.getRebuses$e04f0f9());
+        this.circles = new BitSet(this.gridChars.length);
+        this.circles.or(gridState.circles);
+    }
+
+    public GridState(IPuzGrid iPuzGrid) {
+        this(iPuzGrid.width, iPuzGrid.height, iPuzGrid.chars, null, iPuzGrid.title, iPuzGrid.author, iPuzGrid.copyright, iPuzGrid.notePad, iPuzGrid.circles, iPuzGrid.rebuses$6d32e3b8);
+        int n;
+        Object object;
+        Object object2;
+        Object object3;
+        Map object52 = iPuzGrid.cellNumbers;
+        HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
+        for (Map.Entry entry : object52.entrySet()) {
+            hashMap.put((String)entry.getValue(), (Integer)entry.getKey());
+        }
+        Map map = iPuzGrid.acrossClues;
+        for (Map.Entry entry : map.entrySet()) {
+            Map.Entry entry2 = (String)entry.getKey();
+            object3 = (Integer)hashMap.get(entry2);
+            if (object3 == null || (object2 = this.grid.getWordAt(((Integer)object3).intValue(), 0, true)) == null) continue;
+            object = object2;
+            if (((WordGrid.Word)object).letterIndices.length <= 0) continue;
+            n = 0;
+            object = object2;
+            if (((WordGrid.Word)object).letterIndices[n] != (Integer)object3) continue;
+            entry2 = (String)entry.getValue();
+            n = object2.getWordIndex();
+            object = this;
+            ((GridState)object).clues[n] = entry2;
+        }
+        Map map2 = iPuzGrid.downClues;
+        for (Map.Entry entry2 : map2.entrySet()) {
+            object3 = (String)entry2.getKey();
+            object2 = (Integer)hashMap.get(object3);
+            if (object2 == null || (iPuzGrid = this.grid.getWordAt(((Integer)object2).intValue(), 1, true)) == null) continue;
+            object = iPuzGrid;
+            if (((WordGrid.Word)object).letterIndices.length <= 0) continue;
+            n = 0;
+            object = iPuzGrid;
+            if (((WordGrid.Word)object).letterIndices[n] != (Integer)object2) continue;
+            entry2 = (String)entry2.getValue();
+            n = iPuzGrid.getWordIndex();
+            object = this;
+            ((GridState)object).clues[n] = entry2;
+        }
+    }
+
+    public GridState(AcrossLiteGrid acrossLiteGrid) {
+        this(acrossLiteGrid.width, acrossLiteGrid.height, acrossLiteGrid.chars, acrossLiteGrid.userChars, acrossLiteGrid.title, acrossLiteGrid.author, acrossLiteGrid.copyright, acrossLiteGrid.notePad, acrossLiteGrid.circles, acrossLiteGrid.rebuses$6d32e3b8);
+        GridState gridState;
+        int n;
+        String string;
+        ArrayList<WordGrid.Word> arrayList = this.getSortedWords(0);
+        int n2 = arrayList.size();
+        for (int i = 0; i < n2; ++i) {
+            string = acrossLiteGrid.acrossClues[i];
+            n = arrayList.get(i).getWordIndex();
+            gridState = this;
+            gridState.clues[n] = string;
+        }
+        ArrayList<WordGrid.Word> arrayList2 = this.getSortedWords(1);
+        int n3 = arrayList2.size();
+        for (n2 = 0; n2 < n3; ++n2) {
+            string = acrossLiteGrid.downClues[n2];
+            n = arrayList2.get(n2).getWordIndex();
+            gridState = this;
+            gridState.clues[n] = string;
+        }
+    }
+
+    private GridState(int n, int n2, char[] cArray, char[] cArray2, String string, String string2, String string3, String string4, BitSet bitSet, StringUtil stringUtil) {
+        this.title = "";
+        this.author = "";
+        this.copyright = "";
+        this.storeCompleteWords = true;
+        if (cArray2 == null) {
+            cArray2 = new char[cArray.length];
+            int n3 = cArray2.length;
+            for (int i = 0; i < n3; ++i) {
+                cArray2[i] = cArray[i] == '\u007f' ? 127 : 0;
+            }
+        }
+        this.grid = new WordGrid(n, n2, cArray2);
+        this.gridChars = (char[])cArray.clone();
+        this.completeWords = new String[this.grid.getWordCount()];
+        this.completeSet = new boolean[this.completeWords.length];
+        this.computeComplete();
+        this.title = string;
+        this.author = string2;
+        this.copyright = string3;
+        this.notepad = string4;
+        this.clues = new String[this.grid.getWordCount()];
+        this.themes = new BitSet(this.grid.getWordCount());
+        this.circles = bitSet == null ? new BitSet(cArray.length) : (BitSet)bitSet.clone();
+        this.rebuses$6d32e3b8 = stringUtil == null ? new StringUtil() : new StringUtil(stringUtil);
+    }
+
+    public GridState(JPZGrid object, boolean bl) {
+        this(((JPZGrid)object).width, ((JPZGrid)object).height, ((JPZGrid)object).gridChars, null, ((JPZGrid)object).title, ((JPZGrid)object).author, ((JPZGrid)object).copyright, ((JPZGrid)object).notepad, ((JPZGrid)object).circles, new StringUtil(((JPZGrid)object).rebuses.values()));
+        int n = 1;
+        GridState gridState2 = this;
+        this.storeCompleteWords = n;
+        for (GridState gridState2 : ((JPZGrid)object).words) {
+            if (gridState2 == null) continue;
+            WordGrid.Word word = this.grid.getWordAt(((JPZGrid.WordInfo)gridState2).square, ((JPZGrid.WordInfo)gridState2).dir, true);
+            if (((JPZGrid.WordInfo)gridState2).clue != null && word.getPrintNumber() != ((JPZGrid.WordInfo)gridState2).number && WARNINGS != null) {
+                WARNINGS.logf("Number mismatch: %d vs. %d%n", new Object[]{word.getPrintNumber(), ((JPZGrid.WordInfo)gridState2).number});
+            }
+            String string = ((JPZGrid.WordInfo)gridState2).clue;
+            n = word.getWordIndex();
+            gridState2 = this;
+            gridState2.clues[n] = string;
+        }
+    }
+
+    public GridState(CFPGrid cFPGrid) {
+        this(cFPGrid.width, cFPGrid.height, cFPGrid.chars, null, cFPGrid.title, cFPGrid.author, cFPGrid.copyright, cFPGrid.notePad, cFPGrid.circles, cFPGrid.rebuses$6d32e3b8);
+        for (CFPGrid.Clue clue : cFPGrid.clues) {
+            String string = clue.text;
+            int n = clue.cfNumber;
+            GridState gridState = this;
+            gridState.clues[n] = string;
+            if (!clue.isTheme) continue;
+            this.setTheme(clue.cfNumber, true);
+        }
+    }
+
+    public String getTitle() {
+        return this.title;
+    }
+
+    public String getAuthor() {
+        return this.author;
+    }
+
+    public String getCopyright() {
+        return this.copyright;
+    }
+
+    public String getNotepad() {
+        if (this.notepad == null) {
+            return "";
+        }
+        return this.notepad;
+    }
+
+    public void setTitle(String string) {
+        this.title = string;
+    }
+
+    public void setAuthor(String string) {
+        this.author = string;
+    }
+
+    public void setCopyright(String string) {
+        this.copyright = string;
+    }
+
+    public void setNotepad(String string) {
+        this.notepad = string;
+    }
+
+    public final BitSet allCrosses(int n) {
+        WordGrid.Word word = this.grid.getWord(n);
+        GridState gridState = this;
+        BitSet bitSet = new BitSet(gridState.grid.getWordCount());
+        int n2 = 0;
+        while (true) {
+            gridState = word;
+            if (n2 >= ((WordGrid.Word)gridState).letterIndices.length) break;
+            int n3 = n2;
+            gridState = word;
+            int n4 = ((WordGrid.Word)gridState).letterIndices[n3];
+            for (n3 = 0; n3 < this.grid.getCrossWordCount(n4); ++n3) {
+                bitSet.set(this.grid.getCrossWord(n4, n3));
+            }
+            ++n2;
+        }
+        return bitSet;
+    }
+
+    public final BitSet findIsland(int n) {
+        GridState gridState = this;
+        BitSet bitSet = new BitSet(gridState.grid.getWordCount());
+        int n2 = n;
+        gridState = this;
+        if (gridState.completeSet[n2]) {
+            return bitSet;
+        }
+        ArrayList<WordGrid.Word> arrayList = new ArrayList<WordGrid.Word>();
+        arrayList.add(this.grid.getWord(n));
+        bitSet.set(n);
+        while (!arrayList.isEmpty()) {
+            ArrayList<WordGrid.Word> arrayList2 = arrayList;
+            WordGrid.Word word = (WordGrid.Word)arrayList2.remove(arrayList2.size() - 1);
+            int n3 = word.getDirection();
+            gridState = word;
+            int n4 = ((WordGrid.Word)gridState).letterIndices.length;
+            for (int i = 0; i < n4; ++i) {
+                int n5;
+                WordGrid.Word word2;
+                n2 = i;
+                gridState = word;
+                int n6 = ((WordGrid.Word)gridState).letterIndices[n2];
+                if (this.gridChars[n6] != '\u0000' || (word2 = this.grid.getWordAt(n6, n3, false)) == null || bitSet.get(n5 = word2.getWordIndex())) continue;
+                n2 = n5;
+                gridState = this;
+                if (gridState.completeSet[n2]) continue;
+                bitSet.set(n5);
+                arrayList.add(word2);
+            }
+        }
+        return bitSet;
+    }
+
+    public final BitSet findIslandNeighbors(BitSet bitSet) {
+        GridState gridState = this;
+        BitSet bitSet2 = new BitSet(gridState.grid.getWordCount());
+        int n = bitSet.nextSetBit(0);
+        while (n != -1) {
+            WordGrid.Word word = this.grid.getWord(n);
+            int n2 = word.getDirection();
+            gridState = word;
+            int n3 = ((WordGrid.Word)gridState).letterIndices.length;
+            for (int i = 0; i < n3; ++i) {
+                int n4;
+                int n5 = i;
+                gridState = word;
+                WordGrid.Word word2 = this.grid.getWordAt(((WordGrid.Word)gridState).letterIndices[n5], n2, false);
+                if (word2 == null || bitSet2.get(n4 = word2.getWordIndex())) continue;
+                n5 = n4;
+                gridState = this;
+                if (!gridState.completeSet[n5]) continue;
+                bitSet2.set(n4);
+            }
+            n = bitSet.nextSetBit(n + 1);
+        }
+        return bitSet2;
+    }
+
+    public final String getCompleteWord(int n) {
+        int n2 = n;
+        GridState gridState = this;
+        if (gridState.completeSet[n2]) {
+            return this.getString(n);
+        }
+        return null;
+    }
+
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        int n = 0;
+        int n2 = this.grid.getHeight();
+        for (int i = 0; i < n2; ++i) {
+            int n3 = this.grid.getWidth();
+            for (int j = 0; j < n3; ++j) {
+                char c;
+                if ((c = this.gridChars[n++]) == '\u0000') {
+                    stringBuilder.append('_');
+                    continue;
+                }
+                if (c == '\u007f') {
+                    stringBuilder.append('#');
+                    continue;
+                }
+                stringBuilder.append(c);
+            }
+            stringBuilder.append('\n');
+        }
+        return stringBuilder.toString();
+    }
+
+    final boolean isThemeLetter(int n) {
+        int n2 = this.grid.getCrossWordCount(n);
+        for (int i = 0; i < n2; ++i) {
+            GridState gridState = this;
+            if (!gridState.isTheme(gridState.grid.getCrossWord(n, i))) continue;
+            return true;
+        }
+        return false;
+    }
+
+    public final StringUtil getRebuses$e04f0f9() {
+        if (this.rebuses$6d32e3b8 == null) {
+            return EMPTY_REBUSES$6d32e3b8;
+        }
+        return this.rebuses$6d32e3b8;
+    }
+
+    public final void setRebuses$6a41c4d3(StringUtil stringUtil) {
+        this.rebuses$6d32e3b8 = stringUtil;
+    }
+
+    public final int countUncluedWords() {
+        int n = 0;
+        for (String string : this.clues) {
+            if (string != null && string.length() != 0) continue;
+            ++n;
+        }
+        return n;
+    }
+
+    final float getQuality(WordList wordList) {
+        int n;
+        GridState gridState = this;
+        float[] fArray = new float[gridState.grid.getWordCount()];
+        int n2 = fArray.length;
+        for (int i = 0; i < n2; ++i) {
+            n = i;
+            gridState = this;
+            fArray[i] = !gridState.completeSet[n] ? 1.0f : Math.max(1.0f, wordList.getWordScore(this.getCompleteWord(i)));
+        }
+        float f = 0.0f;
+        gridState = this;
+        n2 = gridState.gridChars.length;
+        for (int i = 0; i < n2; ++i) {
+            float f2 = 1.0f;
+            n = this.grid.getCrossWordCount(i);
+            for (int j = 0; j < n; ++j) {
+                f2 *= fArray[this.grid.getCrossWord(i, j)];
+            }
+            f = (float)((double)f + Math.pow(f2, -0.1));
+        }
+        float f3 = (float)Math.pow(f, -10.0);
+        return f3;
+    }
+}
+
+=== Decompiling CCFillAction_4 ===
+/*
+ * Decompiled with CFR 0.152.
+ * 
+ * Could not load the following classes:
+ *  com.beekeeper.xwd.CCFillAction
+ *  com.beekeeper.xwd.CCFillAction$4$4
+ *  com.beekeeper.xwd.GreedyGridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode
+ *  com.beekeeper.xwd.GridSearchNode$FillOrder
+ *  com.beekeeper.xwd.GridSearchNode$SharedOptions
+ *  com.beekeeper.xwd.GridState
+ *  com.beekeeper.xwd.WordGrid
+ *  com.beekeeper.xwd.WordList
+ */
+package com.beekeeper.xwd;
+
+import com.beekeeper.xwd.CCFillAction;
+import com.beekeeper.xwd.GreedyGridSearchNode;
+import com.beekeeper.xwd.GridSearchNode;
+import com.beekeeper.xwd.GridState;
+import com.beekeeper.xwd.WordGrid;
+import com.beekeeper.xwd.WordList;
+import java.util.BitSet;
+import java.util.TimerTask;
+import javax.swing.SwingUtilities;
+
+final class CCFillAction.4
+implements Runnable {
+    long lastDisplay = 0L;
+
+    CCFillAction.4() {
+    }
+
+    /*
+     * WARNING - void declaration
+     * Enabled force condition propagation
+     * Lifted jumps to return sites
+     */
+    @Override
+    public final void run() {
+        CCFillAction.this.runningFill = true;
+        boolean bl = true;
+        try {
+            WordGrid wordGrid;
+            GridState gridState;
+            Object object;
+            CCFillAction.this.cc.getDisplay().setComputingToolTipInfo(true);
+            long l = System.currentTimeMillis();
+            BitSet bitSet = CCFillAction.this.cc.getDisplay().getAreaSelection();
+            if (bitSet.cardinality() > 1) {
+                object = new BitSet();
+                gridState = CCFillAction.this.cc.getDisplay().getState();
+                wordGrid = gridState.getGrid();
+                int n = bitSet.nextSetBit(0);
+                while (n != -1) {
+                    if (gridState.getChars()[n] == '\u0000') {
+                        int n2 = wordGrid.getCrossWordCount(n);
+                        for (int i = 0; i < n2; ++i) {
+                            ((BitSet)object).set(wordGrid.getCrossWord(n, i));
+                        }
+                    }
+                    n = bitSet.nextSetBit(n + 1);
+                }
+            } else {
+                object = CCFillAction.this.computeDesiredNeighborhood();
+            }
+            if (object == null || !((BitSet)object).isEmpty()) {
+                gridState = new /* Unavailable Anonymous Inner Class!! */;
+                CCFillAction.timer.scheduleAtFixedRate((TimerTask)gridState, 0L, 1000L);
+                wordGrid = new GridSearchNode.SharedOptions(10, (WordList)CCFillAction.this.cc.getWordList());
+                wordGrid.setBadWordsHeuristic(false);
+                wordGrid.aggressiveBacktracking = false;
+                wordGrid.minCandidateScore = CCFillAction.this.cc.getMinAutofillScore();
+                wordGrid.longestSubstring = CCFillAction.this.cc.getLongestSubstring();
+                wordGrid.neighborhood = object;
+                wordGrid.orderStrategy = GridSearchNode.FillOrder.QUALITY;
+                GridState gridState2 = CCFillAction.this.cc.pushUndo();
+                CCFillAction.this.putValue("Name", (Object)"Stop");
+                CCFillAction.this.putValue("SwingLargeIconKey", (Object)CCFillAction.stopIcon);
+                CCFillAction.this.putValue("ShortDescription", (Object)"Stop quick fill");
+                CCFillAction.this.cc.setActiveOperation(true);
+                4 var9_14 = new /* Unavailable Anonymous Inner Class!! */;
+                ((GreedyGridSearchNode)var9_14).setQualityFactor(25);
+                GridSearchNode gridSearchNode = CCFillAction.this.triangulatedSearch((GridSearchNode)var9_14, 24300, (BitSet)object);
+                long l2 = System.currentTimeMillis();
+                float f = (float)(l2 - l) / 1000.0f;
+                CCFillAction cCFillAction = CCFillAction.this;
+                synchronized (cCFillAction) {
+                    gridState.cancel();
+                }
+                bl = false;
+                CCFillAction.this.cc.getDisplay().setComputingToolTipInfo(false);
+                if (Thread.currentThread().isInterrupted() || !CCFillAction.this.runningFill) {
+                    CCFillAction.this.cc.setState(CCFillAction.this.cc.popUndo(false));
+                } else if (gridSearchNode == null) {
+                    CCFillAction.this.showFailureLoc((GridSearchNode)var9_14);
+                    SwingUtilities.invokeLater((Runnable)new /* Unavailable Anonymous Inner Class!! */);
+                    CCFillAction.this.cc.status(String.format("Fill time: %d:%06.3f", (int)(f / 60.0f), Float.valueOf(f % 60.0f)));
+                } else {
+                    void var3_22;
+                    GridState gridState3 = gridSearchNode.state;
+                    if (bitSet.cardinality() > 1) {
+                        object = (char[])gridState2.getChars().clone();
+                        char[] cArray = gridSearchNode.state.getChars();
+                        for (int i = 0; i < cArray.length; ++i) {
+                            if (cArray[i] == object[i] || !bitSet.get(i)) continue;
+                            object[i] = cArray[i];
+                        }
+                        GridState gridState4 = new GridState(gridState2, (char[])object);
+                    }
+                    CCFillAction.this.cc.setState((GridState)var3_22, null);
+                    CCFillAction.this.cc.status(String.format("Fill time: %d:%06.3f", (int)(f / 60.0f), Float.valueOf(f % 60.0f)));
+                }
+            }
+            CCFillAction.this.putValue("Name", (Object)"Quick Fill");
+            CCFillAction.this.putValue("SwingLargeIconKey", (Object)CCFillAction.startIcon);
+            CCFillAction.this.putValue("ShortDescription", (Object)"Quick fill");
+            CCFillAction.this.cc.setActiveOperation(false);
+            CCFillAction.this.fillThread = null;
+            if (!bl) return;
+        }
+        catch (Throwable throwable) {
+            if (!bl) throw throwable;
+            CCFillAction.this.cc.getDisplay().setComputingToolTipInfo(false);
+            throw throwable;
+        }
+        CCFillAction.this.cc.getDisplay().setComputingToolTipInfo(false);
+    }
+}
+

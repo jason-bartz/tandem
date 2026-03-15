@@ -39,6 +39,9 @@ export default class CrosswordGenerator {
     this.timeoutMs = options.timeoutMs || 10000;
     this.excludeWords = new Set((options.excludeWords || []).map((w) => w.toUpperCase()));
 
+    // Minimum shared substring length to reject (CrossFire-style duplicate avoidance)
+    this.minSubstringLength = options.minSubstringLength || 4;
+
     // Randomize mode: when true, _backtrack uses pre-shuffled domain order
     this._randomize = false;
 
@@ -52,10 +55,19 @@ export default class CrosswordGenerator {
     // Crossing map: built once after detectSlots, maps slotId → [{crossSlot, posInThis, posInCross}]
     this.crossings = new Map();
 
+    // Dead state tracking: fingerprints of grid states that led to dead ends (CrossFire-style)
+    this._deadStates = new Set();
+    this._maxDeadStates = 4096;
+    this._deadStateQueue = []; // FIFO for LRU eviction
+
+    // Last filled slot id — used for adjacency-aware fill order
+    this._lastFilledSlotId = null;
+
     // Stats
     this.stats = {
       totalAttempts: 0,
       backtrackCount: 0,
+      deadStateHits: 0,
       slotsFilled: 0,
       patternSearches: 0,
       startTime: null,
@@ -415,8 +427,12 @@ export default class CrosswordGenerator {
     this.placedWords = [];
     this.crossings = new Map();
     this.complete = false;
+    this._deadStates = new Set();
+    this._deadStateQueue = [];
+    this._lastFilledSlotId = null;
     this.stats.slotsFilled = 0;
     this.stats.backtrackCount = 0;
+    this.stats.deadStateHits = 0;
     this.stats.patternSearches = 0;
   }
 
@@ -762,25 +778,167 @@ export default class CrosswordGenerator {
     return result;
   }
 
+  /**
+   * Choose the next slot to fill using CrossFire-inspired heuristics:
+   * 1. Adjacency preference: slots crossing the last filled word get priority
+   * 2. Character-score heuristic: for each cell, compute the product of domain
+   *    sizes of all words crossing it; the slot with the lowest aggregate score
+   *    (most constrained) is selected
+   * 3. Tie-break on domain size (MRV)
+   */
+  _chooseSlot(unfilled) {
+    if (unfilled.length === 1) return unfilled[0];
+
+    // Phase 1: If we just placed a word, prefer its unfilled crossing neighbors
+    if (this._lastFilledSlotId) {
+      const crossings = this.crossings.get(this._lastFilledSlotId) || [];
+      const adjacentUnfilled = [];
+      for (const { crossSlot } of crossings) {
+        if (!crossSlot.filled) {
+          adjacentUnfilled.push(crossSlot);
+        }
+      }
+      // Among adjacent slots, pick the most constrained
+      if (adjacentUnfilled.length > 0) {
+        return this._pickByCharScore(adjacentUnfilled);
+      }
+    }
+
+    // Phase 2: Score all unfilled slots using character-level heuristic
+    return this._pickByCharScore(unfilled);
+  }
+
+  /**
+   * CrossFire-style character-score slot selection.
+   * For each cell, compute the product of domain sizes of all crossing words.
+   * A slot's score = sum of log(cellScore) / length^2, normalized.
+   * Lower score = more constrained = fill first.
+   */
+  _pickByCharScore(candidates) {
+    // Build cell → aggregate constraint score
+    // For each cell, the "flexibility" is the product of domain sizes of words through it
+    const cellFlex = new Map(); // "r,c" → log(product of domain sizes)
+
+    for (const slot of this.slots) {
+      if (slot.filled) continue;
+      const domainSize = slot.domain.length;
+      if (domainSize === 0) continue;
+      const logDomain = Math.log(domainSize);
+
+      for (const cell of slot.cells) {
+        const key = `${cell.row},${cell.col}`;
+        cellFlex.set(key, (cellFlex.get(key) || 0) + logDomain);
+      }
+    }
+
+    let bestSlot = null;
+    let bestScore = Infinity;
+
+    for (const slot of candidates) {
+      if (slot.domain.length === 0) return slot; // Dead end — return immediately
+
+      // Sum cell flexibility scores for this slot, normalized by length
+      let slotScore = 0;
+      for (const cell of slot.cells) {
+        const key = `${cell.row},${cell.col}`;
+        slotScore += cellFlex.get(key) || 0;
+      }
+      // Normalize by length^2 (CrossFire uses length^-2.8, we use ^2 for 5×5)
+      const len = slot.length;
+      slotScore = slotScore / (len * len);
+
+      // Lower score = more constrained = better choice
+      if (
+        slotScore < bestScore ||
+        (slotScore === bestScore && slot.domain.length < (bestSlot?.domain.length ?? Infinity))
+      ) {
+        bestScore = slotScore;
+        bestSlot = slot;
+      }
+    }
+
+    return bestSlot;
+  }
+
+  /**
+   * Generate a fingerprint for the current grid state.
+   * Used for dead state tracking to avoid re-exploring failed configurations.
+   */
+  _gridFingerprint() {
+    let fp = '';
+    for (let r = 0; r < GRID_SIZE; r++) {
+      for (let c = 0; c < GRID_SIZE; c++) {
+        const cell = this.grid[r][c];
+        fp += cell && cell !== EMPTY_CELL ? cell : '.';
+      }
+    }
+    return fp;
+  }
+
+  /**
+   * Record a dead state fingerprint (LRU eviction when full).
+   */
+  _recordDeadState(fingerprint) {
+    if (this._deadStates.has(fingerprint)) return;
+    if (this._deadStateQueue.length >= this._maxDeadStates) {
+      const oldest = this._deadStateQueue.shift();
+      this._deadStates.delete(oldest);
+    }
+    this._deadStates.add(fingerprint);
+    this._deadStateQueue.push(fingerprint);
+  }
+
+  /**
+   * Check if a candidate word shares a long substring with any placed word.
+   * Prevents repetitive fills like STONE + TONES or CRANE + RANCH.
+   */
+  _hasSubstringOverlap(word) {
+    const minLen = this.minSubstringLength;
+    if (word.length < minLen) return false;
+
+    for (const pw of this.placedWords) {
+      if (pw.word.length < minLen) continue;
+      // Check all substrings of length minLen in the candidate
+      const maxI = word.length - minLen;
+      const maxJ = pw.word.length - minLen;
+      for (let i = 0; i <= maxI; i++) {
+        for (let j = 0; j <= maxJ; j++) {
+          let match = true;
+          for (let k = 0; k < minLen; k++) {
+            if (word[i + k] !== pw.word[j + k]) {
+              match = false;
+              break;
+            }
+          }
+          if (match) return true;
+        }
+      }
+    }
+    return false;
+  }
+
   _backtrack(deadline) {
     // Check timeout
     if (Date.now() > deadline) return false;
+
+    // Dead state check
+    const fingerprint = this._gridFingerprint();
+    if (this._deadStates.has(fingerprint)) {
+      this.stats.deadStateHits++;
+      return false;
+    }
 
     // All slots filled?
     const unfilled = this.slots.filter((s) => !s.filled);
     if (unfilled.length === 0) return true;
 
-    // MRV: pick slot with smallest domain
-    let bestSlot = null;
-    let minSize = Infinity;
+    // Check for empty domains early
     for (const slot of unfilled) {
-      const size = slot.domain.length;
-      if (size < minSize) {
-        minSize = size;
-        bestSlot = slot;
-      }
-      if (size === 0) return false; // Dead end
+      if (slot.domain.length === 0) return false;
     }
+
+    // Choose slot using character-score heuristic with adjacency preference
+    const bestSlot = this._chooseSlot(unfilled);
 
     // Try each word in this slot's domain
     // In randomize mode, use the pre-shuffled domain order for variety.
@@ -791,9 +949,14 @@ export default class CrosswordGenerator {
           (a, b) => (this.wordIndex.getScore(b) || 0) - (this.wordIndex.getScore(a) || 0)
         );
 
+    const savedLastFilled = this._lastFilledSlotId;
+
     for (const word of orderedDomain) {
       // Skip if already placed in this puzzle
       if (this.placedWords.some((pw) => pw.word === word)) continue;
+
+      // Skip if word shares a long substring with any placed word
+      if (this._hasSubstringOverlap(word)) continue;
 
       // Save state for backtracking
       const savedDomains = new Map();
@@ -805,8 +968,9 @@ export default class CrosswordGenerator {
         savedGridCells.push(this.grid[cell.row][cell.col]);
       }
 
-      // Place word
+      // Place word and track adjacency
       this._placeWord(bestSlot, word);
+      this._lastFilledSlotId = bestSlot.id;
 
       // Propagate constraints
       if (this._ac3FromSlot(bestSlot)) {
@@ -827,11 +991,15 @@ export default class CrosswordGenerator {
 
       // Backtrack: undo placement, restore domains
       this._unplaceWord(bestSlot, savedGridCells);
+      this._lastFilledSlotId = savedLastFilled;
       for (const slot of this.slots) {
         slot.domain = savedDomains.get(slot.id);
       }
       this.stats.backtrackCount++;
     }
+
+    // All candidates exhausted — record as dead state
+    this._recordDeadState(fingerprint);
 
     return false;
   }

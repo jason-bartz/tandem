@@ -1,0 +1,63 @@
+Autofill Algorithm Overview
+CrossFire uses a depth-first search with backtracking, combined with heuristic word selection and scoring, to fill the crossword grid.
+
+1. Search Engine
+The core is a DFS (Depth-First Search) with two implementations:
+* DepthFirstSearch — basic DFS with backtracking
+* DepthPlusSearch — enhanced version that generates and evaluates multiple successors per node
+Each state in the search is a GridSearchNode representing the current partially-filled grid. When the algorithm hits a dead end (no valid candidates for a slot), it backtracks to try a different word at the previous slot. Search depth is bounded by a maxDepth parameter.
+
+2. Choosing Which Slot to Fill Next (Fill Order)
+The algorithm picks the next empty word slot using one of four strategies, controlled by a FillOrder enum:
+Strategy	Method	Behavior
+Standard	chooseWordToFillStd	Traditional ordering
+Greedy	chooseWordToFillGreedy	Picks the slot with the fewest/easiest candidates (most constrained first — classic CSP heuristic)
+Quality	chooseWordToFillQuality	Picks based on a quality scoring function
+Frontier	chooseWordToFillFrontier	Fills from the edges inward, using findIsland() and findIslandNeighbors() to detect boundaries
+The user can select which strategy to use in the Fill Settings dialog.
+
+3. Candidate Word Generation
+For the chosen slot, the CandidateGenerator (running on a separate CandidateThread for parallelism):
+1. Pattern-matches against the dictionary — the slot has a length and some letters already fixed by crossing words, so it filters default.dict to words matching that pattern
+2. Filters by minimum score — any word below minCandidateScore (configurable via minAutoFillScore) is discarded
+3. Returns a ranked list of candidate words
+
+4. Scoring System
+Words and grid states are scored using multiple components:
+* Word Score — from the .dict file (the ;75 values), representing word quality/commonness
+* Cross Score — how well a word plays with its crossing words
+* Grid Score — overall solution quality
+* Final/Complete Score — combined metric
+The scoring backend (ScoreDatabase) supports multiple sources:
+* Score from the .dict file itself
+* A separate CrossFire score database
+* Fixed constant scores
+* "Highest score" mode (takes the best from multiple dictionaries)
+Two weighting factors let users tune the balance:
+* depthFirstFactor — how much to favor deeper exploration
+* qualityFactor — how much to favor word quality
+
+5. Successor Expansion
+For each candidate word in the chosen slot:
+1. Place the word in the grid → creates a new GridSearchNode
+2. Check if all crossing slots still have valid candidates (implicit constraint checking)
+3. If a crossing slot has zero valid candidates, this branch is pruned
+4. Otherwise, add it as a successor and recurse
+This is constraint enforcement through candidate filtering — not full arc consistency (AC-3), but effective pruning nonetheless.
+
+6. Backtracking & Termination
+* If no candidates work for a slot → backtrack (log: "selection dead-end node: depth = X")
+* If the grid is completely filled → solution found, scored and presented
+* If all branches exhausted → "*** Unfillable Grid ***"
+* User can stop the search at any time; the best partial fill found so far can be inspected via "Show sample fill"
+
+7. User-Facing Controls
+Control	Effect
+Min Autofill Score	Threshold — higher = only common words, lower = obscure words allowed
+Fill Order	Strategy selection (standard/greedy/quality/frontier)
+Auto-enter complete	Automatically fills cells that have only one possible letter
+Insert complete fill	Applies the found solution to the grid
+Show sample fill	Preview current best attempt
+Best location	Highlights the optimal next word to manually fill
+In Summary
+The algorithm is essentially: pick the most constrained empty slot → generate candidate words from the dictionary above a score threshold → try each one via DFS → prune branches where crossings become impossible → backtrack on dead ends → return the highest-scoring complete fill found. The frontier/greedy/quality heuristics and parallel candidate generation make it efficient enough to fill typical crossword grids.

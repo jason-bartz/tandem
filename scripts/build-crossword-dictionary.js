@@ -54,6 +54,13 @@ const SOURCE_FILES = [
     priority: 5,
     description: 'XWI word list (~253K entries)',
   },
+  {
+    file: 'default.dict',
+    priority: 1,
+    description: 'CrossFire default dictionary (~183K entries, scores 5-75)',
+    // CrossFire scores range 5-75; scale to 1-100 for parity with other sources
+    scoreScale: { inputMin: 5, inputMax: 75, outputMin: 1, outputMax: 100 },
+  },
 
   // Supplementary themed lists (small, specialized)
   { file: 'tech.dict', priority: 5, description: 'Tech terms (~1.8K entries)' },
@@ -72,8 +79,15 @@ const SOURCE_FILES = [
  * Parse a single line from any word list format.
  * Handles: "WORD;SCORE", "word;score", "Word With Spaces;Score"
  * Returns { word, score } or null if invalid.
+ *
+ * @param {string} line
+ * @param {object} [scoreScale] - Optional score rescaling config
+ * @param {number} scoreScale.inputMin - Source min score
+ * @param {number} scoreScale.inputMax - Source max score
+ * @param {number} scoreScale.outputMin - Target min score
+ * @param {number} scoreScale.outputMax - Target max score
  */
-function parseLine(line) {
+function parseLine(line, scoreScale) {
   const trimmed = line.trim();
   if (!trimmed || trimmed.startsWith('#')) return null;
 
@@ -84,8 +98,20 @@ function parseLine(line) {
   const rawScore = trimmed.substring(semicolonIdx + 1);
 
   // Parse score
-  const score = parseInt(rawScore, 10);
-  if (isNaN(score) || score < 1 || score > 100) return null;
+  let score = parseInt(rawScore, 10);
+  if (isNaN(score)) return null;
+
+  // Apply score scaling if configured (e.g. CrossFire 5-75 → 1-100)
+  if (scoreScale) {
+    const { inputMin, inputMax, outputMin, outputMax } = scoreScale;
+    // Clamp to input range, then linearly scale to output range
+    const clamped = Math.max(inputMin, Math.min(inputMax, score));
+    score = Math.round(
+      outputMin + ((clamped - inputMin) / (inputMax - inputMin)) * (outputMax - outputMin)
+    );
+  }
+
+  if (score < 1 || score > 100) return null;
 
   // Normalize word: strip spaces/hyphens/apostrophes, uppercase
   const word = rawWord.replace(/[\s\-''.]/g, '').toUpperCase();
@@ -102,8 +128,11 @@ function parseLine(line) {
 /**
  * Load and parse a source file.
  * Returns Map<word, score>.
+ *
+ * @param {string} filePath
+ * @param {object} [scoreScale] - Optional score rescaling config (passed to parseLine)
  */
-function loadSourceFile(filePath) {
+function loadSourceFile(filePath, scoreScale) {
   const content = fs.readFileSync(filePath, 'utf-8');
   const lines = content.split('\n');
   const words = new Map();
@@ -112,7 +141,7 @@ function loadSourceFile(filePath) {
   let skipped = 0;
 
   for (const line of lines) {
-    const result = parseLine(line);
+    const result = parseLine(line, scoreScale);
     if (result) {
       // Within a single file, keep the higher score if duplicates exist
       const existing = words.get(result.word);
@@ -147,7 +176,7 @@ function mergeWordLists() {
       continue;
     }
 
-    const { words, parsed, skipped } = loadSourceFile(filePath);
+    const { words, parsed, skipped } = loadSourceFile(filePath, source.scoreScale);
 
     let newWords = 0;
     let upgradedScores = 0;
