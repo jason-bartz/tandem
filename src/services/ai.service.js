@@ -2233,7 +2233,7 @@ Return ONLY a JSON object with the movie title:
 
         const message = await client.messages.create({
           model: this.model,
-          max_tokens: 512,
+          max_tokens: 1024,
           temperature: 1.0, // High temperature for creative variety
           messages: [
             {
@@ -2302,6 +2302,95 @@ Return ONLY a JSON object with the movie title:
     throw new Error(
       `AI Reel Connections suggestion failed after ${this.maxRetries + 1} attempts: ${lastError?.message || 'Unknown error'}`
     );
+  }
+
+  /**
+   * Suggest a full Reel Connections puzzle (4 connections, one per difficulty level)
+   */
+  async suggestFullReelConnectionsPuzzle({
+    recentConnections = [],
+    allConnections = [],
+    dismissedConnections = [],
+  }) {
+    const client = this.getClient();
+    if (!client) {
+      throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
+    }
+
+    const allExcluded = [...new Set([...allConnections, ...dismissedConnections])];
+
+    const recentList =
+      recentConnections.length > 0
+        ? `\nRECENT CONNECTIONS (last 90 days) - MUST AVOID:\n${recentConnections.map((c) => `- ${c}`).join('\n')}`
+        : '';
+
+    const olderConnections = allExcluded.filter((c) => !recentConnections.includes(c));
+    const olderList =
+      olderConnections.length > 0
+        ? `\nALL HISTORICAL & DISMISSED CONNECTIONS (also avoid):\n${olderConnections.map((c) => `- ${c}`).join('\n')}`
+        : '';
+
+    const randomSeed = Math.floor(Math.random() * 10000);
+
+    const prompt = `You are creating a complete Reel Connections puzzle (similar to NYT Connections but with movies). (seed: ${randomSeed})
+
+A puzzle has exactly 4 groups, each at a different difficulty level. You must suggest one connection per level.
+
+DIFFICULTY LEVELS:
+1. EASIEST - Very well-known, mainstream movies. Blockbusters, Oscar winners, iconic franchises. The connection should be obvious once you see it.
+2. EASY - Popular, widely recognized movies. Most casual moviegoers should know these films.
+3. MEDIUM - Mix of popular and moderately known movies. Requires some movie knowledge. The connection can be trickier.
+4. HARDEST - Can include less mainstream films, cult classics, or obscure categories. For movie enthusiasts. The connection should be clever and surprising.
+${recentList}${olderList}
+
+REQUIREMENTS:
+1. DO NOT use any connection identical or similar to those listed above
+2. All 4 connections must be THEMATICALLY DIVERSE from each other (don't make them all actor-based or all title-based)
+3. Each connection should have at least 4 well-known movies that fit
+4. The connections should create an interesting puzzle when combined - some overlap or potential for confusion between groups is ideal
+5. Use proper Title Case formatting
+6. Be CREATIVE and SURPRISING - pick connections you wouldn't normally suggest first
+
+RESPONSE FORMAT (JSON only):
+{
+  "groups": [
+    { "difficulty": "easiest", "connection": "Connection Title", "description": "Brief explanation with example movies" },
+    { "difficulty": "easy", "connection": "Connection Title", "description": "Brief explanation with example movies" },
+    { "difficulty": "medium", "connection": "Connection Title", "description": "Brief explanation with example movies" },
+    { "difficulty": "hardest", "connection": "Connection Title", "description": "Brief explanation with example movies" }
+  ]
+}
+
+Return ONLY the JSON.`;
+
+    logger.info('Suggesting full Reel Connections puzzle with AI', {
+      recentCount: recentConnections.length,
+      totalExcluded: allExcluded.length,
+    });
+
+    const message = await client.messages.create({
+      model: this.model,
+      max_tokens: 1024,
+      temperature: 1.0,
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const responseText = message.content[0].text;
+    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in response');
+
+    const result = JSON.parse(jsonMatch[0]);
+    if (!Array.isArray(result.groups) || result.groups.length !== 4) {
+      throw new Error('Must have exactly 4 groups');
+    }
+
+    return {
+      groups: result.groups.map((g) => ({
+        difficulty: g.difficulty,
+        connection: g.connection.trim(),
+        description: g.description.trim(),
+      })),
+    };
   }
 
   /**
@@ -2420,11 +2509,13 @@ Return ONLY a JSON object with the movie title:
         ? `\n\nOVERUSED CATEGORIES (try to avoid these types): ${overusedCategories}`
         : '';
 
-    return `You are suggesting connection ideas for a Reel Connections puzzle game (similar to NYT Connections but with movies).
+    const randomSeed = Math.floor(Math.random() * 10000);
+
+    return `You are suggesting connection ideas for a Reel Connections puzzle game (similar to NYT Connections but with movies). (seed: ${randomSeed})
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
 
-Generate 8 UNIQUE and CREATIVE connection ideas that would work well for this difficulty level.
+Generate 8 UNIQUE and CREATIVE connection ideas that are COMPLETELY DIFFERENT from your previous suggestions. Be SURPRISING and UNEXPECTED.
 ${recentConnectionsList}${olderConnectionsList}${existingConnectionsList}${overusedWarning}
 
 CRITICAL REQUIREMENTS FOR AVOIDING DUPLICATES AND SIMILAR CONNECTIONS:

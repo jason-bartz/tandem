@@ -222,6 +222,8 @@ export default function ReelConnectionsPuzzleEditor({
   const [shuffleLoading, setShuffleLoading] = useState({}); // { "groupIndex-movieIndex": true }
   const [suggestions, setSuggestions] = useState({});
   const [suggestionsLoading, setSuggestionsLoading] = useState({});
+  const [dismissedConnections, setDismissedConnections] = useState([]);
+  const [generatingAll, setGeneratingAll] = useState(false);
 
   // Track creator attribution for user-submitted puzzles
   const [creatorName, setCreatorName] = useState(puzzle?.creatorName || null);
@@ -451,7 +453,7 @@ export default function ReelConnectionsPuzzleEditor({
       const response = await fetch('/api/admin/reel-connections/suggest-connections', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true),
-        body: JSON.stringify({ difficulty, existingConnections }),
+        body: JSON.stringify({ difficulty, existingConnections, dismissedConnections }),
       });
 
       if (!response.ok) {
@@ -474,6 +476,88 @@ export default function ReelConnectionsPuzzleEditor({
     newGroups[groupIndex].connection = suggestion.connection;
     setGroups(newGroups);
     setSuggestions((prev) => ({ ...prev, [groupIndex]: [] }));
+  };
+
+  const handleDismissSuggestion = (groupIndex, suggestion) => {
+    setDismissedConnections((prev) => [...prev, suggestion.connection]);
+    setSuggestions((prev) => ({
+      ...prev,
+      [groupIndex]: (prev[groupIndex] || []).filter((s) => s.connection !== suggestion.connection),
+    }));
+  };
+
+  const handleGenerateAll = async () => {
+    setGeneratingAll(true);
+    try {
+      // Step 1: Get AI suggestions for all 4 groups
+      const suggestResponse = await fetch('/api/admin/reel-connections/suggest-full-puzzle', {
+        method: 'POST',
+        headers: await authService.getAuthHeaders(true),
+        body: JSON.stringify({ dismissedConnections }),
+      });
+
+      if (!suggestResponse.ok) {
+        const data = await suggestResponse.json();
+        throw new Error(data.error || 'Failed to suggest connections');
+      }
+
+      const suggestData = await suggestResponse.json();
+      const suggestedGroups = suggestData.groups;
+
+      // Step 2: Set connections on each group
+      const newGroups = [...groups];
+      for (let i = 0; i < 4; i++) {
+        if (suggestedGroups[i]) {
+          newGroups[i].connection = suggestedGroups[i].connection;
+        }
+      }
+      setGroups(newGroups);
+
+      // Step 3: Generate movies for all 4 groups in parallel
+      const generatePromises = suggestedGroups.map(async (sg, i) => {
+        const response = await fetch('/api/admin/reel-connections/generate', {
+          method: 'POST',
+          headers: await authService.getAuthHeaders(true),
+          body: JSON.stringify({
+            connection: sg.connection,
+            difficulty: DIFFICULTY_LEVELS[i].id,
+            context: '',
+          }),
+        });
+
+        const data = await response.json();
+        if (!response.ok || response.status === 206) {
+          logger.warn(`Generate failed for group ${i}:`, data.error || data.details);
+          return null;
+        }
+        return { index: i, connection: data.connection, movies: data.movies };
+      });
+
+      const results = await Promise.all(generatePromises);
+
+      // Step 4: Apply results
+      const finalGroups = [...newGroups];
+      let successCount = 0;
+      for (const result of results) {
+        if (result) {
+          finalGroups[result.index].connection = result.connection;
+          finalGroups[result.index].movies = result.movies;
+          successCount++;
+        }
+      }
+      setGroups(finalGroups);
+
+      if (successCount < 4) {
+        alert(
+          `Generated ${successCount}/4 groups. ${4 - successCount} failed movie verification - try clicking Generate on those groups individually.`
+        );
+      }
+    } catch (error) {
+      logger.error('Generate All error:', error);
+      alert(error.message || 'Failed to generate full puzzle');
+    } finally {
+      setGeneratingAll(false);
+    }
   };
 
   return (
@@ -526,22 +610,62 @@ export default function ReelConnectionsPuzzleEditor({
             </p>
           )}
         </div>
-        {onShowConnections && (
+        <div className="flex gap-2 flex-shrink-0">
           <button
-            onClick={onShowConnections}
-            className="px-2 py-1 bg-accent-blue text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs flex items-center gap-1.5 flex-shrink-0"
+            onClick={handleGenerateAll}
+            disabled={loading || generatingAll || generatingForGroup !== null}
+            className="px-2 py-1 bg-accent-green text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
-              />
-            </svg>
-            Tracker
+            {generatingAll ? (
+              <>
+                <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Generating...
+              </>
+            ) : (
+              <>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 10V3L4 14h7v7l9-11h-7z"
+                  />
+                </svg>
+                Generate All
+              </>
+            )}
           </button>
-        )}
+          {onShowConnections && (
+            <button
+              onClick={onShowConnections}
+              className="px-2 py-1 bg-accent-blue text-white border-[2px] border-black dark:border-white font-bold rounded-lg hover:translate-y-[-1px] transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] text-xs flex items-center gap-1.5 flex-shrink-0"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+                />
+              </svg>
+              Tracker
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="space-y-4">
@@ -618,15 +742,40 @@ export default function ReelConnectionsPuzzleEditor({
                 {groupSuggestions.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
                     {groupSuggestions.map((suggestion, idx) => (
-                      <button
-                        key={idx}
-                        type="button"
-                        onClick={() => handleSelectSuggestion(groupIndex, suggestion)}
-                        className="px-3 py-1.5 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
-                        title={suggestion.description}
-                      >
-                        {suggestion.connection}
-                      </button>
+                      <div key={idx} className="relative group/chip">
+                        <button
+                          type="button"
+                          onClick={() => handleSelectSuggestion(groupIndex, suggestion)}
+                          className="px-3 pr-7 py-1.5 bg-ghost-white text-[#2c2c2c] border-[2px] border-black rounded-lg hover:bg-accent-yellow/30 transition-colors text-xs font-medium"
+                          title={suggestion.description}
+                        >
+                          {suggestion.connection}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDismissSuggestion(groupIndex, suggestion);
+                          }}
+                          className="absolute top-1 right-1 w-4 h-4 flex items-center justify-center rounded-full text-[#2c2c2c]/40 hover:text-red-600 hover:bg-red-100 transition-colors opacity-0 group-hover/chip:opacity-100"
+                          title="Dismiss (never suggest again this session)"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="10"
+                            height="10"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="3"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          >
+                            <line x1="18" y1="6" x2="6" y2="18" />
+                            <line x1="6" y1="6" x2="18" y2="18" />
+                          </svg>
+                        </button>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -737,6 +886,7 @@ export default function ReelConnectionsPuzzleEditor({
               }))
             );
             setSuggestions({});
+            setDismissedConnections([]);
           }}
           disabled={loading}
           className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm bg-accent-orange text-white border-[2px] border-black dark:border-white font-bold rounded-md sm:rounded-lg hover:translate-y-[-1px] active:translate-y-0 transition-transform shadow-[2px_2px_0px_rgba(0,0,0,1)] disabled:opacity-50"

@@ -9,21 +9,19 @@ const supabase = createClient(
 );
 
 /**
- * AI Connection Suggestion API for Reel Connections
- * Generates 3-4 connection ideas based on difficulty, avoiding recent connections
+ * POST /api/admin/reel-connections/suggest-full-puzzle
+ * Suggests 4 connections (one per difficulty level) for a complete puzzle
  */
 export async function POST(request) {
   try {
-    // Verify admin authentication
     const authHeader = request.headers.get('authorization');
     if (!authHeader) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const { difficulty = 'medium', existingConnections = [], dismissedConnections = [] } = body;
+    const { dismissedConnections = [] } = await request.json();
 
-    // Fetch ALL historical connections to avoid duplicates and similar patterns
+    // Fetch ALL historical connections
     const { data: allGroups, error: fetchError } = await supabase
       .from('reel_connections_groups')
       .select(
@@ -36,15 +34,13 @@ export async function POST(request) {
 
     if (fetchError) {
       logger.error('Error fetching historical connections:', fetchError);
-      // Continue without historical connections rather than failing
     }
 
-    // Extract unique connection strings from all history
     const allConnections = allGroups
       ? [...new Set(allGroups.map((g) => g.connection).filter(Boolean))]
       : [];
 
-    // Separate recent (last 90 days) from older connections for prioritization
+    // Recent connections (last 90 days)
     const ninetyDaysAgo = new Date();
     ninetyDaysAgo.setDate(ninetyDaysAgo.getDate() - 90);
     const ninetyDaysAgoStr = ninetyDaysAgo.toISOString().split('T')[0];
@@ -60,31 +56,26 @@ export async function POST(request) {
         ]
       : [];
 
-    logger.info('Fetched historical connections for suggestion', {
-      totalCount: allConnections.length,
-      recentCount: recentConnections.length,
+    logger.info('[SuggestFullPuzzle] Fetched historical connections', {
+      total: allConnections.length,
+      recent: recentConnections.length,
+      dismissed: dismissedConnections.length,
     });
 
-    // Merge dismissed connections into the avoid lists
-    const allExcluded = [...new Set([...allConnections, ...dismissedConnections])];
-
-    // Generate suggestions using AI
-    const result = await aiService.suggestReelConnections({
-      difficulty,
+    const result = await aiService.suggestFullReelConnectionsPuzzle({
       recentConnections,
-      allConnections: allExcluded,
-      existingConnections,
+      allConnections,
+      dismissedConnections,
     });
 
     return NextResponse.json({
-      suggestions: result.suggestions,
-      recentConnectionsCount: recentConnections.length,
+      success: true,
+      groups: result.groups,
       totalConnectionsCount: allConnections.length,
     });
   } catch (error) {
-    logger.error('AI suggestion error:', error);
+    logger.error('[SuggestFullPuzzle] Error:', error);
 
-    // Handle specific AI errors
     if (error.message?.includes('rate_limit')) {
       return NextResponse.json(
         { error: 'AI service rate limit reached. Please try again in a moment.' },
@@ -92,15 +83,8 @@ export async function POST(request) {
       );
     }
 
-    if (error.message?.includes('authentication') || error.message?.includes('API key')) {
-      return NextResponse.json(
-        { error: 'AI service authentication error. Please contact support.' },
-        { status: 500 }
-      );
-    }
-
     return NextResponse.json(
-      { error: error.message || 'Failed to generate suggestions' },
+      { error: error.message || 'Failed to generate full puzzle suggestions' },
       { status: 500 }
     );
   }
