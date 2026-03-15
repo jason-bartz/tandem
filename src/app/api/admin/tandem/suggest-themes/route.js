@@ -40,42 +40,38 @@ export async function POST(request) {
       );
     }
 
-    // Calculate date 120 days ago
-    const today = new Date();
-    const pastDate = new Date();
-    pastDate.setDate(pastDate.getDate() - 120);
+    const { dismissedThemes = [] } = await request.json();
 
-    const startDateStr = pastDate.toISOString().split('T')[0];
-    const endDateStr = today.toISOString().split('T')[0];
-
-    // Fetch recent puzzles from the last 120 days
+    // Fetch ALL past puzzles to avoid repeating any theme ever used
     let recentThemes = [];
     try {
+      // Use a wide date range to capture all historical puzzles
+      const startDateStr = '2020-01-01';
+      const endDateStr = new Date().toISOString().split('T')[0];
       const puzzlesData = await getPuzzlesRange(startDateStr, endDateStr);
 
-      // Extract unique themes
       if (puzzlesData) {
         recentThemes = Object.values(puzzlesData)
           .map((puzzle) => puzzle.theme)
           .filter(Boolean);
-
-        // Deduplicate themes
         recentThemes = [...new Set(recentThemes)];
       }
     } catch (fetchError) {
       logger.error('Error fetching recent themes:', fetchError);
-      // Continue without recent themes rather than failing
     }
 
-    logger.info('Fetched recent themes for suggestion', {
-      count: recentThemes.length,
-      startDate: startDateStr,
-      endDate: endDateStr,
+    // Merge in dismissed themes from this session
+    const allExcluded = [...new Set([...recentThemes, ...dismissedThemes])];
+
+    logger.info('Fetched themes for suggestion exclusion', {
+      pastThemes: recentThemes.length,
+      dismissed: dismissedThemes.length,
+      totalExcluded: allExcluded.length,
     });
 
     // Generate suggestions using AI
     const result = await aiService.suggestTandemThemes({
-      recentThemes,
+      recentThemes: allExcluded,
     });
 
     return NextResponse.json({

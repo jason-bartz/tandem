@@ -28,6 +28,7 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
   );
   const [themeSuggestions, setThemeSuggestions] = useState([]);
   const [suggestingThemes, setSuggestingThemes] = useState(false);
+  const [dismissedThemes, setDismissedThemes] = useState([]);
   const [shufflingEmoji, setShufflingEmoji] = useState(null); // Track which puzzle is being shuffled
 
   useEffect(() => {
@@ -241,13 +242,13 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
   const handleSuggestThemes = async () => {
     setSuggestingThemes(true);
     setThemeSuggestions([]);
-    setMessage('💡 Getting theme suggestions...');
+    setMessage('Getting theme suggestions...');
 
     try {
       const response = await fetch('/api/admin/tandem/suggest-themes', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true),
-        body: JSON.stringify({}),
+        body: JSON.stringify({ dismissedThemes }),
       });
 
       const data = await response.json();
@@ -258,10 +259,10 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
 
       setThemeSuggestions(data.suggestions || []);
       setMessage(
-        `✨ Generated ${data.suggestions?.length || 0} theme ideas (analyzed ${data.recentThemesCount} recent themes)`
+        `Generated ${data.suggestions?.length || 0} theme ideas (${data.recentThemesCount} themes excluded)`
       );
     } catch (error) {
-      setMessage(`❌ ${error.message || 'Failed to get theme suggestions'}`);
+      setMessage(`Error: ${error.message || 'Failed to get theme suggestions'}`);
       logger.error('Theme suggestion error', error);
     } finally {
       setSuggestingThemes(false);
@@ -272,6 +273,11 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
     setTheme(suggestion.theme);
     setThemeSuggestions([]); // Clear suggestions after selection
     setMessage(`Selected theme: "${suggestion.theme}" - Click AI Generate to generate the puzzle.`);
+  };
+
+  const handleDismissThemeSuggestion = (suggestion) => {
+    setDismissedThemes((prev) => [...prev, suggestion.theme]);
+    setThemeSuggestions((prev) => prev.filter((s) => s.theme !== suggestion.theme));
   };
 
   const handleShuffleEmojiPair = async (index) => {
@@ -452,21 +458,46 @@ export default function PuzzleEditor({ initialPuzzle, onClose, onShowBulkImport,
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {themeSuggestions.map((suggestion, index) => (
-                  <button
-                    key={index}
-                    type="button"
-                    onClick={() => handleSelectThemeSuggestion(suggestion)}
-                    disabled={generating || loading}
-                    className="p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-accent-pink hover:bg-accent-pink/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                    style={{ boxShadow: 'var(--shadow-small)' }}
-                  >
-                    <div className="font-bold text-xs sm:text-sm text-text-primary">
-                      {suggestion.theme}
-                    </div>
-                    <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
-                      {suggestion.description}
-                    </div>
-                  </button>
+                  <div key={index} className="relative group">
+                    <button
+                      type="button"
+                      onClick={() => handleSelectThemeSuggestion(suggestion)}
+                      disabled={generating || loading}
+                      className="w-full p-2 sm:p-3 text-left rounded-lg border-[2px] border-black/20 dark:border-white/20 bg-bg-card hover:border-accent-pink hover:bg-accent-pink/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      style={{ boxShadow: 'var(--shadow-small)' }}
+                    >
+                      <div className="font-bold text-xs sm:text-sm text-text-primary pr-5">
+                        {suggestion.theme}
+                      </div>
+                      <div className="text-[10px] sm:text-xs text-text-secondary mt-0.5 line-clamp-2">
+                        {suggestion.description}
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDismissThemeSuggestion(suggestion);
+                      }}
+                      className="absolute top-1 right-1 w-5 h-5 flex items-center justify-center rounded-full text-text-secondary hover:text-red-500 hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors opacity-0 group-hover:opacity-100"
+                      title="Dismiss this suggestion (never suggest again this session)"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  </div>
                 ))}
               </div>
             </div>

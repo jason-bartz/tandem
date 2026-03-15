@@ -2610,25 +2610,28 @@ Return ONLY the JSON.`;
   buildTandemThemeSuggestionPrompt({ recentThemes }) {
     const recentThemesList =
       recentThemes.length > 0
-        ? `\n\nRECENT THEMES TO AVOID (used in the last 120 days):\n${recentThemes.map((t) => `- ${t}`).join('\n')}`
+        ? `\n\nTHEMES TO AVOID (already used or dismissed):\n${recentThemes.map((t) => `- ${t}`).join('\n')}`
         : '';
 
-    return `You are suggesting theme ideas for a Daily Tandem emoji puzzle game.
+    const randomSeed = Math.floor(Math.random() * 10000);
+
+    return `You are suggesting theme ideas for a Daily Tandem emoji puzzle game. (seed: ${randomSeed})
 
 In this game:
 - Each puzzle has a THEME that connects 4 words
 - Players see emoji pairs and must guess the words
 - The theme is revealed AFTER solving - creating an "aha!" moment
 
-Generate 8 UNIQUE and CREATIVE theme suggestions.
+Generate 8 UNIQUE and CREATIVE theme suggestions that are COMPLETELY DIFFERENT from your previous suggestions.
 ${recentThemesList}
 
 REQUIREMENTS:
 1. Themes should be specific enough to be interesting but broad enough to have 4 clear answers
 2. Avoid overly generic themes like "Things" or "Stuff"
-3. DO NOT repeat or closely resemble any recent themes listed above
+3. DO NOT repeat or closely resemble any theme in the avoid list above
 4. Think creatively across different pattern types
 5. Provide a diverse mix of theme types - don't make them all similar
+6. Be SURPRISING and UNEXPECTED - pick themes you wouldn't normally suggest first
 
 THEME PATTERN TYPES (use variety):
 - Direct categories: "Musical Instruments", "Kitchen Appliances"
