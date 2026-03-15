@@ -1828,7 +1828,13 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
    * @param {string} options.context - Additional context/constraints for movie selection
    * @returns {Promise<{connection: string, movies: string[]}>}
    */
-  async generateReelConnectionsMovies({ connection, difficulty = 'medium', context = '' }) {
+  async generateReelConnectionsMovies({
+    connection,
+    difficulty = 'medium',
+    context = '',
+    overusedMovies = [],
+    allPastMovies = [],
+  }) {
     const client = this.getClient();
     if (!client) {
       throw new Error('AI generation is not enabled. Please configure ANTHROPIC_API_KEY.');
@@ -1839,7 +1845,13 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       try {
-        const prompt = this.buildReelConnectionsPrompt({ connection, difficulty, context });
+        const prompt = this.buildReelConnectionsPrompt({
+          connection,
+          difficulty,
+          context,
+          overusedMovies,
+          allPastMovies,
+        });
         const genInfo = {
           connection,
           difficulty,
@@ -1927,24 +1939,46 @@ Generate creative, clever clues for each word above. Return ONLY the JSON array.
   /**
    * Build prompt for Reel Connections movie generation
    */
-  buildReelConnectionsPrompt({ connection, difficulty, context = '' }) {
+  buildReelConnectionsPrompt({
+    connection,
+    difficulty,
+    context = '',
+    overusedMovies = [],
+    allPastMovies = [],
+  }) {
     const difficultyGuidance = {
+      easiest:
+        'Choose very well-known, mainstream movies. Blockbusters, Oscar winners, iconic franchises.',
       easy: 'Choose well-known, popular movies that most people would recognize. Blockbusters and classics.',
       medium:
         'Mix of popular and somewhat less mainstream movies. Should be recognizable but may require some movie knowledge.',
       hard: 'Can include less mainstream or older films, but they must still be findable in movie databases.',
+      hardest:
+        'Can include less mainstream films, cult classics, or more obscure titles. For movie enthusiasts.',
     };
 
     const contextSection = context?.trim()
       ? `\nADDITIONAL CONTEXT/CONSTRAINTS: ${context.trim()}\n`
       : '';
 
+    // Build overused movies section (movies used 2+ times in past puzzles)
+    const overusedSection =
+      overusedMovies.length > 0
+        ? `\nMOVIES TO AVOID (already used multiple times in past puzzles - DO NOT use these):\n${overusedMovies.map((m) => `- ${m}`).join('\n')}\n`
+        : '';
+
+    // For the full past list, just note the count to keep prompt size manageable
+    const pastMovieNote =
+      allPastMovies.length > 0
+        ? `\nIMPORTANT: We have used ${allPastMovies.length} movies in past puzzles. Strongly prefer movies NOT in our existing puzzle library. Choose FRESH picks.\n`
+        : '';
+
     return `You are generating movies for a Reel Connections puzzle game (similar to NYT Connections but with movies).
 
 USER'S CONNECTION IDEA: "${connection}"
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
-${contextSection}
+${contextSection}${overusedSection}${pastMovieNote}
 REQUIREMENTS:
 1. FIRST, refine and improve the user's connection text:
    - Use proper Title Case (e.g., "Movies That Take Place In New York")
@@ -1952,11 +1986,13 @@ REQUIREMENTS:
    - Make it more descriptive and polished (e.g., "Sandra Bullock movies" → "Films Starring Sandra Bullock")
    - Keep the same meaning but make it publication-ready
 2. Generate EXACTLY 4 movies that share this refined connection
-3. Each movie MUST be a real, well-known film that exists in movie databases like IMDB/OMDb
-4. Movies MUST have theatrical posters available (no obscure films without posters)
-5. The connection should be interesting but not too obscure - players should have an "aha!" moment
-6. Prefer movies from 1990-present for better poster availability, but classics are fine
-7. Avoid movies with very similar titles that could be confused
+3. All 4 movies MUST be DIFFERENT from each other - no duplicates
+4. Each movie MUST be a real, well-known film that exists in movie databases like IMDB/OMDb
+5. Movies MUST have theatrical posters available (no obscure films without posters)
+6. DO NOT use any movie from the "MOVIES TO AVOID" list above
+7. The connection should be interesting but not too obscure - players should have an "aha!" moment
+8. Prefer movies from 1990-present for better poster availability, but classics are fine
+9. Avoid movies with very similar titles that could be confused
 
 CONNECTION REFINEMENT EXAMPLES:
 - "movies that take place in ny" → "Movies Set In New York City"
@@ -1976,7 +2012,7 @@ RESPONSE FORMAT (JSON only):
   "movies": ["Movie Title 1", "Movie Title 2", "Movie Title 3", "Movie Title 4"]
 }
 
-Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
+Generate 4 UNIQUE movies for the connection "${connection}". Return ONLY the JSON.`;
   }
 
   /**
@@ -2005,6 +2041,12 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
         }
       });
 
+      // Check for duplicate movies
+      const uniqueMovies = [...new Set(result.movies.map((m) => m.trim().toLowerCase()))];
+      if (uniqueMovies.length < 4) {
+        throw new Error('Response contains duplicate movies');
+      }
+
       return {
         connection: result.connection.trim(),
         movies: result.movies.map((m) => m.trim()),
@@ -2029,6 +2071,7 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
     difficulty = 'medium',
     context = '',
     existingMovies = [],
+    overusedMovies = [],
   }) {
     const client = this.getClient();
     if (!client) {
@@ -2045,6 +2088,7 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
           difficulty,
           context,
           existingMovies,
+          overusedMovies,
         });
         const genInfo = {
           connection,
@@ -2133,16 +2177,29 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
   /**
    * Build prompt for single movie generation
    */
-  buildSingleMoviePrompt({ connection, difficulty, context = '', existingMovies = [] }) {
+  buildSingleMoviePrompt({
+    connection,
+    difficulty,
+    context = '',
+    existingMovies = [],
+    overusedMovies = [],
+  }) {
     const difficultyGuidance = {
+      easiest: 'Choose a very well-known, mainstream movie.',
       easy: 'Choose a well-known, popular movie that most people would recognize.',
       medium: 'Choose a recognizable movie that may require some movie knowledge.',
       hard: 'Can be a less mainstream or older film, but must be findable in movie databases.',
+      hardest: 'Can be a less mainstream film or cult classic. For movie enthusiasts.',
     };
 
     const existingSection =
       existingMovies.length > 0
         ? `\nMOVIES ALREADY SELECTED (DO NOT SUGGEST THESE): ${existingMovies.join(', ')}\n`
+        : '';
+
+    const overusedSection =
+      overusedMovies.length > 0
+        ? `\nOVERUSED MOVIES (used multiple times in past puzzles - AVOID): ${overusedMovies.slice(0, 50).join(', ')}\n`
         : '';
 
     const contextSection = context?.trim()
@@ -2154,13 +2211,14 @@ Generate 4 movies for the connection "${connection}". Return ONLY the JSON.`;
 CONNECTION: "${connection}"
 
 DIFFICULTY: ${difficulty} - ${difficultyGuidance[difficulty] || difficultyGuidance['medium']}
-${existingSection}${contextSection}
+${existingSection}${overusedSection}${contextSection}
 REQUIREMENTS:
 1. The movie MUST fit the connection theme
 2. It MUST be a real, well-known film findable in IMDB/OMDb
 3. It MUST have a theatrical poster available
-4. It should be DIFFERENT from any already-selected movies
+4. It should be DIFFERENT from any already-selected or overused movies
 5. Prefer movies from 1990-present for better poster availability
+6. Choose a FRESH pick - avoid commonly suggested movies
 
 Return ONLY a JSON object with the movie title:
 {"movie": "Movie Title"}`;

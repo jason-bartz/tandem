@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import aiService from '@/services/ai.service';
 import logger from '@/lib/logger';
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
 
 /**
  * Single Movie Regeneration API for Reel Connections
@@ -25,6 +31,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'OMDb API key not configured' }, { status: 500 });
     }
 
+    // Fetch overused movies from past puzzles
+    let overusedMovies = [];
+    try {
+      const { data } = await supabase.from('reel_connections_movies').select('title');
+      if (data) {
+        const counts = {};
+        for (const row of data) {
+          if (row.title) counts[row.title] = (counts[row.title] || 0) + 1;
+        }
+        overusedMovies = Object.entries(counts)
+          .filter(([, c]) => c >= 2)
+          .map(([title]) => title);
+      }
+    } catch (err) {
+      logger.warn('[ReelRegenerate] Failed to fetch past movies:', err.message);
+    }
+
     // Try up to 3 times to get a verified movie
     const maxAttempts = 3;
     let lastError = null;
@@ -37,6 +60,7 @@ export async function POST(request) {
           difficulty,
           context: context?.trim() || '',
           existingMovies,
+          overusedMovies,
         });
 
         const movieTitle = aiResult.movie;

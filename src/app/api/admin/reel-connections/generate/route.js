@@ -1,9 +1,45 @@
 import { NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
 import aiService from '@/services/ai.service';
 import logger from '@/lib/logger';
 
 const OMDB_API_KEY = process.env.OMDB_API_KEY;
 const OMDB_BASE_URL = 'http://www.omdbapi.com/';
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+/**
+ * Fetch all movies used in past puzzles (title list)
+ */
+async function fetchPastMovies() {
+  try {
+    const { data, error } = await supabase.from('reel_connections_movies').select('title');
+
+    if (error) {
+      logger.warn('[ReelGenerate] Failed to fetch past movies:', error.message);
+      return [];
+    }
+
+    // Count occurrences and return movies used 2+ times as high-priority avoids
+    const counts = {};
+    for (const row of data || []) {
+      if (row.title) {
+        const t = row.title;
+        counts[t] = (counts[t] || 0) + 1;
+      }
+    }
+
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([title, count]) => ({ title, count }));
+  } catch (err) {
+    logger.warn('[ReelGenerate] Error fetching past movies:', err.message);
+    return [];
+  }
+}
 
 /**
  * AI Movie Generation API for Reel Connections
@@ -25,11 +61,23 @@ export async function POST(request) {
       return NextResponse.json({ error: 'OMDb API key not configured' }, { status: 500 });
     }
 
+    // Fetch previously used movies to avoid repeats
+    const pastMovies = await fetchPastMovies();
+    const overusedMovies = pastMovies.filter((m) => m.count >= 2).map((m) => m.title);
+    const allPastTitles = pastMovies.map((m) => m.title);
+
+    logger.info('[ReelGenerate] Past movie context', {
+      totalUnique: allPastTitles.length,
+      overused: overusedMovies.length,
+    });
+
     // Generate movies using AI
     const aiResult = await aiService.generateReelConnectionsMovies({
       connection: connection.trim(),
       difficulty,
       context: context?.trim() || '',
+      overusedMovies,
+      allPastMovies: allPastTitles,
     });
 
     // Verify each movie against OMDb and get full details
