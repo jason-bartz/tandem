@@ -828,7 +828,7 @@ export async function createFeedbackEntry(entry) {
     .from('feedback')
     .insert({
       id: entry.id,
-      user_id: entry.userId,
+      user_id: entry.userId || null,
       category: entry.category,
       message: entry.message,
       email: entry.email,

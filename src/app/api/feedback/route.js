@@ -2,7 +2,6 @@
 
 import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
-import { requireAuth } from '@/lib/auth/verify';
 import {
   feedbackSubmissionSchema,
   parseAndValidateJson,
@@ -100,16 +99,27 @@ export async function POST(request) {
       return rateLimitResponse;
     }
 
-    const { user, response } = await requireAuth(request);
+    const {
+      category,
+      message,
+      allowContact,
+      email: submittedEmail,
+    } = await parseAndValidateJson(request, feedbackSubmissionSchema);
 
-    if (!user) {
-      return response;
+    // Try to get authenticated user if available (but don't require it)
+    let user = null;
+    try {
+      const authHeader = request.headers.get('authorization');
+      if (authHeader) {
+        const { requireAuth } = await import('@/lib/auth/verify');
+        const authResult = await requireAuth(request);
+        if (authResult.user) {
+          user = authResult.user;
+        }
+      }
+    } catch {
+      // Auth failed or not provided - that's fine, continue as anonymous
     }
-
-    const { category, message, allowContact } = await parseAndValidateJson(
-      request,
-      feedbackSubmissionSchema
-    );
 
     // Get platform and user agent from request
     const userAgent = request.headers.get('user-agent') || null;
@@ -123,10 +133,13 @@ export async function POST(request) {
       platform = 'android';
     }
 
+    // Use authenticated user's email if available, otherwise use submitted email
+    const email = user?.email || user?.user_metadata?.email || submittedEmail || null;
+
     const entry = {
       id: randomUUID(),
-      userId: user.id,
-      email: user.email || user.user_metadata?.email || null,
+      userId: user?.id || null,
+      email,
       category,
       message,
       allowContact: !!allowContact,
@@ -140,13 +153,14 @@ export async function POST(request) {
     // Send email and Discord notifications before returning response
     // Must await these in serverless environments (Vercel) or they get killed
     // when the function exits. Using allSettled so one failure doesn't block the other.
+    const username = user?.user_metadata?.username || user?.user_metadata?.display_name || null;
     const [emailResult, discordResult] = await Promise.allSettled([
       sendFeedbackNotificationEmail(createdEntry),
       notifyUserFeedback({
         category: createdEntry.category,
         message: createdEntry.message,
         email: createdEntry.email,
-        username: user.user_metadata?.username || user.user_metadata?.display_name,
+        username,
         allowContact: createdEntry.allowContact,
         platform: createdEntry.platform,
       }),

@@ -15,6 +15,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
     category: FEEDBACK_CATEGORIES[0].value,
     message: '',
     allowContact: false,
+    email: '',
   });
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
@@ -34,7 +35,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (!canSubmit || submitting || !user) return;
+    if (!canSubmit || submitting) return;
 
     setSubmitting(true);
     setError('');
@@ -58,6 +59,7 @@ export default function FeedbackPane({ isOpen, onClose }) {
         category: FEEDBACK_CATEGORIES[0].value,
         message: '',
         allowContact: false,
+        email: '',
       });
 
       setTimeout(() => {
@@ -120,39 +122,6 @@ export default function FeedbackPane({ isOpen, onClose }) {
 
           {/* Content */}
           <div className="p-6 space-y-6">
-            {/* Not Authenticated Message */}
-            {!user && (
-              <div
-                className={`p-4 rounded-2xl border-[3px] ${
-                  highContrast
-                    ? 'bg-hc-error/20 border-hc-border'
-                    : 'bg-accent-yellow/20 border-accent-yellow shadow-[3px_3px_0px_rgba(0,0,0,0.1)]'
-                }`}
-              >
-                <div className="flex items-start gap-3">
-                  <svg
-                    className="w-5 h-5 text-yellow-700 flex-shrink-0 mt-0.5"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                  <div>
-                    <p className="text-sm font-bold text-gray-900 dark:text-gray-100">
-                      Sign In Required
-                    </p>
-                    <p className="text-xs text-gray-700 dark:text-gray-300 mt-1">
-                      You must be signed in to send feedback. Please sign in and try again.
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
             {/* Success Message */}
             {submitSuccess && (
               <div
@@ -227,18 +196,15 @@ export default function FeedbackPane({ isOpen, onClose }) {
                     <button
                       key={category.value}
                       type="button"
-                      disabled={!user}
                       onClick={() => setFormData((prev) => ({ ...prev, category: category.value }))}
                       className={`w-full text-left px-4 py-3 rounded-xl border-[3px] font-semibold text-sm transition-all flex items-center gap-3 ${
-                        !user
-                          ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500'
-                          : formData.category === category.value
-                            ? highContrast
-                              ? 'bg-hc-primary border-hc-border text-black'
-                              : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
-                            : highContrast
-                              ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
-                              : 'bg-ghost-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
+                        formData.category === category.value
+                          ? highContrast
+                            ? 'bg-hc-primary border-hc-border text-black'
+                            : 'bg-accent-blue border-border-main text-white shadow-[3px_3px_0px_rgba(0,0,0,1)]'
+                          : highContrast
+                            ? 'bg-hc-surface border-hc-border text-gray-700 hover:bg-hc-primary/20'
+                            : 'bg-ghost-white dark:bg-bg-surface border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 hover:border-gray-400'
                       }`}
                     >
                       {category.icon && (
@@ -265,16 +231,13 @@ export default function FeedbackPane({ isOpen, onClose }) {
                   id="feedback-message"
                   rows={4}
                   value={formData.message}
-                  disabled={!user}
                   onChange={(event) =>
                     setFormData((prev) => ({ ...prev, message: event.target.value }))
                   }
                   className={`w-full rounded-2xl border-[3px] px-4 py-3 text-base resize-none transition-all focus:outline-none focus:ring-4 ${
-                    !user
-                      ? 'opacity-50 cursor-not-allowed bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600'
-                      : highContrast
-                        ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
-                        : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                    highContrast
+                      ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
+                      : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
                   }`}
                   placeholder="Describe your feedback in detail. Include puzzle numbers, steps to reproduce bugs, or specific feature suggestions..."
                   maxLength={2000}
@@ -304,18 +267,13 @@ export default function FeedbackPane({ isOpen, onClose }) {
                     : 'border-border-main bg-gray-50 dark:bg-bg-card'
                 }`}
               >
-                <label
-                  className={`flex items-start gap-3 select-none ${!user ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-                >
+                <label className="flex items-start gap-3 select-none cursor-pointer">
                   <input
                     type="checkbox"
-                    disabled={!user}
                     className={`mt-0.5 w-5 h-5 rounded border-[2px] transition-all focus:ring-4 focus:ring-accent-blue/20 ${
-                      !user
-                        ? 'cursor-not-allowed'
-                        : highContrast
-                          ? 'border-hc-border'
-                          : 'border-gray-400 checked:bg-accent-blue checked:border-accent-blue'
+                      highContrast
+                        ? 'border-hc-border'
+                        : 'border-gray-400 checked:bg-accent-blue checked:border-accent-blue'
                     }`}
                     checked={formData.allowContact}
                     onChange={(event) =>
@@ -326,16 +284,35 @@ export default function FeedbackPane({ isOpen, onClose }) {
                     You can email me for more details
                   </span>
                 </label>
+
+                {/* Email input - shown when allowContact is checked and user is not logged in */}
+                {formData.allowContact && !user && (
+                  <div className="mt-3">
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(event) =>
+                        setFormData((prev) => ({ ...prev, email: event.target.value }))
+                      }
+                      className={`w-full rounded-xl border-[3px] px-4 py-2.5 text-sm transition-all focus:outline-none focus:ring-4 ${
+                        highContrast
+                          ? 'border-hc-border bg-hc-surface text-gray-900 focus:ring-hc-focus/30'
+                          : 'border-border-main bg-ghost-white dark:bg-bg-card text-gray-900 dark:text-gray-100 focus:ring-accent-blue/20 shadow-[2px_2px_0px_rgba(0,0,0,0.1)]'
+                      }`}
+                      placeholder="Your email address"
+                    />
+                  </div>
+                )}
               </div>
 
               {/* Submit Button */}
               <button
                 type="submit"
-                disabled={!user || !canSubmit || submitting}
+                disabled={!canSubmit || submitting}
                 className={`w-full py-4 rounded-2xl border-[3px] font-bold text-base transition-all focus:outline-none focus:ring-4 ${
                   highContrast
                     ? 'bg-hc-primary border-hc-border text-black hover:bg-hc-focus focus:ring-hc-focus/30'
-                    : user && canSubmit && !submitting
+                    : canSubmit && !submitting
                       ? 'bg-accent-blue border-border-main text-white shadow-[4px_4px_0px_rgba(0,0,0,1)] hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(0,0,0,1)] active:translate-x-[4px] active:translate-y-[4px] active:shadow-none focus:ring-accent-blue/30'
                       : 'bg-gray-300 dark:bg-gray-600 border-border-main text-gray-500 dark:text-gray-400 cursor-not-allowed'
                 }`}

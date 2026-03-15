@@ -190,6 +190,7 @@ export const feedbackSubmissionSchema = z.object({
     .max(MAX_FEEDBACK_LENGTH, `Feedback must be at most ${MAX_FEEDBACK_LENGTH} characters`)
     .transform((val) => sanitizeString(val, MAX_FEEDBACK_LENGTH)),
   allowContact: z.boolean().optional().default(false),
+  email: z.string().email('Invalid email address').max(255).optional().or(z.literal('')),
 });
 
 export const feedbackAdminUpdateSchema = z
