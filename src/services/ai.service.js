@@ -2369,6 +2369,7 @@ Return ONLY a JSON object with the movie title:
     recentConnections = [],
     allConnections = [],
     dismissedConnections = [],
+    context = '',
   }) {
     const client = this.getClient();
     if (!client) {
@@ -2399,7 +2400,7 @@ DIFFICULTY LEVELS:
 2. EASY - Popular, widely recognized movies. Most casual moviegoers should know these films.
 3. MEDIUM - Mix of popular and moderately known movies. Requires some movie knowledge. The connection can be trickier.
 4. HARDEST - Can include less mainstream films, cult classics, or obscure categories. For movie enthusiasts. The connection should be clever and surprising.
-${recentList}${olderList}
+${context?.trim() ? `\nUSER GUIDANCE: ${context.trim()}\nIncorporate the above guidance into your choices. If specific connection ideas are mentioned, use them for appropriate difficulty levels and fill in the remaining groups with complementary connections.\n` : ''}${recentList}${olderList}
 
 REQUIREMENTS:
 1. DO NOT use any connection identical or similar to those listed above

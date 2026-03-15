@@ -19,7 +19,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { dismissedConnections = [] } = await request.json();
+    const { dismissedConnections = [], context = '' } = await request.json();
 
     // Fetch ALL historical connections
     const { data: allGroups, error: fetchError } = await supabase
@@ -66,6 +66,7 @@ export async function POST(request) {
       recentConnections,
       allConnections,
       dismissedConnections,
+      context,
     });
 
     return NextResponse.json({

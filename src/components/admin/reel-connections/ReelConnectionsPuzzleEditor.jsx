@@ -224,6 +224,7 @@ export default function ReelConnectionsPuzzleEditor({
   const [suggestionsLoading, setSuggestionsLoading] = useState({});
   const [dismissedConnections, setDismissedConnections] = useState([]);
   const [generatingAll, setGeneratingAll] = useState(false);
+  const [generateAllContext, setGenerateAllContext] = useState('');
 
   // Track creator attribution for user-submitted puzzles
   const [creatorName, setCreatorName] = useState(puzzle?.creatorName || null);
@@ -493,7 +494,10 @@ export default function ReelConnectionsPuzzleEditor({
       const suggestResponse = await fetch('/api/admin/reel-connections/suggest-full-puzzle', {
         method: 'POST',
         headers: await authService.getAuthHeaders(true),
-        body: JSON.stringify({ dismissedConnections }),
+        body: JSON.stringify({
+          dismissedConnections,
+          context: generateAllContext.trim() || '',
+        }),
       });
 
       if (!suggestResponse.ok) {
@@ -666,6 +670,21 @@ export default function ReelConnectionsPuzzleEditor({
             </button>
           )}
         </div>
+      </div>
+
+      {/* Generate All context input */}
+      <div className="mt-3 mb-4">
+        <label className="block text-xs font-bold text-text-secondary mb-1">
+          Generate All Context (optional)
+        </label>
+        <input
+          type="text"
+          value={generateAllContext}
+          onChange={(e) => setGenerateAllContext(e.target.value)}
+          placeholder='e.g., "theme: 90s nostalgia" or "include a connection about Tarantino films and one about movies set in Paris"'
+          className="w-full px-3 py-1.5 text-sm border-[2px] border-gray-300 dark:border-gray-600 rounded-lg bg-bg-card text-text-primary font-medium focus:outline-none focus:ring-2 focus:ring-accent-blue"
+          disabled={generatingAll}
+        />
       </div>
 
       <div className="space-y-4">
