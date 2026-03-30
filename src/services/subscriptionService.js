@@ -12,7 +12,6 @@
  */
 
 import { Capacitor } from '@capacitor/core';
-import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
 
 // Lazy load to avoid circular dependencies and optimize bundle size
 let iOSService = null;
@@ -87,26 +86,18 @@ class UnifiedSubscriptionService {
 
   /**
    * Check if user can access a puzzle
-   * SYNCHRONOUS - Returns immediately using cached service
+   * All puzzles are free — always returns true
    */
-  canAccessPuzzle(puzzleNumber) {
-    // If service not loaded yet, default to today's puzzle only
-    if (!this.service) {
-      const currentPuzzleNumber = getCurrentPuzzleNumber();
-      return puzzleNumber === currentPuzzleNumber;
-    }
-    return this.service.canAccessPuzzle(puzzleNumber);
+  canAccessPuzzle() {
+    return true;
   }
 
   /**
    * Check if user can access a puzzle by date
-   * SYNCHRONOUS - Returns immediately using cached service
+   * All puzzles are free — always returns true
    */
-  canAccessPuzzleByDate(dateString) {
-    if (!this.service) {
-      return this.canAccessPuzzle(getPuzzleNumberForDate(dateString));
-    }
-    return this.service.canAccessPuzzleByDate(dateString);
+  canAccessPuzzleByDate() {
+    return true;
   }
 
   /**
@@ -163,6 +154,25 @@ class UnifiedSubscriptionService {
       throw new Error('Use Stripe Customer Portal for web subscription management');
     }
     return service.restorePurchases();
+  }
+
+  /**
+   * iOS-specific: Get tip product info
+   */
+  async getTipProduct() {
+    const service = await this.getService();
+    return service.getTipProduct?.() || null;
+  }
+
+  /**
+   * iOS-specific: Purchase a tip
+   */
+  async purchaseTip() {
+    const service = await this.getService();
+    if (typeof service.purchaseTip !== 'function') {
+      throw new Error('Tips not available on this platform');
+    }
+    return service.purchaseTip();
   }
 
   /**

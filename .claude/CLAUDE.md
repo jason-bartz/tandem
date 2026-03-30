@@ -195,6 +195,20 @@ The `src/core/` directory contains platform-agnostic abstractions:
 - Components use `.jsx` extension
 - API routes use `.js` extension
 
+## Style Guide
+
+**When modifying any component in `src/components/` or `src/app/`, consult `docs/Style.md`** for color tokens, typography, spacing, border/shadow patterns, and component conventions. Key rules:
+
+- Use Tailwind color tokens (`bg-accent-green`, `text-accent-blue`) — never hardcode hex values
+- Use `ghost-white` instead of `bg-white` for backgrounds
+- Follow the neo-brutalist shadow pattern (offset shadows, no blur)
+- Respect the border radius scale: 20px buttons, 24px cards, 32px modals
+- Default body text is `text-sm` (mobile-first compact design)
+- Always support dark mode and high contrast mode
+- Use `font-jua` and `font-lilita-one` only within Daily Alchemy components
+- Follow the loading state decision matrix: skeleton screens for page/modal loads, inline spinner + text change for button actions, never a bare spinner on a blank page
+- All skeletons use `skeleton-shimmer` class (not `animate-pulse`), `bg-gray-200 dark:bg-gray-700`, and must check `reduceMotion`
+
 ## Environment Variables
 
 See `.env.example` for required variables. Key ones:

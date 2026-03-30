@@ -16,6 +16,7 @@ import FeedbackPane from '@/components/FeedbackPane';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import platformService from '@/core/platform/platform';
 import { isStandaloneAlchemy, homePath } from '@/lib/standalone';
+import TipJarButton from '@/components/shared/TipJarButton';
 
 export default function AboutPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -139,8 +140,8 @@ export default function AboutPage() {
                               games offer fresh challenges that respect your time.
                             </p>
                             <p>
-                              I&apos;m committed to keeping our games ad-free forever. No endless
-                              content trying to steal your attention. Just simple, fun puzzles that
+                              Every game is 100% free to play — no subscriptions, no
+                              microtransactions, no premium tiers. Just simple, fun puzzles that
                               reward curiosity and let you share &quot;aha!&quot; moments with
                               friends. Hope you enjoy!
                             </p>
@@ -175,57 +176,15 @@ export default function AboutPage() {
                         </div>
                       </div>
 
-                      {/* Support Section - Standalone Alchemy */}
-                      {isStandaloneAlchemy && (
-                        <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
-                            Generous supporters help keep this game ad-free and the daily puzzle
-                            free for everyone. Your support helps cover our servers and the AI that
-                            powers the alchemy.
-                          </p>
-                          <a
-                            href="https://buymeacoffee.com/jasonbartz"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
-                          >
-                            <Image
-                              src="/ui/shared/coffee.png"
-                              alt="Coffee cup"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6"
-                            />
-                            Buy me a coffee
-                          </a>
-                        </div>
-                      )}
-
-                      {/* Support Section - Web only (not allowed in iOS App Store), hidden on standalone */}
-                      {isWeb && !isStandaloneAlchemy && (
-                        <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
-                          <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
-                            Our Tandem Puzzle Club subscribers and generous supporters help keep the
-                            game ad-free for everyone, the daily puzzle free, and allow me to
-                            continue developing new games.
-                          </p>
-                          <a
-                            href="https://buymeacoffee.com/jasonbartz"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-2 w-full px-6 py-3 bg-[#FFDD00] hover:bg-[#FFDD00]/90 text-black font-semibold rounded-2xl border-[3px] border-black transition-all"
-                          >
-                            <Image
-                              src="/ui/shared/coffee.png"
-                              alt="Coffee cup"
-                              width={24}
-                              height={24}
-                              className="w-6 h-6"
-                            />
-                            Buy me a coffee
-                          </a>
-                        </div>
-                      )}
+                      {/* Support Section */}
+                      <div className="mt-8 pt-6 border-t-[3px] border-black dark:border-white">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-4">
+                          {isStandaloneAlchemy
+                            ? 'Generous supporters help keep this game ad-free and the daily puzzle free for everyone. Your support helps cover our servers and the AI that powers the alchemy.'
+                            : 'Generous supporters help keep every game free to play and ad-free for everyone. Your support helps cover our servers and the AI that powers the puzzles.'}
+                        </p>
+                        <TipJarButton className="rounded-2xl py-3 px-6" />
+                      </div>
 
                       {/* Call to Action */}
                       <div

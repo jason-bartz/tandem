@@ -9,7 +9,7 @@ import WelcomeScreen from './WelcomeScreen';
 import PlayingScreen from './PlayingScreen';
 import CompleteScreen from './CompleteScreen';
 import AdmireScreen from './AdmireScreen';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import logger from '@/lib/logger';
 
 export default function GameContainer() {
@@ -48,7 +48,7 @@ export default function GameContainer() {
   if (game.loading) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-primary">
-        <LoadingSpinner />
+        <LoadingSpinner size="large" text="Loading puzzle..." color="border-accent-blue" />
       </div>
     );
   }

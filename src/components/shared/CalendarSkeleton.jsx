@@ -15,9 +15,9 @@ export default function CalendarSkeleton() {
         {Array.from({ length: 35 }).map((_, i) => (
           <div
             key={i}
-            className={`aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'animate-pulse' : ''}`}
+            className={`aspect-square rounded-lg bg-gray-200 dark:bg-gray-700 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
             style={{
-              animationDelay: !reduceMotion ? `${(i % 7) * 50}ms` : '0ms',
+              animationDelay: !reduceMotion ? `${Math.min(i % 7, 4) * 100}ms` : '0ms',
             }}
           />
         ))}

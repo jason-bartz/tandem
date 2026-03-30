@@ -1,20 +1,28 @@
 'use client';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 /**
  * FeedbackDashboardSkeleton - Loading state for admin feedback dashboard
  */
 export default function FeedbackDashboardSkeleton() {
+  const { reduceMotion } = useTheme();
+
   return (
     <div className="space-y-4">
       {/* Sort & Filter Row Skeleton */}
       <div className="flex items-center justify-between gap-3 py-2 border-b-[2px] border-black/10 dark:border-white/10">
-        <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-        <div className="h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+        <div
+          className={`h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        />
+        <div
+          className={`h-8 w-20 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+        />
       </div>
 
       {/* Feedback Entry Cards Skeleton */}
       <div className="space-y-4">
-        {[1, 2, 3].map((i) => (
+        {[0, 1, 2].map((i) => (
           <div
             key={i}
             className="rounded-xl border-[3px] border-black dark:border-white bg-ghost-white dark:bg-bg-surface shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)] overflow-hidden"
@@ -22,10 +30,19 @@ export default function FeedbackDashboardSkeleton() {
             {/* Header Skeleton */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-3 bg-gray-100 dark:bg-gray-800 border-b-[3px] border-black dark:border-white">
               <div className="flex items-center gap-4">
-                <div className="h-6 w-16 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
-                <div className="h-4 w-20 bg-gray-300 dark:bg-gray-600 rounded animate-pulse" />
+                <div
+                  className={`h-6 w-16 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  style={{ animationDelay: !reduceMotion ? `${i * 100}ms` : '0ms' }}
+                />
+                <div
+                  className={`h-4 w-20 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  style={{ animationDelay: !reduceMotion ? `${i * 100 + 50}ms` : '0ms' }}
+                />
               </div>
-              <div className="h-7 w-32 bg-gray-300 dark:bg-gray-600 rounded-lg animate-pulse" />
+              <div
+                className={`h-7 w-32 bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                style={{ animationDelay: !reduceMotion ? `${i * 100 + 100}ms` : '0ms' }}
+              />
             </div>
 
             {/* Content Grid Skeleton */}
@@ -33,24 +50,38 @@ export default function FeedbackDashboardSkeleton() {
               {/* User Section Skeleton */}
               <div className="p-5 space-y-4">
                 <div>
-                  <div className="h-3 w-24 bg-gray-300 dark:bg-gray-700 rounded mb-3 animate-pulse" />
+                  <div
+                    className={`h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-3 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  />
                   <div className="space-y-2">
-                    {[1, 2, 3].map((j) => (
+                    {[0, 1, 2].map((j) => (
                       <div key={j} className="flex flex-col gap-1">
-                        <div className="h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                        <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                        <div
+                          className={`h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                        />
+                        <div
+                          className={`h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                        />
                       </div>
                     ))}
                   </div>
                 </div>
 
                 <div className="pt-3 border-t-[2px] border-gray-200 dark:border-gray-700">
-                  <div className="h-3 w-16 bg-gray-300 dark:bg-gray-700 rounded mb-2 animate-pulse" />
+                  <div
+                    className={`h-3 w-16 bg-gray-200 dark:bg-gray-700 rounded mb-2 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  />
                   <div className="p-3 bg-gray-50 dark:bg-gray-800/50 border-[2px] border-gray-200 dark:border-gray-700 rounded-lg">
                     <div className="space-y-2">
-                      <div className="h-3 w-full bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      <div className="h-3 w-4/5 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
-                      <div className="h-3 w-3/4 bg-gray-200 dark:bg-gray-700 rounded animate-pulse" />
+                      <div
+                        className={`h-3 w-full bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                      />
+                      <div
+                        className={`h-3 w-4/5 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                      />
+                      <div
+                        className={`h-3 w-3/4 bg-gray-200 dark:bg-gray-700 rounded ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                      />
                     </div>
                   </div>
                 </div>
@@ -59,12 +90,20 @@ export default function FeedbackDashboardSkeleton() {
               {/* Admin Section Skeleton */}
               <div className="p-5 space-y-4 bg-gray-50/50 dark:bg-gray-900/20">
                 <div>
-                  <div className="h-3 w-24 bg-gray-300 dark:bg-gray-700 rounded mb-3 animate-pulse" />
-                  <div className="h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-4 animate-pulse" />
+                  <div
+                    className={`h-3 w-24 bg-gray-200 dark:bg-gray-700 rounded mb-3 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  />
+                  <div
+                    className={`h-4 w-32 bg-gray-200 dark:bg-gray-700 rounded mb-4 ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                  />
 
                   <div className="space-y-2">
-                    <div className="h-20 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
-                    <div className="h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-lg animate-pulse" />
+                    <div
+                      className={`h-20 w-full bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    />
+                    <div
+                      className={`h-9 w-full bg-gray-200 dark:bg-gray-700 rounded-lg ${!reduceMotion ? 'skeleton-shimmer' : ''}`}
+                    />
                   </div>
                 </div>
               </div>

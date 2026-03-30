@@ -7,9 +7,7 @@ import { motion } from 'framer-motion';
 import { Info, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
-import PaywallModal from '@/components/PaywallModal';
 import AuthModal from '@/components/auth/AuthModal';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 
@@ -32,34 +30,19 @@ export function DailyAlchemyWelcomeScreen({
   onResume,
 }) {
   const { highContrast, reduceMotion } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
   const { user } = useAuth();
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
 
   const handleFreePlayClick = () => {
-    if (hasSubscription) {
-      onStartFreePlay?.();
-    } else {
-      setShowPaywall(true);
-    }
+    onStartFreePlay?.();
   };
 
   const handleCoopClick = () => {
     if (!user) {
-      if (isStandaloneAlchemy) {
-        // On standalone, show auth modal (co-op requires login, but no paywall)
-        setShowAuthModal(true);
-      } else {
-        setShowPaywall(true);
-      }
+      setShowAuthModal(true);
       return;
     }
-    if (hasSubscription) {
-      onStartCoop?.();
-    } else {
-      setShowPaywall(true);
-    }
+    onStartCoop?.();
   };
 
   return (
@@ -194,7 +177,7 @@ export function DailyAlchemyWelcomeScreen({
         onClick={handleFreePlayClick}
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4 mt-3',
-          'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+          'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
           'border-[3px] border-black dark:border-gray-600',
           'rounded-xl font-bold text-lg',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
@@ -209,15 +192,6 @@ export function DailyAlchemyWelcomeScreen({
         transition={{ delay: 0.5 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        {!hasSubscription && (
-          <Image
-            src="/ui/shared/lock.png"
-            alt="Locked"
-            width={20}
-            height={20}
-            className="opacity-70"
-          />
-        )}
         <span>Creative Mode</span>
       </motion.button>
 
@@ -263,17 +237,7 @@ export function DailyAlchemyWelcomeScreen({
         transition={{ delay: 0.58 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        {!hasSubscription ? (
-          <Image
-            src="/ui/shared/lock.png"
-            alt="Locked"
-            width={20}
-            height={20}
-            className="opacity-70 invert"
-          />
-        ) : (
-          <Users className="w-5 h-5" />
-        )}
+        <Users className="w-5 h-5" />
         <span>Co-op Mode</span>
       </motion.button>
 
@@ -348,10 +312,7 @@ export function DailyAlchemyWelcomeScreen({
         </motion.footer>
       )}
 
-      {/* Paywall Modal */}
-      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
-
-      {/* Auth Modal for standalone co-op login */}
+      {/* Auth Modal for co-op login */}
       <AuthModal
         isOpen={showAuthModal}
         onClose={() => setShowAuthModal(false)}

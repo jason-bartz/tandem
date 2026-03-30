@@ -77,15 +77,13 @@ export default function TermsOfUse() {
           <p>Features include:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>One free daily puzzle for all users</li>
-            <li>
-              Archive of past puzzles (subscription required for full access on tandemdaily.com)
-            </li>
+            <li>Archive of past puzzles (free for all users)</li>
             <li>Statistics tracking and streak counting</li>
             <li>Global leaderboards for competition (requires free account)</li>
             <li>Co-op Mode for real-time multiplayer in Daily Alchemy (requires free account)</li>
             <li>Game Center achievements and leaderboards (iOS only)</li>
             <li>iCloud sync across devices (iOS only)</li>
-            <li>Optional in-app purchases for premium features (tandemdaily.com and iOS)</li>
+            <li>All features available for free (tandemdaily.com and iOS)</li>
             <li>Free ad-supported access to Daily Alchemy at dailyalchemy.fun</li>
           </ul>
         </div>
@@ -113,57 +111,14 @@ export default function TermsOfUse() {
       ),
     },
     {
-      id: 'subscriptions',
-      title: 'Subscriptions and Purchases',
+      id: 'free-access',
+      title: 'Free Access',
       content: (
-        <div className="space-y-4 text-sm">
-          <div>
-            <h4 className="font-semibold mb-2">Tandem Puzzle Club Subscriptions</h4>
-            <p className="mb-2">We offer optional subscriptions for premium features:</p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>
-                <strong>Monthly Membership</strong>: Monthly subscription ($1.99/month)
-              </li>
-              <li>
-                <strong>Annual Membership</strong>: Annual subscription ($14.99/year)
-              </li>
-              <li>
-                <strong>Lifetime Membership</strong>: Lifetime access ($29.99 one-time)
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Billing and Renewal</h4>
-            <p className="mb-2">Subscriptions are managed through Stripe (web) and Apple (iOS):</p>
-            <p className="mb-2 text-sm">
-              <strong>iOS App Store:</strong>
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400 mb-3">
-              <li>Payment processed through Apple App Store</li>
-              <li>Subscriptions auto-renew unless canceled 24 hours before renewal</li>
-              <li>Manage subscriptions in your Apple ID Account Settings</li>
-              <li>No refunds for partial subscription periods</li>
-            </ul>
-            <p className="mb-2 text-sm">
-              <strong>Web (via Stripe):</strong>
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Payment processed securely through Stripe</li>
-              <li>Requires account creation with email and password or Google OAuth</li>
-              <li>Subscriptions auto-renew unless canceled before renewal</li>
-              <li>Manage subscriptions through your account page or Stripe customer portal</li>
-              <li>Refund policy follows Stripe's standard terms</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">Free Content</h4>
-            <p>
-              The daily puzzle will always remain free. Premium subscriptions provide access to
-              archived puzzles and future premium features.
-            </p>
-          </div>
+        <div className="space-y-3 text-sm">
+          <p>
+            All games and features, including puzzle archives, Hard Mode, and Creative Mode, are
+            available for free. No subscription or payment is required.
+          </p>
         </div>
       ),
     },
@@ -500,7 +455,7 @@ export default function TermsOfUse() {
           <p>We reserve the right to:</p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Modify or discontinue the Game at any time</li>
-            <li>Change subscription prices with notice</li>
+            <li>Change features or access levels with notice</li>
             <li>Update these Terms as needed</li>
             <li>Add or remove features</li>
           </ul>
@@ -521,8 +476,7 @@ export default function TermsOfUse() {
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Your license to use the Game ends immediately</li>
-            <li>Active subscriptions continue until the end of the billing period</li>
-            <li>No refunds will be provided</li>
+            <li>Your account data will be deleted</li>
           </ul>
         </div>
       ),
@@ -533,8 +487,8 @@ export default function TermsOfUse() {
       content: (
         <div className="space-y-3 text-sm">
           <p>
-            Web users may create an account to access Tandem Puzzle Club features. By creating an
-            account, you agree to:
+            Web users may create a free account to access features like leaderboards, stats sync,
+            and puzzle archives. By creating an account, you agree to:
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
             <li>Provide accurate and complete information</li>
@@ -577,35 +531,9 @@ export default function TermsOfUse() {
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Your account credentials and personal data will be permanently deleted</li>
               <li>Your game progress and statistics will be erased</li>
-              <li>
-                Your subscription records will be deleted (subject to legal retention requirements)
-              </li>
               <li>If you used Sign in with Apple, your authorization will be revoked</li>
               <li>This action is immediate and irreversible</li>
             </ul>
-          </div>
-
-          <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-xl p-4">
-            <p className="font-semibold mb-2 text-orange-900 dark:text-orange-200">
-              Important: Active Subscriptions
-            </p>
-            <p className="text-orange-800 dark:text-orange-300 mb-2">
-              Deleting your account does NOT cancel active subscriptions. You must cancel your
-              subscription separately:
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-orange-800 dark:text-orange-300">
-              <li>
-                <strong>iOS</strong>: Cancel via App Store → Subscriptions before deleting your
-                account
-              </li>
-              <li>
-                <strong>Web</strong>: Cancel via Stripe billing portal before deleting your account
-              </li>
-            </ul>
-            <p className="text-orange-800 dark:text-orange-300 mt-2">
-              Failure to cancel your subscription before deleting your account will result in
-              continued billing.
-            </p>
           </div>
 
           <div>
@@ -615,10 +543,6 @@ export default function TermsOfUse() {
               information for legal and regulatory compliance:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>
-                Transaction records and billing history: Retained for 7 years (tax and financial
-                regulations)
-              </li>
               <li>Security logs: Retained for 30 days</li>
               <li>
                 Anonymized analytics data: May be retained indefinitely for product improvement
@@ -643,11 +567,9 @@ export default function TermsOfUse() {
         <div className="space-y-3 text-sm">
           <p>
             The Game is suitable for all ages. However, users under 13 years old should have
-            parental permission before playing. In-app purchases require:
+            parental permission before playing.
           </p>
           <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-            <li>Users must be 18+ to make purchases</li>
-            <li>Minors need parental consent for subscriptions</li>
             <li>Parents are responsible for their children's use</li>
           </ul>
         </div>
@@ -697,27 +619,6 @@ export default function TermsOfUse() {
       ),
     },
     {
-      id: 'stripe-terms',
-      title: 'Stripe Payment Processing',
-      content: (
-        <div className="space-y-4 text-sm">
-          <div>
-            <h4 className="font-semibold mb-2">Web Subscriptions</h4>
-            <p className="mb-2">
-              For web users, payments are processed by Stripe, Inc. ("Stripe"):
-            </p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Your payment information is collected and processed by Stripe</li>
-              <li>You must comply with Stripe's Terms of Service</li>
-              <li>Stripe's privacy policy applies to your payment data</li>
-              <li>We do not store your credit card information on our servers</li>
-              <li>Billing disputes should be addressed through Stripe's customer service</li>
-            </ul>
-          </div>
-        </div>
-      ),
-    },
-    {
       id: 'advertising',
       title: 'Advertising (dailyalchemy.fun)',
       content: (
@@ -751,10 +652,7 @@ export default function TermsOfUse() {
 
           <div>
             <h4 className="font-semibold mb-2">Ad-Free Experience</h4>
-            <p>
-              No advertisements are displayed on tandemdaily.com or in our iOS app. Tandem Puzzle
-              Club subscribers enjoy an entirely ad-free experience across all platforms.
-            </p>
+            <p>No advertisements are displayed on tandemdaily.com or in our iOS app.</p>
           </div>
         </div>
       ),

@@ -43,8 +43,6 @@ export default function DeleteAccountModal({
   const platform = Capacitor.getPlatform();
   const isWeb = platform === 'web';
 
-  const hasActiveSubscription = accountInfo?.hasActiveSubscription || false;
-
   const handleClose = () => {
     if (!loading) {
       setStep(1);
@@ -230,40 +228,6 @@ export default function DeleteAccountModal({
           <p className="text-sm text-gray-600 dark:text-gray-400 text-center mb-6">
             This action cannot be undone
           </p>
-
-          {/* Active Subscription Warning */}
-          {hasActiveSubscription && (
-            <div
-              className={`rounded-2xl p-4 mb-6 border-[3px] ${
-                highContrast
-                  ? 'bg-hc-error/10 border-hc-error'
-                  : 'bg-orange-50 dark:bg-orange-900/20 border-orange-500'
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                <span className="text-2xl">💳</span>
-                <div>
-                  <p className="font-bold text-orange-900 dark:text-orange-200 mb-2">
-                    Important: Active Subscription
-                  </p>
-                  <p className="text-sm text-orange-800 dark:text-orange-300 mb-3">
-                    Deleting your account will NOT cancel your subscription. You will continue to be
-                    charged.
-                  </p>
-                  <p className="text-sm text-orange-900 dark:text-orange-200 font-semibold">
-                    {isWeb ? (
-                      <>Cancel via the Stripe billing portal before deleting your account</>
-                    ) : (
-                      <>
-                        Cancel via iOS Settings → Your Name → Subscriptions before deleting your
-                        account
-                      </>
-                    )}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* What Will Be Deleted */}
           <div className="mb-6">

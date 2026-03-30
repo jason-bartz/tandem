@@ -15,8 +15,6 @@ import {
 import { playClapperSound } from '@/lib/sounds';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
-import { Capacitor } from '@capacitor/core';
 import ReelConnectionsLoadingSkeleton from './ReelConnectionsLoadingSkeleton';
 import SidebarMenu from '@/components/navigation/SidebarMenu';
 import UnifiedStatsModal from '@/components/stats/UnifiedStatsModal';
@@ -254,7 +252,6 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
   const searchParams = useSearchParams();
   const { lightTap } = useHaptics();
   const { reduceMotion, highContrast } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
   const { user, serviceUnavailable } = useAuth();
 
   // Sidebar and unified modal states
@@ -1056,78 +1053,17 @@ const ReelConnectionsGame = ({ titleFont = '' }) => {
                 </button>
               )}
 
-              {/* Play from Archive - Yellow if subscribed, Gray if not */}
+              {/* Play from Archive */}
               <button
                 onClick={() => setShowArchive(true)}
-                style={
-                  !highContrast && !hasSubscription ? { backgroundColor: '#64748b' } : undefined
-                }
                 className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all font-bold text-lg capitalize tracking-wide hover:brightness-110 ${
                   highContrast
-                    ? hasSubscription
-                      ? 'bg-hc-warning text-black border-hc-border'
-                      : 'bg-hc-surface text-hc-text border-hc-border'
-                    : hasSubscription
-                      ? 'bg-[#ffce00] text-[#2c2c2c] border-black'
-                      : 'text-white border-black'
+                    ? 'bg-hc-warning text-black border-hc-border'
+                    : 'bg-[#ffce00] text-[#2c2c2c] border-black'
                 }`}
               >
                 <div className="flex items-center justify-center gap-2">
-                  {!hasSubscription && (
-                    <Image
-                      src="/ui/shared/lock.png"
-                      alt="Locked"
-                      width={20}
-                      height={20}
-                      className="opacity-80"
-                    />
-                  )}
                   <span>Play from Archive</span>
-                </div>
-              </button>
-
-              {/* Create Your Own Puzzle - Yellow if subscribed, Gray if not */}
-              <button
-                onClick={() => {
-                  if (hasSubscription) {
-                    router.push('/create-puzzle');
-                  } else if (Capacitor.isNativePlatform()) {
-                    // On iOS, navigate to account page for subscription
-                    router.push('/account');
-                  } else {
-                    // On web, trigger paywall modal
-                    window.dispatchEvent(new CustomEvent('openPaywall'));
-                  }
-                }}
-                style={
-                  !highContrast && !hasSubscription ? { backgroundColor: '#64748b' } : undefined
-                }
-                className={`w-full py-4 border-[3px] rounded-xl shadow-[3px_3px_0px_rgba(0,0,0,0.8)] hover:shadow-[2px_2px_0px_rgba(0,0,0,0.8)] active:shadow-[0px_0px_0px_rgba(0,0,0,0.8)] transform hover:-translate-y-0.5 active:translate-y-0 transition-all hover:brightness-110 ${
-                  highContrast
-                    ? hasSubscription
-                      ? 'bg-hc-warning text-black border-hc-border'
-                      : 'bg-hc-surface text-hc-text border-hc-border'
-                    : hasSubscription
-                      ? 'bg-[#ffce00] text-[#2c2c2c] border-black'
-                      : 'text-white border-black'
-                }`}
-              >
-                <div className="flex flex-col items-center gap-1">
-                  <div className="flex items-center gap-2">
-                    {!hasSubscription && (
-                      <Image
-                        src="/ui/shared/lock.png"
-                        alt="Locked"
-                        width={20}
-                        height={20}
-                        className="opacity-80"
-                      />
-                    )}
-                    <span className="font-bold text-lg">Create Your Own Puzzle</span>
-                  </div>
-                  <span className="text-xs opacity-80 font-medium">
-                    Create Your Own Puzzles for others to play!
-                  </span>
                 </div>
               </button>
             </div>

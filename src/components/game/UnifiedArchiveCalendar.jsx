@@ -5,14 +5,11 @@ import { useRouter } from 'next/navigation';
 import { useTheme } from '@/contexts/ThemeContext';
 import CalendarDayCell from './CalendarDayCell';
 import CalendarDatePicker from './CalendarDatePicker';
-import PaywallModal from '@/components/PaywallModal';
 import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import CalendarSkeleton from '@/components/shared/CalendarSkeleton';
 import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
-import subscriptionService from '@/services/subscriptionService';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getCompletedMiniPuzzles } from '@/lib/miniStorage';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
@@ -58,13 +55,11 @@ export default function UnifiedArchiveCalendar({
 }) {
   const router = useRouter();
   const { highContrast } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
   const effectiveDefaultTab = isStandaloneAlchemy ? 'soup' : defaultTab;
   const [activeTab, setActiveTab] = useState(effectiveDefaultTab);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleData, setPuzzleData] = useState({});
   const [, setPuzzleAccessMap] = useState({});
   const [completedMiniPuzzles, setCompletedMiniPuzzles] = useState(new Set());
@@ -190,9 +185,7 @@ export default function UnifiedArchiveCalendar({
             attempted: historyData.attempted || false,
           };
 
-          // Check access permissions
-          const hasAccess = subscriptionService.canAccessPuzzle(puzzle.number);
-          accessMap[day] = !hasAccess; // Invert for lock display
+          accessMap[day] = false; // Never locked
         });
       }
 
@@ -495,16 +488,7 @@ export default function UnifiedArchiveCalendar({
     const puzzle = puzzleData[day];
     if (!puzzle) return;
 
-    const isToday = day === todayDay && currentMonth === todayMonth && currentYear === todayYear;
-
     if (activeTab === 'tandem') {
-      // Archive puzzles require subscription (consistent with mini/reel/soup tabs)
-      const isArchivePuzzle = !isToday;
-      if (isArchivePuzzle && !hasSubscription) {
-        setShowPaywall(true);
-        return;
-      }
-
       // If we're in the Tandem game context (defaultTab is 'tandem'), use the callback
       // Otherwise, navigate directly to the Tandem page
       if (defaultTab === 'tandem' && onSelectPuzzle) {
@@ -515,47 +499,16 @@ export default function UnifiedArchiveCalendar({
         router.push(`/?date=${puzzle.date}`);
       }
     } else if (activeTab === 'mini') {
-      // Mini - only require subscription for archive puzzles (not today's puzzle)
-      const isArchivePuzzle = !isToday;
-      if (isArchivePuzzle && !hasSubscription) {
-        setShowPaywall(true);
-        return;
-      }
-
       // Navigate to the mini game with the selected date
       onClose?.();
       router.push(`/dailymini?date=${puzzle.date}`);
     } else if (activeTab === 'reel') {
-      // Reel Connections - same paywall as Mini (archive puzzles require subscription)
-      const isArchivePuzzle = !isToday;
-      if (isArchivePuzzle && !hasSubscription) {
-        setShowPaywall(true);
-        return;
-      }
-
       onClose?.();
       router.push(`/reel-connections?date=${puzzle.date}`);
     } else {
-      // Element Soup - archive puzzles require subscription (same as Mini/Reel)
-      const isArchivePuzzle = !isToday;
-      if (isArchivePuzzle && !hasSubscription) {
-        setShowPaywall(true);
-        return;
-      }
-
       onClose?.();
       router.push(`/daily-alchemy?date=${puzzle.date}`);
     }
-  };
-
-  /**
-   * Handle purchase complete
-   */
-  const handlePurchaseComplete = () => {
-    subscriptionService.refreshSubscriptionStatus().then(() => {
-      // Reload current month data with new subscription status
-      loadMonthData(currentMonth, currentYear);
-    });
   };
 
   /**
@@ -594,8 +547,7 @@ export default function UnifiedArchiveCalendar({
         } else if (!isPastFirstPuzzle || isFutureDate) {
           status = 'no_puzzle';
         }
-        const isArchivePuzzle = puzzle && !isToday;
-        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+        shouldBeLocked = false;
       } else if (activeTab === 'mini') {
         // Mini
         const dateStr = puzzle?.date;
@@ -609,8 +561,7 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
 
-        const isArchivePuzzle = puzzle && !isToday;
-        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+        shouldBeLocked = false;
       } else if (activeTab === 'reel') {
         // Reel Connections
         const dateStr = puzzle?.date;
@@ -624,9 +575,7 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
 
-        // Reel archive requires subscription (same as Mini)
-        const isArchivePuzzle = puzzle && !isToday;
-        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+        shouldBeLocked = false;
       } else {
         // Element Soup
         const dateStr = puzzle?.date;
@@ -640,9 +589,7 @@ export default function UnifiedArchiveCalendar({
           status = 'no_puzzle';
         }
 
-        // Soup archive requires subscription (same as Mini/Reel)
-        const isArchivePuzzle = puzzle && !isToday;
-        shouldBeLocked = !hasSubscription && isArchivePuzzle;
+        shouldBeLocked = false;
       }
 
       days.push(
@@ -958,13 +905,6 @@ export default function UnifiedArchiveCalendar({
         currentYear={currentYear}
         minYear={firstPuzzleYear}
         maxYear={todayYear}
-      />
-
-      {/* Paywall Modal */}
-      <PaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onPurchaseComplete={handlePurchaseComplete}
       />
     </>
   );

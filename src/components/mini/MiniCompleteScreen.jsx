@@ -6,7 +6,7 @@ import Image from 'next/image';
 import confetti from 'canvas-confetti';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
+
 import { playSuccessSound } from '@/lib/sounds';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatMiniTime, getMiniPuzzleInfoForDate } from '@/lib/miniUtils';
@@ -34,7 +34,7 @@ export default function MiniCompleteScreen({
   const router = useRouter();
   const { celebration } = useHaptics();
   const { reduceMotion } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
+
   const { user } = useAuth();
 
   const [showArchive, setShowArchive] = useState(false);
@@ -287,7 +287,7 @@ export default function MiniCompleteScreen({
               Leaderboard
             </button>
 
-            {/* Play Archive Button - Yellow if subscribed, White with lock if not */}
+            {/* Play Archive Button */}
             <button
               onClick={() => setShowArchive(true)}
               className={`
@@ -302,25 +302,10 @@ export default function MiniCompleteScreen({
                 active:translate-x-[3px] active:translate-y-[3px]
                 active:shadow-none
                 transition-all
-                ${
-                  hasSubscription
-                    ? 'bg-accent-yellow dark:bg-accent-yellow text-gray-900'
-                    : 'bg-ghost-white dark:bg-gray-700 text-text-primary'
-                }
+                bg-accent-yellow dark:bg-accent-yellow text-gray-900
               `}
             >
-              <div className="flex items-center justify-center gap-2">
-                {!hasSubscription && (
-                  <Image
-                    src="/ui/shared/lock.png"
-                    alt="Locked"
-                    width={20}
-                    height={20}
-                    className="opacity-80"
-                  />
-                )}
-                <span>Play Archive</span>
-              </div>
+              <span>Play Archive</span>
             </button>
           </div>
 

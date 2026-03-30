@@ -126,16 +126,6 @@ export default function AuthModalManager() {
     setShowWelcomeBack(false);
   };
 
-  const handleSubscribe = () => {
-    // Trigger the paywall modal to open
-    // This event should be caught by components that manage the paywall
-    window.dispatchEvent(
-      new CustomEvent('openPaywall', {
-        detail: { source: 'welcome_back' },
-      })
-    );
-  };
-
   return (
     <>
       <AuthModal
@@ -146,11 +136,7 @@ export default function AuthModalManager() {
         initialMessage={confirmationMessage}
         initialMessageType={messageType}
       />
-      <WelcomeBackModal
-        isOpen={showWelcomeBack}
-        onClose={handleWelcomeBackClose}
-        onSubscribe={handleSubscribe}
-      />
+      <WelcomeBackModal isOpen={showWelcomeBack} onClose={handleWelcomeBackClose} />
     </>
   );
 }

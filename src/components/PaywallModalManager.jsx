@@ -1,43 +1,7 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import PaywallModal from '@/components/PaywallModal';
-import { Capacitor } from '@capacitor/core';
-
 /**
- * PaywallModalManager - Global paywall modal controller
- *
- * Listens for custom events to open the paywall modal from anywhere in the app.
- * Only active on web platform.
+ * PaywallModalManager - No longer used (all content is free)
+ * Kept as a no-op stub for import compatibility.
  */
 export default function PaywallModalManager() {
-  const [isOpen, setIsOpen] = useState(false);
-  const isWeb = Capacitor.getPlatform() === 'web';
-
-  useEffect(() => {
-    if (!isWeb) return;
-
-    const handleOpenPaywall = () => {
-      setIsOpen(true);
-    };
-
-    window.addEventListener('openPaywall', handleOpenPaywall);
-    return () => {
-      window.removeEventListener('openPaywall', handleOpenPaywall);
-    };
-  }, [isWeb]);
-
-  if (!isWeb) {
-    return null;
-  }
-
-  return (
-    <PaywallModal
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      onPurchaseComplete={() => {
-        setIsOpen(false);
-      }}
-    />
-  );
+  return null;
 }

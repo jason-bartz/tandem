@@ -80,7 +80,7 @@ export default function Support() {
                 time)
               </li>
               <li>
-                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Puzzle Club feature)
+                <strong>Puzzle Archive</strong>: Play previous puzzles anytime
               </li>
               <li>
                 <strong>Streak Tracking</strong>: Build consecutive days of completed puzzles
@@ -172,9 +172,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Is Tandem free to play?</p>
                 <p>
-                  A: Yes! Tandem is completely free with no advertisements. Today's puzzle and the
-                  last 3 days are always free. Tandem Puzzle Club subscriptions unlock access to all
-                  archived puzzles and exclusive features.
+                  A: Yes! Tandem is completely free with no advertisements. All puzzles, including
+                  the full archive, are free to play.
                 </p>
               </div>
               <div>
@@ -184,16 +183,15 @@ export default function Support() {
               <div>
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
                 <p>
-                  A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
-                  a Tandem Puzzle Club subscription, available on both iOS (via App Store) and web
-                  (via Stripe).
+                  A: Yes! All archived puzzles are free to play. Access them from the puzzle archive
+                  calendar.
                 </p>
               </div>
               <div>
                 <p className="font-medium">Q: Is there a time limit?</p>
                 <p>
-                  A: No time limit in regular mode! Take as long as you need. Hard Mode (Tandem
-                  Unlimited subscribers only) adds a 3-minute time limit for extra challenge.
+                  A: No time limit in regular mode! Take as long as you need. Hard Mode adds a
+                  3-minute time limit for extra challenge.
                 </p>
               </div>
             </div>
@@ -243,14 +241,13 @@ export default function Support() {
     },
     {
       id: 'hard-mode',
-      title: 'Hard Mode (Tandem Puzzle Club)',
+      title: 'Hard Mode',
       content: (
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold mb-2">🔥 About Hard Mode</h4>
             <p className="text-sm mb-3">
-              Hard Mode is an exclusive feature for Tandem Puzzle Club subscribers that adds a
-              challenging twist to the classic Tandem gameplay.
+              Hard Mode adds a challenging twist to the classic Tandem gameplay.
             </p>
             <div className="bg-[#ff5757]/20 border-[3px] border-[#ff5757] rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Hard Mode Rules:</h5>
@@ -279,14 +276,10 @@ export default function Support() {
             <h4 className="font-semibold mb-2">How to Enable Hard Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
               <li>
-                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership,
-                Annual Membership, or Lifetime Membership)
-              </li>
-              <li>
                 Open the <strong>Settings</strong> menu (gear icon)
               </li>
               <li>
-                Find the <strong>Hard Mode</strong> toggle in the Subscription section
+                Find the <strong>Hard Mode</strong> toggle
               </li>
               <li>Toggle it ON to enable Hard Mode for your next game</li>
               <li>The setting persists across sessions until you toggle it off</li>
@@ -520,10 +513,7 @@ export default function Support() {
               </div>
               <div>
                 <p className="font-medium">Q: Is Daily Mini free?</p>
-                <p>
-                  A: Yes! Today's puzzle and the last 3 days are always free with a free account.
-                  Tandem Puzzle Club subscriptions unlock the entire archive.
-                </p>
+                <p>A: Yes! All puzzles are free with a free account, including the full archive.</p>
               </div>
               <div>
                 <p className="font-medium">Q: When do new puzzles become available?</p>
@@ -531,10 +521,7 @@ export default function Support() {
               </div>
               <div>
                 <p className="font-medium">Q: Can I play previous puzzles?</p>
-                <p>
-                  A: Yes! The last 4 days (today + 3 previous days) are free. Older puzzles require
-                  a Tandem Puzzle Club subscription.
-                </p>
+                <p>A: Yes! All archived puzzles are free to play.</p>
               </div>
             </div>
           </div>
@@ -658,8 +645,8 @@ export default function Support() {
               <div>
                 <p className="font-medium">Problem: Can't access older puzzles</p>
                 <p className="italic">
-                  Solution: Puzzles older than 4 days require a Tandem Puzzle Club subscription.
-                  Check your subscription status in Settings.
+                  Solution: All archived puzzles are free. Try refreshing the page or signing in to
+                  your account.
                 </p>
               </div>
             </div>
@@ -712,7 +699,7 @@ export default function Support() {
                 time)
               </li>
               <li>
-                <strong>Puzzle Archive</strong>: Play previous puzzles (Tandem Puzzle Club feature)
+                <strong>Puzzle Archive</strong>: Play previous puzzles anytime
               </li>
               <li>
                 <strong>Hint System</strong>: One hint per game reveals the easiest unsolved
@@ -854,10 +841,7 @@ export default function Support() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-medium">Q: Is Reel Connections free to play?</p>
-                <p>
-                  A: Yes! Today&apos;s puzzle and the last 3 days are always free. Tandem Puzzle
-                  Club subscriptions unlock access to all archived puzzles.
-                </p>
+                <p>A: Yes! All puzzles are completely free, including the full archive.</p>
               </div>
               <div>
                 <p className="font-medium">Q: When do new puzzles become available?</p>
@@ -1013,7 +997,7 @@ export default function Support() {
                 favorites for quick access
               </li>
               <li>
-                <strong>Creative Mode</strong>: Unlimited time with no goal (Tandem Puzzle Club)
+                <strong>Creative Mode</strong>: Unlimited time with no goal
               </li>
               <li>
                 <strong>Archive Access</strong>: Play previous puzzles (4-day free window)
@@ -1177,10 +1161,7 @@ export default function Support() {
             <div className="space-y-3 text-sm">
               <div>
                 <p className="font-medium">Q: Is Daily Alchemy free to play?</p>
-                <p>
-                  A: Yes! Today's puzzle and the last 3 days are always free. Tandem Puzzle Club
-                  subscriptions unlock access to all archived puzzles.
-                </p>
+                <p>A: Yes! All puzzles are completely free, including the full archive.</p>
               </div>
               <div>
                 <p className="font-medium">Q: When do new puzzles become available?</p>
@@ -1230,14 +1211,13 @@ export default function Support() {
     },
     {
       id: 'soup-creative-mode',
-      title: 'Creative Mode (Tandem Puzzle Club)',
+      title: 'Creative Mode',
       content: (
         <div className="space-y-4">
           <div>
             <h4 className="font-semibold mb-2">🎨 About Creative Mode</h4>
             <p className="text-sm mb-3">
-              Creative Mode is an exclusive feature for Tandem Puzzle Club subscribers that lets you
-              explore element combinations without any restrictions.
+              Creative Mode lets you explore element combinations without any restrictions.
             </p>
             <div className="bg-purple-50 dark:bg-purple-900/20 border-[3px] border-purple-400 rounded-2xl p-4">
               <h5 className="font-semibold mb-2">Creative Mode Features:</h5>
@@ -1266,10 +1246,6 @@ export default function Support() {
           <div>
             <h4 className="font-semibold mb-2">How to Access Creative Mode</h4>
             <ol className="list-decimal list-inside text-sm space-y-2">
-              <li>
-                Subscribe to <strong>Tandem Puzzle Club</strong> (any tier: Monthly Membership,
-                Annual Membership, or Lifetime Membership)
-              </li>
               <li>
                 Open <strong>Daily Alchemy</strong> from the home screen
               </li>
@@ -1352,7 +1328,7 @@ export default function Support() {
               </li>
               <li>Full offline support - play without internet connection</li>
               <li>Optimized for iPhone and iPad</li>
-              <li>Tandem Puzzle Club subscription with full Hard Mode support</li>
+              <li>Hard Mode support for extra challenge</li>
               <li>Download from the App Store</li>
             </ul>
           </div>
@@ -1364,7 +1340,7 @@ export default function Support() {
               </li>
               <li>Install to home screen for app-like experience</li>
               <li>Works on all devices with modern browsers</li>
-              <li>Tandem Puzzle Club subscription available via Stripe</li>
+              <li>All features available for free</li>
               <li>Requires internet connection to play</li>
               <li>Visit tandemdaily.com to play</li>
             </ul>
@@ -1400,15 +1376,6 @@ export default function Support() {
                 progress, statistics, and preferences will be deleted. If you used Sign in with
                 Apple, your authorization will be revoked. Note: Billing history is retained for 7
                 years for legal compliance.
-              </p>
-            </div>
-            <div>
-              <p className="font-medium">Q: Will deleting my account cancel my subscription?</p>
-              <p>
-                A: No! Account deletion does NOT cancel your subscription. You must cancel
-                separately. iOS: Cancel via iPhone Settings → Your Name → Subscriptions. Web: Cancel
-                via the Stripe billing portal (accessible from Account page → Manage Account).
-                Cancel your subscription BEFORE deleting your account to avoid continued billing.
               </p>
             </div>
             <div>

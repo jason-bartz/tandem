@@ -60,7 +60,6 @@ export default function PlayingScreen({
   const [showSettings, setShowSettings] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [openPaywall, setOpenPaywall] = useState(false);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
   const [showSecondHintCelebration, setShowSecondHintCelebration] = useState(false);
@@ -77,15 +76,12 @@ export default function PlayingScreen({
     window.scrollTo(0, 0);
   }, []);
 
-  // Check URL parameters for auto-opening settings/paywall
+  // Check URL parameters for auto-opening settings
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       if (params.get('settings') === 'true') {
         setShowSettings(true);
-        if (params.get('paywall') === 'true') {
-          setOpenPaywall(true);
-        }
         // Clean up URL
         window.history.replaceState({}, '', window.location.pathname);
       }
@@ -712,9 +708,7 @@ export default function PlayingScreen({
           isOpen={showSettings}
           onClose={() => {
             setShowSettings(false);
-            setOpenPaywall(false);
           }}
-          openPaywall={openPaywall}
         />
       </div>
 

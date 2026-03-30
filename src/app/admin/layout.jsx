@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 import authService from '@/services/auth.service';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import storageService from '@/core/storage/storageService';
 import logger from '@/lib/logger';
 
@@ -116,7 +116,7 @@ export default function AdminLayout({ children }) {
   if (loading) {
     return (
       <div className="fixed inset-0 w-full h-full flex items-center justify-center bg-bg-surface">
-        <LoadingSpinner />
+        <LoadingSpinner size="large" text="Loading admin..." />
       </div>
     );
   }
@@ -128,7 +128,7 @@ export default function AdminLayout({ children }) {
 
   // Render authenticated admin layout
   return (
-    <div className="admin-theme min-h-screen bg-white">
+    <div className="admin-theme min-h-screen bg-ghost-white">
       <nav className="bg-bg-surface border-b-[1.5px] border-black dark:border-white shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(255,255,255,0.3)]">
         <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">

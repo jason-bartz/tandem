@@ -82,7 +82,7 @@ export default function PrivacyPolicy() {
               <li>High contrast mode preference</li>
               <li>Reduced motion preference</li>
               <li>Keyboard layout preference</li>
-              <li>Hard mode preference (Tandem Puzzle Club subscribers only)</li>
+              <li>Hard mode preference</li>
               <li>Game state for the current puzzle</li>
             </ul>
           </div>
@@ -161,7 +161,6 @@ export default function PrivacyPolicy() {
               <li>Password (encrypted and securely stored via Supabase)</li>
               <li>OAuth provider information (if signing in with Google or Apple)</li>
               <li>Account creation date and last login time</li>
-              <li>Subscription status and tier</li>
             </ul>
             <p className="mt-2 text-xs italic">
               Note: Account data is stored securely using Supabase (PostgreSQL database). Passwords
@@ -280,22 +279,6 @@ export default function PrivacyPolicy() {
               are shared with your co-op partner.
             </p>
           </div>
-
-          <div>
-            <h4 className="font-semibold mb-2">14. Payment Information (Web Only)</h4>
-            <p className="mb-2">For web subscriptions processed through Stripe, we collect:</p>
-            <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Stripe customer ID (for managing subscriptions)</li>
-              <li>Subscription status and billing cycle</li>
-              <li>Payment method type (card brand, last 4 digits)</li>
-              <li>Transaction history and invoices</li>
-            </ul>
-            <p className="mt-2 text-xs italic">
-              Important: We do NOT store credit card numbers, CVV codes, or full payment details.
-              All payment information is securely handled and stored by Stripe, Inc. Payment data is
-              governed by Stripe's privacy policy and PCI-DSS compliance standards.
-            </p>
-          </div>
         </div>
       ),
     },
@@ -316,10 +299,7 @@ export default function PrivacyPolicy() {
             <li>Sync your progress across devices (iOS with iCloud only)</li>
             <li>Enable Game Center features like leaderboards (iOS only)</li>
             <li>Manage user accounts and authentication (web only)</li>
-            <li>
-              Process subscription payments and manage billing (web via Stripe, iOS via Apple)
-            </li>
-            <li>Send important account and subscription notifications (web only)</li>
+            <li>Send important account notifications (web only)</li>
             <li>Provide customer support and respond to inquiries</li>
             <li>Generate anonymous aggregated statistics</li>
             <li>Analyze gameplay patterns to improve user experience</li>
@@ -349,10 +329,7 @@ export default function PrivacyPolicy() {
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
               <li>Gameplay statistics and scores are stored on Vercel KV (Redis)</li>
               <li>Data is used for leaderboards and global statistics</li>
-              <li>
-                User accounts and subscription data stored in Supabase (PostgreSQL) - web only
-              </li>
-              <li>Payment information stored by Stripe (not on our servers) - web only</li>
+              <li>User accounts stored in Supabase (PostgreSQL) - web only</li>
               <li>All server data is encrypted in transit (HTTPS/TLS) and at rest</li>
             </ul>
           </div>
@@ -415,10 +392,6 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Apple Services</strong>: If you use iOS features like Game Center or iCloud
               sync, data is shared with Apple according to their privacy policy
-            </li>
-            <li>
-              <strong>Stripe (Payment Processor)</strong>: For web subscriptions, payment data is
-              shared with Stripe to process transactions. Stripe's privacy policy governs this data.
             </li>
             <li>
               <strong>Supabase (Database Provider)</strong>: For web accounts, account data is
@@ -517,8 +490,6 @@ export default function PrivacyPolicy() {
               <li>Local data can be cleared through browser settings</li>
               <li>Web account holders can request account deletion through the account page</li>
               <li>Contact us to request deletion of server-side gameplay data</li>
-              <li>Web users can manage subscription billing through the Stripe customer portal</li>
-              <li>iOS users can manage subscriptions through Apple ID settings</li>
               <li>Use privacy-focused browsers that limit storage</li>
             </ul>
           </div>
@@ -557,7 +528,6 @@ export default function PrivacyPolicy() {
               <li>Your account credentials and authentication data</li>
               <li>Your game statistics and progress data</li>
               <li>Your user preferences and settings</li>
-              <li>Your subscription records (subject to legal retention requirements)</li>
               <li>
                 If you used Sign in with Apple, we will revoke your Apple authorization tokens
               </li>
@@ -567,15 +537,6 @@ export default function PrivacyPolicy() {
           <div>
             <h4 className="font-semibold mb-2">What Is NOT Deleted</h4>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>
-                <strong>Active Subscriptions</strong>: Account deletion does NOT cancel your
-                subscription. You must cancel separately through the App Store (iOS) or Stripe
-                billing portal (web)
-              </li>
-              <li>
-                <strong>Billing History</strong>: We retain billing and transaction records for 7
-                years to comply with financial and tax regulations
-              </li>
               <li>
                 <strong>Anonymized Analytics</strong>: Aggregated, anonymized data used for game
                 improvement may be retained
@@ -593,25 +554,9 @@ export default function PrivacyPolicy() {
               After account deletion, we retain certain information for legal compliance:
             </p>
             <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-400">
-              <li>Transaction and billing records: Retained for 7 years (legal requirement)</li>
               <li>Security logs: Retained for 30 days</li>
               <li>All other personal data: Deleted immediately</li>
             </ul>
-          </div>
-
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-            <p className="text-sm font-semibold mb-2 text-blue-900 dark:text-blue-200">
-              Important: Subscription Cancellation
-            </p>
-            <p className="text-sm text-blue-800 dark:text-blue-300 mb-2">
-              Deleting your account does NOT cancel your subscription. You will continue to be
-              charged until you cancel separately.
-            </p>
-            <p className="text-sm text-blue-800 dark:text-blue-300">
-              <strong>iOS</strong>: Cancel via iPhone Settings → Your Name → Subscriptions
-              <br />
-              <strong>Web</strong>: Cancel via Account page → Manage Account (Stripe billing portal)
-            </p>
           </div>
 
           <div>
@@ -667,10 +612,6 @@ export default function PrivacyPolicy() {
             <li>
               <strong>Account Data</strong>: Retained while account is active; deleted within 30
               days of account deletion request (web only)
-            </li>
-            <li>
-              <strong>Subscription Data</strong>: Retained for duration of subscription plus 7 years
-              for tax/legal compliance
             </li>
             <li>
               <strong>Server Data</strong>: Anonymous statistics retained for up to 1 year
@@ -857,7 +798,8 @@ export default function PrivacyPolicy() {
                           />
                         </svg>
                         <span>
-                          Optional web accounts for subscriptions (email + password or Google OAuth)
+                          Optional web accounts for leaderboards and stats sync (email + password or
+                          Google OAuth)
                         </span>
                       </li>
                       <li className="flex items-start gap-2 text-blue-600 dark:text-blue-400">

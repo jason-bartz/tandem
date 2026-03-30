@@ -1,6 +1,6 @@
 import { Capacitor } from '@capacitor/core';
 import { Preferences } from '@capacitor/preferences';
-import { getCurrentPuzzleNumber, getPuzzleNumberForDate } from '@/lib/puzzleNumber';
+
 import { getApiUrl } from '@/lib/api-config';
 import logger from '@/lib/logger';
 
@@ -9,6 +9,7 @@ const PRODUCTS = {
   BUDDY_MONTHLY: 'com.tandemdaily.app.buddypass',
   BEST_FRIENDS_YEARLY: 'com.tandemdaily.app.bestfriends',
   SOULMATES_LIFETIME: 'com.tandemdaily.app.soulmates',
+  TIP: 'com.tandemdaily.app.tip',
 };
 
 // Storage keys - using Capacitor Preferences for iOS persistence
@@ -176,6 +177,11 @@ class SubscriptionService {
           type: window.CdvPurchase.ProductType.NON_CONSUMABLE,
           platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
         },
+        {
+          id: PRODUCTS.TIP,
+          type: window.CdvPurchase.ProductType.CONSUMABLE,
+          platform: window.CdvPurchase.Platform.APPLE_APPSTORE,
+        },
       ]);
 
       this.setupEventHandlers();
@@ -192,7 +198,8 @@ class SubscriptionService {
         if (
           product.id === PRODUCTS.BUDDY_MONTHLY ||
           product.id === PRODUCTS.BEST_FRIENDS_YEARLY ||
-          product.id === PRODUCTS.SOULMATES_LIFETIME
+          product.id === PRODUCTS.SOULMATES_LIFETIME ||
+          product.id === PRODUCTS.TIP
         ) {
           this.products[product.id] = product;
         }
@@ -693,6 +700,20 @@ class SubscriptionService {
     });
   }
 
+  /**
+   * Get the tip product info (price, etc.)
+   */
+  getTipProduct() {
+    return this.products[PRODUCTS.TIP] || null;
+  }
+
+  /**
+   * Purchase a tip (consumable IAP)
+   */
+  async purchaseTip() {
+    return this.purchase(PRODUCTS.TIP);
+  }
+
   async restorePurchases() {
     if (!this.store) {
       throw new Error('Store not initialized');
@@ -735,22 +756,13 @@ class SubscriptionService {
     return this.subscriptionStatus;
   }
 
-  canAccessPuzzle(puzzleNumber) {
-    // Only today's puzzle is free - all archive puzzles require Tandem Puzzle Club membership
-    const currentPuzzleNumber = getCurrentPuzzleNumber();
-
-    // Free access to today's puzzle only
-    if (puzzleNumber === currentPuzzleNumber) {
-      return true;
-    }
-
-    // All archive puzzles require subscription
-    return this.isSubscriptionActive();
+  canAccessPuzzle() {
+    // All puzzles are free — no subscription required
+    return true;
   }
 
-  canAccessPuzzleByDate(dateString) {
-    const puzzleNumber = getPuzzleNumberForDate(dateString);
-    return this.canAccessPuzzle(puzzleNumber);
+  canAccessPuzzleByDate() {
+    return true;
   }
 
   isReady() {

@@ -1,174 +1,32 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import { useAuth } from '@/contexts/AuthContext';
-import subscriptionService from '@/services/subscriptionService';
-import logger from '@/lib/logger';
-import { isStandaloneAlchemy } from '@/lib/standalone';
-
-const CACHE_KEY = 'tandem_subscription_cache';
+import { createContext, useContext, useCallback } from 'react';
 
 const SubscriptionContext = createContext({
-  isActive: false,
-  tier: null,
+  isActive: true,
+  tier: 'free',
   expiryDate: null,
   cancelAtPeriodEnd: false,
-  loading: true,
+  loading: false,
   refreshStatus: async () => {},
 });
 
 /**
  * SubscriptionProvider - Global subscription state management
  *
- * This provider wraps the app and provides subscription state to all components.
- * It eagerly hydrates from localStorage for instant display, then refreshes
- * in the background for accuracy.
- *
- * Features:
- * - Instant state hydration from localStorage (0ms)
- * - Automatic refresh when auth state changes
- * - Background updates without blocking UI
- * - Automatic cache invalidation on sign out
- * - Reactive updates across all components
- *
- * Usage:
- * ```jsx
- * import { useSubscription } from '@/contexts/SubscriptionContext';
- *
- * function MyComponent() {
- *   const { isActive, tier, refreshStatus } = useSubscription();
- *   // ...
- * }
- * ```
+ * On web, everything is free — isActive is always true.
+ * iOS retains StoreKit-based subscription logic via the native app.
  */
 export function SubscriptionProvider({ children }) {
-  const { user, loading: authLoading } = useAuth();
+  const refreshStatus = useCallback(async () => {}, []);
 
-  // Initialize with consistent default state to avoid hydration mismatch.
-  // localStorage cache is read in useEffect below after hydration completes.
-  const [subscription, setSubscription] = useState(() => {
-    if (isStandaloneAlchemy) {
-      return {
-        isActive: true,
-        tier: 'standalone',
-        expiryDate: null,
-        cancelAtPeriodEnd: false,
-        loading: false,
-      };
-    }
-
-    return {
-      isActive: false,
-      tier: null,
-      expiryDate: null,
-      cancelAtPeriodEnd: false,
-      loading: true,
-    };
-  });
-
-  // Hydrate from localStorage cache after mount (avoids SSR/client mismatch)
-  useEffect(() => {
-    if (isStandaloneAlchemy) return;
-    try {
-      const cached = localStorage.getItem(CACHE_KEY);
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        setSubscription({
-          isActive: parsed.isActive || false,
-          tier: parsed.tier || null,
-          expiryDate: parsed.expiryDate ? new Date(parsed.expiryDate) : null,
-          cancelAtPeriodEnd: parsed.cancelAtPeriodEnd || false,
-          loading: false,
-        });
-      }
-    } catch (error) {
-      logger.error('[SubscriptionContext] Failed to parse cached subscription', error);
-    }
-  }, []);
-
-  /**
-   * Refresh subscription status from API
-   * Caches result to localStorage for next load
-   */
-  const refreshStatus = useCallback(async () => {
-    // Standalone mode: subscription is always active, no API calls needed
-    if (isStandaloneAlchemy) return;
-
-    // If not authenticated or anonymous, clear subscription state (anonymous users can't have subscriptions)
-    if (!user || user.is_anonymous) {
-      const clearedState = {
-        isActive: false,
-        tier: null,
-        expiryDate: null,
-        cancelAtPeriodEnd: false,
-        loading: false,
-      };
-
-      setSubscription(clearedState);
-
-      try {
-        localStorage.removeItem(CACHE_KEY);
-      } catch (error) {
-        logger.error('[SubscriptionContext] Failed to clear cache', error);
-      }
-
-      return;
-    }
-
-    try {
-      await subscriptionService.initialize();
-
-      // Get current subscription status
-      const status = await subscriptionService.getSubscriptionStatus();
-
-      const newState = {
-        isActive: status?.isActive || false,
-        tier: status?.productId || null,
-        expiryDate: status?.expiryDate || null,
-        cancelAtPeriodEnd: status?.cancelAtPeriodEnd || false,
-        loading: false,
-      };
-
-      setSubscription(newState);
-
-      // Cache for next load (serialize Date objects)
-      try {
-        const cacheData = {
-          ...newState,
-          expiryDate: newState.expiryDate?.toISOString() || null,
-        };
-        localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-      } catch (error) {
-        logger.error('[SubscriptionContext] Failed to cache subscription', error);
-      }
-    } catch (error) {
-      logger.error('[SubscriptionContext] Failed to refresh subscription', error);
-
-      // On error, keep cached state but mark as not loading
-      setSubscription((prev) => ({ ...prev, loading: false }));
-    }
-  }, [user]);
-
-  /**
-   * Auto-refresh subscription when auth state changes
-   * This ensures subscription is always in sync with auth
-   */
-  useEffect(() => {
-    if (isStandaloneAlchemy) return;
-    if (!authLoading) {
-      // Set loading immediately when user changes to invalidate stale cache
-      // This ensures components show loading state while we fetch fresh data
-      setSubscription((prev) => ({ ...prev, loading: true }));
-      refreshStatus();
-    }
-  }, [user, authLoading, refreshStatus]);
-
+  // On web, everything is free and unlocked
   const value = {
-    isActive: subscription.isActive,
-    tier: subscription.tier,
-    expiryDate: subscription.expiryDate,
-    cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
-    loading: subscription.loading,
+    isActive: true,
+    tier: 'free',
+    expiryDate: null,
+    cancelAtPeriodEnd: false,
+    loading: false,
     refreshStatus,
   };
 

@@ -248,9 +248,7 @@ export const MESSAGES = {
 export const MINI_CONFIG = {
   GRID_SIZE: 5,
   GAME_ROUTE: '/dailymini',
-  // Access control:
-  // - Daily puzzle: Free for all account holders
-  // - Archive: Last 4 days free (today + 3 back), older requires Tandem Puzzle Club membership
+  // Archive access: all puzzles free for everyone
   FREE_ARCHIVE_DAYS: 4,
 };
 

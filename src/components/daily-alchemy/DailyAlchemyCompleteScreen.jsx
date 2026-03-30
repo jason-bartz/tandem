@@ -7,7 +7,6 @@ import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { isStandaloneAlchemy } from '@/lib/standalone';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useAuth } from '@/contexts/AuthContext';
 import {
   formatTime,
@@ -17,7 +16,6 @@ import {
 } from '@/lib/daily-alchemy.constants';
 import confetti from 'canvas-confetti';
 import platformService from '@/services/platform';
-import PaywallModal from '@/components/PaywallModal';
 import LeaderboardModal from '@/components/leaderboard/LeaderboardModal';
 import LoginReminderPopup from '@/components/shared/LoginReminderPopup';
 import AuthModal from '@/components/auth/AuthModal';
@@ -81,10 +79,8 @@ export function DailyAlchemyCompleteScreen({
   onCoopDecline,
 }) {
   const { highContrast, reduceMotion } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
   const { user } = useAuth();
   const [copied, setCopied] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -138,11 +134,7 @@ export function DailyAlchemyCompleteScreen({
   }, [onCoopDecline]);
 
   const handleFreePlayClick = () => {
-    if (hasSubscription) {
-      onStartFreePlay?.();
-    } else {
-      setShowPaywall(true);
-    }
+    onStartFreePlay?.();
   };
 
   // Calculate par comparison - numerical format
@@ -532,15 +524,6 @@ export function DailyAlchemyCompleteScreen({
                   highContrast && 'border-[4px]'
                 )}
               >
-                {!hasSubscription && (
-                  <Image
-                    src="/ui/shared/lock.png"
-                    alt="Locked"
-                    width={20}
-                    height={20}
-                    className="opacity-70"
-                  />
-                )}
                 <span>Play Archive</span>
               </button>
             </motion.div>
@@ -578,15 +561,6 @@ export function DailyAlchemyCompleteScreen({
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            {!hasSubscription && (
-              <Image
-                src="/ui/shared/lock.png"
-                alt="Locked"
-                width={20}
-                height={20}
-                className="opacity-70"
-              />
-            )}
             <span>Play Creative Mode</span>
           </motion.button>
 
@@ -642,9 +616,6 @@ export function DailyAlchemyCompleteScreen({
         gameType="soup"
         initialTab="daily"
       />
-
-      {/* Paywall Modal */}
-      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
 
       {/* Auth Modal */}
       <AuthModal

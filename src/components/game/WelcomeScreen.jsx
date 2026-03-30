@@ -17,7 +17,6 @@ import Greeting from '@/components/home/Greeting';
 import GameCard from '@/components/home/GameCard';
 import Footer from '@/components/home/Footer';
 import AboutSection from '@/components/home/AboutSection';
-import PaywallModal from '@/components/PaywallModal';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Capacitor } from '@capacitor/core';
@@ -50,7 +49,6 @@ export default function WelcomeScreen({
   const [showHowToPlay, setShowHowToPlay] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showTandemUnavailable, setShowTandemUnavailable] = useState(false);
   const { welcomeMelody } = useHaptics();
   const { highContrast } = useTheme();
@@ -302,7 +300,7 @@ export default function WelcomeScreen({
           </div>
 
           {/* About Section */}
-          <AboutSection onSubscribe={() => setShowPaywall(true)} />
+          <AboutSection />
         </div>
 
         {/* Footer - at bottom of page */}
@@ -332,8 +330,6 @@ export default function WelcomeScreen({
       />
       <HowToPlayModal isOpen={showHowToPlay} onClose={() => setShowHowToPlay(false)} />
       <Settings isOpen={showSettings} onClose={() => setShowSettings(false)} />
-      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
-
       {/* Tandem Unavailable Modal */}
       {showTandemUnavailable && (
         <div

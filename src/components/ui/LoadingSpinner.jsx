@@ -1,20 +1,50 @@
 'use client';
 
-export default function LoadingSpinner({ size = 'medium', text = 'Loading...' }) {
+import { useTheme } from '@/contexts/ThemeContext';
+
+/**
+ * LoadingSpinner - Unified spinner component
+ *
+ * Usage:
+ * - Inside buttons: <LoadingSpinner size="small" />
+ * - Inline sections: <LoadingSpinner size="medium" text="Loading..." />
+ * - Section-level: <LoadingSpinner size="large" text="Loading puzzle..." />
+ *
+ * Color defaults to current text color (border-current).
+ * Pass `color` prop to override (e.g., "border-accent-yellow").
+ */
+export default function LoadingSpinner({ size = 'medium', text = null, color = 'border-current' }) {
+  const { reduceMotion } = useTheme();
+
   const sizeClasses = {
-    small: 'w-6 h-6 border-2',
-    medium: 'w-12 h-12 border-4',
-    large: 'w-16 h-16 border-4',
+    small: 'w-4 h-4 border-2',
+    medium: 'w-8 h-8 border-3',
+    large: 'w-12 h-12 border-4',
   };
 
-  return (
-    <div className="flex flex-col items-center justify-center gap-4">
+  // When reduce motion is on, show static text instead of spinner
+  if (reduceMotion) {
+    return (
       <div
-        className={`${sizeClasses[size]} border-purple-600 border-t-transparent rounded-full animate-spin`}
+        className="flex flex-col items-center justify-center gap-2"
+        role="status"
+        aria-label="Loading"
+      >
+        <p className="text-text-secondary font-medium text-sm">{text || 'Loading...'}</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="flex flex-col items-center justify-center gap-3"
+      role="status"
+      aria-label="Loading"
+    >
+      <div
+        className={`${sizeClasses[size]} ${color} border-t-transparent rounded-full animate-spin`}
       />
-      {text && (
-        <p className="text-gray-600 dark:text-gray-400 font-medium">{text}</p>
-      )}
+      {text && <p className="text-text-secondary font-medium text-sm">{text}</p>}
     </div>
   );
 }

@@ -364,7 +364,7 @@ export function generateFAQSchema() {
         name: 'Is Tandem free to play?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: "Yes! Tandem is completely free to play. You get one new puzzle every day at midnight. For unlimited access to past puzzles and Hard Mode, there's an optional Tandem Puzzle Club membership available.",
+          text: 'Yes! Tandem is completely free to play. All puzzles, including the full archive of past puzzles and Hard Mode, are free for everyone. A new puzzle is released every day at midnight.',
         },
       },
       {

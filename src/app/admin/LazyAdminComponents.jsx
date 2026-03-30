@@ -5,7 +5,7 @@
 
 'use client';
 import { lazy, Suspense } from 'react';
-import LoadingSpinner from '@/components/shared/LoadingSpinner';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 // Lazy load admin components
 export const LazyPuzzleEditor = lazy(() => import('@/components/admin/PuzzleEditor'));

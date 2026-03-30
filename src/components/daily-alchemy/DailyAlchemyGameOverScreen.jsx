@@ -2,12 +2,9 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import Image from 'next/image';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getRandomMessage, GAME_OVER_MESSAGES } from '@/lib/daily-alchemy.constants';
-import PaywallModal from '@/components/PaywallModal';
 import SolutionPathModal from './SolutionPathModal';
 
 /**
@@ -22,16 +19,10 @@ export function DailyAlchemyGameOverScreen({
   solutionPath,
 }) {
   const { highContrast, reduceMotion } = useTheme();
-  const { isActive: hasSubscription } = useSubscription();
-  const [showPaywall, setShowPaywall] = useState(false);
   const [showSolutionPath, setShowSolutionPath] = useState(false);
 
   const handleFreePlayClick = () => {
-    if (hasSubscription) {
-      onStartFreePlay?.();
-    } else {
-      setShowPaywall(true);
-    }
+    onStartFreePlay?.();
   };
 
   return (
@@ -143,7 +134,7 @@ export function DailyAlchemyGameOverScreen({
         onClick={handleFreePlayClick}
         className={cn(
           'w-full max-w-sm flex items-center justify-center gap-3 py-4',
-          'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
+          'bg-ghost-white dark:bg-gray-800 text-gray-800 dark:text-gray-200',
           'border-[3px] border-black dark:border-gray-600',
           'rounded-xl font-bold text-lg',
           'shadow-[4px_4px_0px_rgba(0,0,0,1)] dark:shadow-[4px_4px_0px_rgba(75,85,99,1)]',
@@ -158,15 +149,6 @@ export function DailyAlchemyGameOverScreen({
         transition={{ delay: 0.35 }}
         whileTap={!reduceMotion ? { scale: 0.98 } : undefined}
       >
-        {!hasSubscription && (
-          <Image
-            src="/ui/shared/lock.png"
-            alt="Locked"
-            width={20}
-            height={20}
-            className="opacity-70"
-          />
-        )}
         <span>Try Creative Mode</span>
       </motion.button>
 
@@ -179,9 +161,6 @@ export function DailyAlchemyGameOverScreen({
       >
         Combine elements endlessly with no goal or timer.
       </motion.p>
-
-      {/* Paywall Modal */}
-      <PaywallModal isOpen={showPaywall} onClose={() => setShowPaywall(false)} />
 
       {/* Solution Path Modal */}
       <SolutionPathModal

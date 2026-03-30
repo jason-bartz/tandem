@@ -17,9 +17,7 @@ export const SOUP_CONFIG = {
   ELEMENT_BANK_COLUMNS: 4, // columns in mobile view
   ELEMENT_BANK_COLUMNS_TABLET: 6, // columns in tablet view
   ELEMENT_BANK_COLUMNS_DESKTOP: 8, // columns in desktop view
-  // Access control:
-  // - Daily puzzle: Free for all account holders
-  // - Archive: Last 4 days free, older requires Tandem Puzzle Club membership
+  // Archive access: all puzzles free for everyone
   FREE_ARCHIVE_DAYS: 4,
   // Time limit for daily puzzle mode (10 minutes in seconds)
   // Free play mode has no time limit

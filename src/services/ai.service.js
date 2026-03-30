@@ -5216,15 +5216,26 @@ Your response:`;
       (el) => el.pathLength >= range.min && el.pathLength <= range.max + 2
     );
 
-    // Shuffle the candidate list using Fisher-Yates to ensure variety across requests
-    const shuffled = [...filtered];
-    for (let i = shuffled.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-    }
+    // Prioritize elements with fewer steps (ideal range: 8-12)
+    // Split into ideal range and rest, shuffle each group, then concatenate
+    const ideal = filtered.filter((el) => el.pathLength >= 8 && el.pathLength <= 12);
+    const rest = filtered.filter((el) => el.pathLength < 8 || el.pathLength > 12);
 
-    // Take a random subset (up to 50) so the AI sees different elements each time
-    const subset = shuffled.slice(0, 50);
+    const shuffle = (arr) => {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    };
+
+    // Ideal-range elements first, then rest sorted by pathLength ascending
+    rest.sort((a, b) => a.pathLength - b.pathLength);
+    const prioritized = [...shuffle(ideal), ...shuffle(rest)];
+
+    // Take a subset (up to 50), heavily weighted toward fewer-step elements
+    const subset = prioritized.slice(0, 50);
     const candidateElements = subset
       .map((el) => `- ${el.emoji} ${el.name} (${el.pathLength} steps)`)
       .join('\n');
@@ -5251,12 +5262,15 @@ ${recentList}
 
 REQUIREMENTS:
 1. Choose 8 elements from the list above
-2. Pick elements that would be FUN and INTERESTING puzzle targets
-3. Prefer elements with evocative names and emojis - they should feel rewarding to discover
-4. DO NOT suggest any element from the RECENT TARGETS list
-5. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
-6. Surprise me! Pick DIFFERENT elements than you normally would - be creative and unexpected
-7. For each suggestion, write a brief fun description explaining why it's a good target
+2. PRIORITIZE elements with FEWER steps - shorter paths make better puzzles
+3. The IDEAL range is 8-12 steps. Strongly prefer elements in this range when available
+4. If no 8-12 step elements are available, prefer the shortest path lengths available
+5. Pick elements that would be FUN and INTERESTING puzzle targets
+6. Prefer elements with evocative names and emojis - they should feel rewarding to discover
+7. DO NOT suggest any element from the RECENT TARGETS list
+8. Provide variety - mix different themes (nature, technology, mythology, food, etc.)
+9. Surprise me! Pick DIFFERENT elements than you normally would - be creative and unexpected
+10. For each suggestion, write a brief fun description explaining why it's a good target
 
 RESPONSE FORMAT (JSON only):
 {
@@ -5304,6 +5318,9 @@ Return ONLY the JSON. Element names and emojis MUST exactly match the available 
       if (validated.length < 1) {
         throw new Error('No valid suggestions after cross-referencing with available elements');
       }
+
+      // Sort by pathLength ascending - fewer steps = better puzzle
+      validated.sort((a, b) => a.pathLength - b.pathLength);
 
       return {
         suggestions: validated.slice(0, 8),

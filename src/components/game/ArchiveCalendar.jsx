@@ -3,7 +3,6 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTheme } from '@/contexts/ThemeContext';
 import CalendarDayCell from './CalendarDayCell';
 import CalendarDatePicker from './CalendarDatePicker';
-import PaywallModal from '@/components/PaywallModal';
 import CalendarSkeleton from '@/components/shared/CalendarSkeleton';
 import { getGameHistory } from '@/lib/storage';
 import { getPuzzleRangeForMonth } from '@/lib/puzzleNumber';
@@ -41,7 +40,6 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleData, setPuzzleData] = useState({});
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -241,24 +239,8 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
     const puzzle = puzzleData[day];
     if (!puzzle) return;
 
-    const isLocked = puzzleAccessMap[day] === true;
-    if (isLocked) {
-      setShowPaywall(true);
-      return;
-    }
-
     // Load puzzle - pass date for proper admire mode detection
     onSelectPuzzle(puzzle.date);
-  };
-
-  /**
-   * Handle purchase complete
-   */
-  const handlePurchaseComplete = () => {
-    subscriptionService.refreshSubscriptionStatus().then(() => {
-      // Reload current month data with new subscription status
-      loadMonthData(currentMonth, currentYear);
-    });
   };
 
   /**
@@ -525,13 +507,6 @@ export default function ArchiveCalendar({ isOpen, onClose, onSelectPuzzle }) {
         currentYear={currentYear}
         minYear={firstPuzzleYear}
         maxYear={todayYear}
-      />
-
-      {/* Paywall Modal */}
-      <PaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onPurchaseComplete={handlePurchaseComplete}
       />
     </>
   );

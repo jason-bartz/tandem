@@ -20,7 +20,6 @@ import { useEffect, useState, useCallback, useRef, memo } from 'react';
 import { getGameHistory } from '@/lib/storage';
 import subscriptionService from '@/services/subscriptionService';
 import { getCurrentPuzzleNumber } from '@/lib/puzzleNumber';
-import PaywallModal from '@/components/PaywallModal';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSubscription } from '@/contexts/SubscriptionContext';
 import { getApiUrl, capacitorFetch } from '@/lib/api-config';
@@ -168,7 +167,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const [puzzles, setPuzzles] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
   const [puzzleAccessMap, setPuzzleAccessMap] = useState({});
   const [startNumber, setStartNumber] = useState(1);
   const [hasMore, setHasMore] = useState(true);
@@ -176,7 +174,7 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
   const [error, setError] = useState(null);
 
   const { highContrast } = useTheme();
-  const { isActive: isSubscriptionActive, refreshStatus } = useSubscription();
+  const { isActive: isSubscriptionActive } = useSubscription();
   const scrollContainerRef = useRef(null);
   const abortControllerRef = useRef(null);
   const isInitialLoad = useRef(true);
@@ -423,27 +421,11 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
    */
   const handlePuzzleClick = useCallback(
     (puzzle) => {
-      // Get lock status from cache (synchronously populated on load)
-      const isLocked = puzzleAccessMap[puzzle.number.toString()] === true;
-
-      if (isLocked) {
-        setShowPaywall(true);
-        return;
-      }
-
       // Puzzle is accessible - load it by date for proper admire mode detection
       onSelectPuzzle(puzzle.date);
     },
     [puzzleAccessMap, onSelectPuzzle]
   );
-
-  const handlePurchaseComplete = useCallback(async () => {
-    // Refresh subscription status via context
-    await refreshStatus();
-
-    paginatedCache.puzzleAccessMap = {};
-    checkAccessPermissions(puzzles);
-  }, [refreshStatus, puzzles, checkAccessPermissions]);
 
   // Format date for display
   const formatDate = useCallback((dateStr) => {
@@ -622,13 +604,6 @@ export default function ArchiveModalPaginated({ isOpen, onClose, onSelectPuzzle 
           )}
         </div>
       </LeftSidePanel>
-
-      {/* Nested Panel - Paywall Modal at z-60 */}
-      <PaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onPurchaseComplete={handlePurchaseComplete}
-      />
     </>
   );
 }

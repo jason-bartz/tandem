@@ -3,16 +3,15 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { MINI_GAME_STATES, MINI_CONFIG } from '@/lib/constants';
-import { getCurrentMiniPuzzleInfo } from '@/lib/miniUtils';
+import { MINI_GAME_STATES } from '@/lib/constants';
 import { useAuth } from '@/contexts/AuthContext';
 import ServiceOutage from '@/components/shared/ServiceOutage';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import useMiniGame from '@/hooks/useMiniGame';
 import MiniGameScreen from '@/components/mini/MiniGameScreen';
 import MiniCompleteScreen from '@/components/mini/MiniCompleteScreen';
 import MiniAdmireScreen from '@/components/mini/MiniAdmireScreen';
 import AuthModal from '@/components/auth/AuthModal';
+import MiniLoadingSkeleton from '@/components/mini/MiniLoadingSkeleton';
 
 /**
  * Daily Mini Page
@@ -25,10 +24,7 @@ export default function DailyMiniPage() {
   const dateParam = searchParams?.get('date');
 
   const { user, loading: authLoading, serviceUnavailable } = useAuth();
-  const { isActive: hasSubscription, loading: subscriptionLoading } = useSubscription();
-
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const [showPaywall, setShowPaywall] = useState(false);
 
   // Initialize game with optional date
   const game = useMiniGame(dateParam);
@@ -39,26 +35,6 @@ export default function DailyMiniPage() {
       setShowAuthModal(true);
     }
   }, [user, authLoading]);
-
-  // Subscription check for archive puzzles
-  useEffect(() => {
-    if (!authLoading && !subscriptionLoading && user) {
-      const isArchiveRequest = dateParam && dateParam !== getCurrentMiniPuzzleInfo().isoDate;
-
-      if (isArchiveRequest) {
-        // Check if puzzle is within free window (today + 3 days back = 4 total)
-        const puzzleDate = new Date(dateParam);
-        const today = new Date();
-        const daysOld = Math.floor((today - puzzleDate) / (1000 * 60 * 60 * 24));
-
-        const needsSubscription = daysOld >= MINI_CONFIG.FREE_ARCHIVE_DAYS && !hasSubscription;
-
-        if (needsSubscription) {
-          setShowPaywall(true);
-        }
-      }
-    }
-  }, [user, hasSubscription, dateParam, authLoading, subscriptionLoading]);
 
   // Handle auth modal close
   const handleAuthModalClose = () => {
@@ -81,16 +57,7 @@ export default function DailyMiniPage() {
 
   // Loading state
   if (authLoading || game.loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-bg-main dark:bg-bg-main">
-        <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4">
-            <div className="w-16 h-16 rounded-full border-4 border-accent-yellow border-t-transparent animate-spin"></div>
-          </div>
-          <p className="text-text-secondary font-medium">Loading Daily Mini...</p>
-        </div>
-      </div>
-    );
+    return <MiniLoadingSkeleton />;
   }
 
   // Error state
@@ -141,99 +108,6 @@ export default function DailyMiniPage() {
           >
             Go Back
           </button>
-        </div>
-      </div>
-    );
-  }
-
-  // Paywall state (archive puzzle requires subscription)
-  if (showPaywall) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-bg-main dark:bg-bg-main px-4">
-        <div
-          className="
-            max-w-md w-full
-            rounded-[32px]
-            border-[3px] border-black dark:border-gray-600
-            shadow-[6px_6px_0px_rgba(0,0,0,1)]
-            dark:shadow-[6px_6px_0px_rgba(0,0,0,0.5)]
-            bg-ghost-white dark:bg-gray-800
-            p-10
-            text-center
-          "
-        >
-          <div className="text-6xl mb-4">🔒</div>
-          <h1 className="text-2xl font-black text-text-primary mb-3">
-            Archive Requires Membership
-          </h1>
-          <p className="text-text-secondary mb-6">
-            Get unlimited access to all past Daily Mini puzzles, plus the full archive of Tandem and
-            Cryptic games.
-          </p>
-
-          <div className="space-y-2 mb-8 text-left">
-            <div className="flex items-start gap-3">
-              <span className="text-accent-green text-xl">✓</span>
-              <p className="text-sm text-text-primary">Play all past Daily Mini puzzles</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-accent-green text-xl">✓</span>
-              <p className="text-sm text-text-primary">Access full Tandem & Cryptic archives</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-accent-green text-xl">✓</span>
-              <p className="text-sm text-text-primary">Sync stats across all devices</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <span className="text-accent-green text-xl">✓</span>
-              <p className="text-sm text-text-primary">Support independent development</p>
-            </div>
-          </div>
-
-          <div className="space-y-3">
-            <button
-              onClick={() => router.push('/subscription')}
-              className="
-                w-full h-14
-                rounded-[20px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[4px_4px_0px_rgba(0,0,0,1)]
-                dark:shadow-[4px_4px_0px_rgba(0,0,0,0.5)]
-                bg-accent-yellow dark:bg-accent-yellow
-                text-gray-900
-                font-black
-                tracking-wider
-                uppercase
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[4px] active:translate-y-[4px]
-                active:shadow-none
-                transition-all
-              "
-            >
-              Subscribe Now
-            </button>
-            <button
-              onClick={() => router.push('/dailymini')}
-              className="
-                w-full h-12
-                rounded-[16px]
-                border-[3px] border-black dark:border-gray-600
-                shadow-[3px_3px_0px_rgba(0,0,0,1)]
-                dark:shadow-[3px_3px_0px_rgba(0,0,0,0.5)]
-                bg-ghost-white dark:bg-gray-700
-                text-text-primary
-                font-bold
-                hover:translate-x-[2px] hover:translate-y-[2px]
-                hover:shadow-[2px_2px_0px_rgba(0,0,0,1)]
-                active:translate-x-[3px] active:translate-y-[3px]
-                active:shadow-none
-                transition-all
-              "
-            >
-              Play Today's Puzzle
-            </button>
-          </div>
         </div>
       </div>
     );

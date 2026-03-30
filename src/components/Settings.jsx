@@ -18,14 +18,12 @@
  * @component
  */
 import { useState, useEffect } from 'react';
-import PaywallModal from '@/components/PaywallModal';
 import AvatarSelectionPane from '@/components/AvatarSelectionPane';
 import { Capacitor } from '@capacitor/core';
 // import { Browser } from '@capacitor/browser';
 import { useHaptics } from '@/hooks/useHaptics';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useAuth } from '@/contexts/AuthContext';
-import { useSubscription } from '@/contexts/SubscriptionContext';
 import { useHoroscope } from '@/hooks/useHoroscope';
 import notificationService from '@/services/notificationService';
 import avatarService from '@/services/avatar.service';
@@ -34,7 +32,6 @@ import LeftSidePanel from '@/components/shared/LeftSidePanel';
 import logger from '@/lib/logger';
 
 export default function Settings({ isOpen, onClose, openPaywall = false }) {
-  const [showPaywall, setShowPaywall] = useState(openPaywall);
   const [notificationSettings, setNotificationSettings] = useState(null);
   const [notificationPermission, setNotificationPermission] = useState(null);
   const [keyboardLayout, setKeyboardLayout] = useState('QWERTY');
@@ -47,7 +44,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
     useTheme();
   const { syncStatus, toggleSync } = useUnifiedSync();
   const { user, refreshProfile } = useAuth();
-  const { isActive: isSubscriptionActive, loading: subscriptionLoading } = useSubscription();
 
   useEffect(() => {
     if (isOpen) {
@@ -59,10 +55,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
       // Load user avatar if signed in
       if (user) {
         loadUserAvatar();
-      }
-
-      if (openPaywall) {
-        setShowPaywall(true);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -320,7 +312,7 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
             </div>
           )}
 
-          {/* Subscription Section - Both iOS and Web */}
+          {/* Game Options Section - Both iOS and Web */}
           <div className="mb-8">
             {/* Section Card */}
             <div
@@ -337,126 +329,69 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
                 }`}
               >
                 <h3 className="text-base font-bold text-gray-800 dark:text-gray-200">
-                  Subscription
+                  Game Options
                 </h3>
               </div>
 
               {/* Section Content */}
               <div className="p-5">
-                {subscriptionLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
-                  </div>
-                ) : isSubscriptionActive ? (
-                  <div>
-                    {/* Hard Mode Toggle - Horizontal inline layout */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <p
-                          className={`text-sm font-medium ${
-                            highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
-                          }`}
-                        >
-                          Hard Mode
-                        </p>
-                        <p
-                          className={`text-xs ${
-                            highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
-                          }`}
-                        >
-                          3-min limit • No hints
-                        </p>
-                      </div>
-                      <button
-                        onClick={handleHardModeToggle}
-                        className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
-                          highContrast
-                            ? hardModeEnabled
-                              ? 'bg-hc-primary'
-                              : 'bg-hc-surface'
-                            : hardModeEnabled
-                              ? 'bg-gradient-to-r from-red-500 to-orange-500'
-                              : 'bg-gray-200 dark:bg-gray-700'
+                <div>
+                  {/* Hard Mode Toggle - Horizontal inline layout */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <p
+                        className={`text-sm font-medium ${
+                          highContrast ? 'text-hc-text' : 'text-gray-700 dark:text-gray-200'
                         }`}
-                        role="switch"
-                        aria-checked={hardModeEnabled}
                       >
-                        <span
-                          className={`${
-                            hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
-                          } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
-                            highContrast
-                              ? 'bg-hc-background'
-                              : hardModeEnabled
-                                ? 'bg-orange-600'
-                                : 'bg-ghost-white dark:bg-gray-600'
-                          }`}
-                        >
-                          <img
-                            src={
-                              theme === 'dark'
-                                ? '/ui/shared/hardmode-dark.png'
-                                : '/ui/shared/hardmode.png'
-                            }
-                            alt="Hard Mode"
-                            className="w-4 h-4"
-                          />
-                        </span>
-                      </button>
+                        Hard Mode
+                      </p>
+                      <p
+                        className={`text-xs ${
+                          highContrast ? 'text-hc-text' : 'text-gray-500 dark:text-gray-400'
+                        }`}
+                      >
+                        3-min limit • No hints
+                      </p>
                     </div>
+                    <button
+                      onClick={handleHardModeToggle}
+                      className={`relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-black dark:border-gray-600 transition-colors shadow-[2px_2px_0px_rgba(0,0,0,1)] dark:shadow-[2px_2px_0px_rgba(0,0,0,0.5)] ${
+                        highContrast
+                          ? hardModeEnabled
+                            ? 'bg-hc-primary'
+                            : 'bg-hc-surface'
+                          : hardModeEnabled
+                            ? 'bg-gradient-to-r from-red-500 to-orange-500'
+                            : 'bg-gray-200 dark:bg-gray-700'
+                      }`}
+                      role="switch"
+                      aria-checked={hardModeEnabled}
+                    >
+                      <span
+                        className={`${
+                          hardModeEnabled ? 'translate-x-[2.125rem]' : 'translate-x-0.5'
+                        } inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-black dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,1)] transition-transform ${
+                          highContrast
+                            ? 'bg-hc-background'
+                            : hardModeEnabled
+                              ? 'bg-orange-600'
+                              : 'bg-ghost-white dark:bg-gray-600'
+                        }`}
+                      >
+                        <img
+                          src={
+                            theme === 'dark'
+                              ? '/ui/shared/hardmode-dark.png'
+                              : '/ui/shared/hardmode.png'
+                          }
+                          alt="Hard Mode"
+                          className="w-4 h-4"
+                        />
+                      </span>
+                    </button>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {/* Only show promotional message when user is NOT logged in */}
-                    {!user && (
-                      <div className="bg-gray-100 dark:bg-gray-700 rounded-xl p-4">
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                          Become a Tandem Puzzle Club member for unlimited access to all puzzles!
-                        </p>
-                        <button
-                          onClick={() => setShowPaywall(true)}
-                          className={`w-full py-2 font-semibold rounded-xl text-sm transition-all ${
-                            highContrast
-                              ? 'bg-hc-primary text-white border-[2px] border-hc-border hover:bg-hc-focus shadow-[2px_2px_0px_rgba(0,0,0,1)]'
-                              : 'bg-accent-blue text-white border-[2px] border-black dark:border-gray-600 shadow-[2px_2px_0px_rgba(0,0,0,1)] hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-[1px_1px_0px_rgba(0,0,0,1)]'
-                          }`}
-                        >
-                          View Plans
-                        </button>
-                      </div>
-                    )}
-
-                    {/* Hard Mode - Disabled for non-subscribers - Horizontal inline */}
-                    <div className="flex items-center justify-between opacity-60">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="text-sm font-medium text-gray-500 dark:text-gray-500">
-                            Hard Mode
-                          </p>
-                          <span className="text-[10px] bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300 px-1.5 py-0.5 rounded-full">
-                            Unlimited
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-400 dark:text-gray-500">
-                          3-min limit • No hints
-                        </p>
-                      </div>
-                      <div className="relative inline-flex h-9 w-[4.5rem] items-center rounded-full border-[2px] border-gray-400 dark:border-gray-600 bg-gray-200 dark:bg-gray-700 shadow-[2px_2px_0px_rgba(0,0,0,0.3)] cursor-not-allowed">
-                        <span className="translate-x-0.5 inline-flex h-7 w-7 items-center justify-center transform rounded-full border-[2px] border-gray-400 dark:border-gray-600 shadow-[1px_1px_0px_rgba(0,0,0,0.3)] bg-ghost-white dark:bg-gray-600">
-                          <img
-                            src={
-                              theme === 'dark'
-                                ? '/ui/shared/hardmode-dark.png'
-                                : '/ui/shared/hardmode.png'
-                            }
-                            alt="Hard Mode"
-                            className="w-4 h-4 opacity-50"
-                          />
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                )}
+                </div>
               </div>
             </div>
           </div>
@@ -923,15 +858,6 @@ export default function Settings({ isOpen, onClose, openPaywall = false }) {
           </div>
         </div>
       </LeftSidePanel>
-
-      {/* Nested Panel - Paywall Modal at z-60 */}
-      <PaywallModal
-        isOpen={showPaywall}
-        onClose={() => setShowPaywall(false)}
-        onPurchaseComplete={() => {
-          loadSubscriptionInfo();
-        }}
-      />
 
       {/* Nested Panel - Avatar Selection Pane at z-60 */}
       <AvatarSelectionPane

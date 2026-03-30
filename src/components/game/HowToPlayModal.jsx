@@ -281,18 +281,9 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
               className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
             >
               <span className="text-lg">🔥</span> Hard Mode
-              <span
-                className={`text-xs px-2 py-0.5 rounded-full ${
-                  highContrast
-                    ? 'bg-black text-yellow-300 border border-yellow-300'
-                    : 'bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300'
-                }`}
-              >
-                Club Members
-              </span>
             </h4>
             <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
-              For the ultimate challenge, Tandem Puzzle Club members can enable Hard Mode:
+              For the ultimate challenge, you can enable Hard Mode:
             </p>
             <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
               <li>
@@ -305,7 +296,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             <p
               className={`text-xs mt-2 ${highContrast ? 'text-white' : 'text-gray-600 dark:text-gray-400'}`}
             >
-              Enable Hard Mode in Settings when you're a Tandem Puzzle Club member.
+              Enable Hard Mode in Settings.
             </p>
           </div>
 
