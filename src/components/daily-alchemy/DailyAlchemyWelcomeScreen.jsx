@@ -91,15 +91,11 @@ export function DailyAlchemyWelcomeScreen({
           </h1>
         </div>
 
-        {/* Par and Timer Display */}
+        {/* Par Display */}
         <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
           <div className="flex items-center gap-1.5">
             <Image src="/ui/stats/par.png" alt="" width={16} height={16} />
             <span>Par: {parMoves} moves</span>
-          </div>
-          <div className="flex items-center gap-1.5">
-            <Image src="/ui/stats/stopwatch.png" alt="" width={16} height={16} />
-            <span>10:00 limit</span>
           </div>
         </div>
       </motion.div>
@@ -132,7 +128,7 @@ export function DailyAlchemyWelcomeScreen({
             'transition-colors cursor-pointer'
           )}
         >
-          Combine elements to create new ones. Find the target element within 10 minutes.
+          Combine elements to create new ones. Find the target element!
         </div>
       </motion.button>
 

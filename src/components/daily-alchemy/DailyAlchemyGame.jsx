@@ -138,7 +138,6 @@ export function DailyAlchemyGame({ initialDate = null }) {
 
     // Timer
     elapsedTime,
-    remainingTime,
     formatTime,
     pauseTimer,
     resumeTimer,
@@ -665,7 +664,7 @@ export function DailyAlchemyGame({ initialDate = null }) {
                       targetElement={targetElement}
                       targetEmoji={targetEmoji}
                       parMoves={parMoves}
-                      remainingTime={remainingTime}
+                      elapsedTime={elapsedTime}
                       movesCount={movesCount}
                       formatTime={formatTime}
                       elementBank={elementBank}

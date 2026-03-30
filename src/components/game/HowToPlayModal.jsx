@@ -444,8 +444,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
                   5
                 </span>
                 <span>
-                  <strong>Beat the clock</strong> — You have 10 minutes to find the target element
-                  before time runs out!
+                  <strong>Find the target</strong> — Combine elements to discover the target element
                 </span>
               </li>
             </ul>
@@ -635,36 +634,6 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
           <div
             className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
               highContrast
-                ? 'bg-hc-error text-white border-hc-border'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-400 dark:border-red-600'
-            }`}
-          >
-            <h4
-              className={`font-semibold mb-2 flex items-center gap-2 ${highContrast ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}
-            >
-              <Image
-                src="/ui/stats/stopwatch.png"
-                alt=""
-                width={20}
-                height={20}
-                className="w-5 h-5"
-              />
-              10-Minute Timer
-            </h4>
-            <p className={`text-sm mb-2 ${highContrast ? 'text-white' : ''}`}>
-              Daily puzzles have a <strong>10-minute time limit</strong>. Find the target element
-              before time runs out!
-            </p>
-            <ul className={`text-sm space-y-1 ml-4 ${highContrast ? 'text-white' : ''}`}>
-              <li>• Timer counts down from 10:00</li>
-              <li>• Warning colors appear when time is low</li>
-              <li>• If time runs out, you can retry or try Creative Mode</li>
-            </ul>
-          </div>
-
-          <div
-            className={`rounded-2xl p-4 border-[3px] shadow-[3px_3px_0px_rgba(0,0,0,0.2)] ${
-              highContrast
                 ? 'bg-hc-warning text-black border-hc-border'
                 : 'bg-amber-50 dark:bg-amber-900/20 border-amber-400 dark:border-amber-600'
             }`}
@@ -795,8 +764,7 @@ export default function HowToPlayModal({ isOpen, onClose, defaultTab = 'tandem' 
             </p>
             <ul className={`text-sm space-y-1 ml-4 mb-2 ${highContrast ? '' : ''}`}>
               <li>
-                • <strong>Co-op Daily:</strong> Race the 10-minute timer together to find the daily
-                target
+                • <strong>Co-op Daily:</strong> Work together to find the daily target
               </li>
               <li>
                 • <strong>Co-op Creative:</strong> Free play with no limits — explore and discover

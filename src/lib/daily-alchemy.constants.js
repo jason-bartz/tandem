@@ -19,9 +19,6 @@ export const SOUP_CONFIG = {
   ELEMENT_BANK_COLUMNS_DESKTOP: 8, // columns in desktop view
   // Archive access: all puzzles free for everyone
   FREE_ARCHIVE_DAYS: 4,
-  // Time limit for daily puzzle mode (10 minutes in seconds)
-  // Free play mode has no time limit
-  TIME_LIMIT_SECONDS: 600,
 };
 
 // Starter elements (same every day)
@@ -37,7 +34,7 @@ export const SOUP_GAME_STATES = {
   WELCOME: 'welcome',
   PLAYING: 'playing',
   COMPLETE: 'complete',
-  GAME_OVER: 'game_over', // Time ran out
+  GAME_OVER: 'game_over',
   ADMIRE: 'admire',
   ERROR: 'error',
   COOP_LOBBY: 'coop_lobby', // Co-op mode: waiting for partner or entering invite code
@@ -285,12 +282,12 @@ export const FIRST_DISCOVERY_MESSAGES = [
   'World First!',
 ];
 
-// Game over messages (time ran out)
+// Game over messages
 export const GAME_OVER_MESSAGES = [
-  "Time's Up!",
   'The Cauldron Cooled!',
-  'Out of Time!',
   'The Magic Faded!',
+  'Better luck next time!',
+  'So close!',
 ];
 
 // Par comparison messages

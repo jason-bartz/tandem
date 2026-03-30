@@ -22,7 +22,6 @@ import {
   SOUP_GAME_STATES,
   SOUP_API,
   SOUP_STORAGE_KEYS,
-  SOUP_CONFIG,
   STARTER_ELEMENTS,
   SORT_OPTIONS,
   SORT_DIRECTIONS,
@@ -168,7 +167,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   const [hasStarted, setHasStarted] = useState(false);
   const [startTime, setStartTime] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0);
-  const [remainingTime, setRemainingTime] = useState(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Countdown timer for daily mode
+  const [remainingTime, setRemainingTime] = useState(0); // Kept for co-op compatibility
   const [isPaused, setIsPaused] = useState(false);
   const pausedAtRef = useRef(null); // Track when we paused to calculate elapsed time correctly
   const [isGameOver, setIsGameOver] = useState(false);
@@ -340,16 +339,13 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
   }, [user?.id, user?.is_anonymous, freePlayMode, coopMode]);
 
   // Timer effect (disabled in free play mode)
-  // Tracks both elapsed time (for stats) and remaining time (countdown for daily mode)
+  // Tracks elapsed time for stats display
   useEffect(() => {
     if (freePlayMode) return; // No timer in free play
     if (gameState === SOUP_GAME_STATES.PLAYING && hasStarted && !isPaused && startTime) {
       const interval = setInterval(() => {
         const elapsed = Math.floor((Date.now() - startTime) / 1000);
         setElapsedTime(elapsed);
-        // Calculate remaining time (countdown from TIME_LIMIT_SECONDS)
-        const remaining = Math.max(0, SOUP_CONFIG.TIME_LIMIT_SECONDS - elapsed);
-        setRemainingTime(remaining);
       }, 1000);
       return () => clearInterval(interval);
     }
@@ -626,7 +622,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Restore timer state - calculate startTime so the timer continues from where it left off
     const restoredElapsed = savedState.elapsedTime || 0;
     setElapsedTime(restoredElapsed);
-    setRemainingTime(Math.max(0, SOUP_CONFIG.TIME_LIMIT_SECONDS - restoredElapsed));
+    setRemainingTime(0);
     // Set startTime to a value that makes the timer calculation work correctly
     // Timer calculates: elapsed = (Date.now() - startTime) / 1000
     // So we need: startTime = Date.now() - (elapsedTime * 1000)
@@ -739,7 +735,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Start timer for daily puzzle
     setStartTime(Date.now());
     setElapsedTime(0);
-    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS);
+    setRemainingTime(0);
     setIsPaused(false);
     pausedAtRef.current = null;
 
@@ -1012,7 +1008,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     // Start timer (same as startGame)
     setStartTime(Date.now());
     setElapsedTime(0);
-    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS);
+    setRemainingTime(0);
     setIsPaused(false);
     pausedAtRef.current = null;
 
@@ -2144,18 +2140,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     });
   }, [isGameOver, isComplete, freePlayMode, coopMode]);
 
-  // Game over effect - triggers when time runs out in daily mode
-  useEffect(() => {
-    if (freePlayMode) return; // No game over in free play
-    if (
-      gameState === SOUP_GAME_STATES.PLAYING &&
-      remainingTime === 0 &&
-      !isComplete &&
-      !isGameOver
-    ) {
-      handleGameOver();
-    }
-  }, [remainingTime, gameState, freePlayMode, isComplete, isGameOver, handleGameOver]);
+  // Game over effect - no longer triggered by time (time limit removed)
 
   // Check for win condition (must be after handlePuzzleComplete is defined)
   // Skipped in free play mode - no win condition
@@ -2213,7 +2198,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     setCurrentHintElement(null);
     setStartTime(Date.now());
     setElapsedTime(0);
-    setRemainingTime(SOUP_CONFIG.TIME_LIMIT_SECONDS); // Reset countdown
+    setRemainingTime(0); // Reset countdown
     setIsPaused(false);
     pausedAtRef.current = null;
     setGameState(SOUP_GAME_STATES.PLAYING);
@@ -2449,7 +2434,7 @@ export function useDailyAlchemyGame(initialDate = null, isFreePlay = false) {
     pauseTimer,
     resumeTimer,
     formatTime,
-    timeLimit: SOUP_CONFIG.TIME_LIMIT_SECONDS,
+    timeLimit: null,
 
     // Stats
     movesCount,

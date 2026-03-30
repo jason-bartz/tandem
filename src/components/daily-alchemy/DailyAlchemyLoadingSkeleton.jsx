@@ -72,7 +72,7 @@ export function DailyAlchemyLoadingSkeleton() {
                     />
                   </div>
 
-                  {/* Par and Timer Display */}
+                  {/* Par Display */}
                   <div className="flex items-center gap-4">
                     <div
                       className={`h-4 w-24 bg-gray-200 dark:bg-gray-700 rounded ${shimmerClass}`}
