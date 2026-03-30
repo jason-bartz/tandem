@@ -122,13 +122,12 @@ export default function PathGenerator({ onPathAccepted }) {
           conflicts: data.conflicts?.length || 0,
         });
 
-        // Notify parent component
+        // Notify parent component with CORRECTED solution path (uses actual DB values for conflicts)
         if (onPathAccepted) {
-          onPathAccepted({
-            targetElement,
-            targetEmoji,
-            parMoves: path.steps.length,
-            solutionPath: path.steps.map((step, idx) => ({
+          // Use the server-corrected path if available, otherwise fall back to original
+          const solutionPath =
+            data.correctedSolutionPath ||
+            path.steps.map((step, idx) => ({
               step: idx + 1,
               elementA: step.elementA,
               elementAEmoji: step.emojiA,
@@ -136,7 +135,13 @@ export default function PathGenerator({ onPathAccepted }) {
               elementBEmoji: step.emojiB,
               result: step.result,
               emoji: step.resultEmoji,
-            })),
+            }));
+
+          onPathAccepted({
+            targetElement,
+            targetEmoji,
+            parMoves: solutionPath.length,
+            solutionPath,
           });
         }
       } catch (err) {

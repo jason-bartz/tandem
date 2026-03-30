@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@/lib/supabase/server';
 import logger from '@/lib/logger';
-import { STARTER_ELEMENTS } from '@/lib/daily-alchemy.constants';
+import { STARTER_ELEMENTS, normalizeKey } from '@/lib/daily-alchemy.constants';
 
 /**
  * Get today's date in YYYY-MM-DD format based on ET timezone
@@ -14,6 +14,63 @@ function getCurrentPuzzleDate() {
   const month = String(etDate.getMonth() + 1).padStart(2, '0');
   const day = String(etDate.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+}
+
+/**
+ * Validate and correct a solution path against the actual element_combinations table.
+ * Replaces any step whose result doesn't match the real DB combination.
+ */
+async function validateSolutionPath(solutionPath, supabase) {
+  if (!solutionPath || solutionPath.length === 0) return solutionPath;
+
+  // Collect all combination keys from the path
+  const keys = solutionPath.map((step) => normalizeKey(step.elementA, step.elementB));
+
+  // Batch query the DB for all combinations in the path
+  const { data: dbCombos, error } = await supabase
+    .from('element_combinations')
+    .select('combination_key, result_element, result_emoji')
+    .in('combination_key', keys);
+
+  if (error || !dbCombos) {
+    logger.warn('[API] Failed to validate solution path, returning as-is', {
+      error: error?.message,
+    });
+    return solutionPath;
+  }
+
+  // Build lookup map
+  const comboMap = new Map();
+  for (const combo of dbCombos) {
+    comboMap.set(combo.combination_key, combo);
+  }
+
+  // Correct any mismatched steps
+  let corrected = 0;
+  const validatedPath = solutionPath.map((step) => {
+    const key = normalizeKey(step.elementA, step.elementB);
+    const dbCombo = comboMap.get(key);
+
+    if (dbCombo && dbCombo.result_element.toLowerCase() !== step.result.toLowerCase()) {
+      corrected++;
+      return {
+        ...step,
+        result: dbCombo.result_element,
+        emoji: dbCombo.result_emoji,
+      };
+    }
+
+    return step;
+  });
+
+  if (corrected > 0) {
+    logger.warn('[API] Corrected stale solution path steps', {
+      corrected,
+      total: solutionPath.length,
+    });
+  }
+
+  return validatedPath;
 }
 
 /**
@@ -109,6 +166,9 @@ export async function GET(request) {
       target: data.target_element,
     });
 
+    // Validate solution path against actual DB combinations to fix stale/incorrect hints
+    const solutionPath = await validateSolutionPath(data.solution_path || [], supabase);
+
     return NextResponse.json({
       success: true,
       puzzle: {
@@ -119,7 +179,7 @@ export async function GET(request) {
         targetEmoji: data.target_emoji,
         parMoves: data.par_moves,
         difficulty: data.difficulty,
-        solutionPath: data.solution_path || [],
+        solutionPath,
       },
       starterElements: STARTER_ELEMENTS,
     });

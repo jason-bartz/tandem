@@ -280,6 +280,8 @@ export async function PUT(request) {
     let skipped = 0;
     const errors = [];
     const conflicts = []; // Track when generated result differs from existing
+    // Build a corrected solution path that uses actual DB values for conflicts
+    const correctedSteps = [];
 
     // Check if target element already exists and get its canonical emoji
     let canonicalTargetEmoji = targetEmoji;
@@ -317,6 +319,16 @@ export async function PUT(request) {
       // Normalize the combination key
       const combinationKey = normalizeKey(elementA, elementB);
 
+      // Track the corrected version of this step (defaults to AI-generated)
+      const correctedStep = {
+        elementA: step.elementA,
+        emojiA: step.emojiA,
+        elementB: step.elementB,
+        emojiB: step.emojiB,
+        result,
+        resultEmoji,
+      };
+
       try {
         // Check if this combination already exists
         const { data: existing } = await supabase
@@ -326,6 +338,10 @@ export async function PUT(request) {
           .single();
 
         if (existing) {
+          // Always use the existing DB result for the corrected path
+          correctedStep.result = existing.result_element;
+          correctedStep.resultEmoji = existing.result_emoji;
+
           // Check if there's a conflict (different result)
           if (existing.result_element.toLowerCase() !== result.toLowerCase()) {
             conflicts.push({
@@ -346,6 +362,7 @@ export async function PUT(request) {
             });
           }
           skipped++;
+          correctedSteps.push(correctedStep);
           continue;
         }
 
@@ -388,6 +405,8 @@ export async function PUT(request) {
         });
         errors.push(`Error processing ${elementA} + ${elementB}: ${stepError.message}`);
       }
+
+      correctedSteps.push(correctedStep);
     }
 
     // Ensure the target element exists as a result (in case it was created through a different path)
@@ -427,12 +446,24 @@ export async function PUT(request) {
       errors: errors.length,
     });
 
+    // Build the corrected solution path using actual DB values
+    const correctedSolutionPath = correctedSteps.map((step, idx) => ({
+      step: idx + 1,
+      elementA: step.elementA,
+      elementAEmoji: step.emojiA,
+      elementB: step.elementB,
+      elementBEmoji: step.emojiB,
+      result: step.result,
+      emoji: step.resultEmoji,
+    }));
+
     return NextResponse.json({
       success: true,
       created,
       skipped,
       conflicts: conflicts.length > 0 ? conflicts : undefined,
       errors: errors.length > 0 ? errors : undefined,
+      correctedSolutionPath,
     });
   } catch (error) {
     logger.error('[PathGenerator] Error saving path', {
